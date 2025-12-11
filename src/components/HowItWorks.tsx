@@ -1,43 +1,103 @@
-import React from 'react'
 import { motion } from 'framer-motion'
-import { fadeInUp } from '../lib/motion'
-import { Zap, Layers, Rocket } from 'lucide-react'
+import { MessageSquare, Palette, Rocket, HeartHandshake } from 'lucide-react'
 
-export default function HowItWorks(){
-  return (
-    <section aria-labelledby="how-heading" className="py-16">
-      <div className="max-w-7xl mx-auto px-6">
-        <motion.div variants={fadeInUp} initial="hidden" whileInView="show" viewport={{ once: true, amount: 0.2 }}>
-          <h2 id="how-heading" className="text-2xl md:text-3xl font-semibold text-[var(--brand-dark)]">Zo werkt het</h2>
-          <p className="mt-3 text-slate-600 max-w-xl">Van idee naar live site in een paar stappen — wij regelen het technische en jij bewaakt de groei.</p>
+const steps = [
+	{
+		icon: MessageSquare,
+		step: '01',
+		title: 'Gratis intakegesprek',
+		description:
+			'In een kort gesprek van 15 minuten ontdekken we jouw wensen, doelgroep en doelen. Volledig vrijblijvend.',
+	},
+	{
+		icon: Palette,
+		step: '02',
+		title: 'Design binnen 5 dagen',
+		description:
+			'Je ontvangt een volledig uitgewerkt ontwerp. Niet tevreden? We passen aan tot het perfect is.',
+	},
+	{
+		icon: Rocket,
+		step: '03',
+		title: 'Live binnen 7 dagen',
+		description: 'Na jouw goedkeuring gaat de website direct online. Inclusief hosting, SSL en domein.',
+	},
+	{
+		icon: HeartHandshake,
+		step: '04',
+		title: 'Doorlopende support',
+		description:
+			'Wij blijven je partner. Aanpassingen, vragen of nieuwe ideeën? Wij staan altijd voor je klaar.',
+	},
+]
 
-          <div className="mt-8 grid md:grid-cols-3 gap-6">
-            <div className="bg-white border border-slate-100 rounded-lg p-6 shadow-sm">
-              <div className="flex items-center justify-center w-12 h-12 rounded-full bg-purple-50 text-purple-600">
-                <Zap size={20} />
-              </div>
-              <h3 className="mt-4 font-semibold text-lg">1. Vertel je idee</h3>
-              <p className="mt-2 text-sm text-slate-600">Snel onboarding-formulier: kies je industrie, domein en gewenste sjabloon — wij plannen een korte walkthrough.</p>
-            </div>
+export default function HowItWorks() {
+	return (
+		<section id="how-it-works" className="py-24 lg:py-32 bg-gray-50 relative">
+			<div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+				{/* Header */}
+				<div className="text-center max-w-3xl mx-auto mb-16 lg:mb-20">
+					<motion.span
+						initial={{ opacity: 0, y: 20 }}
+						whileInView={{ opacity: 1, y: 0 }}
+						viewport={{ once: true }}
+						className="inline-block text-primary-600 font-semibold text-sm tracking-wider uppercase mb-4"
+					>
+						Hoe het werkt
+					</motion.span>
+					<motion.h2
+						initial={{ opacity: 0, y: 20 }}
+						whileInView={{ opacity: 1, y: 0 }}
+						viewport={{ once: true }}
+						transition={{ delay: 0.1 }}
+						className="text-3xl sm:text-4xl lg:text-5xl font-bold text-gray-900 mb-6"
+					>
+						Van idee naar website{' '}
+						<span className="text-primary-600">
+							in 7 dagen
+						</span>
+					</motion.h2>
+				</div>
 
-            <div className="bg-white border border-slate-100 rounded-lg p-6 shadow-sm">
-              <div className="flex items-center justify-center w-12 h-12 rounded-full bg-cyan-50 text-cyan-600">
-                <Layers size={20} />
-              </div>
-              <h3 className="mt-4 font-semibold text-lg">2. Wij bouwen en optimaliseren</h3>
-              <p className="mt-2 text-sm text-slate-600">Webstability levert een conversie-gericht ontwerp, responsive build en SEO-basisinstallatie — klaar voor conversie.</p>
-            </div>
+				{/* Steps */}
+				<div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
+					{steps.map((step, index) => (
+						<motion.div
+							key={step.step}
+							initial={{ opacity: 0, y: 30 }}
+							whileInView={{ opacity: 1, y: 0 }}
+							viewport={{ once: true }}
+							transition={{ delay: index * 0.15 }}
+							className="relative h-full"
+						>
+							{/* Connector line */}
+							{index < steps.length - 1 && (
+								<div className="hidden lg:block absolute top-12 left-full w-full h-px bg-gradient-to-r from-primary-300 to-transparent z-0" />
+							)}
 
-            <div className="bg-white border border-slate-100 rounded-lg p-6 shadow-sm">
-              <div className="flex items-center justify-center w-12 h-12 rounded-full bg-amber-50 text-amber-600">
-                <Rocket size={20} />
-              </div>
-              <h3 className="mt-4 font-semibold text-lg">3. Publiceren & groeien</h3>
-              <p className="mt-2 text-sm text-slate-600">We koppelen je domein, zetten analytics en support klaar en geven je tips om bezoekers te converteren.</p>
-            </div>
-          </div>
-        </motion.div>
-      </div>
-    </section>
-  )
+							<div className="relative z-10 bg-white rounded-2xl p-6 border border-gray-100 shadow-sm hover:shadow-lg transition-shadow h-full flex flex-col">
+								{/* Step number */}
+								<div className="text-primary-100 font-bold text-6xl mb-4">
+									{step.step}
+								</div>
+
+								{/* Icon */}
+								<div className="inline-flex p-3 bg-primary-100 rounded-xl mb-4">
+									<step.icon className="w-6 h-6 text-primary-600" />
+								</div>
+
+								<h3 className="text-gray-900 font-semibold text-xl mb-3">
+									{step.title}
+								</h3>
+
+								<p className="text-gray-600 leading-relaxed flex-1">
+									{step.description}
+								</p>
+							</div>
+						</motion.div>
+					))}
+				</div>
+			</div>
+		</section>
+	)
 }

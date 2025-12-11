@@ -1,81 +1,117 @@
-import React, { useState } from 'react'
-import { Globe, Zap, Phone } from 'lucide-react'
-import useReveal from '../hooks/useReveal'
-import { motion } from 'framer-motion'
-import { staggerContainer, fadeInUp, pop } from '../lib/motion'
-import { Rocket, Shield, DollarSign, Users, TrendingUp, ShoppingCart } from 'lucide-react'
+import { motion, useInView } from 'framer-motion'
+import { useRef } from 'react'
+import { 
+  Zap, 
+  Shield, 
+  Palette, 
+  Headphones, 
+  TrendingUp, 
+  RefreshCw 
+} from 'lucide-react'
 
-const ITEMS = [
-  { title: 'Snel live', desc: 'Klaar binnen een week', icon: Rocket },
-  { title: 'Veilige hosting', desc: 'SSL + backups', icon: Shield },
-  { title: 'Betaalbaar', desc: 'Transparante prijzen', icon: DollarSign },
-  { title: 'Support', desc: 'Echte mensen, snelle antwoorden', icon: Users },
-  { title: 'SEO-gericht', desc: 'Structuur voor zichtbaarheid', icon: TrendingUp },
-  { title: 'E-commerce', desc: 'Betaalmethodes en voorraad', icon: ShoppingCart },
+const features = [
+  {
+    icon: Zap,
+    title: 'Razendsnel online',
+    description: 'Je website is binnen 7 werkdagen live. Wij regelen alles: hosting, domein en SSL.',
+    color: 'bg-amber-100 text-amber-600',
+  },
+  {
+    icon: Palette,
+    title: 'Op maat gemaakt',
+    description: 'Geen standaard templates. Jouw website wordt volledig afgestemd op jouw merk en doelen.',
+    color: 'bg-pink-100 text-pink-600',
+  },
+  {
+    icon: Shield,
+    title: 'Veilig & betrouwbaar',
+    description: 'SSL-certificaat, dagelijkse backups en 99.9% uptime garantie zijn standaard inbegrepen.',
+    color: 'bg-green-100 text-green-600',
+  },
+  {
+    icon: Headphones,
+    title: 'Persoonlijke support',
+    description: 'Direct contact met je eigen websitebeheerder. Geen ticketsystemen of wachtrijen.',
+    color: 'bg-blue-100 text-blue-600',
+  },
+  {
+    icon: TrendingUp,
+    title: 'SEO geoptimaliseerd',
+    description: 'Gevonden worden in Google? Elke website wordt gebouwd met SEO best practices.',
+    color: 'bg-primary-100 text-primary-600',
+  },
+  {
+    icon: RefreshCw,
+    title: 'Maandelijkse updates',
+    description: 'Tekst wijzigen? Nieuwe foto\'s? Wij voeren elke maand gratis aanpassingen door.',
+    color: 'bg-purple-100 text-purple-600',
+  },
 ]
 
 export default function Features() {
-  const { ref, visible } = useReveal()
-  const [openIndex, setOpenIndex] = useState<number | null>(null)
-
-  const items = [
-    { id: 1, title: 'SEO & zichtbaarheid', icon: Globe, text: 'Geoptimaliseerde pagina’s, metadata en performance zodat klanten je makkelijker vinden.', details: 'Wij optimaliseren je pagina-architectuur, metadata en content flow zodat je website direct beter gevonden wordt. Dit levert je structureel meer relevante bezoekers.' },
-    { id: 2, title: 'Snel en betrouwbaar', icon: Zap, text: 'Lichtgewicht sites met aandacht voor Core Web Vitals en snelle laadtijden.', details: 'Wij bouwen met performance-first principes: minimale assets, slimme caching en image optimisation — voor snellere pagina’s en hogere conversies.' },
-    { id: 3, title: 'Persoonlijke support', icon: Phone, text: 'Direct contact met hetzelfde team dat je website bouwt, van onboarding tot onderhoud.', details: 'Geen anonieme helpdesk: één vast contactpersoon die je adviseert bij updates, security en groeikansen.' },
-  ]
+  const ref = useRef(null)
+  const isInView = useInView(ref, { once: true, margin: "-100px" })
 
   return (
-    <section id="features" className="py-20 bg-white/4">
-      <div className="max-w-6xl mx-auto px-6">
-        <motion.div initial="hidden" animate={visible ? 'show' : 'hidden'} variants={staggerContainer}>
-          <motion.h2 className={`text-3xl font-bold`} variants={fadeInUp}>Waarom kiezen ondernemers voor webstability?</motion.h2>
-          <motion.p className="mt-2 text-slate-600 max-w-2xl" variants={fadeInUp}>Wij leveren complete websites die leads opleveren: snelle oplevering, conversiegerichte ontwerpkeuzes en support die meegroeit met je bedrijf.</motion.p>
+    <section id="features" className="py-24 lg:py-32 bg-white relative overflow-hidden">
+      <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        {/* Section header */}
+        <div className="text-center max-w-3xl mx-auto mb-16 lg:mb-20">
+          <motion.span
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            className="inline-block text-primary-600 font-semibold text-sm tracking-wider uppercase mb-4"
+          >
+            Waarom Webstability
+          </motion.span>
+          <motion.h2
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ delay: 0.1 }}
+            className="text-3xl sm:text-4xl lg:text-5xl font-bold text-gray-900 mb-6"
+          >
+            Alles wat je nodig hebt,{' '}
+            <span className="text-primary-600">
+              niets wat je niet nodig hebt
+            </span>
+          </motion.h2>
+          <motion.p
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ delay: 0.2 }}
+            className="text-gray-600 text-lg"
+          >
+            Geen verborgen kosten, geen technisch gedoe. 
+            Focus op je bedrijf terwijl wij zorgen voor je online aanwezigheid.
+          </motion.p>
+        </div>
 
-          <motion.div ref={ref} className="mt-8 grid grid-cols-1 md:grid-cols-3 gap-6" variants={staggerContainer}>
-            {items.map((it, i) => (
-              <motion.article key={it.id} className={`card flex flex-col gap-4`} variants={fadeInUp} whileHover={{ scale: 1.02 }} transition={{ type: 'spring', stiffness: 160 }} onClick={() => setOpenIndex(openIndex === i ? null : i)} aria-expanded={openIndex === i}>
-                <div className="flex items-start gap-4">
-                  <div className="w-12 h-12 rounded-lg flex items-center justify-center" style={{background:'linear-gradient(135deg, rgba(109,40,217,0.12), rgba(6,182,212,0.08))'}}>
-                    <it.icon color="var(--brand-500)" />
-                  </div>
-                  <div className="flex-1">
-                    <h3 className="font-semibold">{it.title}</h3>
-                    <p className="text-sm text-slate-600 mt-2">{it.text}</p>
-                  </div>
-                </div>
-
-                <div className="mt-auto flex items-center justify-between">
-                  <div className="text-sm text-slate-500">{openIndex === i ? 'Klik om te sluiten' : 'Klik om meer te lezen'}</div>
-                  <div className="text-sm text-brand-600 font-semibold">Meer</div>
-                </div>
-
-                {openIndex === i && (
-                  <motion.div className="pt-3 border-t mt-3 text-sm text-slate-600" initial={{opacity:0}} animate={{opacity:1}}>
-                    {it.details}
-                    <div className="mt-3">
-                      <a href="#pricing" className="btn-primary">Bekijk pakketten</a>
-                    </div>
-                  </motion.div>
-                )}
-              </motion.article>
-            ))}
-          </motion.div>
-        </motion.div>
-
-        <motion.div variants={staggerContainer} initial="hidden" whileInView="show" className="grid md:grid-cols-3 gap-6 mt-16">
-          {ITEMS.map((it)=> (
-            <motion.div key={it.title} variants={pop} className="bg-white/6 p-6 rounded-lg">
-              <div className="text-2xl text-[var(--brand-500)]">
-                <it.icon size={28} />
+        {/* Features grid */}
+        <div ref={ref} className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8">
+          {features.map((feature, index) => (
+            <motion.div
+              key={feature.title}
+              initial={{ opacity: 0, y: 30 }}
+              animate={isInView ? { opacity: 1, y: 0 } : {}}
+              transition={{ delay: index * 0.1, duration: 0.5 }}
+              className="group relative bg-white border border-gray-100 rounded-2xl p-6 lg:p-8 hover:border-gray-200 hover:shadow-xl hover:shadow-gray-100 transition-all duration-300"
+            >
+              <div className={`inline-flex p-3 rounded-xl ${feature.color} mb-5`}>
+                <feature.icon className="w-6 h-6" />
               </div>
-              <div className="mt-2 font-semibold">{it.title}</div>
-              <div className="mt-1 text-sm text-slate-300">{it.desc}</div>
+              
+              <h3 className="text-gray-900 font-semibold text-xl mb-3">
+                {feature.title}
+              </h3>
+              
+              <p className="text-gray-600 leading-relaxed">
+                {feature.description}
+              </p>
             </motion.div>
           ))}
-        </motion.div>
-
-        <div className="mt-8 text-center">
-          <div className="text-sm text-slate-400">Inclusief: Gratis migratie, SSL, en 14 dagen niet-goed-geld-terug</div>
         </div>
       </div>
     </section>

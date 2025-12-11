@@ -1,5 +1,4 @@
 import { useState } from 'react'
-import { smoothScroll } from '../lib/smoothScroll'
 
 export default function Deal(){
   const [coupon, setCoupon] = useState('NEWYEAR30')
@@ -55,8 +54,8 @@ export default function Deal(){
     }catch(e){ /* ignore */ }
 
     setProcessing(false)
-    // scroll to pricing as fallback
-    smoothScroll('#pricing')
+    // redirect to start project
+    window.location.href = '/start'
   }
 
   return (
@@ -90,7 +89,7 @@ export default function Deal(){
           <button disabled={!applied || processing} onClick={claimDeal} className="btn-primary">
             {processing ? 'Bezig...' : 'Claim & naar afrekenen'}
           </button>
-          <button onClick={()=>smoothScroll('#pricing')} className="text-[var(--muted)] underline">Bekijk pakketten</button>
+          <a href="/start" className="text-[var(--muted)] underline">Start je project</a>
         </div>
 
         <p className="mt-3 text-xs text-[var(--muted)]">14 dagen niet-goed-geld-terug — coupon alleen geldig voor nieuwe klanten.</p>
