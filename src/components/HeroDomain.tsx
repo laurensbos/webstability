@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import { useState } from 'react'
 import { CheckCircle, XCircle, Search } from 'lucide-react'
 
 function normalize(s: string){
