@@ -94,7 +94,7 @@ export default function Article() {
           elements.push(
             <ol key={elements.length} className="list-decimal list-inside space-y-2 my-4 text-gray-700">
               {currentList.map((item, i) => (
-                <li key={i}>{item}</li>
+                <li key={i} dangerouslySetInnerHTML={{ __html: item }} />
               ))}
             </ol>
           )
@@ -102,7 +102,7 @@ export default function Article() {
           elements.push(
             <ul key={elements.length} className="list-disc list-inside space-y-2 my-4 text-gray-700">
               {currentList.map((item, i) => (
-                <li key={i}>{item}</li>
+                <li key={i} dangerouslySetInnerHTML={{ __html: item }} />
               ))}
             </ul>
           )

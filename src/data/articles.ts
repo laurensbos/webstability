@@ -30,59 +30,58 @@ export const articles: Article[] = [
     content: `
 ## Wat kost een website in 2025?
 
-Als ondernemer is een professionele website essentieel voor je online zichtbaarheid. Maar wat kost dat eigenlijk? In dit artikel geven we je een compleet overzicht van alle opties en prijzen.
+Als ondernemer is een professionele website essentieel voor je online zichtbaarheid. Maar wat kost dat eigenlijk? In dit artikel geven we je een compleet overzicht.
 
-### De verschillende opties
+### De slimste optie: website abonnement
 
-Er zijn grofweg drie manieren om aan een website te komen:
+De modernste en voordeligste manier om een professionele website te krijgen is via een **website abonnement**. Voor een vast bedrag per maand krijg je:
 
-**1. Doe-het-zelf (DIY) - €0 tot €500**
+- **Professioneel ontwerp** op maat
+- **Hosting en domein** inbegrepen
+- **Onderhoud en updates** - altijd up-to-date
+- **Support** - hulp wanneer je het nodig hebt
+- **SEO basis** - goed vindbaar in Google
 
-Met website builders zoals Wix, Squarespace of WordPress.com kun je zelf een website maken. Dit kost:
-- Gratis versies: €0 (met advertenties en beperkte functies)
-- Betaalde plannen: €10-€40 per maand
-- Eenmalige template kosten: €50-€200
+Bij Webstability betaal je bijvoorbeeld **€96/maand** voor een complete website, met eenmalige opstartkosten vanaf €120 (alle prijzen incl. BTW). Als ondernemer kun je de 21% BTW terugvragen bij je belastingaangifte.
 
-**2. Freelancer of klein bureau - €1.000 tot €5.000**
+### Waarom een abonnement voordeliger is
 
-Een professionele website laten maken door een freelancer of klein bureau kost gemiddeld:
-- Simpele website (5 pagina's): €1.000 - €2.500
-- Uitgebreide website (10+ pagina's): €2.500 - €5.000
-- Webshop: €3.000 - €8.000
+**Geen grote investering vooraf**
+In plaats van €3.000-€5.000 ineens te betalen, spreid je de kosten. Dit is ideaal voor startende ondernemers.
 
-**3. Website abonnement - vanaf €49 per maand**
+**Alles inbegrepen**
+Hosting, SSL-certificaat, onderhoud, updates en support zitten in de prijs. Geen verrassingen achteraf.
 
-Een moderne oplossing waarbij je voor een vast bedrag per maand een professionele website krijgt inclusief:
-- Professioneel ontwerp
-- Hosting en domein
-- Onderhoud en updates
-- Support
+**Altijd actueel**
+Je website wordt continu bijgewerkt met de nieuwste technologie en beveiligingsupdates.
 
-Bij Webstability betaal je bijvoorbeeld €96/maand voor een complete website, met eenmalige opstartkosten vanaf €120 (alle prijzen incl. BTW). Als ondernemer kun je de 21% BTW terugvragen bij je belastingaangifte.
+### Wat zit er in de prijs?
 
-### Verborgen kosten om rekening mee te houden
-
-Naast de bouwkosten zijn er nog andere kosten:
-- **Domeinnaam**: €10-€20 per jaar
-- **Hosting**: €5-€50 per maand
-- **SSL-certificaat**: €0-€100 per jaar (vaak gratis bij hosting)
-- **Onderhoud**: €50-€200 per maand
-- **Updates en aanpassingen**: €50-€100 per uur
-
-### Onze aanbeveling
-
-Voor de meeste ondernemers is een website abonnement de beste keuze. Je hebt geen grote investering vooraf nodig en alles wordt voor je geregeld. Bij Webstability krijg je een professionele website voor €49/maand, inclusief hosting, onderhoud en support.
+Bij een website abonnement van Webstability krijg je:
+- Professioneel op maat gemaakt ontwerp
+- Responsive design (perfect op mobiel)
+- Contactformulier
+- Google Analytics integratie
+- SEO optimalisatie
+- Snelle hosting
+- SSL-certificaat (https)
+- Maandelijks onderhoud
+- WhatsApp support
 
 ### Veelgestelde vragen
 
-**Kan ik zelf mijn website onderhouden?**
-Ja, maar reken op 2-5 uur per maand voor updates, backups en beveiliging.
-
-**Wat als mijn website gehackt wordt?**
-Bij een abonnement is dit gedekt. Bij een eenmalige website betaal je €100-€500 voor herstel.
-
 **Hoe lang duurt het om een website te bouwen?**
-DIY: 1-4 weken. Freelancer: 4-8 weken. Abonnement: 1-2 weken.
+Bij Webstability is je website binnen 7 dagen online. We werken snel én grondig.
+
+**Kan ik later nog aanpassingen doen?**
+Ja, kleine aanpassingen zijn inbegrepen. Voor grotere wijzigingen bespreken we de mogelijkheden.
+
+**Wat als ik wil stoppen?**
+Je kunt maandelijks opzeggen. Er zijn geen langlopende contracten.
+
+### Direct starten?
+
+Wil je weten wat een website voor jouw bedrijf kost? Start vandaag nog je project en ontvang binnen 24 uur een persoonlijk voorstel.
     `,
   },
   {
@@ -233,12 +232,14 @@ Met goede SEO word je gevonden door mensen die zoeken naar jouw diensten.
 
 ### Hoeveel kost een ZZP-website?
 
-De kosten variëren:
-- **DIY met Wix/Squarespace**: €15-€30/maand
-- **WordPress door freelancer**: €1.000-€3.000 eenmalig
-- **Website abonnement**: €96-€301/maand (incl. BTW)
+Bij Webstability krijg je een complete, professionele website voor **€96/maand** met eenmalige opstartkosten vanaf €120 (incl. BTW). Als ondernemer kun je de 21% BTW terugvragen bij je belastingaangifte. Ideaal voor ZZP'ers die een professionele uitstraling willen zonder gedoe.
 
-Bij Webstability krijg je een complete, professionele website voor €96/maand met eenmalige opstartkosten vanaf €120 (incl. BTW). Als ondernemer kun je de 21% BTW terugvragen. Ideaal voor ZZP'ers die een professionele uitstraling willen zonder gedoe.
+**Wat zit er allemaal in?**
+- Professioneel op maat gemaakt ontwerp
+- Je eigen domeinnaam
+- Hosting en SSL-certificaat
+- Onderhoud en updates
+- WhatsApp support
 
 ### Tips voor ZZP-websites
 
@@ -1361,83 +1362,71 @@ Lokale SEO is essentieel voor fysieke bedrijven. Focus op je Google Business Pro
     `,
   },
   {
-    id: 'wordpress-vs-website-builder',
+    id: 'waarom-website-abonnement',
     category: 'Techniek',
-    title: 'WordPress vs Website Builder: welke kies je?',
-    excerpt: 'Wix, Squarespace, of WordPress? We vergelijken de opties en helpen je kiezen wat bij jou past.',
+    title: 'Waarom een website abonnement de slimste keuze is',
+    excerpt: 'Ontdek waarom steeds meer ondernemers kiezen voor een website abonnement in plaats van een eenmalige website.',
     image: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=800&h=500&fit=crop',
     readTime: 7,
     trending: false,
-    tags: ['wordpress', 'wix', 'squarespace', 'vergelijking'],
+    tags: ['website abonnement', 'voordelen', 'ondernemen'],
     publishedAt: '2025-01-30',
     author: 'Webstability Team',
     content: `
-## WordPress vs Website Builder: welke kies je?
+## Waarom een website abonnement de slimste keuze is
 
-De keuze voor je website platform kan overweldigend zijn. WordPress, Wix, Squarespace, Webflow... Wat past bij jou?
+Steeds meer ondernemers ontdekken de voordelen van een website abonnement. In dit artikel leggen we uit waarom dit de slimste keuze is voor jouw bedrijf.
 
-### Website Builders (Wix, Squarespace, etc.)
+### Wat is een website abonnement?
 
-**Voordelen:**
-- Gebruiksvriendelijk (drag & drop)
-- Alles-in-één (hosting, domein, SSL)
-- Templates om mee te starten
-- Geen technische kennis nodig
+Met een website abonnement betaal je een vast bedrag per maand voor een complete website. Bij Webstability krijg je voor **€96/maand**:
 
-**Nadelen:**
-- Beperkte flexibiliteit
-- Afhankelijk van het platform
-- Moeilijk te verhuizen
-- Beperkte SEO opties
-- Maandelijkse kosten
+- **Professioneel ontwerp** op maat gemaakt
+- **Hosting** - je website staat online
+- **SSL-certificaat** - veilige verbinding (https)
+- **Onderhoud** - altijd up-to-date
+- **Support** - hulp wanneer je het nodig hebt
+- **Aanpassingen** - kleine wijzigingen inbegrepen
 
-**Ideaal voor:** Hobby projecten, simpele portfolio's, tijdelijke websites
+### De 5 grootste voordelen
 
-### WordPress
+**1. Geen grote investering vooraf**
+In plaats van €3.000-€5.000 ineens, betaal je een behapbaar maandbedrag. Ideaal voor startende ondernemers.
 
-**Voordelen:**
-- Onbeperkte flexibiliteit
-- Duizenden plugins
-- Volledig eigenaarschap
-- Grote community
-- SEO-krachtig
+**2. Alles is inbegrepen**
+Geen verborgen kosten voor hosting, SSL, onderhoud of updates. Je betaalt één prijs, wij regelen de rest.
 
-**Nadelen:**
-- Steilere leercurve
-- Onderhoud nodig
-- Beveiliging is je eigen verantwoordelijkheid
-- Aparte hosting nodig
+**3. Altijd up-to-date**
+Wij zorgen ervoor dat je website altijd de nieuwste technologie en beveiligingsupdates heeft.
 
-**Ideaal voor:** Professionele websites, webshops, blogs, maatwerk
+**4. Professionele support**
+Heb je een vraag of probleem? Wij staan voor je klaar. Via WhatsApp, e-mail of telefoon.
 
-### De kosten vergeleken
+**5. Flexibel opzegbaar**
+Geen langlopende contracten. Je kunt maandelijks opzeggen als het niet meer past.
 
-| Aspect | Wix | Squarespace | WordPress |
-|--------|-----|-------------|-----------|
-| Start | €15/mnd | €12/mnd | €5-20/mnd hosting |
-| Domein | Inbegrepen | Inbegrepen | €10-15/jaar apart |
-| Themes | Gratis | Gratis | Gratis - €100 |
-| Plugins | Beperkt | Beperkt | Gratis - €200/jaar |
-| Onderhoud | Inbegrepen | Inbegrepen | Zelf doen |
+### Voor wie is het geschikt?
 
-### Onze aanbeveling
+Een website abonnement is ideaal voor:
 
-**Kies een website builder als:**
-- Je snel iets simpels nodig hebt
-- Je technische kennis minimaal is
-- Budget beperkt is
+- **ZZP'ers** die professioneel willen overkomen
+- **Startende ondernemers** zonder groot budget
+- **MKB-bedrijven** die geen IT-afdeling hebben
+- **Iedereen** die geen tijd heeft voor website onderhoud
 
-**Kies WordPress als:**
-- Je een professionele website wilt
-- Je wilt groeien (webshop, blog, etc.)
-- Je volledige controle wilt
+### Wat krijg je concreet?
 
-**Of kies een website abonnement:**
-De voordelen van WordPress, zonder de nadelen. Wij regelen alles, jij focust op ondernemen.
+Bij Webstability maken we websites die:
 
-### Conclusie
+- **Snel laden** - bezoekers wachten niet
+- **Mobiel perfect werken** - 60%+ van bezoekers komt via telefoon
+- **Goed vindbaar zijn** - SEO is standaard inbegrepen
+- **Professioneel ogen** - eerste indruk telt
+- **Converteren** - bezoekers worden klanten
 
-Er is geen "beste" keuze - alleen de beste keuze voor jouw situatie. Denk na over je doelen, budget en technische vaardigheden.
+### Direct starten?
+
+Wil je weten wat een website abonnement voor jouw bedrijf kan betekenen? Start vandaag je project en ontvang binnen 24 uur een persoonlijk voorstel. Geen verplichtingen, wel duidelijkheid.
     `,
   },
   {

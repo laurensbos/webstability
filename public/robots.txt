@@ -17,9 +17,15 @@ Allow: /start
 
 # Admin en interne pagina's blokkeren
 Disallow: /dashboard
-Disallow: /project-status
+Disallow: /dash
+Disallow: /developer
+Disallow: /marketing
+Disallow: /login
+Disallow: /status
+Disallow: /onboarding
 Disallow: /bedankt
-Disallow: /betaling-succes
+Disallow: /bedankt-service
+Disallow: /unauthorized
 
 # API endpoints blokkeren
 Disallow: /api/

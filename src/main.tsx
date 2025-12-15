@@ -7,6 +7,7 @@ import ScrollToTop from './components/ScrollToTop'
 import FloatingWhatsApp from './components/FloatingWhatsApp'
 import CookieConsent from './components/CookieConsent'
 import { AuthProvider } from './contexts/AuthContext'
+import { DarkModeProvider } from './contexts/DarkModeContext'
 import ProtectedRoute from './components/ProtectedRoute'
 import { initSentry } from './lib/sentry'
 
@@ -56,13 +57,14 @@ function PageLoader() {
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
     <BrowserRouter>
-      <AuthProvider>
-        <ScrollToTop />
-        <Suspense fallback={<PageLoader />}>
-          <Routes>
-            <Route path="/" element={<App />} />
-            <Route path="/wizard" element={<OnboardingWizard />} />
-            <Route path="/portfolio" element={<Portfolio />} />
+      <DarkModeProvider>
+        <AuthProvider>
+          <ScrollToTop />
+          <Suspense fallback={<PageLoader />}>
+            <Routes>
+              <Route path="/" element={<App />} />
+              <Route path="/wizard" element={<OnboardingWizard />} />
+              <Route path="/portfolio" element={<Portfolio />} />
             <Route path="/case-studies" element={<Navigate to="/portfolio" replace />} />
             <Route path="/succesverhalen" element={<Navigate to="/portfolio" replace />} />
             <Route path="/deal" element={<Deal />} />
@@ -144,7 +146,8 @@ createRoot(document.getElementById('root')!).render(
           {/* Cookie consent banner */}
           <CookieConsent />
         </Suspense>
-      </AuthProvider>
+        </AuthProvider>
+      </DarkModeProvider>
     </BrowserRouter>
   </StrictMode>,
 )
