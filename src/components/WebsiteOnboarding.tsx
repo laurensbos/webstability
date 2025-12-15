@@ -232,6 +232,8 @@ export default function WebsiteOnboarding({
   const [submitting, setSubmitting] = useState(false)
   const [newCompetitor, setNewCompetitor] = useState('')
 
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  void isStandalone // Keep for backwards compatibility
   const updateData = (updates: Partial<WebsiteOnboardingData>) => {
     setData(prev => ({ ...prev, ...updates }))
     // Clear errors for updated fields
@@ -355,15 +357,28 @@ export default function WebsiteOnboarding({
       const totalFirstPayment = monthlyPrice + setupFee
       
       // Try to save to API
-      const response = await fetch('/api/create-project', {
+      const response = await fetch('/api/projects', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          projectId: newProjectId,
-          packageType: 'website',
-          packageTier: data.selectedPackage,
+          id: newProjectId,
+          type: 'website',
+          packageType: data.selectedPackage,
+          customer: {
+            name: data.contactName,
+            email: data.email,
+            phone: data.phone,
+            companyName: data.companyName,
+            address: {
+              street: data.address,
+              postalCode: data.postalCode,
+              city: data.city
+            },
+            kvk: data.kvkNumber
+          },
           onboardingData: completeData,
           status: 'onboarding',
+          paymentStatus: 'pending',
           pricing: {
             monthly: monthlyPrice,
             setup: setupFee,
@@ -464,7 +479,8 @@ export default function WebsiteOnboarding({
       if (response.ok || true) { // Continue even if API fails
         if (onComplete) {
           onComplete(completeData, newProjectId)
-        } else if (isStandalone) {
+        } else {
+          // Always navigate to status page
           navigate(`/status/${newProjectId}`)
         }
       }
@@ -474,7 +490,7 @@ export default function WebsiteOnboarding({
       const fallbackProjectId = `WS-${Date.now().toString(36).toUpperCase()}`
       if (onComplete) {
         onComplete(data, fallbackProjectId)
-      } else if (isStandalone) {
+      } else {
         navigate(`/status/${fallbackProjectId}`)
       }
     } finally {

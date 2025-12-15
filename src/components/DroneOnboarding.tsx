@@ -313,7 +313,7 @@ export default function DroneOnboarding({
       }
 
       // Try to save to API
-      const response = await fetch('/api/create-project', {
+      const response = await fetch('/api/projects', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(projectData)
@@ -378,7 +378,7 @@ export default function DroneOnboarding({
       if (response.ok || true) {
         if (onComplete) {
           onComplete(data, newProjectId)
-        } else if (isStandalone) {
+        } else {
           navigate(`/status/${newProjectId}`)
         }
       }
@@ -387,7 +387,7 @@ export default function DroneOnboarding({
       const fallbackProjectId = `DR-${Date.now().toString(36).toUpperCase()}`
       if (onComplete) {
         onComplete(data, fallbackProjectId)
-      } else if (isStandalone) {
+      } else {
         navigate(`/status/${fallbackProjectId}`)
       }
     } finally {

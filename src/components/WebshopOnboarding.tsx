@@ -174,6 +174,8 @@ export default function WebshopOnboarding({
   const [errors, setErrors] = useState<Record<string, string>>({})
   const [submitting, setSubmitting] = useState(false)
 
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  void isStandalone // Keep for backwards compatibility
   const updateData = (updates: Partial<WebshopOnboardingData>) => {
     setData(prev => ({ ...prev, ...updates }))
     // Clear errors for updated fields
@@ -251,14 +253,22 @@ export default function WebshopOnboarding({
       const newProjectId = `WS-${Date.now().toString(36).toUpperCase()}`
       
       // Sla op in server
-      const response = await fetch('/api/create-project', {
+      const response = await fetch('/api/projects', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          projectId: newProjectId,
+          id: newProjectId,
+          type: 'webshop',
           packageType: 'webshop',
+          customer: {
+            name: data.contactName,
+            email: data.email,
+            phone: data.phone,
+            companyName: data.companyName
+          },
           onboardingData: data,
           status: 'onboarding',
+          paymentStatus: 'pending',
           createdAt: new Date().toISOString()
         })
       })
@@ -284,7 +294,7 @@ export default function WebshopOnboarding({
 
         if (onComplete) {
           onComplete(data, newProjectId)
-        } else if (isStandalone) {
+        } else {
           navigate(`/status/${newProjectId}`)
         }
       } else {
@@ -308,7 +318,7 @@ export default function WebshopOnboarding({
 
         if (onComplete) {
           onComplete(data, newProjectId)
-        } else if (isStandalone) {
+        } else {
           navigate(`/status/${newProjectId}`)
         }
       }
@@ -318,7 +328,7 @@ export default function WebshopOnboarding({
       const fallbackProjectId = `WS-${Date.now().toString(36).toUpperCase()}`
       if (onComplete) {
         onComplete(data, fallbackProjectId)
-      } else if (isStandalone) {
+      } else {
         navigate(`/status/${fallbackProjectId}`)
       }
     } finally {

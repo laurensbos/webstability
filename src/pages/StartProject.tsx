@@ -40,8 +40,8 @@ const services: ServiceOption[] = [
     name: 'Website',
     description: 'Professionele website voor je bedrijf',
     icon: Globe,
-    price: 'Vanaf €79',
-    priceNote: 'per maand',
+    price: 'Vanaf €96',
+    priceNote: 'per maand incl. btw',
     color: 'primary',
     gradient: 'from-primary-500 to-blue-600',
     features: ['Mobiel-vriendelijk', 'SEO geoptimaliseerd', 'Contactformulier', 'Hosting inbegrepen'],
@@ -52,8 +52,8 @@ const services: ServiceOption[] = [
     name: 'Webshop',
     description: 'Online verkopen met je eigen shop',
     icon: ShoppingBag,
-    price: 'Vanaf €249',
-    priceNote: 'per maand',
+    price: 'Vanaf €301',
+    priceNote: 'per maand incl. btw',
     color: 'emerald',
     gradient: 'from-emerald-500 to-green-600',
     features: ['Tot 500 producten', 'iDEAL & creditcard', 'Voorraadbeheer', 'Klantaccounts'],
@@ -63,8 +63,8 @@ const services: ServiceOption[] = [
     name: 'Dronebeelden',
     description: 'Professionele luchtfoto\'s en video\'s',
     icon: Plane,
-    price: 'Vanaf €399',
-    priceNote: 'eenmalig',
+    price: 'Vanaf €483',
+    priceNote: 'eenmalig incl. btw',
     color: 'orange',
     gradient: 'from-orange-500 to-amber-600',
     features: ['Gecertificeerde piloot', 'Bewerkte foto\'s', 'Video content', 'Snelle levering'],
@@ -74,8 +74,8 @@ const services: ServiceOption[] = [
     name: 'Logo Design',
     description: 'Uniek logo voor je merk',
     icon: PenTool,
-    price: 'Vanaf €150',
-    priceNote: 'eenmalig',
+    price: 'Vanaf €182',
+    priceNote: 'eenmalig incl. btw',
     color: 'purple',
     gradient: 'from-purple-500 to-violet-600',
     features: ['Meerdere concepten', 'Revisierondes', 'Alle bestandsformaten', 'Kleurenpalet'],
@@ -317,52 +317,6 @@ export default function StartProject() {
               const Icon = service.icon
               const isHovered = hoveredService === service.id
               
-              // Explicit color classes for Tailwind
-              const getHoverClasses = () => {
-                switch (service.id) {
-                  case 'website':
-                    return 'border-primary-300 bg-gradient-to-br from-primary-50 to-white shadow-xl shadow-primary-500/10'
-                  case 'webshop':
-                    return 'border-emerald-300 bg-gradient-to-br from-emerald-50 to-white shadow-xl shadow-emerald-500/10'
-                  case 'drone':
-                    return 'border-orange-300 bg-gradient-to-br from-orange-50 to-white shadow-xl shadow-orange-500/10'
-                  case 'logo':
-                    return 'border-purple-300 bg-gradient-to-br from-purple-50 to-white shadow-xl shadow-purple-500/10'
-                  default:
-                    return 'border-gray-300 bg-white'
-                }
-              }
-              
-              const getCheckColor = () => {
-                switch (service.id) {
-                  case 'website': return 'text-primary-500'
-                  case 'webshop': return 'text-emerald-500'
-                  case 'drone': return 'text-orange-500'
-                  case 'logo': return 'text-purple-500'
-                  default: return 'text-gray-500'
-                }
-              }
-              
-              const getCtaColor = () => {
-                switch (service.id) {
-                  case 'website': return 'text-primary-600'
-                  case 'webshop': return 'text-emerald-600'
-                  case 'drone': return 'text-orange-600'
-                  case 'logo': return 'text-purple-600'
-                  default: return 'text-gray-600'
-                }
-              }
-              
-              const getBorderHoverColor = () => {
-                switch (service.id) {
-                  case 'website': return 'group-hover:border-primary-100'
-                  case 'webshop': return 'group-hover:border-emerald-100'
-                  case 'drone': return 'group-hover:border-orange-100'
-                  case 'logo': return 'group-hover:border-purple-100'
-                  default: return ''
-                }
-              }
-              
               return (
                 <motion.button
                   key={service.id}
@@ -374,7 +328,7 @@ export default function StartProject() {
                   onClick={() => setSelectedService(service.id)}
                   className={`relative group text-left p-6 rounded-2xl border-2 transition-all duration-300 ${
                     isHovered
-                      ? getHoverClasses()
+                      ? `border-${service.color}-300 bg-gradient-to-br from-${service.color}-50 to-white shadow-xl shadow-${service.color}-500/10`
                       : 'border-gray-200 bg-white hover:border-gray-300 shadow-sm hover:shadow-md'
                   }`}
                 >
@@ -406,16 +360,16 @@ export default function StartProject() {
                   <ul className="space-y-2 mb-6">
                     {service.features.map((feature, i) => (
                       <li key={i} className="flex items-center gap-2 text-sm text-gray-600">
-                        <Check className={`w-4 h-4 ${getCheckColor()} flex-shrink-0`} />
+                        <Check className={`w-4 h-4 text-${service.color}-500 flex-shrink-0`} />
                         {feature}
                       </li>
                     ))}
                   </ul>
                   
                   {/* CTA */}
-                  <div className={`flex items-center justify-between pt-4 border-t border-gray-100 ${getBorderHoverColor()} transition-colors`}>
-                    <span className={`font-semibold ${getCtaColor()}`}>Starten</span>
-                    <ArrowRight className={`w-5 h-5 ${getCtaColor()} transition-transform group-hover:translate-x-1`} />
+                  <div className={`flex items-center justify-between pt-4 border-t border-gray-100 group-hover:border-${service.color}-100 transition-colors`}>
+                    <span className={`font-semibold text-${service.color}-600`}>Starten</span>
+                    <ArrowRight className={`w-5 h-5 text-${service.color}-500 transition-transform group-hover:translate-x-1`} />
                   </div>
                 </motion.button>
               )
