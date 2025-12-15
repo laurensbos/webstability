@@ -49,7 +49,7 @@ export default function Pricing() {
 	}
 
 	return (
-		<section id="pricing" className="py-16 lg:py-24 bg-white relative overflow-hidden">
+		<section id="pricing" className="py-16 lg:py-24 bg-white dark:bg-gray-900 relative overflow-hidden">
 			<div className="relative max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
 				{/* Header */}
 				<div className="text-center max-w-3xl mx-auto mb-8 lg:mb-16">
@@ -66,7 +66,7 @@ export default function Pricing() {
 						whileInView={{ opacity: 1, y: 0 }}
 						viewport={{ once: true }}
 						transition={{ delay: 0.1 }}
-						className="text-2xl sm:text-3xl lg:text-5xl font-bold text-gray-900 mb-4 lg:mb-6"
+						className="text-2xl sm:text-3xl lg:text-5xl font-bold text-gray-900 dark:text-white mb-4 lg:mb-6"
 					>
 						Kies het pakket dat{' '}
 						<span className="text-primary-600">bij je past</span>
@@ -76,7 +76,7 @@ export default function Pricing() {
 						whileInView={{ opacity: 1, y: 0 }}
 						viewport={{ once: true }}
 						transition={{ delay: 0.2 }}
-						className="text-gray-600 text-base lg:text-lg"
+						className="text-gray-600 dark:text-gray-400 text-base lg:text-lg"
 					>
 						Alle pakketten inclusief hosting, onderhoud en support. Geen verborgen kosten.
 					</motion.p>
@@ -124,10 +124,10 @@ export default function Pricing() {
 								whileInView={{ opacity: 1, y: 0 }}
 								viewport={{ once: true }}
 								transition={{ delay: index * 0.1 }}
-								className={`flex-shrink-0 w-[280px] snap-center relative rounded-2xl p-5 flex flex-col bg-white transition-all duration-300 ${
+								className={`flex-shrink-0 w-[280px] snap-center relative rounded-2xl p-5 flex flex-col bg-white dark:bg-gray-800 transition-all duration-300 ${
 									pkg.popular
-										? 'border-2 border-primary-500 shadow-lg shadow-primary-100'
-										: 'border border-gray-200'
+										? 'border-2 border-primary-500 shadow-lg shadow-primary-100 dark:shadow-primary-900/30'
+										: 'border border-gray-200 dark:border-gray-700'
 								}`}
 							>
 								{pkg.popular && (
@@ -138,10 +138,10 @@ export default function Pricing() {
 								
 								{/* Package name & tagline */}
 								<div className="mb-3">
-									<h3 className="font-bold text-lg text-gray-900 mb-1">
+									<h3 className="font-bold text-lg text-gray-900 dark:text-white mb-1">
 										{pkg.name}
 									</h3>
-									<p className="text-sm text-gray-500">
+									<p className="text-sm text-gray-500 dark:text-gray-400">
 										{pkg.tagline}
 									</p>
 								</div>
@@ -149,10 +149,10 @@ export default function Pricing() {
 								{/* Price */}
 								<div className="mb-4">
 									<div className="flex items-baseline gap-1">
-										<span className="text-3xl font-bold text-gray-900">
+										<span className="text-3xl font-bold text-gray-900 dark:text-white">
 											€{pkg.price}
 										</span>
-										<span className="text-sm text-gray-500">/maand</span>
+										<span className="text-sm text-gray-500 dark:text-gray-400">/maand</span>
 									</div>
 								</div>
 								
@@ -161,7 +161,7 @@ export default function Pricing() {
 									{pkg.features.slice(0, 5).map((feature, i) => (
 										<li key={i} className="flex items-start gap-2">
 											<Check className="w-4 h-4 mt-0.5 flex-shrink-0 text-primary-500" />
-											<span className="text-sm text-gray-600">
+											<span className="text-sm text-gray-600 dark:text-gray-300">
 												{feature}
 											</span>
 										</li>

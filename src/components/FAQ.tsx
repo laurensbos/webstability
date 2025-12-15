@@ -39,7 +39,7 @@ export default function FAQ() {
 	const [openIndex, setOpenIndex] = useState<number | null>(0)
 
 	return (
-		<section id="faq" className="py-16 lg:py-32 bg-gray-50 relative">
+		<section id="faq" className="py-16 lg:py-32 bg-gray-50 dark:bg-gray-900 relative">
 			<div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
 				{/* Header */}
 				<div className="text-center mb-8 lg:mb-16">
@@ -56,7 +56,7 @@ export default function FAQ() {
 						whileInView={{ opacity: 1, y: 0 }}
 						viewport={{ once: true }}
 						transition={{ delay: 0.1 }}
-						className="text-2xl sm:text-3xl lg:text-5xl font-bold text-gray-900"
+						className="text-2xl sm:text-3xl lg:text-5xl font-bold text-gray-900 dark:text-white"
 					>
 						Heb je vragen?
 					</motion.h2>
@@ -71,15 +71,15 @@ export default function FAQ() {
 							whileInView={{ opacity: 1, y: 0 }}
 							viewport={{ once: true }}
 							transition={{ delay: index * 0.05 }}
-							className="bg-white border border-gray-100 rounded-xl overflow-hidden shadow-sm"
+							className="bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 rounded-xl overflow-hidden shadow-sm"
 						>
 							<button
 								onClick={() =>
 									setOpenIndex(openIndex === index ? null : index)
 								}
-								className="w-full flex items-center justify-between p-4 lg:p-6 text-left hover:bg-gray-50 transition-colors"
+								className="w-full flex items-center justify-between p-4 lg:p-6 text-left hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
 							>
-								<span className="text-gray-900 font-medium pr-4 text-sm lg:text-base">
+								<span className="text-gray-900 dark:text-white font-medium pr-4 text-sm lg:text-base">
 									{faq.question}
 								</span>
 								<span className="flex-shrink-0 text-primary-500">
@@ -99,7 +99,7 @@ export default function FAQ() {
 										exit={{ height: 0, opacity: 0 }}
 										transition={{ duration: 0.2 }}
 									>
-										<div className="px-4 pb-4 lg:px-6 lg:pb-6 text-gray-600 leading-relaxed text-sm lg:text-base">
+										<div className="px-4 pb-4 lg:px-6 lg:pb-6 text-gray-600 dark:text-gray-400 leading-relaxed text-sm lg:text-base">
 											{faq.answer}
 										</div>
 									</motion.div>
@@ -116,7 +116,7 @@ export default function FAQ() {
 					viewport={{ once: true }}
 					className="text-center mt-8 lg:mt-12"
 				>
-					<p className="text-gray-500 text-sm lg:text-base mb-3 lg:mb-4">Staat je vraag er niet bij?</p>
+					<p className="text-gray-500 dark:text-gray-400 text-sm lg:text-base mb-3 lg:mb-4">Staat je vraag er niet bij?</p>
 					<a
 						href="mailto:info@webstability.nl"
 						className="inline-flex items-center gap-2 text-primary-600 hover:text-primary-700 font-medium transition-colors text-sm lg:text-base"

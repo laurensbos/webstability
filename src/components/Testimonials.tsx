@@ -77,7 +77,7 @@ export default function Testimonials() {
 	const [reviews] = useState<TrustpilotReview[]>(staticReviews)
 
 	return (
-		<section id="testimonials" className="py-20 lg:py-28 bg-white relative overflow-hidden">
+		<section id="testimonials" className="py-20 lg:py-28 bg-white dark:bg-gray-900 relative overflow-hidden">
 			<div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
 				{/* Header */}
 				<div className="text-center max-w-3xl mx-auto mb-8 lg:mb-16">
@@ -115,7 +115,7 @@ export default function Testimonials() {
 						whileInView={{ opacity: 1, y: 0 }}
 						viewport={{ once: true }}
 						transition={{ delay: 0.1 }}
-						className="text-2xl sm:text-3xl lg:text-5xl font-bold text-gray-900 mb-3 lg:mb-4"
+						className="text-2xl sm:text-3xl lg:text-5xl font-bold text-gray-900 dark:text-white mb-3 lg:mb-4"
 					>
 						Wat onze klanten zeggen
 					</motion.h2>
@@ -124,7 +124,7 @@ export default function Testimonials() {
 						whileInView={{ opacity: 1, y: 0 }}
 						viewport={{ once: true }}
 						transition={{ delay: 0.2 }}
-						className="text-gray-600 text-base lg:text-lg"
+						className="text-gray-600 dark:text-gray-400 text-base lg:text-lg"
 					>
 						Echte reviews van ondernemers op Trustpilot
 					</motion.p>
@@ -140,7 +140,7 @@ export default function Testimonials() {
 								whileInView={{ opacity: 1, y: 0 }}
 								viewport={{ once: true }}
 								transition={{ delay: index * 0.1 }}
-								className="flex-shrink-0 w-[280px] snap-start bg-gradient-to-br from-gray-50 to-white border border-gray-100 rounded-xl p-5 relative flex flex-col min-h-[220px]"
+								className="flex-shrink-0 w-[280px] snap-start bg-gradient-to-br from-gray-50 to-white dark:from-gray-800 dark:to-gray-800 border border-gray-100 dark:border-gray-700 rounded-xl p-5 relative flex flex-col min-h-[220px]"
 							>
 								{/* Verified badge */}
 								{review.verified && (
@@ -160,7 +160,7 @@ export default function Testimonials() {
 								</div>
 
 								{/* Quote */}
-								<p className="text-gray-700 text-sm leading-relaxed flex-grow line-clamp-4">"{review.quote}"</p>
+								<p className="text-gray-700 dark:text-gray-300 text-sm leading-relaxed flex-grow line-clamp-4">"{review.quote}"</p>
 
 								{/* Author */}
 								<div className="flex items-center gap-2 mt-auto pt-3">
@@ -168,16 +168,16 @@ export default function Testimonials() {
 										<img 
 											src={review.image} 
 											alt={review.author}
-											className="w-8 h-8 rounded-full object-cover ring-2 ring-white shadow-sm"
+											className="w-8 h-8 rounded-full object-cover ring-2 ring-white dark:ring-gray-700 shadow-sm"
 										/>
 									) : (
-										<div className={`w-8 h-8 rounded-full bg-gradient-to-br ${getAvatarColor(review.author)} flex items-center justify-center text-white text-xs font-bold ring-2 ring-white shadow-sm`}>
+										<div className={`w-8 h-8 rounded-full bg-gradient-to-br ${getAvatarColor(review.author)} flex items-center justify-center text-white text-xs font-bold ring-2 ring-white dark:ring-gray-700 shadow-sm`}>
 											{getInitials(review.author)}
 										</div>
 									)}
 									<div>
-										<div className="text-gray-900 font-semibold text-xs">{review.author}</div>
-										<div className="text-gray-500 text-[10px]">{review.role}</div>
+										<div className="text-gray-900 dark:text-white font-semibold text-xs">{review.author}</div>
+										<div className="text-gray-500 dark:text-gray-400 text-[10px]">{review.role}</div>
 									</div>
 								</div>
 							</motion.div>

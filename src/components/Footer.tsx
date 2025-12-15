@@ -34,15 +34,15 @@ function MobileAccordion({ title, children }: { title: string; children: React.R
   const [isOpen, setIsOpen] = useState(false)
   
   return (
-    <div className="border-b border-gray-200 lg:border-none">
+    <div className="border-b border-gray-200 dark:border-gray-700 lg:border-none">
       <button
         onClick={() => setIsOpen(!isOpen)}
         className="flex items-center justify-between w-full py-3 lg:hidden"
       >
-        <h4 className="text-gray-900 font-semibold">{title}</h4>
-        <ChevronDown className={`w-4 h-4 text-gray-500 transition-transform ${isOpen ? 'rotate-180' : ''}`} />
+        <h4 className="text-gray-900 dark:text-white font-semibold">{title}</h4>
+        <ChevronDown className={`w-4 h-4 text-gray-500 dark:text-gray-400 transition-transform ${isOpen ? 'rotate-180' : ''}`} />
       </button>
-      <h4 className="hidden lg:block text-gray-900 font-semibold mb-4">{title}</h4>
+      <h4 className="hidden lg:block text-gray-900 dark:text-white font-semibold mb-4">{title}</h4>
       <div className={`${isOpen ? 'block pb-4' : 'hidden'} lg:block`}>
         {children}
       </div>
@@ -212,7 +212,7 @@ export default function Footer({ ctaVariant = 'default' }: FooterProps) {
   const config = ctaVariant !== 'none' ? ctaConfigs[ctaVariant] : null
 
   return (
-    <footer className="bg-gray-50 border-t border-gray-200">
+    <footer className="bg-gray-50 dark:bg-gray-900 border-t border-gray-200 dark:border-gray-800">
       {/* CTA Section - Full width */}
       {config && (
       <div className="py-12 lg:py-24 relative overflow-hidden">
@@ -285,11 +285,11 @@ export default function Footer({ ctaVariant = 'default' }: FooterProps) {
 
       {/* Main footer - Accordion on mobile, grid on desktop */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="py-8 lg:py-16 border-t border-gray-200">
+        <div className="py-8 lg:py-16 border-t border-gray-200 dark:border-gray-800">
           {/* Mobile: Brand + Accordion */}
           <div className="lg:hidden">
             {/* Brand compact */}
-            <div className="flex items-center justify-between mb-6 pb-6 border-b border-gray-200">
+            <div className="flex items-center justify-between mb-6 pb-6 border-b border-gray-200 dark:border-gray-700">
               <Link to="/">
                 <Logo size="md" showText />
               </Link>
@@ -360,13 +360,13 @@ export default function Footer({ ctaVariant = 'default' }: FooterProps) {
               <Link to="/" className="inline-block mb-6">
                 <Logo size="md" showText />
               </Link>
-              <p className="text-gray-600 mb-6 max-w-sm">
+              <p className="text-gray-600 dark:text-gray-400 mb-6 max-w-sm">
                 Professionele websites voor ondernemers. 
                 Geen gedoe, gewoon een mooie website die werkt.
               </p>
               
               {/* Contact info */}
-              <div className="space-y-3 text-sm text-gray-600">
+              <div className="space-y-3 text-sm text-gray-600 dark:text-gray-400">
                 <a href="mailto:info@webstability.nl" className="flex items-center gap-2 hover:text-primary-600 transition-colors">
                   <Mail className="w-4 h-4" />
                   info@webstability.nl
@@ -384,11 +384,11 @@ export default function Footer({ ctaVariant = 'default' }: FooterProps) {
 
             {/* Diensten */}
             <div>
-              <h4 className="text-gray-900 font-semibold mb-4">Diensten</h4>
+              <h4 className="text-gray-900 dark:text-white font-semibold mb-4">Diensten</h4>
               <ul className="space-y-3">
                 {footerLinks.diensten.map((link) => (
                   <li key={link.href}>
-                    <Link to={link.href} className="text-gray-600 hover:text-primary-600 transition-colors text-sm">
+                    <Link to={link.href} className="text-gray-600 dark:text-gray-400 hover:text-primary-600 transition-colors text-sm">
                       {link.label}
                     </Link>
                   </li>
@@ -398,11 +398,11 @@ export default function Footer({ ctaVariant = 'default' }: FooterProps) {
 
             {/* Product */}
             <div>
-              <h4 className="text-gray-900 font-semibold mb-4">Product</h4>
+              <h4 className="text-gray-900 dark:text-white font-semibold mb-4">Product</h4>
               <ul className="space-y-3">
                 {footerLinks.product.map((link) => (
                   <li key={link.href}>
-                    <a href={link.href} className="text-gray-600 hover:text-primary-600 transition-colors text-sm">
+                    <a href={link.href} className="text-gray-600 dark:text-gray-400 hover:text-primary-600 transition-colors text-sm">
                       {link.label}
                     </a>
                   </li>
@@ -412,11 +412,11 @@ export default function Footer({ ctaVariant = 'default' }: FooterProps) {
 
             {/* Bedrijf */}
             <div>
-              <h4 className="text-gray-900 font-semibold mb-4">Bedrijf</h4>
+              <h4 className="text-gray-900 dark:text-white font-semibold mb-4">Bedrijf</h4>
               <ul className="space-y-3">
                 {footerLinks.bedrijf.map((link) => (
                   <li key={link.href}>
-                    <Link to={link.href} className="text-gray-600 hover:text-primary-600 transition-colors text-sm">
+                    <Link to={link.href} className="text-gray-600 dark:text-gray-400 hover:text-primary-600 transition-colors text-sm">
                       {link.label}
                     </Link>
                   </li>
@@ -426,11 +426,11 @@ export default function Footer({ ctaVariant = 'default' }: FooterProps) {
 
             {/* Legal */}
             <div>
-              <h4 className="text-gray-900 font-semibold mb-4">Legal</h4>
+              <h4 className="text-gray-900 dark:text-white font-semibold mb-4">Legal</h4>
               <ul className="space-y-3">
                 {footerLinks.legal.map((link) => (
                   <li key={link.href}>
-                    <Link to={link.href} className="text-gray-600 hover:text-primary-600 transition-colors text-sm">
+                    <Link to={link.href} className="text-gray-600 dark:text-gray-400 hover:text-primary-600 transition-colors text-sm">
                       {link.label}
                     </Link>
                   </li>
@@ -441,11 +441,11 @@ export default function Footer({ ctaVariant = 'default' }: FooterProps) {
         </div>
 
         {/* Bottom */}
-        <div className="py-6 border-t border-gray-200">
+        <div className="py-6 border-t border-gray-200 dark:border-gray-800">
           <div className="flex flex-col lg:flex-row justify-between items-center gap-4">
-            <div className="flex items-center gap-2 text-sm text-gray-500">
+            <div className="flex items-center gap-2 text-sm text-gray-500 dark:text-gray-400">
               <span>© {new Date().getFullYear()}</span>
-              <Link to="/" className="font-display font-bold text-gray-900 hover:text-primary-600 transition-colors tracking-tight">
+              <Link to="/" className="font-display font-bold text-gray-900 dark:text-white hover:text-primary-600 transition-colors tracking-tight">
                 webstability
               </Link>
               <span className="hidden sm:inline">•</span>

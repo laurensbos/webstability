@@ -49,7 +49,7 @@ function FloatingParticles() {
 export default function Hero() {
 
   return (
-    <section className="relative min-h-screen flex items-center overflow-hidden bg-gradient-to-br from-slate-50 via-blue-50/30 to-white pt-20">
+    <section className="relative min-h-screen flex items-center overflow-hidden bg-gradient-to-br from-slate-50 via-blue-50/30 to-white dark:from-gray-900 dark:via-gray-900 dark:to-gray-800 pt-20">
       {/* Background decorations */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
         {/* Gradient blobs - more colorful */}
@@ -107,7 +107,7 @@ export default function Hero() {
             </motion.div>
 
             {/* Main headline - responsive sizing */}
-            <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold text-gray-900 leading-[1.1] mb-4 sm:mb-6 tracking-tight">
+            <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold text-gray-900 dark:text-white leading-[1.1] mb-4 sm:mb-6 tracking-tight">
               Een website die{' '}
               <span className="relative inline-block">
                 <span className="relative z-10 bg-gradient-to-r from-primary-600 via-primary-500 to-blue-500 bg-clip-text text-transparent">
@@ -124,7 +124,7 @@ export default function Hero() {
             </h1>
 
             {/* Subheadline */}
-            <p className="text-base sm:text-lg md:text-xl text-gray-600 mb-6 sm:mb-8 max-w-lg mx-auto lg:mx-0 leading-relaxed">
+            <p className="text-base sm:text-lg md:text-xl text-gray-600 dark:text-gray-300 mb-6 sm:mb-8 max-w-lg mx-auto lg:mx-0 leading-relaxed">
               Professionele website binnen 7 dagen. Geen technisch gedoe, geen verborgen kosten. Focus op je bedrijf, wij regelen de rest.
             </p>
 
@@ -160,17 +160,17 @@ export default function Hero() {
               transition={{ delay: 0.6 }}
               className="mt-6 sm:mt-8 flex flex-col sm:flex-row flex-wrap items-center gap-2 sm:gap-4 justify-center lg:justify-start"
             >
-              <div className="flex items-center gap-2 text-xs sm:text-sm text-gray-600 bg-white/80 backdrop-blur-sm border border-gray-100 rounded-full px-3 py-1.5 sm:px-4 sm:py-2">
-                <div className="w-4 h-4 sm:w-5 sm:h-5 rounded-full bg-green-100 flex items-center justify-center">
-                  <svg className="w-2.5 h-2.5 sm:w-3 sm:h-3 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <div className="flex items-center gap-2 text-xs sm:text-sm text-gray-600 dark:text-gray-300 bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm border border-gray-100 dark:border-gray-700 rounded-full px-3 py-1.5 sm:px-4 sm:py-2">
+                <div className="w-4 h-4 sm:w-5 sm:h-5 rounded-full bg-green-100 dark:bg-green-900/30 flex items-center justify-center">
+                  <svg className="w-2.5 h-2.5 sm:w-3 sm:h-3 text-green-600 dark:text-green-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M5 13l4 4L19 7" />
                   </svg>
                 </div>
                 Geen verplichtingen
               </div>
-              <div className="flex items-center gap-2 text-xs sm:text-sm text-gray-600 bg-white/80 backdrop-blur-sm border border-gray-100 rounded-full px-3 py-1.5 sm:px-4 sm:py-2">
-                <div className="w-4 h-4 sm:w-5 sm:h-5 rounded-full bg-primary-100 flex items-center justify-center">
-                  <svg className="w-2.5 h-2.5 sm:w-3 sm:h-3 text-primary-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <div className="flex items-center gap-2 text-xs sm:text-sm text-gray-600 dark:text-gray-300 bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm border border-gray-100 dark:border-gray-700 rounded-full px-3 py-1.5 sm:px-4 sm:py-2">
+                <div className="w-4 h-4 sm:w-5 sm:h-5 rounded-full bg-primary-100 dark:bg-primary-900/30 flex items-center justify-center">
+                  <svg className="w-2.5 h-2.5 sm:w-3 sm:h-3 text-primary-600 dark:text-primary-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M12 8v4l3 3" />
                     <circle cx="12" cy="12" r="9" strokeWidth={2} />
                   </svg>

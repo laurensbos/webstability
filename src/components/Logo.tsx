@@ -12,7 +12,7 @@ export default function Logo({ size = 'md', variant = 'default', className = '' 
     lg: { text: 'text-2xl' },
   }
   
-  const textColor = variant === 'white' ? 'text-white' : 'text-gray-900'
+  const textColor = variant === 'white' ? 'text-white' : 'text-gray-900 dark:text-white'
   const hoverColor = variant === 'white' ? 'hover:text-white/80' : 'hover:text-primary-600'
   
   // showText prop wordt genegeerd - we tonen altijd alleen tekst

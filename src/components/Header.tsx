@@ -176,8 +176,8 @@ export default function Header({ urgencyBannerVisible = false }: HeaderProps) {
           urgencyBannerVisible ? 'top-11' : 'top-0'
         } ${
           isScrolled
-            ? 'bg-white/95 backdrop-blur-xl shadow-sm border-b border-gray-100'
-            : 'bg-white/80 backdrop-blur-md'
+            ? 'bg-white/95 dark:bg-gray-900/95 backdrop-blur-xl shadow-sm border-b border-gray-100 dark:border-gray-800'
+            : 'bg-white/80 dark:bg-gray-900/80 backdrop-blur-md'
         }`}
       >
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -192,7 +192,7 @@ export default function Header({ urgencyBannerVisible = false }: HeaderProps) {
               {/* Hoe het werkt - Direct link */}
               <a
                 href="/#how-it-works"
-                className="px-4 py-2 text-sm font-medium text-gray-600 hover:text-gray-900 hover:bg-gray-50 rounded-lg transition-all"
+                className="px-4 py-2 text-sm font-medium text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white hover:bg-gray-50 dark:hover:bg-gray-800 rounded-lg transition-all"
               >
                 Hoe het werkt
               </a>
@@ -200,7 +200,7 @@ export default function Header({ urgencyBannerVisible = false }: HeaderProps) {
               {/* Prijzen - Direct link */}
               <a
                 href="/#pricing"
-                className="px-4 py-2 text-sm font-medium text-gray-600 hover:text-gray-900 hover:bg-gray-50 rounded-lg transition-all"
+                className="px-4 py-2 text-sm font-medium text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white hover:bg-gray-50 dark:hover:bg-gray-800 rounded-lg transition-all"
               >
                 Prijzen
               </a>
@@ -343,7 +343,7 @@ export default function Header({ urgencyBannerVisible = false }: HeaderProps) {
             {/* Mobile menu button */}
             <button
               onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-              className="lg:hidden p-2 text-gray-900 hover:bg-gray-100 rounded-lg transition-colors"
+              className="lg:hidden p-2 text-gray-900 dark:text-white hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition-colors"
               aria-label="Menu openen"
             >
               {isMobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
@@ -359,14 +359,14 @@ export default function Header({ urgencyBannerVisible = false }: HeaderProps) {
             initial={{ opacity: 0, height: 0 }}
             animate={{ opacity: 1, height: 'auto' }}
             exit={{ opacity: 0, height: 0 }}
-            className="fixed inset-x-0 top-16 z-40 lg:hidden bg-white border-b border-gray-100 shadow-lg overflow-hidden"
+            className="fixed inset-x-0 top-16 z-40 lg:hidden bg-white dark:bg-gray-900 border-b border-gray-100 dark:border-gray-800 shadow-lg overflow-hidden"
           >
             <div className="px-4 py-4 space-y-1 max-h-[calc(100vh-4rem)] overflow-y-auto">
               {/* Hoe het werkt direct */}
               <a
                 href="/#how-it-works"
                 onClick={() => setIsMobileMenuOpen(false)}
-                className="flex items-center px-3 py-3 text-gray-900 font-medium rounded-lg hover:bg-gray-50"
+                className="flex items-center px-3 py-3 text-gray-900 dark:text-white font-medium rounded-lg hover:bg-gray-50 dark:hover:bg-gray-800"
               >
                 Hoe het werkt
               </a>
@@ -375,7 +375,7 @@ export default function Header({ urgencyBannerVisible = false }: HeaderProps) {
               <a
                 href="/#pricing"
                 onClick={() => setIsMobileMenuOpen(false)}
-                className="flex items-center px-3 py-3 text-gray-900 font-medium rounded-lg hover:bg-gray-50"
+                className="flex items-center px-3 py-3 text-gray-900 dark:text-white font-medium rounded-lg hover:bg-gray-50 dark:hover:bg-gray-800"
               >
                 Prijzen
               </a>
@@ -384,7 +384,7 @@ export default function Header({ urgencyBannerVisible = false }: HeaderProps) {
               <div>
                 <button
                   onClick={() => setMobileExpanded(mobileExpanded === 'diensten' ? null : 'diensten')}
-                  className="flex items-center justify-between w-full px-3 py-3 text-gray-900 font-medium rounded-lg hover:bg-gray-50"
+                  className="flex items-center justify-between w-full px-3 py-3 text-gray-900 dark:text-white font-medium rounded-lg hover:bg-gray-50 dark:hover:bg-gray-800"
                 >
                   Diensten
                   <ChevronDown className={`w-5 h-5 text-gray-400 transition-transform ${mobileExpanded === 'diensten' ? 'rotate-180' : ''}`} />
@@ -403,7 +403,7 @@ export default function Header({ urgencyBannerVisible = false }: HeaderProps) {
                             key={item.href}
                             href={item.href}
                             onClick={() => setIsMobileMenuOpen(false)}
-                            className="flex items-center gap-3 px-3 py-2.5 text-gray-600 rounded-lg hover:bg-gray-50"
+                            className="flex items-center gap-3 px-3 py-2.5 text-gray-600 dark:text-gray-300 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-800"
                           >
                             <item.icon className="w-5 h-5 text-primary-500" />
                             <span>{item.label}</span>
@@ -419,7 +419,7 @@ export default function Header({ urgencyBannerVisible = false }: HeaderProps) {
               <a
                 href="/kennisbank"
                 onClick={() => setIsMobileMenuOpen(false)}
-                className="flex items-center px-3 py-3 text-gray-900 font-medium rounded-lg hover:bg-gray-50"
+                className="flex items-center px-3 py-3 text-gray-900 dark:text-white font-medium rounded-lg hover:bg-gray-50 dark:hover:bg-gray-800"
               >
                 Kennisbank
               </a>
@@ -428,7 +428,7 @@ export default function Header({ urgencyBannerVisible = false }: HeaderProps) {
               <div>
                 <button
                   onClick={() => setMobileExpanded(mobileExpanded === 'overons' ? null : 'overons')}
-                  className="flex items-center justify-between w-full px-3 py-3 text-gray-900 font-medium rounded-lg hover:bg-gray-50"
+                  className="flex items-center justify-between w-full px-3 py-3 text-gray-900 dark:text-white font-medium rounded-lg hover:bg-gray-50 dark:hover:bg-gray-800"
                 >
                   Over ons
                   <ChevronDown className={`w-5 h-5 text-gray-400 transition-transform ${mobileExpanded === 'overons' ? 'rotate-180' : ''}`} />
@@ -447,7 +447,7 @@ export default function Header({ urgencyBannerVisible = false }: HeaderProps) {
                             key={item.href}
                             href={item.href}
                             onClick={() => setIsMobileMenuOpen(false)}
-                            className="flex items-center gap-3 px-3 py-2.5 text-gray-600 rounded-lg hover:bg-gray-50"
+                            className="flex items-center gap-3 px-3 py-2.5 text-gray-600 dark:text-gray-300 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-800"
                           >
                             <item.icon className="w-5 h-5 text-primary-500" />
                             <span>{item.label}</span>
