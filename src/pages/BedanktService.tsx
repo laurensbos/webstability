@@ -1,0 +1,203 @@
+import { useEffect } from 'react'
+import { motion } from 'framer-motion'
+import { useSearchParams, Link } from 'react-router-dom'
+import { 
+  CheckCircle2, 
+  Calendar, 
+  Mail, 
+  Phone, 
+  ArrowRight,
+  Camera,
+  Palette,
+  Sparkles
+} from 'lucide-react'
+import Header from '../components/Header'
+import Footer from '../components/Footer'
+
+const serviceInfo = {
+  drone: {
+    title: 'Luchtfoto & Videografie',
+    icon: Camera,
+    color: 'from-blue-500 to-cyan-500',
+    nextSteps: [
+      'We bevestigen je afspraak per email',
+      'We nemen 24 uur van tevoren contact op',
+      'Op de dag zelf zijn we 15 min eerder aanwezig',
+      'Binnen 5 werkdagen ontvang je de beelden'
+    ],
+  },
+  logo: {
+    title: 'Logo ontwerp',
+    icon: Palette,
+    color: 'from-purple-500 to-pink-500',
+    nextSteps: [
+      'We nemen je aanvraag door',
+      'Binnen 24 uur nemen we contact op',
+      'Na akkoord ontvang je binnen 5 dagen 3 concepten',
+      'Onbeperkte revisies tot je 100% tevreden bent'
+    ],
+  },
+}
+
+export default function BedanktService() {
+  const [searchParams] = useSearchParams()
+  const serviceType = searchParams.get('type') as 'drone' | 'logo'
+  const requestId = searchParams.get('id')
+  
+  const service = serviceInfo[serviceType] || serviceInfo.drone
+  const ServiceIcon = service.icon
+
+  useEffect(() => {
+    window.scrollTo(0, 0)
+  }, [])
+
+  return (
+    <div className="min-h-screen bg-gradient-to-br from-primary-50/50 via-white to-blue-50/50">
+      <Header />
+      
+      <main className="pt-24 md:pt-32 pb-16 md:pb-24">
+        <div className="max-w-2xl mx-auto px-4 text-center">
+          {/* Success animation */}
+          <motion.div
+            initial={{ scale: 0 }}
+            animate={{ scale: 1 }}
+            transition={{ type: 'spring', duration: 0.6 }}
+            className={`w-24 h-24 bg-gradient-to-br ${service.color} rounded-full flex items-center justify-center mx-auto mb-8 shadow-xl`}
+          >
+            <motion.div
+              initial={{ scale: 0 }}
+              animate={{ scale: 1 }}
+              transition={{ delay: 0.3 }}
+            >
+              <CheckCircle2 className="w-12 h-12 text-white" />
+            </motion.div>
+          </motion.div>
+
+          <motion.h1
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.2 }}
+            className="text-3xl sm:text-4xl font-bold text-gray-900 mb-4"
+          >
+            Aanvraag ontvangen! 🎉
+          </motion.h1>
+
+          <motion.p
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.3 }}
+            className="text-lg text-gray-600 mb-8"
+          >
+            Bedankt voor je {service.title.toLowerCase()} aanvraag. We gaan direct voor je aan de slag!
+          </motion.p>
+
+          {/* Request ID */}
+          {requestId && (
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.4 }}
+              className={`inline-flex items-center gap-3 bg-gradient-to-r ${service.color} text-white rounded-2xl px-6 py-4 mb-10`}
+            >
+              <ServiceIcon className="w-6 h-6" />
+              <div className="text-left">
+                <p className="text-sm opacity-80">Je aanvraagnummer</p>
+                <p className="font-bold text-xl font-mono">{requestId}</p>
+              </div>
+            </motion.div>
+          )}
+
+          {/* Next steps */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.5 }}
+            className="bg-white rounded-2xl border border-gray-200 shadow-lg p-6 md:p-8 mb-8 text-left"
+          >
+            <h2 className="text-xl font-bold text-gray-900 mb-6 flex items-center gap-2">
+              <Sparkles className="w-5 h-5 text-primary-600" />
+              Wat gebeurt er nu?
+            </h2>
+            
+            <div className="space-y-4">
+              {service.nextSteps.map((step, index) => (
+                <div key={index} className="flex items-start gap-4">
+                  <div className={`w-8 h-8 rounded-full bg-gradient-to-br ${service.color} flex items-center justify-center text-white text-sm font-bold flex-shrink-0`}>
+                    {index + 1}
+                  </div>
+                  <p className="text-gray-700 pt-1">{step}</p>
+                </div>
+              ))}
+            </div>
+          </motion.div>
+
+          {/* Contact info */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.6 }}
+            className="bg-gray-50 rounded-xl p-6 mb-8"
+          >
+            <p className="text-gray-600 mb-4">
+              Vragen? Neem gerust contact met ons op:
+            </p>
+            <div className="flex flex-wrap items-center justify-center gap-4">
+              <a 
+                href="mailto:hallo@webstability.nl"
+                className="flex items-center gap-2 text-primary-600 hover:text-primary-700 font-medium"
+              >
+                <Mail className="w-4 h-4" />
+                hallo@webstability.nl
+              </a>
+              <a 
+                href="tel:+31644712573"
+                className="flex items-center gap-2 text-primary-600 hover:text-primary-700 font-medium"
+              >
+                <Phone className="w-4 h-4" />
+                06 44712573
+              </a>
+            </div>
+          </motion.div>
+
+          {/* CTA */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.7 }}
+            className="flex flex-col sm:flex-row items-center justify-center gap-4"
+          >
+            <Link
+              to="/"
+              className="inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-primary-500 to-blue-500 text-white font-semibold rounded-xl hover:from-primary-600 hover:to-blue-600 transition-all shadow-lg"
+            >
+              <span>Terug naar home</span>
+              <ArrowRight className="w-4 h-4" />
+            </Link>
+            
+            {serviceType === 'drone' && (
+              <Link
+                to="/luchtvideografie"
+                className="inline-flex items-center gap-2 px-6 py-3 border border-gray-300 text-gray-700 font-medium rounded-xl hover:bg-gray-50 transition-all"
+              >
+                <Calendar className="w-4 h-4" />
+                <span>Bekijk voorbeelden</span>
+              </Link>
+            )}
+            
+            {serviceType === 'logo' && (
+              <Link
+                to="/logo-laten-maken"
+                className="inline-flex items-center gap-2 px-6 py-3 border border-gray-300 text-gray-700 font-medium rounded-xl hover:bg-gray-50 transition-all"
+              >
+                <Palette className="w-4 h-4" />
+                <span>Bekijk portfolio</span>
+              </Link>
+            )}
+          </motion.div>
+        </div>
+      </main>
+
+      <Footer />
+    </div>
+  )
+}

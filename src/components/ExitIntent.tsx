@@ -106,7 +106,7 @@ export default function ExitIntent() {
                   Wacht! Niet weggaan zonder dit...
                 </h3>
                 <p className="text-primary-100 text-sm">
-                  Ontvang een gratis website-adviesgesprek (t.w.v. €99)
+                  Ontvang een gratis website-adviesgesprek (t.w.v. €120)
                 </p>
               </div>
 

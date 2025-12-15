@@ -1,0 +1,18 @@
+{
+  "name": "webstability-server",
+  "version": "1.0.0",
+  "description": "Webstability backend server",
+  "main": "app.js",
+  "scripts": {
+    "start": "node app.js"
+  },
+  "dependencies": {
+    "@mollie/api-client": "^3.7.0",
+    "bcrypt": "^5.1.1",
+    "better-sqlite3": "^12.5.0",
+    "cors": "^2.8.5",
+    "dotenv": "^17.2.3",
+    "express": "^4.18.2",
+    "nodemailer": "^6.9.7"
+  }
+}

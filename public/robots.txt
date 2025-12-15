@@ -1,0 +1,40 @@
+# Robots.txt voor Webstability.nl
+# https://webstability.nl
+
+# Alle robots toestaan
+User-agent: *
+Allow: /
+
+# Belangrijke pagina's
+Allow: /websites
+Allow: /webshop
+Allow: /prijzen
+Allow: /portfolio
+Allow: /over-ons
+Allow: /contact
+Allow: /kennisbank
+Allow: /start
+
+# Admin en interne pagina's blokkeren
+Disallow: /dashboard
+Disallow: /project-status
+Disallow: /bedankt
+Disallow: /betaling-succes
+
+# API endpoints blokkeren
+Disallow: /api/
+
+# Assets wel toestaan
+Allow: /assets/
+Allow: /*.js$
+Allow: /*.css$
+Allow: /*.svg$
+Allow: /*.png$
+Allow: /*.jpg$
+Allow: /*.webp$
+
+# Sitemap locatie
+Sitemap: https://webstability.nl/sitemap.xml
+
+# Crawl-delay voor beleefdheid
+Crawl-delay: 1

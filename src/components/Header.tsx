@@ -1,28 +1,44 @@
 import { useState, useEffect, useRef } from 'react'
+import { useNavigate } from 'react-router-dom'
 import { motion, AnimatePresence } from 'framer-motion'
-import { Menu, X, ChevronDown, Layers, Image, CreditCard, Users, Mail, ArrowRight, ShoppingCart } from 'lucide-react'
+import { Menu, X, ChevronDown, Image, Users, Mail, ArrowRight, ShoppingCart, Search, ClipboardList, Palette, Plane, Globe } from 'lucide-react'
+import Logo from './Logo'
 
 interface HeaderProps {
   urgencyBannerVisible?: boolean
 }
 
 const dienstenItems = [
-  { label: 'Hoe het werkt', href: '/#how-it-works', icon: Layers, description: 'Ons proces van A tot Z' },
-  { label: 'Portfolio', href: '/#portfolio', icon: Image, description: 'Bekijk ons werk' },
-  { label: 'Prijzen', href: '/#pricing', icon: CreditCard, description: 'Transparante tarieven' },
+  { label: 'Websites', href: '/websites', icon: Globe, description: 'Professionele website laten maken' },
   { label: 'Webshop', href: '/webshop', icon: ShoppingCart, description: 'Webshop laten maken' },
+  { label: 'Logo laten maken', href: '/logo', icon: Palette, description: 'Professioneel logo ontwerp' },
+  { label: 'Luchtfoto & Videografie', href: '/luchtvideografie', icon: Plane, description: 'Professionele luchtopnames' },
 ]
 
 const overOnsItems = [
   { label: 'Over ons', href: '/over-ons', icon: Users, description: 'Ons verhaal en team' },
+  { label: 'Portfolio', href: '/portfolio', icon: Image, description: 'Bekijk ons werk' },
   { label: 'Contact', href: '/contact', icon: Mail, description: 'Neem contact op' },
 ]
 
 export default function Header({ urgencyBannerVisible = false }: HeaderProps) {
+  const navigate = useNavigate()
   const [isScrolled, setIsScrolled] = useState(false)
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
   const [activeDropdown, setActiveDropdown] = useState<string | null>(null)
   const [mobileExpanded, setMobileExpanded] = useState<string | null>(null)
+  const [showProjectModal, setShowProjectModal] = useState(false)
+  const [projectIdInput, setProjectIdInput] = useState('')
+  const [projectPasswordInput, setProjectPasswordInput] = useState('')
+  const [loginError, setLoginError] = useState<string | null>(null)
+  const [isLoggingIn, setIsLoggingIn] = useState(false)
+  const [showRecoveryForm, setShowRecoveryForm] = useState(false)
+  const [recoveryType, setRecoveryType] = useState<'projectId' | 'password'>('projectId')
+  const [recoveryEmail, setRecoveryEmail] = useState('')
+  const [recoveryProjectId, setRecoveryProjectId] = useState('')
+  const [isRecovering, setIsRecovering] = useState(false)
+  const [recoverySuccess, setRecoverySuccess] = useState(false)
+  const [recoveryError, setRecoveryError] = useState<string | null>(null)
   const dropdownRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
@@ -48,6 +64,106 @@ export default function Header({ urgencyBannerVisible = false }: HeaderProps) {
     setActiveDropdown(activeDropdown === name ? null : name)
   }
 
+  const handleProjectSearch = async (e: React.FormEvent) => {
+    e.preventDefault()
+    if (!projectIdInput.trim() || !projectPasswordInput.trim()) return
+
+    setIsLoggingIn(true)
+    setLoginError(null)
+
+    try {
+      // Verify project credentials
+      const response = await fetch('/api/verify-project', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ 
+          projectId: projectIdInput.trim().toUpperCase(),
+          password: projectPasswordInput.trim()
+        })
+      })
+
+      const data = await response.json()
+
+      if (response.ok && data.success) {
+        // Store session for this project
+        sessionStorage.setItem(`project_auth_${projectIdInput.trim().toUpperCase()}`, 'true')
+        setShowProjectModal(false)
+        // Navigate with password in URL for initial verification
+        navigate(`/project/${projectIdInput.trim().toUpperCase()}?pwd=${encodeURIComponent(projectPasswordInput)}`)
+        setProjectIdInput('')
+        setProjectPasswordInput('')
+      } else {
+        setLoginError(data.message || 'Ongeldige project-ID of wachtwoord')
+      }
+    } catch {
+      setLoginError('Er is iets misgegaan. Probeer het opnieuw.')
+    } finally {
+      setIsLoggingIn(false)
+    }
+  }
+
+  const handleRecoverySubmit = async (e: React.FormEvent) => {
+    e.preventDefault()
+    setIsRecovering(true)
+    setRecoveryError(null)
+
+    try {
+      if (recoveryType === 'projectId') {
+        // Recovery project-ID via email
+        if (!recoveryEmail.trim()) return
+        
+        const response = await fetch('/api/recover-project', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email: recoveryEmail.trim() })
+        })
+
+        if (response.ok) {
+          setRecoverySuccess(true)
+        } else {
+          const data = await response.json()
+          setRecoveryError(data.message || 'Er is iets misgegaan. Probeer het opnieuw.')
+        }
+      } else {
+        // Recovery password via email + project ID
+        if (!recoveryEmail.trim() || !recoveryProjectId.trim()) return
+        
+        const response = await fetch('/api/reset-password', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ 
+            email: recoveryEmail.trim(),
+            projectId: recoveryProjectId.trim().toUpperCase()
+          })
+        })
+
+        if (response.ok) {
+          setRecoverySuccess(true)
+        } else {
+          const data = await response.json()
+          setRecoveryError(data.message || 'Er is iets misgegaan. Probeer het opnieuw.')
+        }
+      }
+    } catch {
+      setRecoveryError('Er is iets misgegaan. Probeer het opnieuw.')
+    } finally {
+      setIsRecovering(false)
+    }
+  }
+
+  const resetModal = () => {
+    setShowProjectModal(false)
+    setShowRecoveryForm(false)
+    setRecoveryType('projectId')
+    setRecoveryEmail('')
+    setRecoveryProjectId('')
+    setRecoverySuccess(false)
+    setRecoveryError(null)
+    setProjectIdInput('')
+    setProjectPasswordInput('')
+    setLoginError(null)
+  }
+
   return (
     <>
       <motion.nav
@@ -66,13 +182,27 @@ export default function Header({ urgencyBannerVisible = false }: HeaderProps) {
           <div className="flex items-center justify-between h-16 lg:h-18">
             {/* Logo */}
             <a href="/" className="group flex-shrink-0">
-              <span className="font-display font-bold text-xl text-gray-900 group-hover:text-primary-600 transition-colors tracking-tight">
-                webstability
-              </span>
+              <Logo size="md" showText />
             </a>
 
             {/* Desktop Navigation */}
             <div ref={dropdownRef} className="hidden lg:flex items-center gap-1">
+              {/* Hoe het werkt - Direct link */}
+              <a
+                href="/#how-it-works"
+                className="px-4 py-2 text-sm font-medium text-gray-600 hover:text-gray-900 hover:bg-gray-50 rounded-lg transition-all"
+              >
+                Hoe het werkt
+              </a>
+
+              {/* Prijzen - Direct link */}
+              <a
+                href="/#pricing"
+                className="px-4 py-2 text-sm font-medium text-gray-600 hover:text-gray-900 hover:bg-gray-50 rounded-lg transition-all"
+              >
+                Prijzen
+              </a>
+
               {/* Diensten Dropdown */}
               <div className="relative">
                 <button
@@ -178,8 +308,18 @@ export default function Header({ urgencyBannerVisible = false }: HeaderProps) {
               </div>
             </div>
 
-            {/* CTA Button */}
-            <div className="hidden lg:flex items-center">
+            {/* CTA Buttons */}
+            <div className="hidden lg:flex items-center gap-3">
+              {/* Mijn project button */}
+              <button
+                onClick={() => setShowProjectModal(true)}
+                className="flex items-center gap-2 px-4 py-2.5 text-sm font-medium text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-lg transition-all"
+              >
+                <ClipboardList className="w-4 h-4" />
+                Mijn project
+              </button>
+
+              {/* Start nu button */}
               <a
                 href="/start"
                 className="group flex items-center gap-2 px-5 py-2.5 bg-primary-500 hover:bg-primary-600 text-white text-sm font-semibold rounded-lg transition-all shadow-lg shadow-primary-500/25 hover:shadow-primary-500/40"
@@ -211,6 +351,24 @@ export default function Header({ urgencyBannerVisible = false }: HeaderProps) {
             className="fixed inset-x-0 top-16 z-40 lg:hidden bg-white border-b border-gray-100 shadow-lg overflow-hidden"
           >
             <div className="px-4 py-4 space-y-1 max-h-[calc(100vh-4rem)] overflow-y-auto">
+              {/* Hoe het werkt direct */}
+              <a
+                href="/#how-it-works"
+                onClick={() => setIsMobileMenuOpen(false)}
+                className="flex items-center px-3 py-3 text-gray-900 font-medium rounded-lg hover:bg-gray-50"
+              >
+                Hoe het werkt
+              </a>
+
+              {/* Prijzen direct */}
+              <a
+                href="/#pricing"
+                onClick={() => setIsMobileMenuOpen(false)}
+                className="flex items-center px-3 py-3 text-gray-900 font-medium rounded-lg hover:bg-gray-50"
+              >
+                Prijzen
+              </a>
+
               {/* Diensten accordion */}
               <div>
                 <button
@@ -290,8 +448,20 @@ export default function Header({ urgencyBannerVisible = false }: HeaderProps) {
                 </AnimatePresence>
               </div>
 
-              {/* CTA */}
-              <div className="pt-4 border-t border-gray-100">
+              {/* CTA Buttons */}
+              <div className="pt-4 border-t border-gray-100 space-y-3">
+                {/* Mijn project - Mobile */}
+                <button
+                  onClick={() => {
+                    setIsMobileMenuOpen(false)
+                    setShowProjectModal(true)
+                  }}
+                  className="flex items-center justify-center gap-2 w-full py-3 bg-gray-100 hover:bg-gray-200 text-gray-900 font-semibold rounded-lg transition-all"
+                >
+                  <ClipboardList className="w-5 h-5" />
+                  Mijn project
+                </button>
+
                 <a
                   href="/start"
                   onClick={() => setIsMobileMenuOpen(false)}
@@ -302,6 +472,287 @@ export default function Header({ urgencyBannerVisible = false }: HeaderProps) {
                 </a>
               </div>
             </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* Project Check Modal */}
+      <AnimatePresence>
+        {showProjectModal && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm"
+            onClick={resetModal}
+          >
+            <motion.div
+              initial={{ opacity: 0, scale: 0.95, y: 20 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.95, y: 20 }}
+              onClick={(e) => e.stopPropagation()}
+              className="bg-white rounded-2xl shadow-2xl max-w-md w-full p-6"
+            >
+              <div className="flex items-center justify-between mb-6">
+                <div className="flex items-center gap-3">
+                  <div className="p-2 bg-primary-100 rounded-lg">
+                    <Search className="w-5 h-5 text-primary-600" />
+                  </div>
+                  <h2 className="text-xl font-bold text-gray-900">
+                    {showRecoveryForm ? 'Project-ID opvragen' : 'Check mijn project'}
+                  </h2>
+                </div>
+                <button
+                  onClick={resetModal}
+                  className="p-2 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-lg transition-colors"
+                >
+                  <X className="w-5 h-5" />
+                </button>
+              </div>
+
+              {!showRecoveryForm ? (
+                // Project ID input form
+                <>
+                  <p className="text-gray-600 mb-4">
+                    Voer je project-ID en wachtwoord in om je project status te bekijken.
+                  </p>
+
+                  <form onSubmit={handleProjectSearch}>
+                    <div className="mb-4">
+                      <label htmlFor="projectId" className="block text-sm font-medium text-gray-700 mb-2">
+                        Project-ID
+                      </label>
+                      <input
+                        type="text"
+                        id="projectId"
+                        value={projectIdInput}
+                        onChange={(e) => setProjectIdInput(e.target.value)}
+                        placeholder="Bijv. WS-ABC123"
+                        className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-all text-lg font-mono uppercase"
+                        autoFocus
+                      />
+                    </div>
+
+                    <div className="mb-4">
+                      <label htmlFor="projectPassword" className="block text-sm font-medium text-gray-700 mb-2">
+                        Wachtwoord
+                      </label>
+                      <input
+                        type="password"
+                        id="projectPassword"
+                        value={projectPasswordInput}
+                        onChange={(e) => setProjectPasswordInput(e.target.value)}
+                        placeholder="Je project wachtwoord"
+                        className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-all"
+                      />
+                    </div>
+
+                    {loginError && (
+                      <div className="mb-4 p-3 bg-red-50 border border-red-200 rounded-xl text-red-600 text-sm">
+                        {loginError}
+                      </div>
+                    )}
+
+                    <button
+                      type="submit"
+                      disabled={!projectIdInput.trim() || !projectPasswordInput.trim() || isLoggingIn}
+                      className="w-full flex items-center justify-center gap-2 px-6 py-3 bg-primary-500 hover:bg-primary-600 disabled:bg-gray-300 disabled:cursor-not-allowed text-white font-semibold rounded-xl transition-all"
+                    >
+                      {isLoggingIn ? (
+                        <span className="animate-spin w-5 h-5 border-2 border-white border-t-transparent rounded-full" />
+                      ) : (
+                        <Search className="w-5 h-5" />
+                      )}
+                      {isLoggingIn ? 'Inloggen...' : 'Bekijk project status'}
+                    </button>
+                  </form>
+
+                  <div className="mt-6 pt-4 border-t border-gray-100">
+                    <p className="text-sm text-gray-500 text-center mb-3">Iets vergeten?</p>
+                    <div className="flex gap-2">
+                      <button 
+                        onClick={() => { setShowRecoveryForm(true); setRecoveryType('projectId'); }}
+                        className="flex-1 py-2 px-3 text-sm bg-gray-50 hover:bg-gray-100 text-gray-700 rounded-lg transition-colors"
+                      >
+                        Project-ID kwijt
+                      </button>
+                      <button 
+                        onClick={() => { setShowRecoveryForm(true); setRecoveryType('password'); }}
+                        className="flex-1 py-2 px-3 text-sm bg-gray-50 hover:bg-gray-100 text-gray-700 rounded-lg transition-colors"
+                      >
+                        Wachtwoord kwijt
+                      </button>
+                    </div>
+                  </div>
+                </>
+              ) : recoverySuccess ? (
+                // Success state
+                <div className="text-center py-4">
+                  <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <Mail className="w-8 h-8 text-green-600" />
+                  </div>
+                  <h3 className="text-lg font-bold text-gray-900 mb-2">Check je inbox!</h3>
+                  <p className="text-gray-600 mb-6">
+                    {recoveryType === 'projectId' 
+                      ? 'Als er projecten zijn gekoppeld aan dit e-mailadres, ontvang je binnen enkele minuten een e-mail met je project-ID(s) en wachtwoord.'
+                      : 'Als dit e-mailadres gekoppeld is aan dit project, ontvang je een e-mail met een link om je wachtwoord opnieuw in te stellen.'
+                    }
+                  </p>
+                  <button
+                    onClick={resetModal}
+                    className="w-full py-3 bg-gray-100 hover:bg-gray-200 text-gray-900 font-semibold rounded-xl transition-all"
+                  >
+                    Sluiten
+                  </button>
+                </div>
+              ) : (
+                // Recovery form
+                <>
+                  <div className="flex gap-2 mb-6">
+                    <button
+                      onClick={() => setRecoveryType('projectId')}
+                      className={`flex-1 py-2 px-3 text-sm font-medium rounded-lg transition-colors ${
+                        recoveryType === 'projectId' 
+                          ? 'bg-primary-100 text-primary-700' 
+                          : 'bg-gray-50 text-gray-600 hover:bg-gray-100'
+                      }`}
+                    >
+                      Project-ID kwijt
+                    </button>
+                    <button
+                      onClick={() => setRecoveryType('password')}
+                      className={`flex-1 py-2 px-3 text-sm font-medium rounded-lg transition-colors ${
+                        recoveryType === 'password' 
+                          ? 'bg-primary-100 text-primary-700' 
+                          : 'bg-gray-50 text-gray-600 hover:bg-gray-100'
+                      }`}
+                    >
+                      Wachtwoord kwijt
+                    </button>
+                  </div>
+
+                  {recoveryType === 'projectId' ? (
+                    <>
+                      <p className="text-gray-600 mb-4">
+                        Voer het e-mailadres in waarmee je je project hebt aangemeld. We sturen je project-ID(s) naar dit adres.
+                      </p>
+
+                      <form onSubmit={handleRecoverySubmit}>
+                        <div className="mb-4">
+                          <label htmlFor="recoveryEmail" className="block text-sm font-medium text-gray-700 mb-2">
+                            E-mailadres
+                          </label>
+                          <input
+                            type="email"
+                            id="recoveryEmail"
+                            value={recoveryEmail}
+                            onChange={(e) => setRecoveryEmail(e.target.value)}
+                            placeholder="jouw@email.nl"
+                            className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-all"
+                            autoFocus
+                            required
+                          />
+                        </div>
+
+                        {recoveryError && (
+                          <div className="mb-4 p-3 bg-red-50 border border-red-200 rounded-lg text-red-600 text-sm">
+                            {recoveryError}
+                          </div>
+                        )}
+
+                        <button
+                          type="submit"
+                          disabled={!recoveryEmail.trim() || isRecovering}
+                          className="w-full flex items-center justify-center gap-2 px-6 py-3 bg-primary-500 hover:bg-primary-600 disabled:bg-gray-300 disabled:cursor-not-allowed text-white font-semibold rounded-xl transition-all"
+                        >
+                          {isRecovering ? (
+                            <>
+                              <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                              Verzenden...
+                            </>
+                          ) : (
+                            <>
+                              <Mail className="w-5 h-5" />
+                              Verstuur project-ID
+                            </>
+                          )}
+                        </button>
+                      </form>
+                    </>
+                  ) : (
+                    <>
+                      <p className="text-gray-600 mb-4">
+                        Voer je project-ID en het bijbehorende e-mailadres in. We sturen een link om je wachtwoord opnieuw in te stellen.
+                      </p>
+
+                      <form onSubmit={handleRecoverySubmit}>
+                        <div className="mb-4">
+                          <label htmlFor="recoveryProjectId" className="block text-sm font-medium text-gray-700 mb-2">
+                            Project-ID
+                          </label>
+                          <input
+                            type="text"
+                            id="recoveryProjectId"
+                            value={recoveryProjectId}
+                            onChange={(e) => setRecoveryProjectId(e.target.value)}
+                            placeholder="Bijv. WS-ABC123"
+                            className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-all font-mono uppercase"
+                            autoFocus
+                            required
+                          />
+                        </div>
+
+                        <div className="mb-4">
+                          <label htmlFor="recoveryEmailPassword" className="block text-sm font-medium text-gray-700 mb-2">
+                            E-mailadres
+                          </label>
+                          <input
+                            type="email"
+                            id="recoveryEmailPassword"
+                            value={recoveryEmail}
+                            onChange={(e) => setRecoveryEmail(e.target.value)}
+                            placeholder="jouw@email.nl"
+                            className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-all"
+                            required
+                          />
+                        </div>
+
+                        {recoveryError && (
+                          <div className="mb-4 p-3 bg-red-50 border border-red-200 rounded-lg text-red-600 text-sm">
+                            {recoveryError}
+                          </div>
+                        )}
+
+                        <button
+                          type="submit"
+                          disabled={!recoveryEmail.trim() || !recoveryProjectId.trim() || isRecovering}
+                          className="w-full flex items-center justify-center gap-2 px-6 py-3 bg-primary-500 hover:bg-primary-600 disabled:bg-gray-300 disabled:cursor-not-allowed text-white font-semibold rounded-xl transition-all"
+                        >
+                          {isRecovering ? (
+                            <>
+                              <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                              Verzenden...
+                            </>
+                          ) : (
+                            <>
+                              <Mail className="w-5 h-5" />
+                              Verstuur reset link
+                            </>
+                          )}
+                        </button>
+                      </form>
+                    </>
+                  )}
+
+                  <button
+                    onClick={() => setShowRecoveryForm(false)}
+                    className="w-full mt-3 py-2 text-gray-600 hover:text-gray-900 text-sm font-medium transition-colors"
+                  >
+                    ← Terug naar inloggen
+                  </button>
+                </>
+              )}
+            </motion.div>
           </motion.div>
         )}
       </AnimatePresence>

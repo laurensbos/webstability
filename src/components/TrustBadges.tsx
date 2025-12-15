@@ -1,49 +1,101 @@
-import { CheckCircle, Lock, Zap, MessageCircle } from 'lucide-react'
+import { motion } from 'framer-motion'
+import { CheckCircle, Lock, Zap, Shield, Clock, Award, Headphones } from 'lucide-react'
 
-export default function TrustBadges({ compact = false }: { compact?: boolean }){
-  if(compact){
-    return (
-      <div className="trust-row" aria-hidden>
-        <div className="trust-item">
-          <div className="trust-icon"><CheckCircle size={16} className="text-[var(--brand-500)]" /></div>
-          <div>99.9% uptime</div>
-        </div>
-        <div className="trust-item">
-          <div className="trust-icon"><Lock size={16} className="text-[var(--brand-500)]" /></div>
-          <div>SSL & dagelijkse backups</div>
-        </div>
-        <div className="trust-item">
-          <div className="trust-icon"><Zap size={16} className="text-[var(--brand-500)]" /></div>
-          <div>Snelle hosting (CDN)</div>
-        </div>
-        <div className="trust-item">
-          <div className="trust-icon"><MessageCircle size={16} className="text-[var(--brand-500)]" /></div>
-          <div>Support binnen 24 uur</div>
-        </div>
-      </div>
-    )
-  }
+const badges = [
+	{ icon: CheckCircle, label: '99.9% uptime', color: 'text-green-500', bg: 'bg-green-50' },
+	{ icon: Lock, label: 'SSL & backups', color: 'text-blue-500', bg: 'bg-blue-50' },
+	{ icon: Zap, label: 'Supersnel (CDN)', color: 'text-amber-500', bg: 'bg-amber-50' },
+	{ icon: Headphones, label: '24u support', color: 'text-purple-500', bg: 'bg-purple-50' },
+]
 
-  return (
-    <section aria-hidden className="py-4 bg-white/2">
-      <div className="max-w-6xl mx-auto px-6 flex flex-wrap items-center justify-center gap-6 text-sm text-slate-600">
-        <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-lg feature-icon-bg"><CheckCircle size={18} className="text-[var(--brand-500)]" /></div>
-          <div>99.9% uptime</div>
-        </div>
-        <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-lg feature-icon-bg"><Lock size={18} className="text-[var(--brand-500)]" /></div>
-          <div>SSL & dagelijkse backups</div>
-        </div>
-        <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-lg feature-icon-bg"><Zap size={18} className="text-[var(--brand-500)]" /></div>
-          <div>Snelle hosting (CDN)</div>
-        </div>
-        <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-lg feature-icon-bg"><MessageCircle size={18} className="text-[var(--brand-500)]" /></div>
-          <div>Support binnen 24 uur</div>
-        </div>
-      </div>
-    </section>
-  )
+const extendedBadges = [
+	{ icon: Shield, label: 'GDPR compliant', description: 'Privacy gewaarborgd' },
+	{ icon: Clock, label: '7 dagen live', description: 'Snelle oplevering' },
+	{ icon: Award, label: '120+ klanten', description: 'Tevreden ondernemers' },
+	{ icon: Headphones, label: 'Persoonlijk contact', description: 'Geen robots' },
+]
+
+interface TrustBadgesProps {
+	compact?: boolean
+	variant?: 'light' | 'dark' | 'transparent'
+	showExtended?: boolean
+}
+
+export default function TrustBadges({ compact = false, variant = 'light', showExtended = false }: TrustBadgesProps) {
+	const bgColor = variant === 'dark' ? 'bg-gray-900' : variant === 'transparent' ? '' : 'bg-gray-50'
+	const textColor = variant === 'dark' ? 'text-gray-300' : 'text-gray-600'
+	const iconBg = variant === 'dark' ? 'bg-gray-800' : 'bg-white'
+
+	if (compact) {
+		return (
+			<div className="flex flex-wrap items-center justify-center gap-4 sm:gap-6" aria-hidden>
+				{badges.map((badge, index) => (
+					<motion.div
+						key={badge.label}
+						initial={{ opacity: 0, y: 10 }}
+						whileInView={{ opacity: 1, y: 0 }}
+						viewport={{ once: true }}
+						transition={{ delay: index * 0.1 }}
+						className="flex items-center gap-2"
+					>
+						<div className={`w-8 h-8 ${badge.bg} rounded-lg flex items-center justify-center`}>
+							<badge.icon className={`w-4 h-4 ${badge.color}`} />
+						</div>
+						<span className="text-sm font-medium text-gray-700">{badge.label}</span>
+					</motion.div>
+				))}
+			</div>
+		)
+	}
+
+	if (showExtended) {
+		return (
+			<section className={`py-12 ${bgColor}`}>
+				<div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+					<div className="grid grid-cols-2 md:grid-cols-4 gap-6">
+						{extendedBadges.map((badge, index) => (
+							<motion.div
+								key={badge.label}
+								initial={{ opacity: 0, y: 20 }}
+								whileInView={{ opacity: 1, y: 0 }}
+								viewport={{ once: true }}
+								transition={{ delay: index * 0.1 }}
+								className={`${iconBg} p-6 rounded-2xl border border-gray-100 text-center shadow-sm hover:shadow-md transition-shadow`}
+							>
+								<div className="w-12 h-12 bg-primary-50 rounded-xl flex items-center justify-center mx-auto mb-4">
+									<badge.icon className="w-6 h-6 text-primary-600" />
+								</div>
+								<h4 className="font-semibold text-gray-900 mb-1">{badge.label}</h4>
+								<p className="text-sm text-gray-500">{badge.description}</p>
+							</motion.div>
+						))}
+					</div>
+				</div>
+			</section>
+		)
+	}
+
+	return (
+		<section className={`py-6 ${bgColor}`} aria-hidden>
+			<div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+				<div className="flex flex-wrap items-center justify-center gap-6 sm:gap-8">
+					{badges.map((badge, index) => (
+						<motion.div
+							key={badge.label}
+							initial={{ opacity: 0, y: 10 }}
+							whileInView={{ opacity: 1, y: 0 }}
+							viewport={{ once: true }}
+							transition={{ delay: index * 0.1 }}
+							className="flex items-center gap-3"
+						>
+							<div className={`w-10 h-10 ${iconBg} rounded-xl flex items-center justify-center shadow-sm border border-gray-100`}>
+								<badge.icon className={`w-5 h-5 ${badge.color}`} />
+							</div>
+							<span className={`text-sm font-medium ${textColor}`}>{badge.label}</span>
+						</motion.div>
+					))}
+				</div>
+			</div>
+		</section>
+	)
 }

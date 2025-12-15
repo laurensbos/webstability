@@ -58,7 +58,7 @@ Een moderne oplossing waarbij je voor een vast bedrag per maand een professionel
 - Onderhoud en updates
 - Support
 
-Bij Webstability betaal je bijvoorbeeld €49/maand voor een complete website, met eenmalige opstartkosten vanaf €99.
+Bij Webstability betaal je bijvoorbeeld €96/maand voor een complete website, met eenmalige opstartkosten vanaf €120 (alle prijzen incl. BTW). Als ondernemer kun je de 21% BTW terugvragen bij je belastingaangifte.
 
 ### Verborgen kosten om rekening mee te houden
 
@@ -236,9 +236,9 @@ Met goede SEO word je gevonden door mensen die zoeken naar jouw diensten.
 De kosten variëren:
 - **DIY met Wix/Squarespace**: €15-€30/maand
 - **WordPress door freelancer**: €1.000-€3.000 eenmalig
-- **Website abonnement**: €49-€99/maand
+- **Website abonnement**: €96-€301/maand (incl. BTW)
 
-Bij Webstability krijg je een complete, professionele website voor €49/maand met eenmalige opstartkosten van €99. Ideaal voor ZZP'ers die een professionele uitstraling willen zonder gedoe.
+Bij Webstability krijg je een complete, professionele website voor €96/maand met eenmalige opstartkosten vanaf €120 (incl. BTW). Als ondernemer kun je de 21% BTW terugvragen. Ideaal voor ZZP'ers die een professionele uitstraling willen zonder gedoe.
 
 ### Tips voor ZZP-websites
 
@@ -1490,15 +1490,16 @@ Dit is lastiger, maar essentieel:
 
 **Situatie:** ZZP'er met website abonnement
 
-- Website kosten: €79/mnd × 12 = €948/jaar
+- Website kosten: €96/mnd × 12 = €1.152/jaar (incl. BTW)
+- Netto kosten na BTW-aftrek: €952/jaar
 - Gemiddelde klantwaarde: €500
 - Nieuwe klanten via website: 4/jaar
 
 **Berekening:**
 - Opbrengst: 4 × €500 = €2.000
-- ROI: (2.000 - 948) / 948 × 100% = **111%**
+- ROI: (2.000 - 952) / 952 × 100% = **110%**
 
-Al met 4 klanten per jaar is je website rendabel!
+Al met 4 klanten per jaar is je website rendabel! En als ondernemer krijg je de BTW terug.
 
 ### Track je resultaten
 

@@ -8,6 +8,7 @@ import {
   TrendingUp, 
   RefreshCw 
 } from 'lucide-react'
+import AutoScrollCarousel from './AutoScrollCarousel'
 
 const features = [
   {
@@ -53,15 +54,15 @@ export default function Features() {
   const isInView = useInView(ref, { once: true, margin: "-100px" })
 
   return (
-    <section id="features" className="py-24 lg:py-32 bg-white relative overflow-hidden">
+    <section id="features" className="py-16 lg:py-32 bg-white relative overflow-hidden">
       <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Section header */}
-        <div className="text-center max-w-3xl mx-auto mb-16 lg:mb-20">
+        <div className="text-center max-w-3xl mx-auto mb-8 lg:mb-20">
           <motion.span
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
-            className="inline-block text-primary-600 font-semibold text-sm tracking-wider uppercase mb-4"
+            className="inline-block text-primary-600 font-semibold text-sm tracking-wider uppercase mb-3 lg:mb-4"
           >
             Waarom Webstability
           </motion.span>
@@ -70,7 +71,7 @@ export default function Features() {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ delay: 0.1 }}
-            className="text-3xl sm:text-4xl lg:text-5xl font-bold text-gray-900 mb-6"
+            className="text-2xl sm:text-3xl lg:text-5xl font-bold text-gray-900 mb-4 lg:mb-6"
           >
             Alles wat je nodig hebt,{' '}
             <span className="text-primary-600">
@@ -82,30 +83,68 @@ export default function Features() {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ delay: 0.2 }}
-            className="text-gray-600 text-lg"
+            className="text-gray-600 text-base lg:text-lg"
           >
             Geen verborgen kosten, geen technisch gedoe. 
             Focus op je bedrijf terwijl wij zorgen voor je online aanwezigheid.
           </motion.p>
         </div>
 
-        {/* Features grid */}
-        <div ref={ref} className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8">
+        {/* Mobile: Horizontal scroll carousel with auto-scroll */}
+        <div className="lg:hidden">
+          <AutoScrollCarousel className="flex gap-4 pb-4 -mx-4 px-4 snap-x snap-mandatory">
+            {features.map((feature, index) => (
+              <motion.div
+                key={feature.title}
+                initial={{ opacity: 0, y: 30 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ delay: index * 0.1, duration: 0.5 }}
+                className="flex-shrink-0 w-[280px] snap-start bg-white border border-gray-100 rounded-xl p-4 shadow-sm"
+              >
+                {/* Icon + Title row */}
+                <div className="flex items-center gap-3 mb-2">
+                  <div className={`p-2 rounded-lg ${feature.color}`}>
+                    <feature.icon className="w-5 h-5" />
+                  </div>
+                  <h3 className="text-gray-900 font-semibold text-base">
+                    {feature.title}
+                  </h3>
+                </div>
+                
+                <p className="text-gray-600 text-sm leading-relaxed">
+                  {feature.description}
+                </p>
+              </motion.div>
+            ))}
+          </AutoScrollCarousel>
+          {/* Scroll indicator */}
+          <div className="flex justify-center gap-1.5 mt-3">
+            {features.map((_, i) => (
+              <div key={i} className="w-1.5 h-1.5 rounded-full bg-gray-300" />
+            ))}
+          </div>
+        </div>
+
+        {/* Desktop: Grid layout */}
+        <div ref={ref} className="hidden lg:grid lg:grid-cols-3 gap-8">
           {features.map((feature, index) => (
             <motion.div
               key={feature.title}
               initial={{ opacity: 0, y: 30 }}
               animate={isInView ? { opacity: 1, y: 0 } : {}}
               transition={{ delay: index * 0.1, duration: 0.5 }}
-              className="group relative bg-white border border-gray-100 rounded-2xl p-6 lg:p-8 hover:border-gray-200 hover:shadow-xl hover:shadow-gray-100 transition-all duration-300"
+              className="group relative bg-white border border-gray-100 rounded-2xl p-8 hover:border-gray-200 hover:shadow-xl hover:shadow-gray-100 transition-all duration-300"
             >
-              <div className={`inline-flex p-3 rounded-xl ${feature.color} mb-5`}>
-                <feature.icon className="w-6 h-6" />
+              {/* Icon + Title row */}
+              <div className="flex items-center gap-4 mb-4">
+                <div className={`inline-flex p-3 rounded-xl ${feature.color}`}>
+                  <feature.icon className="w-6 h-6" />
+                </div>
+                <h3 className="text-gray-900 font-semibold text-xl">
+                  {feature.title}
+                </h3>
               </div>
-              
-              <h3 className="text-gray-900 font-semibold text-xl mb-3">
-                {feature.title}
-              </h3>
               
               <p className="text-gray-600 leading-relaxed">
                 {feature.description}

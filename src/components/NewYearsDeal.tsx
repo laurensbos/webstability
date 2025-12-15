@@ -120,7 +120,7 @@ export default function NewYearsDeal() {
           {/* Deal */}
           <div className="mb-4">
             <div className="flex items-center gap-2 mb-1">
-              <span className="text-gray-400 line-through text-lg">€99,-</span>
+              <span className="text-gray-400 line-through text-lg">€120,-</span>
               <span className="bg-green-500 text-white text-xs font-bold px-2 py-0.5 rounded-full">
                 GRATIS
               </span>
@@ -165,7 +165,7 @@ export default function NewYearsDeal() {
 
           {/* Sub text */}
           <p className="text-center text-gray-400 text-xs mt-3">
-            Bespaar €99,- • Direct starten mogelijk
+            Bespaar €120,- • Direct starten mogelijk
           </p>
         </div>
 

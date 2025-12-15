@@ -1,51 +1,152 @@
-import { StrictMode } from 'react'
+import { StrictMode, lazy, Suspense } from 'react'
 import { createRoot } from 'react-dom/client'
 import './index.css'
 import App from './App'
-import { BrowserRouter, Routes, Route } from 'react-router-dom'
-import { OnboardingWizard } from './components/OnboardingWizard'
-import CaseStudies from './pages/CaseStudies'
-import Deal from './pages/Deal'
-import Kennisbank from './pages/Kennisbank'
-import Article from './pages/Article'
-import Contact from './pages/Contact'
-import StartProject from './pages/StartProject'
-import Dashboard from './pages/Dashboard'
-import OverOns from './pages/OverOns'
-import Privacy from './pages/Privacy'
-import Voorwaarden from './pages/Voorwaarden'
-import NotFound from './pages/NotFound'
-import Bedankt from './pages/Bedankt'
-import Webshop from './pages/Webshop'
-import KlantOnboarding from './pages/KlantOnboarding'
-import ProjectStatus from './pages/ProjectStatus'
-import BetalingSucces from './pages/BetalingSucces'
+import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
+import ScrollToTop from './components/ScrollToTop'
+import FloatingWhatsApp from './components/FloatingWhatsApp'
+import CookieConsent from './components/CookieConsent'
+import { AuthProvider } from './contexts/AuthContext'
+import ProtectedRoute from './components/ProtectedRoute'
+import { initSentry } from './lib/sentry'
+
+// Initialize Sentry error tracking
+initSentry()
+
+// Lazy load pagina's voor betere performance
+const OnboardingWizard = lazy(() => import('./components/OnboardingWizard').then(m => ({ default: m.OnboardingWizard })))
+const Portfolio = lazy(() => import('./pages/Portfolio'))
+const Deal = lazy(() => import('./pages/Deal'))
+const Kennisbank = lazy(() => import('./pages/Kennisbank'))
+const Article = lazy(() => import('./pages/Article'))
+const Contact = lazy(() => import('./pages/Contact'))
+const StartProject = lazy(() => import('./pages/StartProject'))
+const Dashboard = lazy(() => import('./pages/Dashboard'))
+const KlantOnboarding = lazy(() => import('./pages/KlantOnboarding'))
+const ProjectStatus = lazy(() => import('./pages/ProjectStatus'))
+const OverOns = lazy(() => import('./pages/OverOns'))
+const Privacy = lazy(() => import('./pages/Privacy'))
+const Voorwaarden = lazy(() => import('./pages/Voorwaarden'))
+const NotFound = lazy(() => import('./pages/NotFound'))
+const Bedankt = lazy(() => import('./pages/Bedankt'))
+const Webshop = lazy(() => import('./pages/Webshop'))
+const WebshopStarten = lazy(() => import('./pages/WebshopStarten'))
+const WebsiteStarten = lazy(() => import('./pages/WebsiteStarten'))
+const DroneStarten = lazy(() => import('./pages/DroneStarten'))
+const Websites = lazy(() => import('./pages/Websites'))
+const LogoMaken = lazy(() => import('./pages/LogoMaken'))
+const Luchtvideografie = lazy(() => import('./pages/Dronebeelden'))
+const StartService = lazy(() => import('./pages/StartService'))
+const BedanktService = lazy(() => import('./pages/BedanktService'))
+const ResetPassword = lazy(() => import('./pages/ResetPassword'))
+const DeveloperDashboard = lazy(() => import('./pages/DeveloperDashboard'))
+const Login = lazy(() => import('./pages/Login'))
+const MarketingDashboard = lazy(() => import('./pages/MarketingDashboard'))
+
+// Loading spinner component
+function PageLoader() {
+  return (
+    <div className="min-h-screen flex items-center justify-center bg-gray-50">
+      <div className="text-center">
+        <div className="w-8 h-8 border-3 border-primary-600 border-t-transparent rounded-full animate-spin mx-auto mb-4" />
+        <p className="text-gray-500 text-sm">Laden...</p>
+      </div>
+    </div>
+  )
+}
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
     <BrowserRouter>
-      <Routes>
-        <Route path="/" element={<App />} />
-        <Route path="/onboarding" element={<OnboardingWizard />} />
-        <Route path="/case-studies" element={<CaseStudies />} />
-        <Route path="/succesverhalen" element={<CaseStudies />} />
-        <Route path="/deal" element={<Deal />} />
-        <Route path="/kennisbank" element={<Kennisbank />} />
-        <Route path="/kennisbank/:slug" element={<Article />} />
-        <Route path="/contact" element={<Contact />} />
-        <Route path="/start" element={<StartProject />} />
-        <Route path="/bedankt" element={<Bedankt />} />
-        <Route path="/betaling-succes" element={<BetalingSucces />} />
-        <Route path="/dashboard" element={<Dashboard />} />
-        <Route path="/klant-onboarding" element={<KlantOnboarding />} />
-        <Route path="/project-status" element={<ProjectStatus />} />
-        <Route path="/over-ons" element={<OverOns />} />
-        <Route path="/privacy" element={<Privacy />} />
-        <Route path="/voorwaarden" element={<Voorwaarden />} />
-        <Route path="/webshop" element={<Webshop />} />
-        <Route path="/webshop-laten-maken" element={<Webshop />} />
-        <Route path="*" element={<NotFound />} />
-      </Routes>
+      <AuthProvider>
+        <ScrollToTop />
+        <Suspense fallback={<PageLoader />}>
+          <Routes>
+            <Route path="/" element={<App />} />
+            <Route path="/wizard" element={<OnboardingWizard />} />
+            <Route path="/portfolio" element={<Portfolio />} />
+            <Route path="/case-studies" element={<Navigate to="/portfolio" replace />} />
+            <Route path="/succesverhalen" element={<Navigate to="/portfolio" replace />} />
+            <Route path="/deal" element={<Deal />} />
+            <Route path="/kennisbank" element={<Kennisbank />} />
+            <Route path="/kennisbank/:slug" element={<Article />} />
+            <Route path="/contact" element={<Contact />} />
+            <Route path="/start" element={<StartProject />} />
+            <Route path="/bedankt" element={<Bedankt />} />
+            <Route path="/dash" element={<Dashboard />} />
+            
+            {/* Login route */}
+            <Route path="/login" element={<Login />} />
+            
+            {/* Onboarding routes - canonical path + redirects */}
+            <Route path="/onboarding/:projectId" element={<KlantOnboarding />} />
+            <Route path="/onboarding" element={<KlantOnboarding />} />
+            <Route path="/klant-onboarding/:projectId" element={<Navigate to="/onboarding/:projectId" replace />} />
+            <Route path="/klant-onboarding" element={<Navigate to="/onboarding" replace />} />
+            
+            {/* Project status routes - canonical path + redirects */}
+            <Route path="/status/:projectId" element={<ProjectStatus />} />
+            <Route path="/status" element={<ProjectStatus />} />
+            <Route path="/project-status/:projectId" element={<Navigate to="/status/:projectId" replace />} />
+            <Route path="/project-status" element={<Navigate to="/status" replace />} />
+            <Route path="/project/:projectId" element={<Navigate to="/status/:projectId" replace />} />
+            <Route path="/project" element={<Navigate to="/status" replace />} />
+            
+            <Route path="/over-ons" element={<OverOns />} />
+            <Route path="/privacy" element={<Privacy />} />
+            <Route path="/voorwaarden" element={<Voorwaarden />} />
+            <Route path="/webshop" element={<Webshop />} />
+            <Route path="/webshop-laten-maken" element={<Webshop />} />
+            <Route path="/webshop-starten" element={<WebshopStarten />} />
+            <Route path="/website-starten" element={<WebsiteStarten />} />
+            <Route path="/websites" element={<Websites />} />
+            <Route path="/website-laten-maken" element={<Websites />} />
+            <Route path="/logo-maken" element={<LogoMaken />} />
+            <Route path="/prijzen" element={<Navigate to="/#pricing" replace />} />
+            <Route path="/pricing" element={<Navigate to="/#pricing" replace />} />
+            <Route path="/logo" element={<LogoMaken />} />
+            <Route path="/logo-laten-maken" element={<LogoMaken />} />
+            <Route path="/luchtvideografie" element={<Luchtvideografie />} />
+            <Route path="/drone-starten" element={<DroneStarten />} />
+            <Route path="/luchtfoto" element={<Luchtvideografie />} />
+            <Route path="/dronebeelden" element={<Navigate to="/luchtvideografie" replace />} />
+            <Route path="/drone" element={<Navigate to="/luchtvideografie" replace />} />
+            
+            {/* Service request routes */}
+            <Route path="/start/:serviceType" element={<StartService />} />
+            <Route path="/bedankt-service" element={<BedanktService />} />
+            
+            {/* Password reset */}
+            <Route path="/reset-password" element={<ResetPassword />} />
+            
+            {/* Developer dashboard - protected */}
+            <Route 
+              path="/developer" 
+              element={
+                <ProtectedRoute requireRole="developer">
+                  <DeveloperDashboard />
+                </ProtectedRoute>
+              } 
+            />
+            
+            {/* Marketing CRM - protected for sales team */}
+            <Route 
+              path="/marketing" 
+              element={
+                <ProtectedRoute requireRole="marketing">
+                  <MarketingDashboard />
+                </ProtectedRoute>
+              } 
+            />
+            
+            <Route path="*" element={<NotFound />} />
+          </Routes>
+          {/* Global WhatsApp widget - visible on all pages */}
+          <FloatingWhatsApp />
+          {/* Cookie consent banner */}
+          <CookieConsent />
+        </Suspense>
+      </AuthProvider>
     </BrowserRouter>
   </StrictMode>,
 )

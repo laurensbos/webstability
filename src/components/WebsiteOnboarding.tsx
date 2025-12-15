@@ -1,0 +1,1428 @@
+import { useState } from 'react'
+import { motion, AnimatePresence } from 'framer-motion'
+import { useNavigate } from 'react-router-dom'
+import { 
+  Globe, 
+  Building2, 
+  Palette, 
+  FileText, 
+  Layout,
+  Target,
+  ChevronRight,
+  ChevronLeft,
+  Check,
+  X,
+  Loader2,
+  Sparkles,
+  Clock,
+  Star,
+  Image,
+  Users,
+  Phone,
+  Mail,
+  MapPin,
+  Calendar,
+  MessageSquare,
+  ExternalLink,
+  Zap,
+  BarChart3,
+  Search,
+  Smartphone,
+  Upload,
+  Link,
+  CheckCircle
+} from 'lucide-react'
+
+// Types
+interface WebsiteOnboardingData {
+  // Stap 1: Bedrijfsgegevens
+  companyName: string
+  contactName: string
+  email: string
+  phone: string
+  address: string
+  postalCode: string
+  city: string
+  kvkNumber: string
+  
+  // Stap 2: Website Doel & Type
+  websiteGoal: string // 'leads' | 'info' | 'portfolio' | 'booking' | 'community'
+  targetAudience: string
+  uniqueSellingPoints: string
+  competitors: string[]
+  
+  // Stap 3: Structuur & Pagina's
+  pages: PageConfig[]
+  hasExistingWebsite: boolean
+  existingWebsiteUrl: string
+  
+  // Stap 4: Design & Branding
+  hasLogo: boolean
+  logoFile: File | null
+  logoUrl: string
+  logoDescription: string
+  brandColors: string
+  designStyle: string // 'modern' | 'classic' | 'minimalist' | 'bold' | 'playful'
+  inspirationUrls: string
+  fontPreference: string
+  
+  // Stap 5: Content & Media
+  hasContent: boolean
+  contentNotes: string
+  hasPhotos: boolean
+  photoFiles: File[]
+  photoUrl: string // WeTransfer/Google Drive link
+  photoNotes: string
+  needsPhotography: boolean
+  needsCopywriting: boolean
+  
+  // Stap 6: Functionaliteiten & Extra
+  features: string[]
+  wantsContactForm: boolean
+  contactFormFields: string[]
+  wantsSocialMedia: boolean
+  socialMediaLinks: string
+  wantsAnalytics: boolean
+  wantsSEO: boolean
+  additionalNotes: string
+  
+  // Pakket info
+  selectedPackage: 'starter' | 'professional' | 'business'
+  agreedToTerms: boolean
+}
+
+interface PageConfig {
+  name: string
+  description: string
+  sections: string[]
+}
+
+const INITIAL_DATA: WebsiteOnboardingData = {
+  companyName: '',
+  contactName: '',
+  email: '',
+  phone: '',
+  address: '',
+  postalCode: '',
+  city: '',
+  kvkNumber: '',
+  
+  websiteGoal: '',
+  targetAudience: '',
+  uniqueSellingPoints: '',
+  competitors: [],
+  
+  pages: [
+    { name: 'Home', description: '', sections: ['hero', 'about', 'services', 'cta'] },
+    { name: 'Over ons', description: '', sections: ['story', 'team', 'values'] },
+    { name: 'Contact', description: '', sections: ['form', 'map', 'info'] },
+  ],
+  hasExistingWebsite: false,
+  existingWebsiteUrl: '',
+  
+  hasLogo: false,
+  logoFile: null,
+  logoUrl: '',
+  logoDescription: '',
+  brandColors: '',
+  designStyle: 'modern',
+  inspirationUrls: '',
+  fontPreference: '',
+  
+  hasContent: false,
+  contentNotes: '',
+  hasPhotos: false,
+  photoFiles: [],
+  photoUrl: '',
+  photoNotes: '',
+  needsPhotography: false,
+  needsCopywriting: false,
+  
+  features: [],
+  wantsContactForm: true,
+  contactFormFields: ['naam', 'email', 'bericht'],
+  wantsSocialMedia: true,
+  socialMediaLinks: '',
+  wantsAnalytics: true,
+  wantsSEO: true,
+  additionalNotes: '',
+  
+  selectedPackage: 'professional',
+  agreedToTerms: false
+}
+
+const STEPS = [
+  { id: 1, title: 'Bedrijfsgegevens', icon: Building2, color: 'from-blue-500 to-primary-600' },
+  { id: 2, title: 'Doel & Doelgroep', icon: Target, color: 'from-blue-500 to-primary-600' },
+  { id: 3, title: 'Pagina\'s', icon: Layout, color: 'from-blue-500 to-primary-600' },
+  { id: 4, title: 'Design & Branding', icon: Palette, color: 'from-purple-500 to-violet-600' },
+  { id: 5, title: 'Content & Media', icon: Image, color: 'from-amber-500 to-orange-600' },
+  { id: 6, title: 'Extra & Bevestigen', icon: Sparkles, color: 'from-cyan-500 to-teal-600' },
+]
+
+const WEBSITE_GOALS = [
+  { id: 'leads', name: 'Leads genereren', description: 'Bezoekers omzetten naar klanten', icon: Target },
+  { id: 'info', name: 'Informeren', description: 'Bedrijfsinformatie delen', icon: FileText },
+  { id: 'portfolio', name: 'Portfolio tonen', description: 'Werk en projecten presenteren', icon: Image },
+  { id: 'booking', name: 'Afspraken maken', description: 'Online reserveringen', icon: Calendar },
+  { id: 'brand', name: 'Merk bouwen', description: 'Professionaliteit uitstralen', icon: Star },
+]
+
+const DESIGN_STYLES = [
+  { id: 'modern', name: 'Modern & Minimalistisch', description: 'Strak, veel witruimte, clean', color: 'bg-gradient-to-br from-gray-100 to-gray-200' },
+  { id: 'bold', name: 'Bold & Opvallend', description: 'Felle kleuren, grote typografie', color: 'bg-gradient-to-br from-purple-500 to-pink-500' },
+  { id: 'classic', name: 'Klassiek & Professioneel', description: 'Tijdloos, betrouwbaar', color: 'bg-gradient-to-br from-slate-600 to-slate-800' },
+  { id: 'playful', name: 'Speels & Creatief', description: 'Illustraties, unieke vormen', color: 'bg-gradient-to-br from-yellow-400 to-orange-500' },
+  { id: 'luxury', name: 'Luxe & Premium', description: 'Elegant, donkere tinten', color: 'bg-gradient-to-br from-amber-700 to-amber-900' },
+]
+
+const DEFAULT_PAGES = [
+  { name: 'Home', description: 'De hoofdpagina met eerste indruk', icon: Globe },
+  { name: 'Over ons', description: 'Verhaal achter het bedrijf', icon: Users },
+  { name: 'Diensten', description: 'Wat je aanbiedt', icon: Zap },
+  { name: 'Portfolio', description: 'Voorbeelden van je werk', icon: Image },
+  { name: 'Blog', description: 'Nieuws en artikelen', icon: FileText },
+  { name: 'Contact', description: 'Contactgegevens en formulier', icon: Phone },
+  { name: 'Prijzen', description: 'Tarieven en pakketten', icon: BarChart3 },
+  { name: 'FAQ', description: 'Veelgestelde vragen', icon: MessageSquare },
+  { name: 'Team', description: 'Je teamleden', icon: Users },
+  { name: 'Referenties', description: 'Klantbeoordelingen', icon: Star },
+]
+
+const FEATURES = [
+  { id: 'contactform', name: 'Contactformulier', description: 'Bezoekers kunnen je bereiken', icon: Mail },
+  { id: 'analytics', name: 'Google Analytics', description: 'Bezoekersstatistieken', icon: BarChart3 },
+  { id: 'seo', name: 'SEO Optimalisatie', description: 'Beter vindbaar in Google', icon: Search },
+  { id: 'social', name: 'Social Media Links', description: 'Koppelingen naar je socials', icon: ExternalLink },
+  { id: 'maps', name: 'Google Maps', description: 'Locatie op de kaart', icon: MapPin },
+  { id: 'whatsapp', name: 'WhatsApp Button', description: 'Direct contact via WhatsApp', icon: MessageSquare },
+  { id: 'booking', name: 'Afspraak Planner', description: 'Online afspraken maken', icon: Calendar },
+  { id: 'newsletter', name: 'Nieuwsbrief', description: 'E-mail inschrijvingen', icon: Mail },
+  { id: 'mobile', name: 'Mobiel Geoptimaliseerd', description: 'Perfect op alle apparaten', icon: Smartphone },
+  { id: 'ssl', name: 'SSL Certificaat', description: 'Veilige verbinding (https)', icon: Check },
+]
+
+// Package pricing
+const PACKAGES = {
+  starter: { name: 'Starter', price: 96, priceExcl: 79, setupFee: 120, setupFeeExcl: 99 },
+  professional: { name: 'Professioneel', price: 180, priceExcl: 149, setupFee: 180, setupFeeExcl: 149 },
+  business: { name: 'Business', price: 301, priceExcl: 249, setupFee: 241, setupFeeExcl: 199 },
+}
+
+interface WebsiteOnboardingProps {
+  onComplete?: (data: WebsiteOnboardingData, projectId: string) => void
+  onClose?: () => void
+  isStandalone?: boolean
+  initialPackage?: 'starter' | 'professional' | 'business'
+}
+
+export default function WebsiteOnboarding({ 
+  onComplete, 
+  onClose, 
+  isStandalone = false,
+  initialPackage = 'professional'
+}: WebsiteOnboardingProps) {
+  const navigate = useNavigate()
+  const [currentStep, setCurrentStep] = useState(1)
+  const [data, setData] = useState<WebsiteOnboardingData>({
+    ...INITIAL_DATA,
+    selectedPackage: initialPackage
+  })
+  const [errors, setErrors] = useState<Record<string, string>>({})
+  const [submitting, setSubmitting] = useState(false)
+  const [newCompetitor, setNewCompetitor] = useState('')
+
+  const updateData = (updates: Partial<WebsiteOnboardingData>) => {
+    setData(prev => ({ ...prev, ...updates }))
+    // Clear errors for updated fields
+    const updatedKeys = Object.keys(updates)
+    setErrors(prev => {
+      const newErrors = { ...prev }
+      updatedKeys.forEach(key => delete newErrors[key])
+      return newErrors
+    })
+  }
+
+  const validateStep = (): boolean => {
+    const newErrors: Record<string, string> = {}
+
+    switch (currentStep) {
+      case 1:
+        if (!data.companyName.trim()) newErrors.companyName = 'Bedrijfsnaam is verplicht'
+        if (!data.contactName.trim()) newErrors.contactName = 'Contactpersoon is verplicht'
+        if (!data.email.trim()) newErrors.email = 'E-mail is verplicht'
+        else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(data.email)) newErrors.email = 'Ongeldig e-mailadres'
+        if (!data.phone.trim()) newErrors.phone = 'Telefoonnummer is verplicht'
+        break
+      case 2:
+        if (!data.websiteGoal) newErrors.websiteGoal = 'Kies een doel voor je website'
+        if (!data.targetAudience.trim()) newErrors.targetAudience = 'Beschrijf je doelgroep'
+        break
+      case 3:
+        if (data.pages.length === 0) newErrors.pages = 'Selecteer minimaal 1 pagina'
+        break
+      case 4:
+        if (!data.designStyle) newErrors.designStyle = 'Kies een design stijl'
+        break
+      case 6:
+        if (!data.agreedToTerms) newErrors.agreedToTerms = 'Je moet akkoord gaan met de voorwaarden'
+        break
+    }
+
+    setErrors(newErrors)
+    return Object.keys(newErrors).length === 0
+  }
+
+  const nextStep = () => {
+    if (validateStep() && currentStep < STEPS.length) {
+      setCurrentStep(prev => prev + 1)
+    }
+  }
+
+  const prevStep = () => {
+    if (currentStep > 1) {
+      setCurrentStep(prev => prev - 1)
+    }
+  }
+
+  const handleSubmit = async () => {
+    if (!validateStep()) return
+    
+    setSubmitting(true)
+    
+    try {
+      // Generate project ID
+      const newProjectId = `WS-${Date.now().toString(36).toUpperCase()}`
+      
+      // Upload logo if provided
+      let logoUploadUrl = data.logoUrl
+      if (data.logoFile) {
+        const formData = new FormData()
+        formData.append('file', data.logoFile)
+        formData.append('projectId', newProjectId)
+        formData.append('type', 'logo')
+        
+        try {
+          const uploadRes = await fetch('/api/upload', {
+            method: 'POST',
+            body: formData
+          })
+          if (uploadRes.ok) {
+            const uploadData = await uploadRes.json()
+            logoUploadUrl = uploadData.url || `Bestand geüpload: ${data.logoFile.name}`
+          }
+        } catch (e) {
+          // Upload failed, use description instead
+          logoUploadUrl = `Logo bestand: ${data.logoFile.name} (upload later via developer link)`
+        }
+      }
+
+      // Upload photos if provided
+      let photoUploadUrls: string[] = []
+      if (data.photoFiles.length > 0) {
+        for (const file of data.photoFiles) {
+          const formData = new FormData()
+          formData.append('file', file)
+          formData.append('projectId', newProjectId)
+          formData.append('type', 'photo')
+          
+          try {
+            const uploadRes = await fetch('/api/upload', {
+              method: 'POST',
+              body: formData
+            })
+            if (uploadRes.ok) {
+              const uploadData = await uploadRes.json()
+              photoUploadUrls.push(uploadData.url || file.name)
+            }
+          } catch (e) {
+            photoUploadUrls.push(`${file.name} (upload later via developer link)`)
+          }
+        }
+      }
+
+      // Prepare complete project data
+      const completeData = {
+        ...data,
+        logoUrl: logoUploadUrl,
+        photoUrls: photoUploadUrls.length > 0 ? photoUploadUrls : (data.photoUrl ? [data.photoUrl] : [])
+      }
+      
+      // Calculate pricing
+      const selectedPkg = PACKAGES[data.selectedPackage]
+      const monthlyPrice = selectedPkg.price
+      const setupFee = selectedPkg.setupFee
+      const totalFirstPayment = monthlyPrice + setupFee
+      
+      // Try to save to API
+      const response = await fetch('/api/create-project', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          projectId: newProjectId,
+          packageType: 'website',
+          packageTier: data.selectedPackage,
+          onboardingData: completeData,
+          status: 'onboarding',
+          pricing: {
+            monthly: monthlyPrice,
+            setup: setupFee,
+            total: totalFirstPayment
+          },
+          createdAt: new Date().toISOString()
+        })
+      })
+
+      // Generate developer upload links
+      const devUploadLinks = {
+        logo: `${window.location.origin}/developer/upload/${newProjectId}/logo`,
+        photos: `${window.location.origin}/developer/upload/${newProjectId}/photos`,
+        files: `${window.location.origin}/developer/upload/${newProjectId}/files`
+      }
+
+      // Always save to localStorage as backup
+      const projectData = {
+        projectId: newProjectId,
+        businessName: data.companyName,
+        package: 'website',
+        packageTier: data.selectedPackage,
+        phase: 'onboarding',
+        client: {
+          name: data.contactName,
+          email: data.email,
+          phone: data.phone,
+          company: data.companyName
+        },
+        onboardingData: completeData,
+        devUploadLinks,
+        pricing: {
+          monthly: monthlyPrice,
+          setup: setupFee,
+          total: totalFirstPayment
+        },
+        createdAt: new Date().toISOString()
+      }
+
+      const existingProjects = JSON.parse(localStorage.getItem('webstability_dev_projects') || '[]')
+      existingProjects.push(projectData)
+      localStorage.setItem('webstability_dev_projects', JSON.stringify(existingProjects))
+
+      // Send notification email to developer
+      try {
+        await fetch('/api/notifications/new-project', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            projectId: newProjectId,
+            clientName: data.contactName,
+            clientEmail: data.email,
+            clientPhone: data.phone,
+            companyName: data.companyName,
+            packageType: 'website',
+            packageTier: data.selectedPackage,
+            pricing: {
+              monthly: monthlyPrice,
+              setup: setupFee
+            },
+            devUploadLinks,
+            summary: {
+              goal: data.websiteGoal,
+              pages: data.pages.map(p => p.name).join(', '),
+              designStyle: data.designStyle,
+              hasLogo: data.hasLogo,
+              hasContent: data.hasContent,
+              hasPhotos: data.hasPhotos,
+              needsCopywriting: data.needsCopywriting,
+              needsPhotography: data.needsPhotography
+            }
+          })
+        })
+      } catch (e) {
+        console.log('Notification email failed, project still created')
+      }
+
+      // Send confirmation email to client
+      try {
+        await fetch('/api/notifications/project-confirmation', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            to: data.email,
+            clientName: data.contactName,
+            companyName: data.companyName,
+            projectId: newProjectId,
+            packageName: selectedPkg.name,
+            monthlyPrice,
+            setupFee,
+            uploadLinks: devUploadLinks
+          })
+        })
+      } catch (e) {
+        console.log('Confirmation email failed')
+      }
+
+      if (response.ok || true) { // Continue even if API fails
+        if (onComplete) {
+          onComplete(completeData, newProjectId)
+        } else if (isStandalone) {
+          navigate(`/status/${newProjectId}`)
+        }
+      }
+    } catch (error) {
+      console.error('Submit error:', error)
+      // Fallback - create project ID anyway
+      const fallbackProjectId = `WS-${Date.now().toString(36).toUpperCase()}`
+      if (onComplete) {
+        onComplete(data, fallbackProjectId)
+      } else if (isStandalone) {
+        navigate(`/status/${fallbackProjectId}`)
+      }
+    } finally {
+      setSubmitting(false)
+    }
+  }
+
+  const addPage = (pageName: string) => {
+    if (!data.pages.find(p => p.name === pageName)) {
+      updateData({ 
+        pages: [...data.pages, { name: pageName, description: '', sections: [] }] 
+      })
+    }
+  }
+
+  const removePage = (pageName: string) => {
+    updateData({ 
+      pages: data.pages.filter(p => p.name !== pageName) 
+    })
+  }
+
+  const toggleFeature = (featureId: string) => {
+    if (data.features.includes(featureId)) {
+      updateData({ features: data.features.filter(f => f !== featureId) })
+    } else {
+      updateData({ features: [...data.features, featureId] })
+    }
+  }
+
+  const addCompetitor = () => {
+    if (newCompetitor.trim() && !data.competitors.includes(newCompetitor.trim())) {
+      updateData({ competitors: [...data.competitors, newCompetitor.trim()] })
+      setNewCompetitor('')
+    }
+  }
+
+  const progress = (currentStep / STEPS.length) * 100
+  const selectedPackage = PACKAGES[data.selectedPackage]
+
+  return (
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-2 sm:p-4 overflow-y-auto"
+    >
+      <motion.div
+        initial={{ scale: 0.95, opacity: 0, y: 20 }}
+        animate={{ scale: 1, opacity: 1, y: 0 }}
+        exit={{ scale: 0.95, opacity: 0, y: 20 }}
+        className="bg-white rounded-2xl w-full max-w-3xl max-h-[95vh] overflow-hidden shadow-2xl flex flex-col"
+      >
+        {/* Header */}
+        <div className="bg-gradient-to-r from-primary-600 to-blue-600 p-4 sm:p-6 text-white relative overflow-hidden">
+          <div className="absolute inset-0 opacity-10">
+            <div className="absolute top-0 right-0 w-64 h-64 rounded-full bg-white transform translate-x-1/2 -translate-y-1/2" />
+            <div className="absolute bottom-0 left-0 w-48 h-48 rounded-full bg-white transform -translate-x-1/2 translate-y-1/2" />
+          </div>
+          <div className="relative z-10">
+            <div className="flex items-center justify-between mb-4">
+              <div className="flex items-center gap-3">
+                <motion.div 
+                  whileHover={{ scale: 1.05 }}
+                  className="w-12 h-12 bg-white/20 backdrop-blur rounded-xl flex items-center justify-center"
+                >
+                  <Globe className="w-6 h-6" />
+                </motion.div>
+                <div>
+                  <h2 className="text-xl font-bold">Website Aanvraag</h2>
+                  <p className="text-white/80 text-sm">Start jouw professionele website</p>
+                </div>
+              </div>
+              <motion.button 
+                whileHover={{ scale: 1.1 }}
+                whileTap={{ scale: 0.95 }}
+                onClick={onClose ? onClose : () => navigate(-1)} 
+                className="p-2 hover:bg-white/10 rounded-lg transition"
+              >
+                <X className="w-5 h-5" />
+              </motion.button>
+            </div>
+
+            {/* Progress bar */}
+            <div className="bg-white/20 rounded-full h-2 overflow-hidden">
+              <motion.div
+                initial={{ width: 0 }}
+                animate={{ width: `${progress}%` }}
+                className="h-full bg-white rounded-full"
+              />
+            </div>
+
+            {/* Step indicators */}
+            <div className="flex justify-between mt-4 overflow-x-auto">
+              {STEPS.map(step => {
+                const isActive = step.id === currentStep
+                const isComplete = step.id < currentStep
+                return (
+                  <motion.div
+                    key={step.id}
+                    whileHover={{ scale: 1.05 }}
+                    className={`flex flex-col items-center min-w-[60px] cursor-pointer ${
+                      isActive ? 'text-white' : isComplete ? 'text-white/80' : 'text-white/40'
+                    }`}
+                  >
+                    <div className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold transition-all ${
+                      isActive ? 'bg-white text-primary-600 shadow-lg' : isComplete ? 'bg-white/30' : 'bg-white/10'
+                    }`}>
+                      {isComplete ? <Check className="w-4 h-4" /> : step.id}
+                    </div>
+                    <span className="text-xs mt-1 hidden sm:block">{step.title}</span>
+                  </motion.div>
+                )
+              })}
+            </div>
+          </div>
+        </div>
+
+        {/* Content */}
+        <div className="flex-1 overflow-y-auto p-4 sm:p-6">
+          <AnimatePresence mode="wait">
+            <motion.div
+              key={currentStep}
+              initial={{ opacity: 0, x: 20 }}
+              animate={{ opacity: 1, x: 0 }}
+              exit={{ opacity: 0, x: -20 }}
+              transition={{ duration: 0.2 }}
+            >
+              {/* Step 1: Bedrijfsgegevens */}
+              {currentStep === 1 && (
+                <div className="space-y-6">
+                  <div>
+                    <h3 className="text-lg font-bold text-gray-900 mb-1">Bedrijfsgegevens</h3>
+                    <p className="text-gray-500 text-sm">Vertel ons over je bedrijf</p>
+                  </div>
+
+                  <div className="grid sm:grid-cols-2 gap-4">
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">
+                        Bedrijfsnaam *
+                      </label>
+                      <input
+                        type="text"
+                        value={data.companyName}
+                        onChange={e => updateData({ companyName: e.target.value })}
+                        className={`w-full px-4 py-2.5 rounded-lg border ${errors.companyName ? 'border-red-500' : 'border-gray-200'} focus:ring-2 focus:ring-primary-500`}
+                        placeholder="Bijv. Jansen & Zn"
+                      />
+                      {errors.companyName && <p className="text-red-500 text-xs mt-1">{errors.companyName}</p>}
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">
+                        Contactpersoon *
+                      </label>
+                      <input
+                        type="text"
+                        value={data.contactName}
+                        onChange={e => updateData({ contactName: e.target.value })}
+                        className={`w-full px-4 py-2.5 rounded-lg border ${errors.contactName ? 'border-red-500' : 'border-gray-200'} focus:ring-2 focus:ring-primary-500`}
+                        placeholder="Jan Jansen"
+                      />
+                      {errors.contactName && <p className="text-red-500 text-xs mt-1">{errors.contactName}</p>}
+                    </div>
+                  </div>
+
+                  <div className="grid sm:grid-cols-2 gap-4">
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">
+                        E-mailadres *
+                      </label>
+                      <input
+                        type="email"
+                        value={data.email}
+                        onChange={e => updateData({ email: e.target.value })}
+                        className={`w-full px-4 py-2.5 rounded-lg border ${errors.email ? 'border-red-500' : 'border-gray-200'} focus:ring-2 focus:ring-primary-500`}
+                        placeholder="info@uwbedrijf.nl"
+                      />
+                      {errors.email && <p className="text-red-500 text-xs mt-1">{errors.email}</p>}
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">
+                        Telefoonnummer *
+                      </label>
+                      <input
+                        type="tel"
+                        value={data.phone}
+                        onChange={e => updateData({ phone: e.target.value })}
+                        className={`w-full px-4 py-2.5 rounded-lg border ${errors.phone ? 'border-red-500' : 'border-gray-200'} focus:ring-2 focus:ring-primary-500`}
+                        placeholder="06-12345678"
+                      />
+                      {errors.phone && <p className="text-red-500 text-xs mt-1">{errors.phone}</p>}
+                    </div>
+                  </div>
+
+                  <div className="grid sm:grid-cols-3 gap-4">
+                    <div className="sm:col-span-2">
+                      <label className="block text-sm font-medium text-gray-700 mb-1">
+                        Adres
+                      </label>
+                      <input
+                        type="text"
+                        value={data.address}
+                        onChange={e => updateData({ address: e.target.value })}
+                        className="w-full px-4 py-2.5 rounded-lg border border-gray-200 focus:ring-2 focus:ring-primary-500"
+                        placeholder="Straatnaam 123"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">
+                        Postcode
+                      </label>
+                      <input
+                        type="text"
+                        value={data.postalCode}
+                        onChange={e => updateData({ postalCode: e.target.value })}
+                        className="w-full px-4 py-2.5 rounded-lg border border-gray-200 focus:ring-2 focus:ring-primary-500"
+                        placeholder="1234 AB"
+                      />
+                    </div>
+                  </div>
+
+                  <div className="grid sm:grid-cols-2 gap-4">
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">
+                        Plaats
+                      </label>
+                      <input
+                        type="text"
+                        value={data.city}
+                        onChange={e => updateData({ city: e.target.value })}
+                        className="w-full px-4 py-2.5 rounded-lg border border-gray-200 focus:ring-2 focus:ring-primary-500"
+                        placeholder="Amsterdam"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">
+                        KvK-nummer
+                      </label>
+                      <input
+                        type="text"
+                        value={data.kvkNumber}
+                        onChange={e => updateData({ kvkNumber: e.target.value })}
+                        className="w-full px-4 py-2.5 rounded-lg border border-gray-200 focus:ring-2 focus:ring-primary-500"
+                        placeholder="12345678"
+                      />
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {/* Step 2: Doel & Doelgroep */}
+              {currentStep === 2 && (
+                <div className="space-y-6">
+                  <div>
+                    <h3 className="text-lg font-bold text-gray-900 mb-1">Doel & Doelgroep</h3>
+                    <p className="text-gray-500 text-sm">Wat wil je bereiken met je website?</p>
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-3">
+                      Hoofddoel van de website *
+                    </label>
+                    <div className="grid sm:grid-cols-2 gap-3">
+                      {WEBSITE_GOALS.map(goal => {
+                        const isSelected = data.websiteGoal === goal.id
+                        const Icon = goal.icon
+                        return (
+                          <motion.button
+                            key={goal.id}
+                            type="button"
+                            whileHover={{ scale: 1.02 }}
+                            whileTap={{ scale: 0.98 }}
+                            onClick={() => updateData({ websiteGoal: goal.id })}
+                            className={`p-4 rounded-xl border-2 text-left transition-all ${
+                              isSelected 
+                                ? 'border-primary-500 bg-primary-50' 
+                                : 'border-gray-200 hover:border-primary-300'
+                            }`}
+                          >
+                            <div className="flex items-start gap-3">
+                              <div className={`w-10 h-10 rounded-lg flex items-center justify-center ${
+                                isSelected ? 'bg-primary-100 text-primary-600' : 'bg-gray-100 text-gray-500'
+                              }`}>
+                                <Icon className="w-5 h-5" />
+                              </div>
+                              <div>
+                                <p className={`font-medium ${isSelected ? 'text-primary-700' : 'text-gray-900'}`}>
+                                  {goal.name}
+                                </p>
+                                <p className="text-xs text-gray-500">{goal.description}</p>
+                              </div>
+                            </div>
+                          </motion.button>
+                        )
+                      })}
+                    </div>
+                    {errors.websiteGoal && <p className="text-red-500 text-xs mt-2">{errors.websiteGoal}</p>}
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                      Beschrijf je doelgroep *
+                    </label>
+                    <textarea
+                      value={data.targetAudience}
+                      onChange={e => updateData({ targetAudience: e.target.value })}
+                      rows={3}
+                      className={`w-full px-4 py-2.5 rounded-lg border ${errors.targetAudience ? 'border-red-500' : 'border-gray-200'} focus:ring-2 focus:ring-primary-500`}
+                      placeholder="Bijv. Ondernemers tussen 30-50 jaar in de regio Amsterdam die op zoek zijn naar..."
+                    />
+                    {errors.targetAudience && <p className="text-red-500 text-xs mt-1">{errors.targetAudience}</p>}
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                      Wat maakt je uniek? (USPs)
+                    </label>
+                    <textarea
+                      value={data.uniqueSellingPoints}
+                      onChange={e => updateData({ uniqueSellingPoints: e.target.value })}
+                      rows={3}
+                      className="w-full px-4 py-2.5 rounded-lg border border-gray-200 focus:ring-2 focus:ring-primary-500"
+                      placeholder="Bijv. 20 jaar ervaring, persoonlijke aanpak, snelle levering, gratis advies..."
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                      Concurrenten / Inspiratie websites
+                    </label>
+                    <div className="flex gap-2 mb-2">
+                      <input
+                        type="text"
+                        value={newCompetitor}
+                        onChange={e => setNewCompetitor(e.target.value)}
+                        onKeyPress={e => e.key === 'Enter' && (e.preventDefault(), addCompetitor())}
+                        className="flex-1 px-4 py-2.5 rounded-lg border border-gray-200 focus:ring-2 focus:ring-primary-500"
+                        placeholder="www.voorbeeld.nl"
+                      />
+                      <button
+                        type="button"
+                        onClick={addCompetitor}
+                        className="px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700"
+                      >
+                        Toevoegen
+                      </button>
+                    </div>
+                    {data.competitors.length > 0 && (
+                      <div className="flex flex-wrap gap-2">
+                        {data.competitors.map((comp, idx) => (
+                          <span key={idx} className="inline-flex items-center gap-1 px-3 py-1 bg-gray-100 rounded-full text-sm">
+                            {comp}
+                            <button
+                              type="button"
+                              onClick={() => updateData({ competitors: data.competitors.filter((_, i) => i !== idx) })}
+                              className="text-gray-400 hover:text-red-500"
+                            >
+                              <X className="w-3 h-3" />
+                            </button>
+                          </span>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                </div>
+              )}
+
+              {/* Step 3: Pagina's */}
+              {currentStep === 3 && (
+                <div className="space-y-6">
+                  <div>
+                    <h3 className="text-lg font-bold text-gray-900 mb-1">Pagina's & Structuur</h3>
+                    <p className="text-gray-500 text-sm">Welke pagina's wil je op je website?</p>
+                  </div>
+
+                  <div className="flex flex-wrap items-center gap-2 mb-2">
+                    <span className="text-sm text-gray-600">Geselecteerd:</span>
+                    <span className={`px-3 py-1 rounded-full text-sm font-medium ${
+                      data.pages.length > 0 ? 'bg-primary-100 text-primary-700' : 'bg-gray-100 text-gray-500'
+                    }`}>
+                      {data.pages.length} pagina's
+                    </span>
+                  </div>
+
+                  <div className="grid sm:grid-cols-2 gap-3">
+                    {DEFAULT_PAGES.map(page => {
+                      const isSelected = data.pages.some(p => p.name === page.name)
+                      const Icon = page.icon
+                      return (
+                        <motion.button
+                          key={page.name}
+                          type="button"
+                          whileHover={{ scale: 1.02 }}
+                          whileTap={{ scale: 0.98 }}
+                          onClick={() => isSelected ? removePage(page.name) : addPage(page.name)}
+                          className={`p-4 rounded-xl border-2 text-left transition-all ${
+                            isSelected 
+                              ? 'border-primary-500 bg-primary-50' 
+                              : 'border-gray-200 hover:border-primary-300'
+                          }`}
+                        >
+                          <div className="flex items-center gap-3">
+                            <div className={`w-10 h-10 rounded-lg flex items-center justify-center ${
+                              isSelected ? 'bg-primary-100 text-primary-600' : 'bg-gray-100 text-gray-500'
+                            }`}>
+                              <Icon className="w-5 h-5" />
+                            </div>
+                            <div className="flex-1">
+                              <p className={`font-medium ${isSelected ? 'text-primary-700' : 'text-gray-900'}`}>
+                                {page.name}
+                              </p>
+                              <p className="text-xs text-gray-500">{page.description}</p>
+                            </div>
+                            {isSelected && (
+                              <Check className="w-5 h-5 text-primary-600" />
+                            )}
+                          </div>
+                        </motion.button>
+                      )
+                    })}
+                  </div>
+                  {errors.pages && <p className="text-red-500 text-xs mt-2">{errors.pages}</p>}
+
+                  <div className="pt-4 border-t">
+                    <label className="flex items-center gap-3 cursor-pointer">
+                      <input
+                        type="checkbox"
+                        checked={data.hasExistingWebsite}
+                        onChange={e => updateData({ hasExistingWebsite: e.target.checked })}
+                        className="w-5 h-5 rounded border-gray-300 text-primary-600 focus:ring-primary-500"
+                      />
+                      <span className="text-gray-700">Ik heb al een bestaande website</span>
+                    </label>
+                    {data.hasExistingWebsite && (
+                      <input
+                        type="text"
+                        value={data.existingWebsiteUrl}
+                        onChange={e => updateData({ existingWebsiteUrl: e.target.value })}
+                        className="mt-3 w-full px-4 py-2.5 rounded-lg border border-gray-200 focus:ring-2 focus:ring-primary-500"
+                        placeholder="www.jouwwebsite.nl"
+                      />
+                    )}
+                  </div>
+                </div>
+              )}
+
+              {/* Step 4: Design & Branding */}
+              {currentStep === 4 && (
+                <div className="space-y-6">
+                  <div>
+                    <h3 className="text-lg font-bold text-gray-900 mb-1">Design & Branding</h3>
+                    <p className="text-gray-500 text-sm">Hoe moet je website eruit zien?</p>
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-3">
+                      Design stijl *
+                    </label>
+                    <div className="grid sm:grid-cols-2 gap-3">
+                      {DESIGN_STYLES.map(style => {
+                        const isSelected = data.designStyle === style.id
+                        return (
+                          <motion.button
+                            key={style.id}
+                            type="button"
+                            whileHover={{ scale: 1.02 }}
+                            whileTap={{ scale: 0.98 }}
+                            onClick={() => updateData({ designStyle: style.id })}
+                            className={`p-4 rounded-xl border-2 text-left transition-all ${
+                              isSelected 
+                                ? 'border-primary-500 bg-primary-50' 
+                                : 'border-gray-200 hover:border-primary-300'
+                            }`}
+                          >
+                            <div className="flex items-center gap-3">
+                              <div className={`w-12 h-12 rounded-lg ${style.color}`} />
+                              <div>
+                                <p className={`font-medium ${isSelected ? 'text-primary-700' : 'text-gray-900'}`}>
+                                  {style.name}
+                                </p>
+                                <p className="text-xs text-gray-500">{style.description}</p>
+                              </div>
+                            </div>
+                          </motion.button>
+                        )
+                      })}
+                    </div>
+                    {errors.designStyle && <p className="text-red-500 text-xs mt-2">{errors.designStyle}</p>}
+                  </div>
+
+                  <div>
+                    <label className="flex items-center gap-3 mb-3 cursor-pointer">
+                      <input
+                        type="checkbox"
+                        checked={data.hasLogo}
+                        onChange={e => updateData({ hasLogo: e.target.checked, logoFile: null, logoUrl: '' })}
+                        className="w-5 h-5 rounded border-gray-300 text-primary-600 focus:ring-primary-500"
+                      />
+                      <span className="text-gray-700 font-medium">Ik heb al een logo</span>
+                    </label>
+                    
+                    {data.hasLogo && (
+                      <div className="space-y-4 p-4 bg-gray-50 rounded-xl">
+                        <p className="text-sm text-gray-600 mb-3">Upload je logo of geef een link:</p>
+                        
+                        {/* File upload */}
+                        <div className="border-2 border-dashed border-gray-300 rounded-lg p-4 text-center hover:border-primary-400 transition-colors">
+                          <input
+                            type="file"
+                            accept="image/*,.svg,.ai,.eps,.pdf"
+                            onChange={e => {
+                              const file = e.target.files?.[0]
+                              if (file) {
+                                updateData({ logoFile: file, logoUrl: '' })
+                              }
+                            }}
+                            className="hidden"
+                            id="logo-upload"
+                          />
+                          <label htmlFor="logo-upload" className="cursor-pointer">
+                            {data.logoFile ? (
+                              <div className="flex items-center justify-center gap-2 text-primary-600">
+                                <CheckCircle className="w-5 h-5" />
+                                <span className="font-medium">{data.logoFile.name}</span>
+                                <button 
+                                  type="button"
+                                  onClick={(e) => { e.preventDefault(); updateData({ logoFile: null }) }}
+                                  className="ml-2 text-gray-400 hover:text-red-500"
+                                >
+                                  <X className="w-4 h-4" />
+                                </button>
+                              </div>
+                            ) : (
+                              <div className="text-gray-500">
+                                <Upload className="w-8 h-8 mx-auto mb-2" />
+                                <p className="font-medium">Klik om logo te uploaden</p>
+                                <p className="text-xs">PNG, JPG, SVG, AI, EPS of PDF</p>
+                              </div>
+                            )}
+                          </label>
+                        </div>
+
+                        <div className="flex items-center gap-3">
+                          <div className="flex-1 h-px bg-gray-300" />
+                          <span className="text-xs text-gray-400">of</span>
+                          <div className="flex-1 h-px bg-gray-300" />
+                        </div>
+
+                        {/* URL input */}
+                        <div>
+                          <div className="flex items-center gap-2">
+                            <Link className="w-4 h-4 text-gray-400" />
+                            <input
+                              type="url"
+                              value={data.logoUrl}
+                              onChange={e => updateData({ logoUrl: e.target.value, logoFile: null })}
+                              className="flex-1 px-4 py-2 rounded-lg border border-gray-200 focus:ring-2 focus:ring-primary-500"
+                              placeholder="Link naar je logo (Google Drive, Dropbox, etc.)"
+                            />
+                          </div>
+                        </div>
+
+                        <p className="text-xs text-gray-500 flex items-center gap-1">
+                          <Sparkles className="w-3 h-3" />
+                          Je kunt ook later uploaden via de developer link die je ontvangt
+                        </p>
+                      </div>
+                    )}
+                    
+                    {!data.hasLogo && (
+                      <p className="text-sm text-amber-600 bg-amber-50 p-3 rounded-lg">
+                        💡 Geen logo? Wij kunnen er eentje voor je ontwerpen! (+€150)
+                      </p>
+                    )}
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                      Gewenste kleuren / Huisstijl
+                    </label>
+                    <input
+                      type="text"
+                      value={data.brandColors}
+                      onChange={e => updateData({ brandColors: e.target.value })}
+                      className="w-full px-4 py-2.5 rounded-lg border border-gray-200 focus:ring-2 focus:ring-primary-500"
+                      placeholder="Bijv. Blauw en wit, of #1E40AF, of 'dezelfde als ons logo'"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                      Inspiratie websites
+                    </label>
+                    <textarea
+                      value={data.inspirationUrls}
+                      onChange={e => updateData({ inspirationUrls: e.target.value })}
+                      rows={2}
+                      className="w-full px-4 py-2.5 rounded-lg border border-gray-200 focus:ring-2 focus:ring-primary-500"
+                      placeholder="Links naar websites die je mooi vindt..."
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                      Lettertype voorkeur
+                    </label>
+                    <input
+                      type="text"
+                      value={data.fontPreference}
+                      onChange={e => updateData({ fontPreference: e.target.value })}
+                      className="w-full px-4 py-2.5 rounded-lg border border-gray-200 focus:ring-2 focus:ring-primary-500"
+                      placeholder="Bijv. Modern en strak, of speels, of 'laat ik aan jullie over'"
+                    />
+                  </div>
+                </div>
+              )}
+
+              {/* Step 5: Content & Media */}
+              {currentStep === 5 && (
+                <div className="space-y-6">
+                  <div>
+                    <h3 className="text-lg font-bold text-gray-900 mb-1">Content & Media</h3>
+                    <p className="text-gray-500 text-sm">Wat heb je al en wat heb je nodig?</p>
+                  </div>
+
+                  <div className="space-y-4">
+                    <div className="p-4 border rounded-xl">
+                      <label className="flex items-center gap-3 cursor-pointer">
+                        <input
+                          type="checkbox"
+                          checked={data.hasContent}
+                          onChange={e => updateData({ hasContent: e.target.checked })}
+                          className="w-5 h-5 rounded border-gray-300 text-primary-600 focus:ring-primary-500"
+                        />
+                        <div>
+                          <span className="text-gray-700 font-medium">Ik heb teksten voor de website</span>
+                          <p className="text-xs text-gray-500">Over ons, diensten, etc.</p>
+                        </div>
+                      </label>
+                      {data.hasContent && (
+                        <textarea
+                          value={data.contentNotes}
+                          onChange={e => updateData({ contentNotes: e.target.value })}
+                          rows={2}
+                          className="mt-3 w-full px-4 py-2.5 rounded-lg border border-gray-200 focus:ring-2 focus:ring-primary-500"
+                          placeholder="Hoe lever je de teksten aan? (Word doc, email, etc.)"
+                        />
+                      )}
+                      {!data.hasContent && (
+                        <label className="flex items-center gap-3 mt-3 cursor-pointer">
+                          <input
+                            type="checkbox"
+                            checked={data.needsCopywriting}
+                            onChange={e => updateData({ needsCopywriting: e.target.checked })}
+                            className="w-5 h-5 rounded border-gray-300 text-amber-600 focus:ring-amber-500"
+                          />
+                          <span className="text-amber-700 text-sm">Ik wil dat jullie de teksten schrijven (+€199)</span>
+                        </label>
+                      )}
+                    </div>
+
+                    <div className="p-4 border rounded-xl">
+                      <label className="flex items-center gap-3 cursor-pointer">
+                        <input
+                          type="checkbox"
+                          checked={data.hasPhotos}
+                          onChange={e => updateData({ hasPhotos: e.target.checked, photoFiles: [], photoUrl: '' })}
+                          className="w-5 h-5 rounded border-gray-300 text-primary-600 focus:ring-primary-500"
+                        />
+                        <div>
+                          <span className="text-gray-700 font-medium">Ik heb foto's voor de website</span>
+                          <p className="text-xs text-gray-500">Productfoto's, teamfoto's, etc.</p>
+                        </div>
+                      </label>
+                      {data.hasPhotos && (
+                        <div className="mt-4 space-y-4">
+                          <p className="text-sm text-gray-600">Upload je foto's of geef een link:</p>
+                          
+                          {/* File upload */}
+                          <div className="border-2 border-dashed border-gray-300 rounded-lg p-4 text-center hover:border-primary-400 transition-colors">
+                            <input
+                              type="file"
+                              accept="image/*"
+                              multiple
+                              onChange={e => {
+                                const files = Array.from(e.target.files || [])
+                                if (files.length > 0) {
+                                  updateData({ photoFiles: [...data.photoFiles, ...files], photoUrl: '' })
+                                }
+                              }}
+                              className="hidden"
+                              id="photo-upload"
+                            />
+                            <label htmlFor="photo-upload" className="cursor-pointer">
+                              <div className="text-gray-500">
+                                <Upload className="w-8 h-8 mx-auto mb-2" />
+                                <p className="font-medium">Klik om foto's te uploaden</p>
+                                <p className="text-xs">Je kunt meerdere bestanden selecteren</p>
+                              </div>
+                            </label>
+                          </div>
+
+                          {/* Show uploaded files */}
+                          {data.photoFiles.length > 0 && (
+                            <div className="space-y-2">
+                              <p className="text-sm font-medium text-gray-700">{data.photoFiles.length} foto('s) geselecteerd:</p>
+                              <div className="max-h-32 overflow-y-auto space-y-1">
+                                {data.photoFiles.map((file, idx) => (
+                                  <div key={idx} className="flex items-center justify-between bg-gray-50 px-3 py-2 rounded-lg text-sm">
+                                    <span className="flex items-center gap-2 text-gray-700 truncate">
+                                      <CheckCircle className="w-4 h-4 text-primary-600 flex-shrink-0" />
+                                      {file.name}
+                                    </span>
+                                    <button
+                                      type="button"
+                                      onClick={() => {
+                                        const newFiles = data.photoFiles.filter((_, i) => i !== idx)
+                                        updateData({ photoFiles: newFiles })
+                                      }}
+                                      className="text-gray-400 hover:text-red-500"
+                                    >
+                                      <X className="w-4 h-4" />
+                                    </button>
+                                  </div>
+                                ))}
+                              </div>
+                            </div>
+                          )}
+
+                          <div className="flex items-center gap-3">
+                            <div className="flex-1 h-px bg-gray-300" />
+                            <span className="text-xs text-gray-400">of</span>
+                            <div className="flex-1 h-px bg-gray-300" />
+                          </div>
+
+                          {/* URL input */}
+                          <div>
+                            <div className="flex items-center gap-2">
+                              <Link className="w-4 h-4 text-gray-400" />
+                              <input
+                                type="url"
+                                value={data.photoUrl}
+                                onChange={e => updateData({ photoUrl: e.target.value, photoFiles: [] })}
+                                className="flex-1 px-4 py-2 rounded-lg border border-gray-200 focus:ring-2 focus:ring-primary-500"
+                                placeholder="Link naar je foto's (WeTransfer, Google Drive, etc.)"
+                              />
+                            </div>
+                          </div>
+
+                          <p className="text-xs text-gray-500 flex items-center gap-1">
+                            <Sparkles className="w-3 h-3" />
+                            Je kunt ook later uploaden via de developer link die je ontvangt
+                          </p>
+                        </div>
+                      )}
+                      {!data.hasPhotos && (
+                        <label className="flex items-center gap-3 mt-3 cursor-pointer">
+                          <input
+                            type="checkbox"
+                            checked={data.needsPhotography}
+                            onChange={e => updateData({ needsPhotography: e.target.checked })}
+                            className="w-5 h-5 rounded border-gray-300 text-amber-600 focus:ring-amber-500"
+                          />
+                          <span className="text-amber-700 text-sm">Ik wil een fotoshoot (prijs op aanvraag)</span>
+                        </label>
+                      )}
+                    </div>
+                  </div>
+
+                  <div className="bg-blue-50 p-4 rounded-xl">
+                    <p className="text-blue-800 text-sm">
+                      <strong>💡 Tip:</strong> Geen foto's? We gebruiken professionele stockfoto's die perfect bij jouw branche passen. Je kunt later altijd eigen foto's toevoegen.
+                    </p>
+                  </div>
+                </div>
+              )}
+
+              {/* Step 6: Extra & Bevestigen */}
+              {currentStep === 6 && (
+                <div className="space-y-6">
+                  <div>
+                    <h3 className="text-lg font-bold text-gray-900 mb-1">Extra Functionaliteiten</h3>
+                    <p className="text-gray-500 text-sm">Welke functies wil je op je website?</p>
+                  </div>
+
+                  <div className="grid sm:grid-cols-2 gap-3">
+                    {FEATURES.map(feature => {
+                      const isSelected = data.features.includes(feature.id)
+                      const Icon = feature.icon
+                      return (
+                        <motion.button
+                          key={feature.id}
+                          type="button"
+                          whileHover={{ scale: 1.02 }}
+                          whileTap={{ scale: 0.98 }}
+                          onClick={() => toggleFeature(feature.id)}
+                          className={`p-3 rounded-xl border-2 text-left transition-all ${
+                            isSelected 
+                              ? 'border-primary-500 bg-primary-50' 
+                              : 'border-gray-200 hover:border-primary-300'
+                          }`}
+                        >
+                          <div className="flex items-center gap-3">
+                            <div className={`w-8 h-8 rounded-lg flex items-center justify-center ${
+                              isSelected ? 'bg-primary-100 text-primary-600' : 'bg-gray-100 text-gray-500'
+                            }`}>
+                              <Icon className="w-4 h-4" />
+                            </div>
+                            <div className="flex-1 min-w-0">
+                              <p className={`font-medium text-sm ${isSelected ? 'text-primary-700' : 'text-gray-900'}`}>
+                                {feature.name}
+                              </p>
+                              <p className="text-xs text-gray-500 truncate">{feature.description}</p>
+                            </div>
+                            {isSelected && <Check className="w-4 h-4 text-primary-600 flex-shrink-0" />}
+                          </div>
+                        </motion.button>
+                      )
+                    })}
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                      Social media links
+                    </label>
+                    <textarea
+                      value={data.socialMediaLinks}
+                      onChange={e => updateData({ socialMediaLinks: e.target.value })}
+                      rows={2}
+                      className="w-full px-4 py-2.5 rounded-lg border border-gray-200 focus:ring-2 focus:ring-primary-500"
+                      placeholder="Facebook, Instagram, LinkedIn URLs..."
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                      Overige wensen of opmerkingen
+                    </label>
+                    <textarea
+                      value={data.additionalNotes}
+                      onChange={e => updateData({ additionalNotes: e.target.value })}
+                      rows={3}
+                      className="w-full px-4 py-2.5 rounded-lg border border-gray-200 focus:ring-2 focus:ring-primary-500"
+                      placeholder="Is er nog iets dat je wilt toevoegen?"
+                    />
+                  </div>
+
+                  {/* Samenvatting */}
+                  <div className="mt-6 p-4 bg-gradient-to-r from-primary-50 to-blue-50 rounded-xl border border-primary-200">
+                    <h4 className="font-bold text-gray-900 mb-3 flex items-center gap-2">
+                      <Star className="w-5 h-5 text-primary-600" />
+                      Jouw website pakket
+                    </h4>
+                    <div className="grid sm:grid-cols-2 gap-4 text-sm">
+                      <div>
+                        <span className="text-gray-600">Pakket:</span>
+                        <span className="ml-2 font-medium text-gray-900">{selectedPackage.name}</span>
+                      </div>
+                      <div>
+                        <span className="text-gray-600">Per maand:</span>
+                        <span className="ml-2 font-bold text-primary-600">€{selectedPackage.price}</span>
+                        <span className="text-gray-500 text-xs ml-1">(incl. btw)</span>
+                      </div>
+                      <div>
+                        <span className="text-gray-600">Eenmalig:</span>
+                        <span className="ml-2 font-medium text-gray-900">€{selectedPackage.setupFee}</span>
+                        <span className="text-gray-500 text-xs ml-1">(incl. btw)</span>
+                      </div>
+                      <div>
+                        <span className="text-gray-600">Pagina's:</span>
+                        <span className="ml-2 font-medium text-gray-900">{data.pages.length}</span>
+                      </div>
+                    </div>
+
+                    <div className="mt-4 pt-4 border-t border-primary-200">
+                      <div className="flex items-center gap-2 text-sm text-gray-600">
+                        <Clock className="w-4 h-4" />
+                        <span>Levertijd: 5-10 werkdagen na goedkeuring ontwerp</span>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Akkoord */}
+                  <div className={`p-4 rounded-xl border-2 ${errors.agreedToTerms ? 'border-red-500 bg-red-50' : 'border-gray-200'}`}>
+                    <label className="flex items-start gap-3 cursor-pointer">
+                      <input
+                        type="checkbox"
+                        checked={data.agreedToTerms}
+                        onChange={e => updateData({ agreedToTerms: e.target.checked })}
+                        className="w-5 h-5 mt-0.5 rounded border-gray-300 text-primary-600 focus:ring-primary-500"
+                      />
+                      <span className="text-sm text-gray-700">
+                        Ik ga akkoord met de{' '}
+                        <a href="/voorwaarden" target="_blank" className="text-primary-600 hover:underline">
+                          algemene voorwaarden
+                        </a>{' '}
+                        en geef toestemming om mijn gegevens te verwerken voor dit project.
+                      </span>
+                    </label>
+                    {errors.agreedToTerms && <p className="text-red-500 text-xs mt-2">{errors.agreedToTerms}</p>}
+                  </div>
+                </div>
+              )}
+            </motion.div>
+          </AnimatePresence>
+        </div>
+
+        {/* Footer */}
+        <div className="border-t p-4 flex items-center justify-between bg-gray-50">
+          <button
+            type="button"
+            onClick={currentStep === 1 ? (onClose ? onClose : () => navigate(-1)) : prevStep}
+            className="flex items-center gap-2 px-4 py-2 text-gray-600 hover:text-gray-900 transition"
+          >
+            <ChevronLeft className="w-4 h-4" />
+            {currentStep === 1 ? 'Annuleren' : 'Vorige'}
+          </button>
+
+          {currentStep < STEPS.length ? (
+            <button
+              type="button"
+              onClick={nextStep}
+              className="flex items-center gap-2 px-6 py-2.5 bg-primary-600 text-white rounded-lg font-medium hover:bg-primary-700 transition"
+            >
+              Volgende
+              <ChevronRight className="w-4 h-4" />
+            </button>
+          ) : (
+            <button
+              type="button"
+              onClick={handleSubmit}
+              disabled={submitting}
+              className="flex items-center gap-2 px-6 py-2.5 bg-gradient-to-r from-primary-600 to-blue-600 text-white rounded-lg font-medium hover:from-primary-700 hover:to-blue-700 transition disabled:opacity-50"
+            >
+              {submitting ? (
+                <>
+                  <Loader2 className="w-4 h-4 animate-spin" />
+                  Verwerken...
+                </>
+              ) : (
+                <>
+                  <Sparkles className="w-4 h-4" />
+                  Aanvraag versturen
+                </>
+              )}
+            </button>
+          )}
+        </div>
+      </motion.div>
+    </motion.div>
+  )
+}

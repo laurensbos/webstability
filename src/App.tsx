@@ -9,7 +9,8 @@ import HowItWorks from './components/HowItWorks'
 import DomainChecker from './components/DomainChecker'
 import Comparison from './components/Comparison'
 import Portfolio from './components/Portfolio'
-import FloatingWhatsApp from './components/FloatingWhatsApp'
+import ExtraServices from './components/ExtraServices'
+import DashboardPreview from './components/DashboardPreview'
 import './index.css'
 
 export default function App() {
@@ -18,19 +19,18 @@ export default function App() {
       <Header urgencyBannerVisible={false} />
       <main>
         <Hero />
-        <HowItWorks />
-        <Features />
         <Portfolio />
-        <Comparison />
-        <DomainChecker />
         <Pricing />
+        <Comparison />
         <Testimonials />
+        <Features />
+        <HowItWorks />
+        <DashboardPreview />
+        <DomainChecker />
+        <ExtraServices />
         <FAQ />
       </main>
       <Footer />
-      
-      {/* Alleen WhatsApp - subtiel en nuttig */}
-      <FloatingWhatsApp />
     </div>
   )
 }

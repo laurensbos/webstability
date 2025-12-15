@@ -1,9 +1,26 @@
-export default function Logo(){
+interface LogoProps {
+  size?: 'sm' | 'md' | 'lg'
+  showText?: boolean
+  variant?: 'default' | 'white'
+  className?: string
+}
+
+export default function Logo({ size = 'md', variant = 'default', className = '' }: LogoProps) {
+  const sizes = {
+    sm: { text: 'text-lg' },
+    md: { text: 'text-xl' },
+    lg: { text: 'text-2xl' },
+  }
+  
+  const textColor = variant === 'white' ? 'text-white' : 'text-gray-900'
+  const hoverColor = variant === 'white' ? 'hover:text-white/80' : 'hover:text-primary-600'
+  
+  // showText prop wordt genegeerd - we tonen altijd alleen tekst
   return (
-    <div className="flex items-center gap-3" aria-label="webstability">
-      {/* small brand mark */}
-      <div className="w-8 h-8 rounded-md bg-gradient-to-br from-[var(--brand-500)] to-[var(--accent-2)] flex items-center justify-center text-white font-semibold">ws</div>
-      <span className="text-[var(--text)] font-semibold tracking-tight">webstability</span>
+    <div className={`flex items-center ${className}`} aria-label="Webstability">
+      <span className={`font-display font-bold tracking-tight ${sizes[size].text} ${textColor} ${hoverColor} transition-colors`}>
+        webstability
+      </span>
     </div>
   )
 }
