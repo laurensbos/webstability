@@ -1703,7 +1703,7 @@ export default function DeveloperDashboard() {
   const [filterPackage, setFilterPackage] = useState<string>('all')
   
   // Nieuwe state voor uitgebreide dashboard
-  const [activeTab, setActiveTab] = useState<DashboardTab>('overview')
+  const [activeTab, setActiveTab] = useState<DashboardTab>('projects')
   const [darkMode, setDarkMode] = useState(() => {
     if (typeof window !== 'undefined') {
       return localStorage.getItem(DARK_MODE_KEY) === 'true'
@@ -2889,8 +2889,7 @@ export default function DeveloperDashboard() {
               </h2>
               <button
                 onClick={() => {
-                  // Add new task modal
-                  console.log('Add task clicked')
+                  alert('Nieuwe taak toevoegen is nog niet geïmplementeerd. Taken worden automatisch gegenereerd vanuit projecten.')
                 }}
                 className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg font-medium hover:bg-blue-700 transition"
               >
@@ -2940,8 +2939,7 @@ export default function DeveloperDashboard() {
                 }
               }}
               onAddTask={(columnId) => {
-                console.log(`Adding task to column ${columnId}`)
-                // In production: open add task modal
+                alert(`Taak toevoegen aan ${columnId} is nog niet geïmplementeerd. Taken worden automatisch gegenereerd vanuit projecten.`)
               }}
               onDeleteTask={(taskId, columnId) => {
                 console.log(`Deleting task ${taskId} from ${columnId}`)
@@ -3301,7 +3299,9 @@ export default function DeveloperDashboard() {
 
             {/* Quick Actions */}
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-              <button className={`p-4 rounded-xl text-left transition ${
+              <button 
+                onClick={() => alert('Factuur maken is nog niet geïmplementeerd. Dit wordt binnenkort toegevoegd.')}
+                className={`p-4 rounded-xl text-left transition ${
                 darkMode 
                   ? 'bg-gray-800 hover:bg-gray-700' 
                   : 'bg-white border border-gray-200 hover:border-blue-300 hover:shadow-md'
@@ -3313,7 +3313,9 @@ export default function DeveloperDashboard() {
                 </p>
               </button>
 
-              <button className={`p-4 rounded-xl text-left transition ${
+              <button 
+                onClick={() => alert('Betaallink sturen is nog niet geïmplementeerd. Dit wordt binnenkort toegevoegd.')}
+                className={`p-4 rounded-xl text-left transition ${
                 darkMode 
                   ? 'bg-gray-800 hover:bg-gray-700' 
                   : 'bg-white border border-gray-200 hover:border-blue-300 hover:shadow-md'
@@ -3325,7 +3327,9 @@ export default function DeveloperDashboard() {
                 </p>
               </button>
 
-              <button className={`p-4 rounded-xl text-left transition ${
+              <button 
+                onClick={() => alert('Export is nog niet geïmplementeerd. Dit wordt binnenkort toegevoegd.')}
+                className={`p-4 rounded-xl text-left transition ${
                 darkMode 
                   ? 'bg-gray-800 hover:bg-gray-700' 
                   : 'bg-white border border-gray-200 hover:border-blue-300 hover:shadow-md'

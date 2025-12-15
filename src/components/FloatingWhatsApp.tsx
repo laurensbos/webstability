@@ -1,15 +1,26 @@
 import { motion, AnimatePresence } from 'framer-motion'
 import { MessageCircle, X } from 'lucide-react'
 import { useState, useEffect } from 'react'
+import { useLocation } from 'react-router-dom'
 
 export default function FloatingWhatsApp() {
+  const location = useLocation()
   const [isVisible, setIsVisible] = useState(false)
   const [isExpanded, setIsExpanded] = useState(false)
   const [showTooltip, setShowTooltip] = useState(false)
 
   const whatsappLink = 'https://wa.me/31644712573?text=Hoi!%20Ik%20heb%20een%20vraag%20over%20jullie%20diensten.'
 
+  // Hide on developer and marketing dashboards
+  const hiddenPaths = ['/developer', '/marketing', '/login']
+  const shouldHide = hiddenPaths.some(path => location.pathname.startsWith(path))
+
   useEffect(() => {
+    if (shouldHide) {
+      setIsVisible(false)
+      return
+    }
+
     // Show button after scrolling past hero or after 3 seconds
     const handleScroll = () => {
       setIsVisible(window.scrollY > 300)
@@ -25,7 +36,7 @@ export default function FloatingWhatsApp() {
       window.removeEventListener('scroll', handleScroll)
       clearTimeout(timer)
     }
-  }, [])
+  }, [shouldHide])
 
   // Show tooltip after button is visible for 2 seconds (only once)
   useEffect(() => {
