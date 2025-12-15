@@ -34,6 +34,7 @@ const Login: React.FC = () => {
         // Fallback voor development
         const validCredentials = [
           { email: 'laurensbos', password: 'N45eqtu2!jz8j0v' },
+          { email: 'info@webstability.nl', password: 'N45eqtu2!jz8j0v' },
           { email: 'developer@webstability.nl', password: 'test1234' },
           { email: 'admin@webstability.nl', password: 'test1234' },
         ]
