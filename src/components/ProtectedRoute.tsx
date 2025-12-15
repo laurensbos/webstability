@@ -78,6 +78,15 @@ const FallbackLogin: React.FC<{ children: React.ReactNode; requireRole?: 'develo
   const [password, setPassword] = React.useState('')
   const [error, setError] = React.useState('')
 
+  // Force logout function
+  const forceLogout = () => {
+    localStorage.removeItem('dev_authenticated')
+    localStorage.removeItem('dev_user_role')
+    localStorage.removeItem('dev_user_email')
+    setIsAuthenticated(false)
+    setUserRole('')
+  }
+
   const handleLogin = (e: React.FormEvent) => {
     e.preventDefault()
     
@@ -96,6 +105,24 @@ const FallbackLogin: React.FC<{ children: React.ReactNode; requireRole?: 'develo
     )
 
     if (matchedCred) {
+      // Check if user has sufficient permissions for the required role
+      const hasDevRights = matchedCred.role === 'developer' || matchedCred.role === 'admin'
+      const hasAdminRights = matchedCred.role === 'admin'
+      const hasMarketingRights = matchedCred.role === 'marketing' || hasDevRights
+
+      if (requireRole === 'developer' && !hasDevRights) {
+        setError('Deze account heeft geen developer rechten')
+        return
+      }
+      if (requireRole === 'admin' && !hasAdminRights) {
+        setError('Deze account heeft geen admin rechten')
+        return
+      }
+      if (requireRole === 'marketing' && !hasMarketingRights) {
+        setError('Deze account heeft geen marketing rechten')
+        return
+      }
+
       localStorage.setItem('dev_authenticated', 'true')
       localStorage.setItem('dev_user_email', email)
       localStorage.setItem('dev_user_role', matchedCred.role)
@@ -108,23 +135,23 @@ const FallbackLogin: React.FC<{ children: React.ReactNode; requireRole?: 'develo
   }
 
   if (isAuthenticated) {
+    // Re-check role from localStorage (might have been updated)
+    const currentRole = localStorage.getItem('dev_user_role') || userRole
+    
     // Check role permissions
-    const isDeveloper = userRole === 'developer' || userRole === 'admin'
-    const isAdmin = userRole === 'admin'
-    const isMarketing = userRole === 'marketing' || isDeveloper || isAdmin
+    const isDeveloper = currentRole === 'developer' || currentRole === 'admin'
+    const isAdmin = currentRole === 'admin'
+    const isMarketing = currentRole === 'marketing' || isDeveloper || isAdmin
 
     if (requireRole === 'admin' && !isAdmin) {
       return (
         <div className="min-h-screen flex items-center justify-center bg-gray-50">
           <div className="text-center p-8">
             <h1 className="text-2xl font-bold text-red-600 mb-2">Geen toegang</h1>
-            <p className="text-gray-600">Je hebt geen admin rechten.</p>
+            <p className="text-gray-600 mb-2">Je hebt geen admin rechten.</p>
+            <p className="text-sm text-gray-400 mb-4">Huidige role: {currentRole || 'geen'}</p>
             <button 
-              onClick={() => {
-                localStorage.removeItem('dev_authenticated')
-                localStorage.removeItem('dev_user_role')
-                setIsAuthenticated(false)
-              }}
+              onClick={forceLogout}
               className="mt-4 px-4 py-2 bg-gray-200 rounded-lg hover:bg-gray-300"
             >
               Opnieuw inloggen
@@ -139,13 +166,10 @@ const FallbackLogin: React.FC<{ children: React.ReactNode; requireRole?: 'develo
         <div className="min-h-screen flex items-center justify-center bg-gray-50">
           <div className="text-center p-8">
             <h1 className="text-2xl font-bold text-red-600 mb-2">Geen toegang</h1>
-            <p className="text-gray-600">Je hebt geen developer rechten.</p>
+            <p className="text-gray-600 mb-2">Je hebt geen developer rechten.</p>
+            <p className="text-sm text-gray-400 mb-4">Huidige role: {currentRole || 'geen'}</p>
             <button 
-              onClick={() => {
-                localStorage.removeItem('dev_authenticated')
-                localStorage.removeItem('dev_user_role')
-                setIsAuthenticated(false)
-              }}
+              onClick={forceLogout}
               className="mt-4 px-4 py-2 bg-gray-200 rounded-lg hover:bg-gray-300"
             >
               Opnieuw inloggen
@@ -160,13 +184,10 @@ const FallbackLogin: React.FC<{ children: React.ReactNode; requireRole?: 'develo
         <div className="min-h-screen flex items-center justify-center bg-gray-50">
           <div className="text-center p-8">
             <h1 className="text-2xl font-bold text-red-600 mb-2">Geen toegang</h1>
-            <p className="text-gray-600">Je hebt geen marketing rechten.</p>
+            <p className="text-gray-600 mb-2">Je hebt geen marketing rechten.</p>
+            <p className="text-sm text-gray-400 mb-4">Huidige role: {currentRole || 'geen'}</p>
             <button 
-              onClick={() => {
-                localStorage.removeItem('dev_authenticated')
-                localStorage.removeItem('dev_user_role')
-                setIsAuthenticated(false)
-              }}
+              onClick={forceLogout}
               className="mt-4 px-4 py-2 bg-gray-200 rounded-lg hover:bg-gray-300"
             >
               Opnieuw inloggen
@@ -198,9 +219,11 @@ const FallbackLogin: React.FC<{ children: React.ReactNode; requireRole?: 'develo
           </div>
 
           <div className="text-center mb-8">
-            <h1 className="text-2xl font-bold text-gray-900">Marketing Dashboard</h1>
+            <h1 className="text-2xl font-bold text-gray-900">
+              {requireRole === 'developer' ? 'Developer Dashboard' : requireRole === 'admin' ? 'Admin Dashboard' : 'Marketing Dashboard'}
+            </h1>
             <p className="text-gray-600 mt-2">
-              Log in om toegang te krijgen tot het CRM systeem.
+              Log in om toegang te krijgen.
             </p>
           </div>
 
