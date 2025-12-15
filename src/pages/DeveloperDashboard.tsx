@@ -1719,6 +1719,15 @@ export default function DeveloperDashboard() {
   const [newPassword, setNewPassword] = useState('')
   const [confirmPassword, setConfirmPassword] = useState('')
   
+  // Add client modal
+  const [showAddClientModal, setShowAddClientModal] = useState(false)
+  const [newClient, setNewClient] = useState({
+    name: '',
+    email: '',
+    phone: '',
+    company: ''
+  })
+  
   // Help/Onboarding state
   const [showHelp, setShowHelp] = useState(false)
   const [showOnboarding, setShowOnboarding] = useState(() => {
@@ -2749,7 +2758,11 @@ export default function DeveloperDashboard() {
 
         {/* PROJECTS TAB */}
         {activeTab === 'projects' && (
-          <>
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.3 }}
+          >
             {/* Toolbar */}
             <div className={`flex items-center justify-between mb-6 p-4 rounded-xl ${darkMode ? 'bg-gray-800' : 'bg-white border border-gray-200'}`}>
               <div className="flex items-center gap-4">
@@ -2877,12 +2890,17 @@ export default function DeveloperDashboard() {
                 </table>
               </div>
             )}
-          </>
+          </motion.div>
         )}
 
         {/* KANBAN TAB */}
         {activeTab === 'kanban' && (
-          <div className="space-y-6">
+          <motion.div 
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.3 }}
+            className="space-y-6"
+          >
             <div className="flex items-center justify-between">
               <h2 className={`text-xl font-bold ${darkMode ? 'text-white' : 'text-gray-900'}`}>
                 Kanban Board
@@ -2947,16 +2965,30 @@ export default function DeveloperDashboard() {
               }}
               darkMode={darkMode}
             />
-          </div>
+          </motion.div>
         )}
 
         {/* CLIENTS TAB */}
         {activeTab === 'clients' && (
-          <div className="space-y-6">
+          <motion.div 
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.3 }}
+            className="space-y-6"
+          >
             <div className="flex items-center justify-between">
               <h2 className={`text-xl font-bold ${darkMode ? 'text-white' : 'text-gray-900'}`}>
                 Klanten ({clients.length})
               </h2>
+              <motion.button
+                whileHover={{ scale: 1.02 }}
+                whileTap={{ scale: 0.98 }}
+                onClick={() => setShowAddClientModal(true)}
+                className="flex items-center gap-2 px-4 py-2 bg-blue-500 text-white font-medium rounded-xl hover:bg-blue-600 transition-colors"
+              >
+                <Plus className="w-4 h-4" />
+                Klant toevoegen
+              </motion.button>
             </div>
 
             <div className="grid gap-4">
@@ -3053,16 +3085,30 @@ export default function DeveloperDashboard() {
               {clients.length === 0 && (
                 <div className={`text-center py-12 rounded-2xl ${darkMode ? 'bg-gray-800' : 'bg-gray-50'}`}>
                   <Users className={`w-12 h-12 mx-auto mb-4 ${darkMode ? 'text-gray-600' : 'text-gray-300'}`} />
-                  <p className={darkMode ? 'text-gray-400' : 'text-gray-500'}>Nog geen klanten</p>
+                  <p className={`mb-4 ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>Nog geen klanten</p>
+                  <motion.button
+                    whileHover={{ scale: 1.02 }}
+                    whileTap={{ scale: 0.98 }}
+                    onClick={() => setShowAddClientModal(true)}
+                    className="inline-flex items-center gap-2 px-4 py-2 bg-blue-500 text-white font-medium rounded-xl hover:bg-blue-600 transition-colors"
+                  >
+                    <Plus className="w-4 h-4" />
+                    Eerste klant toevoegen
+                  </motion.button>
                 </div>
               )}
             </div>
-          </div>
+          </motion.div>
         )}
 
         {/* SERVICES TAB */}
         {activeTab === 'services' && (
-          <div className="space-y-6">
+          <motion.div 
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.3 }}
+            className="space-y-6"
+          >
             <div className="flex items-center justify-between">
               <h2 className={`text-xl font-bold ${darkMode ? 'text-white' : 'text-gray-900'}`}>
                 Service Aanvragen
@@ -3190,12 +3236,17 @@ export default function DeveloperDashboard() {
                 </div>
               )}
             </div>
-          </div>
+          </motion.div>
         )}
 
         {/* BILLING TAB */}
         {activeTab === 'billing' && (
-          <div className="space-y-6">
+          <motion.div 
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.3 }}
+            className="space-y-6"
+          >
             <div className="flex items-center justify-between">
               <h2 className={`text-xl font-bold ${darkMode ? 'text-white' : 'text-gray-900'}`}>
                 Betalingen & Facturen
@@ -3372,12 +3423,17 @@ export default function DeveloperDashboard() {
                 </div>
               </div>
             </div>
-          </div>
+          </motion.div>
         )}
 
         {/* SETTINGS TAB */}
         {activeTab === 'settings' && (
-          <div className="max-w-2xl space-y-6">
+          <motion.div 
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.3 }}
+            className="max-w-2xl space-y-6"
+          >
             <h2 className={`text-xl font-bold ${darkMode ? 'text-white' : 'text-gray-900'}`}>Instellingen</h2>
             
             {/* Appearance */}
@@ -3506,9 +3562,157 @@ export default function DeveloperDashboard() {
                 Alle data wissen
               </button>
             </div>
-          </div>
+          </motion.div>
         )}
       </main>
+
+      {/* Add Client Modal */}
+      <AnimatePresence>
+        {showAddClientModal && (
+          <>
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              className="fixed inset-0 bg-black/50 z-50"
+              onClick={() => setShowAddClientModal(false)}
+            />
+            <motion.div
+              initial={{ opacity: 0, scale: 0.95 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.95 }}
+              className={`fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full max-w-md z-50 rounded-2xl shadow-2xl overflow-hidden ${
+                darkMode ? 'bg-gray-800' : 'bg-white'
+              }`}
+            >
+              <div className={`p-6 border-b ${darkMode ? 'border-gray-700' : 'border-gray-200'}`}>
+                <div className="flex items-center justify-between">
+                  <h2 className={`text-xl font-bold ${darkMode ? 'text-white' : 'text-gray-900'}`}>
+                    Nieuwe klant toevoegen
+                  </h2>
+                  <button
+                    onClick={() => setShowAddClientModal(false)}
+                    className={`p-2 rounded-lg transition-colors ${
+                      darkMode ? 'hover:bg-gray-700 text-gray-400' : 'hover:bg-gray-100 text-gray-500'
+                    }`}
+                  >
+                    <X className="w-5 h-5" />
+                  </button>
+                </div>
+              </div>
+              
+              <form onSubmit={(e) => {
+                e.preventDefault()
+                const newClientData: Client = {
+                  id: `client-${Date.now()}`,
+                  name: newClient.name,
+                  email: newClient.email,
+                  phone: newClient.phone,
+                  company: newClient.company,
+                  projects: [],
+                  totalSpent: 0,
+                  createdAt: new Date().toISOString(),
+                }
+                setClients(prev => [...prev, newClientData])
+                setNewClient({ name: '', email: '', phone: '', company: '' })
+                setShowAddClientModal(false)
+              }} className="p-6 space-y-4">
+                <div>
+                  <label className={`block text-sm font-medium mb-1 ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>
+                    Bedrijfsnaam *
+                  </label>
+                  <input
+                    type="text"
+                    required
+                    value={newClient.company}
+                    onChange={(e) => setNewClient(prev => ({ ...prev, company: e.target.value }))}
+                    className={`w-full px-4 py-2 rounded-lg border ${
+                      darkMode 
+                        ? 'bg-gray-700 border-gray-600 text-white' 
+                        : 'bg-white border-gray-200'
+                    }`}
+                    placeholder="Bakkerij De Gouden Korrel"
+                  />
+                </div>
+                
+                <div>
+                  <label className={`block text-sm font-medium mb-1 ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>
+                    Contactpersoon *
+                  </label>
+                  <input
+                    type="text"
+                    required
+                    value={newClient.name}
+                    onChange={(e) => setNewClient(prev => ({ ...prev, name: e.target.value }))}
+                    className={`w-full px-4 py-2 rounded-lg border ${
+                      darkMode 
+                        ? 'bg-gray-700 border-gray-600 text-white' 
+                        : 'bg-white border-gray-200'
+                    }`}
+                    placeholder="Jan Bakker"
+                  />
+                </div>
+                
+                <div>
+                  <label className={`block text-sm font-medium mb-1 ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>
+                    E-mail *
+                  </label>
+                  <input
+                    type="email"
+                    required
+                    value={newClient.email}
+                    onChange={(e) => setNewClient(prev => ({ ...prev, email: e.target.value }))}
+                    className={`w-full px-4 py-2 rounded-lg border ${
+                      darkMode 
+                        ? 'bg-gray-700 border-gray-600 text-white' 
+                        : 'bg-white border-gray-200'
+                    }`}
+                    placeholder="info@bedrijf.nl"
+                  />
+                </div>
+                
+                <div>
+                  <label className={`block text-sm font-medium mb-1 ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>
+                    Telefoon
+                  </label>
+                  <input
+                    type="tel"
+                    value={newClient.phone}
+                    onChange={(e) => setNewClient(prev => ({ ...prev, phone: e.target.value }))}
+                    className={`w-full px-4 py-2 rounded-lg border ${
+                      darkMode 
+                        ? 'bg-gray-700 border-gray-600 text-white' 
+                        : 'bg-white border-gray-200'
+                    }`}
+                    placeholder="06-12345678"
+                  />
+                </div>
+                
+                <div className="flex justify-end gap-3 pt-4">
+                  <button
+                    type="button"
+                    onClick={() => setShowAddClientModal(false)}
+                    className={`px-4 py-2 rounded-lg font-medium transition-colors ${
+                      darkMode 
+                        ? 'bg-gray-700 text-white hover:bg-gray-600' 
+                        : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                    }`}
+                  >
+                    Annuleren
+                  </button>
+                  <button
+                    type="submit"
+                    className="px-4 py-2 bg-blue-500 text-white font-medium rounded-lg hover:bg-blue-600 transition-colors flex items-center gap-2"
+                  >
+                    <Plus className="w-4 h-4" />
+                    Toevoegen
+                  </button>
+                </div>
+              </form>
+            </motion.div>
+          </>
+        )}
+      </AnimatePresence>
 
       {/* Client edit modal */}
       <AnimatePresence>
