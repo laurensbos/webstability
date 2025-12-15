@@ -135,7 +135,7 @@ const Login: React.FC = () => {
             {/* Forgot password link */}
             <div className="flex justify-end">
               <Link 
-                to="/wachtwoord-vergeten" 
+                to="/reset-password" 
                 className="text-sm text-blue-600 hover:text-blue-700"
               >
                 Wachtwoord vergeten?

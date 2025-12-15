@@ -30,9 +30,6 @@ const Voorwaarden = lazy(() => import('./pages/Voorwaarden'))
 const NotFound = lazy(() => import('./pages/NotFound'))
 const Bedankt = lazy(() => import('./pages/Bedankt'))
 const Webshop = lazy(() => import('./pages/Webshop'))
-const WebshopStarten = lazy(() => import('./pages/WebshopStarten'))
-const WebsiteStarten = lazy(() => import('./pages/WebsiteStarten'))
-const DroneStarten = lazy(() => import('./pages/DroneStarten'))
 const Websites = lazy(() => import('./pages/Websites'))
 const LogoMaken = lazy(() => import('./pages/LogoMaken'))
 const Luchtvideografie = lazy(() => import('./pages/Dronebeelden'))
@@ -42,6 +39,7 @@ const ResetPassword = lazy(() => import('./pages/ResetPassword'))
 const DeveloperDashboard = lazy(() => import('./pages/DeveloperDashboard'))
 const Login = lazy(() => import('./pages/Login'))
 const MarketingDashboard = lazy(() => import('./pages/MarketingDashboard'))
+const Unauthorized = lazy(() => import('./pages/Unauthorized'))
 
 // Loading spinner component
 function PageLoader() {
@@ -97,8 +95,6 @@ createRoot(document.getElementById('root')!).render(
             <Route path="/voorwaarden" element={<Voorwaarden />} />
             <Route path="/webshop" element={<Webshop />} />
             <Route path="/webshop-laten-maken" element={<Webshop />} />
-            <Route path="/webshop-starten" element={<WebshopStarten />} />
-            <Route path="/website-starten" element={<WebsiteStarten />} />
             <Route path="/websites" element={<Websites />} />
             <Route path="/website-laten-maken" element={<Websites />} />
             <Route path="/logo-maken" element={<LogoMaken />} />
@@ -107,7 +103,6 @@ createRoot(document.getElementById('root')!).render(
             <Route path="/logo" element={<LogoMaken />} />
             <Route path="/logo-laten-maken" element={<LogoMaken />} />
             <Route path="/luchtvideografie" element={<Luchtvideografie />} />
-            <Route path="/drone-starten" element={<DroneStarten />} />
             <Route path="/luchtfoto" element={<Luchtvideografie />} />
             <Route path="/dronebeelden" element={<Navigate to="/luchtvideografie" replace />} />
             <Route path="/drone" element={<Navigate to="/luchtvideografie" replace />} />
@@ -138,6 +133,9 @@ createRoot(document.getElementById('root')!).render(
                 </ProtectedRoute>
               } 
             />
+            
+            {/* Unauthorized page */}
+            <Route path="/unauthorized" element={<Unauthorized />} />
             
             <Route path="*" element={<NotFound />} />
           </Routes>

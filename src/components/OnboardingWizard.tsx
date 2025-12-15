@@ -131,7 +131,7 @@ export function OnboardingWizard(){
                 <motion.div key="done" initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
                   <div className="p-4 rounded-md bg-green-50 text-green-800">Je project is aangemaakt. Bekijk de preview of ga verder naar pricing / publish.</div>
                   <div className="mt-4 space-y-2">
-                    <a href="/pricing" className="text-indigo-600">Bekijk pakketten</a>
+                    <a href="/#pricing" className="text-indigo-600">Bekijk pakketten</a>
                   </div>
                 </motion.div>
               )}
