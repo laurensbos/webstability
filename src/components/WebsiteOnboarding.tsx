@@ -169,11 +169,25 @@ const WEBSITE_GOALS = [
 ]
 
 const DESIGN_STYLES = [
-  { id: 'modern', name: 'Modern & Minimalistisch', description: 'Strak, veel witruimte, clean', color: 'bg-gradient-to-br from-gray-100 to-gray-200' },
-  { id: 'bold', name: 'Bold & Opvallend', description: 'Felle kleuren, grote typografie', color: 'bg-gradient-to-br from-purple-500 to-pink-500' },
-  { id: 'classic', name: 'Klassiek & Professioneel', description: 'Tijdloos, betrouwbaar', color: 'bg-gradient-to-br from-slate-600 to-slate-800' },
-  { id: 'playful', name: 'Speels & Creatief', description: 'Illustraties, unieke vormen', color: 'bg-gradient-to-br from-yellow-400 to-orange-500' },
-  { id: 'luxury', name: 'Luxe & Premium', description: 'Elegant, donkere tinten', color: 'bg-gradient-to-br from-amber-700 to-amber-900' },
+  { id: 'modern', name: 'Modern & Minimalistisch', description: 'Strak, veel witruimte, clean' },
+  { id: 'bold', name: 'Bold & Opvallend', description: 'Felle kleuren, grote typografie' },
+  { id: 'classic', name: 'Klassiek & Professioneel', description: 'Tijdloos, betrouwbaar' },
+  { id: 'playful', name: 'Speels & Creatief', description: 'Illustraties, unieke vormen' },
+  { id: 'luxury', name: 'Luxe & Premium', description: 'Elegant, donkere tinten' },
+]
+
+// Preset kleuren voor huisstijl
+const BRAND_COLORS = [
+  { id: 'blue', name: 'Blauw', color: '#1E40AF', preview: 'bg-blue-700' },
+  { id: 'green', name: 'Groen', color: '#059669', preview: 'bg-emerald-600' },
+  { id: 'red', name: 'Rood', color: '#DC2626', preview: 'bg-red-600' },
+  { id: 'purple', name: 'Paars', color: '#7C3AED', preview: 'bg-purple-600' },
+  { id: 'orange', name: 'Oranje', color: '#EA580C', preview: 'bg-orange-600' },
+  { id: 'teal', name: 'Teal', color: '#0D9488', preview: 'bg-teal-600' },
+  { id: 'pink', name: 'Roze', color: '#DB2777', preview: 'bg-pink-600' },
+  { id: 'gray', name: 'Grijs', color: '#4B5563', preview: 'bg-gray-600' },
+  { id: 'black', name: 'Zwart', color: '#111827', preview: 'bg-gray-900' },
+  { id: 'custom', name: 'Eigen kleur', color: '', preview: 'bg-gradient-to-r from-pink-500 via-purple-500 to-blue-500' },
 ]
 
 const DEFAULT_PAGES = [
@@ -202,11 +216,35 @@ const FEATURES = [
   { id: 'ssl', name: 'SSL Certificaat', description: 'Veilige verbinding (https)', icon: Check },
 ]
 
-// Package pricing
+// Package pricing met maxPages en features per pakket
 const PACKAGES = {
-  starter: { name: 'Starter', price: 96, priceExcl: 79, setupFee: 120, setupFeeExcl: 99 },
-  professional: { name: 'Professioneel', price: 180, priceExcl: 149, setupFee: 180, setupFeeExcl: 149 },
-  business: { name: 'Business', price: 301, priceExcl: 249, setupFee: 241, setupFeeExcl: 199 },
+  starter: { 
+    name: 'Starter', 
+    price: 96, 
+    priceExcl: 79, 
+    setupFee: 120, 
+    setupFeeExcl: 99,
+    maxPages: 5,
+    features: ['contactform', 'maps', 'mobile', 'ssl', 'seo']
+  },
+  professional: { 
+    name: 'Professioneel', 
+    price: 180, 
+    priceExcl: 149, 
+    setupFee: 180, 
+    setupFeeExcl: 149,
+    maxPages: 10,
+    features: ['contactform', 'maps', 'mobile', 'ssl', 'seo', 'analytics', 'social', 'whatsapp']
+  },
+  business: { 
+    name: 'Business', 
+    price: 301, 
+    priceExcl: 249, 
+    setupFee: 241, 
+    setupFeeExcl: 199,
+    maxPages: 20,
+    features: ['contactform', 'maps', 'mobile', 'ssl', 'seo', 'analytics', 'social', 'whatsapp', 'booking', 'newsletter']
+  },
 }
 
 interface WebsiteOnboardingProps {
@@ -499,7 +537,8 @@ export default function WebsiteOnboarding({
   }
 
   const addPage = (pageName: string) => {
-    if (!data.pages.find(p => p.name === pageName)) {
+    const maxPages = selectedPackage.maxPages
+    if (!data.pages.find(p => p.name === pageName) && data.pages.length < maxPages) {
       updateData({ 
         pages: [...data.pages, { name: pageName, description: '', sections: [] }] 
       })
@@ -510,14 +549,6 @@ export default function WebsiteOnboarding({
     updateData({ 
       pages: data.pages.filter(p => p.name !== pageName) 
     })
-  }
-
-  const toggleFeature = (featureId: string) => {
-    if (data.features.includes(featureId)) {
-      updateData({ features: data.features.filter(f => f !== featureId) })
-    } else {
-      updateData({ features: [...data.features, featureId] })
-    }
   }
 
   const addCompetitor = () => {
@@ -870,25 +901,34 @@ export default function WebsiteOnboarding({
                     <span className={`px-3 py-1 rounded-full text-sm font-medium ${
                       data.pages.length > 0 ? 'bg-primary-100 text-primary-700' : 'bg-gray-100 text-gray-500'
                     }`}>
-                      {data.pages.length} pagina's
+                      {data.pages.length} / {selectedPackage.maxPages} pagina's
                     </span>
+                    {data.pages.length >= selectedPackage.maxPages && (
+                      <span className="text-xs text-amber-600 bg-amber-50 px-2 py-1 rounded-full">
+                        Maximum bereikt voor {selectedPackage.name}
+                      </span>
+                    )}
                   </div>
 
                   <div className="grid sm:grid-cols-2 gap-3">
                     {DEFAULT_PAGES.map(page => {
                       const isSelected = data.pages.some(p => p.name === page.name)
+                      const isDisabled = !isSelected && data.pages.length >= selectedPackage.maxPages
                       const Icon = page.icon
                       return (
                         <motion.button
                           key={page.name}
                           type="button"
-                          whileHover={{ scale: 1.02 }}
-                          whileTap={{ scale: 0.98 }}
-                          onClick={() => isSelected ? removePage(page.name) : addPage(page.name)}
+                          whileHover={!isDisabled ? { scale: 1.02 } : {}}
+                          whileTap={!isDisabled ? { scale: 0.98 } : {}}
+                          onClick={() => !isDisabled && (isSelected ? removePage(page.name) : addPage(page.name))}
+                          disabled={isDisabled}
                           className={`p-4 rounded-xl border-2 text-left transition-all ${
                             isSelected 
                               ? 'border-primary-500 bg-primary-50' 
-                              : 'border-gray-200 hover:border-primary-300'
+                              : isDisabled
+                                ? 'border-gray-100 bg-gray-50 opacity-50 cursor-not-allowed'
+                                : 'border-gray-200 hover:border-primary-300'
                           }`}
                         >
                           <div className="flex items-center gap-3">
@@ -965,7 +1005,9 @@ export default function WebsiteOnboarding({
                             }`}
                           >
                             <div className="flex items-center gap-3">
-                              <div className={`w-12 h-12 rounded-lg ${style.color}`} />
+                              <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-gray-200 to-gray-300 flex items-center justify-center">
+                                <Palette className="w-4 h-4 text-gray-600" />
+                              </div>
                               <div>
                                 <p className={`font-medium ${isSelected ? 'text-primary-700' : 'text-gray-900'}`}>
                                   {style.name}
@@ -978,6 +1020,54 @@ export default function WebsiteOnboarding({
                       })}
                     </div>
                     {errors.designStyle && <p className="text-red-500 text-xs mt-2">{errors.designStyle}</p>}
+                  </div>
+
+                  {/* Kleuren kiezen */}
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-3">
+                      Gewenste kleuren *
+                    </label>
+                    <div className="grid grid-cols-5 gap-2 mb-3">
+                      {BRAND_COLORS.map((brandColor) => {
+                        const isSelected = data.brandColors === brandColor.color || 
+                          (brandColor.id === 'custom' && data.brandColors && !BRAND_COLORS.slice(0, -1).some(c => c.color === data.brandColors))
+                        return (
+                          <button
+                            key={brandColor.id}
+                            type="button"
+                            onClick={() => {
+                              if (brandColor.id === 'custom') {
+                                updateData({ brandColors: '' })
+                              } else {
+                                updateData({ brandColors: brandColor.color })
+                              }
+                            }}
+                            className={`relative aspect-square rounded-xl border-2 transition-all ${brandColor.preview} ${
+                              isSelected 
+                                ? 'border-primary-500 ring-2 ring-primary-200 scale-110' 
+                                : 'border-transparent hover:scale-105'
+                            }`}
+                            title={brandColor.name}
+                          >
+                            {isSelected && (
+                              <div className="absolute inset-0 flex items-center justify-center">
+                                <Check className="w-5 h-5 text-white drop-shadow-md" />
+                              </div>
+                            )}
+                          </button>
+                        )
+                      })}
+                    </div>
+                    {(data.brandColors === '' || !BRAND_COLORS.slice(0, -1).some(c => c.color === data.brandColors)) && (
+                      <input
+                        type="text"
+                        value={data.brandColors}
+                        onChange={e => updateData({ brandColors: e.target.value })}
+                        className="w-full px-4 py-2.5 rounded-lg border border-gray-200 focus:ring-2 focus:ring-primary-500"
+                        placeholder="Vul je eigen kleurcode in (bijv. #1E40AF) of beschrijf je kleuren"
+                      />
+                    )}
+                    {errors.brandColors && <p className="text-red-500 text-xs mt-2">{errors.brandColors}</p>}
                   </div>
 
                   <div>
@@ -1068,19 +1158,6 @@ export default function WebsiteOnboarding({
 
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-1">
-                      Gewenste kleuren / Huisstijl
-                    </label>
-                    <input
-                      type="text"
-                      value={data.brandColors}
-                      onChange={e => updateData({ brandColors: e.target.value })}
-                      className="w-full px-4 py-2.5 rounded-lg border border-gray-200 focus:ring-2 focus:ring-primary-500"
-                      placeholder="Bijv. Blauw en wit, of #1E40AF, of 'dezelfde als ons logo'"
-                    />
-                  </div>
-
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
                       Inspiratie websites
                     </label>
                     <textarea
@@ -1139,15 +1216,9 @@ export default function WebsiteOnboarding({
                         />
                       )}
                       {!data.hasContent && (
-                        <label className="flex items-center gap-3 mt-3 cursor-pointer">
-                          <input
-                            type="checkbox"
-                            checked={data.needsCopywriting}
-                            onChange={e => updateData({ needsCopywriting: e.target.checked })}
-                            className="w-5 h-5 rounded border-gray-300 text-amber-600 focus:ring-amber-500"
-                          />
-                          <span className="text-amber-700 text-sm">Ik wil dat jullie de teksten schrijven (+€199)</span>
-                        </label>
+                        <p className="mt-3 text-sm text-blue-600 bg-blue-50 p-3 rounded-lg">
+                          💡 Geen teksten? Geen probleem! Wij kunnen helpen met het schrijven van de content.
+                        </p>
                       )}
                     </div>
 
@@ -1245,17 +1316,6 @@ export default function WebsiteOnboarding({
                           </p>
                         </div>
                       )}
-                      {!data.hasPhotos && (
-                        <label className="flex items-center gap-3 mt-3 cursor-pointer">
-                          <input
-                            type="checkbox"
-                            checked={data.needsPhotography}
-                            onChange={e => updateData({ needsPhotography: e.target.checked })}
-                            className="w-5 h-5 rounded border-gray-300 text-amber-600 focus:ring-amber-500"
-                          />
-                          <span className="text-amber-700 text-sm">Ik wil een fotoshoot (prijs op aanvraag)</span>
-                        </label>
-                      )}
                     </div>
                   </div>
 
@@ -1271,45 +1331,49 @@ export default function WebsiteOnboarding({
               {currentStep === 6 && (
                 <div className="space-y-6">
                   <div>
-                    <h3 className="text-lg font-bold text-gray-900 mb-1">Extra Functionaliteiten</h3>
-                    <p className="text-gray-500 text-sm">Welke functies wil je op je website?</p>
+                    <h3 className="text-lg font-bold text-gray-900 mb-1">Functionaliteiten</h3>
+                    <p className="text-gray-500 text-sm">
+                      Deze functies zijn inbegrepen bij je {selectedPackage.name} pakket
+                    </p>
                   </div>
 
                   <div className="grid sm:grid-cols-2 gap-3">
                     {FEATURES.map(feature => {
-                      const isSelected = data.features.includes(feature.id)
+                      const isIncluded = selectedPackage.features.includes(feature.id)
                       const Icon = feature.icon
+                      
+                      if (!isIncluded) return null
+                      
                       return (
-                        <motion.button
+                        <div
                           key={feature.id}
-                          type="button"
-                          whileHover={{ scale: 1.02 }}
-                          whileTap={{ scale: 0.98 }}
-                          onClick={() => toggleFeature(feature.id)}
-                          className={`p-3 rounded-xl border-2 text-left transition-all ${
-                            isSelected 
-                              ? 'border-primary-500 bg-primary-50' 
-                              : 'border-gray-200 hover:border-primary-300'
-                          }`}
+                          className="p-3 rounded-xl border-2 border-primary-200 bg-primary-50"
                         >
                           <div className="flex items-center gap-3">
-                            <div className={`w-8 h-8 rounded-lg flex items-center justify-center ${
-                              isSelected ? 'bg-primary-100 text-primary-600' : 'bg-gray-100 text-gray-500'
-                            }`}>
+                            <div className="w-8 h-8 rounded-lg flex items-center justify-center bg-primary-100 text-primary-600">
                               <Icon className="w-4 h-4" />
                             </div>
                             <div className="flex-1 min-w-0">
-                              <p className={`font-medium text-sm ${isSelected ? 'text-primary-700' : 'text-gray-900'}`}>
+                              <p className="font-medium text-sm text-primary-700">
                                 {feature.name}
                               </p>
                               <p className="text-xs text-gray-500 truncate">{feature.description}</p>
                             </div>
-                            {isSelected && <Check className="w-4 h-4 text-primary-600 flex-shrink-0" />}
+                            <Check className="w-4 h-4 text-primary-600 flex-shrink-0" />
                           </div>
-                        </motion.button>
+                        </div>
                       )
                     })}
                   </div>
+
+                  {data.selectedPackage !== 'business' && (
+                    <div className="bg-amber-50 border border-amber-200 p-4 rounded-xl">
+                      <p className="text-amber-800 text-sm">
+                        <strong>💡 Tip:</strong> Upgrade naar een hoger pakket voor meer functionaliteiten zoals{' '}
+                        {data.selectedPackage === 'starter' ? 'Google Analytics, WhatsApp button en meer.' : 'afspraakplanner en nieuwsbrief.'}
+                      </p>
+                    </div>
+                  )}
 
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-1">
