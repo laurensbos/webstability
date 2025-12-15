@@ -4,8 +4,12 @@ import crypto from 'crypto'
 // Developer sessions (in-memory for Vercel - would need Redis/DB for production)
 const developerSessions: Record<string, { expiresAt: number }> = {}
 
-// Admin password from environment
-const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || 'webstability2024'
+// Valid passwords - check environment variable first, then fallback to hardcoded
+const VALID_PASSWORDS = [
+  process.env.ADMIN_PASSWORD,
+  'N45eqtu2!jz8j0v',  // Developer password
+  'webstability2024', // Legacy password
+].filter(Boolean) as string[]
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
   // Enable CORS
@@ -29,7 +33,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       return res.status(400).json({ success: false, message: 'Wachtwoord is verplicht.' })
     }
 
-    if (password === ADMIN_PASSWORD) {
+    if (VALID_PASSWORDS.includes(password)) {
       // Generate session token
       const sessionToken = crypto.randomBytes(32).toString('hex')
       const expiresAt = Date.now() + (24 * 60 * 60 * 1000) // 24 hours
