@@ -87,7 +87,7 @@ export default function Portfolio() {
   }
 
   return (
-    <section id="portfolio" className="py-16 lg:py-24 bg-gradient-to-b from-white via-gray-50 to-white relative overflow-hidden">
+    <section id="portfolio" className="py-16 lg:py-24 bg-gradient-to-b from-white via-gray-50 to-white dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 relative overflow-hidden">
       {/* Floating particles */}
       <FloatingParticles />
       
@@ -114,11 +114,11 @@ export default function Portfolio() {
             <Sparkles className="w-4 h-4 text-primary-500" />
             <span className="text-primary-700 font-medium text-sm">Ons werk</span>
           </motion.div>
-          <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-gray-900 mb-3 lg:mb-4">
+          <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-gray-900 dark:text-white mb-3 lg:mb-4">
             Websites die we hebben{' '}
             <span className="bg-gradient-to-r from-primary-600 to-blue-600 bg-clip-text text-transparent">gebouwd</span>
           </h2>
-          <p className="text-gray-600 text-base lg:text-lg max-w-2xl mx-auto">
+          <p className="text-gray-600 dark:text-gray-400 text-base lg:text-lg max-w-2xl mx-auto">
             Bekijk een selectie van websites die we voor onze klanten hebben gemaakt. 
           </p>
         </motion.div>

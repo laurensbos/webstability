@@ -125,7 +125,7 @@ function renderCell(value: CellValue, isWebstability = false) {
 
 export default function Comparison() {
   return (
-    <section id="comparison" className="py-16 lg:py-24 bg-gradient-to-b from-gray-50 via-white to-gray-50 relative overflow-hidden">
+    <section id="comparison" className="py-16 lg:py-24 bg-gradient-to-b from-gray-50 via-white to-gray-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 relative overflow-hidden">
       {/* Floating particles */}
       <FloatingParticles />
       
@@ -144,7 +144,7 @@ export default function Comparison() {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ delay: 0.1 }}
-            className="text-2xl sm:text-3xl lg:text-4xl font-bold text-gray-900 mb-4"
+            className="text-2xl sm:text-3xl lg:text-4xl font-bold text-gray-900 dark:text-white mb-4"
           >
             Bespaar{' '}
             <span className="bg-gradient-to-r from-primary-600 to-blue-600 bg-clip-text text-transparent">
@@ -157,7 +157,7 @@ export default function Comparison() {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ delay: 0.2 }}
-            className="text-gray-600 text-base lg:text-lg"
+            className="text-gray-600 dark:text-gray-400 text-base lg:text-lg"
           >
             Een traditioneel webbureau vraagt €3.000+ en weken werk. Zelf bouwen kost je eindeloos veel tijd.
           </motion.p>
@@ -168,7 +168,7 @@ export default function Comparison() {
           initial={{ opacity: 0, y: 30 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
-          className="bg-white/80 backdrop-blur-sm rounded-2xl border border-gray-200/80 shadow-xl shadow-gray-200/50 overflow-hidden"
+          className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-2xl border border-gray-200/80 dark:border-gray-700 shadow-xl shadow-gray-200/50 dark:shadow-gray-900/50 overflow-hidden"
         >
           <div className="overflow-x-auto">
             <table className="w-full">

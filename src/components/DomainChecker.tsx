@@ -141,7 +141,7 @@ export default function DomainChecker() {
   const unavailableDomains = results.filter(r => !r.available)
 
   return (
-    <section id="domain-checker" className="py-16 lg:py-32 bg-white relative overflow-hidden">
+    <section id="domain-checker" className="py-16 lg:py-32 bg-white dark:bg-gray-900 relative overflow-hidden">
       {/* Background */}
       <div className="absolute inset-0">
         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[400px] lg:w-[600px] h-[400px] lg:h-[600px] bg-primary-100/50 rounded-full blur-3xl" />
