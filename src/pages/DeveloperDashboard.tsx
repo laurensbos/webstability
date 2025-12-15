@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react'
+import { useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import {
   Lock,
@@ -51,31 +51,8 @@ import {
   MousePointer,
   ArrowRight,
   Target,
-  Zap,
-  Star,
-  Image,
-  MapPin,
-  CheckCircle,
-  Monitor,
-  Smartphone,
-  Tablet,
-  TrendingDown
+  Zap
 } from 'lucide-react'
-import {
-  AreaChart,
-  Area,
-  BarChart,
-  Bar,
-  PieChart,
-  Pie,
-  Cell,
-  XAxis,
-  YAxis,
-  CartesianGrid,
-  Tooltip as RechartsTooltip,
-  ResponsiveContainer,
-  Legend
-} from 'recharts'
 import Logo from '../components/Logo'
 import KanbanBoard, { type KanbanTask, getDefaultColumns } from '../components/KanbanBoard'
 import type { 
@@ -88,7 +65,7 @@ import type {
 // TYPES
 // ===========================================
 
-type DashboardTab = 'overview' | 'projects' | 'kanban' | 'clients' | 'billing' | 'services' | 'analytics' | 'settings'
+type DashboardTab = 'overview' | 'projects' | 'kanban' | 'clients' | 'billing' | 'services' | 'settings'
 
 interface Client {
   id: string
@@ -102,12 +79,6 @@ interface Client {
   totalSpent: number
   createdAt: string
   notes?: string
-  trustpilotReview?: {
-    hasReviewed: boolean
-    reviewedAt?: string
-    discountActive: boolean
-    discountUsedAt?: string
-  }
 }
 
 interface ServiceRequest {
@@ -132,71 +103,6 @@ interface Notification {
   projectId?: string
   read: boolean
   createdAt: string
-}
-
-// Analytics Types
-interface AnalyticsDailyStats {
-  date: string
-  visitors: number
-  pageviews: number
-  bounceRate: number
-  avgDuration: number
-}
-
-interface AnalyticsTrafficSource {
-  source: string
-  visits: number
-  percent: number
-}
-
-interface AnalyticsTopPage {
-  path: string
-  title: string
-  views: number
-  uniqueVisitors: number
-}
-
-interface AnalyticsDeviceStats {
-  device: string
-  percent: number
-  visitors: number
-}
-
-interface AnalyticsLocationStats {
-  country: string
-  countryCode: string
-  visits: number
-  percent: number
-}
-
-interface AnalyticsConversion {
-  name: string
-  conversions: number
-  rate: number
-}
-
-interface AnalyticsData {
-  period: string
-  summary: {
-    totalVisitors: number
-    totalPageviews: number
-    avgSessionDuration: number
-    bounceRate: number
-    newVisitors: number
-    returningVisitors: number
-    visitorChange: number
-    pageviewChange: number
-  }
-  dailyStats: AnalyticsDailyStats[]
-  trafficSources: AnalyticsTrafficSource[]
-  topPages: AnalyticsTopPage[]
-  devices: AnalyticsDeviceStats[]
-  locations: AnalyticsLocationStats[]
-  conversions: AnalyticsConversion[]
-  realtime: {
-    activeVisitors: number
-    currentPages: { path: string; visitors: number }[]
-  }
 }
 
 // ===========================================
@@ -870,406 +776,6 @@ function ProjectOverviewTab({
         </div>
       )}
       
-      {/* Website Onboarding Data (from WebsiteOnboarding wizard) */}
-      {project.onboardingData?.designStyle && project.package === 'website' && (
-        <div className="bg-gradient-to-br from-blue-50 to-primary-50 border border-blue-200 rounded-xl p-4">
-          <h3 className="font-semibold text-gray-900 mb-3 flex items-center gap-2">
-            <Globe className="w-4 h-4 text-blue-600" />
-            Website Design & Content
-            <span className="text-xs bg-blue-100 text-blue-700 px-2 py-0.5 rounded-full ml-auto">
-              Wizard ingevuld
-            </span>
-          </h3>
-          <div className="space-y-4 text-sm">
-            {/* Design Style */}
-            <div className="flex items-center justify-between">
-              <span className="text-gray-600">Design stijl</span>
-              <span className="font-medium text-gray-900 capitalize">
-                {project.onboardingData.designStyle === 'modern' && 'Modern & Minimalistisch'}
-                {project.onboardingData.designStyle === 'bold' && 'Bold & Opvallend'}
-                {project.onboardingData.designStyle === 'classic' && 'Klassiek & Professioneel'}
-                {project.onboardingData.designStyle === 'playful' && 'Speels & Creatief'}
-                {project.onboardingData.designStyle === 'luxury' && 'Luxe & Premium'}
-              </span>
-            </div>
-
-            {/* Website Goal */}
-            {project.onboardingData.websiteGoal && (
-              <div className="flex items-center justify-between">
-                <span className="text-gray-600">Website doel</span>
-                <span className="font-medium text-gray-900 capitalize">
-                  {project.onboardingData.websiteGoal === 'leads' && 'Leads genereren'}
-                  {project.onboardingData.websiteGoal === 'info' && 'Informeren'}
-                  {project.onboardingData.websiteGoal === 'portfolio' && 'Portfolio tonen'}
-                  {project.onboardingData.websiteGoal === 'booking' && 'Afspraken maken'}
-                  {project.onboardingData.websiteGoal === 'brand' && 'Merk bouwen'}
-                </span>
-              </div>
-            )}
-
-            {/* Target Audience */}
-            {project.onboardingData.targetAudience && (
-              <div>
-                <span className="text-gray-600 block mb-1">Doelgroep</span>
-                <p className="text-gray-900 text-xs bg-white rounded-lg p-2 border border-blue-100">
-                  {project.onboardingData.targetAudience}
-                </p>
-              </div>
-            )}
-
-            {/* Pages */}
-            {project.onboardingData.pages && project.onboardingData.pages.length > 0 && (
-              <div>
-                <span className="text-gray-600 block mb-1">Gekozen pagina's ({project.onboardingData.pages.length})</span>
-                <div className="flex flex-wrap gap-1">
-                  {project.onboardingData.pages.map((page: any, idx: number) => (
-                    <span key={idx} className="px-2 py-1 bg-blue-100 text-blue-700 rounded text-xs font-medium">
-                      {typeof page === 'string' ? page : page.name}
-                    </span>
-                  ))}
-                </div>
-              </div>
-            )}
-
-            {/* Features */}
-            {project.onboardingData.features && project.onboardingData.features.length > 0 && (
-              <div>
-                <span className="text-gray-600 block mb-1">Extra features</span>
-                <div className="flex flex-wrap gap-1">
-                  {project.onboardingData.features.map((feature: string, idx: number) => (
-                    <span key={idx} className="px-2 py-1 bg-purple-100 text-purple-700 rounded text-xs font-medium">
-                      {feature}
-                    </span>
-                  ))}
-                </div>
-              </div>
-            )}
-
-            {/* Brand Colors */}
-            {project.onboardingData.brandColors && (
-              <div className="flex items-center justify-between">
-                <span className="text-gray-600">Merk kleuren</span>
-                <span className="font-medium text-gray-900">{project.onboardingData.brandColors}</span>
-              </div>
-            )}
-
-            {/* Logo Status */}
-            <div className="grid grid-cols-2 gap-3 pt-3 border-t border-blue-100">
-              <div className="p-3 bg-white rounded-lg border border-blue-100">
-                <div className="flex items-center gap-2 mb-1">
-                  <Palette className="w-4 h-4 text-blue-500" />
-                  <span className="text-xs font-medium text-gray-700">Logo</span>
-                </div>
-                <p className="text-sm font-medium text-gray-900">
-                  {project.onboardingData.hasLogo ? (
-                    project.onboardingData.logoUrl || project.onboardingData.logoFile ? (
-                      <span className="text-green-600">✓ Geüpload</span>
-                    ) : (
-                      <span className="text-green-600">✓ Beschikbaar</span>
-                    )
-                  ) : (
-                    <span className="text-amber-600">Moet ontworpen worden (+€150)</span>
-                  )}
-                </p>
-              </div>
-              <div className="p-3 bg-white rounded-lg border border-blue-100">
-                <div className="flex items-center gap-2 mb-1">
-                  <Image className="w-4 h-4 text-blue-500" />
-                  <span className="text-xs font-medium text-gray-700">Foto's</span>
-                </div>
-                <p className="text-sm font-medium text-gray-900">
-                  {project.onboardingData.hasPhotos ? (
-                    (project.onboardingData.photoUrls && project.onboardingData.photoUrls.length > 0) || project.onboardingData.photoUrl ? (
-                      <span className="text-green-600">✓ Geüpload</span>
-                    ) : (
-                      <span className="text-green-600">✓ Beschikbaar</span>
-                    )
-                  ) : project.onboardingData.needsPhotography ? (
-                    <span className="text-amber-600">Fotoshoot aangevraagd</span>
-                  ) : (
-                    <span className="text-gray-500">Stockfoto's gebruiken</span>
-                  )}
-                </p>
-              </div>
-            </div>
-
-            {/* Content Status */}
-            <div className="grid grid-cols-2 gap-3">
-              <div className="p-3 bg-white rounded-lg border border-blue-100">
-                <div className="flex items-center gap-2 mb-1">
-                  <FileText className="w-4 h-4 text-blue-500" />
-                  <span className="text-xs font-medium text-gray-700">Teksten</span>
-                </div>
-                <p className="text-sm font-medium text-gray-900">
-                  {project.onboardingData.hasContent ? (
-                    <span className="text-green-600">✓ Klant levert aan</span>
-                  ) : project.onboardingData.needsCopywriting ? (
-                    <span className="text-amber-600">Copywriting nodig (+€199)</span>
-                  ) : (
-                    <span className="text-gray-500">Nog niet bepaald</span>
-                  )}
-                </p>
-              </div>
-              {project.onboardingData.contentNotes && (
-                <div className="p-3 bg-white rounded-lg border border-blue-100 col-span-2">
-                  <span className="text-xs font-medium text-gray-700">Notities content</span>
-                  <p className="text-xs text-gray-600 mt-1">{project.onboardingData.contentNotes}</p>
-                </div>
-              )}
-            </div>
-
-            {/* Inspiration URLs */}
-            {project.onboardingData.inspirationUrls && (
-              <div>
-                <span className="text-gray-600 block mb-1">Inspiratie websites</span>
-                <p className="text-gray-900 text-xs bg-white rounded-lg p-2 border border-blue-100 break-all">
-                  {project.onboardingData.inspirationUrls}
-                </p>
-              </div>
-            )}
-
-            {/* Competitors */}
-            {project.onboardingData.competitors && project.onboardingData.competitors.length > 0 && (
-              <div>
-                <span className="text-gray-600 block mb-1">Concurrenten</span>
-                <div className="text-xs bg-white rounded-lg p-2 border border-blue-100 space-y-1">
-                  {project.onboardingData.competitors.map((url: string, idx: number) => (
-                    <a key={idx} href={url.startsWith('http') ? url : `https://${url}`} target="_blank" rel="noopener noreferrer" className="block text-blue-600 hover:underline truncate">
-                      {url}
-                    </a>
-                  ))}
-                </div>
-              </div>
-            )}
-
-            {/* USPs */}
-            {project.onboardingData.uniqueSellingPoints && (
-              <div>
-                <span className="text-gray-600 block mb-1">Unique Selling Points</span>
-                <p className="text-gray-900 text-xs bg-white rounded-lg p-2 border border-blue-100">
-                  {project.onboardingData.uniqueSellingPoints}
-                </p>
-              </div>
-            )}
-
-            {/* Additional Notes */}
-            {project.onboardingData.additionalNotes && (
-              <div>
-                <span className="text-gray-600 block mb-1">Extra wensen</span>
-                <p className="text-gray-900 text-xs bg-white rounded-lg p-2 border border-blue-100">
-                  {project.onboardingData.additionalNotes}
-                </p>
-              </div>
-            )}
-          </div>
-        </div>
-      )}
-
-      {/* Drone Onboarding Data (from DroneOnboarding wizard) */}
-      {project.onboardingData?.dronePackage && (
-        <div className="bg-gradient-to-br from-orange-50 to-amber-50 border border-orange-200 rounded-xl p-4">
-          <h3 className="font-semibold text-gray-900 mb-3 flex items-center gap-2">
-            <Camera className="w-4 h-4 text-orange-600" />
-            Drone Project Details
-            <span className="text-xs bg-orange-100 text-orange-700 px-2 py-0.5 rounded-full ml-auto">
-              {project.onboardingData.dronePackage === 'basis' && 'Basis €483'}
-              {project.onboardingData.dronePackage === 'professional' && 'Professioneel €846'}
-              {project.onboardingData.dronePackage === 'premium' && 'Premium €1209'}
-            </span>
-          </h3>
-          <div className="space-y-4 text-sm">
-            {/* Project Name */}
-            {project.onboardingData.projectName && (
-              <div className="flex items-center justify-between">
-                <span className="text-gray-600">Project naam</span>
-                <span className="font-medium text-gray-900">{project.onboardingData.projectName}</span>
-              </div>
-            )}
-
-            {/* Location Details */}
-            <div className="p-3 bg-white rounded-lg border border-orange-100">
-              <div className="flex items-center gap-2 mb-2">
-                <MapPin className="w-4 h-4 text-orange-500" />
-                <span className="text-xs font-medium text-gray-700">Locatie</span>
-              </div>
-              <div className="space-y-1 text-sm">
-                {project.onboardingData.locationType && (
-                  <p className="text-gray-900 font-medium capitalize">
-                    {project.onboardingData.locationType === 'bedrijfspand' && '🏢 Bedrijfspand'}
-                    {project.onboardingData.locationType === 'woning' && '🏠 Woning'}
-                    {project.onboardingData.locationType === 'bouwproject' && '🏗️ Bouwproject'}
-                    {project.onboardingData.locationType === 'landschap' && '🌳 Landschap'}
-                    {project.onboardingData.locationType === 'evenement' && '📸 Evenement'}
-                    {project.onboardingData.locationType === 'water' && '🌊 Water/Kust'}
-                  </p>
-                )}
-                {project.onboardingData.locationAddress && (
-                  <p className="text-gray-600">{project.onboardingData.locationAddress}</p>
-                )}
-                {(project.onboardingData.locationPostalCode || project.onboardingData.locationCity) && (
-                  <p className="text-gray-600">
-                    {project.onboardingData.locationPostalCode} {project.onboardingData.locationCity}
-                  </p>
-                )}
-                {project.onboardingData.gpsCoords && (
-                  <p className="text-xs text-gray-500">GPS: {project.onboardingData.gpsCoords}</p>
-                )}
-              </div>
-            </div>
-
-            {/* Planning */}
-            <div className="grid grid-cols-2 gap-3">
-              <div className="p-3 bg-white rounded-lg border border-orange-100">
-                <div className="flex items-center gap-2 mb-1">
-                  <Calendar className="w-4 h-4 text-orange-500" />
-                  <span className="text-xs font-medium text-gray-700">Voorkeursdatum</span>
-                </div>
-                <p className="text-sm font-medium text-gray-900">
-                  {project.onboardingData.preferredDate || 'Niet opgegeven'}
-                </p>
-              </div>
-              <div className="p-3 bg-white rounded-lg border border-orange-100">
-                <div className="flex items-center gap-2 mb-1">
-                  <Clock className="w-4 h-4 text-orange-500" />
-                  <span className="text-xs font-medium text-gray-700">Tijdvoorkeur</span>
-                </div>
-                <p className="text-sm font-medium text-gray-900 capitalize">
-                  {project.onboardingData.timePreference === 'ochtend' && '☀️ Ochtend (7:00-12:00)'}
-                  {project.onboardingData.timePreference === 'middag' && '🌤️ Middag (12:00-17:00)'}
-                  {project.onboardingData.timePreference === 'golden-hour' && '🌅 Golden hour (17:00-19:00)'}
-                  {project.onboardingData.timePreference === 'flexibel' && '📅 Flexibel'}
-                  {!project.onboardingData.timePreference && 'Niet opgegeven'}
-                </p>
-              </div>
-            </div>
-
-            {/* Alternative Date */}
-            {project.onboardingData.alternativeDate && (
-              <div className="flex items-center justify-between">
-                <span className="text-gray-600">Alternatieve datum</span>
-                <span className="font-medium text-gray-900">{project.onboardingData.alternativeDate}</span>
-              </div>
-            )}
-
-            {/* Deliverables */}
-            {project.onboardingData.deliverables && project.onboardingData.deliverables.length > 0 && (
-              <div>
-                <span className="text-gray-600 block mb-1">Gewenste deliverables</span>
-                <div className="flex flex-wrap gap-1">
-                  {project.onboardingData.deliverables.map((item: string, idx: number) => (
-                    <span key={idx} className="px-2 py-1 bg-orange-100 text-orange-700 rounded text-xs font-medium">
-                      {item}
-                    </span>
-                  ))}
-                </div>
-              </div>
-            )}
-
-            {/* Extras */}
-            {project.onboardingData.extras && project.onboardingData.extras.length > 0 && (
-              <div>
-                <span className="text-gray-600 block mb-1">Extra opties</span>
-                <div className="flex flex-wrap gap-1">
-                  {project.onboardingData.extras.map((extra: string, idx: number) => (
-                    <span key={idx} className="px-2 py-1 bg-amber-100 text-amber-700 rounded text-xs font-medium">
-                      {extra}
-                    </span>
-                  ))}
-                </div>
-              </div>
-            )}
-
-            {/* Project Description */}
-            {project.onboardingData.projectDescription && (
-              <div>
-                <span className="text-gray-600 block mb-1">Projectomschrijving</span>
-                <p className="text-gray-900 text-xs bg-white rounded-lg p-2 border border-orange-100">
-                  {project.onboardingData.projectDescription}
-                </p>
-              </div>
-            )}
-
-            {/* Location Notes */}
-            {project.onboardingData.locationNotes && (
-              <div>
-                <span className="text-gray-600 block mb-1">Locatie notities</span>
-                <p className="text-gray-900 text-xs bg-white rounded-lg p-2 border border-orange-100">
-                  {project.onboardingData.locationNotes}
-                </p>
-              </div>
-            )}
-
-            {/* Reference URLs */}
-            {project.onboardingData.referenceUrls && (
-              <div>
-                <span className="text-gray-600 block mb-1">Referentie URLs</span>
-                <p className="text-gray-900 text-xs bg-white rounded-lg p-2 border border-orange-100 break-all">
-                  {project.onboardingData.referenceUrls}
-                </p>
-              </div>
-            )}
-
-            {/* Uploaded Reference Images */}
-            {project.onboardingData.uploadedReferenceUrls && project.onboardingData.uploadedReferenceUrls.length > 0 && (
-              <div>
-                <span className="text-gray-600 block mb-1">Geüploade referentiebeelden ({project.onboardingData.uploadedReferenceUrls.length})</span>
-                <div className="grid grid-cols-3 gap-2">
-                  {project.onboardingData.uploadedReferenceUrls.map((url: string, idx: number) => (
-                    <a key={idx} href={url} target="_blank" rel="noopener noreferrer" className="block aspect-video bg-gray-100 rounded-lg overflow-hidden border border-orange-100 hover:border-orange-300 transition-colors">
-                      <img src={url} alt={`Referentie ${idx + 1}`} className="w-full h-full object-cover" />
-                    </a>
-                  ))}
-                </div>
-              </div>
-            )}
-
-            {/* Weather Agreement */}
-            {project.onboardingData.agreedToWeather && (
-              <div className="flex items-center gap-2 p-2 bg-green-50 rounded-lg border border-green-200">
-                <CheckCircle className="w-4 h-4 text-green-600" />
-                <span className="text-xs text-green-700">Klant akkoord met weersafhankelijke planning</span>
-              </div>
-            )}
-          </div>
-        </div>
-      )}
-
-      {/* Developer Upload Links */}
-      {project.devUploadLinks && (
-        <div className="bg-gradient-to-br from-amber-50 to-orange-50 border border-amber-200 rounded-xl p-4">
-          <h3 className="font-semibold text-gray-900 mb-3 flex items-center gap-2">
-            <Upload className="w-4 h-4 text-amber-600" />
-            Upload Links voor Klant
-          </h3>
-          <div className="space-y-2 text-sm">
-            {project.devUploadLinks.logo && (
-              <div className="flex items-center justify-between p-2 bg-white rounded-lg border border-amber-100">
-                <span className="text-gray-600">Logo upload</span>
-                <a href={project.devUploadLinks.logo} target="_blank" rel="noopener noreferrer" className="text-amber-600 hover:underline text-xs truncate max-w-[200px]">
-                  {project.devUploadLinks.logo}
-                </a>
-              </div>
-            )}
-            {project.devUploadLinks.photos && (
-              <div className="flex items-center justify-between p-2 bg-white rounded-lg border border-amber-100">
-                <span className="text-gray-600">Foto's upload</span>
-                <a href={project.devUploadLinks.photos} target="_blank" rel="noopener noreferrer" className="text-amber-600 hover:underline text-xs truncate max-w-[200px]">
-                  {project.devUploadLinks.photos}
-                </a>
-              </div>
-            )}
-            {project.devUploadLinks.files && (
-              <div className="flex items-center justify-between p-2 bg-white rounded-lg border border-amber-100">
-                <span className="text-gray-600">Overige bestanden</span>
-                <a href={project.devUploadLinks.files} target="_blank" rel="noopener noreferrer" className="text-amber-600 hover:underline text-xs truncate max-w-[200px]">
-                  {project.devUploadLinks.files}
-                </a>
-              </div>
-            )}
-          </div>
-        </div>
-      )}
-      
       {/* Quick actions */}
       <div className="bg-white border border-gray-200 rounded-xl p-4">
         <h3 className="font-semibold text-gray-900 mb-3">Snelle acties</h3>
@@ -1757,7 +1263,7 @@ function formatDate(dateStr: string): string {
 // TOOLTIP COMPONENT
 // ===========================================
 
-function Tooltip({ children, text, darkMode, position = 'top' }: { children: React.ReactNode; text: string; darkMode: boolean; position?: 'top' | 'bottom' }) {
+function Tooltip({ children, text, darkMode }: { children: React.ReactNode; text: string; darkMode: boolean }) {
   const [show, setShow] = useState(false)
   
   return (
@@ -1771,20 +1277,16 @@ function Tooltip({ children, text, darkMode, position = 'top' }: { children: Rea
       <AnimatePresence>
         {show && (
           <motion.div
-            initial={{ opacity: 0, y: position === 'top' ? 5 : -5 }}
+            initial={{ opacity: 0, y: 5 }}
             animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: position === 'top' ? 5 : -5 }}
-            className={`absolute left-1/2 -translate-x-1/2 px-3 py-1.5 text-xs font-medium rounded-lg whitespace-nowrap z-[100] pointer-events-none ${
-              position === 'top' ? 'bottom-full mb-2' : 'top-full mt-2'
-            } ${
+            exit={{ opacity: 0, y: 5 }}
+            className={`absolute bottom-full left-1/2 -translate-x-1/2 mb-2 px-3 py-1.5 text-xs font-medium rounded-lg whitespace-nowrap z-50 ${
               darkMode ? 'bg-gray-700 text-white' : 'bg-gray-900 text-white'
             }`}
           >
             {text}
-            <div className={`absolute left-1/2 -translate-x-1/2 border-4 border-transparent ${
-              position === 'top' 
-                ? `top-full ${darkMode ? 'border-t-gray-700' : 'border-t-gray-900'}`
-                : `bottom-full ${darkMode ? 'border-b-gray-700' : 'border-b-gray-900'}`
+            <div className={`absolute top-full left-1/2 -translate-x-1/2 border-4 border-transparent ${
+              darkMode ? 'border-t-gray-700' : 'border-t-gray-900'
             }`} />
           </motion.div>
         )}
@@ -1845,19 +1347,19 @@ function OnboardingModal({
   const Icon = currentStep.icon
 
   return (
-    <motion.div
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      exit={{ opacity: 0 }}
-      className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4"
-      onClick={onSkip}
-    >
+    <>
+      <motion.div
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        exit={{ opacity: 0 }}
+        className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50"
+        onClick={onSkip}
+      />
       <motion.div
         initial={{ opacity: 0, scale: 0.9, y: 20 }}
         animate={{ opacity: 1, scale: 1, y: 0 }}
         exit={{ opacity: 0, scale: 0.9, y: 20 }}
-        onClick={(e) => e.stopPropagation()}
-        className={`w-full max-w-md p-8 rounded-2xl shadow-2xl ${
+        className={`fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full max-w-md p-8 rounded-2xl shadow-2xl z-50 ${
           darkMode ? 'bg-gray-800' : 'bg-white'
         }`}
       >
@@ -1921,7 +1423,7 @@ function OnboardingModal({
           </div>
         </motion.div>
       </motion.div>
-    </motion.div>
+    </>
   )
 }
 
@@ -1939,19 +1441,19 @@ function HelpModal({ onClose, darkMode }: { onClose: () => void; darkMode: boole
   ]
 
   return (
-    <motion.div
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      exit={{ opacity: 0 }}
-      className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4"
-      onClick={onClose}
-    >
+    <>
+      <motion.div
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        exit={{ opacity: 0 }}
+        className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50"
+        onClick={onClose}
+      />
       <motion.div
         initial={{ opacity: 0, scale: 0.9 }}
         animate={{ opacity: 1, scale: 1 }}
         exit={{ opacity: 0, scale: 0.9 }}
-        onClick={(e) => e.stopPropagation()}
-        className={`w-full max-w-2xl max-h-[80vh] rounded-2xl shadow-2xl overflow-hidden ${
+        className={`fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full max-w-2xl max-h-[80vh] rounded-2xl shadow-2xl z-50 overflow-hidden ${
           darkMode ? 'bg-gray-800' : 'bg-white'
         }`}
       >
@@ -2109,7 +1611,7 @@ function HelpModal({ onClose, darkMode }: { onClose: () => void; darkMode: boole
           </AnimatePresence>
         </div>
       </motion.div>
-    </motion.div>
+    </>
   )
 }
 
@@ -2184,606 +1686,6 @@ function ShortcutItem({
 }
 
 // ===========================================
-// ADD TASK MODAL
-// ===========================================
-
-function AddTaskModal({ 
-  onClose, 
-  onAdd, 
-  columnId, 
-  projects,
-  darkMode 
-}: { 
-  onClose: () => void
-  onAdd: (task: { title: string; description: string; projectId: string; priority: 'low' | 'normal' | 'high' | 'urgent'; columnId: string }) => void
-  columnId: string
-  projects: DeveloperProject[]
-  darkMode: boolean
-}) {
-  const [title, setTitle] = useState('')
-  const [description, setDescription] = useState('')
-  const [selectedProjectId, setSelectedProjectId] = useState(projects[0]?.projectId || '')
-  const [priority, setPriority] = useState<'low' | 'normal' | 'high' | 'urgent'>('normal')
-
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault()
-    if (!title.trim()) return
-    onAdd({ title, description, projectId: selectedProjectId, priority, columnId })
-    onClose()
-  }
-
-  return (
-    <motion.div
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      exit={{ opacity: 0 }}
-      className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4"
-      onClick={onClose}
-    >
-      <motion.div
-        initial={{ opacity: 0, scale: 0.9, y: 20 }}
-        animate={{ opacity: 1, scale: 1, y: 0 }}
-        exit={{ opacity: 0, scale: 0.9, y: 20 }}
-        onClick={(e) => e.stopPropagation()}
-        className={`w-full max-w-md rounded-2xl shadow-2xl overflow-hidden ${darkMode ? 'bg-gray-800' : 'bg-white'}`}
-      >
-        <div className={`p-6 border-b ${darkMode ? 'border-gray-700' : 'border-gray-200'}`}>
-          <div className="flex items-center justify-between">
-            <h2 className={`text-lg font-bold ${darkMode ? 'text-white' : 'text-gray-900'}`}>
-              Nieuwe Taak
-            </h2>
-            <button
-              onClick={onClose}
-              className={`p-2 rounded-lg transition-colors ${darkMode ? 'hover:bg-gray-700 text-gray-400' : 'hover:bg-gray-100 text-gray-500'}`}
-            >
-              <X className="w-5 h-5" />
-            </button>
-          </div>
-        </div>
-
-        <form onSubmit={handleSubmit} className="p-6 space-y-4">
-          <div>
-            <label className={`block text-sm font-medium mb-1.5 ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>
-              Titel *
-            </label>
-            <input
-              type="text"
-              value={title}
-              onChange={(e) => setTitle(e.target.value)}
-              placeholder="Bijv. Homepage design afmaken"
-              className={`w-full px-4 py-2.5 rounded-lg border focus:ring-2 focus:ring-blue-500 ${
-                darkMode ? 'bg-gray-700 border-gray-600 text-white placeholder-gray-400' : 'bg-white border-gray-200 text-gray-900'
-              }`}
-              autoFocus
-            />
-          </div>
-
-          <div>
-            <label className={`block text-sm font-medium mb-1.5 ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>
-              Beschrijving
-            </label>
-            <textarea
-              value={description}
-              onChange={(e) => setDescription(e.target.value)}
-              placeholder="Optionele beschrijving..."
-              rows={3}
-              className={`w-full px-4 py-2.5 rounded-lg border focus:ring-2 focus:ring-blue-500 ${
-                darkMode ? 'bg-gray-700 border-gray-600 text-white placeholder-gray-400' : 'bg-white border-gray-200 text-gray-900'
-              }`}
-            />
-          </div>
-
-          <div>
-            <label className={`block text-sm font-medium mb-1.5 ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>
-              Project
-            </label>
-            <select
-              value={selectedProjectId}
-              onChange={(e) => setSelectedProjectId(e.target.value)}
-              className={`w-full px-4 py-2.5 rounded-lg border focus:ring-2 focus:ring-blue-500 ${
-                darkMode ? 'bg-gray-700 border-gray-600 text-white' : 'bg-white border-gray-200 text-gray-900'
-              }`}
-            >
-              {projects.map(p => (
-                <option key={p.projectId} value={p.projectId}>{p.businessName}</option>
-              ))}
-            </select>
-          </div>
-
-          <div>
-            <label className={`block text-sm font-medium mb-1.5 ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>
-              Prioriteit
-            </label>
-            <div className="grid grid-cols-4 gap-2">
-              {(['low', 'normal', 'high', 'urgent'] as const).map(p => (
-                <button
-                  key={p}
-                  type="button"
-                  onClick={() => setPriority(p)}
-                  className={`px-3 py-2 rounded-lg text-sm font-medium transition-all ${
-                    priority === p
-                      ? p === 'urgent' ? 'bg-red-500 text-white' 
-                        : p === 'high' ? 'bg-orange-500 text-white'
-                        : p === 'normal' ? 'bg-blue-500 text-white'
-                        : 'bg-gray-500 text-white'
-                      : darkMode ? 'bg-gray-700 text-gray-300 hover:bg-gray-600' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
-                  }`}
-                >
-                  {p === 'low' ? 'Laag' : p === 'normal' ? 'Normaal' : p === 'high' ? 'Hoog' : 'Urgent'}
-                </button>
-              ))}
-            </div>
-          </div>
-
-          <div className="flex gap-3 pt-4">
-            <button
-              type="button"
-              onClick={onClose}
-              className={`flex-1 py-2.5 rounded-lg font-medium transition-colors ${
-                darkMode ? 'bg-gray-700 text-gray-300 hover:bg-gray-600' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
-              }`}
-            >
-              Annuleren
-            </button>
-            <button
-              type="submit"
-              disabled={!title.trim()}
-              className="flex-1 py-2.5 bg-blue-600 text-white rounded-lg font-medium hover:bg-blue-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-            >
-              Toevoegen
-            </button>
-          </div>
-        </form>
-      </motion.div>
-    </motion.div>
-  )
-}
-
-// ===========================================
-// ADD CLIENT MODAL
-// ===========================================
-
-function AddClientModal({ 
-  onClose, 
-  onAdd, 
-  darkMode 
-}: { 
-  onClose: () => void
-  onAdd: (client: { name: string; email: string; phone: string; company: string }) => void
-  darkMode: boolean
-}) {
-  const [name, setName] = useState('')
-  const [email, setEmail] = useState('')
-  const [phone, setPhone] = useState('')
-  const [company, setCompany] = useState('')
-
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault()
-    if (!name.trim() || !email.trim()) return
-    onAdd({ name, email, phone, company })
-    onClose()
-  }
-
-  return (
-    <motion.div
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      exit={{ opacity: 0 }}
-      className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4"
-      onClick={onClose}
-    >
-      <motion.div
-        initial={{ opacity: 0, scale: 0.9, y: 20 }}
-        animate={{ opacity: 1, scale: 1, y: 0 }}
-        exit={{ opacity: 0, scale: 0.9, y: 20 }}
-        onClick={(e) => e.stopPropagation()}
-        className={`w-full max-w-md rounded-2xl shadow-2xl overflow-hidden ${darkMode ? 'bg-gray-800' : 'bg-white'}`}
-      >
-        <div className={`p-6 border-b ${darkMode ? 'border-gray-700' : 'border-gray-200'}`}>
-          <div className="flex items-center justify-between">
-            <h2 className={`text-lg font-bold ${darkMode ? 'text-white' : 'text-gray-900'}`}>
-              Nieuwe Klant
-            </h2>
-            <button
-              onClick={onClose}
-              className={`p-2 rounded-lg transition-colors ${darkMode ? 'hover:bg-gray-700 text-gray-400' : 'hover:bg-gray-100 text-gray-500'}`}
-            >
-              <X className="w-5 h-5" />
-            </button>
-          </div>
-        </div>
-
-        <form onSubmit={handleSubmit} className="p-6 space-y-4">
-          <div>
-            <label className={`block text-sm font-medium mb-1.5 ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>
-              Naam *
-            </label>
-            <input
-              type="text"
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-              placeholder="Volledige naam"
-              className={`w-full px-4 py-2.5 rounded-lg border focus:ring-2 focus:ring-blue-500 ${
-                darkMode ? 'bg-gray-700 border-gray-600 text-white placeholder-gray-400' : 'bg-white border-gray-200 text-gray-900'
-              }`}
-              autoFocus
-            />
-          </div>
-
-          <div>
-            <label className={`block text-sm font-medium mb-1.5 ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>
-              Bedrijfsnaam
-            </label>
-            <input
-              type="text"
-              value={company}
-              onChange={(e) => setCompany(e.target.value)}
-              placeholder="Bedrijfsnaam"
-              className={`w-full px-4 py-2.5 rounded-lg border focus:ring-2 focus:ring-blue-500 ${
-                darkMode ? 'bg-gray-700 border-gray-600 text-white placeholder-gray-400' : 'bg-white border-gray-200 text-gray-900'
-              }`}
-            />
-          </div>
-
-          <div>
-            <label className={`block text-sm font-medium mb-1.5 ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>
-              E-mail *
-            </label>
-            <input
-              type="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              placeholder="email@voorbeeld.nl"
-              className={`w-full px-4 py-2.5 rounded-lg border focus:ring-2 focus:ring-blue-500 ${
-                darkMode ? 'bg-gray-700 border-gray-600 text-white placeholder-gray-400' : 'bg-white border-gray-200 text-gray-900'
-              }`}
-            />
-          </div>
-
-          <div>
-            <label className={`block text-sm font-medium mb-1.5 ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>
-              Telefoon
-            </label>
-            <input
-              type="tel"
-              value={phone}
-              onChange={(e) => setPhone(e.target.value)}
-              placeholder="06-12345678"
-              className={`w-full px-4 py-2.5 rounded-lg border focus:ring-2 focus:ring-blue-500 ${
-                darkMode ? 'bg-gray-700 border-gray-600 text-white placeholder-gray-400' : 'bg-white border-gray-200 text-gray-900'
-              }`}
-            />
-          </div>
-
-          <div className="flex gap-3 pt-4">
-            <button
-              type="button"
-              onClick={onClose}
-              className={`flex-1 py-2.5 rounded-lg font-medium transition-colors ${
-                darkMode ? 'bg-gray-700 text-gray-300 hover:bg-gray-600' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
-              }`}
-            >
-              Annuleren
-            </button>
-            <button
-              type="submit"
-              disabled={!name.trim() || !email.trim()}
-              className="flex-1 py-2.5 bg-blue-600 text-white rounded-lg font-medium hover:bg-blue-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-            >
-              Toevoegen
-            </button>
-          </div>
-        </form>
-      </motion.div>
-    </motion.div>
-  )
-}
-
-// ===========================================
-// SEND PAYMENT LINK MODAL
-// ===========================================
-
-function SendPaymentLinkModal({ 
-  onClose, 
-  onSend,
-  clients,
-  darkMode 
-}: { 
-  onClose: () => void
-  onSend: (data: { clientId: string; amount: number; description: string; amountExBtw: number; btwAmount: number; discountApplied: boolean; discountAmount: number }) => void
-  clients: Client[]
-  darkMode: boolean
-}) {
-  // Pakket configuratie met prijzen
-  const PACKAGES = [
-    { id: 'custom', name: 'Aangepast bedrag', priceExBtw: 0 },
-    { id: 'starter_setup', name: 'Starter - Eenmalig', priceExBtw: 181 },
-    { id: 'starter_monthly', name: 'Starter - Maandelijks', priceExBtw: 96 },
-    { id: 'professional_setup', name: 'Professioneel - Eenmalig', priceExBtw: 241 },
-    { id: 'professional_monthly', name: 'Professioneel - Maandelijks', priceExBtw: 180 },
-    { id: 'business_setup', name: 'Business - Eenmalig', priceExBtw: 362 },
-    { id: 'business_monthly', name: 'Business - Maandelijks', priceExBtw: 301 },
-    { id: 'webshop_setup', name: 'Webshop - Eenmalig', priceExBtw: 362 },
-    { id: 'webshop_monthly', name: 'Webshop - Maandelijks', priceExBtw: 422 },
-  ]
-
-  const BTW_PERCENTAGE = 21
-  const TRUSTPILOT_DISCOUNT_PERCENTAGE = 15
-
-  const [selectedClientId, setSelectedClientId] = useState(clients[0]?.id || '')
-  const [selectedPackage, setSelectedPackage] = useState('custom')
-  const [customAmount, setCustomAmount] = useState('')
-  const [description, setDescription] = useState('')
-  const [sending, setSending] = useState(false)
-  const [applyDiscount, setApplyDiscount] = useState(false)
-
-  const selectedClient = clients.find(c => c.id === selectedClientId)
-  const selectedPkg = PACKAGES.find(p => p.id === selectedPackage)
-  
-  // Bereken of klant korting heeft
-  const clientHasDiscount = selectedClient?.trustpilotReview?.hasReviewed && selectedClient?.trustpilotReview?.discountActive
-
-  // Bereken bedragen
-  const baseAmountExBtw = selectedPackage === 'custom' 
-    ? parseFloat(customAmount) || 0 
-    : (selectedPkg?.priceExBtw || 0)
-  
-  // Korting berekenen
-  const discountAmount = applyDiscount && clientHasDiscount 
-    ? baseAmountExBtw * (TRUSTPILOT_DISCOUNT_PERCENTAGE / 100) 
-    : 0
-  
-  const amountExBtwAfterDiscount = baseAmountExBtw - discountAmount
-  const btwAmount = amountExBtwAfterDiscount * (BTW_PERCENTAGE / 100)
-  const totalAmountInclBtw = amountExBtwAfterDiscount + btwAmount
-
-  // Update description based on package
-  useEffect(() => {
-    if (selectedPackage !== 'custom' && selectedPkg) {
-      setDescription(selectedPkg.name)
-    }
-  }, [selectedPackage, selectedPkg])
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
-    if (!selectedClientId || totalAmountInclBtw <= 0) return
-    
-    setSending(true)
-    
-    // Simulate sending payment link
-    await new Promise(resolve => setTimeout(resolve, 1000))
-    
-    onSend({ 
-      clientId: selectedClientId, 
-      amount: totalAmountInclBtw,
-      description,
-      amountExBtw: amountExBtwAfterDiscount,
-      btwAmount,
-      discountApplied: applyDiscount && !!clientHasDiscount,
-      discountAmount
-    })
-    
-    setSending(false)
-    onClose()
-  }
-
-  return (
-    <motion.div
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      exit={{ opacity: 0 }}
-      className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4"
-      onClick={onClose}
-    >
-      <motion.div
-        initial={{ opacity: 0, scale: 0.9, y: 20 }}
-        animate={{ opacity: 1, scale: 1, y: 0 }}
-        exit={{ opacity: 0, scale: 0.9, y: 20 }}
-        onClick={(e) => e.stopPropagation()}
-        className={`w-full max-w-lg rounded-2xl shadow-2xl overflow-hidden ${darkMode ? 'bg-gray-800' : 'bg-white'}`}
-      >
-        <div className={`p-6 border-b ${darkMode ? 'border-gray-700' : 'border-gray-200'}`}>
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 bg-gradient-to-br from-green-500 to-emerald-600 rounded-xl flex items-center justify-center">
-                <CreditCard className="w-5 h-5 text-white" />
-              </div>
-              <h2 className={`text-lg font-bold ${darkMode ? 'text-white' : 'text-gray-900'}`}>
-                Betaallink Sturen
-              </h2>
-            </div>
-            <button
-              onClick={onClose}
-              className={`p-2 rounded-lg transition-colors ${darkMode ? 'hover:bg-gray-700 text-gray-400' : 'hover:bg-gray-100 text-gray-500'}`}
-            >
-              <X className="w-5 h-5" />
-            </button>
-          </div>
-        </div>
-
-        <form onSubmit={handleSubmit} className="p-6 space-y-4">
-          {/* Klant selectie */}
-          <div>
-            <label className={`block text-sm font-medium mb-1.5 ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>
-              Klant *
-            </label>
-            <select
-              value={selectedClientId}
-              onChange={(e) => {
-                setSelectedClientId(e.target.value)
-                setApplyDiscount(false) // Reset discount when changing client
-              }}
-              className={`w-full px-4 py-2.5 rounded-lg border focus:ring-2 focus:ring-green-500 ${
-                darkMode ? 'bg-gray-700 border-gray-600 text-white' : 'bg-white border-gray-200 text-gray-900'
-              }`}
-            >
-              {clients.map(c => (
-                <option key={c.id} value={c.id}>
-                  {c.name} - {c.company} {c.trustpilotReview?.discountActive ? '⭐ 15% korting' : ''}
-                </option>
-              ))}
-            </select>
-            {selectedClient && (
-              <div className="mt-1 space-y-1">
-                <p className={`text-sm ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>
-                  Email: {selectedClient.email}
-                </p>
-                {clientHasDiscount && (
-                  <p className="text-sm text-green-500 flex items-center gap-1">
-                    <Star className="w-3 h-3 fill-current" />
-                    Trustpilot review korting beschikbaar (15%)
-                  </p>
-                )}
-              </div>
-            )}
-          </div>
-
-          {/* Pakket selectie */}
-          <div>
-            <label className={`block text-sm font-medium mb-1.5 ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>
-              Pakket *
-            </label>
-            <select
-              value={selectedPackage}
-              onChange={(e) => setSelectedPackage(e.target.value)}
-              className={`w-full px-4 py-2.5 rounded-lg border focus:ring-2 focus:ring-green-500 ${
-                darkMode ? 'bg-gray-700 border-gray-600 text-white' : 'bg-white border-gray-200 text-gray-900'
-              }`}
-            >
-              {PACKAGES.map(pkg => (
-                <option key={pkg.id} value={pkg.id}>
-                  {pkg.name} {pkg.priceExBtw > 0 ? `- €${pkg.priceExBtw.toFixed(2)} ex BTW` : ''}
-                </option>
-              ))}
-            </select>
-          </div>
-
-          {/* Aangepast bedrag (alleen bij custom) */}
-          {selectedPackage === 'custom' && (
-            <div>
-              <label className={`block text-sm font-medium mb-1.5 ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>
-                Bedrag ex BTW (€) *
-              </label>
-              <input
-                type="number"
-                value={customAmount}
-                onChange={(e) => setCustomAmount(e.target.value)}
-                placeholder="0.00"
-                min="0"
-                step="0.01"
-                className={`w-full px-4 py-2.5 rounded-lg border focus:ring-2 focus:ring-green-500 ${
-                  darkMode ? 'bg-gray-700 border-gray-600 text-white placeholder-gray-400' : 'bg-white border-gray-200 text-gray-900'
-                }`}
-              />
-            </div>
-          )}
-
-          {/* Omschrijving */}
-          <div>
-            <label className={`block text-sm font-medium mb-1.5 ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>
-              Omschrijving
-            </label>
-            <input
-              type="text"
-              value={description}
-              onChange={(e) => setDescription(e.target.value)}
-              placeholder="Bijv. Website Starter pakket"
-              className={`w-full px-4 py-2.5 rounded-lg border focus:ring-2 focus:ring-green-500 ${
-                darkMode ? 'bg-gray-700 border-gray-600 text-white placeholder-gray-400' : 'bg-white border-gray-200 text-gray-900'
-              }`}
-            />
-          </div>
-
-          {/* Trustpilot korting toggle */}
-          {clientHasDiscount && (
-            <div className={`p-4 rounded-lg border-2 ${applyDiscount ? 'border-green-500 bg-green-50' : darkMode ? 'border-gray-600 bg-gray-700/50' : 'border-gray-200 bg-gray-50'}`}>
-              <label className="flex items-center gap-3 cursor-pointer">
-                <input
-                  type="checkbox"
-                  checked={applyDiscount}
-                  onChange={(e) => setApplyDiscount(e.target.checked)}
-                  className="w-5 h-5 rounded border-gray-300 text-green-600 focus:ring-green-500"
-                />
-                <div>
-                  <p className={`font-medium ${applyDiscount ? 'text-green-700' : darkMode ? 'text-gray-200' : 'text-gray-700'}`}>
-                    ⭐ Trustpilot Review Korting Toepassen
-                  </p>
-                  <p className={`text-sm ${applyDiscount ? 'text-green-600' : darkMode ? 'text-gray-400' : 'text-gray-500'}`}>
-                    15% korting op deze factuur
-                  </p>
-                </div>
-              </label>
-            </div>
-          )}
-
-          {/* Prijsoverzicht */}
-          <div className={`p-4 rounded-lg ${darkMode ? 'bg-gray-700' : 'bg-gray-50'}`}>
-            <h4 className={`font-medium mb-3 ${darkMode ? 'text-white' : 'text-gray-900'}`}>
-              Prijsoverzicht
-            </h4>
-            <div className="space-y-2">
-              <div className="flex justify-between">
-                <span className={darkMode ? 'text-gray-400' : 'text-gray-600'}>Bedrag ex BTW</span>
-                <span className={darkMode ? 'text-gray-200' : 'text-gray-800'}>€{baseAmountExBtw.toFixed(2)}</span>
-              </div>
-              {applyDiscount && clientHasDiscount && discountAmount > 0 && (
-                <div className="flex justify-between text-green-500">
-                  <span>Trustpilot korting (-15%)</span>
-                  <span>-€{discountAmount.toFixed(2)}</span>
-                </div>
-              )}
-              <div className="flex justify-between">
-                <span className={darkMode ? 'text-gray-400' : 'text-gray-600'}>BTW (21%)</span>
-                <span className={darkMode ? 'text-gray-200' : 'text-gray-800'}>€{btwAmount.toFixed(2)}</span>
-              </div>
-              <div className={`flex justify-between pt-2 border-t font-bold ${darkMode ? 'border-gray-600 text-white' : 'border-gray-200 text-gray-900'}`}>
-                <span>Totaal incl BTW</span>
-                <span className="text-green-500">€{totalAmountInclBtw.toFixed(2)}</span>
-              </div>
-            </div>
-          </div>
-
-          <div className={`p-3 rounded-lg ${darkMode ? 'bg-blue-900/30' : 'bg-blue-50'}`}>
-            <p className={`text-sm ${darkMode ? 'text-blue-300' : 'text-blue-700'}`}>
-              💡 De klant ontvangt een email met een Mollie betaallink waar ze veilig kunnen betalen met iDEAL, creditcard of andere methodes.
-            </p>
-          </div>
-
-          <div className="flex gap-3 pt-4">
-            <button
-              type="button"
-              onClick={onClose}
-              className={`flex-1 py-2.5 rounded-lg font-medium transition-colors ${
-                darkMode ? 'bg-gray-700 text-gray-300 hover:bg-gray-600' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
-              }`}
-            >
-              Annuleren
-            </button>
-            <button
-              type="submit"
-              disabled={!selectedClientId || totalAmountInclBtw <= 0 || sending}
-              className="flex-1 py-2.5 bg-green-600 text-white rounded-lg font-medium hover:bg-green-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
-            >
-              {sending ? (
-                <>
-                  <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
-                  Versturen...
-                </>
-              ) : (
-                <>
-                  <Mail className="w-4 h-4" />
-                  Versturen
-                </>
-              )}
-            </button>
-          </div>
-        </form>
-      </motion.div>
-    </motion.div>
-  )
-}
-
-// ===========================================
 // MAIN COMPONENT
 // ===========================================
 
@@ -2824,22 +1726,6 @@ export default function DeveloperDashboard() {
     return false
   })
   const [onboardingStep, setOnboardingStep] = useState(0)
-  
-  // Add Task Modal state
-  const [showAddTaskModal, setShowAddTaskModal] = useState(false)
-  const [addTaskColumnId, setAddTaskColumnId] = useState<string>('todo')
-  
-  // Add Client Modal state
-  const [showAddClientModal, setShowAddClientModal] = useState(false)
-  
-  // Send Payment Link Modal state
-  const [showPaymentLinkModal, setShowPaymentLinkModal] = useState(false)
-  
-  // Analytics state
-  const [analyticsData, setAnalyticsData] = useState<AnalyticsData | null>(null)
-  const [analyticsLoading, setAnalyticsLoading] = useState(false)
-  const [analyticsPeriod, setAnalyticsPeriod] = useState<'7d' | '30d' | '90d' | '12m'>('7d')
-  const [analyticsError, setAnalyticsError] = useState<string | null>(null)
   
   // Dark mode effect
   useEffect(() => {
@@ -2909,37 +1795,6 @@ export default function DeveloperDashboard() {
     return () => document.removeEventListener('keydown', handleKeyDown)
   }, [showHelp, showOnboarding, selectedProject, selectedClient, showNotifications, darkMode])
 
-  // Fetch analytics data
-  const fetchAnalytics = async (period: string) => {
-    setAnalyticsLoading(true)
-    setAnalyticsError(null)
-    try {
-      const response = await fetch(`/api/analytics/stats?period=${period}`, {
-        headers: {
-          'Authorization': `Bearer ${getAuthToken()}`
-        }
-      })
-      if (response.ok) {
-        const data = await response.json()
-        setAnalyticsData(data)
-      } else {
-        setAnalyticsError('Kon analytics data niet laden')
-      }
-    } catch (err) {
-      console.error('Analytics fetch error:', err)
-      setAnalyticsError('Er ging iets mis bij het laden van analytics')
-    } finally {
-      setAnalyticsLoading(false)
-    }
-  }
-
-  // Load analytics when tab changes or period changes
-  useEffect(() => {
-    if (activeTab === 'analytics' && isAuthenticated) {
-      fetchAnalytics(analyticsPeriod)
-    }
-  }, [activeTab, analyticsPeriod, isAuthenticated])
-
   // Helper function to get auth token
   const getAuthToken = () => sessionStorage.getItem(TOKEN_KEY)
 
@@ -2985,93 +1840,14 @@ export default function DeveloperDashboard() {
             monthlyChangesLimit: getPackageConfig(p.package)?.monthlyChanges || 4,
             internalNotes: p.internalNotes || '',
           }))
-          
-          // Merge with localStorage projects (from WebshopOnboarding)
-          const localProjects = JSON.parse(localStorage.getItem('webstability_dev_projects') || '[]')
-          const localTransformed = localProjects.map((p: any) => ({
-            projectId: p.projectId,
-            businessName: p.businessName || p.client?.company || 'Nieuw project',
-            package: p.package || 'webshop',
-            phase: p.phase || 'onboarding',
-            status: 'active',
-            hoursSpent: 0,
-            hoursEstimate: p.package === 'webshop' ? 40 : 20,
-            revisionsUsed: 0,
-            revisionsTotal: 3,
-            messages: [],
-            changeRequests: [],
-            updates: [],
-            monthlyChangesUsed: 0,
-            monthlyChangesLimit: 4,
-            internalNotes: '',
-            client: p.client || {},
-            onboardingData: p.onboardingData,
-            createdAt: p.createdAt || new Date().toISOString(),
-          }))
-          
-          // Combine and dedupe by projectId
-          const allProjects = [...transformedProjects]
-          localTransformed.forEach((lp: any) => {
-            if (!allProjects.find(p => p.projectId === lp.projectId)) {
-              allProjects.push(lp)
-            }
-          })
-          
-          setProjects(allProjects)
+          setProjects(transformedProjects)
         }
       } else if (response.status === 401) {
         // Token expired
         handleLogout()
-      } else {
-        // API failed, load from localStorage only
-        const localProjects = JSON.parse(localStorage.getItem('webstability_dev_projects') || '[]')
-        const localTransformed = localProjects.map((p: any) => ({
-          projectId: p.projectId,
-          businessName: p.businessName || p.client?.company || 'Nieuw project',
-          package: p.package || 'webshop',
-          phase: p.phase || 'onboarding',
-          status: 'active',
-          hoursSpent: 0,
-          hoursEstimate: p.package === 'webshop' ? 40 : 20,
-          revisionsUsed: 0,
-          revisionsTotal: 3,
-          messages: [],
-          changeRequests: [],
-          updates: [],
-          monthlyChangesUsed: 0,
-          monthlyChangesLimit: 4,
-          internalNotes: '',
-          client: p.client || {},
-          onboardingData: p.onboardingData,
-          createdAt: p.createdAt || new Date().toISOString(),
-        }))
-        setProjects(localTransformed)
       }
     } catch (e) {
       console.error('Error loading projects:', e)
-      // Fallback to localStorage
-      const localProjects = JSON.parse(localStorage.getItem('webstability_dev_projects') || '[]')
-      const localTransformed = localProjects.map((p: any) => ({
-        projectId: p.projectId,
-        businessName: p.businessName || p.client?.company || 'Nieuw project',
-        package: p.package || 'webshop',
-        phase: p.phase || 'onboarding',
-        status: 'active',
-        hoursSpent: 0,
-        hoursEstimate: p.package === 'webshop' ? 40 : 20,
-        revisionsUsed: 0,
-        revisionsTotal: 3,
-        messages: [],
-        changeRequests: [],
-        updates: [],
-        monthlyChangesUsed: 0,
-        monthlyChangesLimit: 4,
-        internalNotes: '',
-        client: p.client || {},
-        onboardingData: p.onboardingData,
-        createdAt: p.createdAt || new Date().toISOString(),
-      }))
-      setProjects(localTransformed)
     } finally {
       setIsLoading(false)
     }
@@ -3436,69 +2212,8 @@ export default function DeveloperDashboard() {
         )}
       </AnimatePresence>
 
-      {/* Add Task Modal */}
-      <AnimatePresence>
-        {showAddTaskModal && (
-          <AddTaskModal
-            onClose={() => setShowAddTaskModal(false)}
-            onAdd={(task) => {
-              // In a real app, you would save this to the backend
-              console.log('New task:', task, 'Column:', addTaskColumnId)
-              // For now, just close the modal
-              setShowAddTaskModal(false)
-            }}
-            columnId={addTaskColumnId}
-            projects={projects}
-            darkMode={darkMode}
-          />
-        )}
-      </AnimatePresence>
-
-      {/* Add Client Modal */}
-      <AnimatePresence>
-        {showAddClientModal && (
-          <AddClientModal
-            onClose={() => setShowAddClientModal(false)}
-            onAdd={(client) => {
-              // Add new client to the list
-              const newClient: Client = {
-                id: Date.now().toString(),
-                name: client.name,
-                email: client.email,
-                phone: client.phone,
-                company: client.company,
-                projects: [],
-                totalSpent: 0,
-                createdAt: new Date().toISOString()
-              }
-              setClients(prev => [newClient, ...prev])
-              setShowAddClientModal(false)
-            }}
-            darkMode={darkMode}
-          />
-        )}
-      </AnimatePresence>
-
-      {/* Send Payment Link Modal */}
-      <AnimatePresence>
-        {showPaymentLinkModal && (
-          <SendPaymentLinkModal
-            onClose={() => setShowPaymentLinkModal(false)}
-            onSend={(data) => {
-              const client = clients.find(c => c.id === data.clientId)
-              console.log('Sending payment link:', data, 'to:', client?.email)
-              // In production: call Mollie API to create payment link
-              alert(`Betaallink van €${data.amount.toFixed(2)} verstuurd naar ${client?.email}!`)
-              setShowPaymentLinkModal(false)
-            }}
-            clients={clients}
-            darkMode={darkMode}
-          />
-        )}
-      </AnimatePresence>
-
       {/* Header */}
-      <header className={`sticky top-0 z-40 transition-colors duration-300 ${darkMode ? 'bg-gray-800' : 'bg-white border-b border-gray-200'}`}>
+      <header className={`${darkMode ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-200'} border-b sticky top-0 z-40 transition-colors duration-300`}>
         <div className="max-w-[1800px] mx-auto px-4 sm:px-6 h-16 flex items-center justify-between">
           <div className="flex items-center gap-3 sm:gap-6">
             <Logo variant={darkMode ? 'white' : 'default'} />
@@ -3513,7 +2228,6 @@ export default function DeveloperDashboard() {
                 { id: 'clients', label: 'Klanten', icon: Users },
                 { id: 'billing', label: 'Betalingen', icon: CreditCard },
                 { id: 'services', label: 'Services', icon: Briefcase },
-                { id: 'analytics', label: 'Analytics', icon: TrendingUp },
                 { id: 'settings', label: 'Instellingen', icon: Settings },
               ].map(tab => (
                 <motion.button
@@ -3556,7 +2270,7 @@ export default function DeveloperDashboard() {
             )}
             
             {/* Help Button */}
-            <Tooltip text="Hulp & Documentatie" darkMode={darkMode} position="bottom">
+            <Tooltip text="Hulp & Documentatie" darkMode={darkMode}>
               <motion.button 
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
@@ -3571,7 +2285,7 @@ export default function DeveloperDashboard() {
             
             {/* Notifications */}
             <div className="relative">
-              <Tooltip text="Meldingen" darkMode={darkMode} position="bottom">
+              <Tooltip text="Meldingen" darkMode={darkMode}>
                 <motion.button 
                   whileHover={{ scale: 1.05 }}
                   whileTap={{ scale: 0.95 }}
@@ -3660,7 +2374,7 @@ export default function DeveloperDashboard() {
             </div>
             
             {/* Dark mode toggle */}
-            <Tooltip text={darkMode ? 'Lichte modus' : 'Donkere modus'} darkMode={darkMode} position="bottom">
+            <Tooltip text={darkMode ? 'Lichte modus' : 'Donkere modus'} darkMode={darkMode}>
               <motion.button
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
@@ -3680,7 +2394,7 @@ export default function DeveloperDashboard() {
             </Tooltip>
             
             {/* Logout */}
-            <Tooltip text="Uitloggen" darkMode={darkMode} position="bottom">
+            <Tooltip text="Uitloggen" darkMode={darkMode}>
               <motion.button
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
@@ -4173,8 +2887,8 @@ export default function DeveloperDashboard() {
               </h2>
               <button
                 onClick={() => {
-                  setAddTaskColumnId('todo')
-                  setShowAddTaskModal(true)
+                  // Add new task modal
+                  console.log('Add task clicked')
                 }}
                 className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg font-medium hover:bg-blue-700 transition"
               >
@@ -4224,8 +2938,8 @@ export default function DeveloperDashboard() {
                 }
               }}
               onAddTask={(columnId) => {
-                setAddTaskColumnId(columnId)
-                setShowAddTaskModal(true)
+                console.log(`Adding task to column ${columnId}`)
+                // In production: open add task modal
               }}
               onDeleteTask={(taskId, columnId) => {
                 console.log(`Deleting task ${taskId} from ${columnId}`)
@@ -4243,13 +2957,6 @@ export default function DeveloperDashboard() {
               <h2 className={`text-xl font-bold ${darkMode ? 'text-white' : 'text-gray-900'}`}>
                 Klanten ({clients.length})
               </h2>
-              <button
-                onClick={() => setShowAddClientModal(true)}
-                className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg font-medium hover:bg-blue-700 transition"
-              >
-                <Plus className="w-4 h-4" />
-                Nieuwe klant
-              </button>
             </div>
 
             <div className="grid gap-4">
@@ -4288,46 +2995,6 @@ export default function DeveloperDashboard() {
                     </div>
                     
                     <div className="flex items-center gap-2">
-                      {/* Trustpilot Review Status */}
-                      {client.trustpilotReview?.hasReviewed ? (
-                        <div className={`flex items-center gap-2 px-3 py-2 rounded-lg ${
-                          client.trustpilotReview.discountActive 
-                            ? 'bg-green-100 text-green-700' 
-                            : 'bg-yellow-100 text-yellow-700'
-                        }`}>
-                          <Star className="w-4 h-4 fill-current" />
-                          <span className="text-sm font-medium">
-                            {client.trustpilotReview.discountActive ? '15% korting actief' : 'Korting gebruikt'}
-                          </span>
-                        </div>
-                      ) : (
-                        <button
-                          onClick={() => {
-                            const updatedClients = clients.map(c => 
-                              c.id === client.id 
-                                ? { 
-                                    ...c, 
-                                    trustpilotReview: { 
-                                      hasReviewed: true, 
-                                      reviewedAt: new Date().toISOString(),
-                                      discountActive: true 
-                                    } 
-                                  }
-                                : c
-                            )
-                            setClients(updatedClients)
-                          }}
-                          className={`flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
-                            darkMode 
-                              ? 'bg-yellow-900/30 text-yellow-400 hover:bg-yellow-900/50' 
-                              : 'bg-yellow-50 text-yellow-600 hover:bg-yellow-100'
-                          }`}
-                          title="Klik om Trustpilot review te markeren"
-                        >
-                          <Star className="w-4 h-4" />
-                          Review ontvangen
-                        </button>
-                      )}
                       <button
                         onClick={() => setSelectedClient(client)}
                         className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
@@ -4644,9 +3311,7 @@ export default function DeveloperDashboard() {
                 </p>
               </button>
 
-              <button 
-                onClick={() => setShowPaymentLinkModal(true)}
-                className={`p-4 rounded-xl text-left transition ${
+              <button className={`p-4 rounded-xl text-left transition ${
                 darkMode 
                   ? 'bg-gray-800 hover:bg-gray-700' 
                   : 'bg-white border border-gray-200 hover:border-blue-300 hover:shadow-md'
@@ -4700,282 +3365,6 @@ export default function DeveloperDashboard() {
                   </div>
                 </div>
               </div>
-            </div>
-          </div>
-        )}
-
-        {/* ANALYTICS TAB */}
-        {activeTab === 'analytics' && (
-          <div className="space-y-6">
-            {/* Header */}
-            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-              <div>
-                <h2 className={`text-xl font-bold ${darkMode ? 'text-white' : 'text-gray-900'}`}>
-                  Website Analytics
-                </h2>
-                <p className={`text-sm mt-1 ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>
-                  Inzicht in bezoekers en prestaties van webstability.nl
-                </p>
-              </div>
-              <div className="flex items-center gap-2">
-                <select className={`px-3 py-2 rounded-lg text-sm ${darkMode ? 'bg-gray-800 border-gray-700 text-white' : 'bg-white border-gray-200 text-gray-900'} border`}>
-                  <option value="7d">Laatste 7 dagen</option>
-                  <option value="30d">Laatste 30 dagen</option>
-                  <option value="90d">Laatste 90 dagen</option>
-                  <option value="12m">Laatste 12 maanden</option>
-                </select>
-                <button className={`p-2 rounded-lg ${darkMode ? 'bg-gray-800 hover:bg-gray-700 text-gray-400' : 'bg-gray-100 hover:bg-gray-200 text-gray-600'}`}>
-                  <RefreshCw className="w-4 h-4" />
-                </button>
-              </div>
-            </div>
-
-            {/* Stats Grid */}
-            <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-              {[
-                { label: 'Bezoekers', value: '2,847', change: '+12.5%', positive: true, icon: Users },
-                { label: 'Paginaweergaven', value: '8,432', change: '+8.2%', positive: true, icon: Globe },
-                { label: 'Gem. sessieduur', value: '2:34', change: '+15.3%', positive: true, icon: Clock },
-                { label: 'Bouncepercentage', value: '42.1%', change: '-3.2%', positive: true, icon: ArrowUpRight },
-              ].map((stat, index) => (
-                <motion.div
-                  key={stat.label}
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: index * 0.1 }}
-                  className={`p-5 rounded-2xl ${darkMode ? 'bg-gray-800' : 'bg-white border border-gray-200'}`}
-                >
-                  <div className="flex items-center justify-between mb-3">
-                    <div className={`w-10 h-10 rounded-xl flex items-center justify-center ${darkMode ? 'bg-blue-500/20' : 'bg-blue-100'}`}>
-                      <stat.icon className={`w-5 h-5 ${darkMode ? 'text-blue-400' : 'text-blue-600'}`} />
-                    </div>
-                    <span className={`text-xs font-medium px-2 py-1 rounded-full ${
-                      stat.positive 
-                        ? darkMode ? 'bg-green-500/20 text-green-400' : 'bg-green-100 text-green-700'
-                        : darkMode ? 'bg-red-500/20 text-red-400' : 'bg-red-100 text-red-700'
-                    }`}>
-                      {stat.change}
-                    </span>
-                  </div>
-                  <p className={`text-2xl font-bold ${darkMode ? 'text-white' : 'text-gray-900'}`}>{stat.value}</p>
-                  <p className={`text-sm ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>{stat.label}</p>
-                </motion.div>
-              ))}
-            </div>
-
-            {/* Charts Row */}
-            <div className="grid lg:grid-cols-2 gap-6">
-              {/* Traffic Chart */}
-              <div className={`p-6 rounded-2xl ${darkMode ? 'bg-gray-800' : 'bg-white border border-gray-200'}`}>
-                <h3 className={`font-semibold mb-4 ${darkMode ? 'text-white' : 'text-gray-900'}`}>
-                  Bezoekers per dag
-                </h3>
-                <div className="h-64 flex items-end gap-2">
-                  {[65, 78, 52, 91, 84, 76, 95, 82, 89, 72, 88, 94, 78, 85].map((height, i) => (
-                    <div key={i} className="flex-1 flex flex-col items-center gap-1">
-                      <motion.div 
-                        initial={{ height: 0 }}
-                        animate={{ height: `${height}%` }}
-                        transition={{ delay: i * 0.05, duration: 0.5 }}
-                        className={`w-full rounded-t-lg ${
-                          darkMode 
-                            ? 'bg-gradient-to-t from-blue-600 to-blue-400' 
-                            : 'bg-gradient-to-t from-blue-500 to-blue-400'
-                        }`}
-                      />
-                      <span className={`text-[10px] ${darkMode ? 'text-gray-500' : 'text-gray-400'}`}>
-                        {i + 1}
-                      </span>
-                    </div>
-                  ))}
-                </div>
-                <div className={`mt-4 pt-4 border-t ${darkMode ? 'border-gray-700' : 'border-gray-100'} flex items-center justify-between text-sm`}>
-                  <span className={darkMode ? 'text-gray-400' : 'text-gray-500'}>December 2025</span>
-                  <span className={`font-medium ${darkMode ? 'text-white' : 'text-gray-900'}`}>Totaal: 2,847 bezoekers</span>
-                </div>
-              </div>
-
-              {/* Traffic Sources */}
-              <div className={`p-6 rounded-2xl ${darkMode ? 'bg-gray-800' : 'bg-white border border-gray-200'}`}>
-                <h3 className={`font-semibold mb-4 ${darkMode ? 'text-white' : 'text-gray-900'}`}>
-                  Verkeersbronnen
-                </h3>
-                <div className="space-y-4">
-                  {[
-                    { source: 'Google (organisch)', visits: 1245, percent: 43.7, color: 'bg-blue-500' },
-                    { source: 'Direct', visits: 687, percent: 24.1, color: 'bg-green-500' },
-                    { source: 'Social Media', visits: 423, percent: 14.9, color: 'bg-purple-500' },
-                    { source: 'Referrals', visits: 312, percent: 11.0, color: 'bg-amber-500' },
-                    { source: 'Email', visits: 180, percent: 6.3, color: 'bg-pink-500' },
-                  ].map((item) => (
-                    <div key={item.source} className="space-y-2">
-                      <div className="flex items-center justify-between">
-                        <span className={`text-sm ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>{item.source}</span>
-                        <div className="flex items-center gap-2">
-                          <span className={`text-sm font-medium ${darkMode ? 'text-white' : 'text-gray-900'}`}>{item.visits}</span>
-                          <span className={`text-xs ${darkMode ? 'text-gray-500' : 'text-gray-400'}`}>({item.percent}%)</span>
-                        </div>
-                      </div>
-                      <div className={`h-2 rounded-full ${darkMode ? 'bg-gray-700' : 'bg-gray-100'}`}>
-                        <motion.div 
-                          initial={{ width: 0 }}
-                          animate={{ width: `${item.percent}%` }}
-                          transition={{ duration: 0.5 }}
-                          className={`h-full rounded-full ${item.color}`}
-                        />
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            </div>
-
-            {/* Bottom Row */}
-            <div className="grid lg:grid-cols-3 gap-6">
-              {/* Top Pages */}
-              <div className={`p-6 rounded-2xl ${darkMode ? 'bg-gray-800' : 'bg-white border border-gray-200'}`}>
-                <h3 className={`font-semibold mb-4 ${darkMode ? 'text-white' : 'text-gray-900'}`}>
-                  Populaire pagina's
-                </h3>
-                <div className="space-y-3">
-                  {[
-                    { page: '/', views: 1823, title: 'Homepage' },
-                    { page: '/websites', views: 842, title: 'Websites' },
-                    { page: '/webshop', views: 654, title: 'Webshop' },
-                    { page: '/luchtvideografie', views: 432, title: 'Dronebeelden' },
-                    { page: '/start', views: 387, title: 'Project starten' },
-                    { page: '/contact', views: 298, title: 'Contact' },
-                  ].map((item, index) => (
-                    <div key={item.page} className={`flex items-center justify-between py-2 ${index > 0 ? `border-t ${darkMode ? 'border-gray-700' : 'border-gray-100'}` : ''}`}>
-                      <div className="flex items-center gap-3">
-                        <span className={`w-6 h-6 rounded-full flex items-center justify-center text-xs font-medium ${darkMode ? 'bg-gray-700 text-gray-400' : 'bg-gray-100 text-gray-600'}`}>
-                          {index + 1}
-                        </span>
-                        <div>
-                          <p className={`text-sm font-medium ${darkMode ? 'text-white' : 'text-gray-900'}`}>{item.title}</p>
-                          <p className={`text-xs ${darkMode ? 'text-gray-500' : 'text-gray-400'}`}>{item.page}</p>
-                        </div>
-                      </div>
-                      <span className={`text-sm font-medium ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>{item.views.toLocaleString()}</span>
-                    </div>
-                  ))}
-                </div>
-              </div>
-
-              {/* Device Breakdown */}
-              <div className={`p-6 rounded-2xl ${darkMode ? 'bg-gray-800' : 'bg-white border border-gray-200'}`}>
-                <h3 className={`font-semibold mb-4 ${darkMode ? 'text-white' : 'text-gray-900'}`}>
-                  Apparaten
-                </h3>
-                <div className="flex items-center justify-center mb-6">
-                  <div className="relative w-40 h-40">
-                    {/* Donut chart simulation */}
-                    <svg viewBox="0 0 100 100" className="w-full h-full -rotate-90">
-                      <circle cx="50" cy="50" r="40" fill="none" stroke={darkMode ? '#374151' : '#e5e7eb'} strokeWidth="12" />
-                      <circle cx="50" cy="50" r="40" fill="none" stroke="#3B82F6" strokeWidth="12" strokeDasharray="150.8 251.2" />
-                      <circle cx="50" cy="50" r="40" fill="none" stroke="#10B981" strokeWidth="12" strokeDasharray="75.4 251.2" strokeDashoffset="-150.8" />
-                      <circle cx="50" cy="50" r="40" fill="none" stroke="#F59E0B" strokeWidth="12" strokeDasharray="25 251.2" strokeDashoffset="-226.2" />
-                    </svg>
-                    <div className="absolute inset-0 flex flex-col items-center justify-center">
-                      <span className={`text-2xl font-bold ${darkMode ? 'text-white' : 'text-gray-900'}`}>2.8K</span>
-                      <span className={`text-xs ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>bezoekers</span>
-                    </div>
-                  </div>
-                </div>
-                <div className="space-y-2">
-                  {[
-                    { device: 'Mobiel', percent: 60, color: 'bg-blue-500' },
-                    { device: 'Desktop', percent: 30, color: 'bg-green-500' },
-                    { device: 'Tablet', percent: 10, color: 'bg-amber-500' },
-                  ].map((item) => (
-                    <div key={item.device} className="flex items-center gap-3">
-                      <div className={`w-3 h-3 rounded-full ${item.color}`} />
-                      <span className={`text-sm flex-1 ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>{item.device}</span>
-                      <span className={`text-sm font-medium ${darkMode ? 'text-white' : 'text-gray-900'}`}>{item.percent}%</span>
-                    </div>
-                  ))}
-                </div>
-              </div>
-
-              {/* Geographic Distribution */}
-              <div className={`p-6 rounded-2xl ${darkMode ? 'bg-gray-800' : 'bg-white border border-gray-200'}`}>
-                <h3 className={`font-semibold mb-4 ${darkMode ? 'text-white' : 'text-gray-900'}`}>
-                  Locaties
-                </h3>
-                <div className="space-y-3">
-                  {[
-                    { country: '🇳🇱 Nederland', visits: 2456, percent: 86.3 },
-                    { country: '🇧🇪 België', visits: 234, percent: 8.2 },
-                    { country: '🇩🇪 Duitsland', visits: 89, percent: 3.1 },
-                    { country: '🇬🇧 Verenigd Koninkrijk', visits: 42, percent: 1.5 },
-                    { country: '🌍 Overig', visits: 26, percent: 0.9 },
-                  ].map((item, index) => (
-                    <div key={item.country} className={`flex items-center justify-between py-2 ${index > 0 ? `border-t ${darkMode ? 'border-gray-700' : 'border-gray-100'}` : ''}`}>
-                      <span className={`text-sm ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>{item.country}</span>
-                      <div className="flex items-center gap-2">
-                        <span className={`text-sm font-medium ${darkMode ? 'text-white' : 'text-gray-900'}`}>{item.visits}</span>
-                        <span className={`text-xs px-1.5 py-0.5 rounded ${darkMode ? 'bg-gray-700 text-gray-400' : 'bg-gray-100 text-gray-500'}`}>
-                          {item.percent}%
-                        </span>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            </div>
-
-            {/* Conversions */}
-            <div className={`p-6 rounded-2xl ${darkMode ? 'bg-gray-800' : 'bg-white border border-gray-200'}`}>
-              <div className="flex items-center justify-between mb-6">
-                <h3 className={`font-semibold ${darkMode ? 'text-white' : 'text-gray-900'}`}>
-                  Conversies & Doelen
-                </h3>
-                <span className={`text-sm ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>
-                  Laatste 30 dagen
-                </span>
-              </div>
-              <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
-                {[
-                  { goal: 'Projectaanvraag gestart', conversions: 47, rate: '1.65%', icon: Rocket },
-                  { goal: 'Contactformulier ingevuld', conversions: 32, rate: '1.12%', icon: Mail },
-                  { goal: 'WhatsApp geklikt', conversions: 89, rate: '3.13%', icon: MessageSquare },
-                  { goal: 'Prijzen bekeken', conversions: 234, rate: '8.22%', icon: DollarSign },
-                ].map((item) => (
-                  <div key={item.goal} className={`p-4 rounded-xl ${darkMode ? 'bg-gray-700/50' : 'bg-gray-50'}`}>
-                    <div className="flex items-center gap-3 mb-3">
-                      <div className={`w-8 h-8 rounded-lg flex items-center justify-center ${darkMode ? 'bg-green-500/20' : 'bg-green-100'}`}>
-                        <item.icon className={`w-4 h-4 ${darkMode ? 'text-green-400' : 'text-green-600'}`} />
-                      </div>
-                      <span className={`text-sm font-medium ${darkMode ? 'text-white' : 'text-gray-900'}`}>{item.conversions}</span>
-                    </div>
-                    <p className={`text-sm ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>{item.goal}</p>
-                    <p className={`text-xs mt-1 ${darkMode ? 'text-gray-500' : 'text-gray-400'}`}>
-                      Conversieratio: {item.rate}
-                    </p>
-                  </div>
-                ))}
-              </div>
-            </div>
-
-            {/* Real-time visitors banner */}
-            <div className={`p-4 rounded-xl flex items-center justify-between ${darkMode ? 'bg-green-500/10 border border-green-500/20' : 'bg-green-50 border border-green-100'}`}>
-              <div className="flex items-center gap-3">
-                <div className="relative">
-                  <div className="w-3 h-3 bg-green-500 rounded-full" />
-                  <div className="absolute inset-0 w-3 h-3 bg-green-500 rounded-full animate-ping" />
-                </div>
-                <div>
-                  <p className={`font-medium ${darkMode ? 'text-green-400' : 'text-green-700'}`}>
-                    3 bezoekers nu online
-                  </p>
-                  <p className={`text-sm ${darkMode ? 'text-green-500/70' : 'text-green-600/70'}`}>
-                    Op webstability.nl
-                  </p>
-                </div>
-              </div>
-              <button className={`text-sm font-medium px-4 py-2 rounded-lg transition-colors ${darkMode ? 'bg-green-500/20 text-green-400 hover:bg-green-500/30' : 'bg-green-100 text-green-700 hover:bg-green-200'}`}>
-                Real-time weergave
-              </button>
             </div>
           </div>
         )}
@@ -5118,19 +3507,19 @@ export default function DeveloperDashboard() {
       {/* Client edit modal */}
       <AnimatePresence>
         {selectedClient && (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4"
-            onClick={() => setSelectedClient(null)}
-          >
+          <>
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              className="fixed inset-0 bg-black/50 z-50"
+              onClick={() => setSelectedClient(null)}
+            />
             <motion.div
               initial={{ opacity: 0, scale: 0.95 }}
               animate={{ opacity: 1, scale: 1 }}
               exit={{ opacity: 0, scale: 0.95 }}
-              onClick={(e) => e.stopPropagation()}
-              className={`w-full max-w-lg rounded-2xl shadow-2xl ${
+              className={`fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full max-w-lg rounded-2xl shadow-2xl z-50 ${
                 darkMode ? 'bg-gray-800' : 'bg-white'
               }`}
             >
@@ -5201,7 +3590,7 @@ export default function DeveloperDashboard() {
                 </button>
               </div>
             </motion.div>
-          </motion.div>
+          </>
         )}
       </AnimatePresence>
 

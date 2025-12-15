@@ -133,7 +133,7 @@ export default function Luchtvideografie() {
           {/* Video background */}
           <div className="absolute inset-0 z-0">
             <div className="absolute inset-0 grid grid-cols-3 gap-1 opacity-40">
-              {portfolioVideos.map((video, index) => (
+              {portfolioVideos.map((video) => (
                 <div key={video.id} className="relative h-full overflow-hidden">
                   <iframe
                     src={`https://player.vimeo.com/video/${video.id}?background=1&autoplay=1&loop=1&muted=1&quality=720p`}
@@ -206,7 +206,7 @@ export default function Luchtvideografie() {
 
                 <div className="flex flex-col sm:flex-row gap-4 justify-center">
                   <Link
-                    to="/drone-starten"
+                    to="/contact"
                     className="group inline-flex items-center justify-center gap-2 px-8 py-4 bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 text-white font-semibold rounded-xl transition-all shadow-lg shadow-orange-500/25 hover:shadow-orange-500/40 hover:-translate-y-0.5"
                   >
                     Vraag luchtopnames aan
@@ -532,7 +532,7 @@ export default function Luchtvideografie() {
               className="text-center mt-12"
             >
               <Link
-                to="/drone-starten"
+                to="/start?dienst=drone"
                 className="group inline-flex items-center gap-2 px-8 py-4 bg-gradient-to-r from-orange-500 to-amber-500 hover:from-orange-600 hover:to-amber-600 text-white font-semibold rounded-xl transition-all shadow-lg shadow-orange-500/25 hover:shadow-orange-500/40 hover:-translate-y-0.5"
               >
                 Start je luchtfoto project
@@ -617,7 +617,7 @@ export default function Luchtvideografie() {
               className="text-center"
             >
               <Link
-                to="/drone-starten"
+                to="/contact"
                 className="group inline-flex items-center gap-2 px-8 py-4 bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 text-white font-semibold rounded-xl transition-all shadow-lg shadow-orange-500/25 hover:shadow-orange-500/40 hover:-translate-y-0.5"
               >
                 Plan je luchtopnames

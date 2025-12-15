@@ -17,7 +17,7 @@ export const ProtectedRoute: React.FC<ProtectedRouteProps> = ({
 
   // Als Supabase niet geconfigureerd is, toon fallback login
   if (!isConfigured) {
-    return <FallbackLogin>{children}</FallbackLogin>
+    return <FallbackLogin requireRole={requireRole}>{children}</FallbackLogin>
   }
 
   // Loading state
@@ -67,9 +67,12 @@ export const ProtectedRoute: React.FC<ProtectedRouteProps> = ({
 }
 
 // Fallback login voor development (zonder Supabase)
-const FallbackLogin: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+const FallbackLogin: React.FC<{ children: React.ReactNode; requireRole?: 'developer' | 'admin' | 'marketing' }> = ({ children, requireRole }) => {
   const [isAuthenticated, setIsAuthenticated] = React.useState(() => {
     return localStorage.getItem('dev_authenticated') === 'true'
+  })
+  const [userRole, setUserRole] = React.useState(() => {
+    return localStorage.getItem('dev_user_role') || ''
   })
   const [email, setEmail] = React.useState('')
   const [password, setPassword] = React.useState('')
@@ -88,14 +91,16 @@ const FallbackLogin: React.FC<{ children: React.ReactNode }> = ({ children }) =>
       { email: 'wesley', password: 'getrichordietrying', role: 'marketing' },
     ]
 
-    const isValid = validCredentials.some(
+    const matchedCred = validCredentials.find(
       cred => cred.email === email && cred.password === password
     )
 
-    if (isValid) {
+    if (matchedCred) {
       localStorage.setItem('dev_authenticated', 'true')
       localStorage.setItem('dev_user_email', email)
+      localStorage.setItem('dev_user_role', matchedCred.role)
       setIsAuthenticated(true)
+      setUserRole(matchedCred.role)
       setError('')
     } else {
       setError('Ongeldige inloggegevens')
@@ -103,6 +108,74 @@ const FallbackLogin: React.FC<{ children: React.ReactNode }> = ({ children }) =>
   }
 
   if (isAuthenticated) {
+    // Check role permissions
+    const isDeveloper = userRole === 'developer' || userRole === 'admin'
+    const isAdmin = userRole === 'admin'
+    const isMarketing = userRole === 'marketing' || isDeveloper || isAdmin
+
+    if (requireRole === 'admin' && !isAdmin) {
+      return (
+        <div className="min-h-screen flex items-center justify-center bg-gray-50">
+          <div className="text-center p-8">
+            <h1 className="text-2xl font-bold text-red-600 mb-2">Geen toegang</h1>
+            <p className="text-gray-600">Je hebt geen admin rechten.</p>
+            <button 
+              onClick={() => {
+                localStorage.removeItem('dev_authenticated')
+                localStorage.removeItem('dev_user_role')
+                setIsAuthenticated(false)
+              }}
+              className="mt-4 px-4 py-2 bg-gray-200 rounded-lg hover:bg-gray-300"
+            >
+              Opnieuw inloggen
+            </button>
+          </div>
+        </div>
+      )
+    }
+
+    if (requireRole === 'developer' && !isDeveloper) {
+      return (
+        <div className="min-h-screen flex items-center justify-center bg-gray-50">
+          <div className="text-center p-8">
+            <h1 className="text-2xl font-bold text-red-600 mb-2">Geen toegang</h1>
+            <p className="text-gray-600">Je hebt geen developer rechten.</p>
+            <button 
+              onClick={() => {
+                localStorage.removeItem('dev_authenticated')
+                localStorage.removeItem('dev_user_role')
+                setIsAuthenticated(false)
+              }}
+              className="mt-4 px-4 py-2 bg-gray-200 rounded-lg hover:bg-gray-300"
+            >
+              Opnieuw inloggen
+            </button>
+          </div>
+        </div>
+      )
+    }
+
+    if (requireRole === 'marketing' && !isMarketing) {
+      return (
+        <div className="min-h-screen flex items-center justify-center bg-gray-50">
+          <div className="text-center p-8">
+            <h1 className="text-2xl font-bold text-red-600 mb-2">Geen toegang</h1>
+            <p className="text-gray-600">Je hebt geen marketing rechten.</p>
+            <button 
+              onClick={() => {
+                localStorage.removeItem('dev_authenticated')
+                localStorage.removeItem('dev_user_role')
+                setIsAuthenticated(false)
+              }}
+              className="mt-4 px-4 py-2 bg-gray-200 rounded-lg hover:bg-gray-300"
+            >
+              Opnieuw inloggen
+            </button>
+          </div>
+        </div>
+      )
+    }
+
     return <>{children}</>
   }
 

@@ -102,19 +102,9 @@ export default function FloatingWhatsApp() {
             whileTap={{ scale: 0.95 }}
             className="group relative"
           >
-            {/* Pulse animation */}
-            <motion.div
-              className="absolute inset-0 bg-green-500 rounded-full"
-              animate={{ scale: [1, 1.2, 1], opacity: [0.4, 0, 0.4] }}
-              transition={{ duration: 2, repeat: Infinity }}
-            />
-            <div className="relative w-14 h-14 bg-gradient-to-br from-green-500 to-green-600 rounded-full flex items-center justify-center shadow-xl shadow-green-500/30 transition-all">
-              <MessageCircle className="w-7 h-7 text-white" />
+            <div className="relative w-12 h-12 sm:w-14 sm:h-14 bg-gradient-to-br from-green-500 to-green-600 rounded-full flex items-center justify-center shadow-lg transition-all hover:shadow-xl">
+              <MessageCircle className="w-6 h-6 sm:w-7 sm:h-7 text-white" />
             </div>
-            {/* Notification badge */}
-            <span className="absolute -top-1 -right-1 w-4 h-4 bg-red-500 rounded-full flex items-center justify-center">
-              <span className="text-white text-[10px] font-bold">1</span>
-            </span>
           </motion.button>
         </motion.div>
       )}

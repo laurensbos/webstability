@@ -1278,22 +1278,34 @@ function LeadRow({
             {/* Email button with dropdown */}
             <div className="relative">
               <button
-                onClick={() => setShowTemplates(!showTemplates)}
+                onClick={(e) => {
+                  e.stopPropagation()
+                  setShowTemplates(!showTemplates)
+                  setShowMenu(false)
+                }}
                 className="flex items-center gap-2 px-4 py-2 bg-emerald-600 text-white text-sm font-medium rounded-lg hover:bg-emerald-700 transition-colors"
               >
                 <Mail className="w-4 h-4" />
                 Email sturen
-                <ChevronDown className="w-4 h-4" />
+                <ChevronDown className={`w-4 h-4 transition-transform ${showTemplates ? 'rotate-180' : ''}`} />
               </button>
 
               <AnimatePresence>
                 {showTemplates && (
-                  <motion.div
-                    initial={{ opacity: 0, y: -10 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    exit={{ opacity: 0, y: -10 }}
-                    className="absolute right-0 mt-2 w-64 bg-white rounded-xl shadow-xl border border-gray-100 z-10"
-                  >
+                  <>
+                    {/* Backdrop to close on click outside */}
+                    <div 
+                      className="fixed inset-0 z-10" 
+                      onClick={() => setShowTemplates(false)}
+                    />
+                    <motion.div
+                      initial={{ opacity: 0, y: -10 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      exit={{ opacity: 0, y: -10 }}
+                      className={`absolute right-0 mt-2 w-64 rounded-xl shadow-xl border z-20 max-h-80 overflow-y-auto ${
+                        darkMode ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-100'
+                      }`}
+                    >
                     <div className="p-2">
                       {templates.map((template) => (
                         <button
@@ -1302,25 +1314,30 @@ function LeadRow({
                             onEmail(template)
                             setShowTemplates(false)
                           }}
-                          className="w-full p-3 text-left rounded-lg hover:bg-emerald-50 transition-colors"
+                          className={`w-full p-3 text-left rounded-lg transition-colors ${
+                            darkMode ? 'hover:bg-gray-700' : 'hover:bg-emerald-50'
+                          }`}
                         >
-                          <p className="font-medium text-sm text-gray-900">{template.name}</p>
-                          <p className="text-xs text-gray-500">{template.description}</p>
+                          <p className={`font-medium text-sm ${darkMode ? 'text-white' : 'text-gray-900'}`}>{template.name}</p>
+                          <p className={`text-xs ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>{template.description}</p>
                         </button>
                       ))}
-                      <hr className="my-2" />
+                      <hr className={`my-2 ${darkMode ? 'border-gray-700' : 'border-gray-200'}`} />
                       <button
                         onClick={() => {
                           onEmail()
                           setShowTemplates(false)
                         }}
-                        className="w-full p-3 text-left rounded-lg hover:bg-gray-50 transition-colors"
+                        className={`w-full p-3 text-left rounded-lg transition-colors ${
+                          darkMode ? 'hover:bg-gray-700' : 'hover:bg-gray-50'
+                        }`}
                       >
-                        <p className="font-medium text-sm text-gray-900">Leeg bericht</p>
-                        <p className="text-xs text-gray-500">Schrijf zelf een email</p>
+                        <p className={`font-medium text-sm ${darkMode ? 'text-white' : 'text-gray-900'}`}>Leeg bericht</p>
+                        <p className={`text-xs ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>Schrijf zelf een email</p>
                       </button>
                     </div>
                   </motion.div>
+                  </>
                 )}
               </AnimatePresence>
             </div>
@@ -1328,22 +1345,36 @@ function LeadRow({
             {/* More menu */}
             <div className="relative">
               <button
-                onClick={() => setShowMenu(!showMenu)}
-                className="p-2 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-lg"
+                onClick={(e) => {
+                  e.stopPropagation()
+                  setShowMenu(!showMenu)
+                  setShowTemplates(false)
+                }}
+                className={`p-2 rounded-lg transition-colors ${
+                  darkMode ? 'text-gray-400 hover:text-gray-200 hover:bg-gray-700' : 'text-gray-400 hover:text-gray-600 hover:bg-gray-100'
+                }`}
               >
                 <MoreVertical className="w-5 h-5" />
               </button>
 
               <AnimatePresence>
                 {showMenu && (
-                  <motion.div
-                    initial={{ opacity: 0, y: -10 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    exit={{ opacity: 0, y: -10 }}
-                    className="absolute right-0 mt-2 w-48 bg-white rounded-xl shadow-xl border border-gray-100 z-10"
-                  >
+                  <>
+                    {/* Backdrop to close on click outside */}
+                    <div 
+                      className="fixed inset-0 z-10" 
+                      onClick={() => setShowMenu(false)}
+                    />
+                    <motion.div
+                      initial={{ opacity: 0, y: -10 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      exit={{ opacity: 0, y: -10 }}
+                      className={`absolute right-0 mt-2 w-48 rounded-xl shadow-xl border z-20 ${
+                        darkMode ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-100'
+                      }`}
+                    >
                     <div className="p-2">
-                      <p className="px-3 py-1 text-xs font-medium text-gray-400 uppercase">Status wijzigen</p>
+                      <p className={`px-3 py-1 text-xs font-medium uppercase ${darkMode ? 'text-gray-500' : 'text-gray-400'}`}>Status wijzigen</p>
                       {Object.entries(statusColors).map(([key, value]) => (
                         <button
                           key={key}
@@ -1351,28 +1382,33 @@ function LeadRow({
                             onStatusChange(key as Lead['status'])
                             setShowMenu(false)
                           }}
-                          className={`w-full flex items-center gap-2 p-2 text-left rounded-lg hover:bg-gray-50 ${
-                            lead.status === key ? 'bg-gray-50' : ''
+                          className={`w-full flex items-center gap-2 p-2 text-left rounded-lg transition-colors ${
+                            lead.status === key 
+                              ? darkMode ? 'bg-gray-700' : 'bg-gray-50'
+                              : darkMode ? 'hover:bg-gray-700' : 'hover:bg-gray-50'
                           }`}
                         >
                           <span className={`w-2 h-2 rounded-full ${value.bg.replace('100', '500')}`} />
-                          <span className="text-sm">{value.label}</span>
+                          <span className={`text-sm ${darkMode ? 'text-gray-200' : 'text-gray-700'}`}>{value.label}</span>
                           {lead.status === key && <CheckCircle className="w-4 h-4 text-emerald-500 ml-auto" />}
                         </button>
                       ))}
-                      <hr className="my-2" />
+                      <hr className={`my-2 ${darkMode ? 'border-gray-700' : 'border-gray-200'}`} />
                       <button
                         onClick={() => {
                           onDelete()
                           setShowMenu(false)
                         }}
-                        className="w-full flex items-center gap-2 p-2 text-left rounded-lg text-red-600 hover:bg-red-50"
+                        className={`w-full flex items-center gap-2 p-2 text-left rounded-lg ${
+                          darkMode ? 'text-red-400 hover:bg-red-500/20' : 'text-red-600 hover:bg-red-50'
+                        }`}
                       >
                         <XCircle className="w-4 h-4" />
                         <span className="text-sm">Verwijderen</span>
                       </button>
                     </div>
                   </motion.div>
+                  </>
                 )}
               </AnimatePresence>
             </div>
