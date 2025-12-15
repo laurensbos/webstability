@@ -53,7 +53,7 @@ export interface ProjectTask {
   priority?: 'low' | 'normal' | 'high'
 }
 
-export type PaymentStatus = 'pending' | 'awaiting_payment' | 'paid' | 'failed'
+export type PaymentStatus = 'not_required' | 'pending' | 'awaiting_payment' | 'paid' | 'failed'
 
 export interface Project {
   projectId: string

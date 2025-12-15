@@ -1428,8 +1428,8 @@ export default function ProjectStatus() {
           </motion.div>
         )}
 
-        {/* Payment Section - In review fase, na design goedkeuring */}
-        {project.status === 'review' && project.paymentStatus !== 'paid' && (
+        {/* Payment Section - Alleen tonen als developer de betaling heeft geactiveerd */}
+        {project.status === 'review' && project.paymentStatus && project.paymentStatus !== 'not_required' && project.paymentStatus !== 'paid' && (
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -1470,83 +1470,6 @@ export default function ProjectStatus() {
             }}
           />
         </motion.div>
-
-        {/* Trustpilot Review Request - Only when live */}
-        {project.status === 'live' && (
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.35 }}
-            className="bg-gradient-to-r from-green-500 via-emerald-500 to-teal-500 rounded-2xl shadow-xl p-6 md:p-8 mb-8 text-white relative overflow-hidden"
-          >
-            {/* Background decoration */}
-            <div className="absolute inset-0 opacity-10">
-              <div className="absolute top-0 right-0 w-64 h-64 rounded-full bg-white transform translate-x-1/2 -translate-y-1/2" />
-              <div className="absolute bottom-0 left-0 w-48 h-48 rounded-full bg-white transform -translate-x-1/2 translate-y-1/2" />
-            </div>
-
-            <div className="relative z-10">
-              <div className="flex items-start gap-4 mb-6">
-                <div className="w-14 h-14 bg-white/20 backdrop-blur rounded-xl flex items-center justify-center flex-shrink-0">
-                  <Star className="w-7 h-7 text-yellow-300 fill-yellow-300" />
-                </div>
-                <div>
-                  <h2 className="text-2xl font-bold mb-1">Blij met je website? ⭐</h2>
-                  <p className="text-white/90 text-sm md:text-base">
-                    Deel je ervaring op Trustpilot en ontvang <span className="font-bold text-yellow-300">15% korting</span> op je volgende factuur!
-                  </p>
-                </div>
-              </div>
-
-              <div className="grid md:grid-cols-2 gap-4 mb-6">
-                <div className="bg-white/10 backdrop-blur rounded-xl p-4">
-                  <div className="flex items-center gap-2 mb-2">
-                    <CheckCircle2 className="w-5 h-5 text-yellow-300" />
-                    <span className="font-semibold">Hoe het werkt:</span>
-                  </div>
-                  <ol className="text-sm text-white/90 space-y-1 ml-7">
-                    <li>1. Schrijf een eerlijke review op Trustpilot</li>
-                    <li>2. Stuur ons een berichtje dat je dit hebt gedaan</li>
-                    <li>3. Ontvang automatisch 15% korting op je volgende factuur!</li>
-                  </ol>
-                </div>
-                <div className="bg-white/10 backdrop-blur rounded-xl p-4 flex flex-col justify-center">
-                  <div className="flex items-center gap-2 mb-3">
-                    <Shield className="w-5 h-5 text-yellow-300" />
-                    <span className="font-semibold">Jouw voordelen:</span>
-                  </div>
-                  <ul className="text-sm text-white/90 space-y-1">
-                    <li>✓ 15% korting op je volgende maandfactuur</li>
-                    <li>✓ Help andere ondernemers met hun keuze</li>
-                    <li>✓ Direct toepasbaar na verificatie</li>
-                  </ul>
-                </div>
-              </div>
-
-              <div className="flex flex-col sm:flex-row gap-3">
-                <a
-                  href="https://www.trustpilot.com/evaluate/webstability.nl"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="flex-1 flex items-center justify-center gap-2 px-6 py-4 bg-white text-green-600 font-bold rounded-xl hover:bg-gray-100 transition shadow-lg group"
-                >
-                  <Star className="w-5 h-5 fill-current" />
-                  Review schrijven op Trustpilot
-                  <ExternalLink className="w-4 h-4 group-hover:translate-x-1 transition" />
-                </a>
-                <a
-                  href={`https://wa.me/31612345678?text=Hallo! Ik heb zojuist een Trustpilot review geschreven voor project ${projectId}. Kunnen jullie de 15% korting activeren?`}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="flex items-center justify-center gap-2 px-6 py-4 bg-white/20 backdrop-blur text-white font-semibold rounded-xl hover:bg-white/30 transition"
-                >
-                  <MessageSquare className="w-5 h-5" />
-                  Laat het ons weten
-                </a>
-              </div>
-            </div>
-          </motion.div>
-        )}
 
         {/* Change Request Section - Only when live */}
         {project.status === 'live' && (

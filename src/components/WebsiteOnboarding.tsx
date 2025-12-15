@@ -30,7 +30,10 @@ import {
   Smartphone,
   Upload,
   Link,
-  CheckCircle
+  CheckCircle,
+  Eye,
+  EyeOff,
+  Lock
 } from 'lucide-react'
 
 // Types
@@ -86,8 +89,10 @@ interface WebsiteOnboardingData {
   wantsSEO: boolean
   additionalNotes: string
   
-  // Pakket info
+  // Pakket info & Account
   selectedPackage: 'starter' | 'professional' | 'business'
+  projectPassword: string // Wachtwoord voor project status toegang
+  confirmPassword: string // Bevestiging wachtwoord
   agreedToTerms: boolean
 }
 
@@ -148,16 +153,19 @@ const INITIAL_DATA: WebsiteOnboardingData = {
   additionalNotes: '',
   
   selectedPackage: 'professional',
+  projectPassword: '',
+  confirmPassword: '',
   agreedToTerms: false
 }
 
 const STEPS = [
-  { id: 1, title: 'Bedrijfsgegevens', icon: Building2, color: 'from-blue-500 to-primary-600' },
-  { id: 2, title: 'Doel & Doelgroep', icon: Target, color: 'from-blue-500 to-primary-600' },
-  { id: 3, title: 'Pagina\'s', icon: Layout, color: 'from-blue-500 to-primary-600' },
-  { id: 4, title: 'Design & Branding', icon: Palette, color: 'from-purple-500 to-violet-600' },
-  { id: 5, title: 'Content & Media', icon: Image, color: 'from-amber-500 to-orange-600' },
-  { id: 6, title: 'Extra & Bevestigen', icon: Sparkles, color: 'from-cyan-500 to-teal-600' },
+  { id: 1, title: 'Kies pakket', icon: Star, color: 'from-green-500 to-emerald-600' },
+  { id: 2, title: 'Bedrijfsgegevens', icon: Building2, color: 'from-blue-500 to-primary-600' },
+  { id: 3, title: 'Doel & Doelgroep', icon: Target, color: 'from-blue-500 to-primary-600' },
+  { id: 4, title: 'Pagina\'s', icon: Layout, color: 'from-blue-500 to-primary-600' },
+  { id: 5, title: 'Design & Branding', icon: Palette, color: 'from-purple-500 to-violet-600' },
+  { id: 6, title: 'Content & Media', icon: Image, color: 'from-amber-500 to-orange-600' },
+  { id: 7, title: 'Bevestigen', icon: Sparkles, color: 'from-cyan-500 to-teal-600' },
 ]
 
 const WEBSITE_GOALS = [
@@ -269,6 +277,7 @@ export default function WebsiteOnboarding({
   const [errors, setErrors] = useState<Record<string, string>>({})
   const [submitting, setSubmitting] = useState(false)
   const [newCompetitor, setNewCompetitor] = useState('')
+  const [showPassword, setShowPassword] = useState(false)
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   void isStandalone // Keep for backwards compatibility
@@ -288,23 +297,32 @@ export default function WebsiteOnboarding({
 
     switch (currentStep) {
       case 1:
+        // Pakketkeuze - geen validatie nodig, altijd een default
+        break
+      case 2:
         if (!data.companyName.trim()) newErrors.companyName = 'Bedrijfsnaam is verplicht'
         if (!data.contactName.trim()) newErrors.contactName = 'Contactpersoon is verplicht'
         if (!data.email.trim()) newErrors.email = 'E-mail is verplicht'
         else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(data.email)) newErrors.email = 'Ongeldig e-mailadres'
         if (!data.phone.trim()) newErrors.phone = 'Telefoonnummer is verplicht'
         break
-      case 2:
+      case 3:
         if (!data.websiteGoal) newErrors.websiteGoal = 'Kies een doel voor je website'
         if (!data.targetAudience.trim()) newErrors.targetAudience = 'Beschrijf je doelgroep'
         break
-      case 3:
+      case 4:
         if (data.pages.length === 0) newErrors.pages = 'Selecteer minimaal 1 pagina'
         break
-      case 4:
+      case 5:
         if (!data.designStyle) newErrors.designStyle = 'Kies een design stijl'
         break
-      case 6:
+      case 7:
+        // Wachtwoord validatie
+        if (!data.projectPassword.trim()) newErrors.projectPassword = 'Kies een wachtwoord voor je project dashboard'
+        else if (data.projectPassword.length < 6) newErrors.projectPassword = 'Wachtwoord moet minimaal 6 tekens zijn'
+        if (!data.confirmPassword.trim()) newErrors.confirmPassword = 'Bevestig je wachtwoord'
+        else if (data.projectPassword !== data.confirmPassword) newErrors.confirmPassword = 'Wachtwoorden komen niet overeen'
+        // Akkoord validatie
         if (!data.agreedToTerms) newErrors.agreedToTerms = 'Je moet akkoord gaan met de voorwaarden'
         break
     }
@@ -395,13 +413,18 @@ export default function WebsiteOnboarding({
       const totalFirstPayment = monthlyPrice + setupFee
       
       // Try to save to API
-      const response = await fetch('/api/projects', {
+      const response = await fetch(`/api/project/${newProjectId}`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          id: newProjectId,
+          projectId: newProjectId,
           type: 'website',
           packageType: data.selectedPackage,
+          password: data.projectPassword, // Store password for project access
+          businessName: data.companyName,
+          contactName: data.contactName,
+          contactEmail: data.email,
+          contactPhone: data.phone,
           customer: {
             name: data.contactName,
             email: data.email,
@@ -416,7 +439,7 @@ export default function WebsiteOnboarding({
           },
           onboardingData: completeData,
           status: 'onboarding',
-          paymentStatus: 'pending',
+          paymentStatus: 'not_required', // Betaling pas na design goedkeuring
           pricing: {
             monthly: monthlyPrice,
             setup: setupFee,
@@ -649,8 +672,102 @@ export default function WebsiteOnboarding({
               exit={{ opacity: 0, x: -20 }}
               transition={{ duration: 0.2 }}
             >
-              {/* Step 1: Bedrijfsgegevens */}
+              {/* Step 1: Pakket kiezen */}
               {currentStep === 1 && (
+                <div className="space-y-6">
+                  <div>
+                    <h3 className="text-lg font-bold text-gray-900 mb-1">Kies je pakket</h3>
+                    <p className="text-gray-500 text-sm">Selecteer het pakket dat het beste bij jouw wensen past</p>
+                  </div>
+
+                  <div className="grid gap-4">
+                    {(Object.entries(PACKAGES) as [string, typeof PACKAGES.starter][]).map(([key, pkg]) => {
+                      const isSelected = data.selectedPackage === key
+                      const isPopular = key === 'professional'
+                      return (
+                        <motion.button
+                          key={key}
+                          type="button"
+                          whileHover={{ scale: 1.01 }}
+                          whileTap={{ scale: 0.99 }}
+                          onClick={() => updateData({ selectedPackage: key as 'starter' | 'professional' | 'business' })}
+                          className={`relative p-4 sm:p-5 rounded-xl border-2 text-left transition-all ${
+                            isSelected 
+                              ? 'border-primary-500 bg-primary-50 shadow-lg' 
+                              : 'border-gray-200 hover:border-gray-300 bg-white'
+                          }`}
+                        >
+                          {isPopular && (
+                            <div className="absolute -top-3 left-4 px-3 py-1 bg-gradient-to-r from-primary-600 to-blue-600 text-white text-xs font-bold rounded-full">
+                              Meest gekozen
+                            </div>
+                          )}
+                          <div className="flex items-start justify-between gap-4">
+                            <div className="flex-1">
+                              <div className="flex items-center gap-3 mb-2">
+                                <h4 className={`text-lg font-bold ${isSelected ? 'text-primary-700' : 'text-gray-900'}`}>
+                                  {pkg.name}
+                                </h4>
+                                <span className={`text-sm ${isSelected ? 'text-primary-600' : 'text-gray-500'}`}>
+                                  max. {pkg.maxPages} pagina's
+                                </span>
+                              </div>
+                              <div className="flex flex-wrap gap-2 mb-3">
+                                {pkg.features.slice(0, 5).map(featureId => {
+                                  const feature = FEATURES.find(f => f.id === featureId)
+                                  return feature ? (
+                                    <span key={featureId} className="inline-flex items-center gap-1 text-xs bg-gray-100 text-gray-600 px-2 py-1 rounded-full">
+                                      <Check className="w-3 h-3 text-green-500" />
+                                      {feature.name}
+                                    </span>
+                                  ) : null
+                                })}
+                                {pkg.features.length > 5 && (
+                                  <span className="text-xs text-gray-500 px-2 py-1">
+                                    +{pkg.features.length - 5} meer
+                                  </span>
+                                )}
+                              </div>
+                              {key === 'starter' && (
+                                <p className="text-xs text-gray-500">Perfect voor starters en kleine bedrijven</p>
+                              )}
+                              {key === 'professional' && (
+                                <p className="text-xs text-gray-500">Ideaal voor groeiende ondernemers</p>
+                              )}
+                              {key === 'business' && (
+                                <p className="text-xs text-gray-500">Voor bedrijven die meer willen</p>
+                              )}
+                            </div>
+                            <div className="text-right flex-shrink-0">
+                              <div className={`text-2xl font-bold ${isSelected ? 'text-primary-600' : 'text-gray-900'}`}>
+                                €{pkg.price}
+                              </div>
+                              <div className="text-xs text-gray-500">per maand</div>
+                              <div className="text-xs text-gray-400 mt-1">+ €{pkg.setupFee} eenmalig</div>
+                            </div>
+                          </div>
+                          {isSelected && (
+                            <div className="absolute top-4 right-4">
+                              <div className="w-6 h-6 rounded-full bg-primary-600 flex items-center justify-center">
+                                <Check className="w-4 h-4 text-white" />
+                              </div>
+                            </div>
+                          )}
+                        </motion.button>
+                      )
+                    })}
+                  </div>
+
+                  <div className="bg-blue-50 border border-blue-200 p-4 rounded-xl">
+                    <p className="text-blue-800 text-sm">
+                      <strong>💡 Geen zorgen:</strong> Je kunt later altijd upgraden naar een groter pakket. Je betaalt pas na goedkeuring van het ontwerp.
+                    </p>
+                  </div>
+                </div>
+              )}
+
+              {/* Step 2: Bedrijfsgegevens */}
+              {currentStep === 2 && (
                 <div className="space-y-6">
                   <div>
                     <h3 className="text-lg font-bold text-gray-900 mb-1">Bedrijfsgegevens</h3>
@@ -771,8 +888,8 @@ export default function WebsiteOnboarding({
                 </div>
               )}
 
-              {/* Step 2: Doel & Doelgroep */}
-              {currentStep === 2 && (
+              {/* Step 3: Doel & Doelgroep */}
+              {currentStep === 3 && (
                 <div className="space-y-6">
                   <div>
                     <h3 className="text-lg font-bold text-gray-900 mb-1">Doel & Doelgroep</h3>
@@ -888,8 +1005,8 @@ export default function WebsiteOnboarding({
                 </div>
               )}
 
-              {/* Step 3: Pagina's */}
-              {currentStep === 3 && (
+              {/* Step 4: Pagina's */}
+              {currentStep === 4 && (
                 <div className="space-y-6">
                   <div>
                     <h3 className="text-lg font-bold text-gray-900 mb-1">Pagina's & Structuur</h3>
@@ -976,8 +1093,8 @@ export default function WebsiteOnboarding({
                 </div>
               )}
 
-              {/* Step 4: Design & Branding */}
-              {currentStep === 4 && (
+              {/* Step 5: Design & Branding */}
+              {currentStep === 5 && (
                 <div className="space-y-6">
                   <div>
                     <h3 className="text-lg font-bold text-gray-900 mb-1">Design & Branding</h3>
@@ -1184,8 +1301,8 @@ export default function WebsiteOnboarding({
                 </div>
               )}
 
-              {/* Step 5: Content & Media */}
-              {currentStep === 5 && (
+              {/* Step 6: Content & Media */}
+              {currentStep === 6 && (
                 <div className="space-y-6">
                   <div>
                     <h3 className="text-lg font-bold text-gray-900 mb-1">Content & Media</h3>
@@ -1327,9 +1444,61 @@ export default function WebsiteOnboarding({
                 </div>
               )}
 
-              {/* Step 6: Extra & Bevestigen */}
-              {currentStep === 6 && (
+              {/* Step 7: Account & Bevestigen */}
+              {currentStep === 7 && (
                 <div className="space-y-6">
+                  {/* Wachtwoord aanmaken */}
+                  <div className="p-4 bg-gradient-to-r from-blue-50 to-primary-50 rounded-xl border border-blue-200">
+                    <div className="mb-4">
+                      <h3 className="text-lg font-bold text-gray-900 mb-1 flex items-center gap-2">
+                        <Lock className="w-5 h-5 text-primary-600" />
+                        Maak je account aan
+                      </h3>
+                      <p className="text-gray-500 text-sm">Kies een wachtwoord om je project te kunnen volgen</p>
+                    </div>
+
+                    <div className="grid sm:grid-cols-2 gap-4">
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">
+                          Wachtwoord *
+                        </label>
+                        <div className="relative">
+                          <input
+                            type={showPassword ? 'text' : 'password'}
+                            value={data.projectPassword}
+                            onChange={e => updateData({ projectPassword: e.target.value })}
+                            className={`w-full px-4 py-2.5 pr-10 rounded-lg border ${errors.projectPassword ? 'border-red-500' : 'border-gray-200'} focus:ring-2 focus:ring-primary-500`}
+                            placeholder="Min. 8 tekens"
+                          />
+                          <button
+                            type="button"
+                            onClick={() => setShowPassword(!showPassword)}
+                            className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
+                          >
+                            {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                          </button>
+                        </div>
+                        {errors.projectPassword && <p className="text-red-500 text-xs mt-1">{errors.projectPassword}</p>}
+                      </div>
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">
+                          Bevestig wachtwoord *
+                        </label>
+                        <input
+                          type={showPassword ? 'text' : 'password'}
+                          value={data.confirmPassword}
+                          onChange={e => updateData({ confirmPassword: e.target.value })}
+                          className={`w-full px-4 py-2.5 rounded-lg border ${errors.confirmPassword ? 'border-red-500' : 'border-gray-200'} focus:ring-2 focus:ring-primary-500`}
+                          placeholder="Herhaal wachtwoord"
+                        />
+                        {errors.confirmPassword && <p className="text-red-500 text-xs mt-1">{errors.confirmPassword}</p>}
+                      </div>
+                    </div>
+                    <p className="text-xs text-gray-500 mt-2">
+                      Met dit wachtwoord kun je de voortgang van je project volgen op de statuspagina.
+                    </p>
+                  </div>
+
                   <div>
                     <h3 className="text-lg font-bold text-gray-900 mb-1">Functionaliteiten</h3>
                     <p className="text-gray-500 text-sm">

@@ -9,6 +9,7 @@ const nodemailer = require('nodemailer');
 const path = require('path');
 const fs = require('fs');
 const crypto = require('crypto');
+const bcrypt = require('bcrypt');
 
 // Configuration and logging
 const config = require('./config');
@@ -389,15 +390,22 @@ app.post('/api/project/:projectId', async (req, res) => {
   const existingProject = database.projects.getById(projectId);
   const oldPhase = existingProject?.status;
   
+  // Hash password if provided
+  let projectData = { ...req.body };
+  if (projectData.password) {
+    projectData.passwordHash = await bcrypt.hash(projectData.password, 10);
+    delete projectData.password; // Don't store plain text password
+  }
+  
   // Update of create project
   if (existingProject) {
     database.projects.update(projectId, {
-      ...req.body,
+      ...projectData,
       updatedAt: new Date().toISOString()
     });
   } else {
     database.projects.create({
-      ...req.body,
+      ...projectData,
       projectId,
       createdAt: new Date().toISOString()
     });

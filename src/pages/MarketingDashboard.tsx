@@ -1,5 +1,6 @@
 import { useState, useEffect, createContext } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
+import Logo from '../components/Logo'
 import { 
   Building2, 
   Mail, 
@@ -651,15 +652,9 @@ export default function MarketingDashboard() {
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="flex items-center justify-between h-16">
               <div className="flex items-center gap-3">
-                <motion.div 
-                  whileHover={{ scale: 1.05 }}
-                  whileTap={{ scale: 0.95 }}
-                  className="w-10 h-10 bg-gradient-to-br from-emerald-500 to-teal-600 rounded-xl flex items-center justify-center shadow-lg shadow-emerald-500/20"
-                >
-                  <Target className="w-5 h-5 text-white" />
-                </motion.div>
+                <Logo variant={darkMode ? 'white' : 'default'} showText={false} />
                 <div>
-                  <h1 className={`text-lg font-bold ${darkMode ? 'text-white' : 'text-gray-900'}`}>Marketing CRM</h1>
+                  <h1 className={`text-lg font-bold ${darkMode ? 'text-white' : 'text-gray-900'}`}>Webstability Marketing</h1>
                   <div className="flex items-center gap-2">
                     <p className={`text-xs ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>Lokale klanten werven</p>
                     {/* Sync Status Indicator */}
@@ -995,6 +990,7 @@ export default function MarketingDashboard() {
       <AddLeadModal
         isOpen={showAddModal}
         onClose={() => setShowAddModal(false)}
+        darkMode={darkMode}
         onAdd={(lead) => {
           setLeads(prev => [lead, ...prev])
           setShowAddModal(false)
@@ -1015,18 +1011,18 @@ export default function MarketingDashboard() {
               initial={{ scale: 0.95, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
               exit={{ scale: 0.95, opacity: 0 }}
-              className="bg-white rounded-2xl w-full max-w-2xl max-h-[90vh] overflow-hidden"
+              className={`rounded-2xl w-full max-w-2xl max-h-[90vh] overflow-hidden ${darkMode ? 'bg-gray-800' : 'bg-white'}`}
               onClick={(e) => e.stopPropagation()}
             >
-              <div className="p-6 border-b border-gray-100">
+              <div className={`p-6 border-b ${darkMode ? 'border-gray-700' : 'border-gray-100'}`}>
                 <div className="flex items-center justify-between">
                   <div>
-                    <h2 className="text-xl font-bold text-gray-900">Email versturen</h2>
-                    <p className="text-sm text-gray-500">Naar: {selectedLead.email}</p>
+                    <h2 className={`text-xl font-bold ${darkMode ? 'text-white' : 'text-gray-900'}`}>Email versturen</h2>
+                    <p className={`text-sm ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>Naar: {selectedLead.email}</p>
                   </div>
                   <button
                     onClick={() => setShowEmailModal(false)}
-                    className="p-2 hover:bg-gray-100 rounded-lg"
+                    className={`p-2 rounded-lg ${darkMode ? 'hover:bg-gray-700 text-gray-400' : 'hover:bg-gray-100'}`}
                   >
                     <X className="w-5 h-5" />
                   </button>
@@ -1036,7 +1032,7 @@ export default function MarketingDashboard() {
               <div className="p-6 overflow-y-auto max-h-[60vh]">
                 {/* Template selector */}
                 <div className="mb-4">
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                  <label className={`block text-sm font-medium mb-2 ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>
                     Kies een template
                   </label>
                   <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
@@ -1046,12 +1042,14 @@ export default function MarketingDashboard() {
                         onClick={() => openEmailModal(selectedLead, template)}
                         className={`p-3 text-left rounded-xl border transition-all ${
                           selectedTemplate?.id === template.id
-                            ? 'border-emerald-500 bg-emerald-50'
-                            : 'border-gray-200 hover:border-emerald-300'
+                            ? 'border-emerald-500 bg-emerald-50 dark:bg-emerald-900/30'
+                            : darkMode 
+                              ? 'border-gray-600 hover:border-emerald-500 bg-gray-700' 
+                              : 'border-gray-200 hover:border-emerald-300'
                         }`}
                       >
-                        <p className="font-medium text-sm text-gray-900">{template.name}</p>
-                        <p className="text-xs text-gray-500 truncate">{template.description}</p>
+                        <p className={`font-medium text-sm ${darkMode ? 'text-white' : 'text-gray-900'}`}>{template.name}</p>
+                        <p className={`text-xs truncate ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>{template.description}</p>
                       </button>
                     ))}
                   </div>
@@ -1059,37 +1057,45 @@ export default function MarketingDashboard() {
 
                 {/* Subject */}
                 <div className="mb-4">
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                  <label className={`block text-sm font-medium mb-1 ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>
                     Onderwerp
                   </label>
                   <input
                     type="text"
                     value={emailSubject}
                     onChange={(e) => setEmailSubject(e.target.value)}
-                    className="w-full px-4 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-emerald-500"
+                    className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-emerald-500 ${
+                      darkMode 
+                        ? 'bg-gray-700 border-gray-600 text-white placeholder-gray-400' 
+                        : 'bg-white border-gray-200 text-gray-900'
+                    }`}
                     placeholder="Email onderwerp..."
                   />
                 </div>
 
                 {/* Body */}
                 <div className="mb-4">
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                  <label className={`block text-sm font-medium mb-1 ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>
                     Bericht
                   </label>
                   <textarea
                     value={emailBody}
                     onChange={(e) => setEmailBody(e.target.value)}
                     rows={12}
-                    className="w-full px-4 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-emerald-500 font-mono text-sm"
+                    className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-emerald-500 font-mono text-sm ${
+                      darkMode 
+                        ? 'bg-gray-700 border-gray-600 text-white placeholder-gray-400' 
+                        : 'bg-white border-gray-200 text-gray-900'
+                    }`}
                     placeholder="Typ je bericht..."
                   />
                 </div>
               </div>
 
-              <div className="p-6 border-t border-gray-100 flex justify-end gap-3">
+              <div className={`p-6 border-t flex justify-end gap-3 ${darkMode ? 'border-gray-700' : 'border-gray-100'}`}>
                 <button
                   onClick={() => setShowEmailModal(false)}
-                  className="px-4 py-2 text-gray-600 hover:text-gray-900"
+                  className={`px-4 py-2 ${darkMode ? 'text-gray-400 hover:text-white' : 'text-gray-600 hover:text-gray-900'}`}
                 >
                   Annuleren
                 </button>
@@ -1223,24 +1229,32 @@ function LeadRow({
           <div className="flex items-center gap-2 mt-3 flex-wrap">
             <a
               href={`mailto:${lead.email}`}
-              className="flex items-center gap-1.5 px-3 py-1.5 text-sm text-gray-600 hover:text-emerald-600 hover:bg-emerald-50 rounded-lg transition-colors"
+              className={`flex items-center gap-1.5 px-3 py-1.5 text-sm rounded-lg transition-colors ${
+                darkMode ? 'text-gray-400 hover:text-emerald-400 hover:bg-emerald-500/10' : 'text-gray-600 hover:text-emerald-600 hover:bg-emerald-50'
+              }`}
             >
               <Mail className="w-4 h-4" />
-              {lead.email}
+              <span className="hidden sm:inline">{lead.email}</span>
+              <span className="sm:hidden">Email</span>
             </a>
             <a
               href={`tel:${lead.phone}`}
-              className="flex items-center gap-1.5 px-3 py-1.5 text-sm text-gray-600 hover:text-emerald-600 hover:bg-emerald-50 rounded-lg transition-colors"
+              className={`flex items-center gap-1.5 px-3 py-1.5 text-sm rounded-lg transition-colors ${
+                darkMode ? 'text-gray-400 hover:text-emerald-400 hover:bg-emerald-500/10' : 'text-gray-600 hover:text-emerald-600 hover:bg-emerald-50'
+              }`}
             >
               <Phone className="w-4 h-4" />
-              {lead.phone}
+              <span className="hidden sm:inline">{lead.phone}</span>
+              <span className="sm:hidden">Bel</span>
             </a>
             
             {/* Details toggle button */}
             <button
               onClick={() => setShowDetails(!showDetails)}
               className={`flex items-center gap-1 px-2 py-1 text-xs rounded-full transition-colors ${
-                showDetails ? 'bg-emerald-100 text-emerald-700' : 'bg-gray-100 text-gray-500 hover:bg-gray-200'
+                showDetails 
+                  ? darkMode ? 'bg-emerald-500/20 text-emerald-400' : 'bg-emerald-100 text-emerald-700' 
+                  : darkMode ? 'bg-gray-700 text-gray-400 hover:bg-gray-600' : 'bg-gray-100 text-gray-500 hover:bg-gray-200'
               }`}
             >
               {lead.emailsSent > 0 && (
@@ -1260,14 +1274,20 @@ function LeadRow({
             </button>
 
             {lead.followUpDate && (
-              <span className={`flex items-center gap-1 px-2 py-1 text-xs rounded-full ${isFollowUpOverdue ? 'bg-red-100 text-red-700' : isFollowUpToday ? 'bg-orange-100 text-orange-700' : 'bg-blue-100 text-blue-700'}`}>
+              <span className={`flex items-center gap-1 px-2 py-1 text-xs rounded-full ${
+                isFollowUpOverdue 
+                  ? darkMode ? 'bg-red-500/20 text-red-400' : 'bg-red-100 text-red-700' 
+                  : isFollowUpToday 
+                    ? darkMode ? 'bg-orange-500/20 text-orange-400' : 'bg-orange-100 text-orange-700' 
+                    : darkMode ? 'bg-blue-500/20 text-blue-400' : 'bg-blue-100 text-blue-700'
+              }`}>
                 <Clock className="w-3 h-3" />
                 {new Date(lead.followUpDate).toLocaleDateString('nl-NL')}
               </span>
             )}
 
             {lead.lastContact && !lead.followUpDate && (
-              <span className="flex items-center gap-1 text-xs text-gray-400">
+              <span className={`flex items-center gap-1 text-xs ${darkMode ? 'text-gray-500' : 'text-gray-400'}`}>
                 <Clock className="w-3 h-3" />
                 {new Date(lead.lastContact).toLocaleDateString('nl-NL')}
               </span>
@@ -1275,18 +1295,18 @@ function LeadRow({
 
             <div className="flex-1" />
 
-            {/* Email button with dropdown */}
-            <div className="relative">
+            {/* Email button with dropdown - responsive */}
+            <div className="relative shrink-0">
               <button
                 onClick={(e) => {
                   e.stopPropagation()
                   setShowTemplates(!showTemplates)
                   setShowMenu(false)
                 }}
-                className="flex items-center gap-2 px-4 py-2 bg-emerald-600 text-white text-sm font-medium rounded-lg hover:bg-emerald-700 transition-colors"
+                className="flex items-center gap-2 px-3 sm:px-4 py-2 bg-emerald-600 text-white text-sm font-medium rounded-lg hover:bg-emerald-700 transition-colors"
               >
                 <Mail className="w-4 h-4" />
-                Email sturen
+                <span className="hidden sm:inline">Email sturen</span>
                 <ChevronDown className={`w-4 h-4 transition-transform ${showTemplates ? 'rotate-180' : ''}`} />
               </button>
 
@@ -1421,53 +1441,53 @@ function LeadRow({
                 initial={{ opacity: 0, height: 0 }}
                 animate={{ opacity: 1, height: 'auto' }}
                 exit={{ opacity: 0, height: 0 }}
-                className="mt-4 pt-4 border-t border-gray-100"
+                className={`mt-4 pt-4 border-t ${darkMode ? 'border-gray-700' : 'border-gray-100'}`}
               >
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                   {/* Email History */}
-                  <div className="bg-gray-50 rounded-lg p-4">
-                    <h4 className="text-sm font-semibold text-gray-700 mb-3 flex items-center gap-2">
+                  <div className={`rounded-lg p-4 ${darkMode ? 'bg-gray-700/50' : 'bg-gray-50'}`}>
+                    <h4 className={`text-sm font-semibold mb-3 flex items-center gap-2 ${darkMode ? 'text-gray-200' : 'text-gray-700'}`}>
                       <Mail className="w-4 h-4" />
                       Email History ({lead.emailHistory?.length || 0})
                     </h4>
                     {lead.emailHistory && lead.emailHistory.length > 0 ? (
                       <div className="space-y-2 max-h-40 overflow-y-auto">
                         {lead.emailHistory.slice().reverse().map((email) => (
-                          <div key={email.id} className="bg-white rounded p-2 text-xs">
-                            <p className="font-medium text-gray-900 truncate">{email.subject}</p>
+                          <div key={email.id} className={`rounded p-2 text-xs ${darkMode ? 'bg-gray-600' : 'bg-white'}`}>
+                            <p className={`font-medium truncate ${darkMode ? 'text-white' : 'text-gray-900'}`}>{email.subject}</p>
                             {email.templateName && (
-                              <p className="text-gray-500">Template: {email.templateName}</p>
+                              <p className={darkMode ? 'text-gray-400' : 'text-gray-500'}>Template: {email.templateName}</p>
                             )}
-                            <p className="text-gray-400">
+                            <p className={darkMode ? 'text-gray-500' : 'text-gray-400'}>
                               {new Date(email.sentAt).toLocaleDateString('nl-NL')} om {new Date(email.sentAt).toLocaleTimeString('nl-NL', { hour: '2-digit', minute: '2-digit' })}
                             </p>
                           </div>
                         ))}
                       </div>
                     ) : (
-                      <p className="text-xs text-gray-400">Nog geen emails verstuurd</p>
+                      <p className={`text-xs ${darkMode ? 'text-gray-500' : 'text-gray-400'}`}>Nog geen emails verstuurd</p>
                     )}
                   </div>
 
                   {/* Notes Timeline */}
-                  <div className="bg-gray-50 rounded-lg p-4">
-                    <h4 className="text-sm font-semibold text-gray-700 mb-3 flex items-center gap-2">
+                  <div className={`rounded-lg p-4 ${darkMode ? 'bg-gray-700/50' : 'bg-gray-50'}`}>
+                    <h4 className={`text-sm font-semibold mb-3 flex items-center gap-2 ${darkMode ? 'text-gray-200' : 'text-gray-700'}`}>
                       <MessageSquare className="w-4 h-4" />
                       Notities ({lead.notesTimeline?.length || 0})
                     </h4>
                     {lead.notesTimeline && lead.notesTimeline.length > 0 ? (
                       <div className="space-y-2 max-h-28 overflow-y-auto mb-3">
                         {lead.notesTimeline.slice().reverse().map((note) => (
-                          <div key={note.id} className="bg-white rounded p-2 text-xs">
-                            <p className="text-gray-900">{note.text}</p>
-                            <p className="text-gray-400 mt-1">
+                          <div key={note.id} className={`rounded p-2 text-xs ${darkMode ? 'bg-gray-600' : 'bg-white'}`}>
+                            <p className={darkMode ? 'text-white' : 'text-gray-900'}>{note.text}</p>
+                            <p className={`mt-1 ${darkMode ? 'text-gray-500' : 'text-gray-400'}`}>
                               {new Date(note.createdAt).toLocaleDateString('nl-NL')}
                             </p>
                           </div>
                         ))}
                       </div>
                     ) : (
-                      <p className="text-xs text-gray-400 mb-3">Nog geen notities</p>
+                      <p className={`text-xs mb-3 ${darkMode ? 'text-gray-500' : 'text-gray-400'}`}>Nog geen notities</p>
                     )}
                     <div className="flex gap-2">
                       <input
@@ -1481,7 +1501,9 @@ function LeadRow({
                             setNewNote('')
                           }
                         }}
-                        className="flex-1 px-2 py-1 text-xs border border-gray-200 rounded focus:ring-1 focus:ring-emerald-500"
+                        className={`flex-1 px-2 py-1 text-xs border rounded focus:ring-1 focus:ring-emerald-500 ${
+                          darkMode ? 'bg-gray-600 border-gray-500 text-white placeholder-gray-400' : 'bg-white border-gray-200'
+                        }`}
                       />
                       <button
                         onClick={() => {
@@ -1498,8 +1520,8 @@ function LeadRow({
                   </div>
 
                   {/* Follow-up Planner */}
-                  <div className="bg-gray-50 rounded-lg p-4">
-                    <h4 className="text-sm font-semibold text-gray-700 mb-3 flex items-center gap-2">
+                  <div className={`rounded-lg p-4 ${darkMode ? 'bg-gray-700/50' : 'bg-gray-50'}`}>
+                    <h4 className={`text-sm font-semibold mb-3 flex items-center gap-2 ${darkMode ? 'text-gray-200' : 'text-gray-700'}`}>
                       <Clock className="w-4 h-4" />
                       Follow-up
                     </h4>
@@ -1509,12 +1531,16 @@ function LeadRow({
                         value={lead.followUpDate || ''}
                         min={new Date().toISOString().split('T')[0]}
                         onChange={(e) => onSetFollowUp(e.target.value || undefined)}
-                        className="w-full px-2 py-1 text-sm border border-gray-200 rounded focus:ring-1 focus:ring-emerald-500"
+                        className={`w-full px-2 py-1 text-sm border rounded focus:ring-1 focus:ring-emerald-500 ${
+                          darkMode ? 'bg-gray-600 border-gray-500 text-white' : 'bg-white border-gray-200'
+                        }`}
                       />
                       {lead.followUpDate && (
                         <button
                           onClick={() => onSetFollowUp(undefined)}
-                          className="w-full px-2 py-1 text-xs text-red-600 hover:bg-red-50 rounded transition-colors"
+                          className={`w-full px-2 py-1 text-xs rounded transition-colors ${
+                            darkMode ? 'text-red-400 hover:bg-red-500/20' : 'text-red-600 hover:bg-red-50'
+                          }`}
                         >
                           Follow-up verwijderen
                         </button>
@@ -1526,7 +1552,9 @@ function LeadRow({
                             tomorrow.setDate(tomorrow.getDate() + 1)
                             onSetFollowUp(tomorrow.toISOString().split('T')[0])
                           }}
-                          className="px-2 py-1 text-xs bg-white border border-gray-200 rounded hover:bg-gray-50"
+                          className={`px-2 py-1 text-xs border rounded ${
+                            darkMode ? 'bg-gray-600 border-gray-500 text-white hover:bg-gray-500' : 'bg-white border-gray-200 hover:bg-gray-50'
+                          }`}
                         >
                           Morgen
                         </button>
@@ -1536,7 +1564,9 @@ function LeadRow({
                             nextWeek.setDate(nextWeek.getDate() + 7)
                             onSetFollowUp(nextWeek.toISOString().split('T')[0])
                           }}
-                          className="px-2 py-1 text-xs bg-white border border-gray-200 rounded hover:bg-gray-50"
+                          className={`px-2 py-1 text-xs border rounded ${
+                            darkMode ? 'bg-gray-600 border-gray-500 text-white hover:bg-gray-500' : 'bg-white border-gray-200 hover:bg-gray-50'
+                          }`}
                         >
                           +1 week
                         </button>
@@ -1546,7 +1576,9 @@ function LeadRow({
                             nextMonth.setMonth(nextMonth.getMonth() + 1)
                             onSetFollowUp(nextMonth.toISOString().split('T')[0])
                           }}
-                          className="px-2 py-1 text-xs bg-white border border-gray-200 rounded hover:bg-gray-50"
+                          className={`px-2 py-1 text-xs border rounded ${
+                            darkMode ? 'bg-gray-600 border-gray-500 text-white hover:bg-gray-500' : 'bg-white border-gray-200 hover:bg-gray-50'
+                          }`}
                         >
                           +1 maand
                         </button>
@@ -1567,11 +1599,13 @@ function LeadRow({
 function AddLeadModal({ 
   isOpen, 
   onClose, 
-  onAdd 
+  onAdd,
+  darkMode = false
 }: { 
   isOpen: boolean
   onClose: () => void
   onAdd: (lead: Lead) => void
+  darkMode?: boolean
 }) {
   const [formData, setFormData] = useState({
     companyName: '',
@@ -1617,6 +1651,14 @@ function AddLeadModal({
 
   if (!isOpen) return null
 
+  const inputClasses = `w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-emerald-500 ${
+    darkMode 
+      ? 'bg-gray-700 border-gray-600 text-white placeholder-gray-400' 
+      : 'bg-white border-gray-200 text-gray-900'
+  }`
+
+  const labelClasses = `block text-sm font-medium mb-1 ${darkMode ? 'text-gray-300' : 'text-gray-700'}`
+
   return (
     <motion.div
       initial={{ opacity: 0 }}
@@ -1629,13 +1671,13 @@ function AddLeadModal({
         initial={{ scale: 0.95, opacity: 0 }}
         animate={{ scale: 1, opacity: 1 }}
         exit={{ scale: 0.95, opacity: 0 }}
-        className="bg-white rounded-2xl w-full max-w-lg max-h-[90vh] overflow-y-auto"
+        className={`rounded-2xl w-full max-w-lg max-h-[90vh] overflow-y-auto ${darkMode ? 'bg-gray-800' : 'bg-white'}`}
         onClick={(e) => e.stopPropagation()}
       >
-        <div className="p-6 border-b border-gray-100">
+        <div className={`p-6 border-b ${darkMode ? 'border-gray-700' : 'border-gray-100'}`}>
           <div className="flex items-center justify-between">
-            <h2 className="text-xl font-bold text-gray-900">Nieuw bedrijf toevoegen</h2>
-            <button onClick={onClose} className="p-2 hover:bg-gray-100 rounded-lg">
+            <h2 className={`text-xl font-bold ${darkMode ? 'text-white' : 'text-gray-900'}`}>Nieuw bedrijf toevoegen</h2>
+            <button onClick={onClose} className={`p-2 rounded-lg ${darkMode ? 'hover:bg-gray-700 text-gray-400' : 'hover:bg-gray-100'}`}>
               <X className="w-5 h-5" />
             </button>
           </div>
@@ -1643,7 +1685,7 @@ function AddLeadModal({
 
         <form onSubmit={handleSubmit} className="p-6 space-y-4">
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
+            <label className={labelClasses}>
               Bedrijfsnaam *
             </label>
             <input
@@ -1651,14 +1693,14 @@ function AddLeadModal({
               required
               value={formData.companyName}
               onChange={(e) => setFormData(prev => ({ ...prev, companyName: e.target.value }))}
-              className="w-full px-4 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-emerald-500"
+              className={inputClasses}
               placeholder="Bakkerij De Gouden Korrel"
             />
           </div>
 
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
+              <label className={labelClasses}>
                 Contactpersoon *
               </label>
               <input
@@ -1666,12 +1708,12 @@ function AddLeadModal({
                 required
                 value={formData.contactPerson}
                 onChange={(e) => setFormData(prev => ({ ...prev, contactPerson: e.target.value }))}
-                className="w-full px-4 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-emerald-500"
+                className={inputClasses}
                 placeholder="Jan Bakker"
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
+              <label className={labelClasses}>
                 Plaats *
               </label>
               <input
@@ -1679,7 +1721,7 @@ function AddLeadModal({
                 required
                 value={formData.city}
                 onChange={(e) => setFormData(prev => ({ ...prev, city: e.target.value }))}
-                className="w-full px-4 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-emerald-500"
+                className={inputClasses}
                 placeholder="Leiden"
               />
             </div>
@@ -1687,7 +1729,7 @@ function AddLeadModal({
 
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
+              <label className={labelClasses}>
                 Email *
               </label>
               <input
@@ -1695,19 +1737,19 @@ function AddLeadModal({
                 required
                 value={formData.email}
                 onChange={(e) => setFormData(prev => ({ ...prev, email: e.target.value }))}
-                className="w-full px-4 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-emerald-500"
+                className={inputClasses}
                 placeholder="info@bedrijf.nl"
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
+              <label className={labelClasses}>
                 Telefoon
               </label>
               <input
                 type="tel"
                 value={formData.phone}
                 onChange={(e) => setFormData(prev => ({ ...prev, phone: e.target.value }))}
-                className="w-full px-4 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-emerald-500"
+                className={inputClasses}
                 placeholder="06-12345678"
               />
             </div>
@@ -1715,40 +1757,40 @@ function AddLeadModal({
 
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
+              <label className={labelClasses}>
                 Website
               </label>
               <input
                 type="text"
                 value={formData.website}
                 onChange={(e) => setFormData(prev => ({ ...prev, website: e.target.value }))}
-                className="w-full px-4 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-emerald-500"
+                className={inputClasses}
                 placeholder="www.bedrijf.nl"
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
+              <label className={labelClasses}>
                 Adres
               </label>
               <input
                 type="text"
                 value={formData.address}
                 onChange={(e) => setFormData(prev => ({ ...prev, address: e.target.value }))}
-                className="w-full px-4 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-emerald-500"
+                className={inputClasses}
                 placeholder="Dorpsstraat 15"
               />
             </div>
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
+            <label className={labelClasses}>
               Notities
             </label>
             <textarea
               value={formData.notes}
               onChange={(e) => setFormData(prev => ({ ...prev, notes: e.target.value }))}
               rows={3}
-              className="w-full px-4 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-emerald-500"
+              className={inputClasses}
               placeholder="Geen website, alleen Facebook pagina. Geïnteresseerd in offerte."
             />
           </div>
@@ -1757,7 +1799,7 @@ function AddLeadModal({
             <button
               type="button"
               onClick={onClose}
-              className="px-4 py-2 text-gray-600 hover:text-gray-900"
+              className={`px-4 py-2 ${darkMode ? 'text-gray-400 hover:text-white' : 'text-gray-600 hover:text-gray-900'}`}
             >
               Annuleren
             </button>
@@ -1772,17 +1814,6 @@ function AddLeadModal({
         </form>
       </motion.div>
     </motion.div>
-  )
-}
-
-// Target icon for header
-function Target({ className }: { className?: string }) {
-  return (
-    <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-      <circle cx="12" cy="12" r="10" />
-      <circle cx="12" cy="12" r="6" />
-      <circle cx="12" cy="12" r="2" />
-    </svg>
   )
 }
 
@@ -1829,7 +1860,7 @@ function OnboardingModal({
   const steps = [
     {
       icon: <Building2 className="w-8 h-8" />,
-      title: 'Welkom bij Marketing CRM! 👋',
+      title: 'Welkom bij Webstability Marketing! 👋',
       description: 'Dit systeem helpt je om lokale bedrijven te vinden en te converteren naar klanten. Laten we je rondleiden!',
       tip: 'Dit duurt maar 1 minuut'
     },

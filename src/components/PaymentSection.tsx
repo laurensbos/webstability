@@ -16,7 +16,7 @@ import { packages } from '../config/company'
 interface PaymentSectionProps {
   projectId: string
   packageType: string
-  paymentStatus: 'pending' | 'awaiting_payment' | 'paid' | 'failed'
+  paymentStatus: 'not_required' | 'pending' | 'awaiting_payment' | 'paid' | 'failed'
   paymentUrl?: string
   designApprovedAt?: string
   onPaymentInitiated?: () => void
