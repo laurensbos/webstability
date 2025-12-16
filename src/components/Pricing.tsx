@@ -1,43 +1,22 @@
 import { motion } from 'framer-motion'
-import { Check, ArrowRight, ChevronLeft, ChevronRight } from 'lucide-react'
+import { Check, ArrowRight } from 'lucide-react'
 import { packages, trustBadges } from '../data/packages'
 import { useState, useRef, useEffect } from 'react'
 
 export default function Pricing() {
 	const scrollRef = useRef<HTMLDivElement>(null)
 	const [activeIndex, setActiveIndex] = useState(1) // Start met Professional (meest gekozen)
-	const [canScrollLeft, setCanScrollLeft] = useState(false)
-	const [canScrollRight, setCanScrollRight] = useState(true)
-
-	// Update scroll buttons visibility
-	const updateScrollButtons = () => {
-		if (!scrollRef.current) return
-		const { scrollLeft, scrollWidth, clientWidth } = scrollRef.current
-		setCanScrollLeft(scrollLeft > 10)
-		setCanScrollRight(scrollLeft < scrollWidth - clientWidth - 10)
-	}
 
 	useEffect(() => {
 		const el = scrollRef.current
 		if (!el) return
-		el.addEventListener('scroll', updateScrollButtons)
-		updateScrollButtons()
 		
 		// Scroll to professional package on mount (mobile)
 		if (window.innerWidth < 1024) {
 			const cardWidth = 280 + 16 // card width + gap
 			el.scrollLeft = cardWidth * 1 // Scroll to second card (professional)
 		}
-		
-		return () => el.removeEventListener('scroll', updateScrollButtons)
 	}, [])
-
-	const scrollToCard = (direction: 'left' | 'right') => {
-		if (!scrollRef.current) return
-		const cardWidth = 280 + 16 // card width + gap
-		const newScroll = scrollRef.current.scrollLeft + (direction === 'left' ? -cardWidth : cardWidth)
-		scrollRef.current.scrollTo({ left: newScroll, behavior: 'smooth' })
-	}
 
 	// Track active card on scroll
 	const handleScroll = () => {
@@ -45,7 +24,6 @@ export default function Pricing() {
 		const cardWidth = 280 + 16
 		const index = Math.round(scrollRef.current.scrollLeft / cardWidth)
 		setActiveIndex(Math.min(index, packages.length - 1))
-		updateScrollButtons()
 	}
 
 	return (
@@ -84,32 +62,6 @@ export default function Pricing() {
 
 				{/* Mobile: Horizontal scroll carousel */}
 				<div className="lg:hidden relative">
-					{/* Scroll buttons */}
-					<button
-						onClick={() => scrollToCard('left')}
-						className={`absolute left-0 top-1/2 -translate-y-1/2 z-10 w-10 h-10 bg-white dark:bg-gray-800 shadow-lg rounded-full flex items-center justify-center border border-gray-200 dark:border-gray-700 transition-opacity ${
-							canScrollLeft ? 'opacity-100' : 'opacity-0 pointer-events-none'
-						}`}
-						aria-label="Vorige"
-					>
-						<ChevronLeft className="w-5 h-5 text-gray-600 dark:text-gray-400" />
-					</button>
-					<button
-						onClick={() => scrollToCard('right')}
-						className={`absolute right-0 top-1/2 -translate-y-1/2 z-10 w-10 h-10 bg-white dark:bg-gray-800 shadow-lg rounded-full flex items-center justify-center border border-gray-200 dark:border-gray-700 transition-opacity ${
-							canScrollRight ? 'opacity-100' : 'opacity-0 pointer-events-none'
-						}`}
-						aria-label="Volgende"
-					>
-						<ChevronRight className="w-5 h-5 text-gray-600 dark:text-gray-400" />
-					</button>
-
-					{/* Swipe hint */}
-					<div className="absolute -top-6 right-4 text-xs text-gray-400 dark:text-gray-500 flex items-center gap-1">
-						<span>Swipe</span>
-						<ChevronRight className="w-3 h-3" />
-					</div>
-
 					{/* Cards container */}
 					<div
 						ref={scrollRef}
