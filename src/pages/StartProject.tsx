@@ -326,13 +326,13 @@ export default function StartProject() {
                     className="relative flex-shrink-0 w-[300px] snap-center text-left bg-white dark:bg-gray-800 rounded-2xl border-2 border-gray-200 dark:border-gray-700 overflow-hidden shadow-md active:scale-[0.98] transition-transform"
                   >
                     {/* Colored header with icon */}
-                    <div className={`bg-gradient-to-br ${service.gradient} p-5 flex items-center gap-4`}>
+                    <div className={`bg-gradient-to-br ${service.gradient} p-5 flex items-center gap-4 min-h-[100px]`}>
                       <div className="w-14 h-14 rounded-2xl bg-white/20 backdrop-blur-sm flex items-center justify-center shadow-lg flex-shrink-0">
                         <Icon className="w-7 h-7 text-white" />
                       </div>
                       <div className="text-white flex-1 min-w-0">
                         <h3 className="font-bold text-xl">{service.name}</h3>
-                        <p className="text-white/80 text-sm min-h-[40px]">{service.description}</p>
+                        <p className="text-white/80 text-sm line-clamp-2">{service.description}</p>
                       </div>
                     </div>
                     
