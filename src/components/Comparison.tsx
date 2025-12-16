@@ -23,26 +23,6 @@ const comparisonOptions = [
     ],
   },
   {
-    id: 'webstability',
-    name: 'Webstability',
-    tagline: 'Website abonnement',
-    highlight: true,
-    icon: Sparkles,
-    color: 'primary',
-    pricing: {
-      monthly: '€96/maand',
-      setup: '€120 eenmalig',
-    },
-    features: [
-      { label: 'Professioneel design', value: 'Op maat gemaakt', positive: true },
-      { label: 'Technisch onderhoud', value: 'Volledig verzorgd', positive: true },
-      { label: 'Wijzigingen doorvoeren', value: 'Wij regelen het', positive: true },
-      { label: 'Support & hulp', value: 'Persoonlijk contact', positive: true },
-      { label: 'Flexibiliteit', value: 'Maandelijks opzegbaar', positive: true },
-      { label: 'Jouw tijdsinvestering', value: '~2 uur intake', positive: true },
-    ],
-  },
-  {
     id: 'zelf',
     name: 'Zelf maken',
     tagline: 'Wix, Squarespace, etc.',
@@ -60,6 +40,26 @@ const comparisonOptions = [
       { label: 'Support & hulp', value: 'Forums/documentatie', positive: false },
       { label: 'Flexibiliteit', value: 'Flexibel', positive: true },
       { label: 'Jouw tijdsinvestering', value: '50-200+ uur', positive: false },
+    ],
+  },
+  {
+    id: 'webstability',
+    name: 'Webstability',
+    tagline: 'Website abonnement',
+    highlight: true,
+    icon: Sparkles,
+    color: 'primary',
+    pricing: {
+      monthly: '€96/maand',
+      setup: '€120 eenmalig',
+    },
+    features: [
+      { label: 'Professioneel design', value: 'Op maat gemaakt', positive: true },
+      { label: 'Technisch onderhoud', value: 'Volledig verzorgd', positive: true },
+      { label: 'Wijzigingen doorvoeren', value: 'Wij regelen het', positive: true },
+      { label: 'Support & hulp', value: 'Persoonlijk contact', positive: true },
+      { label: 'Flexibiliteit', value: 'Maandelijks opzegbaar', positive: true },
+      { label: 'Jouw tijdsinvestering', value: '~2 uur intake', positive: true },
     ],
   },
 ]
@@ -133,10 +133,10 @@ export default function Comparison() {
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
                 transition={{ delay: index * 0.1 }}
-                className={`rounded-2xl p-5 bg-white dark:bg-gray-800 ${
+                className={`rounded-2xl p-5 bg-white dark:bg-gray-800 border shadow-md ${
                   isHighlighted
-                    ? 'border-2 border-primary-500 shadow-lg shadow-primary-500/10'
-                    : 'border border-gray-200 dark:border-gray-700 shadow-md'
+                    ? 'border-primary-500'
+                    : 'border-gray-200 dark:border-gray-700'
                 }`}
               >
                 {/* Header */}
@@ -208,10 +208,10 @@ export default function Comparison() {
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
                 transition={{ delay: index * 0.1 }}
-                className={`relative rounded-2xl p-6 lg:p-8 bg-white dark:bg-gray-800 ${
+                className={`relative rounded-2xl p-6 lg:p-8 bg-white dark:bg-gray-800 border shadow-lg ${
                   isHighlighted
-                    ? 'border-2 border-primary-500 shadow-xl shadow-primary-500/10 dark:shadow-primary-500/20'
-                    : 'border border-gray-200 dark:border-gray-700 shadow-lg'
+                    ? 'border-primary-500'
+                    : 'border-gray-200 dark:border-gray-700'
                 }`}
               >
                 {/* Header */}
