@@ -320,11 +320,11 @@ export default function Article() {
                 </span>
               </div>
               
-              <h1 className="text-2xl sm:text-3xl lg:text-4xl xl:text-5xl font-bold text-gray-900 mb-4 sm:mb-6 leading-tight">
+              <h1 className="text-2xl sm:text-3xl lg:text-4xl xl:text-5xl font-bold text-gray-900 dark:text-white mb-4 sm:mb-6 leading-tight">
                 {article.title}
               </h1>
 
-              <p className="text-base sm:text-lg lg:text-xl text-gray-600 mb-6 sm:mb-8 leading-relaxed">
+              <p className="text-base sm:text-lg lg:text-xl text-gray-600 dark:text-gray-400 mb-6 sm:mb-8 leading-relaxed">
                 {article.excerpt}
               </p>
 
@@ -359,7 +359,7 @@ export default function Article() {
               className="grid lg:grid-cols-[1fr,280px] gap-8 lg:gap-12"
             >
               {/* Main content */}
-              <article className="prose prose-sm sm:prose-base lg:prose-lg max-w-none prose-headings:text-gray-900 prose-p:text-gray-600 prose-a:text-primary-600 prose-strong:text-gray-900 dark:text-white">
+              <article className="prose prose-sm sm:prose-base lg:prose-lg max-w-none prose-headings:text-gray-900 dark:prose-headings:text-white prose-p:text-gray-600 dark:prose-p:text-gray-300 prose-a:text-primary-600 prose-strong:text-gray-900 dark:prose-strong:text-white dark:prose-invert">
                 {renderContent(article.content)}
 
                 {/* Tags */}
@@ -370,7 +370,7 @@ export default function Article() {
                     {article.tags.map((tag) => (
                       <span
                         key={tag}
-                        className="px-3 py-1 bg-gray-100 hover:bg-gray-200 text-gray-600 text-sm rounded-full transition-colors cursor-default"
+                        className="px-3 py-1 bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 text-gray-600 dark:text-gray-400 text-sm rounded-full transition-colors cursor-default"
                       >
                         {tag}
                       </span>
@@ -380,7 +380,7 @@ export default function Article() {
 
                 {/* Share */}
                 <div className="mt-6 lg:mt-8 flex items-center gap-4 not-prose">
-                  <span className="text-gray-600 font-medium text-sm sm:text-base">Deel dit artikel:</span>
+                  <span className="text-gray-600 dark:text-gray-400 font-medium text-sm sm:text-base">Deel dit artikel:</span>
                   <div className="flex items-center gap-2">
                     <button 
                       onClick={() => {
@@ -390,11 +390,11 @@ export default function Article() {
                           navigator.clipboard.writeText(window.location.href)
                         }
                       }}
-                      className="p-2 bg-gray-100 hover:bg-primary-100 text-gray-600 hover:text-primary-600 rounded-lg transition-colors"
+                      className="p-2 bg-gray-100 dark:bg-gray-800 hover:bg-primary-100 dark:hover:bg-primary-900/30 text-gray-600 dark:text-gray-400 hover:text-primary-600 rounded-lg transition-colors"
                     >
                       <Share2 className="w-5 h-5" />
                     </button>
-                    <button className="p-2 bg-gray-100 hover:bg-primary-100 text-gray-600 hover:text-primary-600 rounded-lg transition-colors">
+                    <button className="p-2 bg-gray-100 dark:bg-gray-800 hover:bg-primary-100 dark:hover:bg-primary-900/30 text-gray-600 dark:text-gray-400 hover:text-primary-600 rounded-lg transition-colors">
                       <Bookmark className="w-5 h-5" />
                     </button>
                   </div>
@@ -462,9 +462,9 @@ export default function Article() {
 
         {/* Related articles mobile */}
         {relatedArticles.length > 0 && (
-          <section className="py-8 sm:py-12 bg-gray-50 lg:hidden">
+          <section className="py-8 sm:py-12 bg-gray-50 dark:bg-gray-800 lg:hidden">
             <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-              <h3 className="text-lg sm:text-xl font-bold text-gray-900 mb-4 sm:mb-6">Gerelateerde artikelen</h3>
+              <h3 className="text-lg sm:text-xl font-bold text-gray-900 dark:text-white mb-4 sm:mb-6">Gerelateerde artikelen</h3>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
                 {relatedArticles.map((related) => (
                   <Link
@@ -473,8 +473,8 @@ export default function Article() {
                     className="block p-4 sm:p-6 bg-white dark:bg-gray-900 rounded-xl hover:shadow-md transition-shadow"
                   >
                     <span className="text-[10px] sm:text-xs text-primary-600 font-medium">{related.category}</span>
-                    <h4 className="font-semibold text-gray-900 text-sm sm:text-base mt-1.5 sm:mt-2 mb-1.5 sm:mb-2 line-clamp-2">{related.title}</h4>
-                    <p className="text-xs sm:text-sm text-gray-600 line-clamp-2">{related.excerpt}</p>
+                    <h4 className="font-semibold text-gray-900 dark:text-white text-sm sm:text-base mt-1.5 sm:mt-2 mb-1.5 sm:mb-2 line-clamp-2">{related.title}</h4>
+                    <p className="text-xs sm:text-sm text-gray-600 dark:text-gray-400 line-clamp-2">{related.excerpt}</p>
                   </Link>
                 ))}
               </div>

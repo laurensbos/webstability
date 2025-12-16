@@ -212,11 +212,11 @@ export default function Bedankt() {
               <span className={`text-sm font-medium ${colors.textDark}`}>{colors.label}</span>
             </div>
 
-            <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-gray-900 mb-4">
+            <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-gray-900 dark:text-white mb-4">
               Bedankt voor je aanvraag!
             </h1>
             
-            <p className="text-gray-600 text-lg max-w-xl mx-auto">
+            <p className="text-gray-600 dark:text-gray-400 text-lg max-w-xl mx-auto">
               We hebben je projectaanvraag ontvangen en gaan er direct mee aan de slag. 
               Je ontvangt binnen 24 uur een reactie van ons.
             </p>
@@ -295,9 +295,9 @@ export default function Bedankt() {
                     We sturen je een bevestigingsmail met alle details.
                   </p>
                 )}
-                <div className="text-sm text-gray-600 space-y-1">
+                <div className="text-sm text-gray-600 dark:text-gray-400 space-y-1">
                   <p>In deze mail vind je:</p>
-                  <ul className="list-disc list-inside text-gray-600 ml-2 space-y-0.5">
+                  <ul className="list-disc list-inside text-gray-600 dark:text-gray-400 ml-2 space-y-0.5">
                     <li>Je project ID</li>
                     <li>Link naar de onboarding</li>
                     <li>Wat je van ons kunt verwachten</li>
@@ -346,7 +346,7 @@ export default function Bedankt() {
                           {step.time}
                         </span>
                       </div>
-                      <p className="text-gray-600 text-sm">{step.description}</p>
+                      <p className="text-gray-600 dark:text-gray-400 text-sm">{step.description}</p>
                     </div>
                   </motion.div>
                 ))}
@@ -384,7 +384,7 @@ export default function Bedankt() {
           >
             <Link
               to="/"
-              className="inline-flex items-center gap-2 text-gray-600 hover:text-gray-900 transition-colors font-medium"
+              className="inline-flex items-center gap-2 text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white transition-colors font-medium"
             >
               ← Terug naar de homepage
             </Link>

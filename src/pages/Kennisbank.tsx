@@ -148,7 +148,7 @@ export default function Kennisbank() {
                   </span>
                 </h1>
 
-                <p className="text-xl text-gray-600 mb-8 max-w-2xl mx-auto">
+                <p className="text-xl text-gray-600 dark:text-gray-400 mb-8 max-w-2xl mx-auto">
                   Praktische tips, handleidingen en inzichten om het maximale uit je online aanwezigheid te halen.
                 </p>
 
@@ -160,7 +160,7 @@ export default function Kennisbank() {
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
                     placeholder="Zoek artikelen..."
-                    className="w-full pl-12 pr-4 py-4 bg-white dark:bg-gray-900 border border-gray-200 rounded-2xl text-gray-900 placeholder-gray-400 focus:outline-none focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 transition-all shadow-lg shadow-gray-100/50"
+                    className="w-full pl-12 pr-4 py-4 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-2xl text-gray-900 dark:text-white placeholder-gray-400 focus:outline-none focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 transition-all shadow-lg shadow-gray-100/50 dark:shadow-gray-900/50"
                   />
                 </div>
 

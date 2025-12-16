@@ -137,14 +137,14 @@ export default function Voorwaarden() {
 
               <section className="mb-8">
                 <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-4">Artikel 12 – Overmacht</h2>
-                <p className="text-gray-600 mb-4">
+                <p className="text-gray-600 dark:text-gray-300 mb-4">
                   In geval van overmacht (waaronder storingen bij derden, internetstoring, stroomuitval, overheidsmaatregelen) is Webstability niet gehouden tot nakoming van enige verplichting.
                 </p>
               </section>
 
               <section className="mb-8">
                 <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-4">Artikel 13 – Vertrouwelijkheid</h2>
-                <p className="text-gray-600 dark:text-gray-400">
+                <p className="text-gray-600 dark:text-gray-300">
                   Beide partijen zijn verplicht tot geheimhouding van alle vertrouwelijke informatie die zij in het kader van de overeenkomst van elkaar ontvangen.
                 </p>
               </section>
@@ -160,7 +160,7 @@ export default function Voorwaarden() {
 
               <section>
                 <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-4">Artikel 15 – Contact</h2>
-                <p className="text-gray-600 mb-4">
+                <p className="text-gray-600 dark:text-gray-300 mb-4">
                   Voor vragen over deze algemene voorwaarden kun je contact opnemen via:
                 </p>
                 <ul className="text-gray-600 dark:text-gray-300 space-y-2">

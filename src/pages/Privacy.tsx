@@ -103,7 +103,7 @@ export default function Privacy() {
                   <li><strong>Bezwaar:</strong> Je mag bezwaar maken tegen verwerking van je gegevens</li>
                   <li><strong>Overdracht:</strong> Je mag je gegevens opvragen in een gangbaar formaat</li>
                 </ul>
-                <p className="text-gray-600 mt-4">
+                <p className="text-gray-600 dark:text-gray-300 mt-4">
                   Neem contact met ons op via <a href="mailto:info@webstability.nl" className="text-primary-600 hover:underline">info@webstability.nl</a> om gebruik te maken van deze rechten.
                 </p>
               </section>
@@ -117,7 +117,7 @@ export default function Privacy() {
                   <li><strong>Functionele cookies:</strong> Noodzakelijk voor de werking van de website</li>
                   <li><strong>Analytische cookies:</strong> Om websitegebruik te analyseren (geanonimiseerd)</li>
                 </ul>
-                <p className="text-gray-600 mt-4">
+                <p className="text-gray-600 dark:text-gray-300 mt-4">
                   Wij gebruiken geen tracking cookies voor advertentiedoeleinden.
                 </p>
               </section>

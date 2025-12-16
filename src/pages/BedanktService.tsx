@@ -136,9 +136,9 @@ export default function BedanktService() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.6 }}
-            className="bg-gray-50 rounded-xl p-6 mb-8"
+            className="bg-gray-50 dark:bg-gray-800 rounded-xl p-6 mb-8"
           >
-            <p className="text-gray-600 mb-4">
+            <p className="text-gray-600 dark:text-gray-400 mb-4">
               Vragen? Neem gerust contact met ons op:
             </p>
             <div className="flex flex-wrap items-center justify-center gap-4">
