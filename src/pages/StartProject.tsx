@@ -18,6 +18,7 @@ import Footer from '../components/Footer'
 import WebsiteOnboarding from '../components/WebsiteOnboarding'
 import WebshopOnboarding from '../components/WebshopOnboarding'
 import DroneOnboarding from '../components/DroneOnboarding'
+import LogoOnboarding from '../components/LogoOnboarding'
 
 type ServiceType = 'website' | 'webshop' | 'drone' | 'logo' | null
 
@@ -239,41 +240,7 @@ export default function StartProject() {
   }
 
   if (selectedService === 'logo') {
-    // TODO: Create LogoOnboarding component
-    // For now, redirect to old flow or show message
-    return (
-      <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-purple-50/30 dark:from-gray-900 dark:via-gray-900 dark:to-gray-900">
-        <Header />
-        <main className="pt-4 min-h-[60vh] flex items-center justify-center">
-          <div className="text-center max-w-md mx-auto px-4">
-            <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-purple-500 to-violet-600 flex items-center justify-center mx-auto mb-6 shadow-lg shadow-purple-500/20">
-              <PenTool className="w-8 h-8 text-white" />
-            </div>
-            <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-3">Logo Design</h2>
-            <p className="text-gray-600 dark:text-gray-300 mb-6">
-              Voor logo design neem direct contact met ons op. We bespreken graag je wensen en maken een uniek ontwerp voor je merk.
-            </p>
-            <div className="flex flex-col sm:flex-row gap-3 justify-center">
-              <a
-                href="mailto:info@webstability.nl?subject=Logo%20Design%20Aanvraag"
-                className="inline-flex items-center justify-center gap-2 px-6 py-3 bg-gradient-to-r from-purple-500 to-violet-600 text-white font-semibold rounded-xl hover:from-purple-600 hover:to-violet-700 transition-all shadow-lg shadow-purple-500/20"
-              >
-                Contact opnemen
-                <ArrowRight className="w-4 h-4" />
-              </a>
-              <button
-                onClick={handleBack}
-                className="inline-flex items-center justify-center gap-2 px-6 py-3 bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-200 font-semibold rounded-xl hover:bg-gray-200 dark:hover:bg-gray-700 transition-all"
-              >
-                <ChevronLeft className="w-4 h-4" />
-                Terug
-              </button>
-            </div>
-          </div>
-        </main>
-        <Footer />
-      </div>
-    )
+    return <LogoOnboarding onClose={handleBack} />
   }
 
   // Service selection screen
