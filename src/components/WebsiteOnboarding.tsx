@@ -398,12 +398,64 @@ export default function WebsiteOnboarding({
                   </p>
                 </div>
 
-                <div className="flex gap-4 overflow-x-auto pb-4 -mx-4 px-4 sm:mx-0 sm:px-0 snap-x snap-mandatory scrollbar-hide sm:grid sm:grid-cols-3 sm:gap-4 sm:overflow-visible">
+                {/* Mobile: swipe to compare */}
+                <div className="sm:hidden">
+                  <div className="flex items-center justify-center gap-2 text-xs text-gray-400 dark:text-gray-500 mb-3">
+                    <span>Swipe om te vergelijken</span>
+                    <ArrowRight className="w-3 h-3" />
+                  </div>
+
+                  <div className="flex gap-4 overflow-x-auto pb-4 -mx-4 px-4 snap-x snap-mandatory scrollbar-hide" style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
+                    {PACKAGES.map((pkg) => (
+                      <motion.button
+                        key={pkg.id}
+                        onClick={() => updateFormData('package', pkg.id)}
+                        className={`relative flex-shrink-0 w-[280px] snap-center p-6 rounded-2xl border-2 text-left transition-all ${
+                          formData.package === pkg.id ? 'border-transparent ring-2 ring-primary-500 dark:ring-primary-400' : 'border-gray-200 dark:border-gray-700 hover:border-gray-300 dark:hover:border-gray-600'
+                        }`}
+                        whileHover={{ scale: 1.02 }}
+                        whileTap={{ scale: 0.98 }}
+                      >
+                        {formData.package === pkg.id && (
+                          <motion.div className={`absolute inset-0 bg-gradient-to-r ${pkg.gradient} opacity-10 rounded-2xl`} initial={{ opacity: 0 }} animate={{ opacity: 0.1 }} />
+                        )}
+                        <div className={`inline-flex items-center gap-2 px-3 py-1 rounded-full bg-gradient-to-r ${pkg.gradient} text-white text-sm font-medium mb-3`}>
+                          <Globe className="w-4 h-4" />
+                          {pkg.name}
+                        </div>
+                        {pkg.tagline && (
+                          <p className="text-xs text-gray-500 dark:text-gray-400 mb-2">{pkg.tagline}</p>
+                        )}
+                        <div className="text-2xl font-bold text-gray-900 dark:text-white mb-1">
+                          {pkg.price}<span className="text-sm font-normal text-gray-500 dark:text-gray-400">{pkg.priceLabel || '/maand'}</span>
+                        </div>
+                        <p className="text-sm text-gray-600 dark:text-gray-400 mb-4">{pkg.description}</p>
+                        <ul className="space-y-2">
+                          {pkg.features.map((feature, i) => (
+                            <li key={i} className="flex items-center gap-2 text-sm text-gray-700 dark:text-gray-300">
+                              <Check className={`w-4 h-4 flex-shrink-0 ${formData.package === pkg.id ? 'text-primary-500' : 'text-gray-400'}`} />
+                              {feature}
+                            </li>
+                          ))}
+                        </ul>
+                      </motion.button>
+                    ))}
+                  </div>
+
+                  <div className="flex justify-center gap-2 mt-3">
+                    {PACKAGES.map((_, idx) => (
+                      <div key={idx} className={`h-2 rounded-full transition-all ${idx === 0 ? 'bg-primary-500 w-6' : 'bg-gray-300 dark:bg-gray-600 w-2'}`} />
+                    ))}
+                  </div>
+                </div>
+
+                {/* Desktop: grid */}
+                <div className="hidden sm:grid sm:grid-cols-3 gap-4 sm:gap-4 sm:overflow-visible">
                   {PACKAGES.map((pkg) => (
                     <motion.button
                       key={pkg.id}
                       onClick={() => updateFormData('package', pkg.id)}
-                      className={`relative flex-shrink-0 w-[280px] sm:w-auto snap-center p-6 rounded-2xl border-2 text-left transition-all ${
+                      className={`relative p-6 rounded-2xl border-2 text-left transition-all ${
                         formData.package === pkg.id
                           ? 'border-transparent ring-2 ring-primary-500 dark:ring-primary-400'
                           : 'border-gray-200 dark:border-gray-700 hover:border-gray-300 dark:hover:border-gray-600'
@@ -412,28 +464,19 @@ export default function WebsiteOnboarding({
                       whileTap={{ scale: 0.98 }}
                     >
                       {formData.package === pkg.id && (
-                        <motion.div
-                          className={`absolute inset-0 bg-gradient-to-r ${pkg.gradient} opacity-10 rounded-2xl`}
-                          initial={{ opacity: 0 }}
-                          animate={{ opacity: 0.1 }}
-                        />
+                        <motion.div className={`absolute inset-0 bg-gradient-to-r ${pkg.gradient} opacity-10 rounded-2xl`} initial={{ opacity: 0 }} animate={{ opacity: 0.1 }} />
                       )}
-                      
                       <div className={`inline-flex items-center gap-2 px-3 py-1 rounded-full bg-gradient-to-r ${pkg.gradient} text-white text-sm font-medium mb-3`}>
                         <Globe className="w-4 h-4" />
                         {pkg.name}
                       </div>
-                      
                       {pkg.tagline && (
                         <p className="text-xs text-gray-500 dark:text-gray-400 mb-2">{pkg.tagline}</p>
                       )}
-                      
                       <div className="text-2xl font-bold text-gray-900 dark:text-white mb-1">
                         {pkg.price}<span className="text-sm font-normal text-gray-500 dark:text-gray-400">{pkg.priceLabel || '/maand'}</span>
                       </div>
-                      
                       <p className="text-sm text-gray-600 dark:text-gray-400 mb-4">{pkg.description}</p>
-                      
                       <ul className="space-y-2">
                         {pkg.features.map((feature, i) => (
                           <li key={i} className="flex items-center gap-2 text-sm text-gray-700 dark:text-gray-300">
@@ -442,18 +485,6 @@ export default function WebsiteOnboarding({
                           </li>
                         ))}
                       </ul>
-                      
-                      {formData.package === pkg.id && (
-                        <motion.div
-                          className="absolute top-4 right-4"
-                          initial={{ scale: 0 }}
-                          animate={{ scale: 1 }}
-                        >
-                          <div className={`w-6 h-6 rounded-full bg-gradient-to-r ${pkg.gradient} flex items-center justify-center`}>
-                            <Check className="w-4 h-4 text-white" />
-                          </div>
-                        </motion.div>
-                      )}
                     </motion.button>
                   ))}
                 </div>
@@ -652,7 +683,7 @@ export default function WebsiteOnboarding({
                   <h2 className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white mb-2">
                     Welke pagina's wil je?
                   </h2>
-                  <p className="text-gray-600 dark:text-gray-400">
+                  <p className="text-gray-600 dark:text-gray-400 mb-4">
                     Je kunt tot {getPageLimit()} pagina's kiezen met het {selectedPackage?.name} pakket
                   </p>
                 </div>

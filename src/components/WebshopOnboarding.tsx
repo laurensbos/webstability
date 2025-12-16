@@ -308,12 +308,13 @@ export default function WebshopOnboarding({
                   </p>
                 </div>
                 
-                <div className="flex gap-4 overflow-x-auto pb-4 -mx-4 px-4 sm:mx-0 sm:px-0 snap-x snap-mandatory scrollbar-hide sm:grid sm:grid-cols-2 sm:gap-6 sm:overflow-visible max-w-3xl mx-auto">
+                {/* Desktop: grid */}
+                <div className="hidden sm:grid sm:grid-cols-2 gap-6 max-w-3xl mx-auto">
                   {PACKAGES.map((pkg) => (
                     <motion.button 
                       key={pkg.id} 
                       onClick={() => updateFormData('package', pkg.id)} 
-                      className={`relative flex-shrink-0 w-[280px] sm:w-auto snap-center p-6 rounded-2xl border-2 text-left transition-all ${
+                      className={`relative flex-shrink-0 w-full snap-center p-6 rounded-2xl border-2 text-left transition-all ${
                         formData.package === pkg.id 
                           ? 'border-transparent ring-2 ring-emerald-500' 
                           : 'border-gray-200 dark:border-gray-700 hover:border-gray-300'
@@ -375,464 +376,441 @@ export default function WebshopOnboarding({
                     </motion.button>
                   ))}
                 </div>
+
+                {/* Mobile: swipe to compare */}
+                <div className="sm:hidden">
+                  <div className="flex items-center justify-center gap-2 text-xs text-gray-400 dark:text-gray-500 mb-3">
+                    <span>Swipe om te vergelijken</span>
+                    <ArrowRight className="w-3 h-3" />
+                  </div>
+
+                  <div className="flex gap-4 overflow-x-auto pb-4 -mx-4 px-4 snap-x snap-mandatory scrollbar-hide" style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
+                    {PACKAGES.map((pkg) => (
+                      <motion.button
+                        key={pkg.id}
+                        onClick={() => updateFormData('package', pkg.id)}
+                        className={`relative flex-shrink-0 w-[280px] snap-center p-6 rounded-2xl border-2 text-left transition-all ${
+                          formData.package === pkg.id ? 'border-transparent ring-2 ring-emerald-500' : 'border-gray-200 dark:border-gray-700 hover:border-gray-300'
+                        }`}
+                        whileHover={{ scale: 1.02 }}
+                        whileTap={{ scale: 0.98 }}
+                      >
+                       {formData.package === pkg.id && (
+                         <motion.div 
+                           className={`absolute inset-0 bg-gradient-to-r ${pkg.gradient} opacity-10 rounded-2xl`}
+                           initial={{ opacity: 0 }} 
+                           animate={{ opacity: 0.1 }} 
+                         />
+                       )}
+                       
+                       {pkg.popular && (
+                         <div className="absolute -top-3 left-1/2 -translate-x-1/2">
+                           <span className={`inline-flex items-center gap-1 px-3 py-1 rounded-full bg-gradient-to-r ${pkg.gradient} text-white text-xs font-semibold shadow-lg`}>
+                             <Sparkles className="w-3 h-3" />
+                             {pkg.tagline}
+                           </span>
+                         </div>
+                       )}
+                       
+                       <div className={`inline-flex items-center gap-2 px-3 py-1 rounded-full bg-gradient-to-r ${pkg.gradient} text-white text-sm font-medium mb-3 ${pkg.popular ? 'mt-2' : ''}`}>
+                         <ShoppingBag className="w-4 h-4" />
+                         {pkg.name}
+                       </div>
+                       
+                       {pkg.tagline && !pkg.popular && (
+                         <p className="text-xs text-gray-500 dark:text-gray-400 mb-2">{pkg.tagline}</p>
+                       )}
+                       
+                       <div className="text-2xl font-bold text-gray-900 dark:text-white mb-1">
+                         {pkg.price}
+                         <span className="text-sm font-normal text-gray-500 dark:text-gray-400">
+                           {pkg.priceLabel}
+                         </span>
+                       </div>
+                       
+                       <p className="text-sm text-gray-600 dark:text-gray-400 mb-4">{pkg.description}</p>
+                       
+                       <ul className="space-y-2">
+                         {pkg.features.map((f, i) => (
+                           <li key={i} className="flex items-center gap-2 text-sm text-gray-700 dark:text-gray-300">
+                             <Check className={`w-4 h-4 flex-shrink-0 ${formData.package === pkg.id ? 'text-emerald-500' : 'text-gray-400'}`} />
+                             {f}
+                           </li>
+                         ))}
+                       </ul>
+                       
+                       {formData.package === pkg.id && (
+                         <motion.div className="absolute top-4 right-4" initial={{ scale: 0 }} animate={{ scale: 1 }}>
+                           <div className={`w-6 h-6 rounded-full bg-gradient-to-r ${pkg.gradient} flex items-center justify-center`}>
+                             <Check className="w-4 h-4 text-white" />
+                           </div>
+                         </motion.div>
+                       )}
+                     </motion.button>
+                   ))}
+                 </div>
+
+                 <div className="flex justify-center gap-2 mt-3">
+                   {PACKAGES.map((_, idx) => (
+                     <div key={idx} className={`h-2 rounded-full transition-all ${idx === 0 ? 'bg-emerald-500 w-6' : 'bg-gray-300 dark:bg-gray-600 w-2'}`} />
+                   ))}
+                 </div>
+               </div>
               </div>
             )}
-
+            
             {/* Step 2: Company Info */}
             {currentStep === 2 && (
               <div>
                 <div className="text-center mb-8">
                   <h2 className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white mb-2">
-                    Bedrijfsgegevens
+                    Bedrijfsinformatie
                   </h2>
                   <p className="text-gray-600 dark:text-gray-400">
-                    Vul je bedrijfsgegevens in
+                    Vul je bedrijfsgegevens in om verder te gaan
                   </p>
                 </div>
                 
-                <div className="space-y-6 max-w-lg mx-auto">
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                      Bedrijfsnaam *
-                    </label>
-                    <input 
-                      type="text" 
-                      value={formData.companyName} 
-                      onChange={(e) => updateFormData('companyName', e.target.value)} 
-                      className="w-full px-4 py-3 rounded-xl border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-emerald-500 focus:border-transparent" 
-                      placeholder="Jouw Bedrijf B.V." 
-                    />
-                  </div>
-                  
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                      Contactpersoon *
-                    </label>
-                    <input 
-                      type="text" 
-                      value={formData.contactName} 
-                      onChange={(e) => updateFormData('contactName', e.target.value)} 
-                      className="w-full px-4 py-3 rounded-xl border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-emerald-500 focus:border-transparent" 
-                      placeholder="Jan Jansen" 
-                    />
-                  </div>
-                  
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                      E-mailadres *
-                    </label>
-                    <input 
-                      type="email" 
-                      value={formData.email} 
-                      onChange={(e) => updateFormData('email', e.target.value)} 
-                      className="w-full px-4 py-3 rounded-xl border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-emerald-500 focus:border-transparent" 
-                      placeholder="info@jouwbedrijf.nl" 
-                    />
-                  </div>
-                  
-                  <div className="grid grid-cols-2 gap-4">
+                <div className="space-y-4">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                        Telefoon
+                      <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                        Bedrijfsnaam
+                      </label>
+                      <input 
+                        type="text" 
+                        value={formData.companyName} 
+                        onChange={e => updateFormData('companyName', e.target.value)} 
+                        className="block w-full p-3 rounded-lg border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 text-gray-900 dark:text-white focus:ring-emerald-500 focus:border-emerald-500 transition-all"
+                        placeholder="Vul je bedrijfsnaam in"
+                      />
+                    </div>
+                    
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                        Contactpersoon
+                      </label>
+                      <input 
+                        type="text" 
+                        value={formData.contactName} 
+                        onChange={e => updateFormData('contactName', e.target.value)} 
+                        className="block w-full p-3 rounded-lg border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 text-gray-900 dark:text-white focus:ring-emerald-500 focus:border-emerald-500 transition-all"
+                        placeholder="Vul je naam in"
+                      />
+                    </div>
+                  </div>
+                  
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                        E-mailadres
+                      </label>
+                      <input 
+                        type="email" 
+                        value={formData.email} 
+                        onChange={e => updateFormData('email', e.target.value)} 
+                        className="block w-full p-3 rounded-lg border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 text-gray-900 dark:text-white focus:ring-emerald-500 focus:border-emerald-500 transition-all"
+                        placeholder="Vul je e-mailadres in"
+                      />
+                    </div>
+                    
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                        Telefoonnummer
                       </label>
                       <input 
                         type="tel" 
                         value={formData.phone} 
-                        onChange={(e) => updateFormData('phone', e.target.value)} 
-                        className="w-full px-4 py-3 rounded-xl border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-emerald-500 focus:border-transparent" 
-                        placeholder="06-12345678" 
+                        onChange={e => updateFormData('phone', e.target.value)} 
+                        className="block w-full p-3 rounded-lg border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 text-gray-900 dark:text-white focus:ring-emerald-500 focus:border-emerald-500 transition-all"
+                        placeholder="Vul je telefoonnummer in"
                       />
                     </div>
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                        KVK
-                      </label>
-                      <input 
-                        type="text" 
-                        value={formData.kvkNumber} 
-                        onChange={(e) => updateFormData('kvkNumber', e.target.value)} 
-                        className="w-full px-4 py-3 rounded-xl border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-emerald-500 focus:border-transparent" 
-                        placeholder="12345678" 
-                      />
-                    </div>
+                  </div>
+                  
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                      KVK-nummer
+                    </label>
+                    <input 
+                      type="text" 
+                      value={formData.kvkNumber} 
+                      onChange={e => updateFormData('kvkNumber', e.target.value)} 
+                      className="block w-full p-3 rounded-lg border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 text-gray-900 dark:text-white focus:ring-emerald-500 focus:border-emerald-500 transition-all"
+                      placeholder="Vul je KVK-nummer in"
+                    />
                   </div>
                 </div>
               </div>
             )}
-
-            {/* Step 3: Shop Details */}
+            
+            {/* Step 3: Webshop Info */}
             {currentStep === 3 && (
               <div>
                 <div className="text-center mb-8">
                   <h2 className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white mb-2">
-                    Over je webshop
+                    Webshop informatie
                   </h2>
                   <p className="text-gray-600 dark:text-gray-400">
-                    Vertel ons meer over wat je wilt verkopen
+                    Geef informatie over je webshop en producten
                   </p>
                 </div>
                 
-                <div className="space-y-6 max-w-lg mx-auto">
+                <div className="space-y-4">
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                      Naam van je webshop *
+                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                      Webshop naam
                     </label>
                     <input 
                       type="text" 
                       value={formData.shopName} 
-                      onChange={(e) => updateFormData('shopName', e.target.value)} 
-                      className="w-full px-4 py-3 rounded-xl border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-emerald-500 focus:border-transparent" 
-                      placeholder="Mijn Webshop" 
+                      onChange={e => updateFormData('shopName', e.target.value)} 
+                      className="block w-full p-3 rounded-lg border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 text-gray-900 dark:text-white focus:ring-emerald-500 focus:border-emerald-500 transition-all"
+                      placeholder="Vul je webshop naam in"
                     />
                   </div>
                   
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                      Product categorie *
+                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                      Productcategorie
                     </label>
-                    <div className="grid grid-cols-3 gap-2">
-                      {PRODUCT_CATEGORIES.map((cat) => (
-                        <button 
-                          key={cat} 
-                          onClick={() => updateFormData('productCategory', cat)} 
-                          className={`p-3 rounded-xl border-2 text-center transition-all text-sm ${
-                            formData.productCategory === cat 
-                              ? 'border-emerald-500 bg-emerald-50 dark:bg-emerald-900/20' 
-                              : 'border-gray-200 dark:border-gray-700 hover:border-gray-300'
-                          }`}
-                        >
-                          <span className={`font-medium ${
-                            formData.productCategory === cat 
-                              ? 'text-emerald-600 dark:text-emerald-400' 
-                              : 'text-gray-700 dark:text-gray-300'
-                          }`}>
-                            {cat}
-                          </span>
-                        </button>
+                    <select 
+                      value={formData.productCategory} 
+                      onChange={e => updateFormData('productCategory', e.target.value)} 
+                      className="block w-full p-3 rounded-lg border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 text-gray-900 dark:text-white focus:ring-emerald-500 focus:border-emerald-500 transition-all"
+                    >
+                      <option value="">Selecteer een categorie</option>
+                      {PRODUCT_CATEGORIES.map(category => (
+                        <option key={category} value={category}>{category}</option>
                       ))}
-                    </div>
+                    </select>
                   </div>
                   
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                      Aantal producten *
+                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                      Geschat aantal producten
                     </label>
-                    <div className="grid grid-cols-2 gap-2">
-                      {PRODUCT_AMOUNTS.map((a) => (
-                        <button 
-                          key={a} 
-                          onClick={() => updateFormData('estimatedProducts', a)} 
-                          className={`p-3 rounded-xl border-2 text-center transition-all ${
-                            formData.estimatedProducts === a 
-                              ? 'border-emerald-500 bg-emerald-50 dark:bg-emerald-900/20' 
-                              : 'border-gray-200 dark:border-gray-700 hover:border-gray-300'
-                          }`}
-                        >
-                          <span className={`font-medium text-sm ${
-                            formData.estimatedProducts === a 
-                              ? 'text-emerald-600 dark:text-emerald-400' 
-                              : 'text-gray-700 dark:text-gray-300'
-                          }`}>
-                            {a}
-                          </span>
-                        </button>
+                    <select 
+                      value={formData.estimatedProducts} 
+                      onChange={e => updateFormData('estimatedProducts', e.target.value)} 
+                      className="block w-full p-3 rounded-lg border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 text-gray-900 dark:text-white focus:ring-emerald-500 focus:border-emerald-500 transition-all"
+                    >
+                      <option value="">Selecteer een optie</option>
+                      {PRODUCT_AMOUNTS.map(amount => (
+                        <option key={amount} value={amount}>{amount}</option>
                       ))}
-                    </div>
+                    </select>
+                  </div>
+                  
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                      Doelgroep
+                    </label>
+                    <input 
+                      type="text" 
+                      value={formData.targetAudience} 
+                      onChange={e => updateFormData('targetAudience', e.target.value)} 
+                      className="block w-full p-3 rounded-lg border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 text-gray-900 dark:text-white focus:ring-emerald-500 focus:border-emerald-500 transition-all"
+                      placeholder="Bijv. Jongeren, ouders, tech-liefhebbers"
+                    />
                   </div>
                 </div>
               </div>
             )}
-
-            {/* Step 4: Design */}
+            
+            {/* Step 4: Design Preferences */}
             {currentStep === 4 && (
               <div>
                 <div className="text-center mb-8">
                   <h2 className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white mb-2">
-                    Design voorkeuren
+                    Ontwerpvoorkeuren
                   </h2>
                   <p className="text-gray-600 dark:text-gray-400">
-                    Welke stijl past bij jouw webshop?
+                    Kies je ontwerpvoorkeuren voor de webshop
                   </p>
                 </div>
                 
-                <div className="space-y-6 max-w-lg mx-auto">
+                <div className="space-y-4">
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                      Design stijl *
+                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                      Ontwerpstijl
                     </label>
-                    <div className="grid grid-cols-2 gap-3">
-                      {['Minimalistisch', 'Modern', 'Luxe', 'Speels'].map((s) => (
-                        <button 
-                          key={s} 
-                          onClick={() => updateFormData('designStyle', s)} 
-                          className={`p-4 rounded-xl border-2 text-center transition-all ${
-                            formData.designStyle === s 
-                              ? 'border-emerald-500 bg-emerald-50 dark:bg-emerald-900/20' 
-                              : 'border-gray-200 dark:border-gray-700 hover:border-gray-300'
-                          }`}
-                        >
-                          <span className={`font-medium ${
-                            formData.designStyle === s 
-                              ? 'text-emerald-600 dark:text-emerald-400' 
-                              : 'text-gray-700 dark:text-gray-300'
-                          }`}>
-                            {s}
-                          </span>
-                        </button>
-                      ))}
-                    </div>
+                    <input 
+                      type="text" 
+                      value={formData.designStyle} 
+                      onChange={e => updateFormData('designStyle', e.target.value)} 
+                      className="block w-full p-3 rounded-lg border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 text-gray-900 dark:text-white focus:ring-emerald-500 focus:border-emerald-500 transition-all"
+                      placeholder="Bijv. Modern, klassiek, minimalistisch"
+                    />
                   </div>
                   
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                       Huisstijl kleuren
                     </label>
                     <input 
                       type="text" 
                       value={formData.brandColors} 
-                      onChange={(e) => updateFormData('brandColors', e.target.value)} 
-                      className="w-full px-4 py-3 rounded-xl border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-emerald-500 focus:border-transparent" 
-                      placeholder="bijv. Groen en wit" 
+                      onChange={e => updateFormData('brandColors', e.target.value)} 
+                      className="block w-full p-3 rounded-lg border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 text-gray-900 dark:text-white focus:ring-emerald-500 focus:border-emerald-500 transition-all"
+                      placeholder="Vul je huisstijl kleuren in (hex, rgb of kleurnaam)"
                     />
                   </div>
                   
-                  <div className="grid grid-cols-2 gap-4">
-                    <button 
-                      onClick={() => updateFormData('hasLogo', !formData.hasLogo)} 
-                      className={`p-4 rounded-xl border-2 text-center ${
-                        formData.hasLogo 
-                          ? 'border-emerald-500 bg-emerald-50 dark:bg-emerald-900/20' 
-                          : 'border-gray-200 dark:border-gray-700'
-                      }`}
-                    >
-                      <span className={`font-medium text-sm ${
-                        formData.hasLogo 
-                          ? 'text-emerald-600 dark:text-emerald-400' 
-                          : 'text-gray-700 dark:text-gray-300'
-                      }`}>
-                        {formData.hasLogo ? 'V ' : ''}Ik heb een logo
-                      </span>
-                    </button>
-                    <button 
-                      onClick={() => updateFormData('hasProductPhotos', !formData.hasProductPhotos)} 
-                      className={`p-4 rounded-xl border-2 text-center ${
-                        formData.hasProductPhotos 
-                          ? 'border-emerald-500 bg-emerald-50 dark:bg-emerald-900/20' 
-                          : 'border-gray-200 dark:border-gray-700'
-                      }`}
-                    >
-                      <span className={`font-medium text-sm ${
-                        formData.hasProductPhotos 
-                          ? 'text-emerald-600 dark:text-emerald-400' 
-                          : 'text-gray-700 dark:text-gray-300'
-                      }`}>
-                        {formData.hasProductPhotos ? 'V ' : ''}Ik heb productfotos
-                      </span>
-                    </button>
-                  </div>
-                  
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                      Inspiratie webshops
-                    </label>
-                    <textarea 
-                      value={formData.inspirationUrls} 
-                      onChange={(e) => updateFormData('inspirationUrls', e.target.value)} 
-                      rows={3} 
-                      className="w-full px-4 py-3 rounded-xl border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-emerald-500 focus:border-transparent resize-none" 
-                      placeholder="Links naar webshops die je mooi vindt..." 
-                    />
+                  <div className="flex items-center gap-4">
+                    <div className="flex-1">
+                      <label className="flex items-center gap-2 text-sm font-medium text-gray-700 dark:text-gray-300">
+                        <input 
+                          type="checkbox" 
+                          checked={formData.hasLogo} 
+                          onChange={e => updateFormData('hasLogo', e.target.checked)} 
+                          className="w-4 h-4 text-emerald-500 border-gray-300 rounded focus:ring-emerald-500 transition-all"
+                        />
+                        Heb je een logo?
+                      </label>
+                    </div>
+                    
+                    <div className="flex-1">
+                      <label className="flex items-center gap-2 text-sm font-medium text-gray-700 dark:text-gray-300">
+                        <input 
+                          type="checkbox" 
+                          checked={formData.hasProductPhotos} 
+                          onChange={e => updateFormData('hasProductPhotos', e.target.checked)} 
+                          className="w-4 h-4 text-emerald-500 border-gray-300 rounded focus:ring-emerald-500 transition-all"
+                        />
+                        Heb je productfoto's?
+                      </label>
+                    </div>
                   </div>
                 </div>
               </div>
             )}
-
-            {/* Step 5: Target Audience */}
+            
+            {/* Step 5: Goals */}
             {currentStep === 5 && (
               <div>
                 <div className="text-center mb-8">
                   <h2 className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white mb-2">
-                    Doelgroep en Wensen
+                    Doelen
                   </h2>
                   <p className="text-gray-600 dark:text-gray-400">
-                    Aan wie verkoop je?
+                    Stel je doelen en verwachtingen voor de webshop in
                   </p>
                 </div>
                 
-                <div className="space-y-6 max-w-lg mx-auto">
+                <div className="space-y-4">
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                      Doelgroep *
+                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                      Wat is je belangrijkste doel met de webshop?
                     </label>
-                    <div className="grid grid-cols-2 gap-3">
-                      {['Consumenten (B2C)', 'Bedrijven (B2B)', 'Beide'].map((t) => (
-                        <button 
-                          key={t} 
-                          onClick={() => updateFormData('targetAudience', t)} 
-                          className={`p-4 rounded-xl border-2 text-center transition-all ${
-                            formData.targetAudience === t 
-                              ? 'border-emerald-500 bg-emerald-50 dark:bg-emerald-900/20' 
-                              : 'border-gray-200 dark:border-gray-700 hover:border-gray-300'
-                          }`}
-                        >
-                          <span className={`font-medium ${
-                            formData.targetAudience === t 
-                              ? 'text-emerald-600 dark:text-emerald-400' 
-                              : 'text-gray-700 dark:text-gray-300'
-                          }`}>
-                            {t}
-                          </span>
-                        </button>
-                      ))}
-                    </div>
-                  </div>
-                  
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                      Extra wensen
-                    </label>
-                    <textarea 
+                    <input 
+                      type="text" 
                       value={formData.additionalNotes} 
-                      onChange={(e) => updateFormData('additionalNotes', e.target.value)} 
-                      rows={4} 
-                      className="w-full px-4 py-3 rounded-xl border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-emerald-500 focus:border-transparent resize-none" 
-                      placeholder="Specifieke wensen voor je webshop..." 
+                      onChange={e => updateFormData('additionalNotes', e.target.value)} 
+                      className="block w-full p-3 rounded-lg border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 text-gray-900 dark:text-white focus:ring-emerald-500 focus:border-emerald-500 transition-all"
+                      placeholder="Bijv. Verkoop, leadgeneratie, informatievoorziening"
                     />
                   </div>
                 </div>
               </div>
             )}
-
-            {/* Step 6: Account */}
+            
+            {/* Step 6: Account Setup */}
             {currentStep === 6 && (
               <div>
                 <div className="text-center mb-8">
                   <h2 className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white mb-2">
-                    Maak je account aan
+                    Account aanmaken
                   </h2>
                   <p className="text-gray-600 dark:text-gray-400">
-                    Hiermee kun je je project volgen
+                    Maak een account aan om je webshop te kunnen beheren
                   </p>
                 </div>
                 
-                <div className="space-y-6 max-w-lg mx-auto">
-                  <div className="p-4 rounded-xl bg-emerald-50 dark:bg-emerald-900/20 border border-emerald-200 dark:border-emerald-800">
-                    <p className="text-sm text-emerald-700 dark:text-emerald-300">
-                      <strong>E-mail:</strong> {formData.email}
-                    </p>
-                  </div>
-                  
+                <div className="space-y-4">
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                      Wachtwoord *
+                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                      Wachtwoord
                     </label>
                     <div className="relative">
                       <input 
                         type={showPassword ? 'text' : 'password'} 
                         value={formData.password} 
-                        onChange={(e) => updateFormData('password', e.target.value)} 
-                        className="w-full px-4 py-3 pr-12 rounded-xl border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-emerald-500 focus:border-transparent" 
-                        placeholder="Min. 6 karakters" 
+                        onChange={e => updateFormData('password', e.target.value)} 
+                        className="block w-full p-3 rounded-lg border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 text-gray-900 dark:text-white focus:ring-emerald-500 focus:border-emerald-500 transition-all"
+                        placeholder="Kies een sterk wachtwoord"
                       />
+                      
                       <button 
                         type="button" 
-                        onClick={() => setShowPassword(!showPassword)} 
-                        className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-500"
+                        onClick={() => setShowPassword(prev => !prev)} 
+                        className="absolute inset-y-0 right-0 pr-3 flex items-center"
                       >
-                        {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
+                        {showPassword ? (
+                          <EyeOff className="w-5 h-5 text-gray-400" />
+                        ) : (
+                          <Eye className="w-5 h-5 text-gray-400" />
+                        )}
                       </button>
                     </div>
                   </div>
                   
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                      Bevestig wachtwoord *
+                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                      Bevestig wachtwoord
                     </label>
                     <div className="relative">
                       <input 
                         type={showConfirmPassword ? 'text' : 'password'} 
                         value={formData.confirmPassword} 
-                        onChange={(e) => updateFormData('confirmPassword', e.target.value)} 
-                        className="w-full px-4 py-3 pr-12 rounded-xl border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-emerald-500 focus:border-transparent" 
-                        placeholder="Herhaal wachtwoord" 
+                        onChange={e => updateFormData('confirmPassword', e.target.value)} 
+                        className="block w-full p-3 rounded-lg border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 text-gray-900 dark:text-white focus:ring-emerald-500 focus:border-emerald-500 transition-all"
+                        placeholder="Herhaal je wachtwoord"
                       />
+                      
                       <button 
                         type="button" 
-                        onClick={() => setShowConfirmPassword(!showConfirmPassword)} 
-                        className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-500"
+                        onClick={() => setShowConfirmPassword(prev => !prev)} 
+                        className="absolute inset-y-0 right-0 pr-3 flex items-center"
                       >
-                        {showConfirmPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
+                        {showConfirmPassword ? (
+                          <EyeOff className="w-5 h-5 text-gray-400" />
+                        ) : (
+                          <Eye className="w-5 h-5 text-gray-400" />
+                        )}
                       </button>
                     </div>
-                    {formData.confirmPassword && formData.password !== formData.confirmPassword && (
-                      <p className="text-red-500 text-sm mt-1">Wachtwoorden komen niet overeen</p>
-                    )}
-                  </div>
-                  
-                  <div className={`p-4 rounded-xl bg-gradient-to-r ${currentGradient} bg-opacity-10`}>
-                    <h4 className="font-semibold text-gray-900 dark:text-white mb-2 flex items-center gap-2">
-                      <Sparkles className="w-4 h-4" />
-                      Samenvatting
-                    </h4>
-                    <ul className="text-sm text-gray-700 dark:text-gray-300 space-y-1">
-                      <li>Pakket: {selectedPackage?.name}</li>
-                      <li>Webshop: {formData.shopName}</li>
-                      <li>Categorie: {formData.productCategory}</li>
-                      <li>Stijl: {formData.designStyle}</li>
-                    </ul>
                   </div>
                 </div>
               </div>
             )}
           </motion.div>
         </AnimatePresence>
-
+        
         {/* Navigation Buttons */}
-        <div className="flex justify-between mt-8">
+        <div className="flex justify-between gap-4 mt-8">
           <button 
             onClick={handleBack} 
-            className="flex items-center gap-2 px-6 py-3 rounded-xl font-medium text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-gray-800 transition-all"
+            className="flex-1 px-4 py-3 rounded-lg bg-gray-100 dark:bg-gray-700 text-gray-900 dark:text-white font-semibold transition-all flex items-center justify-center gap-2 hover:bg-gray-200 dark:hover:bg-gray-600"
           >
             <ArrowLeft className="w-5 h-5" />
-            Vorige
+            Terug
           </button>
           
-          {currentStep < 6 ? (
-            <button 
-              onClick={handleNext} 
-              disabled={!canProceed()} 
-              className={`flex items-center gap-2 px-8 py-3 rounded-xl font-semibold transition-all ${
-                canProceed() 
-                  ? `bg-gradient-to-r ${currentGradient} text-white shadow-lg hover:shadow-xl hover:-translate-y-0.5` 
-                  : 'bg-gray-200 dark:bg-gray-700 text-gray-500 cursor-not-allowed'
-              }`}
-            >
-              Volgende
-              <ArrowRight className="w-5 h-5" />
-            </button>
-          ) : (
-            <button 
-              onClick={handleSubmit} 
-              disabled={!canProceed() || isSubmitting} 
-              className={`flex items-center gap-2 px-8 py-3 rounded-xl font-semibold transition-all ${
-                canProceed() && !isSubmitting 
-                  ? `bg-gradient-to-r ${currentGradient} text-white shadow-lg hover:shadow-xl hover:-translate-y-0.5` 
-                  : 'bg-gray-200 dark:bg-gray-700 text-gray-500 cursor-not-allowed'
-              }`}
-            >
-              {isSubmitting ? (
-                <>
-                  <Loader2 className="w-5 h-5 animate-spin" />
-                  Versturen...
-                </>
-              ) : (
-                <>
-                  Verstuur aanvraag
-                  <Sparkles className="w-5 h-5" />
-                </>
-              )}
-            </button>
-          )}
+          <button 
+            onClick={handleNext} 
+            className="flex-1 px-4 py-3 rounded-lg bg-emerald-500 text-white font-semibold transition-all flex items-center justify-center gap-2 hover:bg-emerald-600"
+          >
+            Volgende
+            <ArrowRight className="w-5 h-5" />
+          </button>
+        </div>
+        
+        {/* Debug Info */}
+        <div className="mt-8 text-center">
+          <pre className="text-xs text-gray-500 dark:text-gray-400">
+            {JSON.stringify(formData, null, 2)}
+          </pre>
         </div>
       </div>
     </div>

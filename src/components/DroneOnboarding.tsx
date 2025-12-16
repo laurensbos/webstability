@@ -343,72 +343,147 @@ export default function DroneOnboarding({
                   </p>
                 </div>
                 
-                <div className="flex gap-4 overflow-x-auto pb-4 -mx-4 px-4 snap-x snap-mandatory scrollbar-hide sm:grid sm:grid-cols-3 sm:gap-6 sm:overflow-visible max-w-4xl mx-auto">
-                  {PACKAGES.map((pkg) => (
-                    <motion.button 
-                      key={pkg.id} 
-                      onClick={() => updateFormData('package', pkg.id)} 
-                      className={`relative flex-shrink-0 w-[280px] sm:w-auto snap-center p-6 rounded-2xl border-2 text-left transition-all ${
-                        formData.package === pkg.id 
-                          ? 'border-transparent ring-2 ring-orange-500' 
-                          : 'border-gray-200 dark:border-gray-700 hover:border-gray-300'
-                      }`}
-                      whileHover={{ scale: 1.02 }} 
-                      whileTap={{ scale: 0.98 }}
-                    >
-                      {formData.package === pkg.id && (
-                        <motion.div 
-                          className={`absolute inset-0 bg-gradient-to-r ${pkg.gradient} opacity-10 rounded-2xl`}
-                          initial={{ opacity: 0 }} 
-                          animate={{ opacity: 0.1 }} 
-                        />
-                      )}
-                      
-                      {pkg.popular && (
-                        <div className="absolute -top-3 left-1/2 -translate-x-1/2">
-                          <span className={`inline-flex items-center gap-1 px-3 py-1 rounded-full bg-gradient-to-r ${pkg.gradient} text-white text-xs font-semibold shadow-lg`}>
-                            <Sparkles className="w-3 h-3" />
-                            {pkg.tagline}
+                <div className="flex flex-col gap-8">
+                  {/* Mobile: swipe to compare */}
+                  <div className="sm:hidden">
+                    <div className="flex items-center justify-center gap-2 text-xs text-gray-400 dark:text-gray-500 mb-3">
+                      <span>Swipe om te vergelijken</span>
+                      <ArrowRight className="w-3 h-3" />
+                    </div>
+
+                    <div className="flex gap-4 overflow-x-auto pb-4 -mx-4 px-4 snap-x snap-mandatory scrollbar-hide" style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
+                      {PACKAGES.map((pkg) => (
+                        <motion.button
+                          key={pkg.id}
+                          onClick={() => updateFormData('package', pkg.id)}
+                          className={`relative flex-shrink-0 w-[280px] snap-center p-6 rounded-2xl border-2 text-left transition-all ${
+                            formData.package === pkg.id ? 'border-transparent ring-2 ring-orange-500' : 'border-gray-200 dark:border-gray-700 hover:border-gray-300'
+                          }`}
+                          whileHover={{ scale: 1.02 }}
+                          whileTap={{ scale: 0.98 }}
+                        >
+                          {formData.package === pkg.id && (
+                            <motion.div className={`absolute inset-0 bg-gradient-to-r ${pkg.gradient} opacity-10 rounded-2xl`} initial={{ opacity: 0 }} animate={{ opacity: 0.1 }} />
+                          )}
+
+                          {pkg.popular && (
+                            <div className="absolute -top-3 left-1/2 -translate-x-1/2">
+                              <span className={`inline-flex items-center gap-1 px-3 py-1 rounded-full bg-gradient-to-r ${pkg.gradient} text-white text-xs font-semibold shadow-lg`}>
+                                <Sparkles className="w-3 h-3" />
+                                {pkg.tagline}
+                              </span>
+                            </div>
+                          )}
+
+                          <div className={`inline-flex items-center gap-2 px-3 py-1 rounded-full bg-gradient-to-r ${pkg.gradient} text-white text-sm font-medium mb-3 ${pkg.popular ? 'mt-2' : ''}`}>
+                            <Plane className="w-4 h-4" />
+                            {pkg.name}
+                          </div>
+                          
+                          {pkg.tagline && !pkg.popular && (
+                            <p className="text-xs text-gray-500 dark:text-gray-400 mb-2">{pkg.tagline}</p>
+                          )}
+                          
+                          <div className="text-2xl font-bold text-gray-900 dark:text-white mb-1">
+                            {pkg.price}
+                            <span className="text-sm font-normal text-gray-500 dark:text-gray-400">
+                              {pkg.priceLabel}
+                            </span>
+                          </div>
+                          
+                          <p className="text-sm text-gray-600 dark:text-gray-400 mb-4">{pkg.description}</p>
+                          
+                          <ul className="space-y-2">
+                            {pkg.features.map((f, i) => (
+                              <li key={i} className="flex items-center gap-2 text-sm text-gray-700 dark:text-gray-300">
+                                <Check className={`w-4 h-4 flex-shrink-0 ${formData.package === pkg.id ? 'text-orange-500' : 'text-gray-400'}`} />
+                                {f}
+                              </li>
+                            ))}
+                          </ul>
+                          
+                          {formData.package === pkg.id && (
+                            <motion.div className="absolute top-4 right-4" initial={{ scale: 0 }} animate={{ scale: 1 }}>
+                              <div className={`w-6 h-6 rounded-full bg-gradient-to-r ${pkg.gradient} flex items-center justify-center`}>
+                                <Check className="w-4 h-4 text-white" />
+                              </div>
+                            </motion.div>
+                          )}
+                        </motion.button>
+                      ))}
+                    </div>
+
+                    <div className="flex justify-center gap-2 mt-3">
+                      {PACKAGES.map((_, idx) => (
+                        <div key={idx} className={`h-2 rounded-full transition-all ${idx === 0 ? 'bg-orange-500 w-6' : 'bg-gray-300 dark:bg-gray-600 w-2'}`} />
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* Desktop: grid */}
+                  <div className="hidden sm:grid sm:grid-cols-3 gap-6 sm:gap-6 max-w-4xl mx-auto">
+                    {PACKAGES.map((pkg) => (
+                      <motion.button 
+                        key={pkg.id} 
+                        onClick={() => updateFormData('package', pkg.id)} 
+                        className={`relative p-6 rounded-2xl border-2 text-left transition-all ${
+                          formData.package === pkg.id 
+                            ? 'border-transparent ring-2 ring-orange-500' 
+                            : 'border-gray-200 dark:border-gray-700 hover:border-gray-300'
+                        }`}
+                        whileHover={{ scale: 1.02 }} 
+                        whileTap={{ scale: 0.98 }}
+                      >
+                        {formData.package === pkg.id && (
+                          <motion.div className={`absolute inset-0 bg-gradient-to-r ${pkg.gradient} opacity-10 rounded-2xl`} initial={{ opacity: 0 }} animate={{ opacity: 0.1 }} />
+                        )}
+                        
+                        {pkg.popular && (
+                          <div className="absolute -top-3 left-1/2 -translate-x-1/2">
+                            <span className={`inline-flex items-center gap-1 px-3 py-1 rounded-full bg-gradient-to-r ${pkg.gradient} text-white text-xs font-semibold shadow-lg`}>
+                              <Sparkles className="w-3 h-3" />
+                              {pkg.tagline}
+                            </span>
+                          </div>
+                        )}
+                        
+                        <div className={`inline-flex items-center gap-2 px-3 py-1 rounded-full bg-gradient-to-r ${pkg.gradient} text-white text-sm font-medium mb-3 ${pkg.popular ? 'mt-2' : ''}`}>
+                          <Plane className="w-4 h-4" />
+                          {pkg.name}
+                        </div>
+                        
+                        {pkg.tagline && !pkg.popular && (
+                          <p className="text-xs text-gray-500 dark:text-gray-400 mb-2">{pkg.tagline}</p>
+                        )}
+                        
+                        <div className="text-2xl font-bold text-gray-900 dark:text-white mb-1">
+                          {pkg.price}
+                          <span className="text-sm font-normal text-gray-500 dark:text-gray-400">
+                            {pkg.priceLabel}
                           </span>
                         </div>
-                      )}
-                      
-                      <div className={`inline-flex items-center gap-2 px-3 py-1 rounded-full bg-gradient-to-r ${pkg.gradient} text-white text-sm font-medium mb-3 ${pkg.popular ? 'mt-2' : ''}`}>
-                        <Plane className="w-4 h-4" />
-                        {pkg.name}
-                      </div>
-                      
-                      {pkg.tagline && !pkg.popular && (
-                        <p className="text-xs text-gray-500 dark:text-gray-400 mb-2">{pkg.tagline}</p>
-                      )}
-                      
-                      <div className="text-2xl font-bold text-gray-900 dark:text-white mb-1">
-                        {pkg.price}
-                        <span className="text-sm font-normal text-gray-500 dark:text-gray-400">
-                          {pkg.priceLabel}
-                        </span>
-                      </div>
-                      
-                      <p className="text-sm text-gray-600 dark:text-gray-400 mb-4">{pkg.description}</p>
-                      
-                      <ul className="space-y-2">
-                        {pkg.features.map((f, i) => (
-                          <li key={i} className="flex items-center gap-2 text-sm text-gray-700 dark:text-gray-300">
-                            <Check className={`w-4 h-4 flex-shrink-0 ${formData.package === pkg.id ? 'text-orange-500' : 'text-gray-400'}`} />
-                            {f}
-                          </li>
-                        ))}
-                      </ul>
-                      
-                      {formData.package === pkg.id && (
-                        <motion.div className="absolute top-4 right-4" initial={{ scale: 0 }} animate={{ scale: 1 }}>
-                          <div className={`w-6 h-6 rounded-full bg-gradient-to-r ${pkg.gradient} flex items-center justify-center`}>
-                            <Check className="w-4 h-4 text-white" />
-                          </div>
-                        </motion.div>
-                      )}
-                    </motion.button>
-                  ))}
+                        
+                        <p className="text-sm text-gray-600 dark:text-gray-400 mb-4">{pkg.description}</p>
+                        
+                        <ul className="space-y-2">
+                          {pkg.features.map((f, i) => (
+                            <li key={i} className="flex items-center gap-2 text-sm text-gray-700 dark:text-gray-300">
+                              <Check className={`w-4 h-4 flex-shrink-0 ${formData.package === pkg.id ? 'text-orange-500' : 'text-gray-400'}`} />
+                              {f}
+                            </li>
+                          ))}
+                        </ul>
+                        
+                        {formData.package === pkg.id && (
+                          <motion.div className="absolute top-4 right-4" initial={{ scale: 0 }} animate={{ scale: 1 }}>
+                            <div className={`w-6 h-6 rounded-full bg-gradient-to-r ${pkg.gradient} flex items-center justify-center`}>
+                              <Check className="w-4 h-4 text-white" />
+                            </div>
+                          </motion.div>
+                        )}
+                      </motion.button>
+                    ))}
+                  </div>
                 </div>
               </div>
             )}

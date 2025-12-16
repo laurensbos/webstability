@@ -423,7 +423,67 @@ export default function Webshop() {
               </motion.p>
             </div>
 
-            <div className="grid md:grid-cols-2 gap-8 max-w-4xl mx-auto">
+            {/* Mobile: swipe to compare */}
+            <div className="sm:hidden">
+              <div className="flex items-center justify-center gap-2 text-xs text-gray-400 dark:text-gray-500 mb-3">
+                <span>Swipe om te vergelijken</span>
+                <ArrowRight className="w-3 h-3" />
+              </div>
+
+              <div className="flex gap-4 overflow-x-auto pb-4 -mx-4 px-4 snap-x snap-mandatory scrollbar-hide" style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
+                {packages.map((pkg, index) => (
+                  <motion.div
+                    key={pkg.id}
+                    initial={{ opacity: 0, y: 20 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    viewport={{ once: true }}
+                    transition={{ delay: index * 0.05 }}
+                    className={`relative flex-shrink-0 w-[300px] p-6 bg-white dark:bg-gray-800 rounded-2xl border ${
+                      pkg.popular ? 'border-emerald-300 dark:border-emerald-600 shadow-xl shadow-emerald-500/10' : 'border-gray-200 dark:border-gray-700'
+                    } hover:shadow-xl hover:-translate-y-1 transition-all snap-center`}
+                  >
+                    <div className="text-center mb-6">
+                      <div className="w-12 h-12 bg-gradient-to-br from-emerald-500 to-green-600 rounded-xl flex items-center justify-center mx-auto mb-4 shadow-lg shadow-emerald-500/20">
+                        <pkg.icon className="w-6 h-6 text-white" />
+                      </div>
+                      <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-1">{pkg.name}</h3>
+                      <p className="text-gray-500 dark:text-gray-400 text-sm">{pkg.tagline}</p>
+                    </div>
+
+                    <div className="text-center mb-6">
+                      <div className="flex items-baseline justify-center gap-1">
+                        <span className="text-4xl font-bold text-gray-900 dark:text-white">€{pkg.price}</span>
+                        <span className="text-gray-500 dark:text-gray-400">/maand</span>
+                      </div>
+                      <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">+ €{pkg.setupFee} eenmalige opstartkosten</p>
+                    </div>
+
+                    <ul className="space-y-3 mb-6">
+                      {pkg.features.map((feature, i) => (
+                        <li key={i} className="flex items-center gap-2">
+                          <CheckCircle className="w-5 h-5 text-emerald-500 flex-shrink-0" />
+                          <span className="text-gray-700 dark:text-gray-300 text-sm">{feature}</span>
+                        </li>
+                      ))}
+                    </ul>
+
+                    <Link to={`/start?dienst=webshop&pakket=${pkg.id}`} className="block w-full text-center py-3 rounded-xl font-semibold transition-all bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 text-gray-900 dark:text-white">
+                      Kies {pkg.name}
+                    </Link>
+                  </motion.div>
+                ))}
+              </div>
+
+              {/* Dot indicators */}
+              <div className="flex justify-center gap-2 mt-3">
+                {packages.map((_, idx) => (
+                  <div key={idx} className={`h-2 rounded-full transition-all ${idx === 0 ? 'bg-emerald-500 w-6' : 'bg-gray-300 dark:bg-gray-600 w-2'}`} />
+                ))}
+              </div>
+            </div>
+
+            {/* Desktop: grid */}
+            <div className="hidden md:grid md:grid-cols-2 gap-8 max-w-4xl mx-auto">
               {packages.map((pkg, index) => (
                 <motion.div
                   key={pkg.id}
@@ -432,9 +492,7 @@ export default function Webshop() {
                   viewport={{ once: true }}
                   transition={{ delay: index * 0.1 }}
                   className={`relative p-6 bg-white dark:bg-gray-800 rounded-2xl border ${
-                    pkg.popular 
-                      ? 'border-emerald-300 dark:border-emerald-600 shadow-xl shadow-emerald-500/10' 
-                      : 'border-gray-200 dark:border-gray-700'
+                    pkg.popular ? 'border-emerald-300 dark:border-emerald-600 shadow-xl shadow-emerald-500/10' : 'border-gray-200 dark:border-gray-700'
                   } hover:shadow-xl hover:-translate-y-1 transition-all`}
                 >
                   {pkg.popular && (
@@ -444,7 +502,7 @@ export default function Webshop() {
                       </span>
                     </div>
                   )}
-                  
+
                   <div className="text-center mb-6">
                     <div className="w-12 h-12 bg-gradient-to-br from-emerald-500 to-green-600 rounded-xl flex items-center justify-center mx-auto mb-4 shadow-lg shadow-emerald-500/20">
                       <pkg.icon className="w-6 h-6 text-white" />
@@ -458,9 +516,7 @@ export default function Webshop() {
                       <span className="text-4xl font-bold text-gray-900 dark:text-white">€{pkg.price}</span>
                       <span className="text-gray-500 dark:text-gray-400">/maand</span>
                     </div>
-                    <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
-                      + €{pkg.setupFee} eenmalige opstartkosten
-                    </p>
+                    <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">+ €{pkg.setupFee} eenmalige opstartkosten</p>
                   </div>
 
                   <ul className="space-y-3 mb-6">
