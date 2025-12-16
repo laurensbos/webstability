@@ -1,16 +1,9 @@
-import { useState } from 'react'
-import { motion, AnimatePresence } from 'framer-motion'
+import { motion } from 'framer-motion'
 import { 
   Palette, 
   Plane, 
   ArrowRight, 
-  CheckCircle,
-  X,
-  Loader2,
-  Mail,
-  Phone,
-  User,
-  Building2
+  CheckCircle
 } from 'lucide-react'
 import { Link } from 'react-router-dom'
 
@@ -37,214 +30,17 @@ const extraServices = [
   }
 ]
 
-interface RequestModalProps {
-  service: typeof extraServices[0] | null
-  onClose: () => void
-}
-
-function RequestModal({ service, onClose }: RequestModalProps) {
-  const [formData, setFormData] = useState({
-    name: '',
-    email: '',
-    phone: '',
-    company: '',
-    remarks: ''
-  })
-  const [isSubmitting, setIsSubmitting] = useState(false)
-  const [isSuccess, setIsSuccess] = useState(false)
-
-  if (!service) return null
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
-    setIsSubmitting(true)
-
-    try {
-      const response = await fetch('/api/service-request', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          serviceType: service.id,
-          serviceName: service.title,
-          price: service.price,
-          ...formData
-        })
-      })
-
-      if (response.ok) {
-        setIsSuccess(true)
-      } else {
-        throw new Error('Request failed')
-      }
-    } catch (error) {
-      console.error('Error submitting request:', error)
-      alert('Er ging iets mis. Probeer het opnieuw of mail naar info@webstability.nl')
-    } finally {
-      setIsSubmitting(false)
-    }
-  }
-
-  const colorClasses = service.color === 'purple' 
-    ? { bg: 'bg-purple-500', hover: 'hover:bg-purple-600', light: 'bg-purple-50', text: 'text-purple-600' }
-    : { bg: 'bg-sky-500', hover: 'hover:bg-sky-600', light: 'bg-sky-50', text: 'text-sky-600' }
-
-  return (
-    <motion.div
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      exit={{ opacity: 0 }}
-      className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4"
-      onClick={onClose}
-    >
-      <motion.div
-        initial={{ scale: 0.95, opacity: 0 }}
-        animate={{ scale: 1, opacity: 1 }}
-        exit={{ scale: 0.95, opacity: 0 }}
-        onClick={(e) => e.stopPropagation()}
-        className="bg-white dark:bg-gray-900 rounded-2xl shadow-2xl max-w-md w-full max-h-[90vh] overflow-y-auto"
-      >
-        {!isSuccess ? (
-          <>
-            <div className={`${colorClasses.light} dark:bg-gray-800 p-6 border-b dark:border-gray-700`}>
-              <div className="flex justify-between items-start">
-                <div className="flex items-center gap-3">
-                  <div className={`p-3 ${colorClasses.bg} rounded-xl`}>
-                    <service.icon className="w-6 h-6 text-white" />
-                  </div>
-                  <div>
-                    <h3 className="text-xl font-bold text-gray-900 dark:text-white">{service.title}</h3>
-                    <p className={`${colorClasses.text}`}>€{service.price} <span className="text-gray-500 dark:text-gray-400 font-normal">excl. btw</span></p>
-                  </div>
-                </div>
-                <button onClick={onClose} className="p-2 hover:bg-white/50 dark:hover:bg-gray-700 rounded-lg transition">
-                  <X className="w-5 h-5 text-gray-500 dark:text-gray-400" />
-                </button>
-              </div>
-            </div>
-
-            <form onSubmit={handleSubmit} className="p-6 space-y-4">
-              <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                  <User className="w-4 h-4 inline mr-1" /> Naam *
-                </label>
-                <input
-                  type="text"
-                  required
-                  value={formData.name}
-                  onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                  className="w-full px-4 py-2.5 border border-gray-200 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
-                  placeholder="Je naam"
-                />
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                  <Mail className="w-4 h-4 inline mr-1" /> Email *
-                </label>
-                <input
-                  type="email"
-                  required
-                  value={formData.email}
-                  onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                  className="w-full px-4 py-2.5 border border-gray-200 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
-                  placeholder="je@email.nl"
-                />
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                  <Phone className="w-4 h-4 inline mr-1" /> Telefoon
-                </label>
-                <input
-                  type="tel"
-                  value={formData.phone}
-                  onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
-                  className="w-full px-4 py-2.5 border border-gray-200 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
-                  placeholder="06 12345678"
-                />
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                  <Building2 className="w-4 h-4 inline mr-1" /> Bedrijfsnaam
-                </label>
-                <input
-                  type="text"
-                  value={formData.company}
-                  onChange={(e) => setFormData({ ...formData, company: e.target.value })}
-                  className="w-full px-4 py-2.5 border border-gray-200 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
-                  placeholder="Je bedrijfsnaam"
-                />
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                  Extra informatie
-                </label>
-                <textarea
-                  value={formData.remarks}
-                  onChange={(e) => setFormData({ ...formData, remarks: e.target.value })}
-                  rows={3}
-                  className="w-full px-4 py-2.5 border border-gray-200 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-primary-500 focus:border-primary-500 resize-none"
-                  placeholder="Vertel ons meer over wat je zoekt..."
-                />
-              </div>
-
-              <button
-                type="submit"
-                disabled={isSubmitting}
-                className={`w-full py-3 ${colorClasses.bg} ${colorClasses.hover} text-white font-semibold rounded-xl transition flex items-center justify-center gap-2 disabled:opacity-50`}
-              >
-                {isSubmitting ? (
-                  <>
-                    <Loader2 className="w-5 h-5 animate-spin" />
-                    Verzenden...
-                  </>
-                ) : (
-                  <>
-                    Aanvragen
-                    <ArrowRight className="w-5 h-5" />
-                  </>
-                )}
-              </button>
-            </form>
-          </>
-        ) : (
-          <div className="p-8 text-center">
-            <div className={`w-16 h-16 ${colorClasses.light} dark:bg-gray-800 rounded-full flex items-center justify-center mx-auto mb-4`}>
-              <CheckCircle className={`w-8 h-8 ${colorClasses.text}`} />
-            </div>
-            <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-2">Aanvraag ontvangen!</h3>
-            <p className="text-gray-600 dark:text-gray-400 mb-6">
-              We nemen zo snel mogelijk contact met je op om de details te bespreken.
-            </p>
-            <button
-              onClick={onClose}
-              className={`px-6 py-3 ${colorClasses.bg} ${colorClasses.hover} text-white font-semibold rounded-xl transition`}
-            >
-              Sluiten
-            </button>
-          </div>
-        )}
-      </motion.div>
-    </motion.div>
-  )
-}
-
 export default function ExtraServices() {
-  const [selectedService, setSelectedService] = useState<typeof extraServices[0] | null>(null)
-
   return (
-    <>
-      <section className="py-16 bg-gray-50 dark:bg-gray-900">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-12">
-            <motion.p
-              initial={{ opacity: 0, y: 10 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              className="text-primary-600 dark:text-primary-400 font-semibold mb-2"
-            >
+    <section className="py-16 bg-gray-50 dark:bg-gray-900">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="text-center mb-12">
+          <motion.p
+            initial={{ opacity: 0, y: 10 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            className="text-primary-600 dark:text-primary-400 font-semibold mb-2"
+          >
               Aanvullende diensten
             </motion.p>
             <motion.h2
@@ -370,13 +166,13 @@ export default function ExtraServices() {
                     </div>
 
                     <div className="flex gap-3">
-                      <button
-                        onClick={() => setSelectedService(service)}
+                      <Link
+                        to={`/start?dienst=${service.id}`}
                         className={`flex-1 py-3 bg-gradient-to-r ${colorClasses.gradient} text-white font-semibold rounded-xl transition-all hover:shadow-lg hover:-translate-y-0.5 flex items-center justify-center gap-2`}
                       >
                         Direct aanvragen
                         <ArrowRight className="w-4 h-4" />
-                      </button>
+                      </Link>
                       <Link
                         to={service.link}
                         className={`px-5 py-3 ${colorClasses.light} dark:bg-gray-700 ${colorClasses.text} dark:text-gray-300 font-semibold rounded-xl transition hover:opacity-80`}
@@ -391,15 +187,5 @@ export default function ExtraServices() {
           </div>
         </div>
       </section>
-
-      <AnimatePresence>
-        {selectedService && (
-          <RequestModal 
-            service={selectedService} 
-            onClose={() => setSelectedService(null)} 
-          />
-        )}
-      </AnimatePresence>
-    </>
   )
 }
