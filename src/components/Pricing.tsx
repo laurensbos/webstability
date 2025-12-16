@@ -126,12 +126,12 @@ export default function Pricing() {
 								transition={{ delay: index * 0.1 }}
 								className={`flex-shrink-0 w-[280px] snap-center relative rounded-2xl p-5 flex flex-col bg-white dark:bg-gray-800 transition-all duration-300 ${
 									pkg.popular
-										? 'border-2 border-primary-500 shadow-lg shadow-primary-100 dark:shadow-primary-900/30'
+										? 'border-2 border-primary-500 shadow-lg shadow-primary-100 dark:shadow-primary-900/30 mt-4'
 										: 'border border-gray-200 dark:border-gray-700'
 								}`}
 							>
 								{pkg.popular && (
-									<span className="absolute -top-3 left-1/2 -translate-x-1/2 bg-primary-500 text-white text-xs font-medium px-3 py-1 rounded-full whitespace-nowrap">
+									<span className="absolute -top-3.5 left-1/2 -translate-x-1/2 bg-primary-500 text-white text-xs font-medium px-3 py-1.5 rounded-full whitespace-nowrap z-10">
 										Meest gekozen
 									</span>
 								)}
@@ -284,19 +284,22 @@ export default function Pricing() {
 					initial={{ opacity: 0, y: 20 }}
 					whileInView={{ opacity: 1, y: 0 }}
 					viewport={{ once: true }}
-					className="text-center space-y-4"
+					className="text-center space-y-3 mt-6 lg:mt-0"
 				>
-					<p className="text-gray-500 dark:text-gray-400 text-sm flex flex-wrap justify-center gap-x-6 gap-y-2">
+					{/* Trust badges - horizontal scroll on mobile, flex on desktop */}
+					<div className="flex flex-wrap justify-center gap-x-4 gap-y-1.5 lg:gap-x-6 lg:gap-y-2">
 						{trustBadges.map((badge) => (
-							<span key={badge} className="flex items-center gap-1.5">
-								<Check className="w-4 h-4 text-green-500" />
-								{badge}
+							<span key={badge} className="flex items-center gap-1.5 text-xs sm:text-sm text-gray-500 dark:text-gray-400">
+								<Check className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-green-500 flex-shrink-0" />
+								<span className="whitespace-nowrap">{badge}</span>
 							</span>
 						))}
-					</p>
-					<p className="text-sm text-gray-500 dark:text-gray-400">
-						Alle prijzen zijn inclusief 21% BTW • 
-						<span className="text-primary-600 dark:text-primary-400 font-medium"> Als ondernemer krijg je de BTW terug via je belastingaangifte</span>
+					</div>
+					<p className="text-xs sm:text-sm text-gray-500 dark:text-gray-400 px-4">
+						Alle prijzen zijn inclusief 21% BTW
+						<span className="hidden sm:inline"> • </span>
+						<br className="sm:hidden" />
+						<span className="text-primary-600 dark:text-primary-400 font-medium">Als ondernemer krijg je de BTW terug via je belastingaangifte</span>
 					</p>
 				</motion.div>
 			</div>

@@ -113,13 +113,34 @@ export default function Hero() {
                 <span className="relative z-10 bg-gradient-to-r from-primary-600 via-primary-500 to-blue-500 bg-clip-text text-transparent">
                   klanten oplevert
                 </span>
-                {/* Animated underline */}
-                <motion.div
-                  initial={{ scaleX: 0 }}
-                  animate={{ scaleX: 1 }}
-                  transition={{ delay: 0.5, duration: 0.6, ease: "easeOut" }}
-                  className="absolute -bottom-1 left-0 right-0 h-3 bg-gradient-to-r from-primary-200/60 via-blue-200/60 to-cyan-200/60 rounded-full origin-left -z-0"
-                />
+                {/* Animated underline - subtle curved line */}
+                <motion.svg
+                  initial={{ pathLength: 0, opacity: 0 }}
+                  animate={{ pathLength: 1, opacity: 1 }}
+                  transition={{ delay: 0.5, duration: 0.8, ease: "easeOut" }}
+                  className="absolute -bottom-1 sm:-bottom-2 left-0 w-full h-2 sm:h-3"
+                  viewBox="0 0 200 8"
+                  fill="none"
+                  preserveAspectRatio="none"
+                >
+                  <motion.path
+                    d="M0 5 Q50 0 100 5 T200 5"
+                    stroke="url(#underlineGradient)"
+                    strokeWidth="2.5"
+                    strokeLinecap="round"
+                    fill="none"
+                    initial={{ pathLength: 0 }}
+                    animate={{ pathLength: 1 }}
+                    transition={{ delay: 0.5, duration: 0.8, ease: "easeOut" }}
+                  />
+                  <defs>
+                    <linearGradient id="underlineGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+                      <stop offset="0%" stopColor="#4F8EF7" stopOpacity="0.7" />
+                      <stop offset="50%" stopColor="#6366F1" stopOpacity="0.8" />
+                      <stop offset="100%" stopColor="#22D3EE" stopOpacity="0.6" />
+                    </linearGradient>
+                  </defs>
+                </motion.svg>
               </span>
             </h1>
 
@@ -146,36 +167,36 @@ export default function Hero() {
               </a>
               <a
                 href="#portfolio"
-                className="group text-gray-600 hover:text-primary-600 font-medium text-sm transition-colors flex items-center gap-1"
+                className="group text-gray-600 dark:text-white hover:text-primary-600 dark:hover:text-primary-400 font-medium text-sm transition-colors flex items-center gap-1"
               >
                 Bekijk ons werk 
                 <span className="group-hover:translate-x-1 transition-transform">→</span>
               </a>
             </motion.div>
 
-            {/* Trust indicators - responsive */}
+            {/* Trust indicators - always side by side */}
             <motion.div
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ delay: 0.6 }}
-              className="mt-6 sm:mt-8 flex flex-col sm:flex-row flex-wrap items-center gap-2 sm:gap-4 justify-center lg:justify-start"
+              className="mt-6 sm:mt-8 flex flex-row flex-wrap items-center gap-2 sm:gap-4 justify-center lg:justify-start"
             >
-              <div className="flex items-center gap-2 text-xs sm:text-sm text-gray-600 dark:text-gray-300 bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm border border-gray-100 dark:border-gray-700 rounded-full px-3 py-1.5 sm:px-4 sm:py-2">
-                <div className="w-4 h-4 sm:w-5 sm:h-5 rounded-full bg-green-100 dark:bg-green-900/30 flex items-center justify-center">
+              <div className="flex items-center gap-1.5 sm:gap-2 text-xs sm:text-sm text-gray-600 dark:text-gray-300 bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm border border-gray-100 dark:border-gray-700 rounded-full px-2.5 py-1.5 sm:px-4 sm:py-2">
+                <div className="w-4 h-4 sm:w-5 sm:h-5 rounded-full bg-green-100 dark:bg-green-900/30 flex items-center justify-center flex-shrink-0">
                   <svg className="w-2.5 h-2.5 sm:w-3 sm:h-3 text-green-600 dark:text-green-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M5 13l4 4L19 7" />
                   </svg>
                 </div>
-                Geen verplichtingen
+                <span className="whitespace-nowrap">Geen verplichtingen</span>
               </div>
-              <div className="flex items-center gap-2 text-xs sm:text-sm text-gray-600 dark:text-gray-300 bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm border border-gray-100 dark:border-gray-700 rounded-full px-3 py-1.5 sm:px-4 sm:py-2">
-                <div className="w-4 h-4 sm:w-5 sm:h-5 rounded-full bg-primary-100 dark:bg-primary-900/30 flex items-center justify-center">
+              <div className="flex items-center gap-1.5 sm:gap-2 text-xs sm:text-sm text-gray-600 dark:text-gray-300 bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm border border-gray-100 dark:border-gray-700 rounded-full px-2.5 py-1.5 sm:px-4 sm:py-2">
+                <div className="w-4 h-4 sm:w-5 sm:h-5 rounded-full bg-primary-100 dark:bg-primary-900/30 flex items-center justify-center flex-shrink-0">
                   <svg className="w-2.5 h-2.5 sm:w-3 sm:h-3 text-primary-600 dark:text-primary-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M12 8v4l3 3" />
                     <circle cx="12" cy="12" r="9" strokeWidth={2} />
                   </svg>
                 </div>
-                Reactie binnen 24 uur
+                <span className="whitespace-nowrap">Reactie binnen 24 uur</span>
               </div>
             </motion.div>
           </motion.div>

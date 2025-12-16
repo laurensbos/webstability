@@ -54,7 +54,74 @@ export default function ExtraServices() {
             </motion.h2>
           </div>
 
-          <div className="grid md:grid-cols-2 gap-8 max-w-5xl mx-auto">
+          {/* Mobile: Compact horizontal cards */}
+          <div className="md:hidden flex gap-4 overflow-x-auto pb-4 -mx-4 px-4 snap-x snap-mandatory scrollbar-hide" style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
+            {extraServices.map((service, index) => {
+              const colorClasses = service.color === 'purple'
+                ? { bg: 'bg-purple-500', gradient: 'from-purple-500 to-purple-600', light: 'bg-purple-50', text: 'text-purple-600', border: 'border-purple-200/50' }
+                : { bg: 'bg-sky-500', gradient: 'from-sky-500 to-sky-600', light: 'bg-sky-50', text: 'text-sky-600', border: 'border-sky-200/50' }
+
+              return (
+                <motion.div
+                  key={service.id}
+                  initial={{ opacity: 0, x: 20 }}
+                  whileInView={{ opacity: 1, x: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ delay: index * 0.1 }}
+                  className={`flex-shrink-0 w-[280px] snap-center bg-white dark:bg-gray-800 rounded-xl border ${colorClasses.border} dark:border-gray-700 overflow-hidden`}
+                >
+                  {/* Compact header with icon and price */}
+                  <div className={`p-4 bg-gradient-to-r ${colorClasses.gradient} text-white`}>
+                    <div className="flex items-center justify-between mb-2">
+                      <div className="w-10 h-10 bg-white/20 rounded-xl flex items-center justify-center">
+                        <service.icon className="w-5 h-5 text-white" />
+                      </div>
+                      <div className="text-right">
+                        <span className="text-2xl font-bold">€{service.price}</span>
+                        <span className="text-white/70 text-xs block">excl. btw</span>
+                      </div>
+                    </div>
+                    <h3 className="font-bold text-lg">{service.title}</h3>
+                  </div>
+
+                  {/* Content */}
+                  <div className="p-4">
+                    <p className="text-gray-600 dark:text-gray-300 text-sm mb-3 line-clamp-2">{service.description}</p>
+
+                    {/* Compact features - 2x2 grid */}
+                    <div className="grid grid-cols-2 gap-2 mb-4">
+                      {service.features.slice(0, 4).map((feature, i) => (
+                        <div key={i} className="flex items-center gap-1.5 text-xs text-gray-600 dark:text-gray-400">
+                          <CheckCircle className={`w-3.5 h-3.5 ${colorClasses.text} flex-shrink-0`} />
+                          <span className="truncate">{feature}</span>
+                        </div>
+                      ))}
+                    </div>
+
+                    {/* Buttons */}
+                    <div className="flex gap-2">
+                      <Link
+                        to={`/start?dienst=${service.id}`}
+                        className={`flex-1 py-2.5 bg-gradient-to-r ${colorClasses.gradient} text-white font-semibold rounded-lg text-sm flex items-center justify-center gap-1.5`}
+                      >
+                        Direct aanvragen
+                        <ArrowRight className="w-3.5 h-3.5" />
+                      </Link>
+                      <Link
+                        to={service.link}
+                        className={`px-4 py-2.5 ${colorClasses.light} dark:bg-gray-700 ${colorClasses.text} dark:text-gray-300 font-semibold rounded-lg text-sm`}
+                      >
+                        Meer info
+                      </Link>
+                    </div>
+                  </div>
+                </motion.div>
+              )
+            })}
+          </div>
+
+          {/* Desktop: Original large cards */}
+          <div className="hidden md:grid md:grid-cols-2 gap-8 max-w-5xl mx-auto">
             {extraServices.map((service, index) => {
               const colorClasses = service.color === 'purple'
                 ? { bg: 'bg-purple-500', gradient: 'from-purple-500 to-purple-600', light: 'bg-purple-50', text: 'text-purple-600', border: 'border-purple-200/50', hover: 'hover:border-purple-300', shadow: 'hover:shadow-purple-100' }

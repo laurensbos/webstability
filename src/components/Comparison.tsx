@@ -120,8 +120,87 @@ export default function Comparison() {
           </motion.p>
         </div>
 
-        {/* Comparison Cards */}
-        <div className="grid md:grid-cols-3 gap-6 lg:gap-8">
+        {/* Mobile: Compact "Why Webstability" view */}
+        <div className="md:hidden mb-8">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            className="bg-gradient-to-b from-primary-500 to-primary-600 rounded-2xl p-6 text-white shadow-xl shadow-primary-500/30"
+          >
+            {/* Header */}
+            <div className="flex items-center gap-3 mb-5">
+              <div className="w-12 h-12 bg-white/20 rounded-xl flex items-center justify-center">
+                <Sparkles className="w-6 h-6 text-white" />
+              </div>
+              <div>
+                <h3 className="text-xl font-bold">Webstability</h3>
+                <p className="text-primary-100 text-sm">Beste keuze voor ondernemers</p>
+              </div>
+            </div>
+
+            {/* Price highlight */}
+            <div className="bg-white/10 rounded-xl p-4 mb-5 text-center">
+              <p className="text-3xl font-bold">€96/maand</p>
+              <p className="text-primary-100 text-sm">Opstartkosten: €120 eenmalig</p>
+            </div>
+
+            {/* Benefits grid - 2 columns */}
+            <div className="grid grid-cols-2 gap-3 mb-5">
+              {[
+                { icon: '🎨', label: 'Op maat design' },
+                { icon: '🔧', label: 'Alles verzorgd' },
+                { icon: '⚡', label: 'Klaar in 7 dagen' },
+                { icon: '💬', label: 'Persoonlijke support' },
+                { icon: '📱', label: 'Mobiel-vriendelijk' },
+                { icon: '🔄', label: 'Maandelijks opzegbaar' },
+              ].map((benefit, i) => (
+                <motion.div
+                  key={i}
+                  initial={{ opacity: 0, scale: 0.9 }}
+                  whileInView={{ opacity: 1, scale: 1 }}
+                  viewport={{ once: true }}
+                  transition={{ delay: 0.1 + i * 0.05 }}
+                  className="flex items-center gap-2 bg-white/10 rounded-lg px-3 py-2.5"
+                >
+                  <span className="text-lg">{benefit.icon}</span>
+                  <span className="text-sm font-medium">{benefit.label}</span>
+                </motion.div>
+              ))}
+            </div>
+
+            {/* Comparison quick stats */}
+            <div className="bg-white/10 rounded-xl p-4 mb-5">
+              <p className="text-xs text-primary-100 uppercase tracking-wider mb-3 text-center">Vergelijk met alternatieven</p>
+              <div className="space-y-2 text-sm">
+                <div className="flex justify-between items-center">
+                  <span className="text-primary-100">Webbureau:</span>
+                  <span className="font-medium">€3.000+ + €200-500/mnd</span>
+                </div>
+                <div className="flex justify-between items-center">
+                  <span className="text-primary-100">Zelf maken:</span>
+                  <span className="font-medium">50-200+ uur werk</span>
+                </div>
+                <div className="flex justify-between items-center pt-2 border-t border-white/20">
+                  <span className="text-primary-100">Webstability:</span>
+                  <span className="font-bold text-white">€120 + €96/mnd ✓</span>
+                </div>
+              </div>
+            </div>
+
+            {/* CTA */}
+            <a
+              href="/start"
+              className="w-full flex items-center justify-center gap-2 px-6 py-3.5 bg-white text-primary-600 font-semibold rounded-xl hover:bg-gray-50 transition-colors group"
+            >
+              Start je project
+              <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+            </a>
+          </motion.div>
+        </div>
+
+        {/* Desktop: Comparison Cards */}
+        <div className="hidden md:grid md:grid-cols-3 gap-6 lg:gap-8">
           {comparisonOptions.map((option, index) => {
             const Icon = option.icon
             const isHighlighted = option.highlight

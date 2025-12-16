@@ -281,8 +281,88 @@ export default function StartProject() {
             </p>
           </motion.div>
 
-          {/* Service Cards */}
-          <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
+          {/* Service Cards - Mobile Carousel */}
+          <div className="sm:hidden">
+            {/* Swipe hint */}
+            <div className="flex items-center justify-center gap-2 text-xs text-gray-400 dark:text-gray-500 mb-3">
+              <span>Swipe om te vergelijken</span>
+              <ArrowRight className="w-3 h-3" />
+            </div>
+            
+            <div className="flex gap-3 overflow-x-auto pb-4 -mx-4 px-4 snap-x snap-mandatory scrollbar-hide" style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
+              {services.map((service, index) => {
+                const Icon = service.icon
+                
+                return (
+                  <motion.button
+                    key={service.id}
+                    initial={{ opacity: 0, x: 20 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ delay: 0.1 + index * 0.05 }}
+                    onClick={() => setSelectedService(service.id)}
+                    className="relative flex-shrink-0 w-[260px] snap-center text-left bg-white dark:bg-gray-800 rounded-2xl border border-gray-200 dark:border-gray-700 overflow-hidden shadow-sm active:scale-[0.98] transition-transform"
+                  >
+                    {/* Popular badge */}
+                    {service.popular && (
+                      <div className="absolute top-3 right-3 z-10">
+                        <span className="bg-gradient-to-r from-primary-500 to-blue-600 text-white text-[10px] font-bold px-2 py-0.5 rounded-full">
+                          Populair
+                        </span>
+                      </div>
+                    )}
+                    
+                    {/* Colored header with icon */}
+                    <div className={`bg-gradient-to-br ${service.gradient} p-4 flex items-center gap-3`}>
+                      <div className="w-11 h-11 rounded-xl bg-white/20 flex items-center justify-center">
+                        <Icon className="w-6 h-6 text-white" />
+                      </div>
+                      <div className="text-white">
+                        <h3 className="font-bold text-lg">{service.name}</h3>
+                        <p className="text-white/80 text-xs">{service.description}</p>
+                      </div>
+                    </div>
+                    
+                    <div className="p-4">
+                      {/* Price */}
+                      <div className="mb-3">
+                        <span className="text-xl font-bold text-gray-900 dark:text-white">{service.price}</span>
+                        <span className="text-xs text-gray-500 dark:text-gray-400 ml-1">{service.priceNote}</span>
+                      </div>
+                      
+                      {/* Compact features - 2x2 grid */}
+                      <div className="grid grid-cols-2 gap-1.5 mb-4">
+                        {service.features.map((feature, i) => (
+                          <div key={i} className="flex items-center gap-1.5 text-xs text-gray-600 dark:text-gray-300">
+                            <Check className="w-3 h-3 text-green-500 flex-shrink-0" />
+                            <span className="truncate">{feature}</span>
+                          </div>
+                        ))}
+                      </div>
+                      
+                      {/* CTA */}
+                      <div className={`flex items-center justify-center gap-2 py-2.5 rounded-xl bg-gradient-to-r ${service.gradient} text-white font-semibold text-sm`}>
+                        <span>Starten</span>
+                        <ArrowRight className="w-4 h-4" />
+                      </div>
+                    </div>
+                  </motion.button>
+                )
+              })}
+            </div>
+            
+            {/* Dot indicators */}
+            <div className="flex justify-center gap-1.5 mt-2">
+              {services.map((_, index) => (
+                <div
+                  key={index}
+                  className={`w-1.5 h-1.5 rounded-full ${index === 0 ? 'bg-primary-500 w-4' : 'bg-gray-300 dark:bg-gray-600'}`}
+                />
+              ))}
+            </div>
+          </div>
+
+          {/* Service Cards - Desktop Grid */}
+          <div className="hidden sm:grid sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
             {services.map((service, index) => {
               const Icon = service.icon
               const isHovered = hoveredService === service.id
@@ -351,9 +431,28 @@ export default function StartProject() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.6 }}
-            className="mt-16 text-center"
+            className="mt-10 sm:mt-16"
           >
-            <div className="flex flex-wrap items-center justify-center gap-6 sm:gap-10 text-sm text-gray-500 dark:text-gray-400">
+            {/* Mobile: Compact row */}
+            <div className="sm:hidden flex items-center justify-center gap-4 text-xs text-gray-500 dark:text-gray-400">
+              <div className="flex items-center gap-1.5">
+                <Check className="w-4 h-4 text-green-500" />
+                <span>Geen verplichtingen</span>
+              </div>
+              <div className="flex items-center gap-1.5">
+                <Check className="w-4 h-4 text-green-500" />
+                <span>Reactie binnen 24 uur</span>
+              </div>
+            </div>
+            <div className="sm:hidden flex items-center justify-center mt-2">
+              <div className="flex items-center gap-1.5 text-xs text-gray-500 dark:text-gray-400">
+                <Check className="w-4 h-4 text-green-500" />
+                <span>150+ tevreden klanten</span>
+              </div>
+            </div>
+            
+            {/* Desktop: Full row */}
+            <div className="hidden sm:flex flex-wrap items-center justify-center gap-6 sm:gap-10 text-sm text-gray-500 dark:text-gray-400">
               <div className="flex items-center gap-2">
                 <Check className="w-5 h-5 text-green-500" />
                 <span>Geen verplichtingen</span>
