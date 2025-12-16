@@ -805,13 +805,6 @@ export default function WebshopOnboarding({
             <ArrowRight className="w-5 h-5" />
           </button>
         </div>
-        
-        {/* Debug Info */}
-        <div className="mt-8 text-center">
-          <pre className="text-xs text-gray-500 dark:text-gray-400">
-            {JSON.stringify(formData, null, 2)}
-          </pre>
-        </div>
       </div>
     </div>
   )
