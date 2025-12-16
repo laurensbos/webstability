@@ -379,7 +379,7 @@ export default function LogoMaken() {
                 className="text-2xl sm:text-3xl md:text-4xl font-bold text-gray-900 dark:text-white mb-2 md:mb-4"
               >
                 Compleet logo pakket{' '}
-                <span className="bg-gradient-to-r from-purple-600 to-violet-600 bg-clip-text text-transparent">€182</span>
+                <span className="bg-gradient-to-r from-purple-600 to-violet-600 bg-clip-text text-transparent">€169</span>
               </motion.h2>
               <motion.p
                 initial={{ opacity: 0, y: 20 }}

@@ -1,7 +1,6 @@
 import { useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { 
-  PenTool, 
   ArrowRight, 
   ArrowLeft, 
   Check, 
@@ -51,35 +50,23 @@ interface FormData {
 
 const PACKAGES: PackageType[] = [
   {
-    id: 'basis',
-    name: 'Basis',
-    price: '€150',
-    priceLabel: ' excl. BTW',
-    tagline: 'Perfect om te starten',
-    description: 'Ideaal voor startende ondernemers.',
+    id: 'logo',
+    name: 'Logo Design',
+    price: '€169',
+    priceLabel: ' incl. BTW',
+    tagline: 'Alles wat je nodig hebt',
+    description: 'Professioneel logo voor je bedrijf.',
     features: ['2 logo concepten', '2 revisierondes', 'Alle bestandsformaten', 'Kleurenpalet'],
     gradient: 'from-purple-500 to-violet-500',
-  },
-  {
-    id: 'uitgebreid',
-    name: 'Uitgebreid',
-    price: '€250',
-    priceLabel: ' excl. BTW',
-    tagline: 'Meest gekozen',
-    description: 'Complete branding voor je bedrijf.',
-    features: ['4 logo concepten', 'Onbeperkte revisies', 'Alle bestandsformaten', 'Kleurenpalet', 'Visitekaartje ontwerp', 'Brandbook'],
-    gradient: 'from-violet-500 to-purple-600',
-    popular: true,
   },
 ]
 
 const STEPS = [
-  { id: 1, title: 'Pakket', icon: PenTool },
-  { id: 2, title: 'Bedrijf', icon: Building2 },
-  { id: 3, title: 'Stijl', icon: Palette },
-  { id: 4, title: 'Merk', icon: Target },
-  { id: 5, title: 'Details', icon: Sparkles },
-  { id: 6, title: 'Account', icon: Lock },
+  { id: 1, title: 'Bedrijf', icon: Building2 },
+  { id: 2, title: 'Stijl', icon: Palette },
+  { id: 3, title: 'Merk', icon: Target },
+  { id: 4, title: 'Details', icon: Sparkles },
+  { id: 5, title: 'Account', icon: Lock },
 ]
 
 const LOGO_STYLES = [
@@ -143,24 +130,22 @@ function generateProjectId(): string {
 interface LogoOnboardingProps {
   isFullPage?: boolean
   isStandalone?: boolean
-  initialPackage?: 'basis' | 'uitgebreid'
   onClose?: () => void
 }
 
 export default function LogoOnboarding({ 
   isFullPage = true, 
   isStandalone = true, 
-  initialPackage, 
   onClose 
 }: LogoOnboardingProps) {
   const navigate = useNavigate()
-  const [currentStep, setCurrentStep] = useState(initialPackage ? 2 : 1)
+  const [currentStep, setCurrentStep] = useState(1)
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [showPassword, setShowPassword] = useState(false)
   const [showConfirmPassword, setShowConfirmPassword] = useState(false)
   
   const [formData, setFormData] = useState<FormData>({
-    package: initialPackage || '',
+    package: 'logo', // Automatisch het enige pakket selecteren
     companyName: '',
     contactName: '',
     email: '',
@@ -195,25 +180,23 @@ export default function LogoOnboarding({
 
   const canProceed = (): boolean => {
     switch (currentStep) {
-      case 1: return !!formData.package
-      case 2: return !!formData.companyName && !!formData.contactName && !!formData.email && !!formData.industry
-      case 3: return formData.logoStyles.length > 0 && formData.colorPreferences.length > 0
-      case 4: return formData.brandValues.length > 0
-      case 5: return true // Optional step
-      case 6: return !!formData.password && formData.password === formData.confirmPassword && formData.password.length >= 6
+      case 1: return !!formData.companyName && !!formData.contactName && !!formData.email && !!formData.industry
+      case 2: return formData.logoStyles.length > 0 && formData.colorPreferences.length > 0
+      case 3: return formData.brandValues.length > 0
+      case 4: return true // Optional step
+      case 5: return !!formData.password && formData.password === formData.confirmPassword && formData.password.length >= 6
       default: return false
     }
   }
 
   const handleNext = () => {
-    if (currentStep < 6 && canProceed()) {
+    if (currentStep < 5 && canProceed()) {
       setCurrentStep(prev => prev + 1)
     }
   }
   
   const handleBack = () => {
-    const minStep = initialPackage ? 2 : 1
-    if (currentStep <= minStep) {
+    if (currentStep <= 1) {
       if (onClose) {
         onClose()
       } else if (!isStandalone) {
@@ -310,81 +293,8 @@ export default function LogoOnboarding({
             className="bg-white dark:bg-gray-800 rounded-3xl shadow-xl p-6 sm:p-8 border border-gray-100 dark:border-gray-700"
           >
             
-            {/* Step 1: Package Selection */}
+            {/* Step 1: Company Info */}
             {currentStep === 1 && (
-              <div>
-                <div className="text-center mb-8">
-                  <h2 className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white mb-2">
-                    Kies je logo pakket
-                  </h2>
-                  <p className="text-gray-600 dark:text-gray-400">
-                    Selecteer het pakket dat het beste bij je past
-                  </p>
-                </div>
-                
-                <div className="flex gap-4 overflow-x-auto pb-4 -mx-4 px-4 sm:mx-0 sm:px-0 snap-x snap-mandatory scrollbar-hide sm:grid sm:grid-cols-2 sm:gap-6 sm:overflow-visible sm:max-w-3xl sm:mx-auto">
-                  {PACKAGES.map((pkg) => (
-                    <motion.button 
-                      key={pkg.id} 
-                      onClick={() => updateFormData('package', pkg.id)} 
-                      className={`relative flex-shrink-0 w-[280px] sm:w-auto snap-center p-6 rounded-2xl border-2 text-left transition-all ${
-                        formData.package === pkg.id 
-                          ? 'border-transparent ring-2 ring-purple-500' 
-                          : 'border-gray-200 dark:border-gray-700 hover:border-gray-300'
-                      }`}
-                      whileHover={{ scale: 1.02 }} 
-                      whileTap={{ scale: 0.98 }}
-                    >
-                      {formData.package === pkg.id && (
-                        <motion.div 
-                          className={`absolute inset-0 bg-gradient-to-r ${pkg.gradient} opacity-10 rounded-2xl`}
-                          initial={{ opacity: 0 }} 
-                          animate={{ opacity: 0.1 }} 
-                        />
-                      )}
-                      
-                      <div className={`inline-flex items-center gap-2 px-3 py-1 rounded-full bg-gradient-to-r ${pkg.gradient} text-white text-sm font-medium mb-3`}>
-                        <PenTool className="w-4 h-4" />
-                        {pkg.name}
-                      </div>
-                      
-                      {pkg.tagline && (
-                        <p className="text-xs text-gray-500 dark:text-gray-400 mb-2">{pkg.tagline}</p>
-                      )}
-                      
-                      <div className="text-2xl font-bold text-gray-900 dark:text-white mb-1">
-                        {pkg.price}
-                        <span className="text-sm font-normal text-gray-500 dark:text-gray-400">
-                          {pkg.priceLabel}
-                        </span>
-                      </div>
-                      
-                      <p className="text-sm text-gray-600 dark:text-gray-400 mb-4">{pkg.description}</p>
-                      
-                      <ul className="space-y-2">
-                        {pkg.features.map((f, i) => (
-                          <li key={i} className="flex items-center gap-2 text-sm text-gray-700 dark:text-gray-300">
-                            <Check className={`w-4 h-4 flex-shrink-0 ${formData.package === pkg.id ? 'text-purple-500' : 'text-gray-400'}`} />
-                            {f}
-                          </li>
-                        ))}
-                      </ul>
-                      
-                      {formData.package === pkg.id && (
-                        <motion.div className="absolute top-4 right-4" initial={{ scale: 0 }} animate={{ scale: 1 }}>
-                          <div className={`w-6 h-6 rounded-full bg-gradient-to-r ${pkg.gradient} flex items-center justify-center`}>
-                            <Check className="w-4 h-4 text-white" />
-                          </div>
-                        </motion.div>
-                      )}
-                    </motion.button>
-                  ))}
-                </div>
-              </div>
-            )}
-
-            {/* Step 2: Company Info */}
-            {currentStep === 2 && (
               <div>
                 <div className="text-center mb-8">
                   <h2 className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white mb-2">
@@ -479,8 +389,8 @@ export default function LogoOnboarding({
               </div>
             )}
 
-            {/* Step 3: Logo Style */}
-            {currentStep === 3 && (
+            {/* Step 2: Logo Style */}
+            {currentStep === 2 && (
               <div>
                 <div className="text-center mb-8">
                   <h2 className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white mb-2">
@@ -580,8 +490,8 @@ export default function LogoOnboarding({
               </div>
             )}
 
-            {/* Step 4: Brand Values */}
-            {currentStep === 4 && (
+            {/* Step 3: Brand Values */}
+            {currentStep === 3 && (
               <div>
                 <div className="text-center mb-8">
                   <h2 className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white mb-2">
@@ -639,8 +549,8 @@ export default function LogoOnboarding({
               </div>
             )}
 
-            {/* Step 5: Additional Details */}
-            {currentStep === 5 && (
+            {/* Step 4: Additional Details */}
+            {currentStep === 4 && (
               <div>
                 <div className="text-center mb-8">
                   <h2 className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white mb-2">
@@ -681,8 +591,8 @@ export default function LogoOnboarding({
               </div>
             )}
 
-            {/* Step 6: Account */}
-            {currentStep === 6 && (
+            {/* Step 5: Account */}
+            {currentStep === 5 && (
               <div>
                 <div className="text-center mb-8">
                   <h2 className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white mb-2">
@@ -775,7 +685,7 @@ export default function LogoOnboarding({
             Vorige
           </button>
           
-          {currentStep < 6 ? (
+          {currentStep < 5 ? (
             <button 
               onClick={handleNext} 
               disabled={!canProceed()} 

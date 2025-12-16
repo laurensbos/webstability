@@ -567,7 +567,7 @@ export default function Luchtvideografie() {
                 className="text-2xl sm:text-3xl md:text-4xl font-bold text-gray-900 dark:text-white mb-2 md:mb-4"
               >
                 Complete luchtopnames{' '}
-                <span className="bg-gradient-to-r from-orange-600 to-amber-600 bg-clip-text text-transparent">€483</span>
+                <span className="bg-gradient-to-r from-orange-600 to-amber-600 bg-clip-text text-transparent">€349</span>
               </motion.h2>
               <motion.p 
                 initial={{ opacity: 0, y: 20 }}
