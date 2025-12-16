@@ -79,7 +79,7 @@ export default function Pricing() {
 								className={`flex-shrink-0 w-[280px] snap-center relative rounded-2xl p-5 flex flex-col bg-white dark:bg-gray-800 transition-all duration-300 ${
 									pkg.popular
 										? 'border-2 border-primary-500 shadow-lg shadow-primary-100 dark:shadow-primary-900/30 mt-4'
-										: pkg.id.startsWith('webshop')
+										: pkg.id === 'webshop'
 											? 'border-2 border-emerald-500 shadow-lg shadow-emerald-100 dark:shadow-emerald-900/30'
 											: 'border border-gray-200 dark:border-gray-700'
 								}`}
@@ -133,7 +133,7 @@ export default function Pricing() {
 									className={`w-full py-3 px-4 rounded-xl font-semibold text-sm text-center transition-all flex items-center justify-center gap-2 ${
 										pkg.popular
 											? 'bg-primary-500 hover:bg-primary-600 text-white shadow-md shadow-primary-200 dark:shadow-primary-900/30'
-											: pkg.id.startsWith('webshop')
+											: pkg.id === 'webshop'
 												? 'bg-emerald-500 hover:bg-emerald-600 text-white shadow-md shadow-emerald-200 dark:shadow-emerald-900/30'
 												: 'bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 text-gray-900 dark:text-white'
 									}`}
@@ -167,7 +167,7 @@ export default function Pricing() {
 				</div>
 
 				{/* Desktop: Grid layout */}
-				<div className="hidden lg:grid lg:grid-cols-5 gap-6 mb-16">
+				<div className="hidden lg:grid lg:grid-cols-4 gap-6 mb-16">
 					{packages.map((pkg, index) => (
 						<motion.div
 							key={pkg.id}
@@ -178,7 +178,7 @@ export default function Pricing() {
 							className={`relative rounded-2xl p-6 flex flex-col bg-white dark:bg-gray-800 transition-all duration-300 hover:shadow-lg hover:-translate-y-1 ${
 								pkg.popular
 									? 'border-2 border-primary-500 shadow-lg shadow-primary-100 dark:shadow-primary-900/30'
-									: pkg.id.startsWith('webshop')
+									: pkg.id === 'webshop'
 										? 'border-2 border-emerald-500 shadow-lg shadow-emerald-100 dark:shadow-emerald-900/30'
 										: 'border border-gray-200 dark:border-gray-700 hover:border-gray-300 dark:hover:border-gray-600'
 							}`}
@@ -227,7 +227,7 @@ export default function Pricing() {
 								className={`w-full py-3 px-4 rounded-xl font-semibold text-sm text-center transition-all flex items-center justify-center gap-2 ${
 									pkg.popular
 										? 'bg-primary-500 hover:bg-primary-600 text-white shadow-md shadow-primary-200 dark:shadow-primary-900/30'
-										: pkg.id.startsWith('webshop')
+										: pkg.id === 'webshop'
 											? 'bg-emerald-500 hover:bg-emerald-600 text-white shadow-md shadow-emerald-200 dark:shadow-emerald-900/30'
 											: 'bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 text-gray-900 dark:text-white'
 								}`}
