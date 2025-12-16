@@ -62,8 +62,8 @@ const PACKAGES: PackageType[] = [
   {
     id: 'basis',
     name: 'Basis',
-    price: '€399',
-    priceLabel: ' excl. BTW',
+    price: '€349',
+    priceLabel: ' incl. BTW',
     tagline: 'Ideaal voor kleine projecten',
     description: 'Perfect voor een eerste kennismaking.',
     features: ['15 bewerkte fotos', '1 drone video (60 sec)', '1 locatie', 'Levering binnen 5 dagen'],
@@ -72,8 +72,8 @@ const PACKAGES: PackageType[] = [
   {
     id: 'professional',
     name: 'Professioneel',
-    price: '€699',
-    priceLabel: ' excl. BTW',
+    price: '€550',
+    priceLabel: ' incl. BTW',
     description: 'Uitgebreid pakket voor bedrijven.',
     features: ['30 bewerkte fotos', '2 drone videos (90 sec)', 'Tot 2 locaties', 'Levering binnen 3 dagen'],
     gradient: 'from-amber-500 to-orange-600',
@@ -81,8 +81,8 @@ const PACKAGES: PackageType[] = [
   {
     id: 'premium',
     name: 'Premium',
-    price: '€999',
-    priceLabel: ' excl. BTW',
+    price: '€849',
+    priceLabel: ' incl. BTW',
     tagline: 'Complete productie',
     description: 'Voor grote projecten en events.',
     features: ['50+ bewerkte fotos', 'Onbeperkt drone videos', 'Meerdere locaties', 'Same-day editing mogelijk'],
