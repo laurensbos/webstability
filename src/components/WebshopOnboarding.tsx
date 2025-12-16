@@ -384,13 +384,13 @@ export default function WebshopOnboarding({
                     <ArrowRight className="w-3 h-3" />
                   </div>
 
-                  <div className="flex gap-4 overflow-x-auto pb-4 -mx-4 px-4 snap-x snap-mandatory scrollbar-hide" style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
+                  <div className="flex gap-4 overflow-x-auto overflow-y-visible pb-4 -mx-4 px-4 snap-x snap-mandatory scrollbar-hide" style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
                     {PACKAGES.map((pkg) => (
                       <motion.button
                         key={pkg.id}
                         onClick={() => updateFormData('package', pkg.id)}
                         className={`relative flex-shrink-0 w-[280px] snap-center p-6 rounded-2xl border-2 text-left transition-all ${
-                          formData.package === pkg.id ? 'border-gray-200 dark:border-gray-700 ring-2 ring-emerald-500' : 'border-gray-200 dark:border-gray-700 hover:border-gray-300'
+                          formData.package === pkg.id ? 'border-gray-200 dark:border-gray-700 ring-2 ring-emerald-500 z-10' : 'border-gray-200 dark:border-gray-700 hover:border-gray-300'
                         }`}
                         whileHover={{ scale: 1.02 }}
                         whileTap={{ scale: 0.98 }}

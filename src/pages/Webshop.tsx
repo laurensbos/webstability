@@ -430,7 +430,7 @@ export default function Webshop() {
                 <ArrowRight className="w-3 h-3" />
               </div>
 
-              <div className="flex gap-4 overflow-x-auto pb-4 -mx-4 px-4 snap-x snap-mandatory scrollbar-hide" style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
+              <div className="flex gap-4 overflow-x-auto overflow-y-visible pb-4 -mx-4 px-4 snap-x snap-mandatory scrollbar-hide" style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
                 {packages.map((pkg, index) => (
                   <motion.div
                     key={pkg.id}
