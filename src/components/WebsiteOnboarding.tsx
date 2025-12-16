@@ -54,8 +54,8 @@ const PACKAGES: PackageType[] = [
   {
     id: 'starter',
     name: 'Starter',
-    price: '€79',
-    priceLabel: '/maand excl. BTW',
+    price: '€95',
+    priceLabel: '/maand incl. BTW',
     tagline: 'Ideaal om te beginnen',
     description: 'Perfect voor ZZP\'ers en kleine ondernemers die een professionele online aanwezigheid willen.',
     features: [
@@ -69,9 +69,9 @@ const PACKAGES: PackageType[] = [
   {
     id: 'professional',
     name: 'Professioneel',
-    price: '€148',
-    priceLabel: '/maand excl. BTW',
-    tagline: 'Meest gekozen',
+    price: '€179',
+    priceLabel: '/maand incl. BTW',
+    tagline: 'Voor serieuze ondernemers',
     description: 'Voor ondernemers die meer willen dan een visitekaartje. Met blog en analytics.',
     features: [
       'Tot 10 pagina\'s',
@@ -81,13 +81,12 @@ const PACKAGES: PackageType[] = [
       'Google Analytics'
     ],
     gradient: 'from-primary-500 to-blue-500',
-    popular: true,
   },
   {
     id: 'business',
     name: 'Business',
-    price: '€247',
-    priceLabel: '/maand excl. BTW',
+    price: '€299',
+    priceLabel: '/maand incl. BTW',
     tagline: 'Voor groeiende bedrijven',
     description: 'Alle tools om je bedrijf online te laten groeien met boekingssysteem en meer.',
     features: [
