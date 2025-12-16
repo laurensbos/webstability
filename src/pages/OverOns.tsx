@@ -22,7 +22,7 @@ import { Link } from 'react-router-dom'
 import Header from '../components/Header'
 import Footer from '../components/Footer'
 
-// Floating particles component
+// Floating particles component with dark mode support
 function FloatingParticles() {
   const particles = [
     { size: 4, x: '10%', y: '20%', delay: 0, duration: 4 },
@@ -38,7 +38,7 @@ function FloatingParticles() {
       {particles.map((p, i) => (
         <motion.div
           key={i}
-          className="absolute rounded-full bg-gradient-to-br from-primary-400 to-blue-500"
+          className="absolute rounded-full bg-gradient-to-br from-primary-400 to-blue-500 dark:from-primary-500 dark:to-blue-600"
           style={{ 
             width: p.size, 
             height: p.size, 
@@ -137,17 +137,17 @@ export default function OverOns() {
           {/* Background decorations */}
           <div className="absolute inset-0 overflow-hidden pointer-events-none">
             <motion.div 
-              className="absolute top-0 right-0 w-[900px] h-[900px] bg-gradient-to-br from-primary-200/60 via-blue-100/40 to-cyan-100/30 rounded-full blur-3xl -translate-y-1/3 translate-x-1/4"
+              className="absolute top-0 right-0 w-[900px] h-[900px] bg-gradient-to-br from-primary-200/60 via-blue-100/40 to-cyan-100/30 dark:from-primary-900/40 dark:via-blue-900/30 dark:to-cyan-900/20 rounded-full blur-3xl -translate-y-1/3 translate-x-1/4"
               animate={{ scale: [1, 1.05, 1], rotate: [0, 5, 0] }}
               transition={{ duration: 8, repeat: Infinity, ease: "easeInOut" }}
             />
             <motion.div 
-              className="absolute bottom-0 left-0 w-[700px] h-[700px] bg-gradient-to-tr from-primary-100/50 via-blue-100/40 to-transparent rounded-full blur-3xl translate-y-1/3 -translate-x-1/4"
+              className="absolute bottom-0 left-0 w-[700px] h-[700px] bg-gradient-to-tr from-primary-100/50 via-blue-100/40 to-transparent dark:from-primary-900/30 dark:via-blue-900/20 dark:to-transparent rounded-full blur-3xl translate-y-1/3 -translate-x-1/4"
               animate={{ scale: [1, 1.08, 1], rotate: [0, -5, 0] }}
               transition={{ duration: 10, repeat: Infinity, ease: "easeInOut" }}
             />
             <FloatingParticles />
-            <div className="absolute inset-0 bg-[linear-gradient(to_right,#dbeafe33_1px,transparent_1px),linear-gradient(to_bottom,#dbeafe33_1px,transparent_1px)] bg-[size:4rem_4rem] [mask-image:radial-gradient(ellipse_80%_50%_at_50%_0%,#000_70%,transparent_110%)]" />
+            <div className="absolute inset-0 bg-[linear-gradient(to_right,#dbeafe33_1px,transparent_1px),linear-gradient(to_bottom,#dbeafe33_1px,transparent_1px)] dark:bg-[linear-gradient(to_right,#1e3a8a15_1px,transparent_1px),linear-gradient(to_bottom,#1e3a8a15_1px,transparent_1px)] bg-[size:4rem_4rem] [mask-image:radial-gradient(ellipse_80%_50%_at_50%_0%,#000_70%,transparent_110%)]" />
           </div>
 
           <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 lg:py-24">
@@ -157,7 +157,7 @@ export default function OverOns() {
                   initial={{ opacity: 0, scale: 0.9 }}
                   animate={{ opacity: 1, scale: 1 }}
                   transition={{ delay: 0.1 }}
-                  className="inline-flex items-center gap-2 bg-gradient-to-r from-primary-50 to-blue-50 dark:from-primary-900/30 dark:to-blue-900/30 border border-primary-200/50 dark:border-primary-700/50 rounded-full px-4 py-2 mb-6"
+                  className="inline-flex items-center gap-2 bg-gradient-to-r from-primary-50 to-blue-50 dark:from-primary-900/50 dark:to-blue-900/50 border border-primary-200/50 dark:border-primary-700/50 rounded-full px-4 py-2 mb-6"
                 >
                   <Users className="w-4 h-4 text-primary-600 dark:text-primary-400" />
                   <span className="text-sm font-medium text-primary-700 dark:text-primary-300">Over Webstability</span>
@@ -165,7 +165,7 @@ export default function OverOns() {
 
                 <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold text-gray-900 dark:text-white mb-6 leading-tight">
                   Websites bouwen voor{' '}
-                  <span className="bg-gradient-to-r from-primary-600 to-blue-600 bg-clip-text text-transparent">
+                  <span className="bg-gradient-to-r from-primary-600 to-blue-600 dark:from-primary-400 dark:to-blue-400 bg-clip-text text-transparent">
                     ondernemers
                   </span>
                 </h1>
@@ -222,7 +222,7 @@ export default function OverOns() {
         {/* Our Story */}
         <section className="py-20 bg-white dark:bg-gray-900 relative overflow-hidden">
           <div className="absolute inset-0 overflow-hidden pointer-events-none">
-            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-gradient-to-r from-primary-50/50 via-blue-50/30 to-cyan-50/50 rounded-full blur-3xl" />
+            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-gradient-to-r from-primary-50/50 via-blue-50/30 to-cyan-50/50 dark:from-primary-900/20 dark:via-blue-900/15 dark:to-cyan-900/20 rounded-full blur-3xl" />
           </div>
 
           <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
@@ -237,7 +237,7 @@ export default function OverOns() {
                 </span>
                 <h2 className="text-3xl sm:text-4xl font-bold text-gray-900 dark:text-white mb-6">
                   Waarom we{' '}
-                  <span className="bg-gradient-to-r from-primary-600 to-blue-600 bg-clip-text text-transparent">
+                  <span className="bg-gradient-to-r from-primary-600 to-blue-600 dark:from-primary-400 dark:to-blue-400 bg-clip-text text-transparent">
                     Webstability
                   </span>
                   {' '}startten
@@ -317,25 +317,25 @@ export default function OverOns() {
                   
                   <div className="mt-4 p-4 bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-xl border border-primary-100 dark:border-primary-800">
                     <p className="text-sm text-gray-600 dark:text-gray-300 text-center">
-                      <Sparkles className="w-4 h-4 inline mr-1 text-primary-500" />
+                      <Sparkles className="w-4 h-4 inline mr-1 text-primary-500 dark:text-primary-400" />
                       Geen kantoorkosten = lagere prijzen voor jou
                     </p>
                   </div>
                 </div>
                 
                 {/* Decorative elements */}
-                <div className="absolute -top-4 -right-4 w-24 h-24 bg-primary-500/10 rounded-2xl -z-10" />
-                <div className="absolute -bottom-4 -left-4 w-32 h-32 bg-blue-500/5 rounded-2xl -z-10" />
+                <div className="absolute -top-4 -right-4 w-24 h-24 bg-primary-500/10 dark:bg-primary-500/5 rounded-2xl -z-10" />
+                <div className="absolute -bottom-4 -left-4 w-32 h-32 bg-blue-500/5 dark:bg-blue-500/5 rounded-2xl -z-10" />
               </motion.div>
             </div>
           </div>
         </section>
 
         {/* How we work - Remote & Modern */}
-        <section className="py-20 bg-gradient-to-b from-gray-50 via-primary-50/20 to-gray-50 relative overflow-hidden">
+        <section className="py-20 bg-gradient-to-b from-gray-50 via-primary-50/20 to-gray-50 dark:from-gray-800 dark:via-gray-900 dark:to-gray-800 relative overflow-hidden">
           <div className="absolute inset-0 overflow-hidden pointer-events-none">
-            <div className="absolute -top-40 -left-40 w-80 h-80 bg-gradient-to-br from-primary-100/40 to-blue-100/20 rounded-full blur-3xl" />
-            <div className="absolute -bottom-40 -right-40 w-96 h-96 bg-gradient-to-tl from-blue-100/30 to-primary-100/20 rounded-full blur-3xl" />
+            <div className="absolute -top-40 -left-40 w-80 h-80 bg-gradient-to-br from-primary-100/40 to-blue-100/20 dark:from-primary-900/20 dark:to-blue-900/10 rounded-full blur-3xl" />
+            <div className="absolute -bottom-40 -right-40 w-96 h-96 bg-gradient-to-tl from-blue-100/30 to-primary-100/20 dark:from-blue-900/15 dark:to-primary-900/10 rounded-full blur-3xl" />
           </div>
 
           <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
@@ -344,7 +344,7 @@ export default function OverOns() {
                 initial={{ opacity: 0, y: 20 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
-                className="inline-block text-primary-600 font-semibold text-sm tracking-wider uppercase mb-3"
+                className="inline-block text-primary-600 dark:text-primary-400 font-semibold text-sm tracking-wider uppercase mb-3"
               >
                 Hoe wij werken
               </motion.span>
@@ -355,7 +355,7 @@ export default function OverOns() {
                 className="text-3xl sm:text-4xl font-bold text-gray-900 dark:text-white mb-4"
               >
                 100% remote,{' '}
-                <span className="bg-gradient-to-r from-primary-600 to-blue-600 bg-clip-text text-transparent">
+                <span className="bg-gradient-to-r from-primary-600 to-blue-600 dark:from-primary-400 dark:to-blue-400 bg-clip-text text-transparent">
                   100% efficiënt
                 </span>
               </motion.h2>
@@ -379,13 +379,13 @@ export default function OverOns() {
                   whileInView={{ opacity: 1, y: 0 }}
                   viewport={{ once: true }}
                   transition={{ delay: index * 0.1 }}
-                  className="group p-6 bg-white dark:bg-gray-800 border border-gray-200/80 dark:border-gray-700 rounded-2xl shadow-sm hover:shadow-xl hover:border-primary-200 dark:hover:border-primary-700 hover:-translate-y-1 transition-all"
+                  className="group p-6 bg-white dark:bg-gray-800 border border-gray-200/80 dark:border-gray-700 rounded-2xl shadow-sm hover:shadow-xl dark:hover:shadow-gray-900/50 hover:border-primary-200 dark:hover:border-primary-700 hover:-translate-y-1 transition-all"
                 >
                   <div className="w-12 h-12 bg-gradient-to-br from-primary-500 to-blue-600 rounded-xl flex items-center justify-center shadow-lg shadow-primary-500/20 mb-4 group-hover:scale-110 transition-transform">
                     <item.icon className="w-6 h-6 text-white" />
                   </div>
                   <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-2">{item.title}</h3>
-                  <p className="text-gray-600 dark:text-gray-300 text-sm leading-relaxed">{item.description}</p>
+                  <p className="text-gray-600 dark:text-gray-400 text-sm leading-relaxed">{item.description}</p>
                 </motion.div>
               ))}
             </div>
@@ -426,11 +426,11 @@ export default function OverOns() {
               </span>
               <h2 className="text-3xl sm:text-4xl font-bold text-gray-900 dark:text-white mb-4">
                 Waar we{' '}
-                <span className="bg-gradient-to-r from-primary-600 to-blue-600 bg-clip-text text-transparent">
+                <span className="bg-gradient-to-r from-primary-600 to-blue-600 dark:from-primary-400 dark:to-blue-400 bg-clip-text text-transparent">
                   voor staan
                 </span>
               </h2>
-              <p className="text-gray-600 dark:text-gray-300 max-w-2xl mx-auto">
+              <p className="text-gray-600 dark:text-gray-400 max-w-2xl mx-auto">
                 Dit zijn de principes waar we niet van afwijken. Ze zitten in alles wat we doen.
               </p>
             </motion.div>
@@ -443,13 +443,13 @@ export default function OverOns() {
                   whileInView={{ opacity: 1, y: 0 }}
                   viewport={{ once: true }}
                   transition={{ delay: index * 0.1 }}
-                  className="bg-gradient-to-br from-gray-50 to-white dark:from-gray-800 dark:to-gray-800 rounded-2xl p-6 border border-gray-100 dark:border-gray-700 hover:shadow-lg transition-all"
+                  className="bg-gradient-to-br from-gray-50 to-white dark:from-gray-800 dark:to-gray-900 rounded-2xl p-6 border border-gray-100 dark:border-gray-700 hover:shadow-lg dark:hover:shadow-gray-900/50 transition-all"
                 >
                   <div className="w-12 h-12 bg-primary-100 dark:bg-primary-900/50 rounded-xl flex items-center justify-center mb-4">
                     <value.icon className="w-6 h-6 text-primary-600 dark:text-primary-400" />
                   </div>
                   <h3 className="font-bold text-gray-900 dark:text-white mb-2">{value.title}</h3>
-                  <p className="text-gray-600 dark:text-gray-300 text-sm leading-relaxed">{value.description}</p>
+                  <p className="text-gray-600 dark:text-gray-400 text-sm leading-relaxed">{value.description}</p>
                 </motion.div>
               ))}
             </div>
@@ -457,7 +457,7 @@ export default function OverOns() {
         </section>
 
         {/* Timeline */}
-        <section className="py-20 bg-gradient-to-b from-gray-50 via-primary-50/20 to-gray-50 dark:from-gray-800 dark:via-gray-800 dark:to-gray-800">
+        <section className="py-20 bg-gradient-to-b from-gray-50 via-primary-50/20 to-gray-50 dark:from-gray-800 dark:via-gray-900 dark:to-gray-800">
           <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
             <motion.div
               initial={{ opacity: 0, y: 20 }}
@@ -470,7 +470,7 @@ export default function OverOns() {
               </span>
               <h2 className="text-3xl sm:text-4xl font-bold text-gray-900 dark:text-white">
                 Van idee tot{' '}
-                <span className="bg-gradient-to-r from-primary-600 to-blue-600 bg-clip-text text-transparent">
+                <span className="bg-gradient-to-r from-primary-600 to-blue-600 dark:from-primary-400 dark:to-blue-400 bg-clip-text text-transparent">
                   150+ websites
                 </span>
               </h2>
@@ -478,7 +478,7 @@ export default function OverOns() {
 
             <div className="relative">
               {/* Timeline line */}
-              <div className="absolute left-8 top-0 bottom-0 w-0.5 bg-gradient-to-b from-primary-500 via-primary-400 to-primary-300 hidden md:block" />
+              <div className="absolute left-8 top-0 bottom-0 w-0.5 bg-gradient-to-b from-primary-500 via-primary-400 to-primary-300 dark:from-primary-600 dark:via-primary-500 dark:to-primary-400 hidden md:block" />
               
               <div className="space-y-8">
                 {milestones.map((milestone, index) => (
@@ -495,9 +495,9 @@ export default function OverOns() {
                         <span className="text-white font-bold text-sm">{milestone.year}</span>
                       </div>
                     </div>
-                    <div className="flex-1 bg-white dark:bg-gray-800 rounded-2xl p-6 border border-gray-100 dark:border-gray-700 shadow-sm hover:shadow-md transition-shadow">
+                    <div className="flex-1 bg-white dark:bg-gray-800 rounded-2xl p-6 border border-gray-100 dark:border-gray-700 shadow-sm hover:shadow-md dark:hover:shadow-gray-900/50 transition-shadow">
                       <h3 className="font-bold text-gray-900 dark:text-white mb-2">{milestone.title}</h3>
-                      <p className="text-gray-600 dark:text-gray-300">{milestone.description}</p>
+                      <p className="text-gray-600 dark:text-gray-400">{milestone.description}</p>
                     </div>
                   </motion.div>
                 ))}
@@ -520,7 +520,7 @@ export default function OverOns() {
               </span>
               <h2 className="text-3xl sm:text-4xl font-bold text-gray-900 dark:text-white mb-4">
                 Dit{' '}
-                <span className="bg-gradient-to-r from-primary-600 to-blue-600 bg-clip-text text-transparent">
+                <span className="bg-gradient-to-r from-primary-600 to-blue-600 dark:from-primary-400 dark:to-blue-400 bg-clip-text text-transparent">
                   garanderen
                 </span>
                 {' '}we
@@ -550,7 +550,7 @@ export default function OverOns() {
                     whileInView={{ opacity: 1, y: 0 }}
                     viewport={{ once: true }}
                     transition={{ delay: index * 0.05 }}
-                    className="flex items-center gap-3 p-3 bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-xl"
+                    className="flex items-center gap-3 p-3 bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-xl border border-white/50 dark:border-gray-700"
                   >
                     <div className="w-8 h-8 bg-primary-100 dark:bg-primary-900/50 rounded-lg flex items-center justify-center flex-shrink-0">
                       <promise.icon className="w-4 h-4 text-primary-600 dark:text-primary-400" />
