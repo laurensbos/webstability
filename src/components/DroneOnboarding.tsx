@@ -357,7 +357,7 @@ export default function DroneOnboarding({
                           key={pkg.id}
                           onClick={() => updateFormData('package', pkg.id)}
                           className={`relative flex-shrink-0 w-[280px] snap-center p-6 rounded-2xl border-2 text-left transition-all ${
-                            formData.package === pkg.id ? 'border-orange-500 ring-2 ring-orange-500' : 'border-gray-200 dark:border-gray-700 hover:border-gray-300'
+                            formData.package === pkg.id ? 'border-gray-200 dark:border-gray-700 ring-2 ring-orange-500' : 'border-gray-200 dark:border-gray-700 hover:border-gray-300'
                           }`}
                           whileHover={{ scale: 1.02 }}
                           whileTap={{ scale: 0.98 }}
@@ -380,12 +380,18 @@ export default function DroneOnboarding({
                             {pkg.name}
                           </div>
                           
+                          {pkg.tagline && !pkg.popular && (
+                            <p className="text-xs text-gray-500 dark:text-gray-400 mb-2">{pkg.tagline}</p>
+                          )}
+                          
                           <div className="text-2xl font-bold text-gray-900 dark:text-white mb-1">
                             {pkg.price}
                             <span className="text-sm font-normal text-gray-500 dark:text-gray-400">
                               {pkg.priceLabel}
                             </span>
                           </div>
+                          
+                          <p className="text-sm text-gray-600 dark:text-gray-400 mb-4">{pkg.description}</p>
                           
                           <ul className="space-y-2">
                             {pkg.features.map((f, i) => (
@@ -422,7 +428,7 @@ export default function DroneOnboarding({
                         onClick={() => updateFormData('package', pkg.id)} 
                         className={`relative p-6 rounded-2xl border-2 text-left transition-all ${
                           formData.package === pkg.id 
-                            ? 'border-orange-500 ring-2 ring-orange-500' 
+                            ? 'border-gray-200 dark:border-gray-700 ring-2 ring-orange-500' 
                             : 'border-gray-200 dark:border-gray-700 hover:border-gray-300'
                         }`}
                         whileHover={{ scale: 1.02 }} 
@@ -446,12 +452,18 @@ export default function DroneOnboarding({
                           {pkg.name}
                         </div>
                         
+                        {pkg.tagline && !pkg.popular && (
+                          <p className="text-xs text-gray-500 dark:text-gray-400 mb-2">{pkg.tagline}</p>
+                        )}
+                        
                         <div className="text-2xl font-bold text-gray-900 dark:text-white mb-1">
                           {pkg.price}
                           <span className="text-sm font-normal text-gray-500 dark:text-gray-400">
                             {pkg.priceLabel}
                           </span>
                         </div>
+                        
+                        <p className="text-sm text-gray-600 dark:text-gray-400 mb-4">{pkg.description}</p>
                         
                         <ul className="space-y-2">
                           {pkg.features.map((f, i) => (
