@@ -589,13 +589,13 @@ export default function WebsiteOnboarding({
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
-      className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-start justify-center py-4 sm:py-8 px-2 sm:px-4 overflow-y-auto"
+      className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-start justify-center pt-16 sm:pt-8 pb-4 sm:pb-8 px-2 sm:px-4 overflow-y-auto"
     >
       <motion.div
         initial={{ scale: 0.95, opacity: 0, y: 20 }}
         animate={{ scale: 1, opacity: 1, y: 0 }}
         exit={{ scale: 0.95, opacity: 0, y: 20 }}
-        className="bg-white dark:bg-gray-900 rounded-2xl w-full max-w-3xl max-h-[90vh] overflow-hidden shadow-2xl flex flex-col my-auto"
+        className="bg-white dark:bg-gray-900 rounded-2xl w-full max-w-4xl max-h-[90vh] overflow-hidden shadow-2xl flex flex-col my-auto"
       >
         {/* Header */}
         <div className="bg-gradient-to-r from-primary-600 to-blue-600 p-4 sm:p-6 text-white relative overflow-hidden">
@@ -680,8 +680,8 @@ export default function WebsiteOnboarding({
                     <p className="text-gray-500 dark:text-gray-400 text-sm">Selecteer het pakket dat het beste bij jouw wensen past</p>
                   </div>
 
-                  {/* Mobile: Horizontal scroll carousel */}
-                  <div className="flex gap-4 overflow-x-auto pb-4 -mx-4 px-4 sm:mx-0 sm:px-0 snap-x snap-mandatory scrollbar-hide sm:grid sm:grid-cols-1 sm:gap-4 sm:overflow-visible">
+                  {/* Package cards - horizontal scroll on mobile, 3 columns on desktop */}
+                  <div className="flex gap-4 overflow-x-auto pb-4 -mx-4 px-4 sm:mx-0 sm:px-0 snap-x snap-mandatory scrollbar-hide sm:grid sm:grid-cols-3 sm:gap-4 sm:overflow-visible">
                     {(Object.entries(PACKAGES) as [string, typeof PACKAGES.starter][]).map(([key, pkg]) => {
                       const isSelected = data.selectedPackage === key
                       const isPopular = key === 'professional'
@@ -706,10 +706,10 @@ export default function WebsiteOnboarding({
                           type="button"
                           whileTap={{ scale: 0.98 }}
                           onClick={() => updateData({ selectedPackage: key as 'starter' | 'professional' | 'business' })}
-                          className={`relative flex-shrink-0 w-[280px] sm:w-full snap-center text-left bg-white dark:bg-gray-800 rounded-2xl border-2 overflow-hidden transition-all ${
+                          className={`relative flex-shrink-0 w-[280px] sm:w-full snap-center text-left bg-white dark:bg-gray-800 rounded-2xl border-2 overflow-hidden transition-all hover:shadow-lg ${
                             isSelected 
                               ? 'border-primary-500 shadow-lg shadow-primary-100 dark:shadow-primary-900/30' 
-                              : 'border-gray-200 dark:border-gray-700'
+                              : 'border-gray-200 dark:border-gray-700 hover:border-gray-300'
                           }`}
                         >
                           {/* Popular badge */}
