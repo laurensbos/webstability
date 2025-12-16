@@ -196,7 +196,7 @@ export default function Comparison() {
         </div>
 
         {/* Desktop: Comparison Cards */}
-        <div className="hidden md:grid md:grid-cols-3 gap-6 lg:gap-8 items-start">
+        <div className="hidden md:grid md:grid-cols-3 gap-6 lg:gap-8 items-stretch">
           {comparisonOptions.map((option, index) => {
             const Icon = option.icon
             const isHighlighted = option.highlight
@@ -208,7 +208,7 @@ export default function Comparison() {
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
                 transition={{ delay: index * 0.1 }}
-                className={`relative rounded-2xl p-6 lg:p-8 bg-white dark:bg-gray-800 border shadow-lg ${
+                className={`relative rounded-2xl p-6 lg:p-8 bg-white dark:bg-gray-800 border shadow-lg flex flex-col ${
                   isHighlighted
                     ? 'border-primary-500'
                     : 'border-gray-200 dark:border-gray-700'
@@ -248,7 +248,7 @@ export default function Comparison() {
                 </div>
 
                 {/* Features */}
-                <ul className="space-y-3">
+                <ul className="space-y-3 flex-grow">
                   {option.features.map((feature, i) => (
                     <li key={i} className="flex items-start gap-3">
                       {isHighlighted ? (
@@ -277,6 +277,11 @@ export default function Comparison() {
                     Start je project
                     <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
                   </a>
+                )}
+
+                {/* Spacer for non-highlighted cards to align with CTA height */}
+                {!isHighlighted && (
+                  <div className="mt-6 h-[52px]" />
                 )}
               </motion.div>
             )
