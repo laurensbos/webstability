@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { motion } from 'framer-motion'
-import { CheckCircle, Clock, Mail, MessageCircle, ArrowRight, Copy, Check, ExternalLink, Shield, Sparkles, Globe, ShoppingBag, Camera, Palette } from 'lucide-react'
+import { CheckCircle, Clock, Mail, MessageCircle, ArrowRight, Copy, Check, ExternalLink, Shield, Sparkles, Globe, ShoppingBag, Camera, Palette, Lock } from 'lucide-react'
 import { Link, useSearchParams } from 'react-router-dom'
 import Header from '../components/Header'
 import Footer from '../components/Footer'
@@ -254,10 +254,10 @@ export default function Bedankt() {
                   )}
                 </button>
               </div>
-              <div className="flex flex-col sm:flex-row gap-3 justify-center">
+              <div className="flex flex-col sm:flex-row gap-3 justify-center flex-wrap">
                 <Link
                   to={`/onboarding/${projectId}`}
-                  className="inline-flex items-center justify-center gap-2 px-5 py-2.5 bg-white dark:bg-gray-900 text-gray-900 rounded-xl font-semibold hover:bg-white/90 transition shadow-lg"
+                  className="inline-flex items-center justify-center gap-2 px-5 py-2.5 bg-white dark:bg-gray-900 text-gray-900 dark:text-white rounded-xl font-semibold hover:bg-white/90 dark:hover:bg-gray-800 transition shadow-lg"
                 >
                   Start onboarding
                   <ArrowRight className="w-4 h-4" />
@@ -268,6 +268,13 @@ export default function Bedankt() {
                 >
                   Bekijk project status
                   <ExternalLink className="w-4 h-4" />
+                </Link>
+                <Link
+                  to={`/status/${projectId}`}
+                  className="inline-flex items-center justify-center gap-2 px-5 py-2.5 bg-white/10 text-white rounded-xl font-medium hover:bg-white/20 transition border border-white/20"
+                >
+                  <Lock className="w-4 h-4" />
+                  Login dashboard
                 </Link>
               </div>
             </motion.div>
@@ -361,7 +368,7 @@ export default function Bedankt() {
             transition={{ delay: 0.8 }}
             className={`${colors.bg} rounded-2xl p-6 mb-8 text-center border ${colors.border}`}
           >
-            <p className="text-gray-900 font-medium mb-4">
+            <p className="text-gray-900 dark:text-white font-medium mb-4">
               Kan je niet wachten? Neem direct contact op:
             </p>
             <a
