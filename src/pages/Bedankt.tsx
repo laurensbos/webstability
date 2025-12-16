@@ -147,7 +147,7 @@ export default function Bedankt() {
   ]
 
   return (
-    <div className="min-h-screen bg-white dark:bg-gray-900 dark:bg-gray-900">
+    <div className="min-h-screen bg-white dark:bg-gray-900">
       <Header />
       
       {/* Hero Section */}

@@ -77,7 +77,7 @@ export default function BedanktService() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.2 }}
-            className="text-3xl sm:text-4xl font-bold text-gray-900 mb-4"
+            className="text-3xl sm:text-4xl font-bold text-gray-900 dark:text-white mb-4"
           >
             Aanvraag ontvangen! 🎉
           </motion.h1>
@@ -86,7 +86,7 @@ export default function BedanktService() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.3 }}
-            className="text-lg text-gray-600 mb-8"
+            className="text-lg text-gray-600 dark:text-gray-400 mb-8"
           >
             Bedankt voor je {service.title.toLowerCase()} aanvraag. We gaan direct voor je aan de slag!
           </motion.p>

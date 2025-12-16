@@ -20,18 +20,18 @@ export default function Unauthorized() {
             initial={{ scale: 0 }}
             animate={{ scale: 1 }}
             transition={{ delay: 0.2, type: 'spring', stiffness: 200 }}
-            className="inline-flex items-center justify-center w-24 h-24 rounded-full bg-red-100 mb-8"
+            className="inline-flex items-center justify-center w-24 h-24 rounded-full bg-red-100 dark:bg-red-900/30 mb-8"
           >
-            <ShieldOff className="w-12 h-12 text-red-600" />
+            <ShieldOff className="w-12 h-12 text-red-600 dark:text-red-400" />
           </motion.div>
 
           {/* Title */}
-          <h1 className="text-4xl sm:text-5xl font-bold text-gray-900 mb-4">
+          <h1 className="text-4xl sm:text-5xl font-bold text-gray-900 dark:text-white mb-4">
             Geen toegang
           </h1>
 
           {/* Description */}
-          <p className="text-lg text-gray-600 mb-8 max-w-md mx-auto">
+          <p className="text-lg text-gray-600 dark:text-gray-400 mb-8 max-w-md mx-auto">
             Je hebt geen toestemming om deze pagina te bekijken. 
             Dit kan zijn omdat je niet bent ingelogd of niet de juiste rechten hebt.
           </p>
@@ -48,7 +48,7 @@ export default function Unauthorized() {
             
             <Link
               to="/"
-              className="inline-flex items-center justify-center gap-2 px-6 py-3 bg-gray-100 text-gray-700 font-semibold rounded-xl hover:bg-gray-200 transition-colors"
+              className="inline-flex items-center justify-center gap-2 px-6 py-3 bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 font-semibold rounded-xl hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors"
             >
               <Home className="w-5 h-5" />
               Naar homepage
@@ -60,10 +60,10 @@ export default function Unauthorized() {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ delay: 0.4 }}
-            className="mt-12 p-6 bg-white dark:bg-gray-900 rounded-2xl border border-gray-200 max-w-md mx-auto"
+            className="mt-12 p-6 bg-white dark:bg-gray-800 rounded-2xl border border-gray-200 dark:border-gray-700 max-w-md mx-auto"
           >
-            <h3 className="font-semibold text-gray-900 mb-2">Hulp nodig?</h3>
-            <p className="text-gray-600 text-sm mb-4">
+            <h3 className="font-semibold text-gray-900 dark:text-white mb-2">Hulp nodig?</h3>
+            <p className="text-gray-600 dark:text-gray-400 text-sm mb-4">
               Als je denkt dat je wel toegang zou moeten hebben, neem dan contact met ons op.
             </p>
             <a

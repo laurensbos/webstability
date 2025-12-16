@@ -57,7 +57,7 @@ export default function NotFound() {
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.3 }}
-              className="text-3xl sm:text-4xl font-bold text-gray-900 mb-4"
+              className="text-3xl sm:text-4xl font-bold text-gray-900 dark:text-white mb-4"
             >
               Pagina niet gevonden
             </motion.h1>
@@ -66,7 +66,7 @@ export default function NotFound() {
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.4 }}
-              className="text-gray-600 text-lg mb-8 max-w-md mx-auto"
+              className="text-gray-600 dark:text-gray-400 text-lg mb-8 max-w-md mx-auto"
             >
               Oeps! De pagina die je zoekt bestaat niet of is verplaatst. 
               Geen zorgen, we helpen je terug op weg.
@@ -87,7 +87,7 @@ export default function NotFound() {
               </Link>
               <button
                 onClick={() => window.history.back()}
-                className="inline-flex items-center justify-center gap-2 px-8 py-4 bg-white dark:bg-gray-900 border-2 border-gray-200 text-gray-700 font-semibold rounded-xl hover:border-gray-300 hover:bg-gray-50 transition-all"
+                className="inline-flex items-center justify-center gap-2 px-8 py-4 bg-white dark:bg-gray-800 border-2 border-gray-200 dark:border-gray-700 text-gray-700 dark:text-gray-300 font-semibold rounded-xl hover:border-gray-300 dark:hover:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-700 transition-all"
               >
                 <ArrowLeft className="w-5 h-5" />
                 Ga terug

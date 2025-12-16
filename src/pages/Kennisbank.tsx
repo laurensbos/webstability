@@ -104,7 +104,7 @@ export default function Kennisbank() {
   const featuredArticle = articles.find(a => a.featured)
 
   return (
-    <div className="min-h-screen bg-white dark:bg-gray-900 dark:bg-gray-900">
+    <div className="min-h-screen bg-white dark:bg-gray-900">
       <Header />
       
       <main>
@@ -187,7 +187,7 @@ export default function Kennisbank() {
 
         {/* Featured Article */}
         {featuredArticle && (
-          <section className="py-8 lg:py-12 bg-white dark:bg-gray-900 dark:bg-gray-900">
+          <section className="py-8 lg:py-12 bg-white dark:bg-gray-900">
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
               <Link
                 to={`/kennisbank/${featuredArticle.id}`}
