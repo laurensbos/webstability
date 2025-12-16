@@ -316,7 +316,7 @@ export default function WebshopOnboarding({
                       onClick={() => updateFormData('package', pkg.id)} 
                       className={`relative flex-shrink-0 w-full snap-center p-6 rounded-2xl border-2 text-left transition-all ${
                         formData.package === pkg.id 
-                          ? 'border-transparent ring-2 ring-emerald-500' 
+                          ? 'border-emerald-500 ring-2 ring-emerald-500' 
                           : 'border-gray-200 dark:border-gray-700 hover:border-gray-300'
                       }`}
                       whileHover={{ scale: 1.02 }} 
@@ -386,7 +386,7 @@ export default function WebshopOnboarding({
                         key={pkg.id}
                         onClick={() => updateFormData('package', pkg.id)}
                         className={`relative flex-shrink-0 w-[280px] snap-center p-6 rounded-2xl border-2 text-left transition-all ${
-                          formData.package === pkg.id ? 'border-transparent ring-2 ring-emerald-500' : 'border-gray-200 dark:border-gray-700 hover:border-gray-300'
+                          formData.package === pkg.id ? 'border-emerald-500 ring-2 ring-emerald-500' : 'border-gray-200 dark:border-gray-700 hover:border-gray-300'
                         }`}
                         whileHover={{ scale: 1.02 }}
                         whileTap={{ scale: 0.98 }}

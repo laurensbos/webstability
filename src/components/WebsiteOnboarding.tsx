@@ -411,7 +411,7 @@ export default function WebsiteOnboarding({
                         key={pkg.id}
                         onClick={() => updateFormData('package', pkg.id)}
                         className={`relative flex-shrink-0 w-[280px] snap-center p-6 rounded-2xl border-2 text-left transition-all ${
-                          formData.package === pkg.id ? 'border-transparent ring-2 ring-primary-500 dark:ring-primary-400' : 'border-gray-200 dark:border-gray-700 hover:border-gray-300 dark:hover:border-gray-600'
+                          formData.package === pkg.id ? 'border-primary-500 ring-2 ring-primary-500 dark:ring-primary-400' : 'border-gray-200 dark:border-gray-700 hover:border-gray-300 dark:hover:border-gray-600'
                         }`}
                         whileHover={{ scale: 1.02 }}
                         whileTap={{ scale: 0.98 }}
@@ -427,15 +427,6 @@ export default function WebsiteOnboarding({
                         <div className="text-2xl font-bold text-gray-900 dark:text-white mb-1">
                           {pkg.price}<span className="text-sm font-normal text-gray-500 dark:text-gray-400">{pkg.priceLabel || '/maand'}</span>
                         </div>
-                        <p className="text-sm text-gray-600 dark:text-gray-400 mb-4">{pkg.description}</p>
-                        <ul className="space-y-2">
-                          {pkg.features.map((feature, i) => (
-                            <li key={i} className="flex items-center gap-2 text-sm text-gray-700 dark:text-gray-300">
-                              <Check className={`w-4 h-4 flex-shrink-0 ${formData.package === pkg.id ? 'text-primary-500' : 'text-gray-400'}`} />
-                              {feature}
-                            </li>
-                          ))}
-                        </ul>
                       </motion.button>
                     ))}
                   </div>
@@ -455,7 +446,7 @@ export default function WebsiteOnboarding({
                       onClick={() => updateFormData('package', pkg.id)}
                       className={`relative p-6 rounded-2xl border-2 text-left transition-all ${
                         formData.package === pkg.id
-                          ? 'border-transparent ring-2 ring-primary-500 dark:ring-primary-400'
+                          ? 'border-primary-500 ring-2 ring-primary-500 dark:ring-primary-400'
                           : 'border-gray-200 dark:border-gray-700 hover:border-gray-300 dark:hover:border-gray-600'
                       }`}
                       whileHover={{ scale: 1.02 }}
