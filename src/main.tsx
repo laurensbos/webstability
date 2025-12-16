@@ -44,10 +44,10 @@ const Unauthorized = lazy(() => import('./pages/Unauthorized'))
 // Loading spinner component
 function PageLoader() {
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50">
+    <div className="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-gray-900">
       <div className="text-center">
         <div className="w-8 h-8 border-3 border-primary-600 border-t-transparent rounded-full animate-spin mx-auto mb-4" />
-        <p className="text-gray-500 text-sm">Laden...</p>
+        <p className="text-gray-500 dark:text-gray-400 text-sm">Laden...</p>
       </div>
     </div>
   )
