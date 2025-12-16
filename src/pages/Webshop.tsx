@@ -105,11 +105,12 @@ const packages = [
   {
     id: 'starter',
     name: 'Starter',
-    price: 301,
-    priceExcl: 249,
+    price: 299,
+    priceExcl: 247,
     setupFee: 362,
     setupFeeExcl: 299,
     tagline: 'Perfect om te beginnen',
+    popular: false,
     description: 'Perfect om te beginnen met online verkopen',
     features: [
       'Tot 50 producten',
@@ -124,11 +125,11 @@ const packages = [
   {
     id: 'professional',
     name: 'Professioneel',
-    price: 422,
-    priceExcl: 349,
+    price: 599,
+    priceExcl: 496,
     setupFee: 362,
     setupFeeExcl: 299,
-    tagline: 'Meest gekozen',
+    popular: false,
     description: 'Voor serieuze webshops die willen groeien',
     features: [
       'Tot 500 producten',
@@ -139,7 +140,6 @@ const packages = [
       'Klantaccounts',
     ],
     icon: Users,
-    popular: true,
   },
 ]
 

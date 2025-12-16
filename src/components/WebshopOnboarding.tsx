@@ -54,8 +54,8 @@ const PACKAGES: PackageType[] = [
   {
     id: 'starter',
     name: 'Starter',
-    price: '€249',
-    priceLabel: '/maand excl. BTW',
+    price: '€299',
+    priceLabel: '/maand incl. BTW',
     tagline: 'Ideaal om te beginnen',
     description: 'Perfect om te beginnen met online verkopen.',
     features: ['Tot 50 producten', 'iDEAL & creditcard', 'Basis verzendopties', 'Order management', 'E-mail notificaties'],
@@ -64,8 +64,8 @@ const PACKAGES: PackageType[] = [
   {
     id: 'professional',
     name: 'Professioneel',
-    price: '€349',
-    priceLabel: '/maand excl. BTW',
+    price: '€599',
+    priceLabel: '/maand incl. BTW',
     description: 'Voor serieuze webshops die willen groeien.',
     features: ['Tot 500 producten', 'Alle betaalmethodes', 'Geavanceerde verzending', 'Koppeling met boekhouden', 'Kortingscodes systeem', 'Klantaccounts'],
     gradient: 'from-green-500 to-teal-500',
