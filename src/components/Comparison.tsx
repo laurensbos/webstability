@@ -3,26 +3,6 @@ import { Check, X, AlertCircle, ArrowRight, Sparkles, Clock, Building2, Wrench }
 
 const comparisonOptions = [
   {
-    id: 'webstability',
-    name: 'Webstability',
-    tagline: 'Abonnement',
-    highlight: true,
-    icon: Sparkles,
-    color: 'primary',
-    pricing: {
-      monthly: '€96/maand',
-      setup: '€120 eenmalig',
-    },
-    features: [
-      { label: 'Professioneel design', value: 'Op maat gemaakt', positive: true },
-      { label: 'Technisch onderhoud', value: 'Volledig verzorgd', positive: true },
-      { label: 'Wijzigingen doorvoeren', value: 'Wij regelen het', positive: true },
-      { label: 'Support & hulp', value: 'Persoonlijk contact', positive: true },
-      { label: 'Flexibiliteit', value: 'Maandelijks opzegbaar', positive: true },
-      { label: 'Jouw tijdsinvestering', value: '~2 uur intake', positive: true },
-    ],
-  },
-  {
     id: 'webbureau',
     name: 'Webbureau',
     tagline: 'Freelancer of agency',
@@ -40,6 +20,26 @@ const comparisonOptions = [
       { label: 'Support & hulp', value: 'Beperkt inbegrepen', positive: null },
       { label: 'Flexibiliteit', value: 'Je zit eraan vast', positive: false },
       { label: 'Jouw tijdsinvestering', value: '10-20 uur meetings', positive: false },
+    ],
+  },
+  {
+    id: 'webstability',
+    name: 'Webstability',
+    tagline: 'Website abonnement',
+    highlight: true,
+    icon: Sparkles,
+    color: 'primary',
+    pricing: {
+      monthly: '€96/maand',
+      setup: '€120 eenmalig',
+    },
+    features: [
+      { label: 'Professioneel design', value: 'Op maat gemaakt', positive: true },
+      { label: 'Technisch onderhoud', value: 'Volledig verzorgd', positive: true },
+      { label: 'Wijzigingen doorvoeren', value: 'Wij regelen het', positive: true },
+      { label: 'Support & hulp', value: 'Persoonlijk contact', positive: true },
+      { label: 'Flexibiliteit', value: 'Maandelijks opzegbaar', positive: true },
+      { label: 'Jouw tijdsinvestering', value: '~2 uur intake', positive: true },
     ],
   },
   {
@@ -120,87 +120,83 @@ export default function Comparison() {
           </motion.p>
         </div>
 
-        {/* Mobile: Compact "Why Webstability" view */}
-        <div className="md:hidden mb-8">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            className="bg-gradient-to-b from-primary-500 to-primary-600 rounded-2xl p-6 text-white shadow-xl shadow-primary-500/30"
-          >
-            {/* Header */}
-            <div className="flex items-center gap-3 mb-5">
-              <div className="w-12 h-12 bg-white/20 rounded-xl flex items-center justify-center">
-                <Sparkles className="w-6 h-6 text-white" />
-              </div>
-              <div>
-                <h3 className="text-xl font-bold">Webstability</h3>
-                <p className="text-primary-100 text-sm">Website abonnement</p>
-              </div>
-            </div>
-
-            {/* Price highlight */}
-            <div className="bg-white/10 rounded-xl p-4 mb-5 text-center">
-              <p className="text-3xl font-bold">€96/maand</p>
-              <p className="text-primary-100 text-sm">Opstartkosten: €120 eenmalig</p>
-            </div>
-
-            {/* Benefits grid - 2 columns */}
-            <div className="grid grid-cols-2 gap-3 mb-5">
-              {[
-                { icon: '🎨', label: 'Op maat design' },
-                { icon: '🔧', label: 'Alles verzorgd' },
-                { icon: '⚡', label: 'Klaar in 7 dagen' },
-                { icon: '💬', label: 'Persoonlijke support' },
-                { icon: '📱', label: 'Mobiel-vriendelijk' },
-                { icon: '🔄', label: 'Maandelijks opzegbaar' },
-              ].map((benefit, i) => (
-                <motion.div
-                  key={i}
-                  initial={{ opacity: 0, scale: 0.9 }}
-                  whileInView={{ opacity: 1, scale: 1 }}
-                  viewport={{ once: true }}
-                  transition={{ delay: 0.1 + i * 0.05 }}
-                  className="flex items-center gap-2 bg-white/10 rounded-lg px-3 py-2.5"
-                >
-                  <span className="text-lg">{benefit.icon}</span>
-                  <span className="text-sm font-medium">{benefit.label}</span>
-                </motion.div>
-              ))}
-            </div>
-
-            {/* Comparison quick stats */}
-            <div className="bg-white/10 rounded-xl p-4 mb-5">
-              <p className="text-xs text-primary-100 uppercase tracking-wider mb-3 text-center">Vergelijk met alternatieven</p>
-              <div className="space-y-2 text-sm">
-                <div className="flex justify-between items-center">
-                  <span className="text-primary-100">Webbureau:</span>
-                  <span className="font-medium">€3.000+ + €200-500/mnd</span>
+        {/* Mobile: Scrollable cards */}
+        <div className="md:hidden space-y-4">
+          {comparisonOptions.map((option, index) => {
+            const Icon = option.icon
+            const isHighlighted = option.highlight
+            
+            return (
+              <motion.div
+                key={option.id}
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ delay: index * 0.1 }}
+                className={`rounded-2xl p-5 bg-white dark:bg-gray-800 ${
+                  isHighlighted
+                    ? 'border-2 border-primary-500 shadow-lg shadow-primary-500/10'
+                    : 'border border-gray-200 dark:border-gray-700 shadow-md'
+                }`}
+              >
+                {/* Header */}
+                <div className="flex items-center gap-3 mb-4">
+                  <div className={`w-10 h-10 rounded-xl flex items-center justify-center ${
+                    isHighlighted
+                      ? 'bg-primary-100 dark:bg-primary-900/50'
+                      : 'bg-gray-100 dark:bg-gray-700'
+                  }`}>
+                    <Icon className={`w-5 h-5 ${isHighlighted ? 'text-primary-600 dark:text-primary-400' : 'text-gray-600 dark:text-gray-300'}`} />
+                  </div>
+                  <div className="flex-1">
+                    <h3 className="font-bold text-gray-900 dark:text-white">{option.name}</h3>
+                    <p className="text-sm text-gray-500 dark:text-gray-400">{option.tagline}</p>
+                  </div>
+                  <div className="text-right">
+                    <p className={`font-bold ${isHighlighted ? 'text-primary-600 dark:text-primary-400' : 'text-gray-900 dark:text-white'}`}>
+                      {option.pricing.monthly}
+                    </p>
+                    <p className="text-xs text-gray-500 dark:text-gray-400">
+                      + {option.pricing.setup}
+                    </p>
+                  </div>
                 </div>
-                <div className="flex justify-between items-center">
-                  <span className="text-primary-100">Zelf maken:</span>
-                  <span className="font-medium">50-200+ uur werk</span>
-                </div>
-                <div className="flex justify-between items-center pt-2 border-t border-white/20">
-                  <span className="text-primary-100">Webstability:</span>
-                  <span className="font-bold text-white">€120 + €96/mnd ✓</span>
-                </div>
-              </div>
-            </div>
 
-            {/* CTA */}
-            <a
-              href="/start"
-              className="w-full flex items-center justify-center gap-2 px-6 py-3.5 bg-white text-primary-600 font-semibold rounded-xl hover:bg-gray-50 transition-colors group"
-            >
-              Start je project
-              <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
-            </a>
-          </motion.div>
+                {/* Features - compact grid */}
+                <div className="grid grid-cols-2 gap-2 mb-4">
+                  {option.features.slice(0, 4).map((feature, i) => (
+                    <div key={i} className="flex items-center gap-2">
+                      {isHighlighted ? (
+                        <Check className="w-3.5 h-3.5 text-primary-500 flex-shrink-0" />
+                      ) : (
+                        <span className="w-3.5 h-3.5 flex-shrink-0">
+                          {feature.positive === true && <Check className="w-3.5 h-3.5 text-green-500" />}
+                          {feature.positive === false && <X className="w-3.5 h-3.5 text-red-400" />}
+                          {feature.positive === null && <AlertCircle className="w-3.5 h-3.5 text-amber-500" />}
+                        </span>
+                      )}
+                      <span className="text-xs text-gray-600 dark:text-gray-400 truncate">{feature.value}</span>
+                    </div>
+                  ))}
+                </div>
+
+                {/* CTA for highlighted */}
+                {isHighlighted && (
+                  <a
+                    href="/start"
+                    className="w-full flex items-center justify-center gap-2 px-5 py-2.5 bg-primary-500 hover:bg-primary-600 text-white font-semibold rounded-xl transition-colors text-sm group"
+                  >
+                    Start je project
+                    <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+                  </a>
+                )}
+              </motion.div>
+            )
+          })}
         </div>
 
         {/* Desktop: Comparison Cards */}
-        <div className="hidden md:grid md:grid-cols-3 gap-6 lg:gap-8">
+        <div className="hidden md:grid md:grid-cols-3 gap-6 lg:gap-8 items-start">
           {comparisonOptions.map((option, index) => {
             const Icon = option.icon
             const isHighlighted = option.highlight
@@ -212,25 +208,25 @@ export default function Comparison() {
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
                 transition={{ delay: index * 0.1 }}
-                className={`relative rounded-2xl p-6 lg:p-8 ${
+                className={`relative rounded-2xl p-6 lg:p-8 bg-white dark:bg-gray-800 ${
                   isHighlighted
-                    ? 'bg-gradient-to-b from-primary-500 to-primary-600 text-white shadow-2xl shadow-primary-500/30 ring-4 ring-primary-200 dark:ring-primary-800 scale-[1.02] md:scale-105'
-                    : 'bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 shadow-lg'
+                    ? 'border-2 border-primary-500 shadow-xl shadow-primary-500/10 dark:shadow-primary-500/20'
+                    : 'border border-gray-200 dark:border-gray-700 shadow-lg'
                 }`}
               >
                 {/* Header */}
                 <div className="text-center mb-6">
                   <div className={`inline-flex items-center justify-center w-12 h-12 rounded-xl mb-4 ${
                     isHighlighted
-                      ? 'bg-white/20'
+                      ? 'bg-primary-100 dark:bg-primary-900/50'
                       : 'bg-gray-100 dark:bg-gray-700'
                   }`}>
-                    <Icon className={`w-6 h-6 ${isHighlighted ? 'text-white' : 'text-gray-600 dark:text-gray-300'}`} />
+                    <Icon className={`w-6 h-6 ${isHighlighted ? 'text-primary-600 dark:text-primary-400' : 'text-gray-600 dark:text-gray-300'}`} />
                   </div>
-                  <h3 className={`text-xl font-bold mb-1 ${isHighlighted ? 'text-white' : 'text-gray-900 dark:text-white'}`}>
+                  <h3 className="text-xl font-bold mb-1 text-gray-900 dark:text-white">
                     {option.name}
                   </h3>
-                  <p className={`text-sm ${isHighlighted ? 'text-primary-100' : 'text-gray-500 dark:text-gray-400'}`}>
+                  <p className="text-sm text-gray-500 dark:text-gray-400">
                     {option.tagline}
                   </p>
                 </div>
@@ -238,14 +234,14 @@ export default function Comparison() {
                 {/* Pricing */}
                 <div className={`rounded-xl p-4 mb-6 ${
                   isHighlighted
-                    ? 'bg-white/10'
+                    ? 'bg-primary-50 dark:bg-primary-900/30'
                     : 'bg-gray-50 dark:bg-gray-700/50'
                 }`}>
                   <div className="text-center">
-                    <p className={`text-2xl font-bold ${isHighlighted ? 'text-white' : 'text-gray-900 dark:text-white'}`}>
+                    <p className={`text-2xl font-bold ${isHighlighted ? 'text-primary-600 dark:text-primary-400' : 'text-gray-900 dark:text-white'}`}>
                       {option.pricing.monthly}
                     </p>
-                    <p className={`text-sm ${isHighlighted ? 'text-primary-100' : 'text-gray-500 dark:text-gray-400'}`}>
+                    <p className="text-sm text-gray-500 dark:text-gray-400">
                       Opstartkosten: {option.pricing.setup}
                     </p>
                   </div>
@@ -256,15 +252,15 @@ export default function Comparison() {
                   {option.features.map((feature, i) => (
                     <li key={i} className="flex items-start gap-3">
                       {isHighlighted ? (
-                        <Check className="w-4 h-4 text-primary-200 flex-shrink-0 mt-0.5" />
+                        <Check className="w-4 h-4 text-primary-500 flex-shrink-0 mt-0.5" />
                       ) : (
                         <FeatureIcon positive={feature.positive} />
                       )}
                       <div className="flex-1 min-w-0">
-                        <p className={`text-sm font-medium ${isHighlighted ? 'text-white' : 'text-gray-700 dark:text-gray-300'}`}>
+                        <p className="text-sm font-medium text-gray-700 dark:text-gray-300">
                           {feature.label}
                         </p>
-                        <p className={`text-sm ${isHighlighted ? 'text-primary-100' : 'text-gray-500 dark:text-gray-400'}`}>
+                        <p className="text-sm text-gray-500 dark:text-gray-400">
                           {feature.value}
                         </p>
                       </div>
@@ -276,7 +272,7 @@ export default function Comparison() {
                 {isHighlighted && (
                   <a
                     href="/start"
-                    className="mt-6 w-full flex items-center justify-center gap-2 px-6 py-3 bg-white text-primary-600 font-semibold rounded-xl hover:bg-gray-50 transition-colors group"
+                    className="mt-6 w-full flex items-center justify-center gap-2 px-6 py-3 bg-primary-500 hover:bg-primary-600 text-white font-semibold rounded-xl transition-colors group"
                   >
                     Start je project
                     <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
