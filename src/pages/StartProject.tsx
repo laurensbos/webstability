@@ -73,7 +73,7 @@ const services: ServiceOption[] = [
   {
     id: 'logo',
     name: 'Logo Design',
-    description: 'Uniek logo ontwerp voor je merk',
+    description: "Uniek logo ontwerp voor je merk of bedrijf",
     icon: PenTool,
     price: '€169',
     priceNote: 'eenmalig incl. btw',
@@ -331,8 +331,8 @@ export default function StartProject() {
                         <Icon className="w-7 h-7 text-white" />
                       </div>
                       <div className="text-white flex-1 min-w-0">
-                        <h3 className="font-bold text-xl">{service.name}</h3>
-                        <p className="text-white/80 text-sm line-clamp-2">{service.description}</p>
+                        <h3 className="font-bold text-xl leading-tight">{service.name}</h3>
+                        <p className="text-white/80 text-sm line-clamp-2 min-h-[40px]">{service.description}</p>
                       </div>
                     </div>
                     
@@ -395,8 +395,8 @@ export default function StartProject() {
                       <Icon className="w-7 h-7 text-white" />
                     </div>
                     <div className="text-white flex-1 min-w-0">
-                      <h3 className="font-bold text-xl">{service.name}</h3>
-                      <p className="text-white/80 text-sm line-clamp-2">{service.description}</p>
+                      <h3 className="font-bold text-xl leading-tight">{service.name}</h3>
+                      <p className="text-white/80 text-sm line-clamp-2 min-h-[40px]">{service.description}</p>
                     </div>
                   </div>
                   
