@@ -113,13 +113,6 @@ export interface DeveloperProject {
   monthlyChangesUsed: number
   monthlyChangesLimit: number // Gebaseerd op pakket
   lastMonthlyReset?: string
-  
-  // Developer upload links voor klant
-  devUploadLinks?: {
-    logo?: string
-    photos?: string
-    files?: string
-  }
 }
 
 export interface OnboardingData {
@@ -130,8 +123,6 @@ export interface OnboardingData {
   hasLogo: boolean
   logoDescription?: string
   logoFiles?: string[]
-  logoUrl?: string
-  logoFile?: string
   brandColors: string[]
   brandFonts: string
   photos: string[]
@@ -144,49 +135,6 @@ export interface OnboardingData {
   webshopCustomColor?: string
   webshopExampleSites?: string
   webshopBrandAssets?: string
-  // Website-specific fields (from WebsiteOnboarding wizard)
-  designStyle?: string
-  websiteGoal?: string
-  targetAudience?: string
-  pages?: Array<{ name: string; description?: string; sections?: string[] }> | string[]
-  features?: string[]
-  hasContent?: boolean
-  contentNotes?: string
-  hasPhotos?: boolean
-  photoUrls?: string[]
-  photoUrl?: string
-  needsPhotography?: boolean
-  needsCopywriting?: boolean
-  inspirationUrls?: string
-  additionalNotes?: string
-  fontPreference?: string
-  wantsContactForm?: boolean
-  wantsSocialMedia?: boolean
-  wantsAnalytics?: boolean
-  wantsSEO?: boolean
-  // Drone-specific fields (from DroneOnboarding wizard)
-  dronePackage?: 'basis' | 'professional' | 'premium'
-  locationType?: string
-  locationAddress?: string
-  locationCity?: string
-  locationPostalCode?: string
-  locationNotes?: string
-  preferredDate?: string
-  alternativeDate?: string
-  timePreference?: string
-  projectName?: string
-  projectDescription?: string
-  deliverables?: string[]
-  referenceUrls?: string
-  referenceFiles?: string[]
-  uploadedReferenceUrls?: string[]
-  extras?: string[]
-  gpsCoords?: string
-  agreedToWeather?: boolean
-  droneDevUploadLinks?: {
-    references?: string
-    deliverables?: string
-  }
 }
 
 // Onboarding Checklist data (from KlantOnboarding page)

@@ -355,7 +355,7 @@ export default function LogoMaken() {
         </section>
 
         {/* What's included - simplified */}
-        <section className="py-20 bg-gradient-to-b from-gray-50 via-purple-50/20 to-gray-50 dark:from-gray-900 dark:via-purple-900/10 dark:to-gray-900 relative overflow-hidden">
+        <section className="py-12 md:py-20 bg-gradient-to-b from-gray-50 via-purple-50/20 to-gray-50 dark:from-gray-900 dark:via-purple-900/10 dark:to-gray-900 relative overflow-hidden">
           {/* Background decorations */}
           <div className="absolute inset-0 overflow-hidden pointer-events-none">
             <div className="absolute -top-40 -left-40 w-80 h-80 bg-gradient-to-br from-purple-100/40 to-violet-100/20 dark:from-purple-900/30 dark:to-violet-900/20 rounded-full blur-3xl" />
@@ -363,12 +363,12 @@ export default function LogoMaken() {
           </div>
 
           <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-            <div className="text-center mb-12">
+            <div className="text-center mb-6 md:mb-12">
               <motion.span
                 initial={{ opacity: 0, y: 20 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
-                className="inline-block text-purple-600 font-semibold text-sm tracking-wider uppercase mb-3"
+                className="inline-block text-purple-600 font-semibold text-xs md:text-sm tracking-wider uppercase mb-2 md:mb-3"
               >
                 Wat je krijgt
               </motion.span>
@@ -376,37 +376,54 @@ export default function LogoMaken() {
                 initial={{ opacity: 0, y: 20 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
-                className="text-3xl sm:text-4xl font-bold text-gray-900 dark:text-white mb-4"
+                className="text-2xl sm:text-3xl md:text-4xl font-bold text-gray-900 dark:text-white mb-2 md:mb-4"
               >
-                Compleet logo pakket voor{' '}
+                Compleet logo pakket{' '}
                 <span className="bg-gradient-to-r from-purple-600 to-violet-600 bg-clip-text text-transparent">€182</span>
-                <span className="text-lg text-gray-400 ml-2">(incl. BTW)</span>
               </motion.h2>
               <motion.p
                 initial={{ opacity: 0, y: 20 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
                 transition={{ delay: 0.1 }}
-                className="text-gray-600 dark:text-gray-300 text-lg max-w-2xl mx-auto mb-3"
+                className="text-gray-600 dark:text-gray-300 text-sm md:text-lg max-w-2xl mx-auto mb-3"
               >
-                Eenmalige investering voor een professioneel logo dat jarenlang meegaat.
-                Inclusief alle bestandsformaten en revisierondes.
+                Eenmalige investering inclusief alle bestandsformaten en revisierondes.
               </motion.p>
               <motion.div
                 initial={{ opacity: 0, y: 10 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
                 transition={{ delay: 0.15 }}
-                className="inline-flex items-center gap-2 bg-emerald-50 border border-emerald-200 rounded-full px-4 py-2"
+                className="inline-flex flex-col sm:flex-row items-center gap-1 sm:gap-2 bg-emerald-50 border border-emerald-200 rounded-xl sm:rounded-full px-3 py-2 sm:px-4"
               >
-                <span className="text-emerald-600 text-sm font-medium">💼 Zakelijke investering</span>
-                <span className="text-emerald-600 text-sm">•</span>
-                <span className="text-emerald-600 text-sm">21% BTW kun je terugvragen bij je aangifte</span>
+                <span className="text-emerald-600 text-xs sm:text-sm font-medium">💼 Zakelijke investering</span>
+                <span className="hidden sm:inline text-emerald-600 text-sm">•</span>
+                <span className="text-emerald-600 text-xs sm:text-sm">BTW aftrekbaar</span>
               </motion.div>
             </div>
 
-            {/* Features grid */}
-            <div className="grid sm:grid-cols-2 md:grid-cols-4 gap-4 mb-10">
+            {/* Features grid - Mobile: horizontal scroll */}
+            <div className="md:hidden">
+              <div className="flex gap-3 overflow-x-auto pb-4 snap-x snap-mandatory scrollbar-hide -mx-4 px-4">
+                {included.map((item, index) => (
+                  <motion.div
+                    key={index}
+                    initial={{ opacity: 0, y: 10 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    viewport={{ once: true }}
+                    transition={{ delay: index * 0.05 }}
+                    className="flex-shrink-0 flex items-center gap-2 p-3 bg-white dark:bg-gray-800 rounded-xl border border-gray-100 dark:border-gray-700 shadow-sm snap-start"
+                  >
+                    <CheckCircle className="w-4 h-4 text-purple-500 flex-shrink-0" />
+                    <span className="text-gray-700 dark:text-gray-300 text-xs whitespace-nowrap">{item}</span>
+                  </motion.div>
+                ))}
+              </div>
+            </div>
+
+            {/* Desktop: Grid */}
+            <div className="hidden md:grid sm:grid-cols-2 md:grid-cols-4 gap-4 mb-10">
               {included.map((item, index) => (
                 <motion.div
                   key={index}
@@ -426,16 +443,16 @@ export default function LogoMaken() {
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
-              className="text-center"
+              className="text-center mt-6 md:mt-0"
             >
               <Link
                 to="/start?dienst=logo"
-                className="group inline-flex items-center gap-2 px-8 py-4 bg-gradient-to-r from-purple-500 to-purple-600 hover:from-purple-600 hover:to-purple-700 text-white font-semibold rounded-xl transition-all shadow-lg shadow-purple-500/25 hover:shadow-purple-500/40 hover:-translate-y-0.5"
+                className="group inline-flex items-center gap-2 px-6 py-3 md:px-8 md:py-4 bg-gradient-to-r from-purple-500 to-purple-600 hover:from-purple-600 hover:to-purple-700 text-white font-semibold rounded-xl transition-all shadow-lg shadow-purple-500/25 hover:shadow-purple-500/40 hover:-translate-y-0.5 text-sm md:text-base"
               >
                 Start je logo project
-                <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
+                <ArrowRight className="w-4 h-4 md:w-5 md:h-5 group-hover:translate-x-1 transition-transform" />
               </Link>
-              <p className="text-gray-500 dark:text-gray-400 text-sm mt-4">
+              <p className="text-gray-500 dark:text-gray-400 text-xs md:text-sm mt-3 md:mt-4">
                 Combineer met een website voor korting
               </p>
             </motion.div>

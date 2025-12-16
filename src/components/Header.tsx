@@ -495,15 +495,6 @@ export default function Header({ urgencyBannerVisible = false }: HeaderProps) {
 
               {/* CTA Buttons */}
               <div className="pt-4 border-t border-gray-100 dark:border-gray-700 space-y-3">
-                {/* Dark mode toggle - Mobile */}
-                <button
-                  onClick={toggleDarkMode}
-                  className="flex items-center justify-center gap-2 w-full py-3 bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 text-gray-900 dark:text-white font-semibold rounded-lg transition-all"
-                >
-                  {darkMode ? <Sun className="w-5 h-5" /> : <Moon className="w-5 h-5" />}
-                  {darkMode ? 'Lichte modus' : 'Donkere modus'}
-                </button>
-
                 {/* Mijn project - Mobile */}
                 <button
                   onClick={() => {
