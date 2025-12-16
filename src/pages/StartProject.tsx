@@ -326,11 +326,11 @@ export default function StartProject() {
                     className="relative flex-shrink-0 w-[300px] snap-center text-left bg-white dark:bg-gray-800 rounded-2xl border-2 border-gray-200 dark:border-gray-700 overflow-hidden shadow-md active:scale-[0.98] transition-transform"
                   >
                     {/* Colored header with icon */}
-                    <div className={`bg-gradient-to-br ${service.gradient} p-5 flex items-start gap-4 h-[120px]`}>
-                      <div className="w-14 h-14 rounded-2xl bg-white/20 backdrop-blur-sm flex items-center justify-center shadow-lg flex-shrink-0">
+                    <div className={`bg-gradient-to-br ${service.gradient} p-5 flex flex-col items-center justify-center gap-3 h-[150px] rounded-t-2xl`}>
+                      <div className="w-14 h-14 rounded-2xl bg-white/20 backdrop-blur-sm flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-300 flex-shrink-0">
                         <Icon className="w-7 h-7 text-white" />
                       </div>
-                      <div className="text-white flex-1 min-w-0">
+                      <div className="text-white w-full text-center">
                         <h3 className="font-bold text-lg leading-tight mb-1">{service.name}</h3>
                         <p className="text-white/80 text-sm leading-snug">{service.description}</p>
                       </div>
@@ -340,7 +340,8 @@ export default function StartProject() {
                       {/* Price */}
                       <div className="mb-4 pb-4 border-b border-gray-100 dark:border-gray-700">
                         <span className="text-2xl font-bold text-gray-900 dark:text-white">{service.price}</span>
-                        <span className="text-sm text-gray-500 dark:text-gray-400 ml-1">{service.priceNote}</span>
+                        <br />
+                        <span className="text-sm text-gray-500 dark:text-gray-400">{service.priceNote}</span>
                       </div>
                       
                       {/* Features - vertical list */}
@@ -390,11 +391,11 @@ export default function StartProject() {
                   className="relative group text-left bg-white dark:bg-gray-800 rounded-2xl border-2 border-gray-200 dark:border-gray-700 overflow-hidden shadow-md hover:shadow-xl hover:border-gray-300 dark:hover:border-gray-600 transition-all duration-300 hover:-translate-y-1"
                 >
                   {/* Colored header with icon */}
-                  <div className={`bg-gradient-to-br ${service.gradient} p-5 flex items-start gap-4 h-[120px]`}>
+                  <div className={`bg-gradient-to-br ${service.gradient} p-5 flex flex-col items-center justify-center gap-3 h-[150px] rounded-t-2xl`}>
                     <div className="w-14 h-14 rounded-2xl bg-white/20 backdrop-blur-sm flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-300 flex-shrink-0">
                       <Icon className="w-7 h-7 text-white" />
                     </div>
-                    <div className="text-white flex-1 min-w-0">
+                    <div className="text-white w-full text-center">
                       <h3 className="font-bold text-lg leading-tight mb-1">{service.name}</h3>
                       <p className="text-white/80 text-sm leading-snug">{service.description}</p>
                     </div>
@@ -404,7 +405,8 @@ export default function StartProject() {
                     {/* Price */}
                     <div className="mb-4 pb-4 border-b border-gray-100 dark:border-gray-700">
                       <span className="text-2xl font-bold text-gray-900 dark:text-white">{service.price}</span>
-                      <span className="text-sm text-gray-500 dark:text-gray-400 ml-1">{service.priceNote}</span>
+                      <br />
+                      <span className="text-sm text-gray-500 dark:text-gray-400">{service.priceNote}</span>
                     </div>
                     
                     {/* Features - vertical list */}
