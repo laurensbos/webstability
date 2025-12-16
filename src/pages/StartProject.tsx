@@ -51,7 +51,7 @@ const services: ServiceOption[] = [
   {
     id: 'webshop',
     name: 'Webshop',
-    description: 'Online verkopen met je eigen shop',
+    description: 'Verkoop online met je eigen shop',
     icon: ShoppingBag,
     price: 'Vanaf €301',
     priceNote: 'per maand incl. btw',
@@ -62,7 +62,7 @@ const services: ServiceOption[] = [
   {
     id: 'drone',
     name: 'Dronebeelden',
-    description: 'Professionele luchtfoto\'s en video\'s',
+    description: "Professionele luchtfoto's en video's",
     icon: Plane,
     price: 'Vanaf €483',
     priceNote: 'eenmalig incl. btw',
@@ -312,13 +312,13 @@ export default function StartProject() {
                     )}
                     
                     {/* Colored header with icon */}
-                    <div className={`bg-gradient-to-br ${service.gradient} p-5 flex items-center gap-4`}>
-                      <div className="w-14 h-14 rounded-2xl bg-white/20 backdrop-blur-sm flex items-center justify-center shadow-lg">
+                    <div className={`bg-gradient-to-br ${service.gradient} p-5 flex items-center gap-4 min-h-[100px]`}>
+                      <div className="w-14 h-14 rounded-2xl bg-white/20 backdrop-blur-sm flex items-center justify-center shadow-lg flex-shrink-0">
                         <Icon className="w-7 h-7 text-white" />
                       </div>
-                      <div className="text-white flex-1">
+                      <div className="text-white flex-1 min-w-0">
                         <h3 className="font-bold text-xl">{service.name}</h3>
-                        <p className="text-white/80 text-sm">{service.description}</p>
+                        <p className="text-white/80 text-sm line-clamp-2">{service.description}</p>
                       </div>
                     </div>
                     
@@ -385,13 +385,13 @@ export default function StartProject() {
                   )}
                   
                   {/* Colored header with icon */}
-                  <div className={`bg-gradient-to-br ${service.gradient} p-5 flex items-center gap-4`}>
-                    <div className="w-14 h-14 rounded-2xl bg-white/20 backdrop-blur-sm flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-300">
+                  <div className={`bg-gradient-to-br ${service.gradient} p-5 flex items-center gap-4 min-h-[100px]`}>
+                    <div className="w-14 h-14 rounded-2xl bg-white/20 backdrop-blur-sm flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-300 flex-shrink-0">
                       <Icon className="w-7 h-7 text-white" />
                     </div>
-                    <div className="text-white flex-1">
+                    <div className="text-white flex-1 min-w-0">
                       <h3 className="font-bold text-xl">{service.name}</h3>
-                      <p className="text-white/80 text-sm">{service.description}</p>
+                      <p className="text-white/80 text-sm line-clamp-2">{service.description}</p>
                     </div>
                   </div>
                   
