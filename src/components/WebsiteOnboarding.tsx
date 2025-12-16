@@ -367,12 +367,12 @@ export default function WebsiteOnboarding({
                   </p>
                 </div>
 
-                <div className="grid gap-4 sm:grid-cols-3">
+                <div className="flex gap-4 overflow-x-auto pb-4 -mx-4 px-4 sm:mx-0 sm:px-0 snap-x snap-mandatory scrollbar-hide sm:grid sm:grid-cols-3 sm:gap-4 sm:overflow-visible">
                   {PACKAGES.map((pkg) => (
                     <motion.button
                       key={pkg.id}
                       onClick={() => updateFormData('package', pkg.id)}
-                      className={`relative p-6 rounded-2xl border-2 text-left transition-all ${
+                      className={`relative flex-shrink-0 w-[280px] sm:w-auto snap-center p-6 rounded-2xl border-2 text-left transition-all ${
                         formData.package === pkg.id
                           ? 'border-transparent ring-2 ring-primary-500 dark:ring-primary-400'
                           : 'border-gray-200 dark:border-gray-700 hover:border-gray-300 dark:hover:border-gray-600'
