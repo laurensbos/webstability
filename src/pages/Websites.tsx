@@ -5,7 +5,6 @@ import {
   Palette, 
   Headphones, 
   TrendingUp,
-  RefreshCw,
   CheckCircle,
   ArrowRight,
   Star,
@@ -13,8 +12,6 @@ import {
   Rocket,
   HeartHandshake,
   Users,
-  FileText,
-  Calendar,
   Monitor,
   Smartphone,
   Sparkles
@@ -23,7 +20,6 @@ import { Link } from 'react-router-dom'
 import Header from '../components/Header'
 import Footer from '../components/Footer'
 import TrustpilotReviews from '../components/TrustpilotReviews'
-import { includedFeatures } from '../data/packages'
 
 // Floating particles component with blue accents
 function FloatingParticles() {
@@ -729,7 +725,7 @@ export default function Websites() {
         </section>
       </main>
 
-      <Footer ctaVariant="website" />
+      <Footer ctaVariant="default" />
     </div>
   )
 }
