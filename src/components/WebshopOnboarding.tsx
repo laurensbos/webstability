@@ -66,11 +66,9 @@ const PACKAGES: PackageType[] = [
     name: 'Professioneel',
     price: '€349',
     priceLabel: '/maand excl. BTW',
-    tagline: 'Meest gekozen',
     description: 'Voor serieuze webshops die willen groeien.',
     features: ['Tot 500 producten', 'Alle betaalmethodes', 'Geavanceerde verzending', 'Koppeling met boekhouden', 'Kortingscodes systeem', 'Klantaccounts'],
     gradient: 'from-green-500 to-teal-500',
-    popular: true,
   },
 ]
 
