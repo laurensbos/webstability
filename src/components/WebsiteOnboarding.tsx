@@ -676,8 +676,8 @@ export default function WebsiteOnboarding({
               {currentStep === 1 && (
                 <div className="space-y-6">
                   <div>
-                    <h3 className="text-lg font-bold text-gray-900 mb-1">Kies je pakket</h3>
-                    <p className="text-gray-500 text-sm">Selecteer het pakket dat het beste bij jouw wensen past</p>
+                    <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-1">Kies je pakket</h3>
+                    <p className="text-gray-500 dark:text-gray-400 text-sm">Selecteer het pakket dat het beste bij jouw wensen past</p>
                   </div>
 
                   <div className="grid gap-4">
@@ -705,10 +705,10 @@ export default function WebsiteOnboarding({
                           <div className="flex items-start justify-between gap-4">
                             <div className="flex-1">
                               <div className="flex items-center gap-3 mb-2">
-                                <h4 className={`text-lg font-bold ${isSelected ? 'text-primary-700' : 'text-gray-900'}`}>
+                                <h4 className={`text-lg font-bold ${isSelected ? 'text-primary-700 dark:text-primary-400' : 'text-gray-900 dark:text-white'}`}>
                                   {pkg.name}
                                 </h4>
-                                <span className={`text-sm ${isSelected ? 'text-primary-600' : 'text-gray-500'}`}>
+                                <span className={`text-sm ${isSelected ? 'text-primary-600 dark:text-primary-400' : 'text-gray-500 dark:text-gray-400'}`}>
                                   max. {pkg.maxPages} pagina's
                                 </span>
                               </div>
@@ -716,7 +716,7 @@ export default function WebsiteOnboarding({
                                 {pkg.features.slice(0, 5).map(featureId => {
                                   const feature = FEATURES.find(f => f.id === featureId)
                                   return feature ? (
-                                    <span key={featureId} className="inline-flex items-center gap-1 text-xs bg-gray-100 text-gray-600 px-2 py-1 rounded-full">
+                                    <span key={featureId} className="inline-flex items-center gap-1 text-xs bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 px-2 py-1 rounded-full">
                                       <Check className="w-3 h-3 text-green-500" />
                                       {feature.name}
                                     </span>
@@ -739,7 +739,7 @@ export default function WebsiteOnboarding({
                               )}
                             </div>
                             <div className="text-right flex-shrink-0">
-                              <div className={`text-2xl font-bold ${isSelected ? 'text-primary-600' : 'text-gray-900'}`}>
+                              <div className={`text-2xl font-bold ${isSelected ? 'text-primary-600 dark:text-primary-400' : 'text-gray-900 dark:text-white'}`}>
                                 €{pkg.price}
                               </div>
                               <div className="text-xs text-gray-500 dark:text-gray-400">per maand</div>
@@ -758,8 +758,8 @@ export default function WebsiteOnboarding({
                     })}
                   </div>
 
-                  <div className="bg-blue-50 border border-blue-200 p-4 rounded-xl">
-                    <p className="text-blue-800 text-sm">
+                  <div className="bg-blue-50 dark:bg-blue-900/30 border border-blue-200 dark:border-blue-800 p-4 rounded-xl">
+                    <p className="text-blue-800 dark:text-blue-200 text-sm">
                       <strong>💡 Geen zorgen:</strong> Je kunt later altijd upgraden naar een groter pakket. Je betaalt pas na goedkeuring van het ontwerp.
                     </p>
                   </div>
@@ -770,33 +770,33 @@ export default function WebsiteOnboarding({
               {currentStep === 2 && (
                 <div className="space-y-6">
                   <div>
-                    <h3 className="text-lg font-bold text-gray-900 mb-1">Bedrijfsgegevens</h3>
-                    <p className="text-gray-500 text-sm">Vertel ons over je bedrijf</p>
+                    <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-1">Bedrijfsgegevens</h3>
+                    <p className="text-gray-500 dark:text-gray-400 text-sm">Vertel ons over je bedrijf</p>
                   </div>
 
                   <div className="grid sm:grid-cols-2 gap-4">
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1">
+                      <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                         Bedrijfsnaam *
                       </label>
                       <input
                         type="text"
                         value={data.companyName}
                         onChange={e => updateData({ companyName: e.target.value })}
-                        className={`w-full px-4 py-2.5 rounded-lg border ${errors.companyName ? 'border-red-500' : 'border-gray-200'} focus:ring-2 focus:ring-primary-500`}
+                        className={`w-full px-4 py-2.5 rounded-lg border ${errors.companyName ? 'border-red-500' : 'border-gray-200 dark:border-gray-600'} bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-primary-500`}
                         placeholder="Bijv. Jansen & Zn"
                       />
                       {errors.companyName && <p className="text-red-500 text-xs mt-1">{errors.companyName}</p>}
                     </div>
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1">
+                      <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                         Contactpersoon *
                       </label>
                       <input
                         type="text"
                         value={data.contactName}
                         onChange={e => updateData({ contactName: e.target.value })}
-                        className={`w-full px-4 py-2.5 rounded-lg border ${errors.contactName ? 'border-red-500' : 'border-gray-200'} focus:ring-2 focus:ring-primary-500`}
+                        className={`w-full px-4 py-2.5 rounded-lg border ${errors.contactName ? 'border-red-500' : 'border-gray-200 dark:border-gray-600'} bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-primary-500`}
                         placeholder="Jan Jansen"
                       />
                       {errors.contactName && <p className="text-red-500 text-xs mt-1">{errors.contactName}</p>}
@@ -805,27 +805,27 @@ export default function WebsiteOnboarding({
 
                   <div className="grid sm:grid-cols-2 gap-4">
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1">
+                      <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                         E-mailadres *
                       </label>
                       <input
                         type="email"
                         value={data.email}
                         onChange={e => updateData({ email: e.target.value })}
-                        className={`w-full px-4 py-2.5 rounded-lg border ${errors.email ? 'border-red-500' : 'border-gray-200'} focus:ring-2 focus:ring-primary-500`}
+                        className={`w-full px-4 py-2.5 rounded-lg border ${errors.email ? 'border-red-500' : 'border-gray-200 dark:border-gray-600'} bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-primary-500`}
                         placeholder="info@uwbedrijf.nl"
                       />
                       {errors.email && <p className="text-red-500 text-xs mt-1">{errors.email}</p>}
                     </div>
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1">
+                      <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                         Telefoonnummer *
                       </label>
                       <input
                         type="tel"
                         value={data.phone}
                         onChange={e => updateData({ phone: e.target.value })}
-                        className={`w-full px-4 py-2.5 rounded-lg border ${errors.phone ? 'border-red-500' : 'border-gray-200'} focus:ring-2 focus:ring-primary-500`}
+                        className={`w-full px-4 py-2.5 rounded-lg border ${errors.phone ? 'border-red-500' : 'border-gray-200 dark:border-gray-600'} bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-primary-500`}
                         placeholder="06-12345678"
                       />
                       {errors.phone && <p className="text-red-500 text-xs mt-1">{errors.phone}</p>}
@@ -834,26 +834,26 @@ export default function WebsiteOnboarding({
 
                   <div className="grid sm:grid-cols-3 gap-4">
                     <div className="sm:col-span-2">
-                      <label className="block text-sm font-medium text-gray-700 mb-1">
+                      <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                         Adres
                       </label>
                       <input
                         type="text"
                         value={data.address}
                         onChange={e => updateData({ address: e.target.value })}
-                        className="w-full px-4 py-2.5 rounded-lg border border-gray-200 focus:ring-2 focus:ring-primary-500"
+                        className="w-full px-4 py-2.5 rounded-lg border border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-primary-500"
                         placeholder="Straatnaam 123"
                       />
                     </div>
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1">
+                      <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                         Postcode
                       </label>
                       <input
                         type="text"
                         value={data.postalCode}
                         onChange={e => updateData({ postalCode: e.target.value })}
-                        className="w-full px-4 py-2.5 rounded-lg border border-gray-200 focus:ring-2 focus:ring-primary-500"
+                        className="w-full px-4 py-2.5 rounded-lg border border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-primary-500"
                         placeholder="1234 AB"
                       />
                     </div>
@@ -861,26 +861,26 @@ export default function WebsiteOnboarding({
 
                   <div className="grid sm:grid-cols-2 gap-4">
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1">
+                      <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                         Plaats
                       </label>
                       <input
                         type="text"
                         value={data.city}
                         onChange={e => updateData({ city: e.target.value })}
-                        className="w-full px-4 py-2.5 rounded-lg border border-gray-200 focus:ring-2 focus:ring-primary-500"
+                        className="w-full px-4 py-2.5 rounded-lg border border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-primary-500"
                         placeholder="Amsterdam"
                       />
                     </div>
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1">
+                      <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                         KvK-nummer
                       </label>
                       <input
                         type="text"
                         value={data.kvkNumber}
                         onChange={e => updateData({ kvkNumber: e.target.value })}
-                        className="w-full px-4 py-2.5 rounded-lg border border-gray-200 focus:ring-2 focus:ring-primary-500"
+                        className="w-full px-4 py-2.5 rounded-lg border border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-primary-500"
                         placeholder="12345678"
                       />
                     </div>
@@ -892,12 +892,12 @@ export default function WebsiteOnboarding({
               {currentStep === 3 && (
                 <div className="space-y-6">
                   <div>
-                    <h3 className="text-lg font-bold text-gray-900 mb-1">Doel & Doelgroep</h3>
-                    <p className="text-gray-500 text-sm">Wat wil je bereiken met je website?</p>
+                    <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-1">Doel & Doelgroep</h3>
+                    <p className="text-gray-500 dark:text-gray-400 text-sm">Wat wil je bereiken met je website?</p>
                   </div>
 
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-3">
+                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-3">
                       Hoofddoel van de website *
                     </label>
                     <div className="grid sm:grid-cols-2 gap-3">
@@ -913,18 +913,18 @@ export default function WebsiteOnboarding({
                             onClick={() => updateData({ websiteGoal: goal.id })}
                             className={`p-4 rounded-xl border-2 text-left transition-all ${
                               isSelected 
-                                ? 'border-primary-500 bg-primary-50' 
-                                : 'border-gray-200 hover:border-primary-300'
+                                ? 'border-primary-500 bg-primary-50 dark:bg-primary-900/30' 
+                                : 'border-gray-200 dark:border-gray-700 hover:border-primary-300 dark:hover:border-primary-600'
                             }`}
                           >
                             <div className="flex items-start gap-3">
                               <div className={`w-10 h-10 rounded-lg flex items-center justify-center ${
-                                isSelected ? 'bg-primary-100 text-primary-600' : 'bg-gray-100 text-gray-500'
+                                isSelected ? 'bg-primary-100 dark:bg-primary-800 text-primary-600 dark:text-primary-300' : 'bg-gray-100 dark:bg-gray-700 text-gray-500 dark:text-gray-400'
                               }`}>
                                 <Icon className="w-5 h-5" />
                               </div>
                               <div>
-                                <p className={`font-medium ${isSelected ? 'text-primary-700' : 'text-gray-900'}`}>
+                                <p className={`font-medium ${isSelected ? 'text-primary-700 dark:text-primary-300' : 'text-gray-900 dark:text-white'}`}>
                                   {goal.name}
                                 </p>
                                 <p className="text-xs text-gray-500 dark:text-gray-400">{goal.description}</p>
@@ -938,34 +938,34 @@ export default function WebsiteOnboarding({
                   </div>
 
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                       Beschrijf je doelgroep *
                     </label>
                     <textarea
                       value={data.targetAudience}
                       onChange={e => updateData({ targetAudience: e.target.value })}
                       rows={3}
-                      className={`w-full px-4 py-2.5 rounded-lg border ${errors.targetAudience ? 'border-red-500' : 'border-gray-200'} focus:ring-2 focus:ring-primary-500`}
+                      className={`w-full px-4 py-2.5 rounded-lg border ${errors.targetAudience ? 'border-red-500' : 'border-gray-200 dark:border-gray-600'} bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-primary-500`}
                       placeholder="Bijv. Ondernemers tussen 30-50 jaar in de regio Amsterdam die op zoek zijn naar..."
                     />
                     {errors.targetAudience && <p className="text-red-500 text-xs mt-1">{errors.targetAudience}</p>}
                   </div>
 
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                       Wat maakt je uniek? (USPs)
                     </label>
                     <textarea
                       value={data.uniqueSellingPoints}
                       onChange={e => updateData({ uniqueSellingPoints: e.target.value })}
                       rows={3}
-                      className="w-full px-4 py-2.5 rounded-lg border border-gray-200 focus:ring-2 focus:ring-primary-500"
+                      className="w-full px-4 py-2.5 rounded-lg border border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-primary-500"
                       placeholder="Bijv. 20 jaar ervaring, persoonlijke aanpak, snelle levering, gratis advies..."
                     />
                   </div>
 
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                       Concurrenten / Inspiratie websites
                     </label>
                     <div className="flex gap-2 mb-2">
@@ -974,7 +974,7 @@ export default function WebsiteOnboarding({
                         value={newCompetitor}
                         onChange={e => setNewCompetitor(e.target.value)}
                         onKeyPress={e => e.key === 'Enter' && (e.preventDefault(), addCompetitor())}
-                        className="flex-1 px-4 py-2.5 rounded-lg border border-gray-200 focus:ring-2 focus:ring-primary-500"
+                        className="flex-1 px-4 py-2.5 rounded-lg border border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-primary-500"
                         placeholder="www.voorbeeld.nl"
                       />
                       <button
@@ -988,7 +988,7 @@ export default function WebsiteOnboarding({
                     {data.competitors.length > 0 && (
                       <div className="flex flex-wrap gap-2">
                         {data.competitors.map((comp, idx) => (
-                          <span key={idx} className="inline-flex items-center gap-1 px-3 py-1 bg-gray-100 rounded-full text-sm">
+                          <span key={idx} className="inline-flex items-center gap-1 px-3 py-1 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-full text-sm">
                             {comp}
                             <button
                               type="button"
@@ -1009,19 +1009,19 @@ export default function WebsiteOnboarding({
               {currentStep === 4 && (
                 <div className="space-y-6">
                   <div>
-                    <h3 className="text-lg font-bold text-gray-900 mb-1">Pagina's & Structuur</h3>
-                    <p className="text-gray-500 text-sm">Welke pagina's wil je op je website?</p>
+                    <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-1">Pagina's & Structuur</h3>
+                    <p className="text-gray-500 dark:text-gray-400 text-sm">Welke pagina's wil je op je website?</p>
                   </div>
 
                   <div className="flex flex-wrap items-center gap-2 mb-2">
                     <span className="text-sm text-gray-600 dark:text-gray-400">Geselecteerd:</span>
                     <span className={`px-3 py-1 rounded-full text-sm font-medium ${
-                      data.pages.length > 0 ? 'bg-primary-100 text-primary-700' : 'bg-gray-100 text-gray-500'
+                      data.pages.length > 0 ? 'bg-primary-100 dark:bg-primary-900/50 text-primary-700 dark:text-primary-300' : 'bg-gray-100 dark:bg-gray-700 text-gray-500 dark:text-gray-400'
                     }`}>
                       {data.pages.length} / {selectedPackage.maxPages} pagina's
                     </span>
                     {data.pages.length >= selectedPackage.maxPages && (
-                      <span className="text-xs text-amber-600 bg-amber-50 px-2 py-1 rounded-full">
+                      <span className="text-xs text-amber-600 dark:text-amber-400 bg-amber-50 dark:bg-amber-900/30 px-2 py-1 rounded-full">
                         Maximum bereikt voor {selectedPackage.name}
                       </span>
                     )}
@@ -1042,26 +1042,26 @@ export default function WebsiteOnboarding({
                           disabled={isDisabled}
                           className={`p-4 rounded-xl border-2 text-left transition-all ${
                             isSelected 
-                              ? 'border-primary-500 bg-primary-50' 
+                              ? 'border-primary-500 bg-primary-50 dark:bg-primary-900/30' 
                               : isDisabled
-                                ? 'border-gray-100 bg-gray-50 opacity-50 cursor-not-allowed'
-                                : 'border-gray-200 hover:border-primary-300'
+                                ? 'border-gray-100 dark:border-gray-800 bg-gray-50 dark:bg-gray-800/50 opacity-50 cursor-not-allowed'
+                                : 'border-gray-200 dark:border-gray-700 hover:border-primary-300 dark:hover:border-primary-600'
                           }`}
                         >
                           <div className="flex items-center gap-3">
                             <div className={`w-10 h-10 rounded-lg flex items-center justify-center ${
-                              isSelected ? 'bg-primary-100 text-primary-600' : 'bg-gray-100 text-gray-500'
+                              isSelected ? 'bg-primary-100 dark:bg-primary-800 text-primary-600 dark:text-primary-300' : 'bg-gray-100 dark:bg-gray-700 text-gray-500 dark:text-gray-400'
                             }`}>
                               <Icon className="w-5 h-5" />
                             </div>
                             <div className="flex-1">
-                              <p className={`font-medium ${isSelected ? 'text-primary-700' : 'text-gray-900'}`}>
+                              <p className={`font-medium ${isSelected ? 'text-primary-700 dark:text-primary-300' : 'text-gray-900 dark:text-white'}`}>
                                 {page.name}
                               </p>
                               <p className="text-xs text-gray-500 dark:text-gray-400">{page.description}</p>
                             </div>
                             {isSelected && (
-                              <Check className="w-5 h-5 text-primary-600" />
+                              <Check className="w-5 h-5 text-primary-600 dark:text-primary-400" />
                             )}
                           </div>
                         </motion.button>
@@ -1070,13 +1070,13 @@ export default function WebsiteOnboarding({
                   </div>
                   {errors.pages && <p className="text-red-500 text-xs mt-2">{errors.pages}</p>}
 
-                  <div className="pt-4 border-t">
+                  <div className="pt-4 border-t dark:border-gray-700">
                     <label className="flex items-center gap-3 cursor-pointer">
                       <input
                         type="checkbox"
                         checked={data.hasExistingWebsite}
                         onChange={e => updateData({ hasExistingWebsite: e.target.checked })}
-                        className="w-5 h-5 rounded border-gray-300 text-primary-600 focus:ring-primary-500"
+                        className="w-5 h-5 rounded border-gray-300 dark:border-gray-600 text-primary-600 focus:ring-primary-500"
                       />
                       <span className="text-gray-700 dark:text-gray-300">Ik heb al een bestaande website</span>
                     </label>
@@ -1085,7 +1085,7 @@ export default function WebsiteOnboarding({
                         type="text"
                         value={data.existingWebsiteUrl}
                         onChange={e => updateData({ existingWebsiteUrl: e.target.value })}
-                        className="mt-3 w-full px-4 py-2.5 rounded-lg border border-gray-200 focus:ring-2 focus:ring-primary-500"
+                        className="mt-3 w-full px-4 py-2.5 rounded-lg border border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-primary-500"
                         placeholder="www.jouwwebsite.nl"
                       />
                     )}
@@ -1097,12 +1097,12 @@ export default function WebsiteOnboarding({
               {currentStep === 5 && (
                 <div className="space-y-6">
                   <div>
-                    <h3 className="text-lg font-bold text-gray-900 mb-1">Design & Branding</h3>
-                    <p className="text-gray-500 text-sm">Hoe moet je website eruit zien?</p>
+                    <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-1">Design & Branding</h3>
+                    <p className="text-gray-500 dark:text-gray-400 text-sm">Hoe moet je website eruit zien?</p>
                   </div>
 
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-3">
+                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-3">
                       Design stijl *
                     </label>
                     <div className="grid sm:grid-cols-2 gap-3">
@@ -1117,16 +1117,16 @@ export default function WebsiteOnboarding({
                             onClick={() => updateData({ designStyle: style.id })}
                             className={`p-4 rounded-xl border-2 text-left transition-all ${
                               isSelected 
-                                ? 'border-primary-500 bg-primary-50' 
-                                : 'border-gray-200 hover:border-primary-300'
+                                ? 'border-primary-500 bg-primary-50 dark:bg-primary-900/30' 
+                                : 'border-gray-200 dark:border-gray-700 hover:border-primary-300 dark:hover:border-primary-600'
                             }`}
                           >
                             <div className="flex items-center gap-3">
-                              <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-gray-200 to-gray-300 flex items-center justify-center">
-                                <Palette className="w-4 h-4 text-gray-600 dark:text-gray-400" />
+                              <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-gray-200 to-gray-300 dark:from-gray-600 dark:to-gray-700 flex items-center justify-center">
+                                <Palette className="w-4 h-4 text-gray-600 dark:text-gray-300" />
                               </div>
                               <div>
-                                <p className={`font-medium ${isSelected ? 'text-primary-700' : 'text-gray-900'}`}>
+                                <p className={`font-medium ${isSelected ? 'text-primary-700 dark:text-primary-300' : 'text-gray-900 dark:text-white'}`}>
                                   {style.name}
                                 </p>
                                 <p className="text-xs text-gray-500 dark:text-gray-400">{style.description}</p>
@@ -1141,7 +1141,7 @@ export default function WebsiteOnboarding({
 
                   {/* Kleuren kiezen */}
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-3">
+                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-3">
                       Gewenste kleuren *
                     </label>
                     <div className="grid grid-cols-5 gap-2 mb-3">
@@ -1180,7 +1180,7 @@ export default function WebsiteOnboarding({
                         type="text"
                         value={data.brandColors}
                         onChange={e => updateData({ brandColors: e.target.value })}
-                        className="w-full px-4 py-2.5 rounded-lg border border-gray-200 focus:ring-2 focus:ring-primary-500"
+                        className="w-full px-4 py-2.5 rounded-lg border border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-primary-500"
                         placeholder="Vul je eigen kleurcode in (bijv. #1E40AF) of beschrijf je kleuren"
                       />
                     )}
@@ -1193,17 +1193,17 @@ export default function WebsiteOnboarding({
                         type="checkbox"
                         checked={data.hasLogo}
                         onChange={e => updateData({ hasLogo: e.target.checked, logoFile: null, logoUrl: '' })}
-                        className="w-5 h-5 rounded border-gray-300 text-primary-600 focus:ring-primary-500"
+                        className="w-5 h-5 rounded border-gray-300 dark:border-gray-600 text-primary-600 focus:ring-primary-500"
                       />
-                      <span className="text-gray-700 font-medium">Ik heb al een logo</span>
+                      <span className="text-gray-700 dark:text-gray-300 font-medium">Ik heb al een logo</span>
                     </label>
                     
                     {data.hasLogo && (
-                      <div className="space-y-4 p-4 bg-gray-50 rounded-xl">
-                        <p className="text-sm text-gray-600 mb-3">Upload je logo of geef een link:</p>
+                      <div className="space-y-4 p-4 bg-gray-50 dark:bg-gray-800 rounded-xl">
+                        <p className="text-sm text-gray-600 dark:text-gray-400 mb-3">Upload je logo of geef een link:</p>
                         
                         {/* File upload */}
-                        <div className="border-2 border-dashed border-gray-300 rounded-lg p-4 text-center hover:border-primary-400 transition-colors">
+                        <div className="border-2 border-dashed border-gray-300 dark:border-gray-600 rounded-lg p-4 text-center hover:border-primary-400 dark:hover:border-primary-500 transition-colors">
                           <input
                             type="file"
                             accept="image/*,.svg,.ai,.eps,.pdf"
@@ -1218,7 +1218,7 @@ export default function WebsiteOnboarding({
                           />
                           <label htmlFor="logo-upload" className="cursor-pointer">
                             {data.logoFile ? (
-                              <div className="flex items-center justify-center gap-2 text-primary-600">
+                              <div className="flex items-center justify-center gap-2 text-primary-600 dark:text-primary-400">
                                 <CheckCircle className="w-5 h-5" />
                                 <span className="font-medium">{data.logoFile.name}</span>
                                 <button 
@@ -1240,9 +1240,9 @@ export default function WebsiteOnboarding({
                         </div>
 
                         <div className="flex items-center gap-3">
-                          <div className="flex-1 h-px bg-gray-300" />
+                          <div className="flex-1 h-px bg-gray-300 dark:bg-gray-600" />
                           <span className="text-xs text-gray-400">of</span>
-                          <div className="flex-1 h-px bg-gray-300" />
+                          <div className="flex-1 h-px bg-gray-300 dark:bg-gray-600" />
                         </div>
 
                         {/* URL input */}
@@ -1253,13 +1253,13 @@ export default function WebsiteOnboarding({
                               type="url"
                               value={data.logoUrl}
                               onChange={e => updateData({ logoUrl: e.target.value, logoFile: null })}
-                              className="flex-1 px-4 py-2 rounded-lg border border-gray-200 focus:ring-2 focus:ring-primary-500"
+                              className="flex-1 px-4 py-2 rounded-lg border border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-primary-500"
                               placeholder="Link naar je logo (Google Drive, Dropbox, etc.)"
                             />
                           </div>
                         </div>
 
-                        <p className="text-xs text-gray-500 flex items-center gap-1">
+                        <p className="text-xs text-gray-500 dark:text-gray-400 flex items-center gap-1">
                           <Sparkles className="w-3 h-3" />
                           Je kunt ook later uploaden via de developer link die je ontvangt
                         </p>
@@ -1267,34 +1267,34 @@ export default function WebsiteOnboarding({
                     )}
                     
                     {!data.hasLogo && (
-                      <p className="text-sm text-amber-600 bg-amber-50 p-3 rounded-lg">
+                      <p className="text-sm text-amber-600 dark:text-amber-400 bg-amber-50 dark:bg-amber-900/30 p-3 rounded-lg">
                         💡 Geen logo? Wij kunnen er eentje voor je ontwerpen! (+€150)
                       </p>
                     )}
                   </div>
 
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                       Inspiratie websites
                     </label>
                     <textarea
                       value={data.inspirationUrls}
                       onChange={e => updateData({ inspirationUrls: e.target.value })}
                       rows={2}
-                      className="w-full px-4 py-2.5 rounded-lg border border-gray-200 focus:ring-2 focus:ring-primary-500"
+                      className="w-full px-4 py-2.5 rounded-lg border border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-primary-500"
                       placeholder="Links naar websites die je mooi vindt..."
                     />
                   </div>
 
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                       Lettertype voorkeur
                     </label>
                     <input
                       type="text"
                       value={data.fontPreference}
                       onChange={e => updateData({ fontPreference: e.target.value })}
-                      className="w-full px-4 py-2.5 rounded-lg border border-gray-200 focus:ring-2 focus:ring-primary-500"
+                      className="w-full px-4 py-2.5 rounded-lg border border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-primary-500"
                       placeholder="Bijv. Modern en strak, of speels, of 'laat ik aan jullie over'"
                     />
                   </div>
@@ -1305,21 +1305,21 @@ export default function WebsiteOnboarding({
               {currentStep === 6 && (
                 <div className="space-y-6">
                   <div>
-                    <h3 className="text-lg font-bold text-gray-900 mb-1">Content & Media</h3>
-                    <p className="text-gray-500 text-sm">Wat heb je al en wat heb je nodig?</p>
+                    <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-1">Content & Media</h3>
+                    <p className="text-gray-500 dark:text-gray-400 text-sm">Wat heb je al en wat heb je nodig?</p>
                   </div>
 
                   <div className="space-y-4">
-                    <div className="p-4 border rounded-xl">
+                    <div className="p-4 border dark:border-gray-700 rounded-xl">
                       <label className="flex items-center gap-3 cursor-pointer">
                         <input
                           type="checkbox"
                           checked={data.hasContent}
                           onChange={e => updateData({ hasContent: e.target.checked })}
-                          className="w-5 h-5 rounded border-gray-300 text-primary-600 focus:ring-primary-500"
+                          className="w-5 h-5 rounded border-gray-300 dark:border-gray-600 text-primary-600 focus:ring-primary-500"
                         />
                         <div>
-                          <span className="text-gray-700 font-medium">Ik heb teksten voor de website</span>
+                          <span className="text-gray-700 dark:text-gray-300 font-medium">Ik heb teksten voor de website</span>
                           <p className="text-xs text-gray-500 dark:text-gray-400">Over ons, diensten, etc.</p>
                         </div>
                       </label>
@@ -1328,27 +1328,27 @@ export default function WebsiteOnboarding({
                           value={data.contentNotes}
                           onChange={e => updateData({ contentNotes: e.target.value })}
                           rows={2}
-                          className="mt-3 w-full px-4 py-2.5 rounded-lg border border-gray-200 focus:ring-2 focus:ring-primary-500"
+                          className="mt-3 w-full px-4 py-2.5 rounded-lg border border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-primary-500"
                           placeholder="Hoe lever je de teksten aan? (Word doc, email, etc.)"
                         />
                       )}
                       {!data.hasContent && (
-                        <p className="mt-3 text-sm text-blue-600 bg-blue-50 p-3 rounded-lg">
+                        <p className="mt-3 text-sm text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-900/30 p-3 rounded-lg">
                           💡 Geen teksten? Geen probleem! Wij kunnen helpen met het schrijven van de content.
                         </p>
                       )}
                     </div>
 
-                    <div className="p-4 border rounded-xl">
+                    <div className="p-4 border dark:border-gray-700 rounded-xl">
                       <label className="flex items-center gap-3 cursor-pointer">
                         <input
                           type="checkbox"
                           checked={data.hasPhotos}
                           onChange={e => updateData({ hasPhotos: e.target.checked, photoFiles: [], photoUrl: '' })}
-                          className="w-5 h-5 rounded border-gray-300 text-primary-600 focus:ring-primary-500"
+                          className="w-5 h-5 rounded border-gray-300 dark:border-gray-600 text-primary-600 focus:ring-primary-500"
                         />
                         <div>
-                          <span className="text-gray-700 font-medium">Ik heb foto's voor de website</span>
+                          <span className="text-gray-700 dark:text-gray-300 font-medium">Ik heb foto's voor de website</span>
                           <p className="text-xs text-gray-500 dark:text-gray-400">Productfoto's, teamfoto's, etc.</p>
                         </div>
                       </label>
@@ -1357,7 +1357,7 @@ export default function WebsiteOnboarding({
                           <p className="text-sm text-gray-600 dark:text-gray-400">Upload je foto's of geef een link:</p>
                           
                           {/* File upload */}
-                          <div className="border-2 border-dashed border-gray-300 rounded-lg p-4 text-center hover:border-primary-400 transition-colors">
+                          <div className="border-2 border-dashed border-gray-300 dark:border-gray-600 rounded-lg p-4 text-center hover:border-primary-400 dark:hover:border-primary-500 transition-colors">
                             <input
                               type="file"
                               accept="image/*"
@@ -1386,9 +1386,9 @@ export default function WebsiteOnboarding({
                               <p className="text-sm font-medium text-gray-700 dark:text-gray-300">{data.photoFiles.length} foto('s) geselecteerd:</p>
                               <div className="max-h-32 overflow-y-auto space-y-1">
                                 {data.photoFiles.map((file, idx) => (
-                                  <div key={idx} className="flex items-center justify-between bg-gray-50 px-3 py-2 rounded-lg text-sm">
-                                    <span className="flex items-center gap-2 text-gray-700 truncate">
-                                      <CheckCircle className="w-4 h-4 text-primary-600 flex-shrink-0" />
+                                  <div key={idx} className="flex items-center justify-between bg-gray-50 dark:bg-gray-800 px-3 py-2 rounded-lg text-sm">
+                                    <span className="flex items-center gap-2 text-gray-700 dark:text-gray-300 truncate">
+                                      <CheckCircle className="w-4 h-4 text-primary-600 dark:text-primary-400 flex-shrink-0" />
                                       {file.name}
                                     </span>
                                     <button
@@ -1408,9 +1408,9 @@ export default function WebsiteOnboarding({
                           )}
 
                           <div className="flex items-center gap-3">
-                            <div className="flex-1 h-px bg-gray-300" />
+                            <div className="flex-1 h-px bg-gray-300 dark:bg-gray-600" />
                             <span className="text-xs text-gray-400">of</span>
-                            <div className="flex-1 h-px bg-gray-300" />
+                            <div className="flex-1 h-px bg-gray-300 dark:bg-gray-600" />
                           </div>
 
                           {/* URL input */}
@@ -1421,13 +1421,13 @@ export default function WebsiteOnboarding({
                                 type="url"
                                 value={data.photoUrl}
                                 onChange={e => updateData({ photoUrl: e.target.value, photoFiles: [] })}
-                                className="flex-1 px-4 py-2 rounded-lg border border-gray-200 focus:ring-2 focus:ring-primary-500"
+                                className="flex-1 px-4 py-2 rounded-lg border border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-primary-500"
                                 placeholder="Link naar je foto's (WeTransfer, Google Drive, etc.)"
                               />
                             </div>
                           </div>
 
-                          <p className="text-xs text-gray-500 flex items-center gap-1">
+                          <p className="text-xs text-gray-500 dark:text-gray-400 flex items-center gap-1">
                             <Sparkles className="w-3 h-3" />
                             Je kunt ook later uploaden via de developer link die je ontvangt
                           </p>
@@ -1436,8 +1436,8 @@ export default function WebsiteOnboarding({
                     </div>
                   </div>
 
-                  <div className="bg-blue-50 p-4 rounded-xl">
-                    <p className="text-blue-800 text-sm">
+                  <div className="bg-blue-50 dark:bg-blue-900/30 p-4 rounded-xl">
+                    <p className="text-blue-800 dark:text-blue-200 text-sm">
                       <strong>💡 Tip:</strong> Geen foto's? We gebruiken professionele stockfoto's die perfect bij jouw branche passen. Je kunt later altijd eigen foto's toevoegen.
                     </p>
                   </div>
@@ -1448,18 +1448,18 @@ export default function WebsiteOnboarding({
               {currentStep === 7 && (
                 <div className="space-y-6">
                   {/* Wachtwoord aanmaken */}
-                  <div className="p-4 bg-gradient-to-r from-blue-50 to-primary-50 rounded-xl border border-blue-200">
+                  <div className="p-4 bg-gradient-to-r from-blue-50 to-primary-50 dark:from-blue-900/30 dark:to-primary-900/30 rounded-xl border border-blue-200 dark:border-blue-800">
                     <div className="mb-4">
-                      <h3 className="text-lg font-bold text-gray-900 mb-1 flex items-center gap-2">
-                        <Lock className="w-5 h-5 text-primary-600" />
+                      <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-1 flex items-center gap-2">
+                        <Lock className="w-5 h-5 text-primary-600 dark:text-primary-400" />
                         Maak je account aan
                       </h3>
-                      <p className="text-gray-500 text-sm">Kies een wachtwoord om je project te kunnen volgen</p>
+                      <p className="text-gray-500 dark:text-gray-400 text-sm">Kies een wachtwoord om je project te kunnen volgen</p>
                     </div>
 
                     <div className="grid sm:grid-cols-2 gap-4">
                       <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">
+                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                           Wachtwoord *
                         </label>
                         <div className="relative">
@@ -1467,13 +1467,13 @@ export default function WebsiteOnboarding({
                             type={showPassword ? 'text' : 'password'}
                             value={data.projectPassword}
                             onChange={e => updateData({ projectPassword: e.target.value })}
-                            className={`w-full px-4 py-2.5 pr-10 rounded-lg border ${errors.projectPassword ? 'border-red-500' : 'border-gray-200'} focus:ring-2 focus:ring-primary-500`}
+                            className={`w-full px-4 py-2.5 pr-10 rounded-lg border ${errors.projectPassword ? 'border-red-500' : 'border-gray-200 dark:border-gray-600'} bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-primary-500`}
                             placeholder="Min. 8 tekens"
                           />
                           <button
                             type="button"
                             onClick={() => setShowPassword(!showPassword)}
-                            className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 dark:text-gray-400"
+                            className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300"
                           >
                             {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
                           </button>
@@ -1481,27 +1481,27 @@ export default function WebsiteOnboarding({
                         {errors.projectPassword && <p className="text-red-500 text-xs mt-1">{errors.projectPassword}</p>}
                       </div>
                       <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">
+                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                           Bevestig wachtwoord *
                         </label>
                         <input
                           type={showPassword ? 'text' : 'password'}
                           value={data.confirmPassword}
                           onChange={e => updateData({ confirmPassword: e.target.value })}
-                          className={`w-full px-4 py-2.5 rounded-lg border ${errors.confirmPassword ? 'border-red-500' : 'border-gray-200'} focus:ring-2 focus:ring-primary-500`}
+                          className={`w-full px-4 py-2.5 rounded-lg border ${errors.confirmPassword ? 'border-red-500' : 'border-gray-200 dark:border-gray-600'} bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-primary-500`}
                           placeholder="Herhaal wachtwoord"
                         />
                         {errors.confirmPassword && <p className="text-red-500 text-xs mt-1">{errors.confirmPassword}</p>}
                       </div>
                     </div>
-                    <p className="text-xs text-gray-500 mt-2">
+                    <p className="text-xs text-gray-500 dark:text-gray-400 mt-2">
                       Met dit wachtwoord kun je de voortgang van je project volgen op de statuspagina.
                     </p>
                   </div>
 
                   <div>
-                    <h3 className="text-lg font-bold text-gray-900 mb-1">Functionaliteiten</h3>
-                    <p className="text-gray-500 text-sm">
+                    <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-1">Functionaliteiten</h3>
+                    <p className="text-gray-500 dark:text-gray-400 text-sm">
                       Deze functies zijn inbegrepen bij je {selectedPackage.name} pakket
                     </p>
                   </div>
@@ -1516,19 +1516,19 @@ export default function WebsiteOnboarding({
                       return (
                         <div
                           key={feature.id}
-                          className="p-3 rounded-xl border-2 border-primary-200 bg-primary-50"
+                          className="p-3 rounded-xl border-2 border-primary-200 dark:border-primary-700 bg-primary-50 dark:bg-primary-900/30"
                         >
                           <div className="flex items-center gap-3">
-                            <div className="w-8 h-8 rounded-lg flex items-center justify-center bg-primary-100 text-primary-600">
+                            <div className="w-8 h-8 rounded-lg flex items-center justify-center bg-primary-100 dark:bg-primary-800 text-primary-600 dark:text-primary-300">
                               <Icon className="w-4 h-4" />
                             </div>
                             <div className="flex-1 min-w-0">
-                              <p className="font-medium text-sm text-primary-700">
+                              <p className="font-medium text-sm text-primary-700 dark:text-primary-300">
                                 {feature.name}
                               </p>
-                              <p className="text-xs text-gray-500 truncate">{feature.description}</p>
+                              <p className="text-xs text-gray-500 dark:text-gray-400 truncate">{feature.description}</p>
                             </div>
-                            <Check className="w-4 h-4 text-primary-600 flex-shrink-0" />
+                            <Check className="w-4 h-4 text-primary-600 dark:text-primary-400 flex-shrink-0" />
                           </div>
                         </div>
                       )
@@ -1536,8 +1536,8 @@ export default function WebsiteOnboarding({
                   </div>
 
                   {data.selectedPackage !== 'business' && (
-                    <div className="bg-amber-50 border border-amber-200 p-4 rounded-xl">
-                      <p className="text-amber-800 text-sm">
+                    <div className="bg-amber-50 dark:bg-amber-900/30 border border-amber-200 dark:border-amber-800 p-4 rounded-xl">
+                      <p className="text-amber-800 dark:text-amber-200 text-sm">
                         <strong>💡 Tip:</strong> Upgrade naar een hoger pakket voor meer functionaliteiten zoals{' '}
                         {data.selectedPackage === 'starter' ? 'Google Analytics, WhatsApp button en meer.' : 'afspraakplanner en nieuwsbrief.'}
                       </p>
@@ -1545,35 +1545,35 @@ export default function WebsiteOnboarding({
                   )}
 
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                       Social media links
                     </label>
                     <textarea
                       value={data.socialMediaLinks}
                       onChange={e => updateData({ socialMediaLinks: e.target.value })}
                       rows={2}
-                      className="w-full px-4 py-2.5 rounded-lg border border-gray-200 focus:ring-2 focus:ring-primary-500"
+                      className="w-full px-4 py-2.5 rounded-lg border border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-primary-500"
                       placeholder="Facebook, Instagram, LinkedIn URLs..."
                     />
                   </div>
 
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                       Overige wensen of opmerkingen
                     </label>
                     <textarea
                       value={data.additionalNotes}
                       onChange={e => updateData({ additionalNotes: e.target.value })}
                       rows={3}
-                      className="w-full px-4 py-2.5 rounded-lg border border-gray-200 focus:ring-2 focus:ring-primary-500"
+                      className="w-full px-4 py-2.5 rounded-lg border border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-primary-500"
                       placeholder="Is er nog iets dat je wilt toevoegen?"
                     />
                   </div>
 
                   {/* Samenvatting */}
-                  <div className="mt-6 p-4 bg-gradient-to-r from-primary-50 to-blue-50 rounded-xl border border-primary-200">
-                    <h4 className="font-bold text-gray-900 mb-3 flex items-center gap-2">
-                      <Star className="w-5 h-5 text-primary-600" />
+                  <div className="mt-6 p-4 bg-gradient-to-r from-primary-50 to-blue-50 dark:from-primary-900/30 dark:to-blue-900/30 rounded-xl border border-primary-200 dark:border-primary-800">
+                    <h4 className="font-bold text-gray-900 dark:text-white mb-3 flex items-center gap-2">
+                      <Star className="w-5 h-5 text-primary-600 dark:text-primary-400" />
                       Jouw website pakket
                     </h4>
                     <div className="grid sm:grid-cols-2 gap-4 text-sm">
@@ -1583,13 +1583,13 @@ export default function WebsiteOnboarding({
                       </div>
                       <div>
                         <span className="text-gray-600 dark:text-gray-400">Per maand:</span>
-                        <span className="ml-2 font-bold text-primary-600">€{selectedPackage.price}</span>
-                        <span className="text-gray-500 text-xs ml-1">(incl. btw)</span>
+                        <span className="ml-2 font-bold text-primary-600 dark:text-primary-400">€{selectedPackage.price}</span>
+                        <span className="text-gray-500 dark:text-gray-400 text-xs ml-1">(incl. btw)</span>
                       </div>
                       <div>
                         <span className="text-gray-600 dark:text-gray-400">Eenmalig:</span>
                         <span className="ml-2 font-medium text-gray-900 dark:text-white">€{selectedPackage.setupFee}</span>
-                        <span className="text-gray-500 text-xs ml-1">(incl. btw)</span>
+                        <span className="text-gray-500 dark:text-gray-400 text-xs ml-1">(incl. btw)</span>
                       </div>
                       <div>
                         <span className="text-gray-600 dark:text-gray-400">Pagina's:</span>
@@ -1597,7 +1597,7 @@ export default function WebsiteOnboarding({
                       </div>
                     </div>
 
-                    <div className="mt-4 pt-4 border-t border-primary-200">
+                    <div className="mt-4 pt-4 border-t border-primary-200 dark:border-primary-700">
                       <div className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-400">
                         <Clock className="w-4 h-4" />
                         <span>Levertijd: 5-10 werkdagen na goedkeuring ontwerp</span>
@@ -1606,17 +1606,17 @@ export default function WebsiteOnboarding({
                   </div>
 
                   {/* Akkoord */}
-                  <div className={`p-4 rounded-xl border-2 ${errors.agreedToTerms ? 'border-red-500 bg-red-50' : 'border-gray-200'}`}>
+                  <div className={`p-4 rounded-xl border-2 ${errors.agreedToTerms ? 'border-red-500 bg-red-50 dark:bg-red-900/30' : 'border-gray-200 dark:border-gray-700'}`}>
                     <label className="flex items-start gap-3 cursor-pointer">
                       <input
                         type="checkbox"
                         checked={data.agreedToTerms}
                         onChange={e => updateData({ agreedToTerms: e.target.checked })}
-                        className="w-5 h-5 mt-0.5 rounded border-gray-300 text-primary-600 focus:ring-primary-500"
+                        className="w-5 h-5 mt-0.5 rounded border-gray-300 dark:border-gray-600 text-primary-600 focus:ring-primary-500"
                       />
                       <span className="text-sm text-gray-700 dark:text-gray-300">
                         Ik ga akkoord met de{' '}
-                        <a href="/voorwaarden" target="_blank" className="text-primary-600 hover:underline">
+                        <a href="/voorwaarden" target="_blank" className="text-primary-600 dark:text-primary-400 hover:underline">
                           algemene voorwaarden
                         </a>{' '}
                         en geef toestemming om mijn gegevens te verwerken voor dit project.
@@ -1631,11 +1631,11 @@ export default function WebsiteOnboarding({
         </div>
 
         {/* Footer */}
-        <div className="border-t p-4 flex items-center justify-between bg-gray-50 dark:bg-gray-800">
+        <div className="border-t dark:border-gray-700 p-4 flex items-center justify-between bg-gray-50 dark:bg-gray-800">
           <button
             type="button"
             onClick={currentStep === 1 ? (onClose ? onClose : () => navigate(-1)) : prevStep}
-            className="flex items-center gap-2 px-4 py-2 text-gray-600 hover:text-gray-900 transition"
+            className="flex items-center gap-2 px-4 py-2 text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white transition"
           >
             <ChevronLeft className="w-4 h-4" />
             {currentStep === 1 ? 'Annuleren' : 'Vorige'}

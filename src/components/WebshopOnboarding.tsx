@@ -349,7 +349,7 @@ export default function WebshopOnboarding({
         initial={{ scale: 0.95, opacity: 0, y: 20 }}
         animate={{ scale: 1, opacity: 1, y: 0 }}
         exit={{ scale: 0.95, opacity: 0, y: 20 }}
-        className="bg-white rounded-2xl w-full max-w-3xl max-h-[95vh] overflow-hidden shadow-2xl flex flex-col"
+        className="bg-white dark:bg-gray-900 rounded-2xl w-full max-w-3xl max-h-[95vh] overflow-hidden shadow-2xl flex flex-col"
       >
         {/* Header */}
         <div className="bg-gradient-to-r from-emerald-600 to-green-600 p-4 sm:p-6 text-white relative overflow-hidden">
@@ -430,7 +430,7 @@ export default function WebshopOnboarding({
               {currentStep === 1 && (
                 <div className="space-y-6">
                   <div>
-                    <h3 className="text-lg font-bold text-gray-900 mb-1">Bedrijfsgegevens</h3>
+                    <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-1">Bedrijfsgegevens</h3>
                     <p className="text-gray-500 text-sm">Vertel ons over je bedrijf</p>
                   </div>
 
@@ -554,7 +554,7 @@ export default function WebshopOnboarding({
               {currentStep === 2 && (
                 <div className="space-y-6">
                   <div>
-                    <h3 className="text-lg font-bold text-gray-900 mb-1">Webshop Details</h3>
+                    <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-1">Webshop Details</h3>
                     <p className="text-gray-500 text-sm">Wat voor webshop wil je starten?</p>
                   </div>
 
@@ -679,7 +679,7 @@ export default function WebshopOnboarding({
               {currentStep === 3 && (
                 <div className="space-y-6">
                   <div>
-                    <h3 className="text-lg font-bold text-gray-900 mb-1">Producten & Voorraad</h3>
+                    <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-1">Producten & Voorraad</h3>
                     <p className="text-gray-500 text-sm">Hoe wil je je producten beheren?</p>
                   </div>
 
@@ -804,7 +804,7 @@ export default function WebshopOnboarding({
               {currentStep === 4 && (
                 <div className="space-y-6">
                   <div>
-                    <h3 className="text-lg font-bold text-gray-900 mb-1">Betaling & Verzending</h3>
+                    <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-1">Betaling & Verzending</h3>
                     <p className="text-gray-500 text-sm">Hoe wil je betalingen en verzendingen afhandelen?</p>
                   </div>
 
@@ -922,7 +922,7 @@ export default function WebshopOnboarding({
               {currentStep === 5 && (
                 <div className="space-y-6">
                   <div>
-                    <h3 className="text-lg font-bold text-gray-900 mb-1">Branding & Design</h3>
+                    <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-1">Branding & Design</h3>
                     <p className="text-gray-500 text-sm">Hoe moet je webshop eruit zien?</p>
                   </div>
 
@@ -1005,7 +1005,7 @@ export default function WebshopOnboarding({
               {currentStep === 6 && (
                 <div className="space-y-6">
                   <div>
-                    <h3 className="text-lg font-bold text-gray-900 mb-1">Extra Features & Bevestigen</h3>
+                    <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-1">Extra Features & Bevestigen</h3>
                     <p className="text-gray-500 text-sm">Laatste stap! Kies extra's en bevestig je aanvraag.</p>
                   </div>
 
@@ -1082,7 +1082,7 @@ export default function WebshopOnboarding({
                   </div>
 
                   {/* Samenvatting */}
-                  <div className="bg-gradient-to-br from-emerald-50 to-green-50 rounded-xl p-4 border border-emerald-200">
+                  <div className="bg-gradient-to-br from-emerald-50 to-green-50 rounded-xl p-4 border border-emerald-200 dark:border-emerald-800">
                     <h4 className="font-bold text-emerald-900 mb-3">📋 Samenvatting</h4>
                     <div className="grid sm:grid-cols-2 gap-2 text-sm">
                       <div><span className="text-gray-600 dark:text-gray-400">Bedrijf:</span> <span className="font-medium">{data.companyName}</span></div>

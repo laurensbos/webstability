@@ -414,15 +414,15 @@ export default function DroneOnboarding({
                   <Plane className="w-5 h-5 text-white" />
                 </div>
                 <div>
-                  <h1 className="font-bold text-gray-900">Dronebeelden Bestellen</h1>
-                  <p className="text-xs text-gray-500">Professionele luchtopnames</p>
+                  <h1 className="font-bold text-gray-900 dark:text-white">Dronebeelden Bestellen</h1>
+                  <p className="text-xs text-gray-500 dark:text-gray-400">Professionele luchtopnames</p>
                 </div>
               </div>
               <button
                 onClick={() => onClose ? onClose() : navigate(-1)}
                 className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
               >
-                <X className="w-5 h-5 text-gray-500" />
+                <X className="w-5 h-5 text-gray-500 dark:text-gray-400" />
               </button>
             </div>
           </div>
@@ -483,7 +483,7 @@ export default function DroneOnboarding({
         </div>
 
         {/* Form Content */}
-        <form onSubmit={e => e.preventDefault()} className="bg-white rounded-2xl shadow-xl border border-orange-100 overflow-hidden">
+        <form onSubmit={e => e.preventDefault()} className="bg-white dark:bg-gray-900 rounded-2xl shadow-xl border border-orange-100 overflow-hidden">
           <div className="p-6 sm:p-8">
             <AnimatePresence mode="wait">
               {/* Step 1: Package Selection */}
@@ -496,7 +496,7 @@ export default function DroneOnboarding({
                   className="space-y-6"
                 >
                   <div>
-                    <h3 className="text-xl font-bold text-gray-900 mb-1">Kies je drone pakket</h3>
+                    <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-1">Kies je drone pakket</h3>
                     <p className="text-gray-500 text-sm">Selecteer het pakket dat het beste past bij je project</p>
                   </div>
 
@@ -522,16 +522,16 @@ export default function DroneOnboarding({
                             </span>
                           )}
                           <div className="mb-3">
-                            <h4 className="font-bold text-gray-900">{pkg.name}</h4>
+                            <h4 className="font-bold text-gray-900 dark:text-white">{pkg.name}</h4>
                           </div>
                           <div className="flex items-baseline gap-1 mb-2">
                             <span className="text-2xl font-bold text-orange-600">€{pkg.price}</span>
-                            <span className="text-sm text-gray-500">incl. BTW</span>
+                            <span className="text-sm text-gray-500 dark:text-gray-400">incl. BTW</span>
                           </div>
                           <p className="text-xs text-gray-500 mb-3">{pkg.description}</p>
                           <ul className="space-y-1.5">
                             {pkg.features.map((feature, i) => (
-                              <li key={i} className="flex items-center gap-2 text-xs text-gray-600">
+                              <li key={i} className="flex items-center gap-2 text-xs text-gray-600 dark:text-gray-400">
                                 <Check className="w-3.5 h-3.5 text-orange-500 flex-shrink-0" />
                                 {feature}
                               </li>
@@ -566,7 +566,7 @@ export default function DroneOnboarding({
                   className="space-y-6"
                 >
                   <div>
-                    <h3 className="text-xl font-bold text-gray-900 mb-1">Locatie & Planning</h3>
+                    <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-1">Locatie & Planning</h3>
                     <p className="text-gray-500 text-sm">Waar en wanneer gaan we filmen?</p>
                   </div>
 
@@ -590,7 +590,7 @@ export default function DroneOnboarding({
                           >
                             <Icon className={`w-5 h-5 mb-2 ${isSelected ? 'text-orange-600' : 'text-gray-400'}`} />
                             <p className={`font-medium text-sm ${isSelected ? 'text-orange-700' : 'text-gray-700'}`}>{type.name}</p>
-                            <p className="text-xs text-gray-500">{type.description}</p>
+                            <p className="text-xs text-gray-500 dark:text-gray-400">{type.description}</p>
                           </button>
                         )
                       })}
@@ -690,7 +690,7 @@ export default function DroneOnboarding({
                           >
                             <Icon className={`w-5 h-5 mx-auto mb-1 ${isSelected ? 'text-orange-600' : 'text-gray-400'}`} />
                             <p className={`font-medium text-sm ${isSelected ? 'text-orange-700' : 'text-gray-700'}`}>{time.name}</p>
-                            <p className="text-xs text-gray-500">{time.description}</p>
+                            <p className="text-xs text-gray-500 dark:text-gray-400">{time.description}</p>
                           </button>
                         )
                       })}
@@ -716,7 +716,7 @@ export default function DroneOnboarding({
                   className="space-y-6"
                 >
                   <div>
-                    <h3 className="text-xl font-bold text-gray-900 mb-1">Project Details</h3>
+                    <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-1">Project Details</h3>
                     <p className="text-gray-500 text-sm">Vertel ons meer over je project</p>
                   </div>
 
@@ -768,7 +768,7 @@ export default function DroneOnboarding({
                             </div>
                             <div>
                               <p className={`font-medium text-sm ${isSelected ? 'text-orange-700' : 'text-gray-700'}`}>{deliverable.name}</p>
-                              <p className="text-xs text-gray-500">{deliverable.description}</p>
+                              <p className="text-xs text-gray-500 dark:text-gray-400">{deliverable.description}</p>
                             </div>
                           </button>
                         )
@@ -800,7 +800,7 @@ export default function DroneOnboarding({
                         />
                         <label htmlFor="reference-upload" className="cursor-pointer">
                           <Upload className="w-8 h-8 mx-auto mb-2 text-gray-400" />
-                          <p className="font-medium text-gray-600">Klik om bestanden te uploaden</p>
+                          <p className="font-medium text-gray-600 dark:text-gray-400">Klik om bestanden te uploaden</p>
                           <p className="text-xs text-gray-400">Afbeeldingen of video's</p>
                         </label>
                       </div>
@@ -855,7 +855,7 @@ export default function DroneOnboarding({
                   className="space-y-6"
                 >
                   <div>
-                    <h3 className="text-xl font-bold text-gray-900 mb-1">Contactgegevens</h3>
+                    <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-1">Contactgegevens</h3>
                     <p className="text-gray-500 text-sm">Hoe kunnen we je bereiken?</p>
                   </div>
 
@@ -925,42 +925,42 @@ export default function DroneOnboarding({
                   className="space-y-6"
                 >
                   <div>
-                    <h3 className="text-xl font-bold text-gray-900 mb-1">Bevestig je aanvraag</h3>
+                    <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-1">Bevestig je aanvraag</h3>
                     <p className="text-gray-500 text-sm">Controleer je gegevens en verstuur</p>
                   </div>
 
                   {/* Summary */}
-                  <div className="bg-gradient-to-br from-orange-50 to-amber-50 rounded-xl p-5 border border-orange-200">
-                    <h4 className="font-bold text-gray-900 mb-4 flex items-center gap-2">
+                  <div className="bg-gradient-to-br from-orange-50 to-amber-50 rounded-xl p-5 border border-orange-200 dark:border-orange-800">
+                    <h4 className="font-bold text-gray-900 dark:text-white mb-4 flex items-center gap-2">
                       <Camera className="w-5 h-5 text-orange-600" />
                       Samenvatting
                     </h4>
                     
                     <div className="space-y-3 text-sm">
                       <div className="flex justify-between">
-                        <span className="text-gray-600">Pakket</span>
-                        <span className="font-medium text-gray-900">{PACKAGES[data.selectedPackage].name}</span>
+                        <span className="text-gray-600 dark:text-gray-400">Pakket</span>
+                        <span className="font-medium text-gray-900 dark:text-white">{PACKAGES[data.selectedPackage].name}</span>
                       </div>
                       <div className="flex justify-between">
-                        <span className="text-gray-600">Locatie</span>
-                        <span className="font-medium text-gray-900">{data.locationCity}{data.locationAddress && `, ${data.locationAddress}`}</span>
+                        <span className="text-gray-600 dark:text-gray-400">Locatie</span>
+                        <span className="font-medium text-gray-900 dark:text-white">{data.locationCity}{data.locationAddress && `, ${data.locationAddress}`}</span>
                       </div>
                       <div className="flex justify-between">
-                        <span className="text-gray-600">Voorkeursdatum</span>
-                        <span className="font-medium text-gray-900">{data.preferredDate ? new Date(data.preferredDate).toLocaleDateString('nl-NL', { weekday: 'long', day: 'numeric', month: 'long' }) : '-'}</span>
+                        <span className="text-gray-600 dark:text-gray-400">Voorkeursdatum</span>
+                        <span className="font-medium text-gray-900 dark:text-white">{data.preferredDate ? new Date(data.preferredDate).toLocaleDateString('nl-NL', { weekday: 'long', day: 'numeric', month: 'long' }) : '-'}</span>
                       </div>
                       <div className="flex justify-between">
-                        <span className="text-gray-600">Tijdvoorkeur</span>
+                        <span className="text-gray-600 dark:text-gray-400">Tijdvoorkeur</span>
                         <span className="font-medium text-gray-900 capitalize">{data.timePreference.replace('-', ' ')}</span>
                       </div>
                       <div className="flex justify-between">
-                        <span className="text-gray-600">Deliverables</span>
+                        <span className="text-gray-600 dark:text-gray-400">Deliverables</span>
                         <span className="font-medium text-gray-900 text-right max-w-[200px]">{data.deliverables.join(', ')}</span>
                       </div>
                       
                       <div className="border-t border-orange-200 pt-3 mt-3">
                         <div className="flex justify-between text-lg">
-                          <span className="font-bold text-gray-900">Totaal</span>
+                          <span className="font-bold text-gray-900 dark:text-white">Totaal</span>
                           <span className="font-bold text-orange-600">€{PACKAGES[data.selectedPackage].price}</span>
                         </div>
                         <p className="text-xs text-gray-500 text-right">incl. BTW (€{PACKAGES[data.selectedPackage].priceExcl} excl.)</p>
@@ -989,7 +989,7 @@ export default function DroneOnboarding({
                         onChange={e => updateData({ agreedToTerms: e.target.checked })}
                         className="w-5 h-5 mt-0.5 rounded border-gray-300 text-orange-600 focus:ring-orange-500"
                       />
-                      <span className="text-sm text-gray-700">
+                      <span className="text-sm text-gray-700 dark:text-gray-300">
                         Ik ga akkoord met de <a href="/voorwaarden" target="_blank" className="text-orange-600 underline">algemene voorwaarden</a> en het <a href="/privacy" target="_blank" className="text-orange-600 underline">privacybeleid</a>.
                       </span>
                     </label>
@@ -1001,7 +1001,7 @@ export default function DroneOnboarding({
                         onChange={e => updateData({ agreedToWeather: e.target.checked })}
                         className="w-5 h-5 mt-0.5 rounded border-gray-300 text-orange-600 focus:ring-orange-500"
                       />
-                      <span className="text-sm text-gray-700">
+                      <span className="text-sm text-gray-700 dark:text-gray-300">
                         Ik begrijp dat drone opnames weerafhankelijk zijn en dat de shoot bij slecht weer wordt verplaatst naar een andere datum.
                       </span>
                     </label>
