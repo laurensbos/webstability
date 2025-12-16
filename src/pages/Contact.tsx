@@ -38,7 +38,7 @@ function FloatingParticles() {
       {particles.map((p, i) => (
         <motion.div
           key={i}
-          className="absolute rounded-full bg-gradient-to-br from-blue-400 to-indigo-500"
+          className="absolute rounded-full bg-gradient-to-br from-blue-400 to-indigo-500 dark:from-blue-500 dark:to-indigo-600"
           style={{ 
             width: p.size, 
             height: p.size, 
@@ -144,7 +144,6 @@ export default function Contact() {
     e.preventDefault()
     setFormState('submitting')
 
-    // FormSubmit.co integration
     try {
       await fetch('https://formsubmit.co/ajax/hallo@webstability.nl', {
         method: 'POST',
@@ -189,19 +188,19 @@ export default function Contact() {
           {/* Background decorations */}
           <div className="absolute inset-0 overflow-hidden pointer-events-none">
             <motion.div 
-              className="absolute top-0 right-0 w-[900px] h-[900px] bg-gradient-to-br from-blue-200/60 via-indigo-100/40 to-purple-100/30 rounded-full blur-3xl -translate-y-1/3 translate-x-1/4"
+              className="absolute top-0 right-0 w-[900px] h-[900px] bg-gradient-to-br from-blue-200/60 via-indigo-100/40 to-purple-100/30 dark:from-blue-900/40 dark:via-indigo-900/30 dark:to-purple-900/20 rounded-full blur-3xl -translate-y-1/3 translate-x-1/4"
               animate={{ scale: [1, 1.05, 1], rotate: [0, 5, 0] }}
               transition={{ duration: 8, repeat: Infinity, ease: "easeInOut" }}
             />
             <motion.div 
-              className="absolute bottom-0 left-0 w-[700px] h-[700px] bg-gradient-to-tr from-indigo-100/50 via-blue-100/40 to-transparent rounded-full blur-3xl translate-y-1/3 -translate-x-1/4"
+              className="absolute bottom-0 left-0 w-[700px] h-[700px] bg-gradient-to-tr from-indigo-100/50 via-blue-100/40 to-transparent dark:from-indigo-900/30 dark:via-blue-900/20 dark:to-transparent rounded-full blur-3xl translate-y-1/3 -translate-x-1/4"
               animate={{ scale: [1, 1.08, 1], rotate: [0, -5, 0] }}
               transition={{ duration: 10, repeat: Infinity, ease: "easeInOut" }}
             />
             <FloatingParticles />
-            <div className="absolute inset-0 bg-[linear-gradient(to_right,#dbeafe33_1px,transparent_1px),linear-gradient(to_bottom,#dbeafe33_1px,transparent_1px)] bg-[size:4rem_4rem] [mask-image:radial-gradient(ellipse_80%_50%_at_50%_0%,#000_70%,transparent_110%)]" />
-            <div className="absolute top-20 right-20 w-32 h-32 border border-blue-200/30 rounded-full" />
-            <div className="absolute top-24 right-24 w-24 h-24 border border-blue-300/20 rounded-full" />
+            <div className="absolute inset-0 bg-[linear-gradient(to_right,#dbeafe33_1px,transparent_1px),linear-gradient(to_bottom,#dbeafe33_1px,transparent_1px)] dark:bg-[linear-gradient(to_right,#1e3a8a15_1px,transparent_1px),linear-gradient(to_bottom,#1e3a8a15_1px,transparent_1px)] bg-[size:4rem_4rem] [mask-image:radial-gradient(ellipse_80%_50%_at_50%_0%,#000_70%,transparent_110%)]" />
+            <div className="absolute top-20 right-20 w-32 h-32 border border-blue-200/30 dark:border-blue-700/30 rounded-full" />
+            <div className="absolute top-24 right-24 w-24 h-24 border border-blue-300/20 dark:border-blue-600/20 rounded-full" />
           </div>
 
           <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 lg:py-24">
@@ -211,7 +210,7 @@ export default function Contact() {
                   initial={{ opacity: 0, scale: 0.9 }}
                   animate={{ opacity: 1, scale: 1 }}
                   transition={{ delay: 0.1 }}
-                  className="inline-flex items-center gap-2 bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-900/30 dark:to-indigo-900/30 border border-blue-200/50 dark:border-blue-700/50 rounded-full px-4 py-2 mb-6"
+                  className="inline-flex items-center gap-2 bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-900/50 dark:to-indigo-900/50 border border-blue-200/50 dark:border-blue-700/50 rounded-full px-4 py-2 mb-6"
                 >
                   <Sparkles className="w-4 h-4 text-blue-600 dark:text-blue-400" />
                   <span className="text-sm font-medium text-blue-700 dark:text-blue-300">Neem contact op</span>
@@ -219,7 +218,7 @@ export default function Contact() {
 
                 <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold text-gray-900 dark:text-white mb-6 leading-tight">
                   Laten we{' '}
-                  <span className="bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">
+                  <span className="bg-gradient-to-r from-blue-600 to-indigo-600 dark:from-blue-400 dark:to-indigo-400 bg-clip-text text-transparent">
                     samenwerken
                   </span>
                 </h1>
@@ -279,7 +278,7 @@ export default function Contact() {
         {/* Contact Methods */}
         <section className="py-20 bg-white dark:bg-gray-900 relative overflow-hidden">
           <div className="absolute inset-0 overflow-hidden pointer-events-none">
-            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-gradient-to-r from-blue-50/50 via-indigo-50/30 to-purple-50/50 rounded-full blur-3xl" />
+            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-gradient-to-r from-blue-50/50 via-indigo-50/30 to-purple-50/50 dark:from-blue-900/20 dark:via-indigo-900/10 dark:to-purple-900/20 rounded-full blur-3xl" />
           </div>
 
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
@@ -288,7 +287,7 @@ export default function Contact() {
                 initial={{ opacity: 0, y: 20 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
-                className="inline-block text-blue-600 font-semibold text-sm tracking-wider uppercase mb-3"
+                className="inline-block text-blue-600 dark:text-blue-400 font-semibold text-sm tracking-wider uppercase mb-3"
               >
                 Bereik ons
               </motion.span>
@@ -299,7 +298,7 @@ export default function Contact() {
                 className="text-3xl sm:text-4xl font-bold text-gray-900 dark:text-white mb-4"
               >
                 Kies jouw{' '}
-                <span className="bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">
+                <span className="bg-gradient-to-r from-blue-600 to-indigo-600 dark:from-blue-400 dark:to-indigo-400 bg-clip-text text-transparent">
                   favoriete manier
                 </span>
               </motion.h2>
@@ -327,7 +326,7 @@ export default function Contact() {
                     whileInView={{ opacity: 1, y: 0 }}
                     viewport={{ once: true }}
                     transition={{ delay: index * 0.1 }}
-                    className={`group relative p-6 bg-white dark:bg-gray-800 border-2 ${colors.border} rounded-2xl ${colors.hover} transition-all hover:shadow-xl hover:-translate-y-1`}
+                    className={`group relative p-6 bg-white dark:bg-gray-800 border-2 ${colors.border} rounded-2xl ${colors.hover} transition-all hover:shadow-xl dark:hover:shadow-gray-900/50 hover:-translate-y-1`}
                   >
                     {method.badge && (
                       <div className="absolute -top-3 left-1/2 -translate-x-1/2">
@@ -357,15 +356,15 @@ export default function Contact() {
               className="flex flex-wrap justify-center gap-6 mt-12 text-sm text-gray-600 dark:text-gray-400"
             >
               <div className="flex items-center gap-2">
-                <Clock className="w-4 h-4 text-blue-500" />
+                <Clock className="w-4 h-4 text-blue-500 dark:text-blue-400" />
                 <span>Reactie binnen 24 uur</span>
               </div>
               <div className="flex items-center gap-2">
-                <MapPin className="w-4 h-4 text-blue-500" />
+                <MapPin className="w-4 h-4 text-blue-500 dark:text-blue-400" />
                 <span>Gevestigd in Nederland</span>
               </div>
               <div className="flex items-center gap-2">
-                <Zap className="w-4 h-4 text-blue-500" />
+                <Zap className="w-4 h-4 text-blue-500 dark:text-blue-400" />
                 <span>Geen verplichtingen</span>
               </div>
             </motion.div>
@@ -373,10 +372,10 @@ export default function Contact() {
         </section>
 
         {/* Contact Form Section */}
-        <section id="formulier" className="py-20 bg-gradient-to-b from-gray-50 via-blue-50/20 to-gray-50 dark:from-gray-800 dark:via-gray-800 dark:to-gray-800 relative overflow-hidden">
+        <section id="formulier" className="py-20 bg-gradient-to-b from-gray-50 via-blue-50/20 to-gray-50 dark:from-gray-800 dark:via-gray-900 dark:to-gray-800 relative overflow-hidden">
           <div className="absolute inset-0 overflow-hidden pointer-events-none">
-            <div className="absolute -top-40 -left-40 w-80 h-80 bg-gradient-to-br from-blue-100/40 to-indigo-100/20 rounded-full blur-3xl" />
-            <div className="absolute -bottom-40 -right-40 w-96 h-96 bg-gradient-to-tl from-indigo-100/30 to-blue-100/20 rounded-full blur-3xl" />
+            <div className="absolute -top-40 -left-40 w-80 h-80 bg-gradient-to-br from-blue-100/40 to-indigo-100/20 dark:from-blue-900/20 dark:to-indigo-900/10 rounded-full blur-3xl" />
+            <div className="absolute -bottom-40 -right-40 w-96 h-96 bg-gradient-to-tl from-indigo-100/30 to-blue-100/20 dark:from-indigo-900/15 dark:to-blue-900/10 rounded-full blur-3xl" />
           </div>
 
           <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
@@ -385,7 +384,7 @@ export default function Contact() {
                 initial={{ opacity: 0, y: 20 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
-                className="inline-block text-blue-600 font-semibold text-sm tracking-wider uppercase mb-3"
+                className="inline-block text-blue-600 dark:text-blue-400 font-semibold text-sm tracking-wider uppercase mb-3"
               >
                 Contactformulier
               </motion.span>
@@ -396,7 +395,7 @@ export default function Contact() {
                 className="text-3xl sm:text-4xl font-bold text-gray-900 dark:text-white mb-4"
               >
                 Stuur ons een{' '}
-                <span className="bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">
+                <span className="bg-gradient-to-r from-blue-600 to-indigo-600 dark:from-blue-400 dark:to-indigo-400 bg-clip-text text-transparent">
                   bericht
                 </span>
               </motion.h2>
@@ -423,8 +422,8 @@ export default function Contact() {
                   animate={{ opacity: 1, scale: 1 }}
                   className="text-center py-12"
                 >
-                  <div className="w-20 h-20 bg-gradient-to-br from-green-100 to-emerald-100 rounded-full flex items-center justify-center mx-auto mb-6">
-                    <CheckCircle className="w-10 h-10 text-green-600" />
+                  <div className="w-20 h-20 bg-gradient-to-br from-green-100 to-emerald-100 dark:from-green-900/50 dark:to-emerald-900/50 rounded-full flex items-center justify-center mx-auto mb-6">
+                    <CheckCircle className="w-10 h-10 text-green-600 dark:text-green-400" />
                   </div>
                   <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">
                     Bericht verzonden! 🎉
@@ -434,7 +433,7 @@ export default function Contact() {
                   </p>
                   <button
                     onClick={() => setFormState('idle')}
-                    className="text-blue-600 font-semibold hover:text-blue-700 transition-colors"
+                    className="text-blue-600 dark:text-blue-400 font-semibold hover:text-blue-700 dark:hover:text-blue-300 transition-colors"
                   >
                     Nog een bericht sturen →
                   </button>
@@ -452,7 +451,7 @@ export default function Contact() {
                         required
                         value={formData.name}
                         onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                        className="w-full px-4 py-3.5 bg-gray-50 dark:bg-gray-700 border-2 border-gray-200 dark:border-gray-600 rounded-xl text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500 focus:outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 transition-all"
+                        className="w-full px-4 py-3.5 bg-gray-50 dark:bg-gray-900 border-2 border-gray-200 dark:border-gray-700 rounded-xl text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500 focus:outline-none focus:border-blue-500 dark:focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 transition-all"
                         placeholder="Je naam"
                       />
                     </div>
@@ -465,7 +464,7 @@ export default function Contact() {
                         id="company"
                         value={formData.company}
                         onChange={(e) => setFormData({ ...formData, company: e.target.value })}
-                        className="w-full px-4 py-3.5 bg-gray-50 dark:bg-gray-700 border-2 border-gray-200 dark:border-gray-600 rounded-xl text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500 focus:outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 transition-all"
+                        className="w-full px-4 py-3.5 bg-gray-50 dark:bg-gray-900 border-2 border-gray-200 dark:border-gray-700 rounded-xl text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500 focus:outline-none focus:border-blue-500 dark:focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 transition-all"
                         placeholder="Je bedrijf (optioneel)"
                       />
                     </div>
@@ -482,7 +481,7 @@ export default function Contact() {
                         required
                         value={formData.email}
                         onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                        className="w-full px-4 py-3.5 bg-gray-50 dark:bg-gray-700 border-2 border-gray-200 dark:border-gray-600 rounded-xl text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500 focus:outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 transition-all"
+                        className="w-full px-4 py-3.5 bg-gray-50 dark:bg-gray-900 border-2 border-gray-200 dark:border-gray-700 rounded-xl text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500 focus:outline-none focus:border-blue-500 dark:focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 transition-all"
                         placeholder="je@email.nl"
                       />
                     </div>
@@ -495,7 +494,7 @@ export default function Contact() {
                         id="phone"
                         value={formData.phone}
                         onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
-                        className="w-full px-4 py-3.5 bg-gray-50 dark:bg-gray-700 border-2 border-gray-200 dark:border-gray-600 rounded-xl text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500 focus:outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 transition-all"
+                        className="w-full px-4 py-3.5 bg-gray-50 dark:bg-gray-900 border-2 border-gray-200 dark:border-gray-700 rounded-xl text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500 focus:outline-none focus:border-blue-500 dark:focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 transition-all"
                         placeholder="06 12345678 (optioneel)"
                       />
                     </div>
@@ -511,7 +510,7 @@ export default function Contact() {
                       rows={5}
                       value={formData.message}
                       onChange={(e) => setFormData({ ...formData, message: e.target.value })}
-                      className="w-full px-4 py-3.5 bg-gray-50 dark:bg-gray-700 border-2 border-gray-200 dark:border-gray-600 rounded-xl text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500 focus:outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 transition-all resize-none"
+                      className="w-full px-4 py-3.5 bg-gray-50 dark:bg-gray-900 border-2 border-gray-200 dark:border-gray-700 rounded-xl text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500 focus:outline-none focus:border-blue-500 dark:focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 transition-all resize-none"
                       placeholder="Vertel ons over je project, stel een vraag, of laat weten waarmee we je kunnen helpen..."
                     />
                   </div>
@@ -568,7 +567,7 @@ export default function Contact() {
         {/* FAQ Section */}
         <section className="py-20 bg-white dark:bg-gray-900 relative overflow-hidden">
           <div className="absolute inset-0 overflow-hidden pointer-events-none">
-            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-gradient-to-r from-blue-50/30 via-indigo-50/20 to-purple-50/30 rounded-full blur-3xl" />
+            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-gradient-to-r from-blue-50/30 via-indigo-50/20 to-purple-50/30 dark:from-blue-900/15 dark:via-indigo-900/10 dark:to-purple-900/15 rounded-full blur-3xl" />
           </div>
 
           <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
@@ -577,7 +576,7 @@ export default function Contact() {
                 initial={{ opacity: 0, y: 20 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
-                className="inline-block text-blue-600 font-semibold text-sm tracking-wider uppercase mb-3"
+                className="inline-block text-blue-600 dark:text-blue-400 font-semibold text-sm tracking-wider uppercase mb-3"
               >
                 Veelgestelde vragen
               </motion.span>
@@ -588,7 +587,7 @@ export default function Contact() {
                 className="text-3xl sm:text-4xl font-bold text-gray-900 dark:text-white mb-4"
               >
                 Heb je nog{' '}
-                <span className="bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">
+                <span className="bg-gradient-to-r from-blue-600 to-indigo-600 dark:from-blue-400 dark:to-indigo-400 bg-clip-text text-transparent">
                   vragen?
                 </span>
               </motion.h2>
