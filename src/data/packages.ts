@@ -33,7 +33,7 @@ export const packages: Package[] = [
     name: 'Professioneel',
     price: 179,
     priceExcl: 148,
-    tagline: 'Meest gekozen',
+    tagline: 'Voor serieuze ondernemers',
     features: [
       'Tot 10 pagina\'s',
       'Alles van Starter +',
@@ -41,7 +41,7 @@ export const packages: Package[] = [
       'Social media integratie',
       'Google Analytics',
     ],
-    popular: true,
+    popular: false,
     maxPages: 10,
   },
   {
