@@ -63,7 +63,7 @@ interface TrustpilotReviewsProps {
 
 export default function TrustpilotReviews({ className = '' }: TrustpilotReviewsProps) {
   return (
-    <section className={`py-20 lg:py-28 bg-white relative overflow-hidden ${className}`}>
+    <section className={`py-20 lg:py-28 bg-white dark:bg-gray-900 relative overflow-hidden ${className}`}>
       <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Header with Trustpilot badge */}
         <div className="text-center max-w-3xl mx-auto mb-8 lg:mb-16">
@@ -78,7 +78,7 @@ export default function TrustpilotReviews({ className = '' }: TrustpilotReviewsP
               href="https://www.trustpilot.com/review/webstability.nl"
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-flex items-center gap-2 bg-white border border-gray-200 rounded-full px-4 py-2 shadow-sm hover:shadow-md transition-shadow group"
+              className="inline-flex items-center gap-2 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-full px-4 py-2 shadow-sm hover:shadow-md transition-shadow group"
             >
               <svg className="w-5 h-5" viewBox="0 0 24 24" fill="none">
                 <path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z" fill="#00b67a"/>
@@ -91,8 +91,8 @@ export default function TrustpilotReviews({ className = '' }: TrustpilotReviewsP
                   />
                 ))}
               </div>
-              <span className="text-sm font-semibold text-gray-900">{trustpilotData.score}</span>
-              <span className="text-xs text-gray-500">({trustpilotData.totalReviews} reviews)</span>
+              <span className="text-sm font-semibold text-gray-900 dark:text-white">{trustpilotData.score}</span>
+              <span className="text-xs text-gray-500 dark:text-gray-400">({trustpilotData.totalReviews} reviews)</span>
               <ExternalLink className="w-3 h-3 text-gray-400 group-hover:text-primary-500 transition-colors" />
             </a>
           </motion.div>
@@ -101,7 +101,7 @@ export default function TrustpilotReviews({ className = '' }: TrustpilotReviewsP
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ delay: 0.1 }}
-            className="text-2xl sm:text-3xl lg:text-5xl font-bold text-gray-900 mb-3 lg:mb-4"
+            className="text-2xl sm:text-3xl lg:text-5xl font-bold text-gray-900 dark:text-white mb-3 lg:mb-4"
           >
             Wat onze klanten zeggen
           </motion.h2>
@@ -110,7 +110,7 @@ export default function TrustpilotReviews({ className = '' }: TrustpilotReviewsP
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ delay: 0.2 }}
-            className="text-gray-600 text-base lg:text-lg"
+            className="text-gray-600 dark:text-gray-400 text-base lg:text-lg"
           >
             Echte reviews van ondernemers op Trustpilot
           </motion.p>
@@ -126,7 +126,7 @@ export default function TrustpilotReviews({ className = '' }: TrustpilotReviewsP
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
                 transition={{ delay: index * 0.1 }}
-                className="flex-shrink-0 w-[280px] snap-start bg-gradient-to-br from-gray-50 to-white border border-gray-100 rounded-xl p-5 relative flex flex-col min-h-[220px]"
+                className="flex-shrink-0 w-[280px] snap-start bg-gradient-to-br from-gray-50 to-white dark:from-gray-800 dark:to-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl p-5 relative flex flex-col min-h-[220px]"
               >
                 {/* Verified badge */}
                 {review.verified && (
@@ -146,16 +146,16 @@ export default function TrustpilotReviews({ className = '' }: TrustpilotReviewsP
                 </div>
 
                 {/* Quote */}
-                <p className="text-gray-700 text-sm leading-relaxed flex-grow line-clamp-4">"{review.quote}"</p>
+                <p className="text-gray-700 dark:text-gray-300 text-sm leading-relaxed flex-grow line-clamp-4">"{review.quote}"</p>
 
                 {/* Author */}
                 <div className="flex items-center gap-2 mt-auto pt-3">
-                  <div className={`w-8 h-8 rounded-full bg-gradient-to-br ${getAvatarColor(review.author)} flex items-center justify-center text-white text-xs font-bold ring-2 ring-white shadow-sm`}>
+                  <div className={`w-8 h-8 rounded-full bg-gradient-to-br ${getAvatarColor(review.author)} flex items-center justify-center text-white text-xs font-bold ring-2 ring-white dark:ring-gray-800 shadow-sm`}>
                     {getInitials(review.author)}
                   </div>
                   <div>
-                    <div className="text-gray-900 font-semibold text-xs">{review.author}</div>
-                    <div className="text-gray-500 text-[10px]">{review.role}</div>
+                    <div className="text-gray-900 dark:text-white font-semibold text-xs">{review.author}</div>
+                    <div className="text-gray-500 dark:text-gray-400 text-[10px]">{review.role}</div>
                   </div>
                 </div>
               </motion.div>
@@ -172,7 +172,7 @@ export default function TrustpilotReviews({ className = '' }: TrustpilotReviewsP
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ delay: index * 0.1 }}
-              className="bg-gradient-to-br from-gray-50 to-white border border-gray-100 rounded-xl p-6 relative flex flex-col hover:shadow-lg hover:border-primary-200 transition-all"
+              className="bg-gradient-to-br from-gray-50 to-white dark:from-gray-800 dark:to-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl p-6 relative flex flex-col hover:shadow-lg hover:border-primary-200 dark:hover:border-primary-600 transition-all"
             >
               {/* Verified badge */}
               {review.verified && (
@@ -192,16 +192,16 @@ export default function TrustpilotReviews({ className = '' }: TrustpilotReviewsP
               </div>
 
               {/* Quote */}
-              <p className="text-gray-700 text-sm leading-relaxed flex-grow">"{review.quote}"</p>
+              <p className="text-gray-700 dark:text-gray-300 text-sm leading-relaxed flex-grow">"{review.quote}"</p>
 
               {/* Author */}
-              <div className="flex items-center gap-3 mt-4 pt-4 border-t border-gray-100">
-                <div className={`w-10 h-10 rounded-full bg-gradient-to-br ${getAvatarColor(review.author)} flex items-center justify-center text-white text-sm font-bold ring-2 ring-white shadow-sm`}>
+              <div className="flex items-center gap-3 mt-4 pt-4 border-t border-gray-100 dark:border-gray-700">
+                <div className={`w-10 h-10 rounded-full bg-gradient-to-br ${getAvatarColor(review.author)} flex items-center justify-center text-white text-sm font-bold ring-2 ring-white dark:ring-gray-800 shadow-sm`}>
                   {getInitials(review.author)}
                 </div>
                 <div>
-                  <div className="text-gray-900 font-semibold text-sm">{review.author}</div>
-                  <div className="text-gray-500 text-xs">{review.role}</div>
+                  <div className="text-gray-900 dark:text-white font-semibold text-sm">{review.author}</div>
+                  <div className="text-gray-500 dark:text-gray-400 text-xs">{review.role}</div>
                 </div>
               </div>
             </motion.div>

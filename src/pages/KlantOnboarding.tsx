@@ -254,7 +254,7 @@ export default function KlantOnboarding() {
                 <FileText className="w-8 h-8 text-white" />
               </motion.div>
               <h1 className="text-2xl font-bold text-gray-900 mb-2">Onboarding Checklist</h1>
-              <p className="text-gray-600">Vul je Project ID in om te beginnen</p>
+              <p className="text-gray-600 dark:text-gray-400">Vul je Project ID in om te beginnen</p>
             </div>
 
             <form onSubmit={(e) => {
@@ -268,7 +268,7 @@ export default function KlantOnboarding() {
                   type="text"
                   name="projectId"
                   placeholder="Bijv. WS-MJ1G8LH1"
-                  className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-primary-500 bg-white"
+                  className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-primary-500 bg-white dark:bg-gray-900 dark:bg-gray-900"
                   required
                 />
                 <p className="text-sm text-gray-500 mt-2">
@@ -307,7 +307,7 @@ export default function KlantOnboarding() {
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            className="bg-white rounded-2xl shadow-xl p-8 text-center"
+            className="bg-white dark:bg-gray-900 rounded-2xl shadow-xl p-8 text-center"
           >
             <div className="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
               <AlertCircle className="w-8 h-8 text-red-600" />
@@ -372,7 +372,7 @@ export default function KlantOnboarding() {
               <CheckCircle2 className="w-8 h-8 text-white" />
             </motion.div>
             <h1 className="text-2xl font-bold text-gray-900 mb-2">Onboarding voltooid!</h1>
-            <p className="text-gray-600">
+            <p className="text-gray-600 dark:text-gray-400">
               Ingevuld op{' '}
               <strong>{new Date(existingOnboarding.submittedAt).toLocaleDateString('nl-NL', {
                 day: 'numeric',
@@ -389,7 +389,7 @@ export default function KlantOnboarding() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.1 }}
-            className="bg-white rounded-2xl shadow-xl border border-gray-100 p-6 md:p-8 mb-6"
+            className="bg-white dark:bg-gray-900 rounded-2xl shadow-xl border border-gray-100 p-6 md:p-8 mb-6"
           >
             <h2 className="text-lg font-bold text-gray-900 mb-4 flex items-center gap-2">
               <FileText className="w-5 h-5 text-primary-500" />
@@ -424,13 +424,13 @@ export default function KlantOnboarding() {
                     {formData.hasLogo && (
                       <div>
                         <span className="text-xs text-gray-400">Logo</span>
-                        <p className="text-gray-700">{formData.hasLogo === 'ja_vector' ? 'Ja (vector)' : formData.hasLogo === 'ja_afbeelding' ? 'Ja (afbeelding)' : formData.hasLogo === 'nee_nodig' ? 'Logo nodig' : 'Alleen tekst'}</p>
+                        <p className="text-gray-700 dark:text-gray-300">{formData.hasLogo === 'ja_vector' ? 'Ja (vector)' : formData.hasLogo === 'ja_afbeelding' ? 'Ja (afbeelding)' : formData.hasLogo === 'nee_nodig' ? 'Logo nodig' : 'Alleen tekst'}</p>
                       </div>
                     )}
                     {formData.brandColors && (
                       <div>
                         <span className="text-xs text-gray-400">Kleuren</span>
-                        <p className="text-gray-700">{formData.brandColors}</p>
+                        <p className="text-gray-700 dark:text-gray-300">{formData.brandColors}</p>
                       </div>
                     )}
                   </div>
@@ -506,7 +506,7 @@ export default function KlantOnboarding() {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ delay: 0.3 }}
-            className="mt-8 flex flex-wrap justify-center gap-6 text-sm text-gray-500"
+            className="mt-8 flex flex-wrap justify-center gap-6 text-sm text-gray-500 dark:text-gray-400"
           >
             <div className="flex items-center gap-2">
               <Shield className="w-4 h-4 text-emerald-500" />
@@ -691,7 +691,7 @@ export default function KlantOnboarding() {
                       <Building2 className="w-6 h-6 text-white" />
                     </div>
                     <div>
-                      <h2 className="text-xl font-bold text-gray-900">Bedrijfsinformatie</h2>
+                      <h2 className="text-xl font-bold text-gray-900 dark:text-white">Bedrijfsinformatie</h2>
                       <p className="text-gray-600 text-sm">Vertel ons meer over je bedrijf</p>
                     </div>
                   </div>
@@ -744,7 +744,7 @@ export default function KlantOnboarding() {
                       <Palette className="w-6 h-6 text-white" />
                     </div>
                     <div>
-                      <h2 className="text-xl font-bold text-gray-900">Huisstijl & Branding</h2>
+                      <h2 className="text-xl font-bold text-gray-900 dark:text-white">Huisstijl & Branding</h2>
                       <p className="text-gray-600 text-sm">Je visuele identiteit</p>
                     </div>
                   </div>
@@ -763,7 +763,7 @@ export default function KlantOnboarding() {
                         name="hasLogo"
                         value={formData.hasLogo}
                         onChange={handleChange}
-                        className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-primary-500 bg-white"
+                        className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-primary-500 bg-white dark:bg-gray-900 dark:bg-gray-900"
                         required
                       >
                         <option value="">Selecteer...</option>
@@ -818,7 +818,7 @@ export default function KlantOnboarding() {
                       <Image className="w-6 h-6 text-white" />
                     </div>
                     <div>
-                      <h2 className="text-xl font-bold text-gray-900">Foto's & Media</h2>
+                      <h2 className="text-xl font-bold text-gray-900 dark:text-white">Foto's & Media</h2>
                       <p className="text-gray-600 text-sm">Visuele content voor je website</p>
                     </div>
                   </div>
@@ -861,7 +861,7 @@ export default function KlantOnboarding() {
                       <Globe className="w-6 h-6 text-white" />
                     </div>
                     <div>
-                      <h2 className="text-xl font-bold text-gray-900">Laatste details</h2>
+                      <h2 className="text-xl font-bold text-gray-900 dark:text-white">Laatste details</h2>
                       <p className="text-gray-600 text-sm">Nog een paar vragen</p>
                     </div>
                   </div>
@@ -891,12 +891,12 @@ export default function KlantOnboarding() {
                     </div>
 
                     {/* Contact summary */}
-                    <div className="bg-gray-50 rounded-xl p-4 mt-6 border border-gray-100">
+                    <div className="bg-gray-50 rounded-xl p-4 mt-6 border border-gray-100 dark:border-gray-700">
                       <h3 className="font-semibold text-gray-900 mb-3 flex items-center gap-2">
                         <Shield className="w-4 h-4 text-primary-500" />
                         Contactgegevens
                       </h3>
-                      <div className="space-y-1 text-sm text-gray-600">
+                      <div className="space-y-1 text-sm text-gray-600 dark:text-gray-400">
                         <p><strong>Bedrijf:</strong> {formData.businessName}</p>
                         <p><strong>Naam:</strong> {formData.contactName}</p>
                         <p><strong>Email:</strong> {formData.contactEmail}</p>
@@ -916,7 +916,7 @@ export default function KlantOnboarding() {
 
               {/* Terms - last step only */}
               {step === totalSteps && !existingOnboarding && (
-                <div className="mt-6 p-4 bg-gray-50 rounded-xl border border-gray-100">
+                <div className="mt-6 p-4 bg-gray-50 rounded-xl border border-gray-100 dark:border-gray-700">
                   <label className="flex items-start gap-3 cursor-pointer">
                     <input
                       type="checkbox"
@@ -925,7 +925,7 @@ export default function KlantOnboarding() {
                       className="w-5 h-5 mt-0.5 rounded border-gray-300 text-primary-600 focus:ring-primary-500"
                       required
                     />
-                    <span className="text-sm text-gray-700">
+                    <span className="text-sm text-gray-700 dark:text-gray-300">
                       Ik ga akkoord met de{' '}
                       <Link to="/voorwaarden" target="_blank" className="text-primary-600 hover:underline">
                         algemene voorwaarden
@@ -940,7 +940,7 @@ export default function KlantOnboarding() {
               )}
 
               {/* Navigation */}
-              <div className="flex justify-between mt-8 pt-6 border-t border-gray-100">
+              <div className="flex justify-between mt-8 pt-6 border-t border-gray-100 dark:border-gray-700">
                 {step > 1 ? (
                   <button
                     type="button"
@@ -988,7 +988,7 @@ export default function KlantOnboarding() {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.3 }}
-          className="mt-8 flex flex-wrap justify-center gap-6 text-sm text-gray-500"
+          className="mt-8 flex flex-wrap justify-center gap-6 text-sm text-gray-500 dark:text-gray-400"
         >
           <div className="flex items-center gap-2">
             <Shield className="w-4 h-4 text-emerald-500" />

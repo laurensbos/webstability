@@ -217,7 +217,7 @@ export default function Footer({ ctaVariant = 'default' }: FooterProps) {
       {config && (
       <div className="py-12 lg:py-24 relative overflow-hidden">
         {/* Animated background */}
-        <div className={`absolute inset-0 bg-gradient-to-br ${config.gradient.from} via-white ${config.gradient.to}`} />
+        <div className={`absolute inset-0 bg-gradient-to-br ${config.gradient.from} via-white ${config.gradient.to} dark:from-gray-800 dark:via-gray-900 dark:to-gray-800`} />
         <div className="absolute inset-0">
           <div className={`absolute -top-32 -left-32 w-96 h-96 bg-gradient-to-br ${config.gradient.from.replace('from-', 'from-').replace('-50', '-200')}/40 to-transparent rounded-full blur-3xl`} />
           <div className={`absolute -bottom-32 -right-32 w-[500px] h-[500px] bg-gradient-to-tl ${config.gradient.to.replace('to-', 'from-').replace('-50', '-200')}/40 to-transparent rounded-full blur-3xl`} />
@@ -232,7 +232,7 @@ export default function Footer({ ctaVariant = 'default' }: FooterProps) {
             initial={{ opacity: 0, scale: 0.9 }}
             whileInView={{ opacity: 1, scale: 1 }}
             viewport={{ once: true }}
-            className={`inline-flex items-center gap-2 bg-white/80 backdrop-blur-sm border ${config.gradient.badgeBg} rounded-full px-4 py-1.5 mb-6 shadow-sm`}
+            className={`inline-flex items-center gap-2 bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm border ${config.gradient.badgeBg} dark:border-gray-700 rounded-full px-4 py-1.5 mb-6 shadow-sm`}
           >
             <Sparkles className={`w-4 h-4 ${config.gradient.badge.replace('text-', 'text-').replace('-700', '-500')}`} />
             <span className={`text-sm font-medium ${config.gradient.badge}`}>{config.badge}</span>
@@ -242,7 +242,7 @@ export default function Footer({ ctaVariant = 'default' }: FooterProps) {
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
-            className="text-3xl lg:text-5xl font-bold text-gray-900 mb-4 lg:mb-6"
+            className="text-3xl lg:text-5xl font-bold text-gray-900 dark:text-white mb-4 lg:mb-6"
           >
             {config.title}{' '}
             <span className={`bg-gradient-to-r ${config.gradient.text} bg-clip-text text-transparent`}>
@@ -254,7 +254,7 @@ export default function Footer({ ctaVariant = 'default' }: FooterProps) {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ delay: 0.1 }}
-            className="text-gray-600 text-base lg:text-xl mb-8 lg:mb-10 max-w-2xl mx-auto"
+            className="text-gray-600 dark:text-gray-400 text-base lg:text-xl mb-8 lg:mb-10 max-w-2xl mx-auto"
           >
             {config.description}
           </motion.p>
@@ -274,7 +274,7 @@ export default function Footer({ ctaVariant = 'default' }: FooterProps) {
             </Link>
             <Link
               to="/contact"
-              className="inline-flex items-center justify-center px-8 py-4 lg:px-10 lg:py-5 bg-white hover:bg-gray-50 text-gray-700 font-semibold rounded-xl transition-all border border-gray-200 hover:border-gray-300 shadow-lg hover:shadow-xl text-base lg:text-lg"
+              className="inline-flex items-center justify-center px-8 py-4 lg:px-10 lg:py-5 bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-200 font-semibold rounded-xl transition-all border border-gray-200 dark:border-gray-700 hover:border-gray-300 dark:hover:border-gray-600 shadow-lg hover:shadow-xl text-base lg:text-lg"
             >
               Neem contact op
             </Link>
@@ -293,11 +293,11 @@ export default function Footer({ ctaVariant = 'default' }: FooterProps) {
               <Link to="/">
                 <Logo size="md" showText />
               </Link>
-              <div className="flex items-center gap-4 text-sm text-gray-600">
-                <a href="mailto:info@webstability.nl" className="hover:text-primary-600">
+              <div className="flex items-center gap-4 text-sm text-gray-600 dark:text-gray-400">
+                <a href="mailto:info@webstability.nl" className="hover:text-primary-600 dark:hover:text-primary-400">
                   <Mail className="w-5 h-5" />
                 </a>
-                <a href="tel:+31644712573" className="hover:text-primary-600">
+                <a href="tel:+31644712573" className="hover:text-primary-600 dark:hover:text-primary-400">
                   <Phone className="w-5 h-5" />
                 </a>
               </div>
@@ -308,7 +308,7 @@ export default function Footer({ ctaVariant = 'default' }: FooterProps) {
               <ul className="space-y-2">
                 {footerLinks.diensten.map((link) => (
                   <li key={link.href}>
-                    <Link to={link.href} className="text-gray-600 hover:text-primary-600 transition-colors text-sm">
+                    <Link to={link.href} className="text-gray-600 dark:text-gray-400 hover:text-primary-600 transition-colors text-sm">
                       {link.label}
                     </Link>
                   </li>
@@ -320,7 +320,7 @@ export default function Footer({ ctaVariant = 'default' }: FooterProps) {
               <ul className="space-y-2">
                 {footerLinks.product.map((link) => (
                   <li key={link.href}>
-                    <a href={link.href} className="text-gray-600 hover:text-primary-600 transition-colors text-sm">
+                    <a href={link.href} className="text-gray-600 dark:text-gray-400 hover:text-primary-600 transition-colors text-sm">
                       {link.label}
                     </a>
                   </li>
@@ -332,7 +332,7 @@ export default function Footer({ ctaVariant = 'default' }: FooterProps) {
               <ul className="space-y-2">
                 {footerLinks.bedrijf.map((link) => (
                   <li key={link.href}>
-                    <Link to={link.href} className="text-gray-600 hover:text-primary-600 transition-colors text-sm">
+                    <Link to={link.href} className="text-gray-600 dark:text-gray-400 hover:text-primary-600 transition-colors text-sm">
                       {link.label}
                     </Link>
                   </li>
@@ -344,7 +344,7 @@ export default function Footer({ ctaVariant = 'default' }: FooterProps) {
               <ul className="space-y-2">
                 {footerLinks.legal.map((link) => (
                   <li key={link.href}>
-                    <Link to={link.href} className="text-gray-600 hover:text-primary-600 transition-colors text-sm">
+                    <Link to={link.href} className="text-gray-600 dark:text-gray-400 hover:text-primary-600 transition-colors text-sm">
                       {link.label}
                     </Link>
                   </li>

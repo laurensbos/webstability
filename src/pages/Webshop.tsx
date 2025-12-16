@@ -154,7 +154,7 @@ const included = [
 
 export default function Webshop() {
   return (
-    <div className="min-h-screen bg-white">
+    <div className="min-h-screen bg-white dark:bg-gray-900 dark:bg-gray-900">
       <Header />
       
       <main>
@@ -213,7 +213,7 @@ export default function Webshop() {
                   </Link>
                   <a
                     href="#pakketten"
-                    className="inline-flex items-center justify-center px-8 py-4 bg-white/80 backdrop-blur-sm hover:bg-white text-gray-700 font-semibold rounded-xl border border-gray-200 transition-all hover:shadow-lg"
+                    className="inline-flex items-center justify-center px-8 py-4 bg-white/80 backdrop-blur-sm hover:bg-white dark:bg-gray-900 text-gray-700 font-semibold rounded-xl border border-gray-200 transition-all hover:shadow-lg"
                   >
                     Bekijk pakketten
                   </a>
@@ -248,7 +248,7 @@ export default function Webshop() {
         </section>
 
         {/* Webshop Showcase - Mockups */}
-        <section className="py-20 bg-white relative overflow-hidden">
+        <section className="py-20 bg-white dark:bg-gray-900 relative overflow-hidden">
           <div className="absolute inset-0 overflow-hidden pointer-events-none">
             <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-gradient-to-r from-emerald-50/50 via-green-50/30 to-teal-50/50 rounded-full blur-3xl" />
           </div>
@@ -296,7 +296,7 @@ export default function Webshop() {
               >
                 <div className="absolute inset-0 bg-gradient-to-br from-emerald-500/5 to-green-500/5 opacity-0 group-hover:opacity-100 transition-opacity" />
                 <div className="relative w-full max-w-[200px]">
-                  <div className="bg-white rounded-lg shadow-xl overflow-hidden">
+                  <div className="bg-white dark:bg-gray-900 rounded-lg shadow-xl overflow-hidden">
                     <div className="h-24 bg-gradient-to-br from-emerald-100 to-green-50 flex items-center justify-center">
                       <Package className="w-10 h-10 text-emerald-400" />
                     </div>
@@ -311,7 +311,7 @@ export default function Webshop() {
                     </div>
                   </div>
                 </div>
-                <p className="absolute bottom-4 left-4 text-sm font-medium text-gray-500">Productpagina</p>
+                <p className="absolute bottom-4 left-4 text-sm font-medium text-gray-500 dark:text-gray-400">Productpagina</p>
               </motion.div>
 
               {/* Cart mockup */}
@@ -324,7 +324,7 @@ export default function Webshop() {
               >
                 <div className="absolute inset-0 bg-gradient-to-br from-emerald-500/5 to-green-500/5 opacity-0 group-hover:opacity-100 transition-opacity" />
                 <div className="relative w-full max-w-[200px]">
-                  <div className="bg-white rounded-lg shadow-xl p-4">
+                  <div className="bg-white dark:bg-gray-900 rounded-lg shadow-xl p-4">
                     <div className="flex items-center gap-3 mb-3 pb-3 border-b">
                       <div className="w-12 h-12 bg-emerald-100 rounded-lg" />
                       <div className="flex-1">
@@ -346,7 +346,7 @@ export default function Webshop() {
                     </div>
                   </div>
                 </div>
-                <p className="absolute bottom-4 left-4 text-sm font-medium text-gray-500">Winkelwagen</p>
+                <p className="absolute bottom-4 left-4 text-sm font-medium text-gray-500 dark:text-gray-400">Winkelwagen</p>
               </motion.div>
 
               {/* Checkout mockup */}
@@ -359,7 +359,7 @@ export default function Webshop() {
               >
                 <div className="absolute inset-0 bg-gradient-to-br from-emerald-500/5 to-green-500/5 opacity-0 group-hover:opacity-100 transition-opacity" />
                 <div className="relative w-full max-w-[200px]">
-                  <div className="bg-white rounded-lg shadow-xl p-4">
+                  <div className="bg-white dark:bg-gray-900 rounded-lg shadow-xl p-4">
                     <div className="text-center mb-3">
                       <CheckCircle className="w-8 h-8 text-emerald-500 mx-auto mb-1" />
                       <div className="h-2 bg-gray-200 rounded w-2/3 mx-auto" />
@@ -369,7 +369,7 @@ export default function Webshop() {
                         <div className="w-6 h-4 bg-orange-500 rounded text-white text-[6px] flex items-center justify-center font-bold">iDEAL</div>
                         <div className="h-2 bg-gray-200 rounded flex-1" />
                       </div>
-                      <div className="flex items-center gap-2 p-2 bg-gray-50 rounded-lg border border-gray-200">
+                      <div className="flex items-center gap-2 p-2 bg-gray-50 rounded-lg border border-gray-200 dark:border-gray-700">
                         <CreditCard className="w-4 h-4 text-gray-400" />
                         <div className="h-2 bg-gray-200 rounded flex-1" />
                       </div>
@@ -379,7 +379,7 @@ export default function Webshop() {
                     </div>
                   </div>
                 </div>
-                <p className="absolute bottom-4 left-4 text-sm font-medium text-gray-500">Veilige checkout</p>
+                <p className="absolute bottom-4 left-4 text-sm font-medium text-gray-500 dark:text-gray-400">Veilige checkout</p>
               </motion.div>
             </div>
 
@@ -393,7 +393,7 @@ export default function Webshop() {
               {['iDEAL', 'Visa', 'Mastercard', 'PayPal', 'Klarna', 'Bancontact'].map((method) => (
                 <span 
                   key={method}
-                  className="px-4 py-2 bg-white border border-gray-200 rounded-full text-sm font-medium text-gray-600 hover:border-emerald-300 hover:text-emerald-600 transition-colors"
+                  className="px-4 py-2 bg-white dark:bg-gray-900 border border-gray-200 rounded-full text-sm font-medium text-gray-600 hover:border-emerald-300 hover:text-emerald-600 transition-colors"
                 >
                   {method}
                 </span>
@@ -449,7 +449,7 @@ export default function Webshop() {
                   whileInView={{ opacity: 1, y: 0 }}
                   viewport={{ once: true }}
                   transition={{ delay: index * 0.1 }}
-                  className={`relative bg-white rounded-2xl border-2 p-8 transition-all hover:shadow-xl ${
+                  className={`relative bg-white dark:bg-gray-900 rounded-2xl border-2 p-8 transition-all hover:shadow-xl ${
                     pkg.popular 
                       ? 'border-emerald-500 shadow-lg shadow-emerald-100' 
                       : 'border-gray-200 hover:border-emerald-200'
@@ -466,10 +466,10 @@ export default function Webshop() {
                   <div className="text-center mb-6">
                     <h3 className="text-xl font-bold text-gray-900 mb-2">{pkg.name}</h3>
                     <div className="flex items-baseline justify-center gap-1 mb-1">
-                      <span className="text-4xl font-bold text-gray-900">€{pkg.price}</span>
-                      <span className="text-gray-500">/maand</span>
+                      <span className="text-4xl font-bold text-gray-900 dark:text-white">€{pkg.price}</span>
+                      <span className="text-gray-500 dark:text-gray-400">/maand</span>
                     </div>
-                    <p className="text-sm text-gray-500">+ €{pkg.setupFee} eenmalige opstartkosten</p>
+                    <p className="text-sm text-gray-500 dark:text-gray-400">+ €{pkg.setupFee} eenmalige opstartkosten</p>
                     <p className="text-xs text-emerald-600 font-medium mt-1">
                       Prijzen incl. BTW • BTW aftrekbaar als zakelijke investering
                     </p>
@@ -480,7 +480,7 @@ export default function Webshop() {
                     {pkg.features.map((feature, i) => (
                       <div key={i} className="flex items-center gap-3">
                         <CheckCircle className="w-5 h-5 text-emerald-500 flex-shrink-0" />
-                        <span className="text-gray-700">{feature}</span>
+                        <span className="text-gray-700 dark:text-gray-300">{feature}</span>
                       </div>
                     ))}
                   </div>
@@ -557,13 +557,13 @@ export default function Webshop() {
                   whileInView={{ opacity: 1, y: 0 }}
                   viewport={{ once: true }}
                   transition={{ delay: index * 0.1 }}
-                  className="group p-6 bg-white border border-gray-200/80 rounded-2xl shadow-sm hover:shadow-xl hover:border-emerald-200 hover:-translate-y-1 transition-all"
+                  className="group p-6 bg-white dark:bg-gray-900 border border-gray-200/80 rounded-2xl shadow-sm hover:shadow-xl hover:border-emerald-200 hover:-translate-y-1 transition-all"
                 >
                   <div className="flex items-center gap-4 mb-4">
                     <div className="w-12 h-12 bg-gradient-to-br from-emerald-500 to-green-600 rounded-xl flex items-center justify-center shadow-lg shadow-emerald-500/20 group-hover:scale-110 transition-transform flex-shrink-0">
                       <feature.icon className="w-6 h-6 text-white" />
                     </div>
-                    <h3 className="text-lg font-bold text-gray-900">{feature.title}</h3>
+                    <h3 className="text-lg font-bold text-gray-900 dark:text-white">{feature.title}</h3>
                   </div>
                   <p className="text-gray-600 leading-relaxed">{feature.description}</p>
                 </motion.div>
@@ -611,7 +611,7 @@ export default function Webshop() {
                   whileInView={{ opacity: 1, y: 0 }}
                   viewport={{ once: true }}
                   transition={{ delay: index * 0.05 }}
-                  className="flex items-center gap-2 p-3 bg-white rounded-xl border border-gray-100 shadow-sm"
+                  className="flex items-center gap-2 p-3 bg-white dark:bg-gray-900 rounded-xl border border-gray-100 shadow-sm"
                 >
                   <CheckCircle className="w-5 h-5 text-emerald-500 flex-shrink-0" />
                   <span className="text-gray-700 text-sm">{item}</span>
@@ -640,7 +640,7 @@ export default function Webshop() {
         </section>
 
         {/* Trustpilot Reviews */}
-        <TrustpilotReviews className="bg-white" />
+        <TrustpilotReviews className="bg-white dark:bg-gray-900 dark:bg-gray-900" />
       </main>
 
       <Footer ctaVariant="webshop" />

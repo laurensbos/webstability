@@ -147,7 +147,7 @@ export default function Bedankt() {
   ]
 
   return (
-    <div className="min-h-screen bg-white">
+    <div className="min-h-screen bg-white dark:bg-gray-900 dark:bg-gray-900">
       <Header />
       
       {/* Hero Section */}
@@ -257,7 +257,7 @@ export default function Bedankt() {
               <div className="flex flex-col sm:flex-row gap-3 justify-center">
                 <Link
                   to={`/onboarding/${projectId}`}
-                  className="inline-flex items-center justify-center gap-2 px-5 py-2.5 bg-white text-gray-900 rounded-xl font-semibold hover:bg-white/90 transition shadow-lg"
+                  className="inline-flex items-center justify-center gap-2 px-5 py-2.5 bg-white dark:bg-gray-900 text-gray-900 rounded-xl font-semibold hover:bg-white/90 transition shadow-lg"
                 >
                   Start onboarding
                   <ArrowRight className="w-4 h-4" />
@@ -288,7 +288,7 @@ export default function Bedankt() {
                 <h3 className="font-bold text-gray-900 mb-1">📧 Check je inbox!</h3>
                 {email ? (
                   <p className="text-gray-700 text-sm mb-3">
-                    We sturen een bevestigingsmail naar <span className="font-semibold text-gray-900">{email}</span>
+                    We sturen een bevestigingsmail naar <span className="font-semibold text-gray-900 dark:text-white">{email}</span>
                   </p>
                 ) : (
                   <p className="text-gray-700 text-sm mb-3">
@@ -319,7 +319,7 @@ export default function Bedankt() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.5 }}
-            className="bg-white rounded-2xl border border-gray-200 p-8 mb-8 shadow-sm"
+            className="bg-white dark:bg-gray-900 rounded-2xl border border-gray-200 p-8 mb-8 shadow-sm"
           >
             <h2 className="font-bold text-gray-900 text-xl mb-6">Wat kun je verwachten?</h2>
             
@@ -339,9 +339,9 @@ export default function Bedankt() {
                     <div className={`relative z-10 w-11 h-11 rounded-xl bg-gradient-to-br ${colors.gradient} flex items-center justify-center shadow-lg flex-shrink-0`}>
                       <step.icon className="w-5 h-5 text-white" />
                     </div>
-                    <div className="flex-1 bg-gray-50 rounded-xl p-4 border border-gray-100">
+                    <div className="flex-1 bg-gray-50 rounded-xl p-4 border border-gray-100 dark:border-gray-700">
                       <div className="flex items-center justify-between mb-1">
-                        <h3 className="font-semibold text-gray-900">{step.title}</h3>
+                        <h3 className="font-semibold text-gray-900 dark:text-white">{step.title}</h3>
                         <span className={`text-xs font-medium ${colors.text} ${colors.bg} px-2 py-1 rounded-full`}>
                           {step.time}
                         </span>

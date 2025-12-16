@@ -101,30 +101,30 @@ function RequestModal({ service, onClose }: RequestModalProps) {
         animate={{ scale: 1, opacity: 1 }}
         exit={{ scale: 0.95, opacity: 0 }}
         onClick={(e) => e.stopPropagation()}
-        className="bg-white rounded-2xl shadow-2xl max-w-md w-full max-h-[90vh] overflow-y-auto"
+        className="bg-white dark:bg-gray-900 rounded-2xl shadow-2xl max-w-md w-full max-h-[90vh] overflow-y-auto"
       >
         {!isSuccess ? (
           <>
-            <div className={`${colorClasses.light} p-6 border-b`}>
+            <div className={`${colorClasses.light} dark:bg-gray-800 p-6 border-b dark:border-gray-700`}>
               <div className="flex justify-between items-start">
                 <div className="flex items-center gap-3">
                   <div className={`p-3 ${colorClasses.bg} rounded-xl`}>
                     <service.icon className="w-6 h-6 text-white" />
                   </div>
                   <div>
-                    <h3 className="text-xl font-bold text-gray-900">{service.title}</h3>
-                    <p className={`${colorClasses.text} font-semibold`}>€{service.price} excl. btw</p>
+                    <h3 className="text-xl font-bold text-gray-900 dark:text-white">{service.title}</h3>
+                    <p className={`${colorClasses.text}`}>€{service.price} <span className="text-gray-500 dark:text-gray-400 font-normal">excl. btw</span></p>
                   </div>
                 </div>
-                <button onClick={onClose} className="p-2 hover:bg-white/50 rounded-lg transition">
-                  <X className="w-5 h-5 text-gray-500" />
+                <button onClick={onClose} className="p-2 hover:bg-white/50 dark:hover:bg-gray-700 rounded-lg transition">
+                  <X className="w-5 h-5 text-gray-500 dark:text-gray-400" />
                 </button>
               </div>
             </div>
 
             <form onSubmit={handleSubmit} className="p-6 space-y-4">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                   <User className="w-4 h-4 inline mr-1" /> Naam *
                 </label>
                 <input
@@ -132,13 +132,13 @@ function RequestModal({ service, onClose }: RequestModalProps) {
                   required
                   value={formData.name}
                   onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                  className="w-full px-4 py-2.5 border border-gray-200 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
+                  className="w-full px-4 py-2.5 border border-gray-200 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
                   placeholder="Je naam"
                 />
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                   <Mail className="w-4 h-4 inline mr-1" /> Email *
                 </label>
                 <input
@@ -146,46 +146,46 @@ function RequestModal({ service, onClose }: RequestModalProps) {
                   required
                   value={formData.email}
                   onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                  className="w-full px-4 py-2.5 border border-gray-200 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
+                  className="w-full px-4 py-2.5 border border-gray-200 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
                   placeholder="je@email.nl"
                 />
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                   <Phone className="w-4 h-4 inline mr-1" /> Telefoon
                 </label>
                 <input
                   type="tel"
                   value={formData.phone}
                   onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
-                  className="w-full px-4 py-2.5 border border-gray-200 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
+                  className="w-full px-4 py-2.5 border border-gray-200 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
                   placeholder="06 12345678"
                 />
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                   <Building2 className="w-4 h-4 inline mr-1" /> Bedrijfsnaam
                 </label>
                 <input
                   type="text"
                   value={formData.company}
                   onChange={(e) => setFormData({ ...formData, company: e.target.value })}
-                  className="w-full px-4 py-2.5 border border-gray-200 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
+                  className="w-full px-4 py-2.5 border border-gray-200 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
                   placeholder="Je bedrijfsnaam"
                 />
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                   Extra informatie
                 </label>
                 <textarea
                   value={formData.remarks}
                   onChange={(e) => setFormData({ ...formData, remarks: e.target.value })}
                   rows={3}
-                  className="w-full px-4 py-2.5 border border-gray-200 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-primary-500 resize-none"
+                  className="w-full px-4 py-2.5 border border-gray-200 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-primary-500 focus:border-primary-500 resize-none"
                   placeholder="Vertel ons meer over wat je zoekt..."
                 />
               </div>
@@ -211,11 +211,11 @@ function RequestModal({ service, onClose }: RequestModalProps) {
           </>
         ) : (
           <div className="p-8 text-center">
-            <div className={`w-16 h-16 ${colorClasses.light} rounded-full flex items-center justify-center mx-auto mb-4`}>
+            <div className={`w-16 h-16 ${colorClasses.light} dark:bg-gray-800 rounded-full flex items-center justify-center mx-auto mb-4`}>
               <CheckCircle className={`w-8 h-8 ${colorClasses.text}`} />
             </div>
-            <h3 className="text-xl font-bold text-gray-900 mb-2">Aanvraag ontvangen!</h3>
-            <p className="text-gray-600 mb-6">
+            <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-2">Aanvraag ontvangen!</h3>
+            <p className="text-gray-600 dark:text-gray-400 mb-6">
               We nemen zo snel mogelijk contact met je op om de details te bespreken.
             </p>
             <button
@@ -243,7 +243,7 @@ export default function ExtraServices() {
               initial={{ opacity: 0, y: 10 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
-              className="text-primary-600 font-semibold mb-2"
+              className="text-primary-600 dark:text-primary-400 font-semibold mb-2"
             >
               Aanvullende diensten
             </motion.p>
@@ -252,7 +252,7 @@ export default function ExtraServices() {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ delay: 0.1 }}
-              className="text-2xl sm:text-3xl font-bold text-gray-900"
+              className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white"
             >
               Alles voor een sterke online aanwezigheid
             </motion.h2>
@@ -271,25 +271,25 @@ export default function ExtraServices() {
                   whileInView={{ opacity: 1, y: 0 }}
                   viewport={{ once: true }}
                   transition={{ delay: index * 0.1 }}
-                  className={`group bg-white rounded-2xl border ${colorClasses.border} ${colorClasses.hover} overflow-hidden transition-all duration-300 hover:shadow-xl ${colorClasses.shadow}`}
+                  className={`group bg-white dark:bg-gray-800 rounded-2xl border ${colorClasses.border} dark:border-gray-700 ${colorClasses.hover} overflow-hidden transition-all duration-300 hover:shadow-xl ${colorClasses.shadow} dark:hover:shadow-gray-900/50`}
                 >
                   {/* Visual header - different style per service */}
                   <div className="relative h-44 overflow-hidden">
                     {service.id === 'drone' ? (
-                      <div className="absolute inset-0 bg-gradient-to-br from-sky-100 via-sky-50 to-cyan-50 flex items-center justify-center">
+                      <div className="absolute inset-0 bg-gradient-to-br from-sky-100 via-sky-50 to-cyan-50 dark:from-sky-900/30 dark:via-sky-900/20 dark:to-cyan-900/20 flex items-center justify-center">
                         {/* Animated clouds */}
                         <motion.div 
-                          className="absolute top-6 left-8 w-16 h-6 bg-white/60 rounded-full blur-sm"
+                          className="absolute top-6 left-8 w-16 h-6 bg-white/60 dark:bg-gray-600/40 rounded-full blur-sm"
                           animate={{ x: [0, 20, 0] }}
                           transition={{ duration: 8, repeat: Infinity, ease: 'easeInOut' }}
                         />
                         <motion.div 
-                          className="absolute top-10 right-12 w-12 h-4 bg-white/50 rounded-full blur-sm"
+                          className="absolute top-10 right-12 w-12 h-4 bg-white/50 dark:bg-gray-600/30 rounded-full blur-sm"
                           animate={{ x: [0, -15, 0] }}
                           transition={{ duration: 6, repeat: Infinity, ease: 'easeInOut' }}
                         />
                         <motion.div 
-                          className="absolute bottom-16 left-16 w-10 h-3 bg-white/40 rounded-full blur-sm"
+                          className="absolute bottom-16 left-16 w-10 h-3 bg-white/40 dark:bg-gray-600/20 rounded-full blur-sm"
                           animate={{ x: [0, 10, 0] }}
                           transition={{ duration: 7, repeat: Infinity, ease: 'easeInOut' }}
                         />
@@ -298,71 +298,71 @@ export default function ExtraServices() {
                         <div className="relative">
                           {/* Drone shadow on ground */}
                           <motion.div 
-                            className="absolute top-20 left-1/2 -translate-x-1/2 w-12 h-3 bg-sky-200/50 rounded-full blur-md"
+                            className="absolute top-20 left-1/2 -translate-x-1/2 w-12 h-3 bg-sky-200/50 dark:bg-sky-700/30 rounded-full blur-md"
                             animate={{ scale: [1, 0.9, 1], opacity: [0.5, 0.3, 0.5] }}
                             transition={{ duration: 2, repeat: Infinity, ease: 'easeInOut' }}
                           />
                           
                           {/* Floating abstract shapes around drone */}
                           <motion.div 
-                            className="absolute -top-10 -left-10 w-16 h-16 bg-gradient-to-br from-sky-300/40 to-cyan-300/40 rounded-2xl rotate-12"
+                            className="absolute -top-10 -left-10 w-16 h-16 bg-gradient-to-br from-sky-300/40 to-cyan-300/40 dark:from-sky-500/30 dark:to-cyan-500/30 rounded-2xl rotate-12"
                             animate={{ rotate: [12, 18, 12], y: [0, -5, 0] }}
                             transition={{ duration: 4, repeat: Infinity, ease: 'easeInOut' }}
                           />
                           <motion.div 
-                            className="absolute -bottom-8 -right-8 w-14 h-14 bg-gradient-to-br from-cyan-300/40 to-sky-300/40 rounded-full"
+                            className="absolute -bottom-8 -right-8 w-14 h-14 bg-gradient-to-br from-cyan-300/40 to-sky-300/40 dark:from-cyan-500/30 dark:to-sky-500/30 rounded-full"
                             animate={{ scale: [1, 1.15, 1] }}
                             transition={{ duration: 3, repeat: Infinity, ease: 'easeInOut' }}
                           />
                           
                           {/* Main drone body - static */}
-                          <div className="relative w-20 h-20 bg-gradient-to-br from-sky-500 to-sky-600 rounded-2xl flex items-center justify-center shadow-lg shadow-sky-200">
+                          <div className="relative w-20 h-20 bg-gradient-to-br from-sky-500 to-sky-600 rounded-2xl flex items-center justify-center shadow-lg shadow-sky-200 dark:shadow-sky-900/50">
                             <Plane className="w-10 h-10 text-white" />
                           </div>
                         </div>
                       </div>
                     ) : (
-                      <div className="absolute inset-0 bg-gradient-to-br from-purple-100 via-purple-50 to-pink-50 flex items-center justify-center">
+                      <div className="absolute inset-0 bg-gradient-to-br from-purple-100 via-purple-50 to-pink-50 dark:from-purple-900/30 dark:via-purple-900/20 dark:to-pink-900/20 flex items-center justify-center">
                         {/* Abstract logo design elements */}
                         <div className="relative">
                           <motion.div 
-                            className="absolute -top-8 -left-8 w-24 h-24 bg-gradient-to-br from-purple-300/50 to-pink-300/50 rounded-2xl rotate-12"
+                            className="absolute -top-8 -left-8 w-24 h-24 bg-gradient-to-br from-purple-300/50 to-pink-300/50 dark:from-purple-500/30 dark:to-pink-500/30 rounded-2xl rotate-12"
                             animate={{ rotate: [12, 18, 12] }}
                             transition={{ duration: 4, repeat: Infinity, ease: 'easeInOut' }}
                           />
                           <motion.div 
-                            className="absolute -bottom-6 -right-6 w-20 h-20 bg-gradient-to-br from-pink-300/50 to-purple-300/50 rounded-full"
+                            className="absolute -bottom-6 -right-6 w-20 h-20 bg-gradient-to-br from-pink-300/50 to-purple-300/50 dark:from-pink-500/30 dark:to-purple-500/30 rounded-full"
                             animate={{ scale: [1, 1.1, 1] }}
                             transition={{ duration: 3, repeat: Infinity, ease: 'easeInOut' }}
                           />
-                          <div className="relative w-20 h-20 bg-gradient-to-br from-purple-500 to-purple-600 rounded-2xl flex items-center justify-center shadow-lg shadow-purple-200">
+                          <div className="relative w-20 h-20 bg-gradient-to-br from-purple-500 to-purple-600 rounded-2xl flex items-center justify-center shadow-lg shadow-purple-200 dark:shadow-purple-900/50">
                             <Palette className="w-10 h-10 text-white" />
                           </div>
                         </div>
                       </div>
                     )}
                     {/* Gradient overlay for smooth transition */}
-                    <div className="absolute inset-x-0 bottom-0 h-16 bg-gradient-to-t from-white to-transparent" />
+                    <div className="absolute inset-x-0 bottom-0 h-16 bg-gradient-to-t from-white dark:from-gray-800 to-transparent" />
                   </div>
 
                   <div className="p-6 pt-2">
                     <div className="flex items-start justify-between gap-4 mb-3">
                       <div>
-                        <h3 className="text-xl font-bold text-gray-900">{service.title}</h3>
+                        <h3 className="text-xl font-bold text-gray-900 dark:text-white">{service.title}</h3>
                         <p className={`text-lg font-bold ${colorClasses.text}`}>
-                          €{service.price} <span className="text-gray-400 font-normal text-sm">excl. btw</span>
+                          €{service.price} <span className="text-gray-400 dark:text-gray-500 font-normal text-sm">excl. btw</span>
                         </p>
                       </div>
-                      <div className={`p-2.5 ${colorClasses.light} rounded-xl`}>
+                      <div className={`p-2.5 ${colorClasses.light} dark:bg-opacity-20 rounded-xl`}>
                         <service.icon className={`w-5 h-5 ${colorClasses.text}`} />
                       </div>
                     </div>
 
-                    <p className="text-gray-600 mb-5">{service.description}</p>
+                    <p className="text-gray-600 dark:text-gray-300 mb-5">{service.description}</p>
 
                     <div className="grid grid-cols-2 gap-x-4 gap-y-2 mb-6">
                       {service.features.map((feature, i) => (
-                        <div key={i} className="flex items-center gap-2 text-sm text-gray-600">
+                        <div key={i} className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-400">
                           <CheckCircle className={`w-4 h-4 ${colorClasses.text} flex-shrink-0`} />
                           <span>{feature}</span>
                         </div>
@@ -379,7 +379,7 @@ export default function ExtraServices() {
                       </button>
                       <Link
                         to={service.link}
-                        className={`px-5 py-3 ${colorClasses.light} ${colorClasses.text} font-semibold rounded-xl transition hover:opacity-80`}
+                        className={`px-5 py-3 ${colorClasses.light} dark:bg-gray-700 ${colorClasses.text} dark:text-gray-300 font-semibold rounded-xl transition hover:opacity-80`}
                       >
                         Meer info
                       </Link>

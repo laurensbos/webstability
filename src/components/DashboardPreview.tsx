@@ -20,14 +20,14 @@ export default function DashboardPreview() {
             viewport={{ once: true }}
             className="order-2 lg:order-1"
           >
-            <span className="inline-flex items-center gap-2 px-3 py-1.5 lg:px-4 lg:py-2 bg-primary-100 text-primary-700 rounded-full text-xs lg:text-sm font-medium mb-4 lg:mb-6">
+            <span className="inline-flex items-center gap-2 px-3 py-1.5 lg:px-4 lg:py-2 bg-primary-100 dark:bg-primary-900/30 text-primary-700 dark:text-primary-300 rounded-full text-xs lg:text-sm font-medium mb-4 lg:mb-6">
               <LayoutDashboard className="w-3.5 h-3.5 lg:w-4 lg:h-4" />
               Jouw dashboard
             </span>
-            <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-gray-900 mb-4 lg:mb-6">
+            <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-gray-900 dark:text-white mb-4 lg:mb-6">
               Alles in één overzicht
             </h2>
-            <p className="text-gray-600 text-sm lg:text-lg mb-6 lg:mb-8">
+            <p className="text-gray-600 dark:text-gray-300 text-sm lg:text-lg mb-6 lg:mb-8">
               Via je persoonlijke dashboard heb je altijd inzicht in je project. 
               Bekijk de voortgang, geef feedback en vraag aanpassingen aan — allemaal op één plek.
             </p>
@@ -46,10 +46,10 @@ export default function DashboardPreview() {
                   viewport={{ once: true }}
                   transition={{ delay: 0.2 + i * 0.1 }}
                 >
-                  <div className="w-8 h-8 lg:w-10 lg:h-10 bg-primary-50 rounded-lg flex items-center justify-center">
-                    <item.icon className="w-4 h-4 lg:w-5 lg:h-5 text-primary-600" />
+                  <div className="w-8 h-8 lg:w-10 lg:h-10 bg-primary-50 dark:bg-primary-900/30 rounded-lg flex items-center justify-center">
+                    <item.icon className="w-4 h-4 lg:w-5 lg:h-5 text-primary-600 dark:text-primary-400" />
                   </div>
-                  <span className="text-gray-700 text-sm lg:text-base font-medium">{item.text}</span>
+                  <span className="text-gray-700 dark:text-gray-300 text-sm lg:text-base font-medium">{item.text}</span>
                 </motion.div>
               ))}
             </div>

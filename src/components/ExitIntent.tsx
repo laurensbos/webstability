@@ -87,7 +87,7 @@ export default function ExitIntent() {
             transition={{ type: 'spring', stiffness: 300, damping: 25 }}
             className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-[101] w-full max-w-md mx-4"
           >
-            <div className="bg-white rounded-2xl shadow-2xl overflow-hidden">
+            <div className="bg-white dark:bg-gray-900 rounded-2xl shadow-2xl overflow-hidden">
               {/* Header with gradient */}
               <div className="bg-gradient-to-br from-primary-500 to-primary-600 p-6 text-white text-center relative">
                 <button
@@ -121,10 +121,10 @@ export default function ExitIntent() {
                         'Vrijblijvend en zonder verplichtingen',
                       ].map((benefit) => (
                         <li key={benefit} className="flex items-start gap-3">
-                          <div className="flex-shrink-0 w-5 h-5 bg-green-100 rounded-full flex items-center justify-center mt-0.5">
-                            <Check className="w-3 h-3 text-green-600" />
+                          <div className="flex-shrink-0 w-5 h-5 bg-green-100 dark:bg-green-900/30 rounded-full flex items-center justify-center mt-0.5">
+                            <Check className="w-3 h-3 text-green-600 dark:text-green-400" />
                           </div>
-                          <span className="text-gray-600 text-sm">{benefit}</span>
+                          <span className="text-gray-600 dark:text-gray-400 text-sm">{benefit}</span>
                         </li>
                       ))}
                     </ul>
@@ -136,7 +136,7 @@ export default function ExitIntent() {
                         onChange={(e) => setEmail(e.target.value)}
                         placeholder="Je e-mailadres"
                         required
-                        className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl text-gray-900 placeholder-gray-400 focus:outline-none focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 transition-all"
+                        className="w-full px-4 py-3 bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl text-gray-900 dark:text-white placeholder-gray-400 focus:outline-none focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 transition-all"
                       />
                       <button
                         type="submit"
@@ -149,7 +149,7 @@ export default function ExitIntent() {
 
                     <button
                       onClick={handleClose}
-                      className="w-full mt-3 py-2 text-gray-400 hover:text-gray-600 text-sm transition-colors"
+                      className="w-full mt-3 py-2 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 text-sm transition-colors"
                     >
                       Nee bedankt, ik hoef geen gratis advies
                     </button>
@@ -160,13 +160,13 @@ export default function ExitIntent() {
                     animate={{ opacity: 1, y: 0 }}
                     className="text-center py-4"
                   >
-                    <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                      <Check className="w-8 h-8 text-green-600" />
+                    <div className="w-16 h-16 bg-green-100 dark:bg-green-900/30 rounded-full flex items-center justify-center mx-auto mb-4">
+                      <Check className="w-8 h-8 text-green-600 dark:text-green-400" />
                     </div>
-                    <h4 className="text-xl font-bold text-gray-900 mb-2">
+                    <h4 className="text-xl font-bold text-gray-900 dark:text-white mb-2">
                       Top, we nemen contact op!
                     </h4>
-                    <p className="text-gray-600 text-sm">
+                    <p className="text-gray-600 dark:text-gray-400 text-sm">
                       Binnen 24 uur hoor je van ons.
                     </p>
                   </motion.div>

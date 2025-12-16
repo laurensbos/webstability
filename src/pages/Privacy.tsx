@@ -6,7 +6,7 @@ import Footer from '../components/Footer'
 
 export default function Privacy() {
   return (
-    <div className="min-h-screen bg-white">
+    <div className="min-h-screen bg-white dark:bg-gray-900 dark:bg-gray-900">
       <Header urgencyBannerVisible={false} />
       
       <main className="pt-32 pb-20">
@@ -124,21 +124,21 @@ export default function Privacy() {
 
               <section className="mb-8">
                 <h2 className="text-xl font-semibold text-gray-900 mb-4">8. Beveiliging</h2>
-                <p className="text-gray-600">
+                <p className="text-gray-600 dark:text-gray-400">
                   Wij nemen passende technische en organisatorische maatregelen om je gegevens te beschermen tegen ongeautoriseerde toegang, verlies of diefstal. Onze website maakt gebruik van SSL-encryptie.
                 </p>
               </section>
 
               <section className="mb-8">
                 <h2 className="text-xl font-semibold text-gray-900 mb-4">9. Klachten</h2>
-                <p className="text-gray-600">
+                <p className="text-gray-600 dark:text-gray-400">
                   Heb je een klacht over hoe wij met je gegevens omgaan? Neem dan contact met ons op. Je hebt ook het recht om een klacht in te dienen bij de Autoriteit Persoonsgegevens: <a href="https://autoriteitpersoonsgegevens.nl" target="_blank" rel="noopener noreferrer" className="text-primary-600 hover:underline">autoriteitpersoonsgegevens.nl</a>
                 </p>
               </section>
 
               <section>
                 <h2 className="text-xl font-semibold text-gray-900 mb-4">10. Wijzigingen</h2>
-                <p className="text-gray-600">
+                <p className="text-gray-600 dark:text-gray-400">
                   Wij kunnen dit privacybeleid wijzigen. De meest actuele versie is altijd beschikbaar op onze website. Bij belangrijke wijzigingen informeren wij je via e-mail.
                 </p>
               </section>

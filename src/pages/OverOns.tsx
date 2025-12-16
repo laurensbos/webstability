@@ -128,12 +128,12 @@ const milestones = [
 
 export default function OverOns() {
   return (
-    <div className="min-h-screen bg-white">
+    <div className="min-h-screen bg-white dark:bg-gray-900">
       <Header />
       
       <main>
         {/* Hero */}
-        <section className="relative min-h-[60vh] flex items-center overflow-hidden bg-gradient-to-br from-slate-50 via-blue-50/30 to-white pt-20">
+        <section className="relative min-h-[60vh] flex items-center overflow-hidden bg-gradient-to-br from-slate-50 via-blue-50/30 to-white dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 pt-20">
           {/* Background decorations */}
           <div className="absolute inset-0 overflow-hidden pointer-events-none">
             <motion.div 
@@ -157,20 +157,20 @@ export default function OverOns() {
                   initial={{ opacity: 0, scale: 0.9 }}
                   animate={{ opacity: 1, scale: 1 }}
                   transition={{ delay: 0.1 }}
-                  className="inline-flex items-center gap-2 bg-gradient-to-r from-primary-50 to-blue-50 border border-primary-200/50 rounded-full px-4 py-2 mb-6"
+                  className="inline-flex items-center gap-2 bg-gradient-to-r from-primary-50 to-blue-50 dark:from-primary-900/30 dark:to-blue-900/30 border border-primary-200/50 dark:border-primary-700/50 rounded-full px-4 py-2 mb-6"
                 >
-                  <Users className="w-4 h-4 text-primary-600" />
-                  <span className="text-sm font-medium text-primary-700">Over Webstability</span>
+                  <Users className="w-4 h-4 text-primary-600 dark:text-primary-400" />
+                  <span className="text-sm font-medium text-primary-700 dark:text-primary-300">Over Webstability</span>
                 </motion.div>
 
-                <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold text-gray-900 mb-6 leading-tight">
+                <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold text-gray-900 dark:text-white mb-6 leading-tight">
                   Websites bouwen voor{' '}
                   <span className="bg-gradient-to-r from-primary-600 to-blue-600 bg-clip-text text-transparent">
                     ondernemers
                   </span>
                 </h1>
 
-                <p className="text-xl text-gray-600 mb-8 max-w-2xl mx-auto leading-relaxed">
+                <p className="text-xl text-gray-600 dark:text-gray-300 mb-8 max-w-2xl mx-auto leading-relaxed">
                   Wij zijn een 100% remote team van developers en designers die geloven dat elke ondernemer 
                   een professionele online aanwezigheid verdient. Zonder gedoe, zonder technische kennis.
                 </p>
@@ -185,7 +185,7 @@ export default function OverOns() {
                   </Link>
                   <Link
                     to="/contact"
-                    className="inline-flex items-center justify-center px-8 py-4 bg-white/80 backdrop-blur-sm hover:bg-white text-gray-700 font-semibold rounded-xl border border-gray-200 transition-all hover:shadow-lg"
+                    className="inline-flex items-center justify-center px-8 py-4 bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm hover:bg-white dark:hover:bg-gray-700 text-gray-700 dark:text-gray-200 font-semibold rounded-xl border border-gray-200 dark:border-gray-700 transition-all hover:shadow-lg"
                   >
                     Neem contact op
                   </Link>
@@ -220,7 +220,7 @@ export default function OverOns() {
         </section>
 
         {/* Our Story */}
-        <section className="py-20 bg-white relative overflow-hidden">
+        <section className="py-20 bg-white dark:bg-gray-900 relative overflow-hidden">
           <div className="absolute inset-0 overflow-hidden pointer-events-none">
             <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-gradient-to-r from-primary-50/50 via-blue-50/30 to-cyan-50/50 rounded-full blur-3xl" />
           </div>
@@ -232,33 +232,33 @@ export default function OverOns() {
                 whileInView={{ opacity: 1, x: 0 }}
                 viewport={{ once: true }}
               >
-                <span className="inline-block text-primary-600 font-semibold text-sm tracking-wider uppercase mb-3">
+                <span className="inline-block text-primary-600 dark:text-primary-400 font-semibold text-sm tracking-wider uppercase mb-3">
                   Ons verhaal
                 </span>
-                <h2 className="text-3xl sm:text-4xl font-bold text-gray-900 mb-6">
+                <h2 className="text-3xl sm:text-4xl font-bold text-gray-900 dark:text-white mb-6">
                   Waarom we{' '}
                   <span className="bg-gradient-to-r from-primary-600 to-blue-600 bg-clip-text text-transparent">
                     Webstability
                   </span>
                   {' '}startten
                 </h2>
-                <div className="space-y-4 text-gray-600 leading-relaxed">
+                <div className="space-y-4 text-gray-600 dark:text-gray-300 leading-relaxed">
                   <p>
                     Als ondernemer weet je hoe frustrerend het kan zijn om een website te regelen. 
                     Traditionele bureaus vragen duizenden euro's, freelancers zijn vaak onbereikbaar, 
                     en zelf bouwen kost je weken aan kostbare tijd.
                   </p>
                   <p>
-                    <strong className="text-gray-900">Wij zagen dat het anders kon.</strong> Met moderne 
+                    <strong className="text-gray-900 dark:text-white">Wij zagen dat het anders kon.</strong> Met moderne 
                     technologie, slimme workflows en een no-nonsense aanpak bouwen we professionele 
                     websites in dagen in plaats van maanden.
                   </p>
                   <p>
                     Ons abonnementsmodel betekent dat je voor een vast, voorspelbaar bedrag per maand 
                     een complete website krijgt. Hosting, onderhoud, updates, support – alles zit erin. 
-                    <strong className="text-gray-900"> Geen verrassingen.</strong>
+                    <strong className="text-gray-900 dark:text-white"> Geen verrassingen.</strong>
                   </p>
-                  <p className="text-lg font-medium text-gray-900">
+                  <p className="text-lg font-medium text-gray-900 dark:text-white">
                     Zo kun jij focussen op wat je het beste doet: ondernemen.
                   </p>
                 </div>
@@ -271,52 +271,52 @@ export default function OverOns() {
                 className="relative"
               >
                 {/* Remote work illustration */}
-                <div className="bg-gradient-to-br from-primary-50 to-blue-50 rounded-3xl p-8 border border-primary-100">
+                <div className="bg-gradient-to-br from-primary-50 to-blue-50 dark:from-primary-900/30 dark:to-blue-900/30 rounded-3xl p-8 border border-primary-100 dark:border-primary-800">
                   <div className="grid grid-cols-2 gap-4">
                     {/* Work locations */}
-                    <div className="bg-white rounded-2xl p-4 shadow-sm border border-gray-100">
+                    <div className="bg-white dark:bg-gray-800 rounded-2xl p-4 shadow-sm border border-gray-100 dark:border-gray-700">
                       <div className="flex items-center gap-2 mb-3">
-                        <div className="w-8 h-8 bg-primary-100 rounded-lg flex items-center justify-center">
-                          <MapPin className="w-4 h-4 text-primary-600" />
+                        <div className="w-8 h-8 bg-primary-100 dark:bg-primary-900/50 rounded-lg flex items-center justify-center">
+                          <MapPin className="w-4 h-4 text-primary-600 dark:text-primary-400" />
                         </div>
-                        <span className="text-sm font-medium text-gray-700">Remote First</span>
+                        <span className="text-sm font-medium text-gray-700 dark:text-gray-300">Remote First</span>
                       </div>
-                      <p className="text-xs text-gray-500">Werken vanuit heel Nederland</p>
+                      <p className="text-xs text-gray-500 dark:text-gray-400">Werken vanuit heel Nederland</p>
                     </div>
                     
-                    <div className="bg-white rounded-2xl p-4 shadow-sm border border-gray-100">
+                    <div className="bg-white dark:bg-gray-800 rounded-2xl p-4 shadow-sm border border-gray-100 dark:border-gray-700">
                       <div className="flex items-center gap-2 mb-3">
-                        <div className="w-8 h-8 bg-blue-100 rounded-lg flex items-center justify-center">
-                          <Clock className="w-4 h-4 text-blue-600" />
+                        <div className="w-8 h-8 bg-blue-100 dark:bg-blue-900/50 rounded-lg flex items-center justify-center">
+                          <Clock className="w-4 h-4 text-blue-600 dark:text-blue-400" />
                         </div>
-                        <span className="text-sm font-medium text-gray-700">Flexibel</span>
+                        <span className="text-sm font-medium text-gray-700 dark:text-gray-300">Flexibel</span>
                       </div>
-                      <p className="text-xs text-gray-500">Snel schakelen, ook 's avonds</p>
+                      <p className="text-xs text-gray-500 dark:text-gray-400">Snel schakelen, ook 's avonds</p>
                     </div>
                     
-                    <div className="bg-white rounded-2xl p-4 shadow-sm border border-gray-100">
+                    <div className="bg-white dark:bg-gray-800 rounded-2xl p-4 shadow-sm border border-gray-100 dark:border-gray-700">
                       <div className="flex items-center gap-2 mb-3">
-                        <div className="w-8 h-8 bg-green-100 rounded-lg flex items-center justify-center">
-                          <Globe className="w-4 h-4 text-green-600" />
+                        <div className="w-8 h-8 bg-green-100 dark:bg-green-900/50 rounded-lg flex items-center justify-center">
+                          <Globe className="w-4 h-4 text-green-600 dark:text-green-400" />
                         </div>
-                        <span className="text-sm font-medium text-gray-700">Digitaal</span>
+                        <span className="text-sm font-medium text-gray-700 dark:text-gray-300">Digitaal</span>
                       </div>
-                      <p className="text-xs text-gray-500">Alles online, geen papierwerk</p>
+                      <p className="text-xs text-gray-500 dark:text-gray-400">Alles online, geen papierwerk</p>
                     </div>
                     
-                    <div className="bg-white rounded-2xl p-4 shadow-sm border border-gray-100">
+                    <div className="bg-white dark:bg-gray-800 rounded-2xl p-4 shadow-sm border border-gray-100 dark:border-gray-700">
                       <div className="flex items-center gap-2 mb-3">
-                        <div className="w-8 h-8 bg-purple-100 rounded-lg flex items-center justify-center">
-                          <Laptop className="w-4 h-4 text-purple-600" />
+                        <div className="w-8 h-8 bg-purple-100 dark:bg-purple-900/50 rounded-lg flex items-center justify-center">
+                          <Laptop className="w-4 h-4 text-purple-600 dark:text-purple-400" />
                         </div>
-                        <span className="text-sm font-medium text-gray-700">Modern</span>
+                        <span className="text-sm font-medium text-gray-700 dark:text-gray-300">Modern</span>
                       </div>
-                      <p className="text-xs text-gray-500">Nieuwste tools & technieken</p>
+                      <p className="text-xs text-gray-500 dark:text-gray-400">Nieuwste tools & technieken</p>
                     </div>
                   </div>
                   
-                  <div className="mt-4 p-4 bg-white/80 backdrop-blur-sm rounded-xl border border-primary-100">
-                    <p className="text-sm text-gray-600 text-center">
+                  <div className="mt-4 p-4 bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-xl border border-primary-100 dark:border-primary-800">
+                    <p className="text-sm text-gray-600 dark:text-gray-300 text-center">
                       <Sparkles className="w-4 h-4 inline mr-1 text-primary-500" />
                       Geen kantoorkosten = lagere prijzen voor jou
                     </p>
@@ -352,7 +352,7 @@ export default function OverOns() {
                 initial={{ opacity: 0, y: 20 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
-                className="text-3xl sm:text-4xl font-bold text-gray-900 mb-4"
+                className="text-3xl sm:text-4xl font-bold text-gray-900 dark:text-white mb-4"
               >
                 100% remote,{' '}
                 <span className="bg-gradient-to-r from-primary-600 to-blue-600 bg-clip-text text-transparent">
@@ -364,7 +364,7 @@ export default function OverOns() {
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
                 transition={{ delay: 0.1 }}
-                className="text-gray-600 text-lg max-w-2xl mx-auto"
+                className="text-gray-600 dark:text-gray-300 text-lg max-w-2xl mx-auto"
               >
                 Geen dure kantoorpanden, geen overhead. Wij investeren in talent en technologie, 
                 niet in vierkante meters.
@@ -379,13 +379,13 @@ export default function OverOns() {
                   whileInView={{ opacity: 1, y: 0 }}
                   viewport={{ once: true }}
                   transition={{ delay: index * 0.1 }}
-                  className="group p-6 bg-white border border-gray-200/80 rounded-2xl shadow-sm hover:shadow-xl hover:border-primary-200 hover:-translate-y-1 transition-all"
+                  className="group p-6 bg-white dark:bg-gray-800 border border-gray-200/80 dark:border-gray-700 rounded-2xl shadow-sm hover:shadow-xl hover:border-primary-200 dark:hover:border-primary-700 hover:-translate-y-1 transition-all"
                 >
                   <div className="w-12 h-12 bg-gradient-to-br from-primary-500 to-blue-600 rounded-xl flex items-center justify-center shadow-lg shadow-primary-500/20 mb-4 group-hover:scale-110 transition-transform">
                     <item.icon className="w-6 h-6 text-white" />
                   </div>
-                  <h3 className="text-lg font-bold text-gray-900 mb-2">{item.title}</h3>
-                  <p className="text-gray-600 text-sm leading-relaxed">{item.description}</p>
+                  <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-2">{item.title}</h3>
+                  <p className="text-gray-600 dark:text-gray-300 text-sm leading-relaxed">{item.description}</p>
                 </motion.div>
               ))}
             </div>
@@ -397,12 +397,12 @@ export default function OverOns() {
               viewport={{ once: true }}
               className="mt-16 text-center"
             >
-              <p className="text-gray-500 text-sm mb-4">Gebouwd met de nieuwste technologie</p>
+              <p className="text-gray-500 dark:text-gray-400 text-sm mb-4">Gebouwd met de nieuwste technologie</p>
               <div className="flex flex-wrap justify-center gap-3">
                 {techStack.map((tech) => (
                   <span 
                     key={tech}
-                    className="px-4 py-2 bg-white border border-gray-200 rounded-full text-sm font-medium text-gray-600 hover:border-primary-300 hover:text-primary-600 transition-colors"
+                    className="px-4 py-2 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-full text-sm font-medium text-gray-600 dark:text-gray-300 hover:border-primary-300 dark:hover:border-primary-700 hover:text-primary-600 dark:hover:text-primary-400 transition-colors"
                   >
                     {tech}
                   </span>
@@ -413,7 +413,7 @@ export default function OverOns() {
         </section>
 
         {/* Values */}
-        <section className="py-20 bg-white relative overflow-hidden">
+        <section className="py-20 bg-white dark:bg-gray-900 relative overflow-hidden">
           <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
             <motion.div
               initial={{ opacity: 0, y: 20 }}
@@ -421,16 +421,16 @@ export default function OverOns() {
               viewport={{ once: true }}
               className="text-center mb-16"
             >
-              <span className="inline-block text-primary-600 font-semibold text-sm tracking-wider uppercase mb-3">
+              <span className="inline-block text-primary-600 dark:text-primary-400 font-semibold text-sm tracking-wider uppercase mb-3">
                 Onze waarden
               </span>
-              <h2 className="text-3xl sm:text-4xl font-bold text-gray-900 mb-4">
+              <h2 className="text-3xl sm:text-4xl font-bold text-gray-900 dark:text-white mb-4">
                 Waar we{' '}
                 <span className="bg-gradient-to-r from-primary-600 to-blue-600 bg-clip-text text-transparent">
                   voor staan
                 </span>
               </h2>
-              <p className="text-gray-600 max-w-2xl mx-auto">
+              <p className="text-gray-600 dark:text-gray-300 max-w-2xl mx-auto">
                 Dit zijn de principes waar we niet van afwijken. Ze zitten in alles wat we doen.
               </p>
             </motion.div>
@@ -443,13 +443,13 @@ export default function OverOns() {
                   whileInView={{ opacity: 1, y: 0 }}
                   viewport={{ once: true }}
                   transition={{ delay: index * 0.1 }}
-                  className="bg-gradient-to-br from-gray-50 to-white rounded-2xl p-6 border border-gray-100 hover:shadow-lg transition-all"
+                  className="bg-gradient-to-br from-gray-50 to-white dark:from-gray-800 dark:to-gray-800 rounded-2xl p-6 border border-gray-100 dark:border-gray-700 hover:shadow-lg transition-all"
                 >
-                  <div className="w-12 h-12 bg-primary-100 rounded-xl flex items-center justify-center mb-4">
-                    <value.icon className="w-6 h-6 text-primary-600" />
+                  <div className="w-12 h-12 bg-primary-100 dark:bg-primary-900/50 rounded-xl flex items-center justify-center mb-4">
+                    <value.icon className="w-6 h-6 text-primary-600 dark:text-primary-400" />
                   </div>
-                  <h3 className="font-bold text-gray-900 mb-2">{value.title}</h3>
-                  <p className="text-gray-600 text-sm leading-relaxed">{value.description}</p>
+                  <h3 className="font-bold text-gray-900 dark:text-white mb-2">{value.title}</h3>
+                  <p className="text-gray-600 dark:text-gray-300 text-sm leading-relaxed">{value.description}</p>
                 </motion.div>
               ))}
             </div>
@@ -457,7 +457,7 @@ export default function OverOns() {
         </section>
 
         {/* Timeline */}
-        <section className="py-20 bg-gradient-to-b from-gray-50 via-primary-50/20 to-gray-50">
+        <section className="py-20 bg-gradient-to-b from-gray-50 via-primary-50/20 to-gray-50 dark:from-gray-800 dark:via-gray-800 dark:to-gray-800">
           <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
             <motion.div
               initial={{ opacity: 0, y: 20 }}
@@ -465,10 +465,10 @@ export default function OverOns() {
               viewport={{ once: true }}
               className="text-center mb-16"
             >
-              <span className="inline-block text-primary-600 font-semibold text-sm tracking-wider uppercase mb-3">
+              <span className="inline-block text-primary-600 dark:text-primary-400 font-semibold text-sm tracking-wider uppercase mb-3">
                 Onze reis
               </span>
-              <h2 className="text-3xl sm:text-4xl font-bold text-gray-900">
+              <h2 className="text-3xl sm:text-4xl font-bold text-gray-900 dark:text-white">
                 Van idee tot{' '}
                 <span className="bg-gradient-to-r from-primary-600 to-blue-600 bg-clip-text text-transparent">
                   150+ websites
@@ -495,9 +495,9 @@ export default function OverOns() {
                         <span className="text-white font-bold text-sm">{milestone.year}</span>
                       </div>
                     </div>
-                    <div className="flex-1 bg-white rounded-2xl p-6 border border-gray-100 shadow-sm hover:shadow-md transition-shadow">
-                      <h3 className="font-bold text-gray-900 mb-2">{milestone.title}</h3>
-                      <p className="text-gray-600">{milestone.description}</p>
+                    <div className="flex-1 bg-white dark:bg-gray-800 rounded-2xl p-6 border border-gray-100 dark:border-gray-700 shadow-sm hover:shadow-md transition-shadow">
+                      <h3 className="font-bold text-gray-900 dark:text-white mb-2">{milestone.title}</h3>
+                      <p className="text-gray-600 dark:text-gray-300">{milestone.description}</p>
                     </div>
                   </motion.div>
                 ))}
@@ -507,7 +507,7 @@ export default function OverOns() {
         </section>
 
         {/* Our Promise */}
-        <section className="py-20 bg-white">
+        <section className="py-20 bg-white dark:bg-gray-900">
           <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
             <motion.div
               initial={{ opacity: 0, y: 20 }}
@@ -515,10 +515,10 @@ export default function OverOns() {
               viewport={{ once: true }}
               className="text-center mb-12"
             >
-              <span className="inline-block text-primary-600 font-semibold text-sm tracking-wider uppercase mb-3">
+              <span className="inline-block text-primary-600 dark:text-primary-400 font-semibold text-sm tracking-wider uppercase mb-3">
                 Onze belofte
               </span>
-              <h2 className="text-3xl sm:text-4xl font-bold text-gray-900 mb-4">
+              <h2 className="text-3xl sm:text-4xl font-bold text-gray-900 dark:text-white mb-4">
                 Dit{' '}
                 <span className="bg-gradient-to-r from-primary-600 to-blue-600 bg-clip-text text-transparent">
                   garanderen
@@ -531,7 +531,7 @@ export default function OverOns() {
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
-              className="bg-gradient-to-br from-primary-50 to-blue-50 rounded-3xl p-8 border border-primary-100"
+              className="bg-gradient-to-br from-primary-50 to-blue-50 dark:from-primary-900/30 dark:to-blue-900/30 rounded-3xl p-8 border border-primary-100 dark:border-primary-800"
             >
               <div className="grid sm:grid-cols-2 gap-4">
                 {[
@@ -550,12 +550,12 @@ export default function OverOns() {
                     whileInView={{ opacity: 1, y: 0 }}
                     viewport={{ once: true }}
                     transition={{ delay: index * 0.05 }}
-                    className="flex items-center gap-3 p-3 bg-white/80 backdrop-blur-sm rounded-xl"
+                    className="flex items-center gap-3 p-3 bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-xl"
                   >
-                    <div className="w-8 h-8 bg-primary-100 rounded-lg flex items-center justify-center flex-shrink-0">
-                      <promise.icon className="w-4 h-4 text-primary-600" />
+                    <div className="w-8 h-8 bg-primary-100 dark:bg-primary-900/50 rounded-lg flex items-center justify-center flex-shrink-0">
+                      <promise.icon className="w-4 h-4 text-primary-600 dark:text-primary-400" />
                     </div>
-                    <span className="text-gray-700 font-medium">{promise.text}</span>
+                    <span className="text-gray-700 dark:text-gray-200 font-medium">{promise.text}</span>
                   </motion.div>
                 ))}
               </div>

@@ -134,7 +134,7 @@ const CookieConsent: React.FC<CookieConsentProps> = ({ onConsentChange }) => {
           transition={{ type: 'spring', damping: 25, stiffness: 300 }}
           className="fixed bottom-0 left-0 right-0 z-50 p-4 md:p-6"
         >
-          <div className="max-w-4xl mx-auto bg-white rounded-2xl shadow-2xl border border-gray-200 overflow-hidden">
+          <div className="max-w-4xl mx-auto bg-white dark:bg-gray-900 rounded-2xl shadow-2xl border border-gray-200 overflow-hidden">
             {/* Main banner */}
             <div className="p-4 md:p-6">
               <div className="flex items-start gap-4">
@@ -143,7 +143,7 @@ const CookieConsent: React.FC<CookieConsentProps> = ({ onConsentChange }) => {
                 </div>
                 
                 <div className="flex-1">
-                  <h3 className="text-lg font-semibold text-gray-900">
+                  <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
                     Wij gebruiken cookies 🍪
                   </h3>
                   <p className="text-gray-600 mt-1 text-sm md:text-base">
@@ -266,7 +266,7 @@ const CookieToggle: React.FC<CookieToggleProps> = ({
   onChange,
 }) => {
   return (
-    <div className="flex items-start gap-4 p-3 bg-white rounded-lg">
+    <div className="flex items-start gap-4 p-3 bg-white dark:bg-gray-900 rounded-lg">
       <label className="relative inline-flex items-center cursor-pointer mt-0.5">
         <input
           type="checkbox"
@@ -279,7 +279,7 @@ const CookieToggle: React.FC<CookieToggleProps> = ({
           w-11 h-6 bg-gray-200 rounded-full peer 
           peer-checked:bg-blue-600 peer-focus:ring-2 peer-focus:ring-blue-300
           after:content-[''] after:absolute after:top-0.5 after:left-[2px] 
-          after:bg-white after:rounded-full after:h-5 after:w-5 
+          after:bg-white dark:bg-gray-900 after:rounded-full after:h-5 after:w-5 
           after:transition-all peer-checked:after:translate-x-full
           ${disabled ? 'opacity-60 cursor-not-allowed' : ''}
         `} />

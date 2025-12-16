@@ -199,7 +199,7 @@ const packageDetails = [
 
 export default function Websites() {
   return (
-    <div className="min-h-screen bg-white">
+    <div className="min-h-screen bg-white dark:bg-gray-900 dark:bg-gray-900">
       <Header />
       
       <main>
@@ -259,7 +259,7 @@ export default function Websites() {
                   </Link>
                   <a
                     href="#pakketten"
-                    className="inline-flex items-center justify-center px-8 py-4 bg-white/80 backdrop-blur-sm hover:bg-white text-gray-700 font-semibold rounded-xl border border-gray-200 transition-all hover:shadow-lg"
+                    className="inline-flex items-center justify-center px-8 py-4 bg-white/80 backdrop-blur-sm hover:bg-white dark:bg-gray-900 text-gray-700 font-semibold rounded-xl border border-gray-200 transition-all hover:shadow-lg"
                   >
                     Bekijk pakketten
                   </a>
@@ -294,7 +294,7 @@ export default function Websites() {
         </section>
 
         {/* Website Showcase - Device Mockups */}
-        <section className="py-20 bg-white relative overflow-hidden">
+        <section className="py-20 bg-white dark:bg-gray-900 relative overflow-hidden">
           <div className="absolute inset-0 overflow-hidden pointer-events-none">
             <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-gradient-to-r from-primary-50/50 via-blue-50/30 to-cyan-50/50 rounded-full blur-3xl" />
           </div>
@@ -344,7 +344,7 @@ export default function Websites() {
                 <div className="absolute inset-0 bg-gradient-to-br from-primary-500/5 to-blue-500/5 opacity-0 group-hover:opacity-100 transition-opacity" />
                 <div className="relative w-full max-w-[400px]">
                   {/* Browser window */}
-                  <div className="bg-white rounded-lg shadow-xl overflow-hidden">
+                  <div className="bg-white dark:bg-gray-900 rounded-lg shadow-xl overflow-hidden">
                     <div className="h-6 bg-gray-100 flex items-center gap-1.5 px-3">
                       <div className="w-2.5 h-2.5 rounded-full bg-red-400" />
                       <div className="w-2.5 h-2.5 rounded-full bg-yellow-400" />
@@ -372,7 +372,7 @@ export default function Websites() {
                 </div>
                 <div className="absolute bottom-4 left-4 flex items-center gap-2">
                   <Monitor className="w-4 h-4 text-gray-400" />
-                  <p className="text-sm font-medium text-gray-500">Desktop weergave</p>
+                  <p className="text-sm font-medium text-gray-500 dark:text-gray-400">Desktop weergave</p>
                 </div>
               </motion.div>
 
@@ -388,7 +388,7 @@ export default function Websites() {
                 <div className="relative">
                   {/* Phone frame */}
                   <div className="w-28 bg-gray-800 rounded-2xl p-1.5 shadow-xl">
-                    <div className="bg-white rounded-xl overflow-hidden">
+                    <div className="bg-white dark:bg-gray-900 rounded-xl overflow-hidden">
                       {/* Status bar */}
                       <div className="h-4 bg-gray-100 flex items-center justify-center">
                         <div className="w-8 h-1.5 bg-gray-800 rounded-full" />
@@ -408,7 +408,7 @@ export default function Websites() {
                 </div>
                 <div className="absolute bottom-4 left-4 flex items-center gap-2">
                   <Smartphone className="w-4 h-4 text-gray-400" />
-                  <p className="text-sm font-medium text-gray-500">Mobiel responsive</p>
+                  <p className="text-sm font-medium text-gray-500 dark:text-gray-400">Mobiel responsive</p>
                 </div>
               </motion.div>
             </div>
@@ -423,7 +423,7 @@ export default function Websites() {
               {includedFeatures.map((feature) => (
                 <span 
                   key={feature}
-                  className="px-4 py-2 bg-white border border-gray-200 rounded-full text-sm font-medium text-gray-600 hover:border-primary-300 hover:text-primary-600 transition-colors"
+                  className="px-4 py-2 bg-white dark:bg-gray-900 border border-gray-200 rounded-full text-sm font-medium text-gray-600 hover:border-primary-300 hover:text-primary-600 transition-colors"
                 >
                   ✓ {feature}
                 </span>
@@ -479,7 +479,7 @@ export default function Websites() {
                   whileInView={{ opacity: 1, y: 0 }}
                   viewport={{ once: true }}
                   transition={{ delay: index * 0.1 }}
-                  className={`relative bg-white rounded-2xl border-2 p-8 transition-all hover:shadow-xl ${
+                  className={`relative bg-white dark:bg-gray-900 rounded-2xl border-2 p-8 transition-all hover:shadow-xl ${
                     pkg.popular 
                       ? 'border-primary-500 shadow-lg shadow-primary-100' 
                       : 'border-gray-200 hover:border-primary-200'
@@ -503,19 +503,19 @@ export default function Websites() {
                       <pkg.icon className={`w-6 h-6 ${pkg.popular ? 'text-white' : 'text-primary-600'}`} />
                     </div>
                     <div>
-                      <h3 className="text-xl font-bold text-gray-900">{pkg.name}</h3>
-                      <p className="text-sm text-gray-500">{pkg.tagline}</p>
+                      <h3 className="text-xl font-bold text-gray-900 dark:text-white">{pkg.name}</h3>
+                      <p className="text-sm text-gray-500 dark:text-gray-400">{pkg.tagline}</p>
                     </div>
                   </div>
 
                   {/* Price */}
                   <div className="mb-4">
                     <div className="flex items-baseline gap-1 mb-1">
-                      <span className="text-4xl font-bold text-gray-900">€{pkg.price}</span>
-                      <span className="text-gray-500">/maand</span>
+                      <span className="text-4xl font-bold text-gray-900 dark:text-white">€{pkg.price}</span>
+                      <span className="text-gray-500 dark:text-gray-400">/maand</span>
                       <span className="ml-2 text-xs text-gray-400">(incl. BTW)</span>
                     </div>
-                    <p className="text-sm text-gray-500">+ €{pkg.setupFee} eenmalige opstartkosten</p>
+                    <p className="text-sm text-gray-500 dark:text-gray-400">+ €{pkg.setupFee} eenmalige opstartkosten</p>
                   </div>
 
                   {/* Description */}
@@ -652,13 +652,13 @@ export default function Websites() {
                   whileInView={{ opacity: 1, y: 0 }}
                   viewport={{ once: true }}
                   transition={{ delay: index * 0.1 }}
-                  className="group p-6 bg-white border border-gray-200/80 rounded-2xl shadow-sm hover:shadow-xl hover:border-primary-200 hover:-translate-y-1 transition-all"
+                  className="group p-6 bg-white dark:bg-gray-900 border border-gray-200/80 rounded-2xl shadow-sm hover:shadow-xl hover:border-primary-200 hover:-translate-y-1 transition-all"
                 >
                   <div className="flex items-center gap-4 mb-4">
                     <div className="w-12 h-12 bg-gradient-to-br from-primary-500 to-blue-600 rounded-xl flex items-center justify-center shadow-lg shadow-primary-500/20 group-hover:scale-110 transition-transform flex-shrink-0">
                       <feature.icon className="w-6 h-6 text-white" />
                     </div>
-                    <h3 className="text-lg font-bold text-gray-900">{feature.title}</h3>
+                    <h3 className="text-lg font-bold text-gray-900 dark:text-white">{feature.title}</h3>
                   </div>
                   <p className="text-gray-600 leading-relaxed">{feature.description}</p>
                 </motion.div>
@@ -709,7 +709,7 @@ export default function Websites() {
                   whileInView={{ opacity: 1, y: 0 }}
                   viewport={{ once: true }}
                   transition={{ delay: index * 0.1 }}
-                  className="relative bg-white rounded-2xl p-6 border border-gray-100 shadow-sm hover:shadow-lg transition-all"
+                  className="relative bg-white dark:bg-gray-900 rounded-2xl p-6 border border-gray-100 shadow-sm hover:shadow-lg transition-all"
                 >
                   {/* Step number */}
                   <div className="absolute -top-3 left-6">
@@ -755,7 +755,7 @@ export default function Websites() {
         </section>
 
         {/* Trustpilot Reviews */}
-        <TrustpilotReviews className="bg-white" />
+        <TrustpilotReviews className="bg-white dark:bg-gray-900 dark:bg-gray-900" />
       </main>
 
       <Footer ctaVariant="default" />

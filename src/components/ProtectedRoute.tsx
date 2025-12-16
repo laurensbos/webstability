@@ -23,10 +23,10 @@ export const ProtectedRoute: React.FC<ProtectedRouteProps> = ({
   // Loading state
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-50">
+      <div className="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-gray-800">
         <div className="text-center">
           <Loader2 className="w-8 h-8 animate-spin text-blue-600 mx-auto mb-4" />
-          <p className="text-gray-600">Laden...</p>
+          <p className="text-gray-600 dark:text-gray-400">Laden...</p>
         </div>
       </div>
     )
@@ -54,10 +54,10 @@ export const ProtectedRoute: React.FC<ProtectedRouteProps> = ({
   // Check if user profile exists
   if (!userProfile) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-50">
+      <div className="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-gray-800">
         <div className="text-center">
           <Loader2 className="w-8 h-8 animate-spin text-blue-600 mx-auto mb-4" />
-          <p className="text-gray-600">Profiel laden...</p>
+          <p className="text-gray-600 dark:text-gray-400">Profiel laden...</p>
         </div>
       </div>
     )
@@ -146,7 +146,7 @@ const FallbackLogin: React.FC<{ children: React.ReactNode; requireRole?: 'develo
 
     if (requireRole === 'admin' && !isAdmin) {
       return (
-        <div className="min-h-screen flex items-center justify-center bg-gray-50">
+        <div className="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-gray-800">
           <div className="text-center p-8">
             <h1 className="text-2xl font-bold text-red-600 mb-2">Geen toegang</h1>
             <p className="text-gray-600 mb-2">Je hebt geen admin rechten.</p>
@@ -164,7 +164,7 @@ const FallbackLogin: React.FC<{ children: React.ReactNode; requireRole?: 'develo
 
     if (requireRole === 'developer' && !isDeveloper) {
       return (
-        <div className="min-h-screen flex items-center justify-center bg-gray-50">
+        <div className="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-gray-800">
           <div className="text-center p-8">
             <h1 className="text-2xl font-bold text-red-600 mb-2">Geen toegang</h1>
             <p className="text-gray-600 mb-2">Je hebt geen developer rechten.</p>
@@ -182,7 +182,7 @@ const FallbackLogin: React.FC<{ children: React.ReactNode; requireRole?: 'develo
 
     if (requireRole === 'marketing' && !isMarketing) {
       return (
-        <div className="min-h-screen flex items-center justify-center bg-gray-50">
+        <div className="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-gray-800">
           <div className="text-center p-8">
             <h1 className="text-2xl font-bold text-red-600 mb-2">Geen toegang</h1>
             <p className="text-gray-600 mb-2">Je hebt geen marketing rechten.</p>
@@ -215,12 +215,12 @@ const FallbackLogin: React.FC<{ children: React.ReactNode; requireRole?: 'develo
                   <path d="M2 12l10 5 10-5" />
                 </svg>
               </div>
-              <span className="text-xl font-bold text-gray-900">Webstability</span>
+              <span className="text-xl font-bold text-gray-900 dark:text-white">Webstability</span>
             </div>
           </div>
 
           <div className="text-center mb-8">
-            <h1 className="text-2xl font-bold text-gray-900">
+            <h1 className="text-2xl font-bold text-gray-900 dark:text-white">
               {requireRole === 'developer' ? 'Developer Dashboard' : requireRole === 'admin' ? 'Admin Dashboard' : 'Marketing Dashboard'}
             </h1>
             <p className="text-gray-600 mt-2">

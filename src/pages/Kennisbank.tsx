@@ -104,7 +104,7 @@ export default function Kennisbank() {
   const featuredArticle = articles.find(a => a.featured)
 
   return (
-    <div className="min-h-screen bg-white">
+    <div className="min-h-screen bg-white dark:bg-gray-900 dark:bg-gray-900">
       <Header />
       
       <main>
@@ -160,7 +160,7 @@ export default function Kennisbank() {
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
                     placeholder="Zoek artikelen..."
-                    className="w-full pl-12 pr-4 py-4 bg-white border border-gray-200 rounded-2xl text-gray-900 placeholder-gray-400 focus:outline-none focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 transition-all shadow-lg shadow-gray-100/50"
+                    className="w-full pl-12 pr-4 py-4 bg-white dark:bg-gray-900 border border-gray-200 rounded-2xl text-gray-900 placeholder-gray-400 focus:outline-none focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 transition-all shadow-lg shadow-gray-100/50"
                   />
                 </div>
 
@@ -175,7 +175,7 @@ export default function Kennisbank() {
                       className="text-center"
                     >
                       <stat.icon className="w-5 h-5 text-primary-600 mx-auto mb-1" />
-                      <div className="text-xl sm:text-2xl font-bold text-gray-900">{stat.value}</div>
+                      <div className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white">{stat.value}</div>
                       <div className="text-gray-500 text-xs sm:text-sm">{stat.label}</div>
                     </motion.div>
                   ))}
@@ -187,7 +187,7 @@ export default function Kennisbank() {
 
         {/* Featured Article */}
         {featuredArticle && (
-          <section className="py-8 lg:py-12 bg-white">
+          <section className="py-8 lg:py-12 bg-white dark:bg-gray-900 dark:bg-gray-900">
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
               <Link
                 to={`/kennisbank/${featuredArticle.id}`}
@@ -273,7 +273,7 @@ export default function Kennisbank() {
                   <TrendingUp className="w-5 h-5 text-white" />
                 </div>
                 <div>
-                  <h2 className="text-xl font-bold text-gray-900">Populaire artikelen</h2>
+                  <h2 className="text-xl font-bold text-gray-900 dark:text-white">Populaire artikelen</h2>
                   <p className="text-gray-500 text-sm">Meest gelezen deze maand</p>
                 </div>
               </div>
@@ -289,7 +289,7 @@ export default function Kennisbank() {
                       whileInView={{ opacity: 1, y: 0 }}
                       viewport={{ once: true }}
                       transition={{ delay: index * 0.1 }}
-                      className="group bg-white border border-gray-200 rounded-2xl overflow-hidden hover:shadow-xl hover:border-gray-300 hover:-translate-y-1 transition-all"
+                      className="group bg-white dark:bg-gray-900 border border-gray-200 rounded-2xl overflow-hidden hover:shadow-xl hover:border-gray-300 hover:-translate-y-1 transition-all"
                     >
                       <div className="relative h-44 overflow-hidden">
                         <img 
@@ -345,19 +345,19 @@ export default function Kennisbank() {
         )}
 
         {/* All Articles Grid */}
-        <section className="py-12 lg:py-20 bg-gray-50">
+        <section className="py-12 lg:py-20 bg-gray-50 dark:bg-gray-800">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="flex items-center justify-between mb-8">
-              <h2 className="text-2xl font-bold text-gray-900">
+              <h2 className="text-2xl font-bold text-gray-900 dark:text-white">
                 {activeCategory}
               </h2>
-              <span className="text-gray-500 text-sm bg-white px-3 py-1 rounded-full">
+              <span className="text-gray-500 text-sm bg-white dark:bg-gray-900 px-3 py-1 rounded-full">
                 {filteredArticles.length} artikel{filteredArticles.length !== 1 ? 'en' : ''}
               </span>
             </div>
 
             {filteredArticles.length === 0 ? (
-              <div className="text-center py-16 bg-white rounded-2xl border border-gray-200">
+              <div className="text-center py-16 bg-white dark:bg-gray-900 rounded-2xl border border-gray-200 dark:border-gray-700">
                 <Search className="w-12 h-12 text-gray-300 mx-auto mb-4" />
                 <p className="text-gray-500 text-lg mb-2">Geen artikelen gevonden</p>
                 <p className="text-gray-400 text-sm mb-4">Probeer een andere zoekterm of categorie</p>
@@ -380,7 +380,7 @@ export default function Kennisbank() {
                       whileInView={{ opacity: 1, y: 0 }}
                       viewport={{ once: true }}
                       transition={{ delay: Math.min(index * 0.05, 0.3) }}
-                      className="group bg-white border border-gray-200 rounded-2xl overflow-hidden hover:shadow-xl hover:border-gray-300 hover:-translate-y-1 transition-all"
+                      className="group bg-white dark:bg-gray-900 border border-gray-200 rounded-2xl overflow-hidden hover:shadow-xl hover:border-gray-300 hover:-translate-y-1 transition-all"
                     >
                       <div className="relative h-44 overflow-hidden">
                         <img 

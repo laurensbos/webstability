@@ -54,9 +54,9 @@ export function OnboardingWizard(){
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-start">
         <div>
           <div className="mb-4">
-            <div className="text-sm text-slate-500">Stap {step} van 3</div>
-            <h3 className="text-2xl font-bold text-slate-900">Snel je website brief</h3>
-            <p className="text-sm text-slate-600 mt-1">In 3 stappen een eerste website-brief en preview.</p>
+            <div className="text-sm text-slate-500 dark:text-gray-400">Stap {step} van 3</div>
+            <h3 className="text-2xl font-bold text-slate-900 dark:text-white">Snel je website brief</h3>
+            <p className="text-sm text-slate-600 dark:text-gray-300 mt-1">In 3 stappen een eerste website-brief en preview.</p>
           </div>
 
           <div className="space-y-6">
@@ -64,13 +64,13 @@ export function OnboardingWizard(){
               {step === 1 && (
                 <motion.form key="step1" initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -8 }} onSubmit={(e)=>{e.preventDefault(); setStep(2)}} className="space-y-4">
                   <label className="block">
-                    <div className="text-sm font-medium text-slate-700">Bedrijfsnaam</div>
-                    <input value={data.businessName} onChange={(e)=>patch({ businessName: e.target.value })} className="mt-2 w-full px-4 py-2 rounded-md border bg-white" placeholder="Bijv. Jansen Fietsen" required />
+                    <div className="text-sm font-medium text-slate-700 dark:text-gray-300">Bedrijfsnaam</div>
+                    <input value={data.businessName} onChange={(e)=>patch({ businessName: e.target.value })} className="mt-2 w-full px-4 py-2 rounded-md border dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-400" placeholder="Bijv. Jansen Fietsen" required />
                   </label>
 
                   <label className="block">
-                    <div className="text-sm font-medium text-slate-700">Branche</div>
-                    <select value={data.industry} onChange={(e)=>patch({ industry: e.target.value })} className="mt-2 w-full px-4 py-2 rounded-md border bg-white">
+                    <div className="text-sm font-medium text-slate-700 dark:text-gray-300">Branche</div>
+                    <select value={data.industry} onChange={(e)=>patch({ industry: e.target.value })} className="mt-2 w-full px-4 py-2 rounded-md border dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white">
                       <option value="general">Algemeen</option>
                       <option value="restaurant">Horeca</option>
                       <option value="shop">Webshop</option>
@@ -87,24 +87,24 @@ export function OnboardingWizard(){
               {step === 2 && (
                 <motion.div key="step2" initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -8 }} className="space-y-4">
                   <div>
-                    <div className="text-sm font-medium text-slate-700">Kies template</div>
+                    <div className="text-sm font-medium text-slate-700 dark:text-slate-300">Kies template</div>
                     <div className="mt-3 flex gap-3">
-                      <button onClick={()=>patch({ template: 'starter' })} className={`px-4 py-2 rounded-md border ${data.template === 'starter' ? 'bg-violet-600 text-white' : 'bg-white'}`}>Starter</button>
-                      <button onClick={()=>patch({ template: 'shop' })} className={`px-4 py-2 rounded-md border ${data.template === 'shop' ? 'bg-violet-600 text-white' : 'bg-white'}`}>Webshop</button>
+                      <button onClick={()=>patch({ template: 'starter' })} className={`px-4 py-2 rounded-md border ${data.template === 'starter' ? 'bg-violet-600 text-white' : 'bg-white dark:bg-gray-700 dark:text-white'}`}>Starter</button>
+                      <button onClick={()=>patch({ template: 'shop' })} className={`px-4 py-2 rounded-md border ${data.template === 'shop' ? 'bg-violet-600 text-white' : 'bg-white dark:bg-gray-700 dark:text-white'}`}>Webshop</button>
                     </div>
                   </div>
 
                   <div>
                     <label>
-                      <div className="text-sm font-medium text-slate-700">Korte headline</div>
-                      <input value={data.title} onChange={(e)=>patch({ title: e.target.value })} className="mt-2 w-full px-4 py-2 rounded-md border" />
+                      <div className="text-sm font-medium text-slate-700 dark:text-slate-300">Korte headline</div>
+                      <input value={data.title} onChange={(e)=>patch({ title: e.target.value })} className="mt-2 w-full px-4 py-2 rounded-md border dark:bg-gray-700 dark:text-white dark:border-gray-600" />
                     </label>
                     <label className="block mt-3">
-                      <div className="text-sm font-medium text-slate-700">Subheadline</div>
-                      <input value={data.subtitle} onChange={(e)=>patch({ subtitle: e.target.value })} className="mt-2 w-full px-4 py-2 rounded-md border" />
+                      <div className="text-sm font-medium text-slate-700 dark:text-gray-300">Subheadline</div>
+                      <input value={data.subtitle} onChange={(e)=>patch({ subtitle: e.target.value })} className="mt-2 w-full px-4 py-2 rounded-md border dark:bg-gray-700 dark:text-white dark:border-gray-600" />
                     </label>
                     <div className="flex gap-3 mt-4">
-                      <button onClick={()=>setStep(1)} className="px-4 py-2 rounded-md border">Terug</button>
+                      <button onClick={()=>setStep(1)} className="px-4 py-2 rounded-md border dark:border-gray-600 dark:text-gray-300 dark:hover:bg-gray-700">Terug</button>
                       <button onClick={()=>setStep(3)} className="btn-primary px-4 py-2 rounded-md">Volgende</button>
                     </div>
                   </div>
@@ -114,24 +114,24 @@ export function OnboardingWizard(){
               {step === 3 && (
                 <motion.div key="step3" initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -8 }} className="space-y-4">
                   <label>
-                    <div className="text-sm font-medium text-slate-700">Contact e-mail</div>
-                    <input value={data.contactEmail} onChange={(e)=>patch({ contactEmail: e.target.value })} className="mt-2 w-full px-4 py-2 rounded-md border" placeholder="jij@bedrijf.nl" type="email" />
+                    <div className="text-sm font-medium text-slate-700 dark:text-gray-300">Contact e-mail</div>
+                    <input value={data.contactEmail} onChange={(e)=>patch({ contactEmail: e.target.value })} className="mt-2 w-full px-4 py-2 rounded-md border dark:border-gray-600 dark:bg-gray-700 dark:text-white" placeholder="jij@bedrijf.nl" type="email" />
                   </label>
 
                   <div className="flex gap-3">
-                    <button onClick={()=>setStep(2)} className="px-4 py-2 rounded-md border">Terug</button>
+                    <button onClick={()=>setStep(2)} className="px-4 py-2 rounded-md border dark:border-gray-600 dark:text-gray-300 dark:hover:bg-gray-700">Terug</button>
                     <button onClick={submit} disabled={loading} className="btn-primary px-4 py-2 rounded-md">{loading ? 'Aanmaken...' : 'Aanmaken & preview'}</button>
                   </div>
 
-                  {message && <div className="mt-3 text-sm text-slate-600">{message}</div>}
+                  {message && <div className="mt-3 text-sm text-slate-600 dark:text-gray-400">{message}</div>}
                 </motion.div>
               )}
 
               {step === 4 && (
                 <motion.div key="done" initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
-                  <div className="p-4 rounded-md bg-green-50 text-green-800">Je project is aangemaakt. Bekijk de preview of ga verder naar pricing / publish.</div>
+                  <div className="p-4 rounded-md bg-green-50 dark:bg-green-900/30 text-green-800 dark:text-green-300">Je project is aangemaakt. Bekijk de preview of ga verder naar pricing / publish.</div>
                   <div className="mt-4 space-y-2">
-                    <a href="/#pricing" className="text-indigo-600">Bekijk pakketten</a>
+                    <a href="/#pricing" className="text-indigo-600 dark:text-indigo-400">Bekijk pakketten</a>
                   </div>
                 </motion.div>
               )}
@@ -142,7 +142,7 @@ export function OnboardingWizard(){
         <div>
           <div className="sticky top-24">
             <LivePreview content={{ businessName: data.businessName, title: data.title, subtitle: data.subtitle, cta: data.cta }} onChange={(patch)=>patch && setData(prev=>({...prev,...patch}))} />
-            <div className="mt-4 text-sm text-slate-500">Tip: klik op tekst in de preview om direct te bewerken. Opslaan gebeurt automatisch bij afronding.</div>
+            <div className="mt-4 text-sm text-slate-500 dark:text-gray-400">Tip: klik op tekst in de preview om direct te bewerken. Opslaan gebeurt automatisch bij afronding.</div>
           </div>
         </div>
       </div>

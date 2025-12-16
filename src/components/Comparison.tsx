@@ -105,11 +105,11 @@ function renderCell(value: CellValue, isWebstability = false) {
   if (typeof value === 'object') {
     return (
       <div className="flex items-center gap-1.5 justify-center">
-        {value.type === 'check' && <Check className={`w-4 h-4 ${isWebstability ? 'text-green-600' : 'text-gray-400'}`} />}
+        {value.type === 'check' && <Check className={`w-4 h-4 ${isWebstability ? 'text-green-600 dark:text-green-400' : 'text-gray-400 dark:text-gray-500'}`} />}
         {value.type === 'cross' && <X className="w-4 h-4 text-red-400" />}
         {value.type === 'question' && <HelpCircle className="w-4 h-4 text-amber-500" />}
         {value.note && (
-          <span className={`text-sm ${isWebstability && value.type === 'check' ? 'text-green-600 font-medium' : 'text-gray-500'}`}>
+          <span className={`text-sm ${isWebstability && value.type === 'check' ? 'text-green-600 dark:text-green-400 font-medium' : 'text-gray-500 dark:text-gray-400'}`}>
             {value.note}
           </span>
         )}
@@ -117,7 +117,7 @@ function renderCell(value: CellValue, isWebstability = false) {
     )
   }
   return (
-    <span className={`text-sm ${isWebstability ? 'text-green-600 font-medium' : 'text-gray-600'}`}>
+    <span className={`text-sm ${isWebstability ? 'text-green-600 dark:text-green-400 font-medium' : 'text-gray-600 dark:text-gray-400'}`}>
       {value}
     </span>
   )
@@ -131,9 +131,9 @@ export default function Comparison() {
       
       {/* Background gradient blobs */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute -top-40 -left-40 w-80 h-80 bg-gradient-to-br from-primary-100/40 to-primary-200/20 rounded-full blur-3xl" />
-        <div className="absolute -bottom-40 -right-40 w-96 h-96 bg-gradient-to-tl from-blue-100/30 to-primary-100/20 rounded-full blur-3xl" />
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-gradient-to-r from-primary-50/30 to-transparent rounded-full blur-3xl" />
+        <div className="absolute -top-40 -left-40 w-80 h-80 bg-gradient-to-br from-primary-100/40 to-primary-200/20 dark:from-primary-900/30 dark:to-primary-900/20 rounded-full blur-3xl" />
+        <div className="absolute -bottom-40 -right-40 w-96 h-96 bg-gradient-to-tl from-blue-100/30 to-primary-100/20 dark:from-blue-900/20 dark:to-primary-900/10 rounded-full blur-3xl" />
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-gradient-to-r from-primary-50/30 to-transparent dark:from-primary-900/20 dark:to-transparent rounded-full blur-3xl" />
       </div>
 
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
@@ -173,12 +173,12 @@ export default function Comparison() {
           <div className="overflow-x-auto">
             <table className="w-full">
               <thead>
-                <tr className="border-b border-gray-100">
-                  <th className="text-left p-4 lg:p-5 text-gray-500 font-medium text-sm">Aspect</th>
-                  <th className="p-4 lg:p-5 text-center bg-gradient-to-b from-primary-50 to-primary-100/50 border-x border-primary-200/50">
+                <tr className="border-b border-gray-100 dark:border-gray-700">
+                  <th className="text-left p-4 lg:p-5 text-gray-500 dark:text-gray-400 font-medium text-sm">Aspect</th>
+                  <th className="p-4 lg:p-5 text-center bg-gradient-to-b from-primary-50 to-primary-100/50 dark:from-primary-900/50 dark:to-primary-900/30 border-x border-primary-200/50 dark:border-primary-700/50">
                     <div className="flex flex-col items-center gap-1">
-                      <span className="font-bold text-gray-900 text-base">webstability</span>
-                      <span className="text-xs text-primary-600 font-medium flex items-center gap-1">
+                      <span className="font-bold text-gray-900 dark:text-white text-base">webstability</span>
+                      <span className="text-xs text-primary-600 dark:text-primary-400 font-medium flex items-center gap-1">
                         <span className="relative flex h-1.5 w-1.5">
                           <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
                           <span className="relative inline-flex rounded-full h-1.5 w-1.5 bg-green-500"></span>
@@ -188,12 +188,12 @@ export default function Comparison() {
                     </div>
                   </th>
                   <th className="p-4 lg:p-5 text-center">
-                    <span className="font-bold text-gray-900">Webbureau</span>
-                    <p className="text-xs text-gray-500 mt-0.5 hidden lg:block">Freelancer of agency</p>
+                    <span className="font-bold text-gray-900 dark:text-white">Webbureau</span>
+                    <p className="text-xs text-gray-500 dark:text-gray-400 mt-0.5 hidden lg:block">Freelancer of agency</p>
                   </th>
                   <th className="p-4 lg:p-5 text-center">
-                    <span className="font-bold text-gray-900">Zelf maken</span>
-                    <p className="text-xs text-gray-500 mt-0.5 hidden lg:block">Wix, Squarespace, etc.</p>
+                    <span className="font-bold text-gray-900 dark:text-white">Zelf maken</span>
+                    <p className="text-xs text-gray-500 dark:text-gray-400 mt-0.5 hidden lg:block">Wix, Squarespace, etc.</p>
                   </th>
                 </tr>
               </thead>
@@ -201,10 +201,10 @@ export default function Comparison() {
                 {comparisons.map((row, index) => (
                   <tr 
                     key={row.aspect} 
-                    className={`${index % 2 === 0 ? 'bg-gray-50/30' : ''} hover:bg-gray-50/70 transition-colors`}
+                    className={`${index % 2 === 0 ? 'bg-gray-50/30 dark:bg-gray-700/30' : ''} hover:bg-gray-50/70 dark:hover:bg-gray-700/50 transition-colors`}
                   >
-                    <td className="p-4 text-gray-700 font-medium text-sm">{row.aspect}</td>
-                    <td className="p-4 text-center bg-gradient-to-b from-primary-50/40 to-primary-50/20 border-x border-primary-100/30">
+                    <td className="p-4 text-gray-700 dark:text-gray-300 font-medium text-sm">{row.aspect}</td>
+                    <td className="p-4 text-center bg-gradient-to-b from-primary-50/40 to-primary-50/20 dark:from-primary-900/40 dark:to-primary-900/20 border-x border-primary-100/30 dark:border-primary-800/30">
                       <div className="flex justify-center">{renderCell(row.webstability, true)}</div>
                     </td>
                     <td className="p-4 text-center">
@@ -220,25 +220,25 @@ export default function Comparison() {
           </div>
 
           {/* CTA Row */}
-          <div className="border-t border-gray-200/80 p-6 lg:p-8 bg-gradient-to-r from-primary-50 via-white to-blue-50 relative overflow-hidden">
+          <div className="border-t border-gray-200/80 dark:border-gray-700 p-6 lg:p-8 bg-gradient-to-r from-primary-50 via-white to-blue-50 dark:from-gray-800 dark:via-gray-800 dark:to-gray-800 relative overflow-hidden">
             {/* Subtle background pattern */}
-            <div className="absolute inset-0 opacity-30">
-              <div className="absolute top-0 left-1/4 w-32 h-32 bg-gradient-to-br from-primary-200 to-transparent rounded-full blur-2xl" />
-              <div className="absolute bottom-0 right-1/4 w-40 h-40 bg-gradient-to-tl from-blue-200 to-transparent rounded-full blur-2xl" />
+            <div className="absolute inset-0 opacity-30 dark:opacity-20">
+              <div className="absolute top-0 left-1/4 w-32 h-32 bg-gradient-to-br from-primary-200 to-transparent dark:from-primary-700 dark:to-transparent rounded-full blur-2xl" />
+              <div className="absolute bottom-0 right-1/4 w-40 h-40 bg-gradient-to-tl from-blue-200 to-transparent dark:from-blue-700 dark:to-transparent rounded-full blur-2xl" />
             </div>
             
             <div className="relative z-10 flex flex-col lg:flex-row items-center justify-between gap-6">
               {/* Left: Value proposition */}
               <div className="flex items-center gap-4">
                 <div className="flex -space-x-2">
-                  <div className="w-10 h-10 rounded-full bg-gradient-to-br from-primary-400 to-primary-600 flex items-center justify-center text-white text-sm font-bold ring-2 ring-white">€</div>
-                  <div className="w-10 h-10 rounded-full bg-gradient-to-br from-green-400 to-green-600 flex items-center justify-center ring-2 ring-white">
+                  <div className="w-10 h-10 rounded-full bg-gradient-to-br from-primary-400 to-primary-600 flex items-center justify-center text-white text-sm font-bold ring-2 ring-white dark:ring-gray-800">€</div>
+                  <div className="w-10 h-10 rounded-full bg-gradient-to-br from-green-400 to-green-600 flex items-center justify-center ring-2 ring-white dark:ring-gray-800">
                     <Check className="w-5 h-5 text-white" />
                   </div>
                 </div>
                 <div>
-                  <p className="font-semibold text-gray-900">Bespaar gemiddeld €2.500+</p>
-                  <p className="text-sm text-gray-500">Vergeleken met een traditioneel webbureau</p>
+                  <p className="font-semibold text-gray-900 dark:text-white">Bespaar gemiddeld €2.500+</p>
+                  <p className="text-sm text-gray-500 dark:text-gray-400">Vergeleken met een traditioneel webbureau</p>
                 </div>
               </div>
 
@@ -251,7 +251,7 @@ export default function Comparison() {
                   <span>Start je project</span>
                   <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
                 </a>
-                <div className="flex items-center gap-3 text-xs text-gray-500">
+                <div className="flex items-center gap-3 text-xs text-gray-500 dark:text-gray-400">
                   <span className="flex items-center gap-1">
                     <Check className="w-3 h-3 text-green-500" />
                     Geen verplichtingen
@@ -264,12 +264,12 @@ export default function Comparison() {
               </div>
 
               {/* Right: Social proof hint */}
-              <div className="flex items-center gap-3 bg-white/60 backdrop-blur-sm rounded-xl px-4 py-3 border border-gray-200/50">
+              <div className="flex items-center gap-3 bg-white/60 dark:bg-gray-800/60 backdrop-blur-sm rounded-xl px-4 py-3 border border-gray-200/50 dark:border-gray-700/50">
                 <div className="flex -space-x-2">
                   {[...Array(4)].map((_, i) => (
                     <div 
                       key={i} 
-                      className="w-8 h-8 rounded-full bg-gradient-to-br from-gray-300 to-gray-400 ring-2 ring-white flex items-center justify-center text-white text-xs font-medium"
+                      className="w-8 h-8 rounded-full bg-gradient-to-br from-gray-300 to-gray-400 ring-2 ring-white dark:ring-gray-800 flex items-center justify-center text-white text-xs font-medium"
                       style={{ 
                         backgroundImage: `linear-gradient(135deg, hsl(${200 + i * 30}, 70%, 60%), hsl(${220 + i * 30}, 70%, 50%))` 
                       }}
@@ -279,7 +279,7 @@ export default function Comparison() {
                   ))}
                 </div>
                 <div className="text-sm">
-                  <p className="font-medium text-gray-900">50+ ondernemers</p>
+                  <p className="font-medium text-gray-900 dark:text-white">50+ ondernemers</p>
                   <p className="text-gray-500 text-xs">gingen je al voor</p>
                 </div>
               </div>

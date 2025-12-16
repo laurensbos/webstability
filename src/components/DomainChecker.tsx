@@ -144,7 +144,7 @@ export default function DomainChecker() {
     <section id="domain-checker" className="py-16 lg:py-32 bg-white dark:bg-gray-900 relative overflow-hidden">
       {/* Background */}
       <div className="absolute inset-0">
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[400px] lg:w-[600px] h-[400px] lg:h-[600px] bg-primary-100/50 rounded-full blur-3xl" />
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[400px] lg:w-[600px] h-[400px] lg:h-[600px] bg-primary-100/50 dark:bg-primary-900/30 rounded-full blur-3xl" />
       </div>
 
       <div className="relative max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -154,7 +154,7 @@ export default function DomainChecker() {
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
-            className="inline-block text-primary-600 font-semibold text-sm tracking-wider uppercase mb-3 lg:mb-4"
+            className="inline-block text-primary-600 dark:text-primary-400 font-semibold text-sm tracking-wider uppercase mb-3 lg:mb-4"
           >
             Domeinchecker
           </motion.span>
@@ -163,10 +163,10 @@ export default function DomainChecker() {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ delay: 0.1 }}
-            className="text-2xl sm:text-3xl lg:text-5xl font-bold text-gray-900 mb-3 lg:mb-4"
+            className="text-2xl sm:text-3xl lg:text-5xl font-bold text-gray-900 dark:text-white mb-3 lg:mb-4"
           >
             Vind jouw perfecte{' '}
-            <span className="text-primary-600">
+            <span className="text-primary-600 dark:text-primary-400">
               domeinnaam
             </span>
           </motion.h2>
@@ -175,7 +175,7 @@ export default function DomainChecker() {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ delay: 0.2 }}
-            className="text-gray-600 text-base lg:text-lg max-w-2xl mx-auto"
+            className="text-gray-600 dark:text-gray-400 text-base lg:text-lg max-w-2xl mx-auto"
           >
             Check direct of jouw gewenste domeinnaam nog beschikbaar is. 
             Domeinregistratie is bij alle pakketten inbegrepen.
@@ -199,7 +199,7 @@ export default function DomainChecker() {
                 value={query}
                 onChange={(e) => setQuery(e.target.value)}
                 placeholder="Zoek je domeinnaam (bijv. mijnbedrijf)"
-                className="w-full pl-10 lg:pl-12 pr-4 py-3 lg:py-4 bg-white border border-gray-200 rounded-xl text-gray-900 placeholder-gray-400 focus:outline-none focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 transition-all text-base lg:text-lg shadow-sm"
+                className="w-full pl-10 lg:pl-12 pr-4 py-3 lg:py-4 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl text-gray-900 dark:text-white placeholder-gray-400 focus:outline-none focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 transition-all text-base lg:text-lg shadow-sm"
               />
             </div>
             <button
@@ -228,7 +228,7 @@ export default function DomainChecker() {
               className="text-center py-8 lg:py-12"
             >
               <Loader2 className="w-6 h-6 lg:w-8 lg:h-8 text-primary-500 animate-spin mx-auto mb-3 lg:mb-4" />
-              <p className="text-gray-600 text-sm lg:text-base">Domeinen controleren...</p>
+              <p className="text-gray-600 dark:text-gray-400 text-sm lg:text-base">Domeinen controleren...</p>
             </motion.div>
           )}
 
@@ -243,7 +243,7 @@ export default function DomainChecker() {
               {/* Beschikbare domeinen */}
               {availableDomains.length > 0 && (
                 <div className="space-y-2 lg:space-y-3">
-                  <h3 className="text-gray-900 font-semibold flex items-center gap-2 text-sm lg:text-base">
+                  <h3 className="text-gray-900 dark:text-white font-semibold flex items-center gap-2 text-sm lg:text-base">
                     <Check className="w-4 h-4 lg:w-5 lg:h-5 text-green-500" />
                     Beschikbaar ({availableDomains.length})
                   </h3>
@@ -253,15 +253,15 @@ export default function DomainChecker() {
                       initial={{ opacity: 0, x: -20 }}
                       animate={{ opacity: 1, x: 0 }}
                       transition={{ delay: index * 0.05 }}
-                      className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 lg:gap-4 p-3 lg:p-4 bg-white border border-green-200 rounded-xl hover:border-green-300 transition-colors shadow-sm"
+                      className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 lg:gap-4 p-3 lg:p-4 bg-white dark:bg-gray-800 border border-green-200 dark:border-green-800 rounded-xl hover:border-green-300 dark:hover:border-green-700 transition-colors shadow-sm"
                     >
                       <div className="flex items-center gap-2 lg:gap-3">
-                        <div className="w-8 h-8 lg:w-10 lg:h-10 bg-green-100 rounded-lg flex items-center justify-center flex-shrink-0">
-                          <Check className="w-4 h-4 lg:w-5 lg:h-5 text-green-600" />
+                        <div className="w-8 h-8 lg:w-10 lg:h-10 bg-green-100 dark:bg-green-900/30 rounded-lg flex items-center justify-center flex-shrink-0">
+                          <Check className="w-4 h-4 lg:w-5 lg:h-5 text-green-600 dark:text-green-400" />
                         </div>
                         <div>
-                          <div className="text-gray-900 font-medium text-base lg:text-lg">{result.domain}</div>
-                          <div className="text-gray-500 text-xs lg:text-sm">{result.price}</div>
+                          <div className="text-gray-900 dark:text-white font-medium text-base lg:text-lg">{result.domain}</div>
+                          <div className="text-gray-500 dark:text-gray-400 text-xs lg:text-sm">{result.price}</div>
                         </div>
                       </div>
                       <a
@@ -279,7 +279,7 @@ export default function DomainChecker() {
               {/* Niet beschikbare domeinen */}
               {unavailableDomains.length > 0 && (
                 <div className="space-y-3 mt-6">
-                  <h3 className="text-gray-500 font-semibold flex items-center gap-2">
+                  <h3 className="text-gray-500 dark:text-gray-400 font-semibold flex items-center gap-2">
                     <X className="w-5 h-5 text-red-400" />
                     Niet beschikbaar ({unavailableDomains.length})
                   </h3>
@@ -289,13 +289,13 @@ export default function DomainChecker() {
                       initial={{ opacity: 0, x: -20 }}
                       animate={{ opacity: 1, x: 0 }}
                       transition={{ delay: 0.2 + index * 0.05 }}
-                      className="flex items-center gap-3 p-4 bg-gray-50 border border-gray-100 rounded-xl opacity-60"
+                      className="flex items-center gap-3 p-4 bg-gray-50 dark:bg-gray-800 border border-gray-100 dark:border-gray-700 rounded-xl opacity-60"
                     >
-                      <div className="w-10 h-10 bg-red-100 rounded-lg flex items-center justify-center">
+                      <div className="w-10 h-10 bg-red-100 dark:bg-red-900/30 rounded-lg flex items-center justify-center">
                         <X className="w-5 h-5 text-red-400" />
                       </div>
                       <div>
-                        <div className="text-gray-600 font-medium">{result.domain}</div>
+                        <div className="text-gray-600 dark:text-gray-300 font-medium">{result.domain}</div>
                         <div className="text-gray-400 text-sm">Reeds geregistreerd</div>
                       </div>
                     </motion.div>
@@ -309,18 +309,18 @@ export default function DomainChecker() {
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
                   transition={{ delay: 0.4 }}
-                  className="mt-8 p-6 bg-primary-50 border border-primary-100 rounded-2xl text-center"
+                  className="mt-8 p-6 bg-primary-50 dark:bg-primary-900/20 border border-primary-100 dark:border-primary-800 rounded-2xl text-center"
                 >
-                  <p className="text-gray-900 font-medium mb-2">
+                  <p className="text-gray-900 dark:text-white font-medium mb-2">
                     🎉 Goed nieuws! Er zijn domeinen beschikbaar.
                   </p>
-                  <p className="text-gray-600 text-sm mb-4">
+                  <p className="text-gray-600 dark:text-gray-400 text-sm mb-4">
                     Domeinregistratie is inbegrepen bij al onze pakketten. 
                     Klik hierboven op je favoriete domein om direct te starten.
                   </p>
                   <a
                     href={`/start?domain=${encodeURIComponent(availableDomains[0].domain)}`}
-                    className="inline-flex items-center gap-2 text-primary-600 hover:text-primary-700 font-medium transition-colors"
+                    className="inline-flex items-center gap-2 text-primary-600 dark:text-primary-400 hover:text-primary-700 dark:hover:text-primary-300 font-medium transition-colors"
                   >
                     Start met {availableDomains[0].domain}
                     <ArrowRight className="w-4 h-4" />
@@ -338,10 +338,10 @@ export default function DomainChecker() {
               exit={{ opacity: 0 }}
               className="text-center py-12"
             >
-              <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
+              <div className="w-16 h-16 bg-gray-100 dark:bg-gray-800 rounded-full flex items-center justify-center mx-auto mb-4">
                 <Search className="w-8 h-8 text-gray-400" />
               </div>
-              <p className="text-gray-600">{error || 'Geen resultaten gevonden. Probeer een andere zoekterm.'}</p>
+              <p className="text-gray-600 dark:text-gray-400">{error || 'Geen resultaten gevonden. Probeer een andere zoekterm.'}</p>
             </motion.div>
           )}
         </AnimatePresence>
@@ -354,12 +354,12 @@ export default function DomainChecker() {
             transition={{ delay: 0.4 }}
             className="text-center"
           >
-            <p className="text-gray-500 text-sm mb-4">Populaire extensies:</p>
+            <p className="text-gray-500 dark:text-gray-400 text-sm mb-4">Populaire extensies:</p>
             <div className="flex flex-wrap justify-center gap-2">
               {['.nl', '.com', '.eu', '.online', '.shop'].map((ext) => (
                 <span
                   key={ext}
-                  className="px-3 py-1.5 bg-gray-100 border border-gray-200 rounded-full text-gray-600 text-sm"
+                  className="px-3 py-1.5 bg-gray-100 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-full text-gray-600 dark:text-gray-300 text-sm"
                 >
                   {ext}
                 </span>

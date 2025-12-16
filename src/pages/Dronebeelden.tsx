@@ -124,7 +124,7 @@ const portfolioVideos = [
 
 export default function Luchtvideografie() {
   return (
-    <div className="min-h-screen bg-white">
+    <div className="min-h-screen bg-white dark:bg-gray-900">
       <Header />
 
       <main>
@@ -237,11 +237,11 @@ export default function Luchtvideografie() {
         </section>
 
         {/* Features */}
-        <section id="features" className="py-20 bg-gradient-to-b from-white via-orange-50/20 to-white relative overflow-hidden">
+        <section id="features" className="py-20 bg-gradient-to-b from-white via-orange-50/20 to-white dark:from-gray-900 dark:via-orange-900/10 dark:to-gray-900 relative overflow-hidden">
           {/* Background decorations */}
           <div className="absolute inset-0 overflow-hidden pointer-events-none">
-            <div className="absolute -top-40 -right-40 w-80 h-80 bg-gradient-to-br from-orange-100/40 to-amber-100/20 rounded-full blur-3xl" />
-            <div className="absolute -bottom-40 -left-40 w-96 h-96 bg-gradient-to-tl from-amber-100/30 to-orange-100/20 rounded-full blur-3xl" />
+            <div className="absolute -top-40 -right-40 w-80 h-80 bg-gradient-to-br from-orange-100/40 to-amber-100/20 dark:from-orange-900/30 dark:to-amber-900/20 rounded-full blur-3xl" />
+            <div className="absolute -bottom-40 -left-40 w-96 h-96 bg-gradient-to-tl from-amber-100/30 to-orange-100/20 dark:from-amber-900/20 dark:to-orange-900/10 rounded-full blur-3xl" />
           </div>
 
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
@@ -258,7 +258,7 @@ export default function Luchtvideografie() {
                 initial={{ opacity: 0, y: 20 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
-                className="text-3xl sm:text-4xl font-bold text-gray-900 mb-4"
+                className="text-3xl sm:text-4xl font-bold text-gray-900 dark:text-white mb-4"
               >
                 Een uniek{' '}
                 <span className="bg-gradient-to-r from-orange-600 to-amber-600 bg-clip-text text-transparent">
@@ -270,7 +270,7 @@ export default function Luchtvideografie() {
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
                 transition={{ delay: 0.1 }}
-                className="text-gray-600 text-lg max-w-2xl mx-auto"
+                className="text-gray-600 dark:text-gray-300 text-lg max-w-2xl mx-auto"
               >
                 Luchtfoto's en video's geven een uniek perspectief dat je met geen andere techniek 
                 kunt bereiken. Laat je bedrijf zien zoals nooit tevoren.
@@ -285,16 +285,16 @@ export default function Luchtvideografie() {
                   whileInView={{ opacity: 1, y: 0 }}
                   viewport={{ once: true }}
                   transition={{ delay: index * 0.1 }}
-                  className="group p-6 bg-white border border-gray-200/80 rounded-2xl shadow-sm hover:shadow-xl hover:border-orange-200 hover:-translate-y-1 transition-all"
+                  className="group p-6 bg-white dark:bg-gray-800 border border-gray-200/80 dark:border-gray-700 rounded-2xl shadow-sm hover:shadow-xl hover:border-orange-200 dark:hover:border-orange-700 hover:-translate-y-1 transition-all"
                 >
                   {/* Icon + Title row */}
                   <div className="flex items-center gap-4 mb-4">
                     <div className="w-12 h-12 bg-gradient-to-br from-orange-500 to-amber-500 rounded-xl flex items-center justify-center shadow-lg shadow-orange-500/20 group-hover:scale-110 transition-transform flex-shrink-0">
                       <feature.icon className="w-6 h-6 text-white" />
                     </div>
-                    <h3 className="text-lg font-bold text-gray-900">{feature.title}</h3>
+                    <h3 className="text-lg font-bold text-gray-900 dark:text-white">{feature.title}</h3>
                   </div>
-                  <p className="text-gray-600 leading-relaxed">{feature.description}</p>
+                  <p className="text-gray-600 dark:text-gray-300 leading-relaxed">{feature.description}</p>
                 </motion.div>
               ))}
             </div>
@@ -402,10 +402,10 @@ export default function Luchtvideografie() {
         </section>
 
         {/* Use cases */}
-        <section className="py-20 bg-gradient-to-b from-white via-orange-50/30 to-white relative overflow-hidden">
+        <section className="py-20 bg-gradient-to-b from-white via-orange-50/30 to-white dark:from-gray-900 dark:via-orange-900/10 dark:to-gray-900 relative overflow-hidden">
           {/* Background decorations */}
           <div className="absolute inset-0 overflow-hidden pointer-events-none">
-            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-gradient-to-r from-orange-100/30 via-amber-100/20 to-transparent rounded-full blur-3xl" />
+            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-gradient-to-r from-orange-100/30 via-amber-100/20 to-transparent dark:from-orange-900/20 dark:via-amber-900/10 dark:to-transparent rounded-full blur-3xl" />
           </div>
 
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
@@ -422,7 +422,7 @@ export default function Luchtvideografie() {
                 initial={{ opacity: 0, y: 20 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
-                className="text-2xl sm:text-3xl font-bold text-gray-900 mb-4"
+                className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white mb-4"
               >
                 Perfect voor{' '}
                 <span className="bg-gradient-to-r from-orange-600 to-amber-600 bg-clip-text text-transparent">
@@ -438,7 +438,7 @@ export default function Luchtvideografie() {
                   whileInView={{ opacity: 1, scale: 1 }}
                   viewport={{ once: true }}
                   transition={{ delay: index * 0.05 }}
-                  className="px-5 py-2.5 bg-white border border-gray-200 rounded-full text-gray-700 text-sm font-medium shadow-sm hover:border-orange-300 hover:bg-gradient-to-r hover:from-orange-50 hover:to-amber-50 hover:shadow-md transition-all cursor-default"
+                  className="px-5 py-2.5 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-full text-gray-700 dark:text-gray-300 text-sm font-medium shadow-sm hover:border-orange-300 dark:hover:border-orange-600 hover:bg-gradient-to-r hover:from-orange-50 hover:to-amber-50 dark:hover:from-orange-900/20 dark:hover:to-amber-900/20 hover:shadow-md transition-all cursor-default"
                 >
                   {useCase}
                 </motion.span>
@@ -543,11 +543,11 @@ export default function Luchtvideografie() {
         </section>
 
         {/* What's included */}
-        <section className="py-20 bg-gradient-to-b from-white via-orange-50/20 to-white relative overflow-hidden">
+        <section className="py-20 bg-gradient-to-b from-white via-orange-50/20 to-white dark:from-gray-900 dark:via-orange-900/10 dark:to-gray-900 relative overflow-hidden">
           {/* Background decorations */}
           <div className="absolute inset-0 overflow-hidden pointer-events-none">
-            <div className="absolute -top-40 -left-40 w-80 h-80 bg-gradient-to-br from-orange-100/40 to-amber-100/20 rounded-full blur-3xl" />
-            <div className="absolute -bottom-40 -right-40 w-96 h-96 bg-gradient-to-tl from-amber-100/30 to-orange-100/20 rounded-full blur-3xl" />
+            <div className="absolute -top-40 -left-40 w-80 h-80 bg-gradient-to-br from-orange-100/40 to-amber-100/20 dark:from-orange-900/30 dark:to-amber-900/20 rounded-full blur-3xl" />
+            <div className="absolute -bottom-40 -right-40 w-96 h-96 bg-gradient-to-tl from-amber-100/30 to-orange-100/20 dark:from-amber-900/20 dark:to-orange-900/10 rounded-full blur-3xl" />
           </div>
 
           <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
@@ -564,7 +564,7 @@ export default function Luchtvideografie() {
                 initial={{ opacity: 0, y: 20 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
-                className="text-3xl sm:text-4xl font-bold text-gray-900 mb-4"
+                className="text-3xl sm:text-4xl font-bold text-gray-900 dark:text-white mb-4"
               >
                 Complete luchtopnames voor{' '}
                 <span className="bg-gradient-to-r from-orange-600 to-amber-600 bg-clip-text text-transparent">€483</span>
@@ -575,7 +575,7 @@ export default function Luchtvideografie() {
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
                 transition={{ delay: 0.1 }}
-                className="text-gray-600 text-lg max-w-2xl mx-auto mb-3"
+                className="text-gray-600 dark:text-gray-300 text-lg max-w-2xl mx-auto mb-3"
               >
                 Eenmalige investering voor professionele luchtopnames. Inclusief 
                 voorbereiding, shoot en nabewerking. Geen verrassingen.
@@ -585,11 +585,11 @@ export default function Luchtvideografie() {
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
                 transition={{ delay: 0.15 }}
-                className="inline-flex items-center gap-2 bg-emerald-50 border border-emerald-200 rounded-full px-4 py-2"
+                className="inline-flex items-center gap-2 bg-emerald-50 dark:bg-emerald-900/30 border border-emerald-200 dark:border-emerald-700 rounded-full px-4 py-2"
               >
-                <span className="text-emerald-600 text-sm font-medium">💼 Zakelijke investering</span>
-                <span className="text-emerald-600 text-sm">•</span>
-                <span className="text-emerald-600 text-sm">21% BTW kun je terugvragen bij je aangifte</span>
+                <span className="text-emerald-600 dark:text-emerald-400 text-sm font-medium">💼 Zakelijke investering</span>
+                <span className="text-emerald-600 dark:text-emerald-400 text-sm">•</span>
+                <span className="text-emerald-600 dark:text-emerald-400 text-sm">21% BTW kun je terugvragen bij je aangifte</span>
               </motion.div>
             </div>
 
@@ -602,10 +602,10 @@ export default function Luchtvideografie() {
                   whileInView={{ opacity: 1, y: 0 }}
                   viewport={{ once: true }}
                   transition={{ delay: index * 0.05 }}
-                  className="flex items-center gap-2 p-3 bg-white rounded-xl border border-gray-100 shadow-sm"
+                  className="flex items-center gap-2 p-3 bg-white dark:bg-gray-800 rounded-xl border border-gray-100 dark:border-gray-700 shadow-sm"
                 >
                   <CheckCircle className="w-5 h-5 text-orange-500 flex-shrink-0" />
-                  <span className="text-gray-700 text-sm">{item}</span>
+                  <span className="text-gray-700 dark:text-gray-300 text-sm">{item}</span>
                 </motion.div>
               ))}
             </div>
@@ -623,7 +623,7 @@ export default function Luchtvideografie() {
                 Plan je luchtopnames
                 <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
               </Link>
-              <p className="text-gray-500 text-sm mt-4">
+              <p className="text-gray-500 dark:text-gray-400 text-sm mt-4">
                 Combineer met een website voor korting
               </p>
             </motion.div>
@@ -631,7 +631,7 @@ export default function Luchtvideografie() {
         </section>
 
         {/* Trustpilot Reviews */}
-        <TrustpilotReviews className="bg-gray-50" />
+        <TrustpilotReviews className="bg-gray-50 dark:bg-gray-800" />
       </main>
 
       <Footer ctaVariant="drone" />

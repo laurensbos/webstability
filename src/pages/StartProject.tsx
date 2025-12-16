@@ -166,13 +166,13 @@ export default function StartProject() {
   // If a service is selected, show the appropriate onboarding
   if (selectedService === 'website') {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-primary-50/30">
+      <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-primary-50/30 dark:from-gray-900 dark:via-gray-900 dark:to-gray-900">
         <Header />
         <main className="pt-4">
           <div className="max-w-4xl mx-auto px-4 sm:px-6 mb-4">
             <button
               onClick={handleBack}
-              className="flex items-center gap-2 text-gray-500 hover:text-gray-700 transition-colors"
+              className="flex items-center gap-2 text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 transition-colors"
             >
               <ChevronLeft className="w-4 h-4" />
               <span className="text-sm">Andere dienst kiezen</span>
@@ -181,6 +181,7 @@ export default function StartProject() {
           <WebsiteOnboarding 
             isStandalone={false}
             initialPackage={(pakket as 'starter' | 'professional' | 'business') || 'professional'}
+            onClose={handleBack}
           />
         </main>
         <Footer />
@@ -190,13 +191,13 @@ export default function StartProject() {
 
   if (selectedService === 'webshop') {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-emerald-50/30">
+      <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-emerald-50/30 dark:from-gray-900 dark:via-gray-900 dark:to-gray-900">
         <Header />
         <main className="pt-4">
           <div className="max-w-4xl mx-auto px-4 sm:px-6 mb-4">
             <button
               onClick={handleBack}
-              className="flex items-center gap-2 text-gray-500 hover:text-gray-700 transition-colors"
+              className="flex items-center gap-2 text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 transition-colors"
             >
               <ChevronLeft className="w-4 h-4" />
               <span className="text-sm">Andere dienst kiezen</span>
@@ -204,6 +205,7 @@ export default function StartProject() {
           </div>
           <WebshopOnboarding 
             isStandalone={false}
+            onClose={handleBack}
           />
         </main>
         <Footer />
@@ -213,13 +215,13 @@ export default function StartProject() {
 
   if (selectedService === 'drone') {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-orange-50/30">
+      <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-orange-50/30 dark:from-gray-900 dark:via-gray-900 dark:to-gray-900">
         <Header />
         <main className="pt-4">
           <div className="max-w-4xl mx-auto px-4 sm:px-6 mb-4">
             <button
               onClick={handleBack}
-              className="flex items-center gap-2 text-gray-500 hover:text-gray-700 transition-colors"
+              className="flex items-center gap-2 text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 transition-colors"
             >
               <ChevronLeft className="w-4 h-4" />
               <span className="text-sm">Andere dienst kiezen</span>
@@ -228,6 +230,7 @@ export default function StartProject() {
           <DroneOnboarding 
             isStandalone={false}
             initialPackage={(pakket as 'basis' | 'professional' | 'premium') || 'professional'}
+            onClose={handleBack}
           />
         </main>
         <Footer />
@@ -239,15 +242,15 @@ export default function StartProject() {
     // TODO: Create LogoOnboarding component
     // For now, redirect to old flow or show message
     return (
-      <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-purple-50/30">
+      <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-purple-50/30 dark:from-gray-900 dark:via-gray-900 dark:to-gray-900">
         <Header />
         <main className="pt-4 min-h-[60vh] flex items-center justify-center">
           <div className="text-center max-w-md mx-auto px-4">
             <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-purple-500 to-violet-600 flex items-center justify-center mx-auto mb-6 shadow-lg shadow-purple-500/20">
               <PenTool className="w-8 h-8 text-white" />
             </div>
-            <h2 className="text-2xl font-bold text-gray-900 mb-3">Logo Design</h2>
-            <p className="text-gray-600 mb-6">
+            <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-3">Logo Design</h2>
+            <p className="text-gray-600 dark:text-gray-300 mb-6">
               Voor logo design neem direct contact met ons op. We bespreken graag je wensen en maken een uniek ontwerp voor je merk.
             </p>
             <div className="flex flex-col sm:flex-row gap-3 justify-center">
@@ -260,7 +263,7 @@ export default function StartProject() {
               </a>
               <button
                 onClick={handleBack}
-                className="inline-flex items-center justify-center gap-2 px-6 py-3 bg-gray-100 text-gray-700 font-semibold rounded-xl hover:bg-gray-200 transition-all"
+                className="inline-flex items-center justify-center gap-2 px-6 py-3 bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-200 font-semibold rounded-xl hover:bg-gray-200 dark:hover:bg-gray-700 transition-all"
               >
                 <ChevronLeft className="w-4 h-4" />
                 Terug
@@ -275,7 +278,7 @@ export default function StartProject() {
 
   // Service selection screen
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-primary-50/30 relative overflow-hidden">
+    <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-primary-50/30 dark:from-gray-900 dark:via-gray-900 dark:to-gray-900 relative overflow-hidden">
       <FloatingParticles activeService={hoveredService || 'website'} />
       
       <Header />
@@ -292,20 +295,20 @@ export default function StartProject() {
               initial={{ opacity: 0, scale: 0.9 }}
               animate={{ opacity: 1, scale: 1 }}
               transition={{ delay: 0.1 }}
-              className="inline-flex items-center gap-2 bg-primary-50 border border-primary-200 rounded-full px-4 py-2 mb-6"
+              className="inline-flex items-center gap-2 bg-primary-50 dark:bg-primary-900/30 border border-primary-200 dark:border-primary-700 rounded-full px-4 py-2 mb-6"
             >
-              <Sparkles className="w-4 h-4 text-primary-600" />
-              <span className="text-sm font-medium text-primary-700">Start je project</span>
+              <Sparkles className="w-4 h-4 text-primary-600 dark:text-primary-400" />
+              <span className="text-sm font-medium text-primary-700 dark:text-primary-300">Start je project</span>
             </motion.div>
             
-            <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-gray-900 mb-4">
+            <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-gray-900 dark:text-white mb-4">
               Wat kunnen we voor je{' '}
               <span className="bg-gradient-to-r from-primary-600 to-blue-600 bg-clip-text text-transparent">
                 maken?
               </span>
             </h1>
             
-            <p className="text-lg sm:text-xl text-gray-600 max-w-2xl mx-auto">
+            <p className="text-lg sm:text-xl text-gray-600 dark:text-gray-300 max-w-2xl mx-auto">
               Kies een dienst en doorloop onze slimme wizard. 
               Binnen 5 minuten heb je je project aangevraagd.
             </p>
@@ -328,8 +331,8 @@ export default function StartProject() {
                   onClick={() => setSelectedService(service.id)}
                   className={`relative group text-left p-6 rounded-2xl border-2 transition-all duration-300 ${
                     isHovered
-                      ? `border-${service.color}-300 bg-gradient-to-br from-${service.color}-50 to-white shadow-xl shadow-${service.color}-500/10`
-                      : 'border-gray-200 bg-white hover:border-gray-300 shadow-sm hover:shadow-md'
+                      ? `border-${service.color}-300 bg-gradient-to-br from-${service.color}-50 to-white dark:from-${service.color}-900/30 dark:to-gray-800 shadow-xl shadow-${service.color}-500/10`
+                      : 'border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 hover:border-gray-300 dark:hover:border-gray-600 shadow-sm hover:shadow-md'
                   }`}
                 >
                   {/* Popular badge */}
@@ -347,19 +350,19 @@ export default function StartProject() {
                   </div>
                   
                   {/* Title & Description */}
-                  <h3 className="text-xl font-bold text-gray-900 mb-1">{service.name}</h3>
-                  <p className="text-sm text-gray-500 mb-4">{service.description}</p>
+                  <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-1">{service.name}</h3>
+                  <p className="text-sm text-gray-500 dark:text-gray-400 mb-4">{service.description}</p>
                   
                   {/* Price */}
                   <div className="mb-4">
-                    <span className="text-2xl font-bold text-gray-900">{service.price}</span>
-                    <span className="text-sm text-gray-500 ml-1">{service.priceNote}</span>
+                    <span className="text-2xl font-bold text-gray-900 dark:text-white">{service.price}</span>
+                    <span className="text-sm text-gray-500 dark:text-gray-400 ml-1">{service.priceNote}</span>
                   </div>
                   
                   {/* Features */}
                   <ul className="space-y-2 mb-6">
                     {service.features.map((feature, i) => (
-                      <li key={i} className="flex items-center gap-2 text-sm text-gray-600">
+                      <li key={i} className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-300">
                         <Check className={`w-4 h-4 text-${service.color}-500 flex-shrink-0`} />
                         {feature}
                       </li>
@@ -367,8 +370,8 @@ export default function StartProject() {
                   </ul>
                   
                   {/* CTA */}
-                  <div className={`flex items-center justify-between pt-4 border-t border-gray-100 group-hover:border-${service.color}-100 transition-colors`}>
-                    <span className={`font-semibold text-${service.color}-600`}>Starten</span>
+                  <div className={`flex items-center justify-between pt-4 border-t border-gray-100 dark:border-gray-700 group-hover:border-${service.color}-100 dark:group-hover:border-${service.color}-800 transition-colors`}>
+                    <span className={`font-semibold text-${service.color}-600 dark:text-${service.color}-400`}>Starten</span>
                     <ArrowRight className={`w-5 h-5 text-${service.color}-500 transition-transform group-hover:translate-x-1`} />
                   </div>
                 </motion.button>
@@ -383,7 +386,7 @@ export default function StartProject() {
             transition={{ delay: 0.6 }}
             className="mt-16 text-center"
           >
-            <div className="flex flex-wrap items-center justify-center gap-6 sm:gap-10 text-sm text-gray-500">
+            <div className="flex flex-wrap items-center justify-center gap-6 sm:gap-10 text-sm text-gray-500 dark:text-gray-400">
               <div className="flex items-center gap-2">
                 <Check className="w-5 h-5 text-green-500" />
                 <span>Geen verplichtingen</span>

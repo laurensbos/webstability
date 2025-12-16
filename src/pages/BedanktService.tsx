@@ -112,7 +112,7 @@ export default function BedanktService() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.5 }}
-            className="bg-white rounded-2xl border border-gray-200 shadow-lg p-6 md:p-8 mb-8 text-left"
+            className="bg-white dark:bg-gray-900 rounded-2xl border border-gray-200 shadow-lg p-6 md:p-8 mb-8 text-left"
           >
             <h2 className="text-xl font-bold text-gray-900 mb-6 flex items-center gap-2">
               <Sparkles className="w-5 h-5 text-primary-600" />

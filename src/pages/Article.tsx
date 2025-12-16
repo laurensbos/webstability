@@ -85,14 +85,14 @@ export default function Article() {
               {currentList.map((item, i) => (
                 <li key={i} className="flex items-start gap-2">
                   <input type="checkbox" disabled className="mt-1 rounded border-gray-300" />
-                  <span className="text-gray-700">{item}</span>
+                  <span className="text-gray-700 dark:text-gray-300">{item}</span>
                 </li>
               ))}
             </ul>
           )
         } else if (listType === 'ol') {
           elements.push(
-            <ol key={elements.length} className="list-decimal list-inside space-y-2 my-4 text-gray-700">
+            <ol key={elements.length} className="list-decimal list-inside space-y-2 my-4 text-gray-700 dark:text-gray-300">
               {currentList.map((item, i) => (
                 <li key={i} dangerouslySetInnerHTML={{ __html: item }} />
               ))}
@@ -100,7 +100,7 @@ export default function Article() {
           )
         } else {
           elements.push(
-            <ul key={elements.length} className="list-disc list-inside space-y-2 my-4 text-gray-700">
+            <ul key={elements.length} className="list-disc list-inside space-y-2 my-4 text-gray-700 dark:text-gray-300">
               {currentList.map((item, i) => (
                 <li key={i} dangerouslySetInnerHTML={{ __html: item }} />
               ))}
@@ -117,7 +117,7 @@ export default function Article() {
         elements.push(
           <div key={elements.length} className="overflow-x-auto my-6">
             <table className="min-w-full border border-gray-200 rounded-lg overflow-hidden">
-              <thead className="bg-gray-50">
+              <thead className="bg-gray-50 dark:bg-gray-800">
                 <tr>
                   {tableRows[0].map((cell, i) => (
                     <th key={i} className="px-4 py-3 text-left text-sm font-semibold text-gray-900 border-b">
@@ -252,7 +252,7 @@ export default function Article() {
   }
 
   return (
-    <div className="min-h-screen bg-white">
+    <div className="min-h-screen bg-white dark:bg-gray-900 dark:bg-gray-900">
       <Header />
 
       <main>
@@ -329,18 +329,18 @@ export default function Article() {
               </p>
 
               {/* Meta info */}
-              <div className="flex flex-wrap items-center gap-4 sm:gap-6 text-xs sm:text-sm text-gray-500 pt-6 border-t border-gray-100">
+              <div className="flex flex-wrap items-center gap-4 sm:gap-6 text-xs sm:text-sm text-gray-500 pt-6 border-t border-gray-100 dark:border-gray-700">
                 <div className="flex items-center gap-2">
                   <div className="w-8 h-8 rounded-full bg-gradient-to-br from-primary-400 to-primary-600 flex items-center justify-center text-white font-semibold text-xs">
                     {article.author.charAt(0)}
                   </div>
-                  <span className="font-medium text-gray-700">{article.author}</span>
+                  <span className="font-medium text-gray-700 dark:text-gray-300">{article.author}</span>
                 </div>
-                <div className="flex items-center gap-1.5 sm:gap-2 text-gray-500">
+                <div className="flex items-center gap-1.5 sm:gap-2 text-gray-500 dark:text-gray-400">
                   <Calendar className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-gray-400" />
                   <span>{formatDate(article.publishedAt)}</span>
                 </div>
-                <div className="flex items-center gap-1.5 sm:gap-2 text-gray-500">
+                <div className="flex items-center gap-1.5 sm:gap-2 text-gray-500 dark:text-gray-400">
                   <Clock className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-gray-400" />
                   <span>{article.readTime} min leestijd</span>
                 </div>
@@ -350,7 +350,7 @@ export default function Article() {
         </section>
 
         {/* Content */}
-        <section className="py-12 lg:py-16 bg-white">
+        <section className="py-12 lg:py-16 bg-white dark:bg-gray-900 dark:bg-gray-900">
           <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
             <motion.div
               initial={{ opacity: 0, y: 20 }}
@@ -359,7 +359,7 @@ export default function Article() {
               className="grid lg:grid-cols-[1fr,280px] gap-8 lg:gap-12"
             >
               {/* Main content */}
-              <article className="prose prose-sm sm:prose-base lg:prose-lg max-w-none prose-headings:text-gray-900 prose-p:text-gray-600 prose-a:text-primary-600 prose-strong:text-gray-900">
+              <article className="prose prose-sm sm:prose-base lg:prose-lg max-w-none prose-headings:text-gray-900 prose-p:text-gray-600 prose-a:text-primary-600 prose-strong:text-gray-900 dark:text-white">
                 {renderContent(article.content)}
 
                 {/* Tags */}
@@ -419,7 +419,7 @@ export default function Article() {
                       </p>
                       <Link
                         to="/start"
-                        className="flex items-center justify-center gap-2 w-full py-3 bg-white text-primary-600 font-semibold rounded-xl hover:bg-primary-50 transition-all group"
+                        className="flex items-center justify-center gap-2 w-full py-3 bg-white dark:bg-gray-900 text-primary-600 font-semibold rounded-xl hover:bg-primary-50 transition-all group"
                       >
                         <span>Start je project</span>
                         <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
@@ -439,7 +439,7 @@ export default function Article() {
                           <Link
                             key={related.id}
                             to={`/kennisbank/${related.id}`}
-                            className="block p-3 bg-white rounded-xl hover:shadow-md transition-all border border-gray-100 group"
+                            className="block p-3 bg-white dark:bg-gray-900 rounded-xl hover:shadow-md transition-all border border-gray-100 group"
                           >
                             <span className="text-xs text-primary-600 font-medium">{related.category}</span>
                             <h5 className="text-sm font-medium text-gray-900 mt-1 line-clamp-2 group-hover:text-primary-600 transition-colors">
@@ -470,7 +470,7 @@ export default function Article() {
                   <Link
                     key={related.id}
                     to={`/kennisbank/${related.id}`}
-                    className="block p-4 sm:p-6 bg-white rounded-xl hover:shadow-md transition-shadow"
+                    className="block p-4 sm:p-6 bg-white dark:bg-gray-900 rounded-xl hover:shadow-md transition-shadow"
                   >
                     <span className="text-[10px] sm:text-xs text-primary-600 font-medium">{related.category}</span>
                     <h4 className="font-semibold text-gray-900 text-sm sm:text-base mt-1.5 sm:mt-2 mb-1.5 sm:mb-2 line-clamp-2">{related.title}</h4>
@@ -531,7 +531,7 @@ export default function Article() {
             >
               <Link
                 to="/start"
-                className="group inline-flex items-center justify-center gap-2 px-6 lg:px-8 py-3 lg:py-4 bg-white text-primary-600 font-semibold rounded-xl hover:bg-primary-50 transition-all hover:-translate-y-0.5 shadow-lg text-sm lg:text-base"
+                className="group inline-flex items-center justify-center gap-2 px-6 lg:px-8 py-3 lg:py-4 bg-white dark:bg-gray-900 text-primary-600 font-semibold rounded-xl hover:bg-primary-50 transition-all hover:-translate-y-0.5 shadow-lg text-sm lg:text-base"
               >
                 <span>Start je project</span>
                 <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />

@@ -101,43 +101,43 @@ export default function CheckoutModal(){
   return (
     <div className="fixed inset-0 z-60 flex items-center justify-center">
       <div className="absolute inset-0 bg-black/40" onClick={()=>setOpen(false)} />
-      <motion.div className="relative bg-white rounded-2xl p-6 max-w-lg w-full shadow-card" initial={{opacity:0,scale:0.98,y:8}} animate={{opacity:1,scale:1,y:0}} transition={{duration:0.18}}>
-        <h3 className="text-lg font-semibold">Bestel: {isWebshop ? 'Webshop' : plan}</h3>
-        <p className="text-sm text-slate-600 mt-1">Vul je gegevens in om direct te starten.</p>
+      <motion.div className="relative bg-white dark:bg-gray-800 rounded-2xl p-6 max-w-lg w-full shadow-card" initial={{opacity:0,scale:0.98,y:8}} animate={{opacity:1,scale:1,y:0}} transition={{duration:0.18}}>
+        <h3 className="text-lg font-semibold text-gray-900 dark:text-white">Bestel: {isWebshop ? 'Webshop' : plan}</h3>
+        <p className="text-sm text-slate-600 dark:text-gray-300 mt-1">Vul je gegevens in om direct te starten.</p>
 
         <form onSubmit={submit} className="mt-4 space-y-3">
-          <input value={name} onChange={(e)=>setName(e.target.value)} placeholder="Volledige naam" className="w-full px-3 py-2 border rounded" required />
-          <input value={email} onChange={(e)=>setEmail(e.target.value)} type="email" placeholder="E-mail" className="w-full px-3 py-2 border rounded" required />
-          <input value={domain} onChange={(e)=>setDomain(e.target.value)} placeholder="Gewenst domein (optioneel)" className="w-full px-3 py-2 border rounded" />
+          <input value={name} onChange={(e)=>setName(e.target.value)} placeholder="Volledige naam" className="w-full px-3 py-2 border dark:border-gray-600 rounded bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500" required />
+          <input value={email} onChange={(e)=>setEmail(e.target.value)} type="email" placeholder="E-mail" className="w-full px-3 py-2 border dark:border-gray-600 rounded bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500" required />
+          <input value={domain} onChange={(e)=>setDomain(e.target.value)} placeholder="Gewenst domein (optioneel)" className="w-full px-3 py-2 border dark:border-gray-600 rounded bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500" />
 
-          <div className="mt-3 p-4 bg-slate-50 rounded-lg">
+          <div className="mt-3 p-4 bg-slate-50 dark:bg-gray-700 rounded-lg">
             <div className="flex items-center justify-between">
-              <div className="text-sm text-slate-700">Pakket</div>
-              <div className="font-medium">{isWebshop ? 'Webshop' : plan}</div>
+              <div className="text-sm text-slate-700 dark:text-gray-300">Pakket</div>
+              <div className="font-medium text-gray-900 dark:text-white">{isWebshop ? 'Webshop' : plan}</div>
             </div>
-            <div className="flex items-center justify-between mt-2 pt-2 border-t border-slate-200">
-              <div className="text-sm text-slate-700">Eenmalige opstartkosten</div>
-              <div className="font-medium">€{prices.setup}</div>
+            <div className="flex items-center justify-between mt-2 pt-2 border-t border-slate-200 dark:border-gray-600">
+              <div className="text-sm text-slate-700 dark:text-gray-300">Eenmalige opstartkosten</div>
+              <div className="font-medium text-gray-900 dark:text-white">€{prices.setup}</div>
             </div>
             <div className="flex items-center justify-between mt-1">
-              <div className="text-sm text-slate-700">Eerste maand</div>
-              <div className="font-medium">€{prices.monthly}</div>
+              <div className="text-sm text-slate-700 dark:text-gray-300">Eerste maand</div>
+              <div className="font-medium text-gray-900 dark:text-white">€{prices.monthly}</div>
             </div>
             {coupon && (
               <div className="flex items-center justify-between mt-1">
-                <div className="text-sm text-slate-700">Coupon</div>
-                <div className="font-medium text-green-600">{coupon}</div>
+                <div className="text-sm text-slate-700 dark:text-gray-300">Coupon</div>
+                <div className="font-medium text-green-600 dark:text-green-400">{coupon}</div>
               </div>
             )}
-            <div className="flex items-center justify-between mt-3 pt-3 border-t border-slate-300">
-              <div className="text-sm font-semibold text-slate-900">Totaal eerste betaling</div>
-              <div className="font-bold text-lg text-primary-600">€{totalFirstPayment}</div>
+            <div className="flex items-center justify-between mt-3 pt-3 border-t border-slate-300 dark:border-gray-500">
+              <div className="text-sm font-semibold text-slate-900 dark:text-white">Totaal eerste betaling</div>
+              <div className="font-bold text-lg text-primary-600 dark:text-primary-400">€{totalFirstPayment}</div>
             </div>
-            <p className="text-xs text-slate-500 mt-2">Daarna €{prices.monthly}/maand</p>
+            <p className="text-xs text-slate-500 dark:text-gray-400 mt-2">Daarna €{prices.monthly}/maand</p>
           </div>
 
           <div className="flex items-center justify-between pt-2">
-            <button type="button" className="px-4 py-2 rounded border" onClick={()=>setOpen(false)}>Annuleer</button>
+            <button type="button" className="px-4 py-2 rounded border dark:border-gray-600 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700" onClick={()=>setOpen(false)}>Annuleer</button>
             <button type="submit" className="btn-primary" disabled={processing}>{processing ? 'Verwerken…' : 'Naar betaling'}</button>
           </div>
         </form>

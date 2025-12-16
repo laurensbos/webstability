@@ -6,7 +6,7 @@ import Footer from '../components/Footer'
 
 export default function Voorwaarden() {
   return (
-    <div className="min-h-screen bg-white">
+    <div className="min-h-screen bg-white dark:bg-gray-900 dark:bg-gray-900">
       <Header urgencyBannerVisible={false} />
       
       <main className="pt-32 pb-20">
@@ -144,7 +144,7 @@ export default function Voorwaarden() {
 
               <section className="mb-8">
                 <h2 className="text-xl font-semibold text-gray-900 mb-4">Artikel 13 – Vertrouwelijkheid</h2>
-                <p className="text-gray-600">
+                <p className="text-gray-600 dark:text-gray-400">
                   Beide partijen zijn verplicht tot geheimhouding van alle vertrouwelijke informatie die zij in het kader van de overeenkomst van elkaar ontvangen.
                 </p>
               </section>

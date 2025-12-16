@@ -603,7 +603,7 @@ export default function WebshopOnboarding({
                           }`}
                         >
                           <div className="font-semibold">{option}</div>
-                          <div className="text-xs text-gray-500">producten</div>
+                          <div className="text-xs text-gray-500 dark:text-gray-400">producten</div>
                         </button>
                       ))}
                     </div>
@@ -704,7 +704,7 @@ export default function WebshopOnboarding({
                           }`}
                         >
                           <div className="font-semibold text-sm">{option.name}</div>
-                          <div className="text-xs text-gray-500">{option.desc}</div>
+                          <div className="text-xs text-gray-500 dark:text-gray-400">{option.desc}</div>
                         </button>
                       ))}
                     </div>
@@ -760,7 +760,7 @@ export default function WebshopOnboarding({
                             }`}
                           >
                             <div className="font-semibold text-sm">{option.name}</div>
-                            <div className="text-xs text-gray-500">{option.desc}</div>
+                            <div className="text-xs text-gray-500 dark:text-gray-400">{option.desc}</div>
                           </button>
                         ))}
                       </div>
@@ -769,8 +769,8 @@ export default function WebshopOnboarding({
 
                   <div className="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
                     <div>
-                      <div className="font-medium text-gray-900">Voorraadbeheer</div>
-                      <div className="text-sm text-gray-500">Automatisch voorraad bijhouden</div>
+                      <div className="font-medium text-gray-900 dark:text-white">Voorraadbeheer</div>
+                      <div className="text-sm text-gray-500 dark:text-gray-400">Automatisch voorraad bijhouden</div>
                     </div>
                     <button
                       type="button"
@@ -928,8 +928,8 @@ export default function WebshopOnboarding({
 
                   <div className="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
                     <div>
-                      <div className="font-medium text-gray-900">Heb je al een logo?</div>
-                      <div className="text-sm text-gray-500">Anders kunnen wij er een maken</div>
+                      <div className="font-medium text-gray-900 dark:text-white">Heb je al een logo?</div>
+                      <div className="text-sm text-gray-500 dark:text-gray-400">Anders kunnen wij er een maken</div>
                     </div>
                     <button
                       type="button"
@@ -979,7 +979,7 @@ export default function WebshopOnboarding({
                           }`}
                         >
                           <div className="font-semibold">{style.name}</div>
-                          <div className="text-xs text-gray-500">{style.desc}</div>
+                          <div className="text-xs text-gray-500 dark:text-gray-400">{style.desc}</div>
                         </button>
                       ))}
                     </div>
@@ -1085,17 +1085,17 @@ export default function WebshopOnboarding({
                   <div className="bg-gradient-to-br from-emerald-50 to-green-50 rounded-xl p-4 border border-emerald-200">
                     <h4 className="font-bold text-emerald-900 mb-3">📋 Samenvatting</h4>
                     <div className="grid sm:grid-cols-2 gap-2 text-sm">
-                      <div><span className="text-gray-600">Bedrijf:</span> <span className="font-medium">{data.companyName}</span></div>
-                      <div><span className="text-gray-600">Webshop:</span> <span className="font-medium">{data.shopName}</span></div>
-                      <div><span className="text-gray-600">Producten:</span> <span className="font-medium">{data.expectedProducts}</span></div>
-                      <div><span className="text-gray-600">Stijl:</span> <span className="font-medium">{data.designStyle}</span></div>
+                      <div><span className="text-gray-600 dark:text-gray-400">Bedrijf:</span> <span className="font-medium">{data.companyName}</span></div>
+                      <div><span className="text-gray-600 dark:text-gray-400">Webshop:</span> <span className="font-medium">{data.shopName}</span></div>
+                      <div><span className="text-gray-600 dark:text-gray-400">Producten:</span> <span className="font-medium">{data.expectedProducts}</span></div>
+                      <div><span className="text-gray-600 dark:text-gray-400">Stijl:</span> <span className="font-medium">{data.designStyle}</span></div>
                     </div>
                   </div>
 
                   {/* Pricing */}
                   <div className="bg-white rounded-xl p-4 border-2 border-emerald-500">
                     <div className="flex items-center justify-between mb-2">
-                      <span className="font-bold text-gray-900">Webshop Pakket</span>
+                      <span className="font-bold text-gray-900 dark:text-white">Webshop Pakket</span>
                       <span className="text-2xl font-bold text-emerald-600">€79/maand</span>
                     </div>
                     <p className="text-sm text-gray-500 mb-3">+ €299 eenmalige opzet kosten</p>
@@ -1119,9 +1119,9 @@ export default function WebshopOnboarding({
                       className="mt-1 w-5 h-5 rounded border-gray-300 text-emerald-600 focus:ring-emerald-500"
                     />
                     <div className="text-sm">
-                      <span className="font-medium text-gray-900">Ik ga akkoord met de </span>
+                      <span className="font-medium text-gray-900 dark:text-white">Ik ga akkoord met de </span>
                       <a href="/voorwaarden" target="_blank" className="text-emerald-600 hover:underline">algemene voorwaarden</a>
-                      <span className="font-medium text-gray-900"> en </span>
+                      <span className="font-medium text-gray-900 dark:text-white"> en </span>
                       <a href="/privacy" target="_blank" className="text-emerald-600 hover:underline">privacy policy</a>
                     </div>
                   </label>
@@ -1133,7 +1133,7 @@ export default function WebshopOnboarding({
         </div>
 
         {/* Footer */}
-        <div className="border-t p-4 flex items-center justify-between bg-gray-50">
+        <div className="border-t p-4 flex items-center justify-between bg-gray-50 dark:bg-gray-800">
           <button
             type="button"
             onClick={currentStep === 1 ? onClose : prevStep}

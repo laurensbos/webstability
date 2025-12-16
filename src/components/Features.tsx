@@ -15,37 +15,37 @@ const features = [
     icon: Zap,
     title: 'Razendsnel online',
     description: 'Je website is binnen 7 werkdagen live. Wij regelen alles: hosting, domein en SSL.',
-    color: 'bg-amber-100 text-amber-600',
+    color: 'bg-amber-100 text-amber-600 dark:bg-amber-900/30 dark:text-amber-400',
   },
   {
     icon: Palette,
     title: 'Op maat gemaakt',
     description: 'Geen standaard templates. Jouw website wordt volledig afgestemd op jouw merk en doelen.',
-    color: 'bg-pink-100 text-pink-600',
+    color: 'bg-pink-100 text-pink-600 dark:bg-pink-900/30 dark:text-pink-400',
   },
   {
     icon: Shield,
     title: 'Veilig & betrouwbaar',
     description: 'SSL-certificaat, dagelijkse backups en 99.9% uptime garantie zijn standaard inbegrepen.',
-    color: 'bg-green-100 text-green-600',
+    color: 'bg-green-100 text-green-600 dark:bg-green-900/30 dark:text-green-400',
   },
   {
     icon: Headphones,
     title: 'Persoonlijke support',
     description: 'Direct contact met je eigen websitebeheerder. Geen ticketsystemen of wachtrijen.',
-    color: 'bg-blue-100 text-blue-600',
+    color: 'bg-blue-100 text-blue-600 dark:bg-blue-900/30 dark:text-blue-400',
   },
   {
     icon: TrendingUp,
     title: 'SEO geoptimaliseerd',
     description: 'Gevonden worden in Google? Elke website wordt gebouwd met SEO best practices.',
-    color: 'bg-primary-100 text-primary-600',
+    color: 'bg-primary-100 text-primary-600 dark:bg-primary-900/30 dark:text-primary-400',
   },
   {
     icon: RefreshCw,
     title: 'Maandelijkse updates',
     description: 'Tekst wijzigen? Nieuwe foto\'s? Wij voeren elke maand gratis aanpassingen door.',
-    color: 'bg-purple-100 text-purple-600',
+    color: 'bg-purple-100 text-purple-600 dark:bg-purple-900/30 dark:text-purple-400',
   },
 ]
 
@@ -121,7 +121,7 @@ export default function Features() {
           {/* Scroll indicator */}
           <div className="flex justify-center gap-1.5 mt-3">
             {features.map((_, i) => (
-              <div key={i} className="w-1.5 h-1.5 rounded-full bg-gray-300" />
+              <div key={i} className="w-1.5 h-1.5 rounded-full bg-gray-300 dark:bg-gray-600" />
             ))}
           </div>
         </div>

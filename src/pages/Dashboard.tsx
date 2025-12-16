@@ -911,7 +911,7 @@ export default function Dashboard() {
             <div className="w-16 h-16 bg-primary-100 rounded-full flex items-center justify-center mx-auto mb-4">
               <Lock className="w-8 h-8 text-primary-600" />
             </div>
-            <h1 className="text-2xl font-bold text-gray-900">dash login</h1>
+            <h1 className="text-2xl font-bold text-gray-900 dark:text-white">dash login</h1>
             <p className="text-gray-600 mt-2">Alleen toegankelijk voor developers</p>
           </div>
 
@@ -948,7 +948,7 @@ export default function Dashboard() {
 
   // Dashboard
   return (
-    <div className="min-h-screen bg-gray-100">
+    <div className="min-h-screen bg-gray-100 dark:bg-gray-800">
       {/* Top Header */}
       <header className="bg-white border-b border-gray-200 sticky top-0 z-50">
         <div className="max-w-[1600px] mx-auto px-4 lg:px-8">
@@ -959,10 +959,10 @@ export default function Dashboard() {
                 <div className="w-8 h-8 bg-gradient-to-br from-primary-500 to-primary-600 rounded-lg flex items-center justify-center">
                   <span className="text-white font-bold text-sm">W</span>
                 </div>
-                <span className="font-semibold text-gray-900">Webstability</span>
+                <span className="font-semibold text-gray-900 dark:text-white">Webstability</span>
               </div>
               <div className="hidden md:block h-6 w-px bg-gray-200" />
-              <h1 className="hidden md:block text-sm font-medium text-gray-500">Dashboard</h1>
+              <h1 className="hidden md:block text-sm font-medium text-gray-500 dark:text-gray-400">Dashboard</h1>
               {saveMessage && (
                 <motion.span 
                   initial={{ opacity: 0, scale: 0.9 }}
@@ -1106,8 +1106,8 @@ export default function Dashboard() {
                   </div>
                   <ArrowUpRight className="w-4 h-4 text-gray-400" />
                 </div>
-                <p className="text-2xl font-bold text-gray-900">{submissions.length}</p>
-                <p className="text-sm text-gray-500">Klanten</p>
+                <p className="text-2xl font-bold text-gray-900 dark:text-white">{submissions.length}</p>
+                <p className="text-sm text-gray-500 dark:text-gray-400">Klanten</p>
               </motion.div>
               
               <motion.div 
@@ -1118,13 +1118,13 @@ export default function Dashboard() {
               >
                 <div className="flex items-center justify-between mb-3">
                   <div className="p-2.5 bg-gray-100 rounded-lg">
-                    <FileText className="w-5 h-5 text-gray-600" />
+                    <FileText className="w-5 h-5 text-gray-600 dark:text-gray-400" />
                   </div>
                 </div>
-                <p className="text-2xl font-bold text-gray-900">
+                <p className="text-2xl font-bold text-gray-900 dark:text-white">
                   {projects.filter(p => p.status === 'onboarding').length}
                 </p>
-                <p className="text-sm text-gray-500">Onboarding</p>
+                <p className="text-sm text-gray-500 dark:text-gray-400">Onboarding</p>
               </motion.div>
               
               <motion.div 
@@ -1138,10 +1138,10 @@ export default function Dashboard() {
                     <Palette className="w-5 h-5 text-purple-600" />
                   </div>
                 </div>
-                <p className="text-2xl font-bold text-gray-900">
+                <p className="text-2xl font-bold text-gray-900 dark:text-white">
                   {projects.filter(p => p.status === 'design').length}
                 </p>
-                <p className="text-sm text-gray-500">Design</p>
+                <p className="text-sm text-gray-500 dark:text-gray-400">Design</p>
               </motion.div>
               
               <motion.div 
@@ -1155,10 +1155,10 @@ export default function Dashboard() {
                     <Clock className="w-5 h-5 text-blue-600" />
                   </div>
                 </div>
-                <p className="text-2xl font-bold text-gray-900">
+                <p className="text-2xl font-bold text-gray-900 dark:text-white">
                   {projects.filter(p => p.status === 'development').length}
                 </p>
-                <p className="text-sm text-gray-500">Development</p>
+                <p className="text-sm text-gray-500 dark:text-gray-400">Development</p>
               </motion.div>
               
               <motion.div 
@@ -1172,10 +1172,10 @@ export default function Dashboard() {
                     <MessageSquare className="w-5 h-5 text-amber-600" />
                   </div>
                 </div>
-                <p className="text-2xl font-bold text-gray-900">
+                <p className="text-2xl font-bold text-gray-900 dark:text-white">
                   {projects.filter(p => p.status === 'review').length}
                 </p>
-                <p className="text-sm text-gray-500">Review</p>
+                <p className="text-sm text-gray-500 dark:text-gray-400">Review</p>
               </motion.div>
               
               <motion.div 
@@ -1189,10 +1189,10 @@ export default function Dashboard() {
                     <Rocket className="w-5 h-5 text-green-600" />
                   </div>
                 </div>
-                <p className="text-2xl font-bold text-gray-900">
+                <p className="text-2xl font-bold text-gray-900 dark:text-white">
                   {projects.filter(p => p.status === 'live').length}
                 </p>
-                <p className="text-sm text-gray-500">Live</p>
+                <p className="text-sm text-gray-500 dark:text-gray-400">Live</p>
               </motion.div>
             </div>
 
@@ -1210,8 +1210,8 @@ export default function Dashboard() {
                       <Users className="w-4 h-4 text-blue-600" />
                     </div>
                     <div>
-                      <p className="font-medium text-gray-900">Klanten bekijken</p>
-                      <p className="text-xs text-gray-500">Beheer klantgegevens</p>
+                      <p className="font-medium text-gray-900 dark:text-white">Klanten bekijken</p>
+                      <p className="text-xs text-gray-500 dark:text-gray-400">Beheer klantgegevens</p>
                     </div>
                     <ChevronRight className="w-4 h-4 text-gray-400 ml-auto" />
                   </button>
@@ -1223,8 +1223,8 @@ export default function Dashboard() {
                       <Activity className="w-4 h-4 text-primary-600" />
                     </div>
                     <div>
-                      <p className="font-medium text-gray-900">Projecten beheren</p>
-                      <p className="text-xs text-gray-500">Status & voortgang</p>
+                      <p className="font-medium text-gray-900 dark:text-white">Projecten beheren</p>
+                      <p className="text-xs text-gray-500 dark:text-gray-400">Status & voortgang</p>
                     </div>
                     <ChevronRight className="w-4 h-4 text-gray-400 ml-auto" />
                   </button>
@@ -1233,11 +1233,11 @@ export default function Dashboard() {
                     className="w-full flex items-center gap-3 p-3 text-left hover:bg-gray-50 rounded-lg transition-colors"
                   >
                     <div className="p-2 bg-gray-100 rounded-lg">
-                      <Download className="w-4 h-4 text-gray-600" />
+                      <Download className="w-4 h-4 text-gray-600 dark:text-gray-400" />
                     </div>
                     <div>
-                      <p className="font-medium text-gray-900">Export naar CSV</p>
-                      <p className="text-xs text-gray-500">Download alle data</p>
+                      <p className="font-medium text-gray-900 dark:text-white">Export naar CSV</p>
+                      <p className="text-xs text-gray-500 dark:text-gray-400">Download alle data</p>
                     </div>
                     <ChevronRight className="w-4 h-4 text-gray-400 ml-auto" />
                   </button>
@@ -1247,7 +1247,7 @@ export default function Dashboard() {
               {/* Recent Customers */}
               <div className="lg:col-span-2 bg-white rounded-xl p-6 shadow-sm border border-gray-100">
                 <div className="flex items-center justify-between mb-4">
-                  <h3 className="font-semibold text-gray-900">Recente klanten</h3>
+                  <h3 className="font-semibold text-gray-900 dark:text-white">Recente klanten</h3>
                   <button 
                     onClick={() => setActiveTab('klanten')}
                     className="text-sm text-primary-600 hover:text-primary-700 font-medium"
@@ -1297,7 +1297,7 @@ export default function Dashboard() {
             {/* Projects Kanban Preview */}
             <div className="bg-white rounded-xl p-6 shadow-sm border border-gray-100">
               <div className="flex items-center justify-between mb-4">
-                <h3 className="font-semibold text-gray-900">Projecten per fase</h3>
+                <h3 className="font-semibold text-gray-900 dark:text-white">Projecten per fase</h3>
                 <button 
                   onClick={() => setActiveTab('projecten')}
                   className="text-sm text-primary-600 hover:text-primary-700 font-medium"
@@ -1342,7 +1342,7 @@ export default function Dashboard() {
                               }}
                             >
                               <p className="font-medium text-gray-900 truncate">{project.businessName}</p>
-                              <p className="text-xs text-gray-500">{project.package}</p>
+                              <p className="text-xs text-gray-500 dark:text-gray-400">{project.package}</p>
                             </div>
                           ))}
                           {statusProjects.length > 3 && (
@@ -1364,7 +1364,7 @@ export default function Dashboard() {
             {/* Header */}
             <div className="flex flex-col sm:flex-row gap-4 items-start sm:items-center justify-between">
               <div>
-                <h2 className="text-xl font-bold text-gray-900">Klanten</h2>
+                <h2 className="text-xl font-bold text-gray-900 dark:text-white">Klanten</h2>
                 <p className="text-gray-500 text-sm">Klanten die zich hebben aangemeld via /start</p>
               </div>
               <div className="flex items-center gap-3 w-full sm:w-auto">
@@ -1428,8 +1428,8 @@ export default function Dashboard() {
                                 {submission.businessName?.charAt(0).toUpperCase() || '?'}
                               </div>
                               <div>
-                                <p className="font-medium text-gray-900">{submission.businessName || 'Onbekend'}</p>
-                                <p className="text-sm text-gray-500">{submission.contactName}</p>
+                                <p className="font-medium text-gray-900 dark:text-white">{submission.businessName || 'Onbekend'}</p>
+                                <p className="text-sm text-gray-500 dark:text-gray-400">{submission.contactName}</p>
                               </div>
                             </div>
                           </td>
@@ -1455,11 +1455,11 @@ export default function Dashboard() {
                           <td className="px-6 py-4">
                             <div className="flex items-center gap-1.5">
                               <Globe className="w-3.5 h-3.5 text-gray-400" />
-                              <span className="text-sm text-gray-900">{submission.domain || '-'}</span>
+                              <span className="text-sm text-gray-900 dark:text-white">{submission.domain || '-'}</span>
                             </div>
                           </td>
                           <td className="px-6 py-4">
-                            <span className="text-sm text-gray-500">{formatDate(submission.timestamp)}</span>
+                            <span className="text-sm text-gray-500 dark:text-gray-400">{formatDate(submission.timestamp)}</span>
                           </td>
                           <td className="px-6 py-4">
                             <div className="flex items-center justify-end gap-1">
@@ -1514,7 +1514,7 @@ export default function Dashboard() {
                       initial={{ opacity: 0, height: 0 }}
                       animate={{ opacity: 1, height: 'auto' }}
                       exit={{ opacity: 0, height: 0 }}
-                      className="border-t border-gray-200 bg-gray-50"
+                      className="border-t border-gray-200 bg-gray-50 dark:bg-gray-800"
                     >
                       {(() => {
                         const submission = filteredSubmissions.find(s => s.id === expandedId)!
@@ -1564,7 +1564,7 @@ export default function Dashboard() {
                                         className="w-full mt-1 px-3 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 outline-none text-sm"
                                       />
                                     ) : (
-                                      <p className="font-medium text-gray-900">{submission.contactName || '-'}</p>
+                                      <p className="font-medium text-gray-900 dark:text-white">{submission.contactName || '-'}</p>
                                     )}
                                   </div>
                                   <div>
@@ -1577,7 +1577,7 @@ export default function Dashboard() {
                                         className="w-full mt-1 px-3 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 outline-none text-sm"
                                       />
                                     ) : (
-                                      <p className="font-medium text-gray-900">{submission.contactEmail || '-'}</p>
+                                      <p className="font-medium text-gray-900 dark:text-white">{submission.contactEmail || '-'}</p>
                                     )}
                                   </div>
                                   <div>
@@ -1590,7 +1590,7 @@ export default function Dashboard() {
                                         className="w-full mt-1 px-3 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 outline-none text-sm"
                                       />
                                     ) : (
-                                      <p className="font-medium text-gray-900">{submission.contactPhone || '-'}</p>
+                                      <p className="font-medium text-gray-900 dark:text-white">{submission.contactPhone || '-'}</p>
                                     )}
                                   </div>
                                 </div>
@@ -1613,7 +1613,7 @@ export default function Dashboard() {
                                         className="w-full mt-1 px-3 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 outline-none text-sm"
                                       />
                                     ) : (
-                                      <p className="font-medium text-gray-900">{submission.businessName || '-'}</p>
+                                      <p className="font-medium text-gray-900 dark:text-white">{submission.businessName || '-'}</p>
                                     )}
                                   </div>
                                   <div>
@@ -1626,7 +1626,7 @@ export default function Dashboard() {
                                         className="w-full mt-1 px-3 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 outline-none text-sm"
                                       />
                                     ) : (
-                                      <p className="font-medium text-gray-900">{submission.websiteType || '-'}</p>
+                                      <p className="font-medium text-gray-900 dark:text-white">{submission.websiteType || '-'}</p>
                                     )}
                                   </div>
                                   <div>
@@ -1639,7 +1639,7 @@ export default function Dashboard() {
                                         className="w-full mt-1 px-3 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 outline-none text-sm"
                                       />
                                     ) : (
-                                      <p className="font-medium text-gray-900">{submission.industry || '-'}</p>
+                                      <p className="font-medium text-gray-900 dark:text-white">{submission.industry || '-'}</p>
                                     )}
                                   </div>
                                   <div>
@@ -1652,7 +1652,7 @@ export default function Dashboard() {
                                         className="w-full mt-1 px-3 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 outline-none text-sm"
                                       />
                                     ) : (
-                                      <p className="font-medium text-gray-900">{submission.domain || '-'}</p>
+                                      <p className="font-medium text-gray-900 dark:text-white">{submission.domain || '-'}</p>
                                     )}
                                   </div>
                                 </div>
@@ -1667,16 +1667,16 @@ export default function Dashboard() {
                                 <div className="space-y-3">
                                   <div>
                                     <label className="text-xs text-gray-500 uppercase tracking-wide">Stijl</label>
-                                    <p className="font-medium text-gray-900">{submission.style || '-'}</p>
+                                    <p className="font-medium text-gray-900 dark:text-white">{submission.style || '-'}</p>
                                   </div>
                                   <div>
                                     <label className="text-xs text-gray-500 uppercase tracking-wide">Primaire kleur</label>
                                     <div className="flex items-center gap-2 mt-1">
                                       <div 
-                                        className="w-6 h-6 rounded-full border border-gray-200" 
+                                        className="w-6 h-6 rounded-full border border-gray-200 dark:border-gray-700" 
                                         style={{ backgroundColor: submission.primaryColor || '#ccc' }}
                                       />
-                                      <span className="font-medium text-gray-900">{submission.primaryColor || '-'}</span>
+                                      <span className="font-medium text-gray-900 dark:text-white">{submission.primaryColor || '-'}</span>
                                     </div>
                                   </div>
                                   <div>
@@ -1742,7 +1742,7 @@ export default function Dashboard() {
         {activeTab === 'projecten' && (
           <>
             <div className="flex justify-between items-center mb-6">
-              <h2 className="text-lg font-semibold text-gray-900">Project Pipeline</h2>
+              <h2 className="text-lg font-semibold text-gray-900 dark:text-white">Project Pipeline</h2>
               <button
                 onClick={() => { loadProjects(); setSaveMessage('Projecten vernieuwd!'); setTimeout(() => setSaveMessage(''), 2000) }}
                 className="flex items-center gap-2 px-4 py-2 text-gray-600 hover:text-gray-900 transition"
@@ -1758,7 +1758,7 @@ export default function Dashboard() {
                   <Activity className="w-8 h-8 text-gray-400" />
                 </div>
                 <h2 className="text-xl font-semibold text-gray-900 mb-2">Nog geen projecten</h2>
-                <p className="text-gray-600">
+                <p className="text-gray-600 dark:text-gray-400">
                   Projecten verschijnen hier wanneer klanten een aanvraag indienen via /start
                 </p>
               </div>
@@ -1778,7 +1778,7 @@ export default function Dashboard() {
                       <div key={phase.key} className="bg-gray-50 rounded-xl p-3">
                         <div className={`flex items-center gap-2 mb-3 pb-2 border-b border-${phase.color}-200`}>
                           <span className="text-lg">{phase.icon}</span>
-                          <span className="font-semibold text-gray-700">{phase.label}</span>
+                          <span className="font-semibold text-gray-700 dark:text-gray-300">{phase.label}</span>
                           <span className={`ml-auto px-2 py-0.5 text-xs font-bold rounded-full bg-${phase.color}-100 text-${phase.color}-700`}>
                             {phaseProjects.length}
                           </span>
@@ -1830,7 +1830,7 @@ export default function Dashboard() {
                       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
                         <div>
                           <div className="flex items-center gap-3 mb-1">
-                            <h3 className="font-semibold text-gray-900">{project.businessName}</h3>
+                            <h3 className="font-semibold text-gray-900 dark:text-white">{project.businessName}</h3>
                             <span className={`px-2 py-1 text-xs font-medium rounded-full ${getStatusColor(project.status)}`}>
                               {getStatusLabel(project.status)}
                             </span>
@@ -1844,11 +1844,11 @@ export default function Dashboard() {
                               </span>
                             )}
                           </div>
-                          <p className="text-sm text-gray-600">
+                          <p className="text-sm text-gray-600 dark:text-gray-400">
                             {project.projectId} • {project.contactName} • {project.contactEmail}
                           </p>
                           <div className="flex items-center gap-4 mt-2">
-                            <p className="text-sm text-gray-500">{project.package}</p>
+                            <p className="text-sm text-gray-500 dark:text-gray-400">{project.package}</p>
                             {project.googleDriveUrl && (
                               <a 
                                 href={project.googleDriveUrl} 
@@ -1905,7 +1905,7 @@ export default function Dashboard() {
         {activeTab === 'onboarding' && (
           <>
             <div className="flex justify-between items-center mb-6">
-              <h2 className="text-lg font-semibold text-gray-900">Onboarding Inzendingen</h2>
+              <h2 className="text-lg font-semibold text-gray-900 dark:text-white">Onboarding Inzendingen</h2>
               <button
                 onClick={() => { loadOnboardingSubmissions(); setSaveMessage('Onboarding vernieuwd!'); setTimeout(() => setSaveMessage(''), 2000) }}
                 className="flex items-center gap-2 px-4 py-2 text-gray-600 hover:text-gray-900 transition"
@@ -1921,7 +1921,7 @@ export default function Dashboard() {
                   <ClipboardList className="w-8 h-8 text-gray-400" />
                 </div>
                 <h2 className="text-xl font-semibold text-gray-900 mb-2">Nog geen onboarding inzendingen</h2>
-                <p className="text-gray-600">
+                <p className="text-gray-600 dark:text-gray-400">
                   Wanneer klanten hun onboarding checklist invullen, verschijnen ze hier.
                 </p>
               </div>
@@ -1936,12 +1936,12 @@ export default function Dashboard() {
                       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
                         <div>
                           <div className="flex items-center gap-3 mb-1">
-                            <h3 className="font-semibold text-gray-900">{ob.businessName}</h3>
+                            <h3 className="font-semibold text-gray-900 dark:text-white">{ob.businessName}</h3>
                             <span className="px-2 py-1 text-xs font-medium rounded-full bg-green-100 text-green-700">
                               Ingevuld
                             </span>
                           </div>
-                          <p className="text-sm text-gray-600">
+                          <p className="text-sm text-gray-600 dark:text-gray-400">
                             {ob.projectId} • {ob.contactName} • {ob.contactEmail}
                           </p>
                           <p className="text-sm text-gray-500 mt-1">
@@ -1970,7 +1970,7 @@ export default function Dashboard() {
                         initial={{ height: 0, opacity: 0 }}
                         animate={{ height: 'auto', opacity: 1 }}
                         exit={{ height: 0, opacity: 0 }}
-                        className="border-t border-gray-100 p-6 bg-gray-50"
+                        className="border-t border-gray-100 p-6 bg-gray-50 dark:bg-gray-800"
                       >
                         <div className="grid md:grid-cols-2 gap-6">
                           <div>
@@ -1987,13 +1987,13 @@ export default function Dashboard() {
                           </div>
                           <div>
                             <h4 className="font-semibold text-gray-900 mb-2">Logo</h4>
-                            <p className="text-sm text-gray-700">{ob.hasLogo}</p>
+                            <p className="text-sm text-gray-700 dark:text-gray-300">{ob.hasLogo}</p>
                             {ob.logoDescription && <p className="text-sm text-gray-600 mt-1">{ob.logoDescription}</p>}
                           </div>
                           <div>
                             <h4 className="font-semibold text-gray-900 mb-2">Kleuren & Fonts</h4>
-                            <p className="text-sm text-gray-700">Kleuren: {ob.brandColors || '-'}</p>
-                            <p className="text-sm text-gray-700">Fonts: {ob.brandFonts || '-'}</p>
+                            <p className="text-sm text-gray-700 dark:text-gray-300">Kleuren: {ob.brandColors || '-'}</p>
+                            <p className="text-sm text-gray-700 dark:text-gray-300">Fonts: {ob.brandFonts || '-'}</p>
                           </div>
                           <div>
                             <h4 className="font-semibold text-gray-900 mb-2">Foto's & Media</h4>
@@ -2026,7 +2026,7 @@ export default function Dashboard() {
           <>
             <div className="flex items-center justify-between mb-6">
               <div>
-                <h2 className="text-xl font-bold text-gray-900">Extra Diensten Aanvragen</h2>
+                <h2 className="text-xl font-bold text-gray-900 dark:text-white">Extra Diensten Aanvragen</h2>
                 <p className="text-gray-600 text-sm">Aanvragen voor logo ontwerp, luchtfoto's en andere diensten</p>
               </div>
               <button
@@ -2042,7 +2042,7 @@ export default function Dashboard() {
               <div className="bg-white border border-gray-200 rounded-2xl p-12 text-center">
                 <Palette className="w-12 h-12 text-gray-300 mx-auto mb-4" />
                 <h3 className="text-lg font-semibold text-gray-800 mb-2">Geen aanvragen</h3>
-                <p className="text-gray-500">Er zijn nog geen extra diensten aangevraagd via de website.</p>
+                <p className="text-gray-500 dark:text-gray-400">Er zijn nog geen extra diensten aangevraagd via de website.</p>
               </div>
             ) : (
               <div className="space-y-4">
@@ -2073,11 +2073,11 @@ export default function Dashboard() {
                               {isDrone ? '🚁' : '🎨'}
                             </div>
                             <div>
-                              <h3 className="font-semibold text-gray-900">
+                              <h3 className="font-semibold text-gray-900 dark:text-white">
                                 {isDrone ? 'Drone Opnames' : 'Logo Ontwerp'}
                                 {request.preferCall && <span className="ml-2 text-orange-500 text-sm">📞 Wil bellen</span>}
                               </h3>
-                              <p className="text-sm text-gray-500">{displayName}</p>
+                              <p className="text-sm text-gray-500 dark:text-gray-400">{displayName}</p>
                               <div className="flex items-center gap-4 mt-2 text-sm flex-wrap">
                                 {displayEmail && (
                                   <a href={`mailto:${displayEmail}`} className="text-primary-600 hover:underline flex items-center gap-1">
@@ -2134,11 +2134,11 @@ export default function Dashboard() {
                         {isDrone && (
                           <div className="mt-4 pt-4 border-t border-gray-100 grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
                             <div>
-                              <span className="text-gray-500">Locatie:</span>
+                              <span className="text-gray-500 dark:text-gray-400">Locatie:</span>
                               <p className="font-medium">{request.locationAddress}, {request.locationCity}</p>
                             </div>
                             <div>
-                              <span className="text-gray-500">Datum:</span>
+                              <span className="text-gray-500 dark:text-gray-400">Datum:</span>
                               <p className="font-medium">
                                 {request.confirmedDate || request.preferredDate 
                                   ? new Date(request.confirmedDate || request.preferredDate || '').toLocaleDateString('nl-NL')
@@ -2146,11 +2146,11 @@ export default function Dashboard() {
                               </p>
                             </div>
                             <div>
-                              <span className="text-gray-500">Tijd:</span>
+                              <span className="text-gray-500 dark:text-gray-400">Tijd:</span>
                               <p className="font-medium">{request.confirmedTime || request.preferredTime || '-'}</p>
                             </div>
                             <div>
-                              <span className="text-gray-500">Duur:</span>
+                              <span className="text-gray-500 dark:text-gray-400">Duur:</span>
                               <p className="font-medium">{request.duration || '-'}</p>
                             </div>
                           </div>
@@ -2160,15 +2160,15 @@ export default function Dashboard() {
                         {!isDrone && (
                           <div className="mt-4 pt-4 border-t border-gray-100 grid grid-cols-2 md:grid-cols-3 gap-4 text-sm">
                             <div>
-                              <span className="text-gray-500">Branche:</span>
+                              <span className="text-gray-500 dark:text-gray-400">Branche:</span>
                               <p className="font-medium">{request.industry || '-'}</p>
                             </div>
                             <div>
-                              <span className="text-gray-500">Stijl:</span>
+                              <span className="text-gray-500 dark:text-gray-400">Stijl:</span>
                               <p className="font-medium">{(request.style || []).join(', ') || '-'}</p>
                             </div>
                             <div>
-                              <span className="text-gray-500">Kleuren:</span>
+                              <span className="text-gray-500 dark:text-gray-400">Kleuren:</span>
                               <p className="font-medium">{(request.colors || []).join(', ') || '-'}</p>
                             </div>
                           </div>
@@ -2176,7 +2176,7 @@ export default function Dashboard() {
                         
                         {(request.additionalNotes || request.remarks) && (
                           <div className="mt-4 pt-4 border-t border-gray-100">
-                            <p className="text-sm text-gray-600">
+                            <p className="text-sm text-gray-600 dark:text-gray-400">
                               <strong>Opmerkingen:</strong> {request.additionalNotes || request.remarks}
                             </p>
                           </div>
@@ -2301,20 +2301,20 @@ export default function Dashboard() {
                 Betaallink voor {paymentSubmission.businessName}
               </h3>
               <button onClick={closePaymentModal} className="p-2 hover:bg-gray-100 rounded-lg">
-                <X className="w-5 h-5 text-gray-500" />
+                <X className="w-5 h-5 text-gray-500 dark:text-gray-400" />
               </button>
             </div>
 
             <div className="space-y-4">
               {/* Klantinfo */}
               <div className="bg-gray-50 rounded-xl p-4">
-                <p className="text-sm text-gray-600">
+                <p className="text-sm text-gray-600 dark:text-gray-400">
                   <strong>Klant:</strong> {paymentSubmission.contactName}
                 </p>
-                <p className="text-sm text-gray-600">
+                <p className="text-sm text-gray-600 dark:text-gray-400">
                   <strong>Email:</strong> {paymentSubmission.contactEmail}
                 </p>
-                <p className="text-sm text-gray-600">
+                <p className="text-sm text-gray-600 dark:text-gray-400">
                   <strong>Pakket:</strong> {getPackageLabel(paymentSubmission.package)}
                 </p>
               </div>
@@ -2338,11 +2338,11 @@ export default function Dashboard() {
                       }}
                       className="rounded border-gray-300 text-primary-500 focus:ring-primary-500"
                     />
-                    <span className="text-sm text-gray-700">Inclusief eenmalige opstartkosten</span>
+                    <span className="text-sm text-gray-700 dark:text-gray-300">Inclusief eenmalige opstartkosten</span>
                   </label>
                 </div>
                 <div className="flex items-center gap-2">
-                  <span className="text-gray-500">€</span>
+                  <span className="text-gray-500 dark:text-gray-400">€</span>
                   <input
                     type="number"
                     value={customAmount}
@@ -2390,7 +2390,7 @@ export default function Dashboard() {
                         type="text"
                         value={paymentLink}
                         readOnly
-                        className="flex-1 px-3 py-2 bg-white border border-green-200 rounded-lg text-sm text-gray-700"
+                        className="flex-1 px-3 py-2 bg-white border border-green-200 rounded-lg text-sm text-gray-700 dark:text-gray-300"
                       />
                       <button
                         onClick={copyPaymentLink}
@@ -2456,7 +2456,7 @@ export default function Dashboard() {
                     <CheckIcon className="w-8 h-8 text-green-600" />
                   </div>
                   <h3 className="text-xl font-semibold text-gray-900 mb-2">Email verstuurd!</h3>
-                  <p className="text-gray-600">
+                  <p className="text-gray-600 dark:text-gray-400">
                     De email is succesvol verstuurd naar {templateProject.contactEmail}
                   </p>
                 </div>
@@ -2471,13 +2471,13 @@ export default function Dashboard() {
               <>
                 <div className="flex items-center justify-between mb-6">
                   <div>
-                    <h3 className="text-lg font-semibold text-gray-900">Email versturen</h3>
-                    <p className="text-sm text-gray-500">
+                    <h3 className="text-lg font-semibold text-gray-900 dark:text-white">Email versturen</h3>
+                    <p className="text-sm text-gray-500 dark:text-gray-400">
                       Naar: {templateProject.contactEmail}
                     </p>
                   </div>
                   <button onClick={closeTemplateModal} className="p-2 hover:bg-gray-100 rounded-lg">
-                    <X className="w-5 h-5 text-gray-500" />
+                    <X className="w-5 h-5 text-gray-500 dark:text-gray-400" />
                   </button>
                 </div>
 
@@ -2505,8 +2505,8 @@ export default function Dashboard() {
                         />
                         <span className="text-xl">{opt.label.split(' ')[0]}</span>
                         <div className="flex-1">
-                          <p className="font-medium text-gray-900">{opt.label.replace(/^[^\s]+\s/, '')}</p>
-                          <p className="text-xs text-gray-500">{opt.description}</p>
+                          <p className="font-medium text-gray-900 dark:text-white">{opt.label.replace(/^[^\s]+\s/, '')}</p>
+                          <p className="text-xs text-gray-500 dark:text-gray-400">{opt.description}</p>
                         </div>
                         {selectedTemplate === opt.key && (
                           <CheckIcon className="w-5 h-5 text-primary-600" />
@@ -2590,10 +2590,10 @@ export default function Dashboard() {
                 <Trash2 className="w-6 h-6 text-red-600" />
               </div>
               <div>
-                <h3 className="text-lg font-semibold text-gray-900">
+                <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
                   {deleteType === 'project' ? 'Project' : 'Onboarding'} verwijderen
                 </h3>
-                <p className="text-sm text-gray-500">{deleteId}</p>
+                <p className="text-sm text-gray-500 dark:text-gray-400">{deleteId}</p>
               </div>
             </div>
             

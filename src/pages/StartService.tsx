@@ -433,7 +433,7 @@ export default function StartService() {
             className="mb-8"
           >
             <div className="flex items-center justify-between mb-2">
-              <span className="text-sm font-medium text-gray-600">Stap {currentStep}/{totalSteps}</span>
+              <span className="text-sm font-medium text-gray-600 dark:text-gray-400">Stap {currentStep}/{totalSteps}</span>
               <span className="text-sm font-semibold bg-gradient-to-r from-primary-600 to-blue-600 bg-clip-text text-transparent">
                 {Math.round((currentStep / totalSteps) * 100)}%
               </span>
@@ -581,7 +581,7 @@ export default function StartService() {
                               }`}
                             >
                               <span className="font-bold block">{duration.label}</span>
-                              <span className="text-sm text-gray-500">{duration.price}</span>
+                              <span className="text-sm text-gray-500 dark:text-gray-400">{duration.price}</span>
                             </button>
                           ))}
                         </div>
@@ -662,7 +662,7 @@ export default function StartService() {
                         />
                         <div>
                           <span className="font-medium">Ik ben flexibel met de datum/tijd</span>
-                          <p className="text-sm text-gray-500">We kunnen dan rekening houden met het weer</p>
+                          <p className="text-sm text-gray-500 dark:text-gray-400">We kunnen dan rekening houden met het weer</p>
                         </div>
                       </label>
                     </div>
@@ -796,7 +796,7 @@ export default function StartService() {
                         />
                         <div>
                           <span className="font-medium">Ik heb al een bestaand logo</span>
-                          <p className="text-sm text-gray-500">We kunnen elementen overnemen of volledig opnieuw beginnen</p>
+                          <p className="text-sm text-gray-500 dark:text-gray-400">We kunnen elementen overnemen of volledig opnieuw beginnen</p>
                         </div>
                       </label>
                     </div>
@@ -995,7 +995,7 @@ export default function StartService() {
                             <Phone className="w-4 h-4 text-primary-600" />
                             Ik wil graag gebeld worden
                           </span>
-                          <p className="text-sm text-gray-500">We plannen een kort gesprek om je wensen te bespreken</p>
+                          <p className="text-sm text-gray-500 dark:text-gray-400">We plannen een kort gesprek om je wensen te bespreken</p>
                         </div>
                       </label>
                       
@@ -1020,7 +1020,7 @@ export default function StartService() {
               <button
                 onClick={prevStep}
                 disabled={currentStep === 1}
-                className="flex items-center gap-2 px-6 py-3 text-gray-600 hover:text-gray-900 disabled:opacity-50 disabled:cursor-not-allowed transition-colors rounded-xl hover:bg-gray-100"
+                className="flex items-center gap-2 px-6 py-3 text-gray-600 hover:text-gray-900 disabled:opacity-50 disabled:cursor-not-allowed transition-colors rounded-xl hover:bg-gray-100 dark:bg-gray-800"
               >
                 <ArrowLeft className="w-4 h-4" />
                 <span>Vorige</span>
@@ -1065,7 +1065,7 @@ export default function StartService() {
             className="mt-8 grid grid-cols-2 md:grid-cols-4 gap-4"
           >
             {service.features.map((feature, i) => (
-              <div key={i} className="flex items-center gap-2 text-sm text-gray-600">
+              <div key={i} className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-400">
                 <CheckCircle2 className="w-4 h-4 text-green-500 flex-shrink-0" />
                 <span>{feature}</span>
               </div>

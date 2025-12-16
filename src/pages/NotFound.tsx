@@ -38,7 +38,7 @@ export default function NotFound() {
                 <motion.div
                   animate={{ y: [-8, 8, -8], rotate: [0, 5, 0] }}
                   transition={{ duration: 4, repeat: Infinity }}
-                  className="absolute -top-4 -right-4 bg-white rounded-2xl p-3 shadow-lg border border-gray-100"
+                  className="absolute -top-4 -right-4 bg-white dark:bg-gray-900 rounded-2xl p-3 shadow-lg border border-gray-100 dark:border-gray-700"
                 >
                   <Search className="w-6 h-6 text-gray-400" />
                 </motion.div>
@@ -87,7 +87,7 @@ export default function NotFound() {
               </Link>
               <button
                 onClick={() => window.history.back()}
-                className="inline-flex items-center justify-center gap-2 px-8 py-4 bg-white border-2 border-gray-200 text-gray-700 font-semibold rounded-xl hover:border-gray-300 hover:bg-gray-50 transition-all"
+                className="inline-flex items-center justify-center gap-2 px-8 py-4 bg-white dark:bg-gray-900 border-2 border-gray-200 text-gray-700 font-semibold rounded-xl hover:border-gray-300 hover:bg-gray-50 transition-all"
               >
                 <ArrowLeft className="w-5 h-5" />
                 Ga terug
@@ -99,7 +99,7 @@ export default function NotFound() {
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ delay: 0.7 }}
-              className="mt-16 pt-8 border-t border-gray-200"
+              className="mt-16 pt-8 border-t border-gray-200 dark:border-gray-700"
             >
               <p className="text-gray-500 text-sm mb-4">Misschien zoek je een van deze pagina's?</p>
               <div className="flex flex-wrap justify-center gap-3">

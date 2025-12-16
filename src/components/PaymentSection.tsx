@@ -181,8 +181,8 @@ export default function PaymentSection({
             <CreditCard className="w-8 h-8 text-white" />
           </div>
           <div>
-            <h3 className="text-xl font-bold text-gray-900">Klaar om live te gaan!</h3>
-            <p className="text-gray-600">Start je abonnement en we zetten je website online</p>
+            <h3 className="text-xl font-bold text-gray-900 dark:text-white">Klaar om live te gaan!</h3>
+            <p className="text-gray-600 dark:text-gray-400">Start je abonnement en we zetten je website online</p>
           </div>
         </div>
 
@@ -193,21 +193,21 @@ export default function PaymentSection({
         </div>
 
         {/* Pakket info */}
-        <div className="bg-white rounded-xl p-5 mb-6 border border-gray-200 shadow-sm">
+        <div className="bg-white dark:bg-gray-900 rounded-xl p-5 mb-6 border border-gray-200 shadow-sm">
           <div className="flex justify-between items-start mb-4">
             <div>
               <h4 className="font-bold text-gray-900 text-lg">{pkg.name} Pakket</h4>
               <p className="text-gray-600 text-sm">{pkg.description}</p>
             </div>
             <div className="text-right">
-              <p className="text-2xl font-bold text-gray-900">€{pkg.priceInclVat.toFixed(2)}</p>
-              <p className="text-xs text-gray-500">per maand incl. BTW</p>
+              <p className="text-2xl font-bold text-gray-900 dark:text-white">€{pkg.priceInclVat.toFixed(2)}</p>
+              <p className="text-xs text-gray-500 dark:text-gray-400">per maand incl. BTW</p>
             </div>
           </div>
 
           <div className="grid grid-cols-2 gap-2">
             {pkg.features.slice(0, 6).map((feature, i) => (
-              <div key={i} className="flex items-center gap-2 text-sm text-gray-700">
+              <div key={i} className="flex items-center gap-2 text-sm text-gray-700 dark:text-gray-300">
                 <CheckCircle2 className="w-4 h-4 text-green-500 flex-shrink-0" />
                 <span>{feature}</span>
               </div>
@@ -259,7 +259,7 @@ export default function PaymentSection({
         )}
 
         {/* Trust badges */}
-        <div className="flex items-center justify-center gap-6 mt-6 pt-6 border-t border-gray-200">
+        <div className="flex items-center justify-center gap-6 mt-6 pt-6 border-t border-gray-200 dark:border-gray-700">
           <div className="flex items-center gap-2 text-gray-600 text-sm">
             <Lock className="w-4 h-4" />
             <span>Veilig betalen</span>
@@ -272,7 +272,7 @@ export default function PaymentSection({
 
         {/* Betaalmethodes */}
         <div className="flex items-center justify-center gap-3 mt-4">
-          <span className="text-xs text-gray-500">Betaal met:</span>
+          <span className="text-xs text-gray-500 dark:text-gray-400">Betaal met:</span>
           <div className="flex items-center gap-2">
             <img src="https://www.mollie.com/external/icons/payment-methods/ideal.svg" alt="iDEAL" className="h-6" />
             <img src="https://www.mollie.com/external/icons/payment-methods/creditcard.svg" alt="Creditcard" className="h-6" />

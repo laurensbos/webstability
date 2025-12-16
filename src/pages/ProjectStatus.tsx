@@ -520,7 +520,7 @@ export default function ProjectStatus() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.3 }}
-            className="bg-white rounded-2xl shadow-xl border border-gray-100 p-8"
+            className="bg-white dark:bg-gray-900 rounded-2xl shadow-xl border border-gray-100 p-8"
           >
             <form onSubmit={handleLookup}>
               <div className="mb-6">
@@ -594,7 +594,7 @@ export default function ProjectStatus() {
                       <div className="flex items-center justify-between">
                         <div>
                           <p className="font-semibold text-gray-900 group-hover:text-blue-600 transition">{p.businessName}</p>
-                          <p className="text-xs text-gray-500">{p.projectId}</p>
+                          <p className="text-xs text-gray-500 dark:text-gray-400">{p.projectId}</p>
                         </div>
                         <div className="flex items-center gap-2">
                           <span className={`px-3 py-1 rounded-full text-xs font-medium ${
@@ -621,7 +621,7 @@ export default function ProjectStatus() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.5 }}
-            className="mt-8 flex flex-wrap justify-center gap-6 text-sm text-gray-500"
+            className="mt-8 flex flex-wrap justify-center gap-6 text-sm text-gray-500 dark:text-gray-400"
           >
             <div className="flex items-center gap-2">
               <Shield className="w-5 h-5 text-green-500" />
@@ -647,7 +647,7 @@ export default function ProjectStatus() {
       <div className="min-h-screen bg-gradient-to-b from-gray-50 to-white flex items-center justify-center">
         <div className="text-center">
           <Loader2 className="w-12 h-12 animate-spin text-blue-600 mx-auto mb-4" />
-          <p className="text-gray-600">Project laden...</p>
+          <p className="text-gray-600 dark:text-gray-400">Project laden...</p>
         </div>
       </div>
     )
@@ -713,7 +713,7 @@ export default function ProjectStatus() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.3 }}
-            className="bg-white rounded-2xl shadow-xl border border-gray-100 p-8"
+            className="bg-white dark:bg-gray-900 rounded-2xl shadow-xl border border-gray-100 p-8"
           >
             <form onSubmit={handlePasswordSubmit}>
               <div className="mb-6">
@@ -734,7 +734,7 @@ export default function ProjectStatus() {
                   <button
                     type="button"
                     onClick={() => setShowPassword(!showPassword)}
-                    className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
+                    className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 dark:text-gray-400"
                   >
                     {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
                   </button>
@@ -818,7 +818,7 @@ export default function ProjectStatus() {
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            className="bg-white rounded-2xl shadow-xl p-8 text-center"
+            className="bg-white dark:bg-gray-900 rounded-2xl shadow-xl p-8 text-center"
           >
             <Link
               to="/status"
@@ -897,7 +897,7 @@ export default function ProjectStatus() {
                   initial={{ width: 0 }}
                   animate={{ width: `${progressPercentage}%` }}
                   transition={{ duration: 1, ease: 'easeOut' }}
-                  className="h-full bg-white rounded-full shadow-lg"
+                  className="h-full bg-white dark:bg-gray-900 rounded-full shadow-lg"
                   role="progressbar"
                   aria-valuenow={progressPercentage}
                   aria-valuemin={0}
@@ -936,7 +936,7 @@ export default function ProjectStatus() {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.1 }}
-          className="bg-white rounded-2xl shadow-xl border border-gray-100 p-6 md:p-8 mb-8"
+          className="bg-white dark:bg-gray-900 rounded-2xl shadow-xl border border-gray-100 p-6 md:p-8 mb-8"
         >
           <h2 className="text-xl font-bold text-gray-900 mb-6 flex items-center gap-2">
             <Clock className={`w-6 h-6 ${phaseColors.text}`} />
@@ -1002,7 +1002,7 @@ export default function ProjectStatus() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.2 }}
-            className="bg-white rounded-2xl shadow-xl border border-gray-100 p-6 md:p-8 mb-8"
+            className="bg-white dark:bg-gray-900 rounded-2xl shadow-xl border border-gray-100 p-6 md:p-8 mb-8"
           >
             <h2 className="text-xl font-bold text-gray-900 mb-6 flex items-center gap-2">
               <Sparkles className={`w-6 h-6 ${phaseColors.text}`} />
@@ -1023,7 +1023,7 @@ export default function ProjectStatus() {
                   <div className={`space-y-3 border-l-4 ${phaseColors.bg} pl-4`}>
                     {updates.map((update, index) => (
                       <div key={index} className="py-2">
-                        <h3 className="font-semibold text-gray-900">{update.title}</h3>
+                        <h3 className="font-semibold text-gray-900 dark:text-white">{update.title}</h3>
                         <p className="text-gray-600 text-sm">{update.message}</p>
                       </div>
                     ))}
@@ -1039,14 +1039,14 @@ export default function ProjectStatus() {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.25 }}
-          className="bg-white rounded-2xl shadow-xl border border-gray-100 p-6 md:p-8 mb-8"
+          className="bg-white dark:bg-gray-900 rounded-2xl shadow-xl border border-gray-100 p-6 md:p-8 mb-8"
         >
           <div className="flex items-center gap-3 mb-6">
             <div className={`w-12 h-12 ${phaseColors.light} rounded-xl flex items-center justify-center`}>
               <Building2 className={`w-6 h-6 ${phaseColors.text}`} />
             </div>
             <div>
-              <h2 className="text-xl font-bold text-gray-900">Projectgegevens</h2>
+              <h2 className="text-xl font-bold text-gray-900 dark:text-white">Projectgegevens</h2>
               <p className="text-gray-600 text-sm">Overzicht van je project</p>
             </div>
           </div>
@@ -1061,11 +1061,11 @@ export default function ProjectStatus() {
               <div className="bg-gray-50 rounded-xl p-4 space-y-3">
                 <div className="flex justify-between">
                   <span className="text-gray-500 text-sm">Project ID</span>
-                  <span className="font-mono text-sm font-medium text-gray-900">{projectId}</span>
+                  <span className="font-mono text-sm font-medium text-gray-900 dark:text-white">{projectId}</span>
                 </div>
                 <div className="flex justify-between">
                   <span className="text-gray-500 text-sm">Pakket</span>
-                  <span className="text-sm font-medium text-gray-900">{project.package || 'Starter'}</span>
+                  <span className="text-sm font-medium text-gray-900 dark:text-white">{project.package || 'Starter'}</span>
                 </div>
                 <div className="flex justify-between">
                   <span className="text-gray-500 text-sm">Status</span>
@@ -1076,7 +1076,7 @@ export default function ProjectStatus() {
                 {project.estimatedCompletion && (
                   <div className="flex justify-between">
                     <span className="text-gray-500 text-sm">Geschatte oplevering</span>
-                    <span className="text-sm font-medium text-gray-900">{project.estimatedCompletion}</span>
+                    <span className="text-sm font-medium text-gray-900 dark:text-white">{project.estimatedCompletion}</span>
                   </div>
                 )}
               </div>
@@ -1092,19 +1092,19 @@ export default function ProjectStatus() {
                 {project.contactName && (
                   <div className="flex justify-between">
                     <span className="text-gray-500 text-sm">Naam</span>
-                    <span className="text-sm font-medium text-gray-900">{project.contactName}</span>
+                    <span className="text-sm font-medium text-gray-900 dark:text-white">{project.contactName}</span>
                   </div>
                 )}
                 {project.contactEmail && (
                   <div className="flex justify-between">
                     <span className="text-gray-500 text-sm">Email</span>
-                    <span className="text-sm font-medium text-gray-900">{project.contactEmail}</span>
+                    <span className="text-sm font-medium text-gray-900 dark:text-white">{project.contactEmail}</span>
                   </div>
                 )}
                 {project.contactPhone && (
                   <div className="flex justify-between">
                     <span className="text-gray-500 text-sm">Telefoon</span>
-                    <span className="text-sm font-medium text-gray-900">{project.contactPhone}</span>
+                    <span className="text-sm font-medium text-gray-900 dark:text-white">{project.contactPhone}</span>
                   </div>
                 )}
                 {!project.contactName && !project.contactEmail && (
@@ -1136,7 +1136,7 @@ export default function ProjectStatus() {
           {/* Onboarding Checklist - Dynamic */}
           <Link
             to={`/onboarding/${projectId}`}
-            className={`bg-white rounded-xl p-5 shadow-lg border-2 transition group ${
+            className={`bg-white dark:bg-gray-900 rounded-xl p-5 shadow-lg border-2 transition group ${
               onboardingCompleted 
                 ? 'border-green-200 hover:border-green-300 hover:shadow-xl' 
                 : 'border-blue-200 hover:border-blue-300 hover:shadow-xl'
@@ -1163,7 +1163,7 @@ export default function ProjectStatus() {
                     {onboardingCompleted ? 'Onboarding voltooid' : 'Onboarding Checklist'}
                   </h3>
                 </div>
-                <p className="text-sm text-gray-600">
+                <p className="text-sm text-gray-600 dark:text-gray-400">
                   {onboardingCompleted 
                     ? onboardingDate 
                       ? `Ingevuld op ${new Date(onboardingDate).toLocaleDateString('nl-NL', { day: 'numeric', month: 'short' })}`
@@ -1183,7 +1183,7 @@ export default function ProjectStatus() {
             href={`https://wa.me/${WHATSAPP_NUMBER}?text=Hallo! Ik heb een vraag over mijn project ${projectId}`}
             target="_blank"
             rel="noopener noreferrer"
-            className="bg-white rounded-xl p-5 shadow-lg border border-gray-100 hover:shadow-xl hover:border-green-200 transition group"
+            className="bg-white dark:bg-gray-900 rounded-xl p-5 shadow-lg border border-gray-100 hover:shadow-xl hover:border-green-200 transition group"
           >
             <div className="flex items-center gap-4">
               <div className="w-12 h-12 bg-green-100 rounded-xl flex items-center justify-center group-hover:scale-110 transition">
@@ -1191,7 +1191,7 @@ export default function ProjectStatus() {
               </div>
               <div className="flex-1">
                 <h3 className="font-semibold text-gray-900 group-hover:text-green-600 transition">WhatsApp</h3>
-                <p className="text-sm text-gray-600">Stel je vraag via WhatsApp</p>
+                <p className="text-sm text-gray-600 dark:text-gray-400">Stel je vraag via WhatsApp</p>
               </div>
               <ExternalLink className="w-4 h-4 text-gray-400 group-hover:text-green-500 transition" />
             </div>
@@ -1203,7 +1203,7 @@ export default function ProjectStatus() {
               href={project.googleDriveUrl}
               target="_blank"
               rel="noopener noreferrer"
-              className="bg-white rounded-xl p-5 shadow-lg border border-gray-100 hover:shadow-xl hover:border-amber-200 transition group"
+              className="bg-white dark:bg-gray-900 rounded-xl p-5 shadow-lg border border-gray-100 hover:shadow-xl hover:border-amber-200 transition group"
             >
               <div className="flex items-center gap-4">
                 <div className="w-12 h-12 bg-amber-100 rounded-xl flex items-center justify-center group-hover:scale-110 transition">
@@ -1211,7 +1211,7 @@ export default function ProjectStatus() {
                 </div>
                 <div className="flex-1">
                   <h3 className="font-semibold text-gray-900 group-hover:text-amber-600 transition">Bestanden</h3>
-                  <p className="text-sm text-gray-600">Bekijk gedeelde bestanden</p>
+                  <p className="text-sm text-gray-600 dark:text-gray-400">Bekijk gedeelde bestanden</p>
                 </div>
                 <ExternalLink className="w-4 h-4 text-gray-400 group-hover:text-amber-500 transition" />
               </div>
@@ -1244,9 +1244,9 @@ export default function ProjectStatus() {
           </div>
 
           {/* Chat Window */}
-          <div className="bg-white rounded-xl overflow-hidden">
+          <div className="bg-white dark:bg-gray-900 rounded-xl overflow-hidden">
             {/* Messages */}
-            <div className="h-72 overflow-y-auto p-4 space-y-3 bg-gray-50">
+            <div className="h-72 overflow-y-auto p-4 space-y-3 bg-gray-50 dark:bg-gray-800">
               {messages.length === 0 ? (
                 <div className="h-full flex flex-col items-center justify-center text-gray-400">
                   <MessageSquare className="w-12 h-12 mb-2 opacity-50" />
@@ -1262,7 +1262,7 @@ export default function ProjectStatus() {
                     <div className={`max-w-[80%] rounded-2xl p-4 ${
                       msg.from === 'client'
                         ? `${phaseColors.bg} text-white rounded-br-md`
-                        : 'bg-white text-gray-900 shadow-md rounded-bl-md'
+                        : 'bg-white dark:bg-gray-900 text-gray-900 shadow-md rounded-bl-md'
                     }`}>
                       {msg.from === 'developer' && (
                         <p className={`text-xs font-semibold ${phaseColors.text} mb-1`}>Team Webstability</p>
@@ -1283,7 +1283,7 @@ export default function ProjectStatus() {
             </div>
 
             {/* Input */}
-            <div className="p-4 border-t bg-white">
+            <div className="p-4 border-t bg-white dark:bg-gray-900 dark:bg-gray-900">
               <div className="flex gap-2">
                 <input
                   type="text"
@@ -1323,14 +1323,14 @@ export default function ProjectStatus() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.4 }}
-            className="bg-white rounded-2xl shadow-xl border border-gray-100 p-6 md:p-8 mb-8"
+            className="bg-white dark:bg-gray-900 rounded-2xl shadow-xl border border-gray-100 p-6 md:p-8 mb-8"
           >
             <div className="flex items-center gap-3 mb-6">
               <div className="w-12 h-12 bg-purple-100 rounded-xl flex items-center justify-center">
                 <Palette className="w-6 h-6 text-purple-600" />
               </div>
               <div>
-                <h2 className="text-xl font-bold text-gray-900">Design Preview</h2>
+                <h2 className="text-xl font-bold text-gray-900 dark:text-white">Design Preview</h2>
                 <p className="text-gray-600 text-sm">Bekijk je ontwerp en geef feedback</p>
               </div>
             </div>
@@ -1348,7 +1348,7 @@ export default function ProjectStatus() {
 
             {!feedbackSent ? (
               <div className="space-y-4">
-                <label className="block text-sm font-medium text-gray-700">
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
                   Heb je feedback of opmerkingen?
                 </label>
                 <textarea
@@ -1477,7 +1477,7 @@ export default function ProjectStatus() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.4 }}
-            className="bg-white rounded-2xl shadow-xl border border-gray-100 p-6 md:p-8 mb-8"
+            className="bg-white dark:bg-gray-900 rounded-2xl shadow-xl border border-gray-100 p-6 md:p-8 mb-8"
           >
             <div className="flex items-center justify-between mb-6">
               <div className="flex items-center gap-3">
@@ -1485,13 +1485,13 @@ export default function ProjectStatus() {
                   <Edit3 className="w-6 h-6 text-blue-600" />
                 </div>
                 <div>
-                  <h2 className="text-xl font-bold text-gray-900">Aanpassing aanvragen</h2>
+                  <h2 className="text-xl font-bold text-gray-900 dark:text-white">Aanpassing aanvragen</h2>
                   <p className="text-gray-600 text-sm">Wil je iets laten wijzigen aan je website?</p>
                 </div>
               </div>
               {project.revisionsTotal && (
                 <div className="text-right px-4 py-2 bg-gray-50 rounded-xl">
-                  <p className="text-sm text-gray-500">Revisies</p>
+                  <p className="text-sm text-gray-500 dark:text-gray-400">Revisies</p>
                   <p className={`text-lg font-bold ${
                     (project.revisionsUsed || 0) >= project.revisionsTotal 
                       ? 'text-red-600' 
@@ -1582,14 +1582,14 @@ export default function ProjectStatus() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.45 }}
-            className="bg-white rounded-2xl shadow-xl border border-gray-100 p-6 md:p-8 mb-8"
+            className="bg-white dark:bg-gray-900 rounded-2xl shadow-xl border border-gray-100 p-6 md:p-8 mb-8"
           >
             <div className="flex items-center gap-3 mb-6">
               <div className="w-12 h-12 bg-purple-100 rounded-xl flex items-center justify-center">
                 <FileText className="w-6 h-6 text-purple-600" />
               </div>
               <div>
-                <h2 className="text-xl font-bold text-gray-900">Mijn Aanvragen</h2>
+                <h2 className="text-xl font-bold text-gray-900 dark:text-white">Mijn Aanvragen</h2>
                 <p className="text-gray-600 text-sm">
                   {project.changeRequests.length} aanvra{project.changeRequests.length === 1 ? 'ag' : 'gen'}
                 </p>
@@ -1632,11 +1632,11 @@ export default function ProjectStatus() {
                           {PRIORITY_CONFIG[request.priority].label}
                         </span>
                       </div>
-                      <p className="text-gray-900">{request.request}</p>
+                      <p className="text-gray-900 dark:text-white">{request.request}</p>
                       {request.response && (
-                        <div className="mt-4 pt-4 border-t border-gray-200">
+                        <div className="mt-4 pt-4 border-t border-gray-200 dark:border-gray-700">
                           <p className="text-xs font-medium text-gray-500 mb-1">Reactie developer:</p>
-                          <p className="text-gray-700">{request.response}</p>
+                          <p className="text-gray-700 dark:text-gray-300">{request.response}</p>
                         </div>
                       )}
                     </div>
@@ -1658,7 +1658,7 @@ export default function ProjectStatus() {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.5 }}
-          className="bg-white rounded-2xl shadow-xl border border-gray-100 p-6 md:p-8"
+          className="bg-white dark:bg-gray-900 rounded-2xl shadow-xl border border-gray-100 p-6 md:p-8"
         >
           <button
             onClick={() => setShowFaq(!showFaq)}
@@ -1669,7 +1669,7 @@ export default function ProjectStatus() {
                 <HelpCircle className="w-6 h-6 text-amber-600" />
               </div>
               <div className="text-left">
-                <h2 className="text-xl font-bold text-gray-900">Veelgestelde vragen</h2>
+                <h2 className="text-xl font-bold text-gray-900 dark:text-white">Veelgestelde vragen</h2>
                 <p className="text-gray-600 text-sm">
                   Over de {STATUS_STEPS.find(s => s.key === project.status)?.label.toLowerCase()}-fase
                 </p>
@@ -1689,7 +1689,7 @@ export default function ProjectStatus() {
                 <div className="mt-6 space-y-4">
                   {PHASE_FAQS[project.status]?.map((faq, index) => (
                     <div key={index} className={`border-l-4 ${phaseColors.bg} pl-4 py-2`}>
-                      <h4 className="font-semibold text-gray-900">{faq.question}</h4>
+                      <h4 className="font-semibold text-gray-900 dark:text-white">{faq.question}</h4>
                       <p className="text-gray-600 text-sm mt-1">{faq.answer}</p>
                     </div>
                   ))}
@@ -1704,7 +1704,7 @@ export default function ProjectStatus() {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.55 }}
-          className="mt-8 flex flex-wrap justify-center gap-6 text-sm text-gray-500"
+          className="mt-8 flex flex-wrap justify-center gap-6 text-sm text-gray-500 dark:text-gray-400"
         >
           <div className="flex items-center gap-2">
             <Shield className="w-5 h-5 text-green-500" />

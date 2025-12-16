@@ -60,7 +60,7 @@ export default function Unauthorized() {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ delay: 0.4 }}
-            className="mt-12 p-6 bg-white rounded-2xl border border-gray-200 max-w-md mx-auto"
+            className="mt-12 p-6 bg-white dark:bg-gray-900 rounded-2xl border border-gray-200 max-w-md mx-auto"
           >
             <h3 className="font-semibold text-gray-900 mb-2">Hulp nodig?</h3>
             <p className="text-gray-600 text-sm mb-4">

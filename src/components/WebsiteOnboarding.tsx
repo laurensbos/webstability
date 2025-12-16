@@ -595,13 +595,13 @@ export default function WebsiteOnboarding({
         initial={{ scale: 0.95, opacity: 0, y: 20 }}
         animate={{ scale: 1, opacity: 1, y: 0 }}
         exit={{ scale: 0.95, opacity: 0, y: 20 }}
-        className="bg-white rounded-2xl w-full max-w-3xl max-h-[95vh] overflow-hidden shadow-2xl flex flex-col"
+        className="bg-white dark:bg-gray-900 rounded-2xl w-full max-w-3xl max-h-[95vh] overflow-hidden shadow-2xl flex flex-col"
       >
         {/* Header */}
         <div className="bg-gradient-to-r from-primary-600 to-blue-600 p-4 sm:p-6 text-white relative overflow-hidden">
           <div className="absolute inset-0 opacity-10">
-            <div className="absolute top-0 right-0 w-64 h-64 rounded-full bg-white transform translate-x-1/2 -translate-y-1/2" />
-            <div className="absolute bottom-0 left-0 w-48 h-48 rounded-full bg-white transform -translate-x-1/2 translate-y-1/2" />
+            <div className="absolute top-0 right-0 w-64 h-64 rounded-full bg-white dark:bg-gray-900 transform translate-x-1/2 -translate-y-1/2" />
+            <div className="absolute bottom-0 left-0 w-48 h-48 rounded-full bg-white dark:bg-gray-900 transform -translate-x-1/2 translate-y-1/2" />
           </div>
           <div className="relative z-10">
             <div className="flex items-center justify-between mb-4">
@@ -632,7 +632,7 @@ export default function WebsiteOnboarding({
               <motion.div
                 initial={{ width: 0 }}
                 animate={{ width: `${progress}%` }}
-                className="h-full bg-white rounded-full"
+                className="h-full bg-white dark:bg-gray-900 rounded-full"
               />
             </div>
 
@@ -650,7 +650,7 @@ export default function WebsiteOnboarding({
                     }`}
                   >
                     <div className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold transition-all ${
-                      isActive ? 'bg-white text-primary-600 shadow-lg' : isComplete ? 'bg-white/30' : 'bg-white/10'
+                      isActive ? 'bg-white dark:bg-gray-900 text-primary-600 shadow-lg' : isComplete ? 'bg-white/30' : 'bg-white/10'
                     }`}>
                       {isComplete ? <Check className="w-4 h-4" /> : step.id}
                     </div>
@@ -693,8 +693,8 @@ export default function WebsiteOnboarding({
                           onClick={() => updateData({ selectedPackage: key as 'starter' | 'professional' | 'business' })}
                           className={`relative p-4 sm:p-5 rounded-xl border-2 text-left transition-all ${
                             isSelected 
-                              ? 'border-primary-500 bg-primary-50 shadow-lg' 
-                              : 'border-gray-200 hover:border-gray-300 bg-white'
+                              ? 'border-primary-500 bg-primary-50 dark:bg-primary-900/30 shadow-lg' 
+                              : 'border-gray-200 dark:border-gray-700 hover:border-gray-300 dark:hover:border-gray-600 bg-white dark:bg-gray-800'
                           }`}
                         >
                           {isPopular && (
@@ -729,20 +729,20 @@ export default function WebsiteOnboarding({
                                 )}
                               </div>
                               {key === 'starter' && (
-                                <p className="text-xs text-gray-500">Perfect voor starters en kleine bedrijven</p>
+                                <p className="text-xs text-gray-500 dark:text-gray-400">Perfect voor starters en kleine bedrijven</p>
                               )}
                               {key === 'professional' && (
-                                <p className="text-xs text-gray-500">Ideaal voor groeiende ondernemers</p>
+                                <p className="text-xs text-gray-500 dark:text-gray-400">Ideaal voor groeiende ondernemers</p>
                               )}
                               {key === 'business' && (
-                                <p className="text-xs text-gray-500">Voor bedrijven die meer willen</p>
+                                <p className="text-xs text-gray-500 dark:text-gray-400">Voor bedrijven die meer willen</p>
                               )}
                             </div>
                             <div className="text-right flex-shrink-0">
                               <div className={`text-2xl font-bold ${isSelected ? 'text-primary-600' : 'text-gray-900'}`}>
                                 €{pkg.price}
                               </div>
-                              <div className="text-xs text-gray-500">per maand</div>
+                              <div className="text-xs text-gray-500 dark:text-gray-400">per maand</div>
                               <div className="text-xs text-gray-400 mt-1">+ €{pkg.setupFee} eenmalig</div>
                             </div>
                           </div>
@@ -927,7 +927,7 @@ export default function WebsiteOnboarding({
                                 <p className={`font-medium ${isSelected ? 'text-primary-700' : 'text-gray-900'}`}>
                                   {goal.name}
                                 </p>
-                                <p className="text-xs text-gray-500">{goal.description}</p>
+                                <p className="text-xs text-gray-500 dark:text-gray-400">{goal.description}</p>
                               </div>
                             </div>
                           </motion.button>
@@ -1014,7 +1014,7 @@ export default function WebsiteOnboarding({
                   </div>
 
                   <div className="flex flex-wrap items-center gap-2 mb-2">
-                    <span className="text-sm text-gray-600">Geselecteerd:</span>
+                    <span className="text-sm text-gray-600 dark:text-gray-400">Geselecteerd:</span>
                     <span className={`px-3 py-1 rounded-full text-sm font-medium ${
                       data.pages.length > 0 ? 'bg-primary-100 text-primary-700' : 'bg-gray-100 text-gray-500'
                     }`}>
@@ -1058,7 +1058,7 @@ export default function WebsiteOnboarding({
                               <p className={`font-medium ${isSelected ? 'text-primary-700' : 'text-gray-900'}`}>
                                 {page.name}
                               </p>
-                              <p className="text-xs text-gray-500">{page.description}</p>
+                              <p className="text-xs text-gray-500 dark:text-gray-400">{page.description}</p>
                             </div>
                             {isSelected && (
                               <Check className="w-5 h-5 text-primary-600" />
@@ -1078,7 +1078,7 @@ export default function WebsiteOnboarding({
                         onChange={e => updateData({ hasExistingWebsite: e.target.checked })}
                         className="w-5 h-5 rounded border-gray-300 text-primary-600 focus:ring-primary-500"
                       />
-                      <span className="text-gray-700">Ik heb al een bestaande website</span>
+                      <span className="text-gray-700 dark:text-gray-300">Ik heb al een bestaande website</span>
                     </label>
                     {data.hasExistingWebsite && (
                       <input
@@ -1123,13 +1123,13 @@ export default function WebsiteOnboarding({
                           >
                             <div className="flex items-center gap-3">
                               <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-gray-200 to-gray-300 flex items-center justify-center">
-                                <Palette className="w-4 h-4 text-gray-600" />
+                                <Palette className="w-4 h-4 text-gray-600 dark:text-gray-400" />
                               </div>
                               <div>
                                 <p className={`font-medium ${isSelected ? 'text-primary-700' : 'text-gray-900'}`}>
                                   {style.name}
                                 </p>
-                                <p className="text-xs text-gray-500">{style.description}</p>
+                                <p className="text-xs text-gray-500 dark:text-gray-400">{style.description}</p>
                               </div>
                             </div>
                           </motion.button>
@@ -1230,7 +1230,7 @@ export default function WebsiteOnboarding({
                                 </button>
                               </div>
                             ) : (
-                              <div className="text-gray-500">
+                              <div className="text-gray-500 dark:text-gray-400">
                                 <Upload className="w-8 h-8 mx-auto mb-2" />
                                 <p className="font-medium">Klik om logo te uploaden</p>
                                 <p className="text-xs">PNG, JPG, SVG, AI, EPS of PDF</p>
@@ -1320,7 +1320,7 @@ export default function WebsiteOnboarding({
                         />
                         <div>
                           <span className="text-gray-700 font-medium">Ik heb teksten voor de website</span>
-                          <p className="text-xs text-gray-500">Over ons, diensten, etc.</p>
+                          <p className="text-xs text-gray-500 dark:text-gray-400">Over ons, diensten, etc.</p>
                         </div>
                       </label>
                       {data.hasContent && (
@@ -1349,12 +1349,12 @@ export default function WebsiteOnboarding({
                         />
                         <div>
                           <span className="text-gray-700 font-medium">Ik heb foto's voor de website</span>
-                          <p className="text-xs text-gray-500">Productfoto's, teamfoto's, etc.</p>
+                          <p className="text-xs text-gray-500 dark:text-gray-400">Productfoto's, teamfoto's, etc.</p>
                         </div>
                       </label>
                       {data.hasPhotos && (
                         <div className="mt-4 space-y-4">
-                          <p className="text-sm text-gray-600">Upload je foto's of geef een link:</p>
+                          <p className="text-sm text-gray-600 dark:text-gray-400">Upload je foto's of geef een link:</p>
                           
                           {/* File upload */}
                           <div className="border-2 border-dashed border-gray-300 rounded-lg p-4 text-center hover:border-primary-400 transition-colors">
@@ -1372,7 +1372,7 @@ export default function WebsiteOnboarding({
                               id="photo-upload"
                             />
                             <label htmlFor="photo-upload" className="cursor-pointer">
-                              <div className="text-gray-500">
+                              <div className="text-gray-500 dark:text-gray-400">
                                 <Upload className="w-8 h-8 mx-auto mb-2" />
                                 <p className="font-medium">Klik om foto's te uploaden</p>
                                 <p className="text-xs">Je kunt meerdere bestanden selecteren</p>
@@ -1383,7 +1383,7 @@ export default function WebsiteOnboarding({
                           {/* Show uploaded files */}
                           {data.photoFiles.length > 0 && (
                             <div className="space-y-2">
-                              <p className="text-sm font-medium text-gray-700">{data.photoFiles.length} foto('s) geselecteerd:</p>
+                              <p className="text-sm font-medium text-gray-700 dark:text-gray-300">{data.photoFiles.length} foto('s) geselecteerd:</p>
                               <div className="max-h-32 overflow-y-auto space-y-1">
                                 {data.photoFiles.map((file, idx) => (
                                   <div key={idx} className="flex items-center justify-between bg-gray-50 px-3 py-2 rounded-lg text-sm">
@@ -1473,7 +1473,7 @@ export default function WebsiteOnboarding({
                           <button
                             type="button"
                             onClick={() => setShowPassword(!showPassword)}
-                            className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
+                            className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 dark:text-gray-400"
                           >
                             {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
                           </button>
@@ -1578,27 +1578,27 @@ export default function WebsiteOnboarding({
                     </h4>
                     <div className="grid sm:grid-cols-2 gap-4 text-sm">
                       <div>
-                        <span className="text-gray-600">Pakket:</span>
-                        <span className="ml-2 font-medium text-gray-900">{selectedPackage.name}</span>
+                        <span className="text-gray-600 dark:text-gray-400">Pakket:</span>
+                        <span className="ml-2 font-medium text-gray-900 dark:text-white">{selectedPackage.name}</span>
                       </div>
                       <div>
-                        <span className="text-gray-600">Per maand:</span>
+                        <span className="text-gray-600 dark:text-gray-400">Per maand:</span>
                         <span className="ml-2 font-bold text-primary-600">€{selectedPackage.price}</span>
                         <span className="text-gray-500 text-xs ml-1">(incl. btw)</span>
                       </div>
                       <div>
-                        <span className="text-gray-600">Eenmalig:</span>
-                        <span className="ml-2 font-medium text-gray-900">€{selectedPackage.setupFee}</span>
+                        <span className="text-gray-600 dark:text-gray-400">Eenmalig:</span>
+                        <span className="ml-2 font-medium text-gray-900 dark:text-white">€{selectedPackage.setupFee}</span>
                         <span className="text-gray-500 text-xs ml-1">(incl. btw)</span>
                       </div>
                       <div>
-                        <span className="text-gray-600">Pagina's:</span>
-                        <span className="ml-2 font-medium text-gray-900">{data.pages.length}</span>
+                        <span className="text-gray-600 dark:text-gray-400">Pagina's:</span>
+                        <span className="ml-2 font-medium text-gray-900 dark:text-white">{data.pages.length}</span>
                       </div>
                     </div>
 
                     <div className="mt-4 pt-4 border-t border-primary-200">
-                      <div className="flex items-center gap-2 text-sm text-gray-600">
+                      <div className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-400">
                         <Clock className="w-4 h-4" />
                         <span>Levertijd: 5-10 werkdagen na goedkeuring ontwerp</span>
                       </div>
@@ -1614,7 +1614,7 @@ export default function WebsiteOnboarding({
                         onChange={e => updateData({ agreedToTerms: e.target.checked })}
                         className="w-5 h-5 mt-0.5 rounded border-gray-300 text-primary-600 focus:ring-primary-500"
                       />
-                      <span className="text-sm text-gray-700">
+                      <span className="text-sm text-gray-700 dark:text-gray-300">
                         Ik ga akkoord met de{' '}
                         <a href="/voorwaarden" target="_blank" className="text-primary-600 hover:underline">
                           algemene voorwaarden
@@ -1631,7 +1631,7 @@ export default function WebsiteOnboarding({
         </div>
 
         {/* Footer */}
-        <div className="border-t p-4 flex items-center justify-between bg-gray-50">
+        <div className="border-t p-4 flex items-center justify-between bg-gray-50 dark:bg-gray-800">
           <button
             type="button"
             onClick={currentStep === 1 ? (onClose ? onClose : () => navigate(-1)) : prevStep}

@@ -8,6 +8,7 @@ export default function FloatingWhatsApp() {
   const [isVisible, setIsVisible] = useState(false)
   const [isExpanded, setIsExpanded] = useState(false)
   const [showTooltip, setShowTooltip] = useState(false)
+  const [isDesktop, setIsDesktop] = useState(false)
 
   const whatsappLink = 'https://wa.me/31644712573?text=Hoi!%20Ik%20heb%20een%20vraag%20over%20jullie%20diensten.'
 
@@ -15,8 +16,19 @@ export default function FloatingWhatsApp() {
   const hiddenPaths = ['/developer', '/marketing', '/login']
   const shouldHide = hiddenPaths.some(path => location.pathname.startsWith(path))
 
+  // Check if desktop
   useEffect(() => {
-    if (shouldHide) {
+    const checkDesktop = () => {
+      setIsDesktop(window.innerWidth >= 1024) // lg breakpoint
+    }
+    checkDesktop()
+    window.addEventListener('resize', checkDesktop)
+    return () => window.removeEventListener('resize', checkDesktop)
+  }, [])
+
+  useEffect(() => {
+    // Hide on desktop or hidden paths
+    if (shouldHide || isDesktop) {
       setIsVisible(false)
       return
     }
@@ -36,7 +48,7 @@ export default function FloatingWhatsApp() {
       window.removeEventListener('scroll', handleScroll)
       clearTimeout(timer)
     }
-  }, [shouldHide])
+  }, [shouldHide, isDesktop])
 
   // Show tooltip after button is visible for 2 seconds (only once)
   useEffect(() => {
@@ -66,7 +78,7 @@ export default function FloatingWhatsApp() {
                 initial={{ opacity: 0, x: 20, scale: 0.9 }}
                 animate={{ opacity: 1, x: 0, scale: 1 }}
                 exit={{ opacity: 0, x: 20, scale: 0.9 }}
-                className="bg-white rounded-2xl shadow-2xl border border-gray-100 p-4 max-w-[280px]"
+                className="bg-white dark:bg-gray-900 rounded-2xl shadow-2xl border border-gray-100 p-4 max-w-[280px]"
               >
                 <div className="flex items-start justify-between gap-2 mb-2">
                   <div className="flex items-center gap-2">

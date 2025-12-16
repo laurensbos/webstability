@@ -171,21 +171,21 @@ export default function Contact() {
 
   const getColorClasses = (color: string) => {
     const colors: Record<string, { bg: string; bgLight: string; text: string; border: string; hover: string }> = {
-      green: { bg: 'bg-green-500', bgLight: 'bg-green-50', text: 'text-green-600', border: 'border-green-200', hover: 'hover:border-green-300 hover:bg-green-50' },
-      blue: { bg: 'bg-blue-500', bgLight: 'bg-blue-50', text: 'text-blue-600', border: 'border-blue-200', hover: 'hover:border-blue-300 hover:bg-blue-50' },
-      purple: { bg: 'bg-purple-500', bgLight: 'bg-purple-50', text: 'text-purple-600', border: 'border-purple-200', hover: 'hover:border-purple-300 hover:bg-purple-50' },
-      amber: { bg: 'bg-amber-500', bgLight: 'bg-amber-50', text: 'text-amber-600', border: 'border-amber-200', hover: 'hover:border-amber-300 hover:bg-amber-50' },
+      green: { bg: 'bg-green-500', bgLight: 'bg-green-50 dark:bg-green-900/30', text: 'text-green-600 dark:text-green-400', border: 'border-green-200 dark:border-green-800', hover: 'hover:border-green-300 hover:bg-green-50 dark:hover:border-green-700 dark:hover:bg-green-900/20' },
+      blue: { bg: 'bg-blue-500', bgLight: 'bg-blue-50 dark:bg-blue-900/30', text: 'text-blue-600 dark:text-blue-400', border: 'border-blue-200 dark:border-blue-800', hover: 'hover:border-blue-300 hover:bg-blue-50 dark:hover:border-blue-700 dark:hover:bg-blue-900/20' },
+      purple: { bg: 'bg-purple-500', bgLight: 'bg-purple-50 dark:bg-purple-900/30', text: 'text-purple-600 dark:text-purple-400', border: 'border-purple-200 dark:border-purple-800', hover: 'hover:border-purple-300 hover:bg-purple-50 dark:hover:border-purple-700 dark:hover:bg-purple-900/20' },
+      amber: { bg: 'bg-amber-500', bgLight: 'bg-amber-50 dark:bg-amber-900/30', text: 'text-amber-600 dark:text-amber-400', border: 'border-amber-200 dark:border-amber-800', hover: 'hover:border-amber-300 hover:bg-amber-50 dark:hover:border-amber-700 dark:hover:bg-amber-900/20' },
     }
     return colors[color] || colors.blue
   }
 
   return (
-    <div className="min-h-screen bg-white">
+    <div className="min-h-screen bg-white dark:bg-gray-900">
       <Header />
 
       <main>
         {/* Hero Section */}
-        <section className="relative min-h-[60vh] flex items-center overflow-hidden bg-gradient-to-br from-slate-50 via-blue-50/30 to-white pt-20">
+        <section className="relative min-h-[60vh] flex items-center overflow-hidden bg-gradient-to-br from-slate-50 via-blue-50/30 to-white dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 pt-20">
           {/* Background decorations */}
           <div className="absolute inset-0 overflow-hidden pointer-events-none">
             <motion.div 
@@ -211,20 +211,20 @@ export default function Contact() {
                   initial={{ opacity: 0, scale: 0.9 }}
                   animate={{ opacity: 1, scale: 1 }}
                   transition={{ delay: 0.1 }}
-                  className="inline-flex items-center gap-2 bg-gradient-to-r from-blue-50 to-indigo-50 border border-blue-200/50 rounded-full px-4 py-2 mb-6"
+                  className="inline-flex items-center gap-2 bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-900/30 dark:to-indigo-900/30 border border-blue-200/50 dark:border-blue-700/50 rounded-full px-4 py-2 mb-6"
                 >
-                  <Sparkles className="w-4 h-4 text-blue-600" />
-                  <span className="text-sm font-medium text-blue-700">Neem contact op</span>
+                  <Sparkles className="w-4 h-4 text-blue-600 dark:text-blue-400" />
+                  <span className="text-sm font-medium text-blue-700 dark:text-blue-300">Neem contact op</span>
                 </motion.div>
 
-                <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold text-gray-900 mb-6 leading-tight">
+                <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold text-gray-900 dark:text-white mb-6 leading-tight">
                   Laten we{' '}
                   <span className="bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">
                     samenwerken
                   </span>
                 </h1>
 
-                <p className="text-xl text-gray-600 mb-8 max-w-2xl mx-auto">
+                <p className="text-xl text-gray-600 dark:text-gray-300 mb-8 max-w-2xl mx-auto">
                   Heb je een vraag of wil je een website laten maken? 
                   We reageren altijd binnen 24 uur en denken graag met je mee.
                 </p>
@@ -242,7 +242,7 @@ export default function Contact() {
                   </a>
                   <a
                     href="#formulier"
-                    className="inline-flex items-center justify-center px-8 py-4 bg-white/80 backdrop-blur-sm hover:bg-white text-gray-700 font-semibold rounded-xl border border-gray-200 transition-all hover:shadow-lg"
+                    className="inline-flex items-center justify-center px-8 py-4 bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm hover:bg-white dark:hover:bg-gray-700 text-gray-700 dark:text-gray-200 font-semibold rounded-xl border border-gray-200 dark:border-gray-700 transition-all hover:shadow-lg"
                   >
                     Stuur een bericht
                   </a>
@@ -277,7 +277,7 @@ export default function Contact() {
         </section>
 
         {/* Contact Methods */}
-        <section className="py-20 bg-white relative overflow-hidden">
+        <section className="py-20 bg-white dark:bg-gray-900 relative overflow-hidden">
           <div className="absolute inset-0 overflow-hidden pointer-events-none">
             <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-gradient-to-r from-blue-50/50 via-indigo-50/30 to-purple-50/50 rounded-full blur-3xl" />
           </div>
@@ -296,7 +296,7 @@ export default function Contact() {
                 initial={{ opacity: 0, y: 20 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
-                className="text-3xl sm:text-4xl font-bold text-gray-900 mb-4"
+                className="text-3xl sm:text-4xl font-bold text-gray-900 dark:text-white mb-4"
               >
                 Kies jouw{' '}
                 <span className="bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">
@@ -308,7 +308,7 @@ export default function Contact() {
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
                 transition={{ delay: 0.1 }}
-                className="text-gray-600 text-lg max-w-2xl mx-auto"
+                className="text-gray-600 dark:text-gray-400 text-lg max-w-2xl mx-auto"
               >
                 We zijn via meerdere kanalen bereikbaar. Kies wat voor jou het beste werkt.
               </motion.p>
@@ -327,7 +327,7 @@ export default function Contact() {
                     whileInView={{ opacity: 1, y: 0 }}
                     viewport={{ once: true }}
                     transition={{ delay: index * 0.1 }}
-                    className={`group relative p-6 bg-white border-2 ${colors.border} rounded-2xl ${colors.hover} transition-all hover:shadow-xl hover:-translate-y-1`}
+                    className={`group relative p-6 bg-white dark:bg-gray-800 border-2 ${colors.border} rounded-2xl ${colors.hover} transition-all hover:shadow-xl hover:-translate-y-1`}
                   >
                     {method.badge && (
                       <div className="absolute -top-3 left-1/2 -translate-x-1/2">
@@ -341,8 +341,8 @@ export default function Contact() {
                       <method.icon className={`w-7 h-7 ${colors.text}`} />
                     </div>
                     
-                    <h3 className="text-lg font-bold text-gray-900 mb-1">{method.title}</h3>
-                    <p className="text-sm text-gray-500 mb-3">{method.subtitle}</p>
+                    <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-1">{method.title}</h3>
+                    <p className="text-sm text-gray-500 dark:text-gray-400 mb-3">{method.subtitle}</p>
                     <p className={`font-semibold ${colors.text}`}>{method.value}</p>
                   </motion.a>
                 )
@@ -354,7 +354,7 @@ export default function Contact() {
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
-              className="flex flex-wrap justify-center gap-6 mt-12 text-sm text-gray-600"
+              className="flex flex-wrap justify-center gap-6 mt-12 text-sm text-gray-600 dark:text-gray-400"
             >
               <div className="flex items-center gap-2">
                 <Clock className="w-4 h-4 text-blue-500" />
@@ -373,7 +373,7 @@ export default function Contact() {
         </section>
 
         {/* Contact Form Section */}
-        <section id="formulier" className="py-20 bg-gradient-to-b from-gray-50 via-blue-50/20 to-gray-50 relative overflow-hidden">
+        <section id="formulier" className="py-20 bg-gradient-to-b from-gray-50 via-blue-50/20 to-gray-50 dark:from-gray-800 dark:via-gray-800 dark:to-gray-800 relative overflow-hidden">
           <div className="absolute inset-0 overflow-hidden pointer-events-none">
             <div className="absolute -top-40 -left-40 w-80 h-80 bg-gradient-to-br from-blue-100/40 to-indigo-100/20 rounded-full blur-3xl" />
             <div className="absolute -bottom-40 -right-40 w-96 h-96 bg-gradient-to-tl from-indigo-100/30 to-blue-100/20 rounded-full blur-3xl" />
@@ -393,7 +393,7 @@ export default function Contact() {
                 initial={{ opacity: 0, y: 20 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
-                className="text-3xl sm:text-4xl font-bold text-gray-900 mb-4"
+                className="text-3xl sm:text-4xl font-bold text-gray-900 dark:text-white mb-4"
               >
                 Stuur ons een{' '}
                 <span className="bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">
@@ -405,7 +405,7 @@ export default function Contact() {
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
                 transition={{ delay: 0.1 }}
-                className="text-gray-600 text-lg max-w-2xl mx-auto"
+                className="text-gray-600 dark:text-gray-400 text-lg max-w-2xl mx-auto"
               >
                 Vertel ons over je project en we nemen zo snel mogelijk contact met je op.
               </motion.p>
@@ -415,7 +415,7 @@ export default function Contact() {
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
-              className="bg-white rounded-2xl border-2 border-gray-200 p-8 md:p-10 shadow-xl shadow-gray-100/50"
+              className="bg-white dark:bg-gray-800 rounded-2xl border-2 border-gray-200 dark:border-gray-700 p-8 md:p-10 shadow-xl shadow-gray-100/50 dark:shadow-gray-900/50"
             >
               {formState === 'success' ? (
                 <motion.div
@@ -426,10 +426,10 @@ export default function Contact() {
                   <div className="w-20 h-20 bg-gradient-to-br from-green-100 to-emerald-100 rounded-full flex items-center justify-center mx-auto mb-6">
                     <CheckCircle className="w-10 h-10 text-green-600" />
                   </div>
-                  <h3 className="text-2xl font-bold text-gray-900 mb-2">
+                  <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">
                     Bericht verzonden! 🎉
                   </h3>
-                  <p className="text-gray-600 mb-6 max-w-md mx-auto">
+                  <p className="text-gray-600 dark:text-gray-400 mb-6 max-w-md mx-auto">
                     Bedankt voor je bericht. We nemen binnen 24 uur contact met je op.
                   </p>
                   <button
@@ -443,7 +443,7 @@ export default function Contact() {
                 <form onSubmit={handleSubmit} className="space-y-6">
                   <div className="grid sm:grid-cols-2 gap-6">
                     <div>
-                      <label htmlFor="name" className="block text-sm font-semibold text-gray-700 mb-2">
+                      <label htmlFor="name" className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
                         Naam *
                       </label>
                       <input
@@ -452,12 +452,12 @@ export default function Contact() {
                         required
                         value={formData.name}
                         onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                        className="w-full px-4 py-3.5 bg-gray-50 border-2 border-gray-200 rounded-xl text-gray-900 placeholder-gray-400 focus:outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 transition-all"
+                        className="w-full px-4 py-3.5 bg-gray-50 dark:bg-gray-700 border-2 border-gray-200 dark:border-gray-600 rounded-xl text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500 focus:outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 transition-all"
                         placeholder="Je naam"
                       />
                     </div>
                     <div>
-                      <label htmlFor="company" className="block text-sm font-semibold text-gray-700 mb-2">
+                      <label htmlFor="company" className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
                         Bedrijfsnaam
                       </label>
                       <input
@@ -465,7 +465,7 @@ export default function Contact() {
                         id="company"
                         value={formData.company}
                         onChange={(e) => setFormData({ ...formData, company: e.target.value })}
-                        className="w-full px-4 py-3.5 bg-gray-50 border-2 border-gray-200 rounded-xl text-gray-900 placeholder-gray-400 focus:outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 transition-all"
+                        className="w-full px-4 py-3.5 bg-gray-50 dark:bg-gray-700 border-2 border-gray-200 dark:border-gray-600 rounded-xl text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500 focus:outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 transition-all"
                         placeholder="Je bedrijf (optioneel)"
                       />
                     </div>
@@ -473,7 +473,7 @@ export default function Contact() {
 
                   <div className="grid sm:grid-cols-2 gap-6">
                     <div>
-                      <label htmlFor="email" className="block text-sm font-semibold text-gray-700 mb-2">
+                      <label htmlFor="email" className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
                         E-mail *
                       </label>
                       <input
@@ -482,12 +482,12 @@ export default function Contact() {
                         required
                         value={formData.email}
                         onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                        className="w-full px-4 py-3.5 bg-gray-50 border-2 border-gray-200 rounded-xl text-gray-900 placeholder-gray-400 focus:outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 transition-all"
+                        className="w-full px-4 py-3.5 bg-gray-50 dark:bg-gray-700 border-2 border-gray-200 dark:border-gray-600 rounded-xl text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500 focus:outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 transition-all"
                         placeholder="je@email.nl"
                       />
                     </div>
                     <div>
-                      <label htmlFor="phone" className="block text-sm font-semibold text-gray-700 mb-2">
+                      <label htmlFor="phone" className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
                         Telefoon
                       </label>
                       <input
@@ -495,14 +495,14 @@ export default function Contact() {
                         id="phone"
                         value={formData.phone}
                         onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
-                        className="w-full px-4 py-3.5 bg-gray-50 border-2 border-gray-200 rounded-xl text-gray-900 placeholder-gray-400 focus:outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 transition-all"
+                        className="w-full px-4 py-3.5 bg-gray-50 dark:bg-gray-700 border-2 border-gray-200 dark:border-gray-600 rounded-xl text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500 focus:outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 transition-all"
                         placeholder="06 12345678 (optioneel)"
                       />
                     </div>
                   </div>
 
                   <div>
-                    <label htmlFor="message" className="block text-sm font-semibold text-gray-700 mb-2">
+                    <label htmlFor="message" className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
                       Bericht *
                     </label>
                     <textarea
@@ -511,7 +511,7 @@ export default function Contact() {
                       rows={5}
                       value={formData.message}
                       onChange={(e) => setFormData({ ...formData, message: e.target.value })}
-                      className="w-full px-4 py-3.5 bg-gray-50 border-2 border-gray-200 rounded-xl text-gray-900 placeholder-gray-400 focus:outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 transition-all resize-none"
+                      className="w-full px-4 py-3.5 bg-gray-50 dark:bg-gray-700 border-2 border-gray-200 dark:border-gray-600 rounded-xl text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500 focus:outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 transition-all resize-none"
                       placeholder="Vertel ons over je project, stel een vraag, of laat weten waarmee we je kunnen helpen..."
                     />
                   </div>
@@ -542,15 +542,15 @@ export default function Contact() {
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
-              className="mt-8 p-6 bg-gradient-to-r from-green-50 to-emerald-50 rounded-2xl border-2 border-green-200"
+              className="mt-8 p-6 bg-gradient-to-r from-green-50 to-emerald-50 dark:from-green-900/20 dark:to-emerald-900/20 rounded-2xl border-2 border-green-200 dark:border-green-800"
             >
               <div className="flex flex-col sm:flex-row items-center gap-4">
                 <div className="w-14 h-14 bg-green-500 rounded-full flex items-center justify-center flex-shrink-0 shadow-lg shadow-green-500/30">
                   <MessageCircle className="w-7 h-7 text-white" />
                 </div>
                 <div className="flex-1 text-center sm:text-left">
-                  <h3 className="font-bold text-gray-900 text-lg">Liever direct chatten?</h3>
-                  <p className="text-gray-600">WhatsApp is de snelste manier om ons te bereiken</p>
+                  <h3 className="font-bold text-gray-900 dark:text-white text-lg">Liever direct chatten?</h3>
+                  <p className="text-gray-600 dark:text-gray-400">WhatsApp is de snelste manier om ons te bereiken</p>
                 </div>
                 <a
                   href="https://wa.me/31644712573?text=Hoi!%20Ik%20heb%20een%20vraag%20over%20een%20website."
@@ -566,7 +566,7 @@ export default function Contact() {
         </section>
 
         {/* FAQ Section */}
-        <section className="py-20 bg-white relative overflow-hidden">
+        <section className="py-20 bg-white dark:bg-gray-900 relative overflow-hidden">
           <div className="absolute inset-0 overflow-hidden pointer-events-none">
             <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-gradient-to-r from-blue-50/30 via-indigo-50/20 to-purple-50/30 rounded-full blur-3xl" />
           </div>
@@ -585,7 +585,7 @@ export default function Contact() {
                 initial={{ opacity: 0, y: 20 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
-                className="text-3xl sm:text-4xl font-bold text-gray-900 mb-4"
+                className="text-3xl sm:text-4xl font-bold text-gray-900 dark:text-white mb-4"
               >
                 Heb je nog{' '}
                 <span className="bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">
@@ -606,19 +606,19 @@ export default function Contact() {
                 >
                   <button
                     onClick={() => setExpandedFaq(expandedFaq === index ? null : index)}
-                    className={`w-full text-left p-6 bg-white border-2 rounded-xl transition-all ${
+                    className={`w-full text-left p-6 bg-white dark:bg-gray-800 border-2 rounded-xl transition-all ${
                       expandedFaq === index 
-                        ? 'border-blue-300 shadow-lg' 
-                        : 'border-gray-200 hover:border-blue-200 hover:shadow-md'
+                        ? 'border-blue-300 dark:border-blue-600 shadow-lg' 
+                        : 'border-gray-200 dark:border-gray-700 hover:border-blue-200 dark:hover:border-blue-700 hover:shadow-md'
                     }`}
                   >
                     <div className="flex items-center justify-between gap-4">
-                      <h3 className="font-semibold text-gray-900">{faq.q}</h3>
+                      <h3 className="font-semibold text-gray-900 dark:text-white">{faq.q}</h3>
                       <div className={`w-8 h-8 rounded-full flex items-center justify-center transition-all flex-shrink-0 ${
-                        expandedFaq === index ? 'bg-blue-500 rotate-180' : 'bg-gray-100'
+                        expandedFaq === index ? 'bg-blue-500 rotate-180' : 'bg-gray-100 dark:bg-gray-700'
                       }`}>
                         <svg 
-                          className={`w-4 h-4 transition-colors ${expandedFaq === index ? 'text-white' : 'text-gray-500'}`} 
+                          className={`w-4 h-4 transition-colors ${expandedFaq === index ? 'text-white' : 'text-gray-500 dark:text-gray-400'}`} 
                           fill="none" 
                           viewBox="0 0 24 24" 
                           stroke="currentColor"
@@ -631,7 +631,7 @@ export default function Contact() {
                       <motion.p 
                         initial={{ opacity: 0, height: 0 }}
                         animate={{ opacity: 1, height: 'auto' }}
-                        className="text-gray-600 mt-4 pr-12"
+                        className="text-gray-600 dark:text-gray-400 mt-4 pr-12"
                       >
                         {faq.a}
                       </motion.p>
@@ -648,7 +648,7 @@ export default function Contact() {
               viewport={{ once: true }}
               className="text-center mt-12"
             >
-              <p className="text-gray-600 mb-4">
+              <p className="text-gray-600 dark:text-gray-400 mb-4">
                 Staat je vraag er niet tussen?
               </p>
               <Link

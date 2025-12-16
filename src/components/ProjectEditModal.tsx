@@ -304,7 +304,7 @@ export default function ProjectEditModal({ project, isOpen, onClose, onSave }: P
                         `}
                       >
                         <input type="checkbox" className="w-5 h-5 rounded text-blue-500" />
-                        <span className="flex-1 text-gray-700">{item.label}</span>
+                        <span className="flex-1 text-gray-700 dark:text-gray-300">{item.label}</span>
                         {item.forCustomer && (
                           <span className="text-xs bg-amber-100 text-amber-700 px-2 py-1 rounded-full">
                             Klant
@@ -395,7 +395,7 @@ export default function ProjectEditModal({ project, isOpen, onClose, onSave }: P
                   <h4 className="text-sm font-medium text-gray-700 mb-3">Revisie Tracking</h4>
                   <div className="flex items-center gap-4">
                     <div className="flex-1">
-                      <label className="text-xs text-gray-500">Gebruikt</label>
+                      <label className="text-xs text-gray-500 dark:text-gray-400">Gebruikt</label>
                       <input
                         type="number"
                         min="0"
@@ -406,7 +406,7 @@ export default function ProjectEditModal({ project, isOpen, onClose, onSave }: P
                     </div>
                     <span className="text-gray-400 text-xl font-light">/</span>
                     <div className="flex-1">
-                      <label className="text-xs text-gray-500">Totaal</label>
+                      <label className="text-xs text-gray-500 dark:text-gray-400">Totaal</label>
                       <input
                         type="number"
                         min="1"
@@ -464,7 +464,7 @@ export default function ProjectEditModal({ project, isOpen, onClose, onSave }: P
                 className="space-y-4"
               >
                 <div className="flex justify-between items-center">
-                  <h3 className="font-semibold text-gray-900">Project updates</h3>
+                  <h3 className="font-semibold text-gray-900 dark:text-white">Project updates</h3>
                   <button
                     onClick={addUpdate}
                     className="flex items-center gap-2 px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition text-sm font-medium"
@@ -486,7 +486,7 @@ export default function ProjectEditModal({ project, isOpen, onClose, onSave }: P
                       
                       <div className="flex items-center gap-2 mb-3">
                         <Calendar className="w-4 h-4 text-gray-400" />
-                        <span className="text-sm text-gray-500">{update.date}</span>
+                        <span className="text-sm text-gray-500 dark:text-gray-400">{update.date}</span>
                         {update.phase && (
                           <span className={`text-xs px-2 py-0.5 rounded-full ${getPhaseConfig(update.phase).bgColor} ${getPhaseConfig(update.phase).color}`}>
                             {getPhaseConfig(update.phase).label}
@@ -512,7 +512,7 @@ export default function ProjectEditModal({ project, isOpen, onClose, onSave }: P
                   ))}
 
                   {(!editingProject.updates || editingProject.updates.length === 0) && (
-                    <div className="text-center py-12 text-gray-500">
+                    <div className="text-center py-12 text-gray-500 dark:text-gray-400">
                       <MessageSquare className="w-12 h-12 mx-auto mb-3 text-gray-300" />
                       <p>Nog geen updates</p>
                       <button
@@ -583,7 +583,7 @@ export default function ProjectEditModal({ project, isOpen, onClose, onSave }: P
                         type="text"
                         value={editingProject.package}
                         disabled
-                        className="w-full px-4 py-2 border border-gray-200 rounded-xl bg-gray-100 text-gray-500"
+                        className="w-full px-4 py-2 border border-gray-200 rounded-xl bg-gray-100 text-gray-500 dark:text-gray-400"
                       />
                     </div>
                   </div>
@@ -593,11 +593,11 @@ export default function ProjectEditModal({ project, isOpen, onClose, onSave }: P
                   <h3 className="font-semibold text-gray-900 mb-4">Project details</h3>
                   <div className="grid md:grid-cols-2 gap-4 text-sm">
                     <div>
-                      <span className="text-gray-500">Project ID:</span>
+                      <span className="text-gray-500 dark:text-gray-400">Project ID:</span>
                       <span className="ml-2 font-mono">{editingProject.projectId}</span>
                     </div>
                     <div>
-                      <span className="text-gray-500">Aangemaakt:</span>
+                      <span className="text-gray-500 dark:text-gray-400">Aangemaakt:</span>
                       <span className="ml-2">{new Date(editingProject.createdAt).toLocaleDateString('nl-NL')}</span>
                     </div>
                   </div>

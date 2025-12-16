@@ -110,14 +110,14 @@ export default function FeedbackModule({
           rel="noopener noreferrer"
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
-          className="block p-6 bg-gradient-to-r from-purple-50 to-blue-50 rounded-xl border-2 border-dashed border-purple-200 hover:border-purple-400 transition text-center group"
+          className="block p-6 bg-gradient-to-r from-purple-50 to-blue-50 dark:from-purple-900/20 dark:to-blue-900/20 rounded-xl border-2 border-dashed border-purple-200 dark:border-purple-800 hover:border-purple-400 dark:hover:border-purple-600 transition text-center group"
         >
-          <div className="w-16 h-16 bg-white rounded-xl shadow-lg flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition">
-            <Palette className="w-8 h-8 text-purple-600" />
+          <div className="w-16 h-16 bg-white dark:bg-gray-800 rounded-xl shadow-lg flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition">
+            <Palette className="w-8 h-8 text-purple-600 dark:text-purple-400" />
           </div>
-          <h3 className="font-bold text-gray-900 text-lg mb-1">Preview bekijken</h3>
-          <p className="text-purple-600 text-sm">{previewUrl}</p>
-          <p className="text-gray-500 text-xs mt-2">Opent in een nieuw venster</p>
+          <h3 className="font-bold text-gray-900 dark:text-white text-lg mb-1">Preview bekijken</h3>
+          <p className="text-purple-600 dark:text-purple-400 text-sm">{previewUrl}</p>
+          <p className="text-gray-500 dark:text-gray-400 text-xs mt-2">Opent in een nieuw venster</p>
         </motion.a>
       )}
 
@@ -126,14 +126,14 @@ export default function FeedbackModule({
         initial={{ opacity: 0, y: 10 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.1 }}
-        className="bg-white rounded-xl border border-gray-200 shadow-lg overflow-hidden"
+        className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 shadow-lg overflow-hidden"
       >
-        <div className="p-6 border-b border-gray-100">
-          <h3 className="font-bold text-gray-900 text-lg flex items-center gap-2">
-            <MessageSquare className="w-5 h-5 text-primary-600" />
+        <div className="p-6 border-b border-gray-100 dark:border-gray-700">
+          <h3 className="font-bold text-gray-900 dark:text-white text-lg flex items-center gap-2">
+            <MessageSquare className="w-5 h-5 text-primary-600 dark:text-primary-400" />
             Feedback geven
           </h3>
-          <p className="text-gray-500 text-sm mt-1">
+          <p className="text-gray-500 dark:text-gray-400 text-sm mt-1">
             Beschrijf wat je wilt laten aanpassen
           </p>
         </div>
@@ -147,11 +147,11 @@ export default function FeedbackModule({
               exit={{ opacity: 0, scale: 0.95 }}
               className="p-8 text-center"
             >
-              <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                <CheckCircle2 className="w-8 h-8 text-green-600" />
+              <div className="w-16 h-16 bg-green-100 dark:bg-green-900/30 rounded-full flex items-center justify-center mx-auto mb-4">
+                <CheckCircle2 className="w-8 h-8 text-green-600 dark:text-green-400" />
               </div>
-              <h4 className="font-semibold text-gray-900 text-lg">Feedback ontvangen!</h4>
-              <p className="text-gray-500 text-sm mt-1">
+              <h4 className="font-semibold text-gray-900 dark:text-white text-lg">Feedback ontvangen!</h4>
+              <p className="text-gray-500 dark:text-gray-400 text-sm mt-1">
                 We gaan ermee aan de slag en houden je op de hoogte.
               </p>
             </motion.div>
@@ -166,13 +166,13 @@ export default function FeedbackModule({
             >
               {/* Page Selection */}
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                   Welke pagina betreft het?
                 </label>
                 <select
                   value={page}
                   onChange={(e) => setPage(e.target.value)}
-                  className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-primary-500 bg-white"
+                  className="w-full px-4 py-3 border border-gray-200 dark:border-gray-600 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-primary-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
                   required
                 >
                   <option value="">Selecteer een pagina...</option>
@@ -184,7 +184,7 @@ export default function FeedbackModule({
 
               {/* Category Selection */}
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                   Type aanpassing
                 </label>
                 <div className="grid grid-cols-2 sm:grid-cols-5 gap-2">
@@ -198,12 +198,12 @@ export default function FeedbackModule({
                         onClick={() => setCategory(cat.value as FeedbackItem['category'])}
                         className={`flex flex-col items-center gap-1 p-3 rounded-xl border-2 transition ${
                           isSelected
-                            ? `border-${cat.color}-500 bg-${cat.color}-50`
-                            : 'border-gray-200 hover:border-gray-300'
+                            ? `border-${cat.color}-500 bg-${cat.color}-50 dark:bg-${cat.color}-900/30`
+                            : 'border-gray-200 dark:border-gray-600 hover:border-gray-300 dark:hover:border-gray-500'
                         }`}
                       >
-                        <Icon className={`w-5 h-5 ${isSelected ? `text-${cat.color}-600` : 'text-gray-400'}`} />
-                        <span className={`text-xs font-medium ${isSelected ? `text-${cat.color}-700` : 'text-gray-600'}`}>
+                        <Icon className={`w-5 h-5 ${isSelected ? `text-${cat.color}-600 dark:text-${cat.color}-400` : 'text-gray-400'}`} />
+                        <span className={`text-xs font-medium ${isSelected ? `text-${cat.color}-700 dark:text-${cat.color}-300` : 'text-gray-600 dark:text-gray-400'}`}>
                           {cat.label}
                         </span>
                       </button>
@@ -214,7 +214,7 @@ export default function FeedbackModule({
 
               {/* Description */}
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                   Beschrijving
                 </label>
                 <textarea
@@ -222,7 +222,7 @@ export default function FeedbackModule({
                   onChange={(e) => setDescription(e.target.value)}
                   placeholder="Beschrijf zo specifiek mogelijk wat je wilt laten aanpassen..."
                   rows={4}
-                  className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-primary-500 resize-none"
+                  className="w-full px-4 py-3 border border-gray-200 dark:border-gray-600 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-primary-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-white resize-none"
                   required
                 />
                 <p className="text-xs text-gray-400 mt-1">
@@ -265,27 +265,27 @@ export default function FeedbackModule({
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.2 }}
-          className="bg-white rounded-xl border border-gray-200 shadow-lg overflow-hidden"
+          className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 shadow-lg overflow-hidden"
         >
           <button
             onClick={() => setShowHistory(!showHistory)}
-            className="w-full p-4 flex items-center justify-between hover:bg-gray-50 transition"
+            className="w-full p-4 flex items-center justify-between hover:bg-gray-50 dark:hover:bg-gray-700 transition"
           >
             <div className="flex items-center gap-4">
-              <h3 className="font-semibold text-gray-900">Eerdere feedback</h3>
+              <h3 className="font-semibold text-gray-900 dark:text-white">Eerdere feedback</h3>
               <div className="flex gap-2">
                 {pendingCount > 0 && (
-                  <span className="px-2 py-1 bg-gray-100 text-gray-600 text-xs rounded-full">
+                  <span className="px-2 py-1 bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-400 text-xs rounded-full">
                     {pendingCount} wachtend
                   </span>
                 )}
                 {inProgressCount > 0 && (
-                  <span className="px-2 py-1 bg-blue-100 text-blue-600 text-xs rounded-full">
+                  <span className="px-2 py-1 bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 text-xs rounded-full">
                     {inProgressCount} bezig
                   </span>
                 )}
                 {completedCount > 0 && (
-                  <span className="px-2 py-1 bg-green-100 text-green-600 text-xs rounded-full">
+                  <span className="px-2 py-1 bg-green-100 dark:bg-green-900/30 text-green-600 dark:text-green-400 text-xs rounded-full">
                     {completedCount} opgelost
                   </span>
                 )}

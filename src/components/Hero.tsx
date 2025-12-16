@@ -54,7 +54,7 @@ export default function Hero() {
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
         {/* Gradient blobs - more colorful */}
         <motion.div 
-          className="absolute top-0 right-0 w-[900px] h-[900px] bg-gradient-to-br from-primary-200/60 via-blue-100/40 to-cyan-100/30 rounded-full blur-3xl -translate-y-1/3 translate-x-1/4"
+          className="absolute top-0 right-0 w-[900px] h-[900px] bg-gradient-to-br from-primary-200/60 via-blue-100/40 to-cyan-100/30 dark:from-primary-800/30 dark:via-blue-900/20 dark:to-cyan-900/10 rounded-full blur-3xl -translate-y-1/3 translate-x-1/4"
           animate={{ 
             scale: [1, 1.05, 1],
             rotate: [0, 5, 0]
@@ -62,25 +62,25 @@ export default function Hero() {
           transition={{ duration: 8, repeat: Infinity, ease: "easeInOut" }}
         />
         <motion.div 
-          className="absolute bottom-0 left-0 w-[700px] h-[700px] bg-gradient-to-tr from-primary-100/50 via-blue-100/40 to-transparent rounded-full blur-3xl translate-y-1/3 -translate-x-1/4"
+          className="absolute bottom-0 left-0 w-[700px] h-[700px] bg-gradient-to-tr from-primary-100/50 via-blue-100/40 to-transparent dark:from-primary-900/30 dark:via-blue-900/20 dark:to-transparent rounded-full blur-3xl translate-y-1/3 -translate-x-1/4"
           animate={{ 
             scale: [1, 1.08, 1],
             rotate: [0, -5, 0]
           }}
           transition={{ duration: 10, repeat: Infinity, ease: "easeInOut" }}
         />
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] bg-gradient-to-r from-cyan-100/30 via-primary-100/20 to-blue-100/30 rounded-full blur-3xl" />
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] bg-gradient-to-r from-cyan-100/30 via-primary-100/20 to-blue-100/30 dark:from-cyan-900/20 dark:via-primary-900/10 dark:to-blue-900/20 rounded-full blur-3xl" />
         
         {/* Floating particles */}
         <FloatingParticles />
         
         {/* Subtle grid with brand color */}
-        <div className="absolute inset-0 bg-[linear-gradient(to_right,#dbeafe33_1px,transparent_1px),linear-gradient(to_bottom,#dbeafe33_1px,transparent_1px)] bg-[size:4rem_4rem] [mask-image:radial-gradient(ellipse_80%_50%_at_50%_0%,#000_70%,transparent_110%)]" />
+        <div className="absolute inset-0 bg-[linear-gradient(to_right,#dbeafe33_1px,transparent_1px),linear-gradient(to_bottom,#dbeafe33_1px,transparent_1px)] dark:bg-[linear-gradient(to_right,#1e3a5f33_1px,transparent_1px),linear-gradient(to_bottom,#1e3a5f33_1px,transparent_1px)] bg-[size:4rem_4rem] [mask-image:radial-gradient(ellipse_80%_50%_at_50%_0%,#000_70%,transparent_110%)]" />
         
         {/* Decorative rings */}
-        <div className="absolute top-20 right-20 w-32 h-32 border border-primary-200/30 rounded-full" />
-        <div className="absolute top-24 right-24 w-24 h-24 border border-primary-300/20 rounded-full" />
-        <div className="absolute bottom-32 left-20 w-20 h-20 border border-blue-200/40 rounded-full" />
+        <div className="absolute top-20 right-20 w-32 h-32 border border-primary-200/30 dark:border-primary-700/30 rounded-full" />
+        <div className="absolute top-24 right-24 w-24 h-24 border border-primary-300/20 dark:border-primary-600/20 rounded-full" />
+        <div className="absolute bottom-32 left-20 w-20 h-20 border border-blue-200/40 dark:border-blue-700/40 rounded-full" />
       </div>
 
       <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12 lg:py-24">
@@ -141,7 +141,7 @@ export default function Hero() {
               >
                 {/* Shimmer effect */}
                 <div className="absolute inset-0 -translate-x-full group-hover:translate-x-full transition-transform duration-700 bg-gradient-to-r from-transparent via-white/20 to-transparent" />
-                <span className="relative">Vraag gratis offerte aan</span>
+                <span className="relative">Start direct</span>
                 <ArrowRight className="relative w-4 h-4 group-hover:translate-x-1 transition-transform" />
               </a>
               <a
@@ -192,16 +192,16 @@ export default function Hero() {
               <div className="absolute inset-0 bg-gradient-to-br from-primary-400/20 via-blue-400/15 to-cyan-400/10 rounded-3xl blur-2xl scale-105" />
               
               {/* Main browser mockup */}
-              <div className="relative bg-white rounded-2xl border border-gray-200/80 shadow-2xl shadow-primary-900/10 overflow-hidden">
+              <div className="relative bg-white dark:bg-gray-800 rounded-2xl border border-gray-200/80 dark:border-gray-700 shadow-2xl shadow-primary-900/10 dark:shadow-primary-900/30 overflow-hidden">
                 {/* Browser bar with gradient */}
-                <div className="flex items-center gap-2 px-4 py-3 bg-gradient-to-r from-gray-50 to-slate-50 border-b border-gray-100">
+                <div className="flex items-center gap-2 px-4 py-3 bg-gradient-to-r from-gray-50 to-slate-50 dark:from-gray-800 dark:to-gray-900 border-b border-gray-100 dark:border-gray-700">
                   <div className="flex gap-1.5">
                     <div className="w-3 h-3 rounded-full bg-red-400" />
                     <div className="w-3 h-3 rounded-full bg-yellow-400" />
                     <div className="w-3 h-3 rounded-full bg-green-400" />
                   </div>
                   <div className="flex-1 mx-4">
-                    <div className="bg-white border border-gray-200 rounded-lg px-3 py-1.5 text-sm text-gray-600 font-mono flex items-center gap-2">
+                    <div className="bg-white dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-lg px-3 py-1.5 text-sm text-gray-600 dark:text-gray-300 font-mono flex items-center gap-2">
                       <svg className="w-3 h-3 text-green-500" fill="currentColor" viewBox="0 0 20 20">
                         <path fillRule="evenodd" d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z" clipRule="evenodd" />
                       </svg>
@@ -211,7 +211,7 @@ export default function Hero() {
                 </div>
                 
                 {/* Website preview content */}
-                <div className="bg-gradient-to-b from-white to-slate-50/50">
+                <div className="bg-gradient-to-b from-white to-slate-50/50 dark:from-gray-800 dark:to-gray-900">
                   {/* Hero of preview - more vibrant */}
                   <div className="bg-gradient-to-br from-primary-500 via-primary-600 to-blue-700 p-6 text-white relative overflow-hidden">
                     {/* Decorative pattern */}
@@ -241,24 +241,24 @@ export default function Hero() {
                       {['💼', '🚀', '💎'].map((emoji, i) => (
                         <motion.div 
                           key={i} 
-                          className="bg-white rounded-xl p-3 text-center border border-gray-100 shadow-sm"
+                          className="bg-white dark:bg-gray-700 rounded-xl p-3 text-center border border-gray-100 dark:border-gray-600 shadow-sm"
                           initial={{ opacity: 0, y: 10 }}
                           animate={{ opacity: 1, y: 0 }}
                           transition={{ delay: 0.6 + i * 0.1 }}
                         >
                           <div className="text-xl mb-1">{emoji}</div>
-                          <div className="h-2 bg-gray-200 rounded w-full mb-1" />
-                          <div className="h-2 bg-gray-100 rounded w-4/5 mx-auto" />
+                          <div className="h-2 bg-gray-200 dark:bg-gray-600 rounded w-full mb-1" />
+                          <div className="h-2 bg-gray-100 dark:bg-gray-500 rounded w-4/5 mx-auto" />
                         </motion.div>
                       ))}
                     </div>
                     
                     {/* Review preview */}
-                    <div className="bg-gradient-to-br from-white to-primary-50/30 rounded-xl p-4 border border-primary-100/50 shadow-sm">
+                    <div className="bg-gradient-to-br from-white to-primary-50/30 dark:from-gray-700 dark:to-gray-800 rounded-xl p-4 border border-primary-100/50 dark:border-primary-800/50 shadow-sm">
                       <div className="flex items-center gap-3 mb-2">
                         <div className="w-8 h-8 bg-gradient-to-br from-primary-100 to-primary-200 rounded-full" />
                         <div className="flex-1">
-                          <div className="h-2 bg-gray-300 rounded w-20 mb-1" />
+                          <div className="h-2 bg-gray-300 dark:bg-gray-500 rounded w-20 mb-1" />
                           <div className="flex gap-0.5">
                             {[...Array(5)].map((_, i) => (
                               <Star key={i} className="w-2.5 h-2.5 fill-yellow-400 text-yellow-400" />
@@ -266,8 +266,8 @@ export default function Hero() {
                           </div>
                         </div>
                       </div>
-                      <div className="h-2 bg-gray-200 rounded w-full mb-1" />
-                      <div className="h-2 bg-gray-200 rounded w-3/4" />
+                      <div className="h-2 bg-gray-200 dark:bg-gray-600 rounded w-full mb-1" />
+                      <div className="h-2 bg-gray-200 dark:bg-gray-600 rounded w-3/4" />
                     </div>
                   </div>
                 </div>
@@ -278,15 +278,15 @@ export default function Hero() {
                 initial={{ opacity: 0, y: 20, x: 20 }}
                 animate={{ opacity: 1, y: 0, x: 0 }}
                 transition={{ delay: 0.6, type: "spring", stiffness: 100 }}
-                className="absolute -top-6 -right-6 bg-white rounded-2xl p-4 shadow-xl shadow-green-900/10 border border-green-100"
+                className="absolute -top-6 -right-6 bg-white dark:bg-gray-800 rounded-2xl p-4 shadow-xl shadow-green-900/10 dark:shadow-green-900/30 border border-green-100 dark:border-green-800"
               >
                 <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 bg-gradient-to-br from-green-100 to-green-200 rounded-xl flex items-center justify-center">
-                    <TrendingUp className="w-5 h-5 text-green-600" />
+                  <div className="w-10 h-10 bg-gradient-to-br from-green-100 to-green-200 dark:from-green-900/50 dark:to-green-800/50 rounded-xl flex items-center justify-center">
+                    <TrendingUp className="w-5 h-5 text-green-600 dark:text-green-400" />
                   </div>
                   <div>
-                    <div className="text-lg font-bold text-gray-900">+147%</div>
-                    <div className="text-xs text-gray-500">Meer bezoekers</div>
+                    <div className="text-lg font-bold text-gray-900 dark:text-white">+147%</div>
+                    <div className="text-xs text-gray-500 dark:text-gray-400">Meer bezoekers</div>
                   </div>
                 </div>
               </motion.div>
@@ -296,17 +296,17 @@ export default function Hero() {
                 initial={{ opacity: 0, y: 20, x: -20 }}
                 animate={{ opacity: 1, y: 0, x: 0 }}
                 transition={{ delay: 0.8, type: "spring", stiffness: 100 }}
-                className="absolute -bottom-4 -left-6 bg-white rounded-2xl p-4 shadow-xl shadow-primary-900/10 border border-primary-100"
+                className="absolute -bottom-4 -left-6 bg-white dark:bg-gray-800 rounded-2xl p-4 shadow-xl shadow-primary-900/10 dark:shadow-primary-900/30 border border-primary-100 dark:border-primary-800"
               >
                 <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 bg-gradient-to-br from-primary-100 to-blue-200 rounded-xl flex items-center justify-center">
-                    <svg className="w-5 h-5 text-primary-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <div className="w-10 h-10 bg-gradient-to-br from-primary-100 to-blue-200 dark:from-primary-900/50 dark:to-blue-800/50 rounded-xl flex items-center justify-center">
+                    <svg className="w-5 h-5 text-primary-600 dark:text-primary-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
                     </svg>
                   </div>
                   <div>
-                    <div className="text-lg font-bold text-gray-900">7 dagen</div>
-                    <div className="text-xs text-gray-500">Levertijd</div>
+                    <div className="text-lg font-bold text-gray-900 dark:text-white">7 dagen</div>
+                    <div className="text-xs text-gray-500 dark:text-gray-400">Levertijd</div>
                   </div>
                 </div>
               </motion.div>

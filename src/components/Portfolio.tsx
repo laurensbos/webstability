@@ -109,10 +109,10 @@ export default function Portfolio() {
             initial={{ opacity: 0, scale: 0.9 }}
             whileInView={{ opacity: 1, scale: 1 }}
             viewport={{ once: true }}
-            className="inline-flex items-center gap-2 bg-white/80 backdrop-blur-sm border border-primary-200 rounded-full px-4 py-2 mb-6 shadow-sm"
+            className="inline-flex items-center gap-2 bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm border border-primary-200 dark:border-primary-800 rounded-full px-4 py-2 mb-6 shadow-sm"
           >
             <Sparkles className="w-4 h-4 text-primary-500" />
-            <span className="text-primary-700 font-medium text-sm">Ons werk</span>
+            <span className="text-primary-700 dark:text-primary-400 font-medium text-sm">Ons werk</span>
           </motion.div>
           <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-gray-900 dark:text-white mb-3 lg:mb-4">
             Websites die we hebben{' '}
@@ -138,7 +138,7 @@ export default function Portfolio() {
                 transition={{ delay: index * 0.1 }}
                 className="flex-shrink-0 w-[280px] snap-start group block"
               >
-                <div className="relative bg-white/80 backdrop-blur-sm rounded-xl overflow-hidden shadow-lg border border-gray-200/80 hover:shadow-xl hover:border-primary-200/50 transition-all">
+                <div className="relative bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-xl overflow-hidden shadow-lg border border-gray-200/80 dark:border-gray-700 hover:shadow-xl hover:border-primary-200/50 dark:hover:border-primary-700/50 transition-all">
                   {/* Screenshot Container */}
                   <div className="relative aspect-[16/10] overflow-hidden">
                     {/* Gradient Fallback */}
@@ -185,7 +185,7 @@ export default function Portfolio() {
           {/* Scroll indicator */}
           <div className="flex justify-center gap-1.5 mt-2">
             {portfolioItems.map((_, i) => (
-              <div key={i} className="w-1.5 h-1.5 rounded-full bg-gray-300" />
+              <div key={i} className="w-1.5 h-1.5 rounded-full bg-gray-300 dark:bg-gray-600" />
             ))}
           </div>
         </div>
@@ -206,16 +206,16 @@ export default function Portfolio() {
               onMouseLeave={() => setHoveredItem(null)}
               className="group block"
             >
-              <div className="relative bg-white/80 backdrop-blur-sm rounded-2xl overflow-hidden shadow-lg hover:shadow-2xl hover:shadow-primary-500/10 transition-all duration-500 border border-gray-200/80 hover:border-primary-200/50 hover:-translate-y-1">
+              <div className="relative bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-2xl overflow-hidden shadow-lg hover:shadow-2xl hover:shadow-primary-500/10 transition-all duration-500 border border-gray-200/80 dark:border-gray-700 hover:border-primary-200/50 dark:hover:border-primary-700/50 hover:-translate-y-1">
                 {/* Screenshot Container */}
                 <div className="relative aspect-[16/10] overflow-hidden">
                   {/* Browser Chrome */}
-                  <div className="absolute top-0 left-0 right-0 h-8 bg-gradient-to-b from-gray-100 to-gray-200 flex items-center px-3 gap-1.5 z-10 border-b border-gray-200/50">
+                  <div className="absolute top-0 left-0 right-0 h-8 bg-gradient-to-b from-gray-100 to-gray-200 dark:from-gray-700 dark:to-gray-800 flex items-center px-3 gap-1.5 z-10 border-b border-gray-200/50 dark:border-gray-600">
                     <div className="w-2.5 h-2.5 rounded-full bg-red-400 shadow-sm" />
                     <div className="w-2.5 h-2.5 rounded-full bg-yellow-400 shadow-sm" />
                     <div className="w-2.5 h-2.5 rounded-full bg-green-400 shadow-sm" />
                     <div className="flex-1 mx-3">
-                      <div className="bg-white/80 backdrop-blur-sm rounded-md px-3 py-1 text-xs text-gray-500 truncate border border-gray-200/50">
+                      <div className="bg-white/80 dark:bg-gray-700/80 backdrop-blur-sm rounded-md px-3 py-1 text-xs text-gray-500 dark:text-gray-400 truncate border border-gray-200/50 dark:border-gray-600">
                         {item.url.replace('https://', '')}
                       </div>
                     </div>
@@ -265,19 +265,19 @@ export default function Portfolio() {
                 {/* Content */}
                 <div className="p-6">
                   <div className="flex items-center justify-between mb-3">
-                    <span className="text-xs font-semibold text-primary-600 bg-gradient-to-r from-primary-50 to-blue-50 px-3 py-1.5 rounded-full border border-primary-100/50">
+                    <span className="text-xs font-semibold text-primary-600 dark:text-primary-400 bg-gradient-to-r from-primary-50 to-blue-50 dark:from-primary-900/30 dark:to-blue-900/30 px-3 py-1.5 rounded-full border border-primary-100/50 dark:border-primary-800/50">
                       {item.category}
                     </span>
                   </div>
-                  <h3 className="text-xl font-bold text-gray-900 mb-2 group-hover:text-primary-600 transition-colors">
+                  <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-2 group-hover:text-primary-600 dark:group-hover:text-primary-400 transition-colors">
                     {item.name}
                   </h3>
-                  <p className="text-gray-600 text-sm mb-4">
+                  <p className="text-gray-600 dark:text-gray-400 text-sm mb-4">
                     {item.description}
                   </p>
                   
                   {/* Button */}
-                  <div className="flex items-center gap-2 text-primary-600 font-semibold text-sm group-hover:gap-3 transition-all">
+                  <div className="flex items-center gap-2 text-primary-600 dark:text-primary-400 font-semibold text-sm group-hover:gap-3 transition-all">
                     <span>Bekijk website</span>
                     <ExternalLink className="w-4 h-4 group-hover:scale-110 transition-transform" />
                   </div>
