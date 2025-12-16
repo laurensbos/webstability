@@ -674,89 +674,105 @@ export default function WebsiteOnboarding({
             >
               {/* Step 1: Pakket kiezen */}
               {currentStep === 1 && (
-                <div className="space-y-6">
+                <div className="space-y-4">
                   <div>
                     <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-1">Kies je pakket</h3>
                     <p className="text-gray-500 dark:text-gray-400 text-sm">Selecteer het pakket dat het beste bij jouw wensen past</p>
                   </div>
 
-                  <div className="grid gap-4">
+                  {/* Mobile: Horizontal scroll carousel */}
+                  <div className="flex gap-4 overflow-x-auto pb-4 -mx-4 px-4 sm:mx-0 sm:px-0 snap-x snap-mandatory scrollbar-hide sm:grid sm:grid-cols-1 sm:gap-4 sm:overflow-visible">
                     {(Object.entries(PACKAGES) as [string, typeof PACKAGES.starter][]).map(([key, pkg]) => {
                       const isSelected = data.selectedPackage === key
                       const isPopular = key === 'professional'
+                      
+                      // Feature names for display
+                      const featureNames: Record<string, string> = {
+                        contactform: 'Contactformulier',
+                        maps: 'Google Maps',
+                        mobile: 'Mobiel Geoptimaliseerd',
+                        ssl: 'SSL Certificaat',
+                        seo: 'SEO Optimalisatie',
+                        analytics: 'Google Analytics',
+                        social: 'Social Media',
+                        whatsapp: 'WhatsApp Integratie',
+                        booking: 'Boekingssysteem',
+                        newsletter: 'Nieuwsbrief'
+                      }
+                      
                       return (
                         <motion.button
                           key={key}
                           type="button"
-                          whileHover={{ scale: 1.01 }}
-                          whileTap={{ scale: 0.99 }}
+                          whileTap={{ scale: 0.98 }}
                           onClick={() => updateData({ selectedPackage: key as 'starter' | 'professional' | 'business' })}
-                          className={`relative p-4 sm:p-5 rounded-xl border-2 text-left transition-all ${
+                          className={`relative flex-shrink-0 w-[280px] sm:w-full snap-center text-left bg-white dark:bg-gray-800 rounded-2xl border-2 overflow-hidden transition-all ${
                             isSelected 
-                              ? 'border-primary-500 bg-primary-50 dark:bg-primary-900/30 shadow-lg' 
-                              : 'border-gray-200 dark:border-gray-700 hover:border-gray-300 dark:hover:border-gray-600 bg-white dark:bg-gray-800'
+                              ? 'border-primary-500 shadow-lg shadow-primary-100 dark:shadow-primary-900/30' 
+                              : 'border-gray-200 dark:border-gray-700'
                           }`}
                         >
+                          {/* Popular badge */}
                           {isPopular && (
-                            <div className="absolute -top-3 left-4 px-3 py-1 bg-gradient-to-r from-primary-600 to-blue-600 text-white text-xs font-bold rounded-full">
-                              Meest gekozen
+                            <div className="absolute top-3 right-3 z-10">
+                              <span className="bg-gradient-to-r from-primary-500 to-blue-600 text-white text-xs font-bold px-2.5 py-1 rounded-full shadow-lg">
+                                Meest gekozen
+                              </span>
                             </div>
                           )}
-                          <div className="flex items-start justify-between gap-4">
-                            <div className="flex-1">
-                              <div className="flex items-center gap-3 mb-2">
-                                <h4 className={`text-lg font-bold ${isSelected ? 'text-primary-700 dark:text-primary-400' : 'text-gray-900 dark:text-white'}`}>
-                                  {pkg.name}
-                                </h4>
-                                <span className={`text-sm ${isSelected ? 'text-primary-600 dark:text-primary-400' : 'text-gray-500 dark:text-gray-400'}`}>
-                                  max. {pkg.maxPages} pagina's
-                                </span>
-                              </div>
-                              <div className="flex flex-wrap gap-2 mb-3">
-                                {pkg.features.slice(0, 5).map(featureId => {
-                                  const feature = FEATURES.find(f => f.id === featureId)
-                                  return feature ? (
-                                    <span key={featureId} className="inline-flex items-center gap-1 text-xs bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 px-2 py-1 rounded-full">
-                                      <Check className="w-3 h-3 text-green-500" />
-                                      {feature.name}
-                                    </span>
-                                  ) : null
-                                })}
-                                {pkg.features.length > 5 && (
-                                  <span className="text-xs text-gray-500 px-2 py-1">
-                                    +{pkg.features.length - 5} meer
-                                  </span>
-                                )}
-                              </div>
-                              {key === 'starter' && (
-                                <p className="text-xs text-gray-500 dark:text-gray-400">Perfect voor starters en kleine bedrijven</p>
-                              )}
-                              {key === 'professional' && (
-                                <p className="text-xs text-gray-500 dark:text-gray-400">Ideaal voor groeiende ondernemers</p>
-                              )}
-                              {key === 'business' && (
-                                <p className="text-xs text-gray-500 dark:text-gray-400">Voor bedrijven die meer willen</p>
-                              )}
-                            </div>
-                            <div className="text-right flex-shrink-0">
-                              <div className={`text-2xl font-bold ${isSelected ? 'text-primary-600 dark:text-primary-400' : 'text-gray-900 dark:text-white'}`}>
-                                €{pkg.price}
-                              </div>
-                              <div className="text-xs text-gray-500 dark:text-gray-400">per maand</div>
-                              <div className="text-xs text-gray-400 mt-1">+ €{pkg.setupFee} eenmalig</div>
-                            </div>
-                          </div>
+                          
+                          {/* Selected checkmark */}
                           {isSelected && (
-                            <div className="absolute top-4 right-4">
-                              <div className="w-6 h-6 rounded-full bg-primary-600 flex items-center justify-center">
+                            <div className="absolute top-3 left-3 z-10">
+                              <div className="w-6 h-6 rounded-full bg-primary-600 flex items-center justify-center shadow-lg">
                                 <Check className="w-4 h-4 text-white" />
                               </div>
                             </div>
                           )}
+                          
+                          {/* Colored header */}
+                          <div className={`bg-gradient-to-br ${isSelected ? 'from-primary-500 to-blue-600' : 'from-gray-600 to-gray-700'} p-4 flex items-center justify-between`}>
+                            <div className="text-white">
+                              <h4 className="font-bold text-lg">{pkg.name}</h4>
+                              <p className="text-white/80 text-sm">max. {pkg.maxPages} pagina's</p>
+                            </div>
+                            <div className="text-right text-white">
+                              <div className="text-2xl font-bold">€{pkg.price}</div>
+                              <div className="text-white/80 text-xs">per maand</div>
+                              <div className="text-white/60 text-xs">+ €{pkg.setupFee} eenmalig</div>
+                            </div>
+                          </div>
+                          
+                          {/* Features */}
+                          <div className="p-4">
+                            <div className="space-y-2 mb-3">
+                              {pkg.features.slice(0, 5).map(featureId => (
+                                <div key={featureId} className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-300">
+                                  <Check className="w-4 h-4 text-green-500 flex-shrink-0" />
+                                  <span>{featureNames[featureId] || featureId}</span>
+                                </div>
+                              ))}
+                              {pkg.features.length > 5 && (
+                                <p className="text-xs text-gray-400 dark:text-gray-500 pl-6">+ {pkg.features.length - 5} meer functies</p>
+                              )}
+                            </div>
+                            
+                            {/* Description */}
+                            <p className="text-xs text-gray-500 dark:text-gray-400 border-t border-gray-100 dark:border-gray-700 pt-3">
+                              {key === 'starter' && 'Perfect voor starters en kleine bedrijven'}
+                              {key === 'professional' && 'Ideaal voor groeiende ondernemers'}
+                              {key === 'business' && 'Voor bedrijven die meer willen'}
+                            </p>
+                          </div>
                         </motion.button>
                       )
                     })}
                   </div>
+                  
+                  {/* Swipe hint - mobile only */}
+                  <p className="text-center text-xs text-gray-400 dark:text-gray-500 sm:hidden">
+                    ← Swipe voor meer pakketten →
+                  </p>
 
                   <div className="bg-blue-50 dark:bg-blue-900/30 border border-blue-200 dark:border-blue-800 p-4 rounded-xl">
                     <p className="text-blue-800 dark:text-blue-200 text-sm">
