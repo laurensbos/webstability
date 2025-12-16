@@ -180,6 +180,7 @@ export default function StartProject() {
           </div>
           <WebsiteOnboarding 
             isStandalone={false}
+            isFullPage={true}
             initialPackage={(pakket as 'starter' | 'professional' | 'business') || 'professional'}
             onClose={handleBack}
           />
@@ -205,6 +206,7 @@ export default function StartProject() {
           </div>
           <WebshopOnboarding 
             isStandalone={false}
+            isFullPage={true}
             onClose={handleBack}
           />
         </main>
@@ -229,6 +231,7 @@ export default function StartProject() {
           </div>
           <DroneOnboarding 
             isStandalone={false}
+            isFullPage={true}
             initialPackage={(pakket as 'basis' | 'professional' | 'premium') || 'professional'}
             onClose={handleBack}
           />
@@ -239,7 +242,27 @@ export default function StartProject() {
   }
 
   if (selectedService === 'logo') {
-    return <LogoOnboarding onClose={handleBack} />
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-purple-50/30 dark:from-gray-900 dark:via-gray-900 dark:to-gray-900">
+        <Header />
+        <main className="pt-4">
+          <div className="max-w-4xl mx-auto px-4 sm:px-6 mb-4">
+            <button
+              onClick={handleBack}
+              className="flex items-center gap-2 text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 transition-colors"
+            >
+              <ChevronLeft className="w-4 h-4" />
+              <span className="text-sm">Andere dienst kiezen</span>
+            </button>
+          </div>
+          <LogoOnboarding 
+            isFullPage={true}
+            onClose={handleBack}
+          />
+        </main>
+        <Footer />
+      </div>
+    )
   }
 
   // Service selection screen

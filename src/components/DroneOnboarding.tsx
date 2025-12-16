@@ -159,6 +159,7 @@ interface DroneOnboardingProps {
   onComplete?: (data: DroneOnboardingData, projectId: string) => void
   onClose?: () => void
   isStandalone?: boolean
+  isFullPage?: boolean
   initialPackage?: 'basis' | 'professional' | 'premium'
 }
 
@@ -166,9 +167,13 @@ export default function DroneOnboarding({
   onComplete, 
   onClose, 
   isStandalone = false,
+  isFullPage = false,
   initialPackage = 'professional'
 }: DroneOnboardingProps) {
   const navigate = useNavigate()
+  
+  // isFullPage is an alias for isStandalone for consistency
+  const useFullPageMode = isStandalone || isFullPage
   const [currentStep, setCurrentStep] = useState(1)
   const [data, setData] = useState<DroneOnboardingData>({
     ...INITIAL_DATA,
@@ -415,9 +420,9 @@ export default function DroneOnboarding({
   }
 
   return (
-    <div className={`${isStandalone ? 'min-h-screen bg-gradient-to-br from-orange-50 via-white to-amber-50' : ''}`}>
+    <div className={`${useFullPageMode ? 'min-h-screen bg-gradient-to-br from-orange-50 via-white to-amber-50' : ''}`}>
       {/* Header for standalone */}
-      {isStandalone && (
+      {useFullPageMode && (
         <header className="sticky top-0 z-50 bg-white/80 dark:bg-gray-900/80 backdrop-blur-lg border-b border-orange-100 dark:border-gray-700">
           <div className="max-w-4xl mx-auto px-4 sm:px-6 py-4">
             <div className="flex items-center justify-between">
@@ -441,7 +446,7 @@ export default function DroneOnboarding({
         </header>
       )}
 
-      <div className={`max-w-4xl mx-auto ${isStandalone ? 'px-4 sm:px-6 py-8' : 'p-6'}`}>
+      <div className={`max-w-4xl mx-auto ${useFullPageMode ? 'px-4 sm:px-6 py-8' : 'p-6'}`}>
         {/* Progress Steps */}
         <div className="mb-8">
           <div className="flex items-center justify-between mb-4">
