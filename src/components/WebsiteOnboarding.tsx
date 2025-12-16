@@ -419,6 +419,9 @@ export default function WebsiteOnboarding({
                         {formData.package === pkg.id && (
                           <motion.div className={`absolute inset-0 bg-gradient-to-r ${pkg.gradient} opacity-10 rounded-2xl`} initial={{ opacity: 0 }} animate={{ opacity: 0.1 }} />
                         )}
+                        {formData.package === pkg.id && (
+                          <div className="absolute inset-1 rounded-2xl pointer-events-none border-2 border-primary-500 dark:border-primary-400" />
+                        )}
                         <div className={`inline-flex items-center gap-2 px-3 py-1 rounded-full bg-gradient-to-r ${pkg.gradient} text-white text-sm font-medium mb-3`}>
                           <Globe className="w-4 h-4" />
                           {pkg.name}
@@ -465,6 +468,9 @@ export default function WebsiteOnboarding({
                     >
                       {formData.package === pkg.id && (
                         <motion.div className={`absolute inset-0 bg-gradient-to-r ${pkg.gradient} opacity-10 rounded-2xl`} initial={{ opacity: 0 }} animate={{ opacity: 0.1 }} />
+                      )}
+                      {formData.package === pkg.id && (
+                        <div className="absolute inset-1 rounded-2xl pointer-events-none border-2 border-primary-500 dark:border-primary-400" />
                       )}
                       <div className={`inline-flex items-center gap-2 px-3 py-1 rounded-full bg-gradient-to-r ${pkg.gradient} text-white text-sm font-medium mb-3`}>
                         <Globe className="w-4 h-4" />

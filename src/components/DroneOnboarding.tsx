@@ -365,6 +365,9 @@ export default function DroneOnboarding({
                           {formData.package === pkg.id && (
                             <motion.div className={`absolute inset-0 bg-gradient-to-r ${pkg.gradient} opacity-10 rounded-2xl`} initial={{ opacity: 0 }} animate={{ opacity: 0.1 }} />
                           )}
+                          {formData.package === pkg.id && (
+                            <div className="absolute inset-1 rounded-2xl pointer-events-none border-2 border-orange-500" />
+                          )}
 
                           {pkg.popular && (
                             <div className="absolute -top-3 left-1/2 -translate-x-1/2">
@@ -436,6 +439,9 @@ export default function DroneOnboarding({
                       >
                         {formData.package === pkg.id && (
                           <motion.div className={`absolute inset-0 bg-gradient-to-r ${pkg.gradient} opacity-10 rounded-2xl`} initial={{ opacity: 0 }} animate={{ opacity: 0.1 }} />
+                        )}
+                        {formData.package === pkg.id && (
+                          <div className="absolute inset-1 rounded-2xl pointer-events-none border-2 border-orange-500" />
                         )}
                         
                         {pkg.popular && (

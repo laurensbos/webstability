@@ -329,6 +329,9 @@ export default function WebshopOnboarding({
                           animate={{ opacity: 0.1 }} 
                         />
                       )}
+                      {formData.package === pkg.id && (
+                        <div className="absolute inset-1 rounded-2xl pointer-events-none border-2 border-emerald-500" />
+                      )}
                       
                       {pkg.popular && (
                         <div className="absolute -top-3 left-1/2 -translate-x-1/2">
@@ -401,6 +404,9 @@ export default function WebshopOnboarding({
                            initial={{ opacity: 0 }} 
                            animate={{ opacity: 0.1 }} 
                          />
+                       )}
+                       {formData.package === pkg.id && (
+                         <div className="absolute inset-1 rounded-2xl pointer-events-none border-2 border-emerald-500" />
                        )}
                        
                        {pkg.popular && (
