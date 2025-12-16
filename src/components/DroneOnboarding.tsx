@@ -23,7 +23,10 @@ import {
   Link,
   CheckCircle,
   Sun,
-  Sunset
+  Sunset,
+  Lock,
+  Eye,
+  EyeOff
 } from 'lucide-react'
 
 // Types
@@ -57,7 +60,9 @@ interface DroneOnboardingData {
   // Stap 5: Bevestigen
   additionalNotes: string
   agreedToTerms: boolean
-  agreedToWeather: boolean // Drone flights depend on weather
+  agreedToWeather: boolean
+  projectPassword: string
+  confirmPassword: string // Drone flights depend on weather
 }
 
 const INITIAL_DATA: DroneOnboardingData = {
@@ -85,7 +90,9 @@ const INITIAL_DATA: DroneOnboardingData = {
   
   additionalNotes: '',
   agreedToTerms: false,
-  agreedToWeather: false
+  agreedToWeather: false,
+  projectPassword: '',
+  confirmPassword: ''
 }
 
 const STEPS = [
@@ -169,6 +176,7 @@ export default function DroneOnboarding({
   })
   const [errors, setErrors] = useState<Record<string, string>>({})
   const [submitting, setSubmitting] = useState(false)
+  const [showPassword, setShowPassword] = useState(false)
 
   const updateData = (updates: Partial<DroneOnboardingData>) => {
     setData(prev => ({ ...prev, ...updates }))
@@ -205,6 +213,10 @@ export default function DroneOnboarding({
         if (!data.phone.trim()) newErrors.phone = 'Vul je telefoonnummer in'
         break
       case 5:
+        if (!data.projectPassword.trim()) newErrors.projectPassword = 'Kies een wachtwoord voor je project dashboard'
+        else if (data.projectPassword.length < 6) newErrors.projectPassword = 'Wachtwoord moet minimaal 6 tekens zijn'
+        if (!data.confirmPassword.trim()) newErrors.confirmPassword = 'Bevestig je wachtwoord'
+        else if (data.projectPassword !== data.confirmPassword) newErrors.confirmPassword = 'Wachtwoorden komen niet overeen'
         if (!data.agreedToTerms) newErrors.agreedToTerms = 'Je moet akkoord gaan met de voorwaarden'
         if (!data.agreedToWeather) newErrors.agreedToWeather = 'Je moet akkoord gaan met de weervoorwaarden'
         break
@@ -978,6 +990,58 @@ export default function DroneOnboarding({
                       className="w-full px-4 py-2.5 rounded-xl border border-gray-200 focus:ring-2 focus:ring-orange-500"
                       placeholder="Nog iets dat we moeten weten?"
                     />
+                  </div>
+
+                  {/* Wachtwoord aanmaken */}
+                  <div className="p-4 bg-gradient-to-r from-orange-50 to-amber-50 dark:from-orange-900/30 dark:to-amber-900/30 rounded-xl border border-orange-200 dark:border-orange-800">
+                    <div className="mb-4">
+                      <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-1 flex items-center gap-2">
+                        <Lock className="w-5 h-5 text-orange-600 dark:text-orange-400" />
+                        Maak je account aan
+                      </h3>
+                      <p className="text-gray-500 dark:text-gray-400 text-sm">Kies een wachtwoord om je project te kunnen volgen</p>
+                    </div>
+
+                    <div className="grid sm:grid-cols-2 gap-4">
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                          Wachtwoord *
+                        </label>
+                        <div className="relative">
+                          <input
+                            type={showPassword ? 'text' : 'password'}
+                            value={data.projectPassword}
+                            onChange={e => updateData({ projectPassword: e.target.value })}
+                            className={`w-full px-4 py-2.5 pr-10 rounded-lg border ${errors.projectPassword ? 'border-red-500' : 'border-gray-200 dark:border-gray-600'} bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-orange-500`}
+                            placeholder="Min. 6 tekens"
+                          />
+                          <button
+                            type="button"
+                            onClick={() => setShowPassword(!showPassword)}
+                            className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300"
+                          >
+                            {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                          </button>
+                        </div>
+                        {errors.projectPassword && <p className="text-red-500 text-xs mt-1">{errors.projectPassword}</p>}
+                      </div>
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                          Bevestig wachtwoord *
+                        </label>
+                        <input
+                          type={showPassword ? 'text' : 'password'}
+                          value={data.confirmPassword}
+                          onChange={e => updateData({ confirmPassword: e.target.value })}
+                          className={`w-full px-4 py-2.5 rounded-lg border ${errors.confirmPassword ? 'border-red-500' : 'border-gray-200 dark:border-gray-600'} bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-orange-500`}
+                          placeholder="Herhaal wachtwoord"
+                        />
+                        {errors.confirmPassword && <p className="text-red-500 text-xs mt-1">{errors.confirmPassword}</p>}
+                      </div>
+                    </div>
+                    <p className="text-xs text-gray-500 dark:text-gray-400 mt-2">
+                      Met dit wachtwoord kun je de voortgang van je project volgen op de statuspagina.
+                    </p>
                   </div>
 
                   {/* Terms */}

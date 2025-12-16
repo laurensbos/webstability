@@ -15,7 +15,10 @@ import {
   Loader2,
   Sparkles,
   Clock,
-  Star
+  Star,
+  Lock,
+  Eye,
+  EyeOff
 } from 'lucide-react'
 
 // Types
@@ -68,6 +71,8 @@ interface WebshopOnboardingData {
   // Pakket info
   selectedPackage: 'webshop'
   agreedToTerms: boolean
+  projectPassword: string
+  confirmPassword: string
 }
 
 const INITIAL_DATA: WebshopOnboardingData = {
@@ -111,7 +116,9 @@ const INITIAL_DATA: WebshopOnboardingData = {
   extraNotes: '',
   
   selectedPackage: 'webshop',
-  agreedToTerms: false
+  agreedToTerms: false,
+  projectPassword: '',
+  confirmPassword: ''
 }
 
 const STEPS = [
@@ -173,6 +180,7 @@ export default function WebshopOnboarding({
   const [data, setData] = useState<WebshopOnboardingData>(INITIAL_DATA)
   const [errors, setErrors] = useState<Record<string, string>>({})
   const [submitting, setSubmitting] = useState(false)
+  const [showPassword, setShowPassword] = useState(false)
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   void isStandalone // Keep for backwards compatibility
@@ -219,6 +227,10 @@ export default function WebshopOnboarding({
         if (!data.designStyle) newErrors.designStyle = 'Selecteer een stijl'
         break
       case 6:
+        if (!data.projectPassword.trim()) newErrors.projectPassword = 'Kies een wachtwoord voor je project dashboard'
+        else if (data.projectPassword.length < 6) newErrors.projectPassword = 'Wachtwoord moet minimaal 6 tekens zijn'
+        if (!data.confirmPassword.trim()) newErrors.confirmPassword = 'Bevestig je wachtwoord'
+        else if (data.projectPassword !== data.confirmPassword) newErrors.confirmPassword = 'Wachtwoorden komen niet overeen'
         if (!data.agreedToTerms) newErrors.agreedToTerms = 'Je moet akkoord gaan met de voorwaarden'
         break
     }
@@ -260,6 +272,7 @@ export default function WebshopOnboarding({
           id: newProjectId,
           type: 'webshop',
           packageType: 'webshop',
+          password: data.projectPassword,
           customer: {
             name: data.contactName,
             email: data.email,
@@ -1106,6 +1119,58 @@ export default function WebshopOnboarding({
                       <li className="flex items-center gap-2"><Check className="w-4 h-4 text-green-500" /> Hosting & SSL inbegrepen</li>
                       <li className="flex items-center gap-2"><Check className="w-4 h-4 text-green-500" /> Maandelijks aanpasbaar</li>
                     </ul>
+                  </div>
+
+                  {/* Wachtwoord aanmaken */}
+                  <div className="p-4 bg-gradient-to-r from-emerald-50 to-green-50 dark:from-emerald-900/30 dark:to-green-900/30 rounded-xl border border-emerald-200 dark:border-emerald-800">
+                    <div className="mb-4">
+                      <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-1 flex items-center gap-2">
+                        <Lock className="w-5 h-5 text-emerald-600 dark:text-emerald-400" />
+                        Maak je account aan
+                      </h3>
+                      <p className="text-gray-500 dark:text-gray-400 text-sm">Kies een wachtwoord om je project te kunnen volgen</p>
+                    </div>
+
+                    <div className="grid sm:grid-cols-2 gap-4">
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                          Wachtwoord *
+                        </label>
+                        <div className="relative">
+                          <input
+                            type={showPassword ? 'text' : 'password'}
+                            value={data.projectPassword}
+                            onChange={e => updateData({ projectPassword: e.target.value })}
+                            className={`w-full px-4 py-2.5 pr-10 rounded-lg border ${errors.projectPassword ? 'border-red-500' : 'border-gray-200 dark:border-gray-600'} bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-emerald-500`}
+                            placeholder="Min. 6 tekens"
+                          />
+                          <button
+                            type="button"
+                            onClick={() => setShowPassword(!showPassword)}
+                            className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300"
+                          >
+                            {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                          </button>
+                        </div>
+                        {errors.projectPassword && <p className="text-red-500 text-xs mt-1">{errors.projectPassword}</p>}
+                      </div>
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                          Bevestig wachtwoord *
+                        </label>
+                        <input
+                          type={showPassword ? 'text' : 'password'}
+                          value={data.confirmPassword}
+                          onChange={e => updateData({ confirmPassword: e.target.value })}
+                          className={`w-full px-4 py-2.5 rounded-lg border ${errors.confirmPassword ? 'border-red-500' : 'border-gray-200 dark:border-gray-600'} bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-emerald-500`}
+                          placeholder="Herhaal wachtwoord"
+                        />
+                        {errors.confirmPassword && <p className="text-red-500 text-xs mt-1">{errors.confirmPassword}</p>}
+                      </div>
+                    </div>
+                    <p className="text-xs text-gray-500 dark:text-gray-400 mt-2">
+                      Met dit wachtwoord kun je de voortgang van je project volgen op de statuspagina.
+                    </p>
                   </div>
 
                   {/* Terms */}
