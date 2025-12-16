@@ -325,15 +325,6 @@ export default function StartProject() {
                     onClick={() => setSelectedService(service.id)}
                     className="relative flex-shrink-0 w-[300px] snap-center text-left bg-white dark:bg-gray-800 rounded-2xl border-2 border-gray-200 dark:border-gray-700 overflow-hidden shadow-md active:scale-[0.98] transition-transform"
                   >
-                    {/* Popular badge */}
-                    {service.popular && (
-                      <div className="absolute top-3 right-3 z-10">
-                        <span className="bg-gradient-to-r from-primary-500 to-blue-600 text-white text-xs font-bold px-2.5 py-1 rounded-full shadow-lg">
-                          Populair
-                        </span>
-                      </div>
-                    )}
-                    
                     {/* Colored header with icon */}
                     <div className={`bg-gradient-to-br ${service.gradient} p-5 flex items-center gap-4 min-h-[100px]`}>
                       <div className="w-14 h-14 rounded-2xl bg-white/20 backdrop-blur-sm flex items-center justify-center shadow-lg flex-shrink-0">
@@ -398,15 +389,6 @@ export default function StartProject() {
                   onClick={() => setSelectedService(service.id)}
                   className="relative group text-left bg-white dark:bg-gray-800 rounded-2xl border-2 border-gray-200 dark:border-gray-700 overflow-hidden shadow-md hover:shadow-xl hover:border-gray-300 dark:hover:border-gray-600 transition-all duration-300 hover:-translate-y-1"
                 >
-                  {/* Popular badge */}
-                  {service.popular && (
-                    <div className="absolute top-3 right-3 z-10">
-                      <span className="bg-gradient-to-r from-primary-500 to-blue-600 text-white text-xs font-bold px-2.5 py-1 rounded-full shadow-lg">
-                        Populair
-                      </span>
-                    </div>
-                  )}
-                  
                   {/* Colored header with icon */}
                   <div className={`bg-gradient-to-br ${service.gradient} p-5 flex items-center gap-4 min-h-[100px]`}>
                     <div className="w-14 h-14 rounded-2xl bg-white/20 backdrop-blur-sm flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-300 flex-shrink-0">

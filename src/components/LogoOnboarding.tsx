@@ -343,21 +343,12 @@ export default function LogoOnboarding({
                         />
                       )}
                       
-                      {pkg.popular && (
-                        <div className="absolute -top-3 left-1/2 -translate-x-1/2">
-                          <span className={`inline-flex items-center gap-1 px-3 py-1 rounded-full bg-gradient-to-r ${pkg.gradient} text-white text-xs font-semibold shadow-lg`}>
-                            <Sparkles className="w-3 h-3" />
-                            {pkg.tagline}
-                          </span>
-                        </div>
-                      )}
-                      
-                      <div className={`inline-flex items-center gap-2 px-3 py-1 rounded-full bg-gradient-to-r ${pkg.gradient} text-white text-sm font-medium mb-3 ${pkg.popular ? 'mt-2' : ''}`}>
+                      <div className={`inline-flex items-center gap-2 px-3 py-1 rounded-full bg-gradient-to-r ${pkg.gradient} text-white text-sm font-medium mb-3`}>
                         <PenTool className="w-4 h-4" />
                         {pkg.name}
                       </div>
                       
-                      {pkg.tagline && !pkg.popular && (
+                      {pkg.tagline && (
                         <p className="text-xs text-gray-500 dark:text-gray-400 mb-2">{pkg.tagline}</p>
                       )}
                       
