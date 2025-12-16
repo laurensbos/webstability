@@ -130,16 +130,36 @@ function generateProjectId(): string {
 
 interface WebsiteOnboardingProps {
   isFullPage?: boolean
+  isStandalone?: boolean
+  initialPackage?: 'starter' | 'professional' | 'business'
+  onClose?: () => void
 }
 
-export default function WebsiteOnboarding({ isFullPage = true }: WebsiteOnboardingProps) {
+export default function WebsiteOnboarding({ 
+  isFullPage = true, 
+  isStandalone = true,
+  initialPackage,
+  onClose 
+}: WebsiteOnboardingProps) {
   const navigate = useNavigate()
-  const [currentStep, setCurrentStep] = useState(1)
+  const [currentStep, setCurrentStep] = useState(initialPackage ? 2 : 1)
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [showPassword, setShowPassword] = useState(false)
   const [showConfirmPassword, setShowConfirmPassword] = useState(false)
+  
+  // Map initialPackage to internal package id if provided
+  const getInitialPackage = () => {
+    if (!initialPackage) return ''
+    const packageMap: Record<string, string> = {
+      'starter': 'starter',
+      'professional': 'professional', 
+      'business': 'enterprise'
+    }
+    return packageMap[initialPackage] || ''
+  }
+  
   const [formData, setFormData] = useState<FormData>({
-    package: '',
+    package: getInitialPackage(),
     companyName: '',
     industry: '',
     currentWebsite: '',
@@ -192,7 +212,15 @@ export default function WebsiteOnboarding({ isFullPage = true }: WebsiteOnboardi
   }
 
   const handleBack = () => {
-    if (currentStep > 1) {
+    // If we're on step 1, or step 2 with initialPackage (skipped step 1), call onClose
+    const minStep = initialPackage ? 2 : 1
+    if (currentStep <= minStep) {
+      if (onClose) {
+        onClose()
+      } else if (!isStandalone) {
+        navigate(-1)
+      }
+    } else {
       setCurrentStep(prev => prev - 1)
     }
   }
@@ -717,12 +745,7 @@ export default function WebsiteOnboarding({ isFullPage = true }: WebsiteOnboardi
         <div className="flex justify-between mt-8">
           <button
             onClick={handleBack}
-            disabled={currentStep === 1}
-            className={`flex items-center gap-2 px-6 py-3 rounded-xl font-medium transition-all ${
-              currentStep === 1
-                ? 'opacity-0 pointer-events-none'
-                : 'text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-gray-800'
-            }`}
+            className="flex items-center gap-2 px-6 py-3 rounded-xl font-medium transition-all text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-gray-800"
           >
             <ArrowLeft className="w-5 h-5" />
             Vorige
