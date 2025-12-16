@@ -74,11 +74,9 @@ const PACKAGES: PackageType[] = [
     name: 'Professioneel',
     price: '€699',
     priceLabel: ' excl. BTW',
-    tagline: 'Meest gekozen',
     description: 'Uitgebreid pakket voor bedrijven.',
     features: ['30 bewerkte fotos', '2 drone videos (90 sec)', 'Tot 2 locaties', 'Levering binnen 3 dagen'],
     gradient: 'from-amber-500 to-orange-600',
-    popular: true,
   },
   {
     id: 'premium',
