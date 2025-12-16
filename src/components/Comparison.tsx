@@ -50,7 +50,7 @@ const comparisonOptions = [
     icon: Sparkles,
     color: 'primary',
     pricing: {
-      monthly: '€96/maand',
+      monthly: '€95/maand',
       setup: '€120 eenmalig',
     },
     features: [

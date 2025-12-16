@@ -69,7 +69,7 @@ const PACKAGES: PackageType[] = [
   {
     id: 'professional',
     name: 'Professioneel',
-    price: '€149',
+    price: '€148',
     priceLabel: '/maand excl. BTW',
     tagline: 'Meest gekozen',
     description: 'Voor ondernemers die meer willen dan een visitekaartje. Met blog en analytics.',
@@ -86,7 +86,7 @@ const PACKAGES: PackageType[] = [
   {
     id: 'business',
     name: 'Business',
-    price: '€249',
+    price: '€247',
     priceLabel: '/maand excl. BTW',
     tagline: 'Voor groeiende bedrijven',
     description: 'Alle tools om je bedrijf online te laten groeien met boekingssysteem en meer.',

@@ -16,7 +16,7 @@ export const packages: Package[] = [
   {
     id: 'starter',
     name: 'Starter',
-    price: 96,
+    price: 95,
     priceExcl: 79,
     tagline: 'Ideaal om te beginnen',
     features: [
@@ -31,8 +31,8 @@ export const packages: Package[] = [
   {
     id: 'professional',
     name: 'Professioneel',
-    price: 180,
-    priceExcl: 149,
+    price: 179,
+    priceExcl: 148,
     tagline: 'Meest gekozen',
     features: [
       'Tot 10 pagina\'s',
@@ -47,8 +47,8 @@ export const packages: Package[] = [
   {
     id: 'business',
     name: 'Business',
-    price: 301,
-    priceExcl: 249,
+    price: 299,
+    priceExcl: 247,
     tagline: 'Voor groeiende bedrijven',
     features: [
       'Tot 20 pagina\'s',
@@ -63,8 +63,8 @@ export const packages: Package[] = [
   {
     id: 'webshop',
     name: 'Webshop',
-    price: 301,
-    priceExcl: 249,
+    price: 299,
+    priceExcl: 247,
     tagline: 'Start met verkopen',
     features: [
       'Tot 50 producten',
