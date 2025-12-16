@@ -181,7 +181,7 @@ export default function StartProject() {
           <WebsiteOnboarding 
             isStandalone={false}
             isFullPage={true}
-            initialPackage={(pakket as 'starter' | 'professional' | 'business') || 'professional'}
+            initialPackage={pakket ? (pakket as 'starter' | 'professional' | 'business') : undefined}
             onClose={handleBack}
           />
         </main>
@@ -232,7 +232,7 @@ export default function StartProject() {
           <DroneOnboarding 
             isStandalone={false}
             isFullPage={true}
-            initialPackage={(pakket as 'basis' | 'professional' | 'premium') || 'professional'}
+            initialPackage={pakket ? (pakket as 'basis' | 'professional' | 'premium') : undefined}
             onClose={handleBack}
           />
         </main>
