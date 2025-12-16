@@ -721,15 +721,6 @@ export default function WebsiteOnboarding({
                             </div>
                           )}
                           
-                          {/* Selected checkmark */}
-                          {isSelected && (
-                            <div className="absolute top-3 left-3 z-10">
-                              <div className="w-6 h-6 rounded-full bg-primary-600 flex items-center justify-center shadow-lg">
-                                <Check className="w-4 h-4 text-white" />
-                              </div>
-                            </div>
-                          )}
-                          
                           {/* Colored header */}
                           <div className={`bg-gradient-to-br ${isSelected ? 'from-primary-500 to-blue-600' : 'from-gray-600 to-gray-700'} p-4 flex items-center justify-between`}>
                             <div className="text-white">
