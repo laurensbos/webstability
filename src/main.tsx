@@ -4,7 +4,6 @@ import './index.css'
 import App from './App'
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
 import ScrollToTop from './components/ScrollToTop'
-import FloatingWhatsApp from './components/FloatingWhatsApp'
 import CookieConsent from './components/CookieConsent'
 import { AuthProvider } from './contexts/AuthContext'
 import { DarkModeProvider } from './contexts/DarkModeContext'
@@ -141,8 +140,6 @@ createRoot(document.getElementById('root')!).render(
             
             <Route path="*" element={<NotFound />} />
           </Routes>
-          {/* Global WhatsApp widget - visible on all pages */}
-          <FloatingWhatsApp />
           {/* Cookie consent banner */}
           <CookieConsent />
         </Suspense>
