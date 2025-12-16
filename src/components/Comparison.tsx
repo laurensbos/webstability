@@ -5,7 +5,7 @@ const comparisonOptions = [
   {
     id: 'webstability',
     name: 'Webstability',
-    tagline: 'Beste keuze',
+    tagline: 'Abonnement',
     highlight: true,
     icon: Sparkles,
     color: 'primary',
@@ -135,7 +135,7 @@ export default function Comparison() {
               </div>
               <div>
                 <h3 className="text-xl font-bold">Webstability</h3>
-                <p className="text-primary-100 text-sm">Beste keuze voor ondernemers</p>
+                <p className="text-primary-100 text-sm">Website abonnement</p>
               </div>
             </div>
 
@@ -218,16 +218,6 @@ export default function Comparison() {
                     : 'bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 shadow-lg'
                 }`}
               >
-                {/* Recommended badge */}
-                {isHighlighted && (
-                  <div className="absolute -top-3 left-1/2 -translate-x-1/2">
-                    <span className="inline-flex items-center gap-1.5 px-4 py-1 rounded-full bg-white text-primary-600 text-sm font-bold shadow-lg">
-                      <Sparkles className="w-4 h-4" />
-                      Aanbevolen
-                    </span>
-                  </div>
-                )}
-
                 {/* Header */}
                 <div className="text-center mb-6">
                   <div className={`inline-flex items-center justify-center w-12 h-12 rounded-xl mb-4 ${
