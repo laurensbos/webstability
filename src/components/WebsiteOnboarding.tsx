@@ -22,6 +22,8 @@ interface PackageType {
   id: string
   name: string
   price: string
+  priceLabel?: string
+  tagline?: string
   description: string
   features: string[]
   gradient: string
@@ -47,31 +49,54 @@ interface FormData {
   confirmPassword: string
 }
 
-// Packages
+// Packages - matching /websites page
 const PACKAGES: PackageType[] = [
   {
     id: 'starter',
     name: 'Starter',
-    price: '€49',
-    description: 'Perfect voor starters en kleine ondernemers',
-    features: ['5 pagina\'s', 'Responsive design', 'Basis SEO', 'Contactformulier'],
+    price: '€79',
+    priceLabel: '/maand excl. BTW',
+    tagline: 'Ideaal om te beginnen',
+    description: 'Perfect voor ZZP\'ers en kleine ondernemers die een professionele online aanwezigheid willen.',
+    features: [
+      'Tot 5 pagina\'s',
+      'Responsive design',
+      'Contactformulier',
+      'Google Maps integratie'
+    ],
     gradient: 'from-blue-500 to-cyan-500',
   },
   {
     id: 'professional',
-    name: 'Professional',
-    price: '€79',
-    description: 'Voor groeiende bedrijven die meer willen',
-    features: ['10 pagina\'s', 'Geavanceerde SEO', 'Blog systeem', 'Analytics dashboard'],
+    name: 'Professioneel',
+    price: '€149',
+    priceLabel: '/maand excl. BTW',
+    tagline: 'Meest gekozen',
+    description: 'Voor ondernemers die meer willen dan een visitekaartje. Met blog en analytics.',
+    features: [
+      'Tot 10 pagina\'s',
+      'Alles van Starter +',
+      'Blog functionaliteit',
+      'Social media integratie',
+      'Google Analytics'
+    ],
     gradient: 'from-primary-500 to-blue-500',
     popular: true,
   },
   {
-    id: 'enterprise',
-    name: 'Enterprise',
-    price: '€129',
-    description: 'Maximale mogelijkheden voor grote bedrijven',
-    features: ['Onbeperkt pagina\'s', 'Custom integraties', 'Priority support', 'Maatwerk functionaliteit'],
+    id: 'business',
+    name: 'Business',
+    price: '€249',
+    priceLabel: '/maand excl. BTW',
+    tagline: 'Voor groeiende bedrijven',
+    description: 'Alle tools om je bedrijf online te laten groeien met boekingssysteem en meer.',
+    features: [
+      'Tot 20 pagina\'s',
+      'Alles van Professioneel +',
+      'Online boekingssysteem',
+      'Nieuwsbrief integratie',
+      'Meerdere talen'
+    ],
     gradient: 'from-purple-500 to-pink-500',
   },
 ]
@@ -153,7 +178,7 @@ export default function WebsiteOnboarding({
     const packageMap: Record<string, string> = {
       'starter': 'starter',
       'professional': 'professional', 
-      'business': 'enterprise'
+      'business': 'business'
     }
     return packageMap[initialPackage] || ''
   }
@@ -363,13 +388,27 @@ export default function WebsiteOnboarding({
                         />
                       )}
                       
-                      <div className={`inline-flex items-center gap-2 px-3 py-1 rounded-full bg-gradient-to-r ${pkg.gradient} text-white text-sm font-medium mb-4`}>
+                      {/* Popular badge */}
+                      {pkg.popular && (
+                        <div className="absolute -top-3 left-1/2 -translate-x-1/2">
+                          <span className={`inline-flex items-center gap-1 px-3 py-1 rounded-full bg-gradient-to-r ${pkg.gradient} text-white text-xs font-semibold shadow-lg`}>
+                            <Sparkles className="w-3 h-3" />
+                            {pkg.tagline || 'Meest gekozen'}
+                          </span>
+                        </div>
+                      )}
+                      
+                      <div className={`inline-flex items-center gap-2 px-3 py-1 rounded-full bg-gradient-to-r ${pkg.gradient} text-white text-sm font-medium mb-3 ${pkg.popular ? 'mt-2' : ''}`}>
                         <Globe className="w-4 h-4" />
                         {pkg.name}
                       </div>
                       
-                      <div className="text-2xl font-bold text-gray-900 dark:text-white mb-2">
-                        {pkg.price}<span className="text-sm font-normal text-gray-500 dark:text-gray-400">/maand</span>
+                      {pkg.tagline && !pkg.popular && (
+                        <p className="text-xs text-gray-500 dark:text-gray-400 mb-2">{pkg.tagline}</p>
+                      )}
+                      
+                      <div className="text-2xl font-bold text-gray-900 dark:text-white mb-1">
+                        {pkg.price}<span className="text-sm font-normal text-gray-500 dark:text-gray-400">{pkg.priceLabel || '/maand'}</span>
                       </div>
                       
                       <p className="text-sm text-gray-600 dark:text-gray-400 mb-4">{pkg.description}</p>
@@ -377,7 +416,7 @@ export default function WebsiteOnboarding({
                       <ul className="space-y-2">
                         {pkg.features.map((feature, i) => (
                           <li key={i} className="flex items-center gap-2 text-sm text-gray-700 dark:text-gray-300">
-                            <Check className={`w-4 h-4 ${formData.package === pkg.id ? 'text-primary-500' : 'text-gray-400'}`} />
+                            <Check className={`w-4 h-4 flex-shrink-0 ${formData.package === pkg.id ? 'text-primary-500' : 'text-gray-400'}`} />
                             {feature}
                           </li>
                         ))}
