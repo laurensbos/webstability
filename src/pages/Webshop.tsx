@@ -431,11 +431,11 @@ export default function Webshop() {
                   whileInView={{ opacity: 1, y: 0 }}
                   viewport={{ once: true }}
                   transition={{ delay: index * 0.1 }}
-                  className={\`relative p-6 bg-white dark:bg-gray-800 rounded-2xl border \${
+                  className={`relative p-6 bg-white dark:bg-gray-800 rounded-2xl border ${
                     pkg.popular 
                       ? 'border-emerald-300 dark:border-emerald-600 shadow-xl shadow-emerald-500/10' 
                       : 'border-gray-200 dark:border-gray-700'
-                  } hover:shadow-xl hover:-translate-y-1 transition-all\`}
+                  } hover:shadow-xl hover:-translate-y-1 transition-all`}
                 >
                   {pkg.popular && (
                     <div className="absolute -top-3 left-1/2 -translate-x-1/2">
@@ -473,12 +473,12 @@ export default function Webshop() {
                   </ul>
 
                   <Link
-                    to={\`/start?dienst=webshop&pakket=\${pkg.id}\`}
-                    className={\`block w-full text-center py-3 rounded-xl font-semibold transition-all \${
+                    to={`/start?dienst=webshop&pakket=${pkg.id}`}
+                    className={`block w-full text-center py-3 rounded-xl font-semibold transition-all ${
                       pkg.popular
                         ? 'bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-600 hover:to-emerald-700 text-white shadow-lg shadow-emerald-500/25'
                         : 'bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 text-gray-900 dark:text-white'
-                    }\`}
+                    }`}
                   >
                     Kies {pkg.name}
                   </Link>

@@ -519,11 +519,11 @@ export default function Websites() {
                   whileInView={{ opacity: 1, y: 0 }}
                   viewport={{ once: true }}
                   transition={{ delay: index * 0.1 }}
-                  className={\`relative p-6 bg-white dark:bg-gray-800 rounded-2xl border \${
+                  className={`relative p-6 bg-white dark:bg-gray-800 rounded-2xl border ${
                     pkg.popular 
                       ? 'border-primary-300 dark:border-primary-600 shadow-xl shadow-primary-500/10' 
                       : 'border-gray-200 dark:border-gray-700'
-                  } hover:shadow-xl hover:-translate-y-1 transition-all\`}
+                  } hover:shadow-xl hover:-translate-y-1 transition-all`}
                 >
                   {pkg.popular && (
                     <div className="absolute -top-3 left-1/2 -translate-x-1/2">
@@ -561,12 +561,12 @@ export default function Websites() {
                   </ul>
 
                   <Link
-                    to={\`/start?dienst=website&pakket=\${pkg.id}\`}
-                    className={\`block w-full text-center py-3 rounded-xl font-semibold transition-all \${
+                    to={`/start?dienst=website&pakket=${pkg.id}`}
+                    className={`block w-full text-center py-3 rounded-xl font-semibold transition-all ${
                       pkg.popular
                         ? 'bg-gradient-to-r from-primary-500 to-primary-600 hover:from-primary-600 hover:to-primary-700 text-white shadow-lg shadow-primary-500/25'
                         : 'bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 text-gray-900 dark:text-white'
-                    }\`}
+                    }`}
                   >
                     Kies {pkg.name}
                   </Link>
