@@ -344,10 +344,6 @@ export default function WebshopOnboarding({
                         {pkg.name}
                       </div>
                       
-                      {pkg.tagline && !pkg.popular && (
-                        <p className="text-xs text-gray-500 dark:text-gray-400 mb-2">{pkg.tagline}</p>
-                      )}
-                      
                       <div className="text-2xl font-bold text-gray-900 dark:text-white mb-1">
                         {pkg.price}
                         <span className="text-sm font-normal text-gray-500 dark:text-gray-400">
@@ -416,10 +412,6 @@ export default function WebshopOnboarding({
                          <ShoppingBag className="w-4 h-4" />
                          {pkg.name}
                        </div>
-                       
-                       {pkg.tagline && !pkg.popular && (
-                         <p className="text-xs text-gray-500 dark:text-gray-400 mb-2">{pkg.tagline}</p>
-                       )}
                        
                        <div className="text-2xl font-bold text-gray-900 dark:text-white mb-1">
                          {pkg.price}

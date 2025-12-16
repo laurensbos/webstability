@@ -423,9 +423,7 @@ export default function WebsiteOnboarding({
                           <Globe className="w-4 h-4" />
                           {pkg.name}
                         </div>
-                        {pkg.tagline && (
-                          <p className="text-xs text-gray-500 dark:text-gray-400 mb-2">{pkg.tagline}</p>
-                        )}
+                        
                         <div className="text-2xl font-bold text-gray-900 dark:text-white mb-1">
                           {pkg.price}<span className="text-sm font-normal text-gray-500 dark:text-gray-400">{pkg.priceLabel || '/maand'}</span>
                         </div>
@@ -470,9 +468,7 @@ export default function WebsiteOnboarding({
                         <Globe className="w-4 h-4" />
                         {pkg.name}
                       </div>
-                      {pkg.tagline && (
-                        <p className="text-xs text-gray-500 dark:text-gray-400 mb-2">{pkg.tagline}</p>
-                      )}
+                      
                       <div className="text-2xl font-bold text-gray-900 dark:text-white mb-1">
                         {pkg.price}<span className="text-sm font-normal text-gray-500 dark:text-gray-400">{pkg.priceLabel || '/maand'}</span>
                       </div>

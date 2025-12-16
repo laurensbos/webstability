@@ -447,7 +447,6 @@ export default function Webshop() {
                         <pkg.icon className="w-6 h-6 text-white" />
                       </div>
                       <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-1">{pkg.name}</h3>
-                      <p className="text-gray-500 dark:text-gray-400 text-sm">{pkg.tagline}</p>
                     </div>
 
                     <div className="text-center mb-6">
@@ -508,7 +507,6 @@ export default function Webshop() {
                       <pkg.icon className="w-6 h-6 text-white" />
                     </div>
                     <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-1">{pkg.name}</h3>
-                    <p className="text-gray-500 dark:text-gray-400 text-sm">{pkg.tagline}</p>
                   </div>
 
                   <div className="text-center mb-6">
