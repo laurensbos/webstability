@@ -343,12 +343,12 @@ export default function DroneOnboarding({
                   </p>
                 </div>
                 
-                <div className="grid gap-6 sm:grid-cols-3 max-w-4xl mx-auto">
+                <div className="flex gap-4 overflow-x-auto pb-4 -mx-4 px-4 snap-x snap-mandatory scrollbar-hide sm:grid sm:grid-cols-3 sm:gap-6 sm:overflow-visible max-w-4xl mx-auto">
                   {PACKAGES.map((pkg) => (
                     <motion.button 
                       key={pkg.id} 
                       onClick={() => updateFormData('package', pkg.id)} 
-                      className={`relative p-6 rounded-2xl border-2 text-left transition-all ${
+                      className={`relative flex-shrink-0 w-[280px] sm:w-auto snap-center p-6 rounded-2xl border-2 text-left transition-all ${
                         formData.package === pkg.id 
                           ? 'border-transparent ring-2 ring-orange-500' 
                           : 'border-gray-200 dark:border-gray-700 hover:border-gray-300'
