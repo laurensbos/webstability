@@ -115,6 +115,13 @@ const PAGE_OPTIONS = [
   'Blog', 'FAQ', 'Prijzen', 'Team', 'Vacatures'
 ]
 
+// Package limits for pages
+const PACKAGE_PAGE_LIMITS: Record<string, number> = {
+  'starter': 5,
+  'professional': 10,
+  'business': 20
+}
+
 // Floating Particles Component
 function FloatingParticles({ gradient }: { gradient: string }) {
   return (
@@ -171,6 +178,7 @@ export default function WebsiteOnboarding({
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [showPassword, setShowPassword] = useState(false)
   const [showConfirmPassword, setShowConfirmPassword] = useState(false)
+  const [showUpgradePrompt, setShowUpgradePrompt] = useState(false)
   
   // Map initialPackage to internal package id if provided
   const getInitialPackage = () => {
@@ -209,13 +217,37 @@ export default function WebsiteOnboarding({
     setFormData(prev => ({ ...prev, [field]: value }))
   }
 
+  // Get page limit based on selected package
+  const getPageLimit = () => PACKAGE_PAGE_LIMITS[formData.package] || 5
+  
+  // Get next upgrade package
+  const getNextPackage = () => {
+    if (formData.package === 'starter') return PACKAGES.find(p => p.id === 'professional')
+    if (formData.package === 'professional') return PACKAGES.find(p => p.id === 'business')
+    return null
+  }
+
   const togglePage = (page: string) => {
+    const pageLimit = getPageLimit()
+    const isRemoving = formData.pages.includes(page)
+    
+    if (!isRemoving && formData.pages.length >= pageLimit) {
+      // Show upgrade prompt instead of adding
+      setShowUpgradePrompt(true)
+      return
+    }
+    
     setFormData(prev => ({
       ...prev,
       pages: prev.pages.includes(page)
         ? prev.pages.filter(p => p !== page)
         : [...prev.pages, page]
     }))
+  }
+  
+  const handleUpgrade = (packageId: string) => {
+    updateFormData('package', packageId)
+    setShowUpgradePrompt(false)
   }
 
   const canProceed = (): boolean => {
@@ -632,27 +664,103 @@ export default function WebsiteOnboarding({
                     Welke pagina's wil je?
                   </h2>
                   <p className="text-gray-600 dark:text-gray-400">
-                    Selecteer minimaal 2 pagina's voor je website
+                    Je kunt tot {getPageLimit()} pagina's kiezen met het {selectedPackage?.name} pakket
                   </p>
                 </div>
 
                 <div className="max-w-lg mx-auto">
-                  <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 mb-6">
-                    {PAGE_OPTIONS.map((page) => (
-                      <button
-                        key={page}
-                        onClick={() => togglePage(page)}
-                        className={`p-3 rounded-xl border-2 text-center transition-all ${
-                          formData.pages.includes(page)
-                            ? `border-primary-500 bg-primary-50 dark:bg-primary-900/20`
-                            : 'border-gray-200 dark:border-gray-700 hover:border-gray-300'
-                        }`}
+                  {/* Upgrade prompt modal */}
+                  <AnimatePresence>
+                    {showUpgradePrompt && (
+                      <motion.div
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        exit={{ opacity: 0 }}
+                        className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4"
+                        onClick={() => setShowUpgradePrompt(false)}
                       >
-                        <span className={`font-medium text-sm ${formData.pages.includes(page) ? 'text-primary-600 dark:text-primary-400' : 'text-gray-700 dark:text-gray-300'}`}>
-                          {page}
-                        </span>
-                      </button>
-                    ))}
+                        <motion.div
+                          initial={{ scale: 0.9, opacity: 0 }}
+                          animate={{ scale: 1, opacity: 1 }}
+                          exit={{ scale: 0.9, opacity: 0 }}
+                          onClick={(e) => e.stopPropagation()}
+                          className="bg-white dark:bg-gray-800 rounded-2xl p-6 max-w-md w-full shadow-2xl"
+                        >
+                          <div className="text-center mb-6">
+                            <div className="w-16 h-16 bg-gradient-to-r from-primary-500 to-blue-500 rounded-full flex items-center justify-center mx-auto mb-4">
+                              <Sparkles className="w-8 h-8 text-white" />
+                            </div>
+                            <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-2">
+                              Meer pagina's nodig?
+                            </h3>
+                            <p className="text-gray-600 dark:text-gray-400">
+                              Je hebt de limiet van {getPageLimit()} pagina's bereikt met het {selectedPackage?.name} pakket.
+                            </p>
+                          </div>
+                          
+                          {getNextPackage() && (
+                            <div className="bg-gradient-to-r from-primary-50 to-blue-50 dark:from-primary-900/20 dark:to-blue-900/20 rounded-xl p-4 mb-6">
+                              <div className="flex justify-between items-center mb-2">
+                                <span className="font-semibold text-gray-900 dark:text-white">{getNextPackage()?.name}</span>
+                                <span className="text-primary-600 dark:text-primary-400 font-bold">{getNextPackage()?.price}</span>
+                              </div>
+                              <p className="text-sm text-gray-600 dark:text-gray-400 mb-3">
+                                Tot {PACKAGE_PAGE_LIMITS[getNextPackage()?.id || ''] || 10} pagina's + extra features
+                              </p>
+                              <ul className="text-sm text-gray-600 dark:text-gray-400 space-y-1">
+                                {getNextPackage()?.features.slice(0, 3).map((f, i) => (
+                                  <li key={i} className="flex items-center gap-2">
+                                    <Check className="w-4 h-4 text-primary-500" />
+                                    {f}
+                                  </li>
+                                ))}
+                              </ul>
+                            </div>
+                          )}
+                          
+                          <div className="flex gap-3">
+                            <button
+                              onClick={() => setShowUpgradePrompt(false)}
+                              className="flex-1 px-4 py-3 rounded-xl border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 font-medium hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
+                            >
+                              Blijf bij {selectedPackage?.name}
+                            </button>
+                            {getNextPackage() && (
+                              <button
+                                onClick={() => handleUpgrade(getNextPackage()!.id)}
+                                className="flex-1 px-4 py-3 rounded-xl bg-gradient-to-r from-primary-500 to-blue-500 text-white font-medium hover:shadow-lg transition-all"
+                              >
+                                Upgraden
+                              </button>
+                            )}
+                          </div>
+                        </motion.div>
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
+
+                  <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 mb-6">
+                    {PAGE_OPTIONS.map((page) => {
+                      const isSelected = formData.pages.includes(page)
+                      const isDisabled = !isSelected && formData.pages.length >= getPageLimit()
+                      return (
+                        <button
+                          key={page}
+                          onClick={() => togglePage(page)}
+                          className={`p-3 rounded-xl border-2 text-center transition-all ${
+                            isSelected
+                              ? `border-primary-500 bg-primary-50 dark:bg-primary-900/20`
+                              : isDisabled
+                                ? 'border-gray-200 dark:border-gray-700 opacity-50 cursor-not-allowed'
+                                : 'border-gray-200 dark:border-gray-700 hover:border-gray-300'
+                          }`}
+                        >
+                          <span className={`font-medium text-sm ${isSelected ? 'text-primary-600 dark:text-primary-400' : 'text-gray-700 dark:text-gray-300'}`}>
+                            {page}
+                          </span>
+                        </button>
+                      )
+                    })}
                   </div>
 
                   <div>
@@ -668,9 +776,19 @@ export default function WebsiteOnboarding({
                     />
                   </div>
 
-                  <p className="text-sm text-gray-500 dark:text-gray-400 mt-4">
-                    Geselecteerd: {formData.pages.length} pagina's
-                  </p>
+                  <div className="flex items-center justify-between mt-4">
+                    <p className="text-sm text-gray-500 dark:text-gray-400">
+                      Geselecteerd: {formData.pages.length}/{getPageLimit()} pagina's
+                    </p>
+                    {formData.pages.length >= getPageLimit() && getNextPackage() && (
+                      <button
+                        onClick={() => setShowUpgradePrompt(true)}
+                        className="text-sm text-primary-600 dark:text-primary-400 hover:underline font-medium"
+                      >
+                        Meer nodig? Upgrade →
+                      </button>
+                    )}
+                  </div>
                 </div>
               </div>
             )}
