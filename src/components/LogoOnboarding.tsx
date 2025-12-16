@@ -130,12 +130,14 @@ const INDUSTRIES = [
 interface LogoOnboardingProps {
   onComplete?: (data: LogoOnboardingData, projectId: string) => void
   onClose?: () => void
+  isFullPage?: boolean
   initialPackage?: 'basis' | 'uitgebreid'
 }
 
 export default function LogoOnboarding({ 
   onComplete, 
   onClose,
+  isFullPage = false,
   initialPackage = 'uitgebreid'
 }: LogoOnboardingProps) {
   const navigate = useNavigate()
@@ -271,18 +273,31 @@ export default function LogoOnboarding({
   const progress = (currentStep / STEPS.length) * 100
   const selectedPackage = PACKAGES[data.selectedPackage]
 
-  return (
+  // Full page wrapper for non-modal mode
+  const Wrapper = isFullPage ? ({ children }: { children: React.ReactNode }) => (
+    <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-purple-50/30 dark:from-gray-900 dark:via-gray-900 dark:to-gray-900 pt-20 pb-12">
+      <div className="max-w-4xl mx-auto px-4 sm:px-6">
+        {children}
+      </div>
+    </div>
+  ) : ({ children }: { children: React.ReactNode }) => (
     <motion.div
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
       className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-start justify-center pt-16 sm:pt-8 pb-4 sm:pb-8 px-2 sm:px-4 overflow-y-auto"
     >
+      {children}
+    </motion.div>
+  )
+
+  return (
+    <Wrapper>
       <motion.div
         initial={{ scale: 0.95, opacity: 0, y: 20 }}
         animate={{ scale: 1, opacity: 1, y: 0 }}
         exit={{ scale: 0.95, opacity: 0, y: 20 }}
-        className="bg-white dark:bg-gray-900 rounded-2xl w-full max-w-4xl max-h-[90vh] overflow-hidden shadow-2xl flex flex-col my-auto"
+        className={`bg-white dark:bg-gray-900 rounded-2xl w-full max-w-4xl overflow-hidden shadow-2xl flex flex-col ${isFullPage ? '' : 'max-h-[90vh] my-auto'}`}
       >
         {/* Header */}
         <div className="bg-gradient-to-r from-purple-600 to-violet-600 p-4 sm:p-6 text-white relative overflow-hidden">
@@ -838,6 +853,6 @@ export default function LogoOnboarding({
           )}
         </div>
       </motion.div>
-    </motion.div>
+    </Wrapper>
   )
 }

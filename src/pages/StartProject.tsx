@@ -166,12 +166,11 @@ export default function StartProject() {
   if (selectedService === 'website') {
     return (
       <>
-        <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-primary-50/30 dark:from-gray-900 dark:via-gray-900 dark:to-gray-900">
-          <Header />
-        </div>
+        <Header />
         <WebsiteOnboarding 
           initialPackage={(pakket as 'starter' | 'professional' | 'business') || 'professional'}
           onClose={handleBack}
+          isFullPage={true}
         />
       </>
     )
@@ -180,12 +179,11 @@ export default function StartProject() {
   if (selectedService === 'webshop') {
     return (
       <>
-        <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-emerald-50/30 dark:from-gray-900 dark:via-gray-900 dark:to-gray-900">
-          <Header />
-        </div>
+        <Header />
         <WebshopOnboarding 
           initialPackage={(pakket as 'starter' | 'professional') || 'professional'}
           onClose={handleBack}
+          isFullPage={true}
         />
       </>
     )
@@ -194,12 +192,11 @@ export default function StartProject() {
   if (selectedService === 'drone') {
     return (
       <>
-        <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-orange-50/30 dark:from-gray-900 dark:via-gray-900 dark:to-gray-900">
-          <Header />
-        </div>
+        <Header />
         <DroneOnboarding 
           initialPackage={(pakket as 'basis' | 'professional' | 'premium') || 'professional'}
           onClose={handleBack}
+          isFullPage={true}
         />
       </>
     )
@@ -208,12 +205,11 @@ export default function StartProject() {
   if (selectedService === 'logo') {
     return (
       <>
-        <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-purple-50/30 dark:from-gray-900 dark:via-gray-900 dark:to-gray-900">
-          <Header />
-        </div>
+        <Header />
         <LogoOnboarding 
           initialPackage={(pakket as 'basis' | 'uitgebreid') || 'uitgebreid'}
           onClose={handleBack}
+          isFullPage={true}
         />
       </>
     )
