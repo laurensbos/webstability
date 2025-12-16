@@ -1,1259 +1,842 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { useNavigate } from 'react-router-dom'
 import { 
-  ShoppingCart, 
-  Building2, 
-  Palette, 
-  CreditCard, 
-  Truck, 
-  Package,
-  ChevronRight,
-  ChevronLeft,
-  Check,
-  X,
-  Loader2,
+  ShoppingBag, 
+  ArrowRight, 
+  ArrowLeft, 
+  Check, 
   Sparkles,
-  Clock,
-  Star,
+  Building2,
+  Palette,
+  Target,
+  Package,
   Lock,
   Eye,
-  EyeOff
+  EyeOff,
+  Loader2
 } from 'lucide-react'
+import { useNavigate } from 'react-router-dom'
 
-// Types
-interface WebshopOnboardingData {
-  // Stap 1: Bedrijfsgegevens
+interface PackageType {
+  id: string
+  name: string
+  price: string
+  priceLabel?: string
+  tagline?: string
+  description: string
+  features: string[]
+  gradient: string
+  popular?: boolean
+}
+
+interface FormData {
+  package: string
   companyName: string
   contactName: string
   email: string
   phone: string
-  address: string
-  postalCode: string
-  city: string
   kvkNumber: string
-  btwNumber: string
-  
-  // Stap 2: Webshop Details
   shopName: string
-  shopDescription: string
-  expectedProducts: string // '1-25' | '26-100' | '100-500' | '500+'
-  productCategories: string[]
-  hasPhysicalStore: boolean
-  currentWebsite: string
-  
-  // Stap 3: Producten & Voorraad
-  productType: string // 'physical' | 'digital' | 'both'
-  hasExistingProducts: boolean
-  productSource: string // 'manual' | 'csv' | 'existing_system'
-  needsInventoryManagement: boolean
-  averageProductPrice: string
-  
-  // Stap 4: Betalingen & Verzending
-  paymentMethods: string[]
-  shippingOptions: string[]
-  shippingZones: string[] // 'nl' | 'be' | 'eu' | 'worldwide'
-  freeShippingThreshold: string
-  returnPolicy: string
-  
-  // Stap 5: Branding & Design
-  hasLogo: boolean
+  productCategory: string
+  estimatedProducts: string
+  targetAudience: string
+  designStyle: string
   brandColors: string
-  designStyle: string // 'modern' | 'classic' | 'minimalist' | 'playful'
+  hasLogo: boolean
+  hasProductPhotos: boolean
   inspirationUrls: string
-  
-  // Stap 6: Extra Wensen
-  socialMedia: string
-  marketingIntegrations: string[]
-  additionalFeatures: string[]
-  extraNotes: string
-  
-  // Pakket info
-  selectedPackage: 'webshop'
-  agreedToTerms: boolean
-  projectPassword: string
+  additionalNotes: string
+  password: string
   confirmPassword: string
 }
 
-const INITIAL_DATA: WebshopOnboardingData = {
-  companyName: '',
-  contactName: '',
-  email: '',
-  phone: '',
-  address: '',
-  postalCode: '',
-  city: '',
-  kvkNumber: '',
-  btwNumber: '',
-  
-  shopName: '',
-  shopDescription: '',
-  expectedProducts: '1-25',
-  productCategories: [],
-  hasPhysicalStore: false,
-  currentWebsite: '',
-  
-  productType: 'physical',
-  hasExistingProducts: false,
-  productSource: 'manual',
-  needsInventoryManagement: true,
-  averageProductPrice: '',
-  
-  paymentMethods: ['ideal'],
-  shippingOptions: [],
-  shippingZones: ['nl'],
-  freeShippingThreshold: '',
-  returnPolicy: '14 dagen',
-  
-  hasLogo: false,
-  brandColors: '',
-  designStyle: 'modern',
-  inspirationUrls: '',
-  
-  socialMedia: '',
-  marketingIntegrations: [],
-  additionalFeatures: [],
-  extraNotes: '',
-  
-  selectedPackage: 'webshop',
-  agreedToTerms: false,
-  projectPassword: '',
-  confirmPassword: ''
-}
+const PACKAGES: PackageType[] = [
+  {
+    id: 'starter',
+    name: 'Starter',
+    price: '€249',
+    priceLabel: '/maand excl. BTW',
+    tagline: 'Ideaal om te beginnen',
+    description: 'Perfect om te beginnen met online verkopen.',
+    features: ['Tot 50 producten', 'iDEAL & creditcard', 'Basis verzendopties', 'Order management', 'E-mail notificaties'],
+    gradient: 'from-emerald-500 to-green-500',
+  },
+  {
+    id: 'professional',
+    name: 'Professioneel',
+    price: '€349',
+    priceLabel: '/maand excl. BTW',
+    tagline: 'Meest gekozen',
+    description: 'Voor serieuze webshops die willen groeien.',
+    features: ['Tot 500 producten', 'Alle betaalmethodes', 'Geavanceerde verzending', 'Koppeling met boekhouden', 'Kortingscodes systeem', 'Klantaccounts'],
+    gradient: 'from-green-500 to-teal-500',
+    popular: true,
+  },
+]
 
 const STEPS = [
-  { id: 1, title: 'Bedrijfsgegevens', icon: Building2, color: 'from-emerald-500 to-green-600' },
-  { id: 2, title: 'Webshop Details', icon: ShoppingCart, color: 'from-emerald-500 to-green-600' },
-  { id: 3, title: 'Producten', icon: Package, color: 'from-emerald-500 to-green-600' },
-  { id: 4, title: 'Betaling & Verzending', icon: Truck, color: 'from-orange-500 to-amber-600' },
-  { id: 5, title: 'Branding', icon: Palette, color: 'from-pink-500 to-rose-600' },
-  { id: 6, title: 'Extra & Bevestigen', icon: Sparkles, color: 'from-cyan-500 to-teal-600' },
+  { id: 1, title: 'Pakket', icon: Package },
+  { id: 2, title: 'Bedrijf', icon: Building2 },
+  { id: 3, title: 'Webshop', icon: ShoppingBag },
+  { id: 4, title: 'Design', icon: Palette },
+  { id: 5, title: 'Doel', icon: Target },
+  { id: 6, title: 'Account', icon: Lock },
 ]
 
 const PRODUCT_CATEGORIES = [
-  'Kleding & Mode', 'Elektronica', 'Huis & Tuin', 'Sport & Outdoor',
-  'Beauty & Gezondheid', 'Speelgoed & Games', 'Eten & Drinken', 'Boeken & Media',
-  'Auto & Motor', 'Kunst & Handwerk', 'Huisdieren', 'Anders'
+  'Kleding & Mode',
+  'Elektronica',
+  'Voeding & Dranken',
+  'Gezondheid & Beauty',
+  'Huis & Tuin',
+  'Sport & Outdoor',
+  'Speelgoed & Games',
+  'Kunst & Handwerk',
+  'Anders'
 ]
 
-const PAYMENT_METHODS = [
-  { id: 'ideal', name: 'iDEAL', popular: true },
-  { id: 'creditcard', name: 'Creditcard', popular: true },
-  { id: 'paypal', name: 'PayPal', popular: true },
-  { id: 'bancontact', name: 'Bancontact', popular: false },
-  { id: 'klarna', name: 'Klarna (achteraf betalen)', popular: true },
-  { id: 'applepay', name: 'Apple Pay', popular: false },
-  { id: 'googlepay', name: 'Google Pay', popular: false },
+const PRODUCT_AMOUNTS = [
+  '1-25 producten',
+  '25-50 producten',
+  '50-100 producten',
+  '100-250 producten',
+  '250-500 producten',
+  '500+ producten'
 ]
 
-const SHIPPING_OPTIONS = [
-  { id: 'postnl', name: 'PostNL' },
-  { id: 'dhl', name: 'DHL' },
-  { id: 'dpd', name: 'DPD' },
-  { id: 'ups', name: 'UPS' },
-  { id: 'pickup', name: 'Afhalen in winkel' },
-]
+function FloatingParticles() {
+  return (
+    <div className="absolute inset-0 overflow-hidden pointer-events-none">
+      {[...Array(20)].map((_, i) => (
+        <motion.div
+          key={i}
+          className="absolute w-2 h-2 rounded-full bg-gradient-to-r from-emerald-400 to-green-500 opacity-20"
+          initial={{ x: Math.random() * 1000, y: Math.random() * 800 }}
+          animate={{ x: Math.random() * 1000, y: Math.random() * 800 }}
+          transition={{ 
+            duration: Math.random() * 20 + 10, 
+            repeat: Infinity, 
+            repeatType: 'reverse', 
+            ease: 'linear' 
+          }}
+        />
+      ))}
+    </div>
+  )
+}
 
-const MARKETING_INTEGRATIONS = [
-  'Google Analytics', 'Facebook Pixel', 'Google Ads', 'Mailchimp',
-  'Klaviyo', 'Instagram Shopping', 'Pinterest', 'TikTok Pixel'
-]
-
-const ADDITIONAL_FEATURES = [
-  'Productreviews', 'Wishlist/Verlanglijst', 'Kortingscodes', 'Cadeaubonnen',
-  'Loyaliteitsprogramma', 'Product vergelijken', 'Meertalig (NL/EN)', 'B2B prijzen'
-]
+function generateProjectId(): string {
+  const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789'
+  let result = 'WS-'
+  for (let i = 0; i < 6; i++) {
+    result += chars.charAt(Math.floor(Math.random() * chars.length))
+  }
+  return result
+}
 
 interface WebshopOnboardingProps {
-  onComplete?: (data: WebshopOnboardingData, projectId: string) => void
-  onClose?: () => void
-  isStandalone?: boolean
   isFullPage?: boolean
+  isStandalone?: boolean
+  initialPackage?: 'starter' | 'professional'
+  onClose?: () => void
 }
 
 export default function WebshopOnboarding({ 
-  onComplete, 
-  onClose, 
-  isStandalone = false,
-  isFullPage = false
+  isFullPage = true, 
+  isStandalone = true, 
+  initialPackage, 
+  onClose 
 }: WebshopOnboardingProps) {
   const navigate = useNavigate()
-  const [currentStep, setCurrentStep] = useState(1)
-  const [data, setData] = useState<WebshopOnboardingData>(INITIAL_DATA)
-  const [errors, setErrors] = useState<Record<string, string>>({})
-  const [submitting, setSubmitting] = useState(false)
+  const [currentStep, setCurrentStep] = useState(initialPackage ? 2 : 1)
+  const [isSubmitting, setIsSubmitting] = useState(false)
   const [showPassword, setShowPassword] = useState(false)
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false)
+  
+  const [formData, setFormData] = useState<FormData>({
+    package: initialPackage || '',
+    companyName: '',
+    contactName: '',
+    email: '',
+    phone: '',
+    kvkNumber: '',
+    shopName: '',
+    productCategory: '',
+    estimatedProducts: '',
+    targetAudience: '',
+    designStyle: '',
+    brandColors: '',
+    hasLogo: false,
+    hasProductPhotos: false,
+    inspirationUrls: '',
+    additionalNotes: '',
+    password: '',
+    confirmPassword: '',
+  })
 
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  void isStandalone // Keep for backwards compatibility
-  const updateData = (updates: Partial<WebshopOnboardingData>) => {
-    setData(prev => ({ ...prev, ...updates }))
-    // Clear errors for updated fields
-    const clearedErrors = { ...errors }
-    Object.keys(updates).forEach(key => delete clearedErrors[key])
-    setErrors(clearedErrors)
+  const selectedPackage = PACKAGES.find(p => p.id === formData.package)
+  const currentGradient = selectedPackage?.gradient || 'from-emerald-500 to-green-500'
+
+  const updateFormData = (field: keyof FormData, value: string | boolean) => {
+    setFormData(prev => ({ ...prev, [field]: value }))
   }
 
-  const toggleArrayItem = (field: keyof WebshopOnboardingData, item: string) => {
-    const current = data[field] as string[]
-    const updated = current.includes(item)
-      ? current.filter(i => i !== item)
-      : [...current, item]
-    updateData({ [field]: updated } as Partial<WebshopOnboardingData>)
-  }
-
-  const validateStep = (step: number): boolean => {
-    const newErrors: Record<string, string> = {}
-
-    switch (step) {
-      case 1:
-        if (!data.companyName.trim()) newErrors.companyName = 'Bedrijfsnaam is verplicht'
-        if (!data.contactName.trim()) newErrors.contactName = 'Contactpersoon is verplicht'
-        if (!data.email.trim()) newErrors.email = 'Email is verplicht'
-        else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(data.email)) newErrors.email = 'Ongeldig email adres'
-        if (!data.phone.trim()) newErrors.phone = 'Telefoonnummer is verplicht'
-        break
-      case 2:
-        if (!data.shopName.trim()) newErrors.shopName = 'Webshop naam is verplicht'
-        if (!data.shopDescription.trim()) newErrors.shopDescription = 'Korte omschrijving is verplicht'
-        if (data.productCategories.length === 0) newErrors.productCategories = 'Selecteer minimaal 1 categorie'
-        break
-      case 3:
-        // No required fields
-        break
-      case 4:
-        if (data.paymentMethods.length === 0) newErrors.paymentMethods = 'Selecteer minimaal 1 betaalmethode'
-        if (data.shippingZones.length === 0) newErrors.shippingZones = 'Selecteer minimaal 1 verzendzone'
-        break
-      case 5:
-        if (!data.designStyle) newErrors.designStyle = 'Selecteer een stijl'
-        break
-      case 6:
-        if (!data.projectPassword.trim()) newErrors.projectPassword = 'Kies een wachtwoord voor je project dashboard'
-        else if (data.projectPassword.length < 6) newErrors.projectPassword = 'Wachtwoord moet minimaal 6 tekens zijn'
-        if (!data.confirmPassword.trim()) newErrors.confirmPassword = 'Bevestig je wachtwoord'
-        else if (data.projectPassword !== data.confirmPassword) newErrors.confirmPassword = 'Wachtwoorden komen niet overeen'
-        if (!data.agreedToTerms) newErrors.agreedToTerms = 'Je moet akkoord gaan met de voorwaarden'
-        break
+  const canProceed = (): boolean => {
+    switch (currentStep) {
+      case 1: return !!formData.package
+      case 2: return !!formData.companyName && !!formData.contactName && !!formData.email
+      case 3: return !!formData.shopName && !!formData.productCategory && !!formData.estimatedProducts
+      case 4: return !!formData.designStyle
+      case 5: return !!formData.targetAudience
+      case 6: return !!formData.password && formData.password === formData.confirmPassword && formData.password.length >= 6
+      default: return false
     }
-
-    setErrors(newErrors)
-    return Object.keys(newErrors).length === 0
   }
 
-  const nextStep = () => {
-    if (validateStep(currentStep)) {
-      if (currentStep < STEPS.length) {
-        setCurrentStep(currentStep + 1)
-        window.scrollTo({ top: 0, behavior: 'smooth' })
+  const handleNext = () => {
+    if (currentStep < 6 && canProceed()) {
+      setCurrentStep(prev => prev + 1)
+    }
+  }
+  
+  const handleBack = () => {
+    const minStep = initialPackage ? 2 : 1
+    if (currentStep <= minStep) {
+      if (onClose) {
+        onClose()
+      } else if (!isStandalone) {
+        navigate(-1)
       }
-    }
-  }
-
-  const prevStep = () => {
-    if (currentStep > 1) {
-      setCurrentStep(currentStep - 1)
-      window.scrollTo({ top: 0, behavior: 'smooth' })
+    } else {
+      setCurrentStep(prev => prev - 1)
     }
   }
 
   const handleSubmit = async () => {
-    if (!validateStep(currentStep)) return
-
-    setSubmitting(true)
-
+    if (!canProceed()) return
+    setIsSubmitting(true)
+    const projectId = generateProjectId()
+    
     try {
-      // Genereer project ID
-      const newProjectId = `WS-${Date.now().toString(36).toUpperCase()}`
-      
-      // Sla op in server
       const response = await fetch('/api/projects', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          id: newProjectId,
-          type: 'webshop',
-          packageType: 'webshop',
-          password: data.projectPassword,
-          customer: {
-            name: data.contactName,
-            email: data.email,
-            phone: data.phone,
-            companyName: data.companyName
-          },
-          onboardingData: data,
-          status: 'onboarding',
-          paymentStatus: 'pending',
-          createdAt: new Date().toISOString()
-        })
+        body: JSON.stringify({ 
+          projectId, 
+          type: 'webshop', 
+          ...formData, 
+          status: 'pending', 
+          createdAt: new Date().toISOString() 
+        }),
       })
-
-      if (response.ok) {
-        // Ook opslaan in localStorage als backup
-        const existingProjects = JSON.parse(localStorage.getItem('webstability_dev_projects') || '[]')
-        existingProjects.push({
-          projectId: newProjectId,
-          businessName: data.companyName,
-          package: 'webshop',
-          phase: 'onboarding',
-          client: {
-            name: data.contactName,
-            email: data.email,
-            phone: data.phone,
-            company: data.companyName
-          },
-          onboardingData: data,
-          createdAt: new Date().toISOString()
-        })
-        localStorage.setItem('webstability_dev_projects', JSON.stringify(existingProjects))
-
-        if (onComplete) {
-          onComplete(data, newProjectId)
-        } else {
-          navigate(`/status/${newProjectId}`)
-        }
-      } else {
-        // Fallback naar alleen localStorage
-        const existingProjects = JSON.parse(localStorage.getItem('webstability_dev_projects') || '[]')
-        existingProjects.push({
-          projectId: newProjectId,
-          businessName: data.companyName,
-          package: 'webshop',
-          phase: 'onboarding',
-          client: {
-            name: data.contactName,
-            email: data.email,
-            phone: data.phone,
-            company: data.companyName
-          },
-          onboardingData: data,
-          createdAt: new Date().toISOString()
-        })
-        localStorage.setItem('webstability_dev_projects', JSON.stringify(existingProjects))
-
-        if (onComplete) {
-          onComplete(data, newProjectId)
-        } else {
-          navigate(`/status/${newProjectId}`)
-        }
-      }
+      
+      if (!response.ok) throw new Error('Failed')
+      
+      const bedanktUrl = '/bedankt?project=' + projectId + '&dienst=webshop&email=' + encodeURIComponent(formData.email)
+      navigate(bedanktUrl)
     } catch (error) {
-      console.error('Submit error:', error)
-      // Fallback - maak alsnog project ID aan
-      const fallbackProjectId = `WS-${Date.now().toString(36).toUpperCase()}`
-      if (onComplete) {
-        onComplete(data, fallbackProjectId)
-      } else {
-        navigate(`/status/${fallbackProjectId}`)
-      }
+      console.error(error)
+      alert('Er ging iets mis. Probeer het opnieuw.')
     } finally {
-      setSubmitting(false)
+      setIsSubmitting(false)
     }
   }
 
-  const progress = (currentStep / STEPS.length) * 100
-
-  // Full page wrapper for non-modal mode
-  const Wrapper = isFullPage ? ({ children }: { children: React.ReactNode }) => (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-emerald-50/30 dark:from-gray-900 dark:via-gray-900 dark:to-gray-900 py-8 px-4">
-      <div className="max-w-4xl mx-auto">
-        {children}
-      </div>
-    </div>
-  ) : ({ children }: { children: React.ReactNode }) => (
-    <motion.div
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      exit={{ opacity: 0 }}
-      className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-start justify-center py-4 sm:py-8 px-2 sm:px-4 overflow-y-auto"
-    >
-      {children}
-    </motion.div>
-  )
+  useEffect(() => { 
+    window.scrollTo({ top: 0, behavior: 'smooth' }) 
+  }, [currentStep])
 
   return (
-    <Wrapper>
-      <motion.div
-        initial={{ scale: 0.95, opacity: 0, y: 20 }}
-        animate={{ scale: 1, opacity: 1, y: 0 }}
-        exit={{ scale: 0.95, opacity: 0, y: 20 }}
-        className={`bg-white dark:bg-gray-900 rounded-2xl w-full max-w-3xl overflow-hidden shadow-2xl flex flex-col ${isFullPage ? '' : 'max-h-[90vh] my-auto'}`}
-      >
-        {/* Header */}
-        <div className="bg-gradient-to-r from-emerald-600 to-green-600 p-4 sm:p-6 text-white relative overflow-hidden">
-          <div className="absolute inset-0 opacity-10">
-            <div className="absolute top-0 right-0 w-64 h-64 rounded-full bg-white transform translate-x-1/2 -translate-y-1/2" />
-            <div className="absolute bottom-0 left-0 w-48 h-48 rounded-full bg-white transform -translate-x-1/2 translate-y-1/2" />
+    <div className={`min-h-screen bg-gradient-to-b from-slate-50 via-emerald-50/20 to-slate-50 dark:from-gray-900 dark:via-gray-900 dark:to-gray-800 ${isFullPage ? 'pt-20' : ''}`}>
+      <FloatingParticles />
+      
+      <div className="relative z-10 max-w-4xl mx-auto px-4 py-12">
+        {/* Step Indicator */}
+        <div className="mb-12">
+          <div className="flex items-center justify-between max-w-2xl mx-auto">
+            {STEPS.map((step, index) => {
+              const Icon = step.icon
+              const isActive = currentStep === step.id
+              const isCompleted = currentStep > step.id
+              return (
+                <div key={step.id} className="flex items-center">
+                  <motion.div 
+                    className={`flex flex-col items-center ${isActive || isCompleted ? 'opacity-100' : 'opacity-40'}`}
+                    animate={{ scale: isActive ? 1.1 : 1 }}
+                  >
+                    <div className={`w-10 h-10 rounded-full flex items-center justify-center transition-all ${
+                      isCompleted 
+                        ? `bg-gradient-to-r ${currentGradient} text-white` 
+                        : isActive 
+                          ? `bg-gradient-to-r ${currentGradient} text-white shadow-lg` 
+                          : 'bg-gray-200 dark:bg-gray-700 text-gray-500 dark:text-gray-400'
+                    }`}>
+                      {isCompleted ? <Check className="w-5 h-5" /> : <Icon className="w-5 h-5" />}
+                    </div>
+                    <span className="text-xs mt-2 font-medium text-gray-600 dark:text-gray-400 hidden sm:block">
+                      {step.title}
+                    </span>
+                  </motion.div>
+                  {index < STEPS.length - 1 && (
+                    <div className={`w-8 sm:w-16 h-0.5 mx-2 ${
+                      isCompleted ? `bg-gradient-to-r ${currentGradient}` : 'bg-gray-200 dark:bg-gray-700'
+                    }`} />
+                  )}
+                </div>
+              )
+            })}
           </div>
-          <div className="relative z-10">
-            <div className="flex items-center justify-between mb-4">
-              <div className="flex items-center gap-3">
-                <motion.div 
-                  whileHover={{ scale: 1.05 }}
-                  className="w-12 h-12 bg-white/20 backdrop-blur rounded-xl flex items-center justify-center"
-                >
-                  <ShoppingCart className="w-6 h-6" />
-                </motion.div>
-                <div>
-                  <h2 className="text-xl font-bold">Webshop Aanvraag</h2>
-                  <p className="text-white/80 text-sm">Start jouw professionele webshop</p>
+        </div>
+
+        <AnimatePresence mode="wait">
+          <motion.div 
+            key={currentStep} 
+            initial={{ opacity: 0, x: 20 }} 
+            animate={{ opacity: 1, x: 0 }} 
+            exit={{ opacity: 0, x: -20 }} 
+            transition={{ duration: 0.3 }} 
+            className="bg-white dark:bg-gray-800 rounded-3xl shadow-xl p-6 sm:p-8 border border-gray-100 dark:border-gray-700"
+          >
+            
+            {/* Step 1: Package Selection */}
+            {currentStep === 1 && (
+              <div>
+                <div className="text-center mb-8">
+                  <h2 className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white mb-2">
+                    Kies je webshop pakket
+                  </h2>
+                  <p className="text-gray-600 dark:text-gray-400">
+                    Selecteer het pakket dat het beste bij jouw webshop past
+                  </p>
+                </div>
+                
+                <div className="grid gap-6 sm:grid-cols-2 max-w-3xl mx-auto">
+                  {PACKAGES.map((pkg) => (
+                    <motion.button 
+                      key={pkg.id} 
+                      onClick={() => updateFormData('package', pkg.id)} 
+                      className={`relative p-6 rounded-2xl border-2 text-left transition-all ${
+                        formData.package === pkg.id 
+                          ? 'border-transparent ring-2 ring-emerald-500' 
+                          : 'border-gray-200 dark:border-gray-700 hover:border-gray-300'
+                      }`}
+                      whileHover={{ scale: 1.02 }} 
+                      whileTap={{ scale: 0.98 }}
+                    >
+                      {formData.package === pkg.id && (
+                        <motion.div 
+                          className={`absolute inset-0 bg-gradient-to-r ${pkg.gradient} opacity-10 rounded-2xl`}
+                          initial={{ opacity: 0 }} 
+                          animate={{ opacity: 0.1 }} 
+                        />
+                      )}
+                      
+                      {pkg.popular && (
+                        <div className="absolute -top-3 left-1/2 -translate-x-1/2">
+                          <span className={`inline-flex items-center gap-1 px-3 py-1 rounded-full bg-gradient-to-r ${pkg.gradient} text-white text-xs font-semibold shadow-lg`}>
+                            <Sparkles className="w-3 h-3" />
+                            {pkg.tagline}
+                          </span>
+                        </div>
+                      )}
+                      
+                      <div className={`inline-flex items-center gap-2 px-3 py-1 rounded-full bg-gradient-to-r ${pkg.gradient} text-white text-sm font-medium mb-3 ${pkg.popular ? 'mt-2' : ''}`}>
+                        <ShoppingBag className="w-4 h-4" />
+                        {pkg.name}
+                      </div>
+                      
+                      {pkg.tagline && !pkg.popular && (
+                        <p className="text-xs text-gray-500 dark:text-gray-400 mb-2">{pkg.tagline}</p>
+                      )}
+                      
+                      <div className="text-2xl font-bold text-gray-900 dark:text-white mb-1">
+                        {pkg.price}
+                        <span className="text-sm font-normal text-gray-500 dark:text-gray-400">
+                          {pkg.priceLabel}
+                        </span>
+                      </div>
+                      
+                      <p className="text-sm text-gray-600 dark:text-gray-400 mb-4">{pkg.description}</p>
+                      
+                      <ul className="space-y-2">
+                        {pkg.features.map((f, i) => (
+                          <li key={i} className="flex items-center gap-2 text-sm text-gray-700 dark:text-gray-300">
+                            <Check className={`w-4 h-4 flex-shrink-0 ${formData.package === pkg.id ? 'text-emerald-500' : 'text-gray-400'}`} />
+                            {f}
+                          </li>
+                        ))}
+                      </ul>
+                      
+                      {formData.package === pkg.id && (
+                        <motion.div className="absolute top-4 right-4" initial={{ scale: 0 }} animate={{ scale: 1 }}>
+                          <div className={`w-6 h-6 rounded-full bg-gradient-to-r ${pkg.gradient} flex items-center justify-center`}>
+                            <Check className="w-4 h-4 text-white" />
+                          </div>
+                        </motion.div>
+                      )}
+                    </motion.button>
+                  ))}
                 </div>
               </div>
-              <motion.button 
-                whileHover={{ scale: 1.1 }}
-                whileTap={{ scale: 0.95 }}
-                onClick={onClose ? onClose : () => navigate(-1)} 
-                className="p-2 hover:bg-white/10 rounded-lg transition"
-              >
-                <X className="w-5 h-5" />
-              </motion.button>
-            </div>
+            )}
 
-            {/* Progress bar */}
-            <div className="bg-white/20 rounded-full h-2 overflow-hidden">
-              <motion.div
-                initial={{ width: 0 }}
-                animate={{ width: `${progress}%` }}
-                className="h-full bg-white rounded-full"
-              />
-            </div>
-
-            {/* Step indicators */}
-            <div className="flex justify-between mt-4 overflow-x-auto">
-              {STEPS.map(step => {
-                const isActive = step.id === currentStep
-                const isComplete = step.id < currentStep
-                return (
-                  <motion.div
-                    key={step.id}
-                    whileHover={{ scale: 1.05 }}
-                    className={`flex flex-col items-center min-w-[60px] cursor-pointer ${
-                      isActive ? 'text-white' : isComplete ? 'text-white/80' : 'text-white/40'
-                    }`}
-                  >
-                    <div className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold transition-all ${
-                      isActive ? 'bg-white text-emerald-600 shadow-lg' : isComplete ? 'bg-white/30' : 'bg-white/10'
-                    }`}>
-                      {isComplete ? <Check className="w-4 h-4" /> : step.id}
-                    </div>
-                    <span className="text-xs mt-1 hidden sm:block">{step.title}</span>
-                  </motion.div>
-                )
-              })}
-            </div>
-          </div>
-        </div>
-
-        {/* Content */}
-        <div className="flex-1 overflow-y-auto p-4 sm:p-6">
-          <AnimatePresence mode="wait">
-            <motion.div
-              key={currentStep}
-              initial={{ opacity: 0, x: 20 }}
-              animate={{ opacity: 1, x: 0 }}
-              exit={{ opacity: 0, x: -20 }}
-              transition={{ duration: 0.2 }}
-            >
-              {/* Step 1: Bedrijfsgegevens */}
-              {currentStep === 1 && (
-                <div className="space-y-6">
+            {/* Step 2: Company Info */}
+            {currentStep === 2 && (
+              <div>
+                <div className="text-center mb-8">
+                  <h2 className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white mb-2">
+                    Bedrijfsgegevens
+                  </h2>
+                  <p className="text-gray-600 dark:text-gray-400">
+                    Vul je bedrijfsgegevens in
+                  </p>
+                </div>
+                
+                <div className="space-y-6 max-w-lg mx-auto">
                   <div>
-                    <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-1">Bedrijfsgegevens</h3>
-                    <p className="text-gray-500 text-sm">Vertel ons over je bedrijf</p>
+                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                      Bedrijfsnaam *
+                    </label>
+                    <input 
+                      type="text" 
+                      value={formData.companyName} 
+                      onChange={(e) => updateFormData('companyName', e.target.value)} 
+                      className="w-full px-4 py-3 rounded-xl border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-emerald-500 focus:border-transparent" 
+                      placeholder="Jouw Bedrijf B.V." 
+                    />
                   </div>
-
-                  <div className="grid sm:grid-cols-2 gap-4">
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1">
-                        Bedrijfsnaam *
-                      </label>
-                      <input
-                        type="text"
-                        value={data.companyName}
-                        onChange={e => updateData({ companyName: e.target.value })}
-                        className={`w-full px-4 py-2.5 rounded-lg border ${errors.companyName ? 'border-red-500' : 'border-gray-200'} focus:ring-2 focus:ring-emerald-500`}
-                        placeholder="Bijv. Fashion Store BV"
-                      />
-                      {errors.companyName && <p className="text-red-500 text-xs mt-1">{errors.companyName}</p>}
-                    </div>
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1">
-                        Contactpersoon *
-                      </label>
-                      <input
-                        type="text"
-                        value={data.contactName}
-                        onChange={e => updateData({ contactName: e.target.value })}
-                        className={`w-full px-4 py-2.5 rounded-lg border ${errors.contactName ? 'border-red-500' : 'border-gray-200'} focus:ring-2 focus:ring-emerald-500`}
-                        placeholder="Jan Jansen"
-                      />
-                      {errors.contactName && <p className="text-red-500 text-xs mt-1">{errors.contactName}</p>}
-                    </div>
+                  
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                      Contactpersoon *
+                    </label>
+                    <input 
+                      type="text" 
+                      value={formData.contactName} 
+                      onChange={(e) => updateFormData('contactName', e.target.value)} 
+                      className="w-full px-4 py-3 rounded-xl border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-emerald-500 focus:border-transparent" 
+                      placeholder="Jan Jansen" 
+                    />
                   </div>
-
-                  <div className="grid sm:grid-cols-2 gap-4">
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1">
-                        Email *
-                      </label>
-                      <input
-                        type="email"
-                        value={data.email}
-                        onChange={e => updateData({ email: e.target.value })}
-                        className={`w-full px-4 py-2.5 rounded-lg border ${errors.email ? 'border-red-500' : 'border-gray-200'} focus:ring-2 focus:ring-emerald-500`}
-                        placeholder="info@bedrijf.nl"
-                      />
-                      {errors.email && <p className="text-red-500 text-xs mt-1">{errors.email}</p>}
-                    </div>
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1">
-                        Telefoon *
-                      </label>
-                      <input
-                        type="tel"
-                        value={data.phone}
-                        onChange={e => updateData({ phone: e.target.value })}
-                        className={`w-full px-4 py-2.5 rounded-lg border ${errors.phone ? 'border-red-500' : 'border-gray-200'} focus:ring-2 focus:ring-emerald-500`}
-                        placeholder="06-12345678"
-                      />
-                      {errors.phone && <p className="text-red-500 text-xs mt-1">{errors.phone}</p>}
-                    </div>
+                  
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                      E-mailadres *
+                    </label>
+                    <input 
+                      type="email" 
+                      value={formData.email} 
+                      onChange={(e) => updateFormData('email', e.target.value)} 
+                      className="w-full px-4 py-3 rounded-xl border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-emerald-500 focus:border-transparent" 
+                      placeholder="info@jouwbedrijf.nl" 
+                    />
                   </div>
-
-                  <div className="grid sm:grid-cols-3 gap-4">
-                    <div className="sm:col-span-2">
-                      <label className="block text-sm font-medium text-gray-700 mb-1">Adres</label>
-                      <input
-                        type="text"
-                        value={data.address}
-                        onChange={e => updateData({ address: e.target.value })}
-                        className="w-full px-4 py-2.5 rounded-lg border border-gray-200 focus:ring-2 focus:ring-emerald-500"
-                        placeholder="Straatnaam 123"
+                  
+                  <div className="grid grid-cols-2 gap-4">
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                        Telefoon
+                      </label>
+                      <input 
+                        type="tel" 
+                        value={formData.phone} 
+                        onChange={(e) => updateFormData('phone', e.target.value)} 
+                        className="w-full px-4 py-3 rounded-xl border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-emerald-500 focus:border-transparent" 
+                        placeholder="06-12345678" 
                       />
                     </div>
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1">Postcode</label>
-                      <input
-                        type="text"
-                        value={data.postalCode}
-                        onChange={e => updateData({ postalCode: e.target.value })}
-                        className="w-full px-4 py-2.5 rounded-lg border border-gray-200 focus:ring-2 focus:ring-emerald-500"
-                        placeholder="1234 AB"
-                      />
-                    </div>
-                  </div>
-
-                  <div className="grid sm:grid-cols-3 gap-4">
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1">Plaats</label>
-                      <input
-                        type="text"
-                        value={data.city}
-                        onChange={e => updateData({ city: e.target.value })}
-                        className="w-full px-4 py-2.5 rounded-lg border border-gray-200 focus:ring-2 focus:ring-emerald-500"
-                        placeholder="Amsterdam"
-                      />
-                    </div>
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1">KVK nummer</label>
-                      <input
-                        type="text"
-                        value={data.kvkNumber}
-                        onChange={e => updateData({ kvkNumber: e.target.value })}
-                        className="w-full px-4 py-2.5 rounded-lg border border-gray-200 focus:ring-2 focus:ring-emerald-500"
-                        placeholder="12345678"
-                      />
-                    </div>
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1">BTW nummer</label>
-                      <input
-                        type="text"
-                        value={data.btwNumber}
-                        onChange={e => updateData({ btwNumber: e.target.value })}
-                        className="w-full px-4 py-2.5 rounded-lg border border-gray-200 focus:ring-2 focus:ring-emerald-500"
-                        placeholder="NL123456789B01"
+                      <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                        KVK
+                      </label>
+                      <input 
+                        type="text" 
+                        value={formData.kvkNumber} 
+                        onChange={(e) => updateFormData('kvkNumber', e.target.value)} 
+                        className="w-full px-4 py-3 rounded-xl border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-emerald-500 focus:border-transparent" 
+                        placeholder="12345678" 
                       />
                     </div>
                   </div>
                 </div>
-              )}
+              </div>
+            )}
 
-              {/* Step 2: Webshop Details */}
-              {currentStep === 2 && (
-                <div className="space-y-6">
+            {/* Step 3: Shop Details */}
+            {currentStep === 3 && (
+              <div>
+                <div className="text-center mb-8">
+                  <h2 className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white mb-2">
+                    Over je webshop
+                  </h2>
+                  <p className="text-gray-600 dark:text-gray-400">
+                    Vertel ons meer over wat je wilt verkopen
+                  </p>
+                </div>
+                
+                <div className="space-y-6 max-w-lg mx-auto">
                   <div>
-                    <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-1">Webshop Details</h3>
-                    <p className="text-gray-500 text-sm">Wat voor webshop wil je starten?</p>
-                  </div>
-
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                       Naam van je webshop *
                     </label>
-                    <input
-                      type="text"
-                      value={data.shopName}
-                      onChange={e => updateData({ shopName: e.target.value })}
-                      className={`w-full px-4 py-2.5 rounded-lg border ${errors.shopName ? 'border-red-500' : 'border-gray-200'} focus:ring-2 focus:ring-emerald-500`}
-                      placeholder="Bijv. Fashion Forward"
-                    />
-                    {errors.shopName && <p className="text-red-500 text-xs mt-1">{errors.shopName}</p>}
-                  </div>
-
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
-                      Korte omschrijving van je webshop *
-                    </label>
-                    <textarea
-                      value={data.shopDescription}
-                      onChange={e => updateData({ shopDescription: e.target.value })}
-                      rows={3}
-                      className={`w-full px-4 py-2.5 rounded-lg border ${errors.shopDescription ? 'border-red-500' : 'border-gray-200'} focus:ring-2 focus:ring-emerald-500`}
-                      placeholder="Wat verkoop je en wie is je doelgroep?"
-                    />
-                    {errors.shopDescription && <p className="text-red-500 text-xs mt-1">{errors.shopDescription}</p>}
-                  </div>
-
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Hoeveel producten verwacht je te verkopen?
-                    </label>
-                    <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
-                      {['1-25', '26-100', '100-500', '500+'].map(option => (
-                        <button
-                          key={option}
-                          type="button"
-                          onClick={() => updateData({ expectedProducts: option })}
-                          className={`p-3 rounded-lg border-2 text-center transition ${
-                            data.expectedProducts === option
-                              ? 'border-emerald-500 bg-emerald-50 text-emerald-700'
-                              : 'border-gray-200 hover:border-emerald-300'
-                          }`}
-                        >
-                          <div className="font-semibold">{option}</div>
-                          <div className="text-xs text-gray-500 dark:text-gray-400">producten</div>
-                        </button>
-                      ))}
-                    </div>
-                  </div>
-
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Productcategorieën * <span className="text-gray-400 font-normal">(selecteer alle relevante)</span>
-                    </label>
-                    <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
-                      {PRODUCT_CATEGORIES.map(cat => (
-                        <button
-                          key={cat}
-                          type="button"
-                          onClick={() => toggleArrayItem('productCategories', cat)}
-                          className={`p-2 rounded-lg border text-sm text-left transition ${
-                            data.productCategories.includes(cat)
-                              ? 'border-emerald-500 bg-emerald-50 text-emerald-700'
-                              : 'border-gray-200 hover:border-emerald-300'
-                          }`}
-                        >
-                          {data.productCategories.includes(cat) && <Check className="w-3 h-3 inline mr-1" />}
-                          {cat}
-                        </button>
-                      ))}
-                    </div>
-                    {errors.productCategories && <p className="text-red-500 text-xs mt-1">{errors.productCategories}</p>}
-                  </div>
-
-                  <div className="grid sm:grid-cols-2 gap-4">
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1">
-                        Heb je al een fysieke winkel?
-                      </label>
-                      <div className="flex gap-2">
-                        <button
-                          type="button"
-                          onClick={() => updateData({ hasPhysicalStore: true })}
-                          className={`flex-1 p-2 rounded-lg border text-sm transition ${
-                            data.hasPhysicalStore ? 'border-emerald-500 bg-emerald-50' : 'border-gray-200'
-                          }`}
-                        >
-                          Ja
-                        </button>
-                        <button
-                          type="button"
-                          onClick={() => updateData({ hasPhysicalStore: false })}
-                          className={`flex-1 p-2 rounded-lg border text-sm transition ${
-                            !data.hasPhysicalStore ? 'border-emerald-500 bg-emerald-50' : 'border-gray-200'
-                          }`}
-                        >
-                          Nee
-                        </button>
-                      </div>
-                    </div>
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1">
-                        Huidige website (optioneel)
-                      </label>
-                      <input
-                        type="url"
-                        value={data.currentWebsite}
-                        onChange={e => updateData({ currentWebsite: e.target.value })}
-                        className="w-full px-4 py-2.5 rounded-lg border border-gray-200 focus:ring-2 focus:ring-emerald-500"
-                        placeholder="https://..."
-                      />
-                    </div>
-                  </div>
-                </div>
-              )}
-
-              {/* Step 3: Producten & Voorraad */}
-              {currentStep === 3 && (
-                <div className="space-y-6">
-                  <div>
-                    <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-1">Producten & Voorraad</h3>
-                    <p className="text-gray-500 text-sm">Hoe wil je je producten beheren?</p>
-                  </div>
-
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Type producten
-                    </label>
-                    <div className="grid sm:grid-cols-3 gap-2">
-                      {[
-                        { id: 'physical', name: 'Fysieke producten', desc: 'Worden verzonden' },
-                        { id: 'digital', name: 'Digitale producten', desc: 'Downloads, e-books, etc.' },
-                        { id: 'both', name: 'Beide', desc: 'Fysiek én digitaal' },
-                      ].map(option => (
-                        <button
-                          key={option.id}
-                          type="button"
-                          onClick={() => updateData({ productType: option.id })}
-                          className={`p-3 rounded-lg border-2 text-left transition ${
-                            data.productType === option.id
-                              ? 'border-emerald-500 bg-emerald-50'
-                              : 'border-gray-200 hover:border-emerald-300'
-                          }`}
-                        >
-                          <div className="font-semibold text-sm">{option.name}</div>
-                          <div className="text-xs text-gray-500 dark:text-gray-400">{option.desc}</div>
-                        </button>
-                      ))}
-                    </div>
-                  </div>
-
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Heb je al producten klaar om te uploaden?
-                    </label>
-                    <div className="flex gap-2">
-                      <button
-                        type="button"
-                        onClick={() => updateData({ hasExistingProducts: true })}
-                        className={`flex-1 p-3 rounded-lg border-2 text-center transition ${
-                          data.hasExistingProducts ? 'border-emerald-500 bg-emerald-50' : 'border-gray-200'
-                        }`}
-                      >
-                        <Package className="w-5 h-5 mx-auto mb-1" />
-                        <div className="font-semibold text-sm">Ja, klaar</div>
-                      </button>
-                      <button
-                        type="button"
-                        onClick={() => updateData({ hasExistingProducts: false })}
-                        className={`flex-1 p-3 rounded-lg border-2 text-center transition ${
-                          !data.hasExistingProducts ? 'border-emerald-500 bg-emerald-50' : 'border-gray-200'
-                        }`}
-                      >
-                        <Clock className="w-5 h-5 mx-auto mb-1" />
-                        <div className="font-semibold text-sm">Nog niet</div>
-                      </button>
-                    </div>
-                  </div>
-
-                  {data.hasExistingProducts && (
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-2">
-                        Hoe wil je producten toevoegen?
-                      </label>
-                      <div className="grid sm:grid-cols-3 gap-2">
-                        {[
-                          { id: 'manual', name: 'Handmatig', desc: 'Één voor één invoeren' },
-                          { id: 'csv', name: 'CSV import', desc: 'Bulk upload via bestand' },
-                          { id: 'existing_system', name: 'Bestaand systeem', desc: 'Migratie van andere shop' },
-                        ].map(option => (
-                          <button
-                            key={option.id}
-                            type="button"
-                            onClick={() => updateData({ productSource: option.id })}
-                            className={`p-3 rounded-lg border-2 text-left transition ${
-                              data.productSource === option.id
-                                ? 'border-emerald-500 bg-emerald-50'
-                                : 'border-gray-200 hover:border-emerald-300'
-                            }`}
-                          >
-                            <div className="font-semibold text-sm">{option.name}</div>
-                            <div className="text-xs text-gray-500 dark:text-gray-400">{option.desc}</div>
-                          </button>
-                        ))}
-                      </div>
-                    </div>
-                  )}
-
-                  <div className="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
-                    <div>
-                      <div className="font-medium text-gray-900 dark:text-white">Voorraadbeheer</div>
-                      <div className="text-sm text-gray-500 dark:text-gray-400">Automatisch voorraad bijhouden</div>
-                    </div>
-                    <button
-                      type="button"
-                      onClick={() => updateData({ needsInventoryManagement: !data.needsInventoryManagement })}
-                      className={`relative w-12 h-6 rounded-full transition-colors ${
-                        data.needsInventoryManagement ? 'bg-emerald-500' : 'bg-gray-300'
-                      }`}
-                    >
-                      <div className={`absolute top-0.5 w-5 h-5 bg-white rounded-full shadow transition-all ${
-                        data.needsInventoryManagement ? 'left-6' : 'left-0.5'
-                      }`} />
-                    </button>
-                  </div>
-
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
-                      Gemiddelde productprijs (optioneel)
-                    </label>
-                    <input
-                      type="text"
-                      value={data.averageProductPrice}
-                      onChange={e => updateData({ averageProductPrice: e.target.value })}
-                      className="w-full px-4 py-2.5 rounded-lg border border-gray-200 focus:ring-2 focus:ring-emerald-500"
-                      placeholder="€ 50 - € 100"
+                    <input 
+                      type="text" 
+                      value={formData.shopName} 
+                      onChange={(e) => updateFormData('shopName', e.target.value)} 
+                      className="w-full px-4 py-3 rounded-xl border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-emerald-500 focus:border-transparent" 
+                      placeholder="Mijn Webshop" 
                     />
                   </div>
-                </div>
-              )}
-
-              {/* Step 4: Betalingen & Verzending */}
-              {currentStep === 4 && (
-                <div className="space-y-6">
+                  
                   <div>
-                    <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-1">Betaling & Verzending</h3>
-                    <p className="text-gray-500 text-sm">Hoe wil je betalingen en verzendingen afhandelen?</p>
-                  </div>
-
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Betaalmethodes * <span className="text-gray-400 font-normal">(selecteer alle gewenste)</span>
+                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                      Product categorie *
                     </label>
-                    <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
-                      {PAYMENT_METHODS.map(method => (
-                        <button
-                          key={method.id}
-                          type="button"
-                          onClick={() => toggleArrayItem('paymentMethods', method.id)}
-                          className={`p-3 rounded-lg border-2 text-left transition ${
-                            data.paymentMethods.includes(method.id)
-                              ? 'border-emerald-500 bg-emerald-50'
-                              : 'border-gray-200 hover:border-emerald-300'
+                    <div className="grid grid-cols-3 gap-2">
+                      {PRODUCT_CATEGORIES.map((cat) => (
+                        <button 
+                          key={cat} 
+                          onClick={() => updateFormData('productCategory', cat)} 
+                          className={`p-3 rounded-xl border-2 text-center transition-all text-sm ${
+                            formData.productCategory === cat 
+                              ? 'border-emerald-500 bg-emerald-50 dark:bg-emerald-900/20' 
+                              : 'border-gray-200 dark:border-gray-700 hover:border-gray-300'
                           }`}
                         >
-                          <div className="flex items-center justify-between">
-                            <span className="font-medium text-sm">{method.name}</span>
-                            {method.popular && <Star className="w-3 h-3 text-yellow-500 fill-current" />}
-                          </div>
-                        </button>
-                      ))}
-                    </div>
-                    {errors.paymentMethods && <p className="text-red-500 text-xs mt-1">{errors.paymentMethods}</p>}
-                  </div>
-
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Verzendopties <span className="text-gray-400 font-normal">(optioneel)</span>
-                    </label>
-                    <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
-                      {SHIPPING_OPTIONS.map(option => (
-                        <button
-                          key={option.id}
-                          type="button"
-                          onClick={() => toggleArrayItem('shippingOptions', option.id)}
-                          className={`p-2 rounded-lg border text-sm transition ${
-                            data.shippingOptions.includes(option.id)
-                              ? 'border-emerald-500 bg-emerald-50'
-                              : 'border-gray-200 hover:border-emerald-300'
-                          }`}
-                        >
-                          {data.shippingOptions.includes(option.id) && <Check className="w-3 h-3 inline mr-1" />}
-                          {option.name}
+                          <span className={`font-medium ${
+                            formData.productCategory === cat 
+                              ? 'text-emerald-600 dark:text-emerald-400' 
+                              : 'text-gray-700 dark:text-gray-300'
+                          }`}>
+                            {cat}
+                          </span>
                         </button>
                       ))}
                     </div>
                   </div>
-
+                  
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Verzendzones *
-                    </label>
-                    <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
-                      {[
-                        { id: 'nl', name: 'Nederland' },
-                        { id: 'be', name: 'België' },
-                        { id: 'eu', name: 'Europa' },
-                        { id: 'worldwide', name: 'Wereldwijd' },
-                      ].map(zone => (
-                        <button
-                          key={zone.id}
-                          type="button"
-                          onClick={() => toggleArrayItem('shippingZones', zone.id)}
-                          className={`p-2 rounded-lg border text-sm transition ${
-                            data.shippingZones.includes(zone.id)
-                              ? 'border-emerald-500 bg-emerald-50'
-                              : 'border-gray-200 hover:border-emerald-300'
-                          }`}
-                        >
-                          {data.shippingZones.includes(zone.id) && <Check className="w-3 h-3 inline mr-1" />}
-                          {zone.name}
-                        </button>
-                      ))}
-                    </div>
-                    {errors.shippingZones && <p className="text-red-500 text-xs mt-1">{errors.shippingZones}</p>}
-                  </div>
-
-                  <div className="grid sm:grid-cols-2 gap-4">
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1">
-                        Gratis verzending vanaf (optioneel)
-                      </label>
-                      <input
-                        type="text"
-                        value={data.freeShippingThreshold}
-                        onChange={e => updateData({ freeShippingThreshold: e.target.value })}
-                        className="w-full px-4 py-2.5 rounded-lg border border-gray-200 focus:ring-2 focus:ring-emerald-500"
-                        placeholder="€ 50"
-                      />
-                    </div>
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1">
-                        Retourbeleid
-                      </label>
-                      <select
-                        value={data.returnPolicy}
-                        onChange={e => updateData({ returnPolicy: e.target.value })}
-                        className="w-full px-4 py-2.5 rounded-lg border border-gray-200 focus:ring-2 focus:ring-emerald-500"
-                      >
-                        <option value="14 dagen">14 dagen (wettelijk minimum)</option>
-                        <option value="30 dagen">30 dagen</option>
-                        <option value="60 dagen">60 dagen</option>
-                        <option value="anders">Anders / Geen retour</option>
-                      </select>
-                    </div>
-                  </div>
-                </div>
-              )}
-
-              {/* Step 5: Branding */}
-              {currentStep === 5 && (
-                <div className="space-y-6">
-                  <div>
-                    <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-1">Branding & Design</h3>
-                    <p className="text-gray-500 text-sm">Hoe moet je webshop eruit zien?</p>
-                  </div>
-
-                  <div className="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
-                    <div>
-                      <div className="font-medium text-gray-900 dark:text-white">Heb je al een logo?</div>
-                      <div className="text-sm text-gray-500 dark:text-gray-400">Anders kunnen wij er een maken</div>
-                    </div>
-                    <button
-                      type="button"
-                      onClick={() => updateData({ hasLogo: !data.hasLogo })}
-                      className={`relative w-12 h-6 rounded-full transition-colors ${
-                        data.hasLogo ? 'bg-emerald-500' : 'bg-gray-300'
-                      }`}
-                    >
-                      <div className={`absolute top-0.5 w-5 h-5 bg-white rounded-full shadow transition-all ${
-                        data.hasLogo ? 'left-6' : 'left-0.5'
-                      }`} />
-                    </button>
-                  </div>
-
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
-                      Huisstijlkleuren (optioneel)
-                    </label>
-                    <input
-                      type="text"
-                      value={data.brandColors}
-                      onChange={e => updateData({ brandColors: e.target.value })}
-                      className="w-full px-4 py-2.5 rounded-lg border border-gray-200 focus:ring-2 focus:ring-emerald-500"
-                      placeholder="Bijv. Donkerblauw, Goud"
-                    />
-                  </div>
-
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Gewenste stijl *
-                    </label>
-                    <div className="grid grid-cols-2 gap-3">
-                      {[
-                        { id: 'modern', name: 'Modern', desc: 'Strak, minimalistisch, veel witruimte' },
-                        { id: 'classic', name: 'Klassiek', desc: 'Elegant, tijdloos, verfijnd' },
-                        { id: 'minimalist', name: 'Minimalistisch', desc: 'Simpel, clean, focus op producten' },
-                        { id: 'playful', name: 'Speels', desc: 'Kleurrijk, levendig, creatief' },
-                      ].map(style => (
-                        <button
-                          key={style.id}
-                          type="button"
-                          onClick={() => updateData({ designStyle: style.id })}
-                          className={`p-4 rounded-lg border-2 text-left transition ${
-                            data.designStyle === style.id
-                              ? 'border-emerald-500 bg-emerald-50'
-                              : 'border-gray-200 hover:border-emerald-300'
-                          }`}
-                        >
-                          <div className="font-semibold">{style.name}</div>
-                          <div className="text-xs text-gray-500 dark:text-gray-400">{style.desc}</div>
-                        </button>
-                      ))}
-                    </div>
-                    {errors.designStyle && <p className="text-red-500 text-xs mt-1">{errors.designStyle}</p>}
-                  </div>
-
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
-                      Inspiratie websites (optioneel)
-                    </label>
-                    <textarea
-                      value={data.inspirationUrls}
-                      onChange={e => updateData({ inspirationUrls: e.target.value })}
-                      rows={2}
-                      className="w-full px-4 py-2.5 rounded-lg border border-gray-200 focus:ring-2 focus:ring-emerald-500"
-                      placeholder="Links naar webshops die je mooi vindt..."
-                    />
-                  </div>
-                </div>
-              )}
-
-              {/* Step 6: Extra & Bevestigen */}
-              {currentStep === 6 && (
-                <div className="space-y-6">
-                  <div>
-                    <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-1">Extra Features & Bevestigen</h3>
-                    <p className="text-gray-500 text-sm">Laatste stap! Kies extra's en bevestig je aanvraag.</p>
-                  </div>
-
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
-                      Social media links (optioneel)
-                    </label>
-                    <textarea
-                      value={data.socialMedia}
-                      onChange={e => updateData({ socialMedia: e.target.value })}
-                      rows={2}
-                      className="w-full px-4 py-2.5 rounded-lg border border-gray-200 focus:ring-2 focus:ring-emerald-500"
-                      placeholder="Instagram, Facebook, TikTok links..."
-                    />
-                  </div>
-
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Marketing integraties <span className="text-gray-400 font-normal">(optioneel)</span>
-                    </label>
-                    <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
-                      {MARKETING_INTEGRATIONS.map(item => (
-                        <button
-                          key={item}
-                          type="button"
-                          onClick={() => toggleArrayItem('marketingIntegrations', item)}
-                          className={`p-2 rounded-lg border text-xs transition ${
-                            data.marketingIntegrations.includes(item)
-                              ? 'border-emerald-500 bg-emerald-50'
-                              : 'border-gray-200 hover:border-emerald-300'
-                          }`}
-                        >
-                          {data.marketingIntegrations.includes(item) && <Check className="w-3 h-3 inline mr-0.5" />}
-                          {item}
-                        </button>
-                      ))}
-                    </div>
-                  </div>
-
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Extra features <span className="text-gray-400 font-normal">(optioneel)</span>
+                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                      Aantal producten *
                     </label>
                     <div className="grid grid-cols-2 gap-2">
-                      {ADDITIONAL_FEATURES.map(item => (
-                        <button
-                          key={item}
-                          type="button"
-                          onClick={() => toggleArrayItem('additionalFeatures', item)}
-                          className={`p-2 rounded-lg border text-sm transition ${
-                            data.additionalFeatures.includes(item)
-                              ? 'border-emerald-500 bg-emerald-50'
-                              : 'border-gray-200 hover:border-emerald-300'
+                      {PRODUCT_AMOUNTS.map((a) => (
+                        <button 
+                          key={a} 
+                          onClick={() => updateFormData('estimatedProducts', a)} 
+                          className={`p-3 rounded-xl border-2 text-center transition-all ${
+                            formData.estimatedProducts === a 
+                              ? 'border-emerald-500 bg-emerald-50 dark:bg-emerald-900/20' 
+                              : 'border-gray-200 dark:border-gray-700 hover:border-gray-300'
                           }`}
                         >
-                          {data.additionalFeatures.includes(item) && <Check className="w-3 h-3 inline mr-1" />}
-                          {item}
+                          <span className={`font-medium text-sm ${
+                            formData.estimatedProducts === a 
+                              ? 'text-emerald-600 dark:text-emerald-400' 
+                              : 'text-gray-700 dark:text-gray-300'
+                          }`}>
+                            {a}
+                          </span>
                         </button>
                       ))}
                     </div>
                   </div>
+                </div>
+              </div>
+            )}
 
+            {/* Step 4: Design */}
+            {currentStep === 4 && (
+              <div>
+                <div className="text-center mb-8">
+                  <h2 className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white mb-2">
+                    Design voorkeuren
+                  </h2>
+                  <p className="text-gray-600 dark:text-gray-400">
+                    Welke stijl past bij jouw webshop?
+                  </p>
+                </div>
+                
+                <div className="space-y-6 max-w-lg mx-auto">
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
-                      Overige wensen of opmerkingen
+                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                      Design stijl *
                     </label>
-                    <textarea
-                      value={data.extraNotes}
-                      onChange={e => updateData({ extraNotes: e.target.value })}
-                      rows={3}
-                      className="w-full px-4 py-2.5 rounded-lg border border-gray-200 focus:ring-2 focus:ring-emerald-500"
-                      placeholder="Nog iets dat we moeten weten?"
+                    <div className="grid grid-cols-2 gap-3">
+                      {['Minimalistisch', 'Modern', 'Luxe', 'Speels'].map((s) => (
+                        <button 
+                          key={s} 
+                          onClick={() => updateFormData('designStyle', s)} 
+                          className={`p-4 rounded-xl border-2 text-center transition-all ${
+                            formData.designStyle === s 
+                              ? 'border-emerald-500 bg-emerald-50 dark:bg-emerald-900/20' 
+                              : 'border-gray-200 dark:border-gray-700 hover:border-gray-300'
+                          }`}
+                        >
+                          <span className={`font-medium ${
+                            formData.designStyle === s 
+                              ? 'text-emerald-600 dark:text-emerald-400' 
+                              : 'text-gray-700 dark:text-gray-300'
+                          }`}>
+                            {s}
+                          </span>
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                  
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                      Huisstijl kleuren
+                    </label>
+                    <input 
+                      type="text" 
+                      value={formData.brandColors} 
+                      onChange={(e) => updateFormData('brandColors', e.target.value)} 
+                      className="w-full px-4 py-3 rounded-xl border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-emerald-500 focus:border-transparent" 
+                      placeholder="bijv. Groen en wit" 
                     />
                   </div>
+                  
+                  <div className="grid grid-cols-2 gap-4">
+                    <button 
+                      onClick={() => updateFormData('hasLogo', !formData.hasLogo)} 
+                      className={`p-4 rounded-xl border-2 text-center ${
+                        formData.hasLogo 
+                          ? 'border-emerald-500 bg-emerald-50 dark:bg-emerald-900/20' 
+                          : 'border-gray-200 dark:border-gray-700'
+                      }`}
+                    >
+                      <span className={`font-medium text-sm ${
+                        formData.hasLogo 
+                          ? 'text-emerald-600 dark:text-emerald-400' 
+                          : 'text-gray-700 dark:text-gray-300'
+                      }`}>
+                        {formData.hasLogo ? 'V ' : ''}Ik heb een logo
+                      </span>
+                    </button>
+                    <button 
+                      onClick={() => updateFormData('hasProductPhotos', !formData.hasProductPhotos)} 
+                      className={`p-4 rounded-xl border-2 text-center ${
+                        formData.hasProductPhotos 
+                          ? 'border-emerald-500 bg-emerald-50 dark:bg-emerald-900/20' 
+                          : 'border-gray-200 dark:border-gray-700'
+                      }`}
+                    >
+                      <span className={`font-medium text-sm ${
+                        formData.hasProductPhotos 
+                          ? 'text-emerald-600 dark:text-emerald-400' 
+                          : 'text-gray-700 dark:text-gray-300'
+                      }`}>
+                        {formData.hasProductPhotos ? 'V ' : ''}Ik heb productfotos
+                      </span>
+                    </button>
+                  </div>
+                  
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                      Inspiratie webshops
+                    </label>
+                    <textarea 
+                      value={formData.inspirationUrls} 
+                      onChange={(e) => updateFormData('inspirationUrls', e.target.value)} 
+                      rows={3} 
+                      className="w-full px-4 py-3 rounded-xl border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-emerald-500 focus:border-transparent resize-none" 
+                      placeholder="Links naar webshops die je mooi vindt..." 
+                    />
+                  </div>
+                </div>
+              </div>
+            )}
 
-                  {/* Samenvatting */}
-                  <div className="bg-gradient-to-br from-emerald-50 to-green-50 rounded-xl p-4 border border-emerald-200 dark:border-emerald-800">
-                    <h4 className="font-bold text-emerald-900 mb-3">📋 Samenvatting</h4>
-                    <div className="grid sm:grid-cols-2 gap-2 text-sm">
-                      <div><span className="text-gray-600 dark:text-gray-400">Bedrijf:</span> <span className="font-medium">{data.companyName}</span></div>
-                      <div><span className="text-gray-600 dark:text-gray-400">Webshop:</span> <span className="font-medium">{data.shopName}</span></div>
-                      <div><span className="text-gray-600 dark:text-gray-400">Producten:</span> <span className="font-medium">{data.expectedProducts}</span></div>
-                      <div><span className="text-gray-600 dark:text-gray-400">Stijl:</span> <span className="font-medium">{data.designStyle}</span></div>
+            {/* Step 5: Target Audience */}
+            {currentStep === 5 && (
+              <div>
+                <div className="text-center mb-8">
+                  <h2 className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white mb-2">
+                    Doelgroep en Wensen
+                  </h2>
+                  <p className="text-gray-600 dark:text-gray-400">
+                    Aan wie verkoop je?
+                  </p>
+                </div>
+                
+                <div className="space-y-6 max-w-lg mx-auto">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                      Doelgroep *
+                    </label>
+                    <div className="grid grid-cols-2 gap-3">
+                      {['Consumenten (B2C)', 'Bedrijven (B2B)', 'Beide'].map((t) => (
+                        <button 
+                          key={t} 
+                          onClick={() => updateFormData('targetAudience', t)} 
+                          className={`p-4 rounded-xl border-2 text-center transition-all ${
+                            formData.targetAudience === t 
+                              ? 'border-emerald-500 bg-emerald-50 dark:bg-emerald-900/20' 
+                              : 'border-gray-200 dark:border-gray-700 hover:border-gray-300'
+                          }`}
+                        >
+                          <span className={`font-medium ${
+                            formData.targetAudience === t 
+                              ? 'text-emerald-600 dark:text-emerald-400' 
+                              : 'text-gray-700 dark:text-gray-300'
+                          }`}>
+                            {t}
+                          </span>
+                        </button>
+                      ))}
                     </div>
                   </div>
-
-                  {/* Pricing */}
-                  <div className="bg-white rounded-xl p-4 border-2 border-emerald-500">
-                    <div className="flex items-center justify-between mb-2">
-                      <span className="font-bold text-gray-900 dark:text-white">Webshop Pakket</span>
-                      <span className="text-2xl font-bold text-emerald-600">€79/maand</span>
-                    </div>
-                    <p className="text-sm text-gray-500 mb-3">+ €299 eenmalige opzet kosten</p>
-                    <ul className="text-sm text-gray-600 space-y-1">
-                      <li className="flex items-center gap-2"><Check className="w-4 h-4 text-green-500" /> Volledig werkende webshop</li>
-                      <li className="flex items-center gap-2"><Check className="w-4 h-4 text-green-500" /> Mollie betalingen geïntegreerd</li>
-                      <li className="flex items-center gap-2"><Check className="w-4 h-4 text-green-500" /> Onbeperkt producten</li>
-                      <li className="flex items-center gap-2"><Check className="w-4 h-4 text-green-500" /> Hosting & SSL inbegrepen</li>
-                      <li className="flex items-center gap-2"><Check className="w-4 h-4 text-green-500" /> Maandelijks aanpasbaar</li>
-                    </ul>
+                  
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                      Extra wensen
+                    </label>
+                    <textarea 
+                      value={formData.additionalNotes} 
+                      onChange={(e) => updateFormData('additionalNotes', e.target.value)} 
+                      rows={4} 
+                      className="w-full px-4 py-3 rounded-xl border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-emerald-500 focus:border-transparent resize-none" 
+                      placeholder="Specifieke wensen voor je webshop..." 
+                    />
                   </div>
+                </div>
+              </div>
+            )}
 
-                  {/* Wachtwoord aanmaken */}
-                  <div className="p-4 bg-gradient-to-r from-emerald-50 to-green-50 dark:from-emerald-900/30 dark:to-green-900/30 rounded-xl border border-emerald-200 dark:border-emerald-800">
-                    <div className="mb-4">
-                      <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-1 flex items-center gap-2">
-                        <Lock className="w-5 h-5 text-emerald-600 dark:text-emerald-400" />
-                        Maak je account aan
-                      </h3>
-                      <p className="text-gray-500 dark:text-gray-400 text-sm">Kies een wachtwoord om je project te kunnen volgen</p>
-                    </div>
-
-                    <div className="grid sm:grid-cols-2 gap-4">
-                      <div>
-                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                          Wachtwoord *
-                        </label>
-                        <div className="relative">
-                          <input
-                            type={showPassword ? 'text' : 'password'}
-                            value={data.projectPassword}
-                            onChange={e => updateData({ projectPassword: e.target.value })}
-                            className={`w-full px-4 py-2.5 pr-10 rounded-lg border ${errors.projectPassword ? 'border-red-500' : 'border-gray-200 dark:border-gray-600'} bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-emerald-500`}
-                            placeholder="Min. 6 tekens"
-                          />
-                          <button
-                            type="button"
-                            onClick={() => setShowPassword(!showPassword)}
-                            className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300"
-                          >
-                            {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
-                          </button>
-                        </div>
-                        {errors.projectPassword && <p className="text-red-500 text-xs mt-1">{errors.projectPassword}</p>}
-                      </div>
-                      <div>
-                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                          Bevestig wachtwoord *
-                        </label>
-                        <input
-                          type={showPassword ? 'text' : 'password'}
-                          value={data.confirmPassword}
-                          onChange={e => updateData({ confirmPassword: e.target.value })}
-                          className={`w-full px-4 py-2.5 rounded-lg border ${errors.confirmPassword ? 'border-red-500' : 'border-gray-200 dark:border-gray-600'} bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-emerald-500`}
-                          placeholder="Herhaal wachtwoord"
-                        />
-                        {errors.confirmPassword && <p className="text-red-500 text-xs mt-1">{errors.confirmPassword}</p>}
-                      </div>
-                    </div>
-                    <p className="text-xs text-gray-500 dark:text-gray-400 mt-2">
-                      Met dit wachtwoord kun je de voortgang van je project volgen op de statuspagina.
+            {/* Step 6: Account */}
+            {currentStep === 6 && (
+              <div>
+                <div className="text-center mb-8">
+                  <h2 className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white mb-2">
+                    Maak je account aan
+                  </h2>
+                  <p className="text-gray-600 dark:text-gray-400">
+                    Hiermee kun je je project volgen
+                  </p>
+                </div>
+                
+                <div className="space-y-6 max-w-lg mx-auto">
+                  <div className="p-4 rounded-xl bg-emerald-50 dark:bg-emerald-900/20 border border-emerald-200 dark:border-emerald-800">
+                    <p className="text-sm text-emerald-700 dark:text-emerald-300">
+                      <strong>E-mail:</strong> {formData.email}
                     </p>
                   </div>
-
-                  {/* Terms */}
-                  <label className={`flex items-start gap-3 p-4 rounded-lg border-2 cursor-pointer transition ${
-                    data.agreedToTerms ? 'border-emerald-500 bg-emerald-50' : errors.agreedToTerms ? 'border-red-500' : 'border-gray-200'
-                  }`}>
-                    <input
-                      type="checkbox"
-                      checked={data.agreedToTerms}
-                      onChange={e => updateData({ agreedToTerms: e.target.checked })}
-                      className="mt-1 w-5 h-5 rounded border-gray-300 text-emerald-600 focus:ring-emerald-500"
-                    />
-                    <div className="text-sm">
-                      <span className="font-medium text-gray-900 dark:text-white">Ik ga akkoord met de </span>
-                      <a href="/voorwaarden" target="_blank" className="text-emerald-600 hover:underline">algemene voorwaarden</a>
-                      <span className="font-medium text-gray-900 dark:text-white"> en </span>
-                      <a href="/privacy" target="_blank" className="text-emerald-600 hover:underline">privacy policy</a>
+                  
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                      Wachtwoord *
+                    </label>
+                    <div className="relative">
+                      <input 
+                        type={showPassword ? 'text' : 'password'} 
+                        value={formData.password} 
+                        onChange={(e) => updateFormData('password', e.target.value)} 
+                        className="w-full px-4 py-3 pr-12 rounded-xl border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-emerald-500 focus:border-transparent" 
+                        placeholder="Min. 6 karakters" 
+                      />
+                      <button 
+                        type="button" 
+                        onClick={() => setShowPassword(!showPassword)} 
+                        className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-500"
+                      >
+                        {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
+                      </button>
                     </div>
-                  </label>
-                  {errors.agreedToTerms && <p className="text-red-500 text-xs">{errors.agreedToTerms}</p>}
+                  </div>
+                  
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                      Bevestig wachtwoord *
+                    </label>
+                    <div className="relative">
+                      <input 
+                        type={showConfirmPassword ? 'text' : 'password'} 
+                        value={formData.confirmPassword} 
+                        onChange={(e) => updateFormData('confirmPassword', e.target.value)} 
+                        className="w-full px-4 py-3 pr-12 rounded-xl border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-emerald-500 focus:border-transparent" 
+                        placeholder="Herhaal wachtwoord" 
+                      />
+                      <button 
+                        type="button" 
+                        onClick={() => setShowConfirmPassword(!showConfirmPassword)} 
+                        className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-500"
+                      >
+                        {showConfirmPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
+                      </button>
+                    </div>
+                    {formData.confirmPassword && formData.password !== formData.confirmPassword && (
+                      <p className="text-red-500 text-sm mt-1">Wachtwoorden komen niet overeen</p>
+                    )}
+                  </div>
+                  
+                  <div className={`p-4 rounded-xl bg-gradient-to-r ${currentGradient} bg-opacity-10`}>
+                    <h4 className="font-semibold text-gray-900 dark:text-white mb-2 flex items-center gap-2">
+                      <Sparkles className="w-4 h-4" />
+                      Samenvatting
+                    </h4>
+                    <ul className="text-sm text-gray-700 dark:text-gray-300 space-y-1">
+                      <li>Pakket: {selectedPackage?.name}</li>
+                      <li>Webshop: {formData.shopName}</li>
+                      <li>Categorie: {formData.productCategory}</li>
+                      <li>Stijl: {formData.designStyle}</li>
+                    </ul>
+                  </div>
                 </div>
-              )}
-            </motion.div>
-          </AnimatePresence>
-        </div>
+              </div>
+            )}
+          </motion.div>
+        </AnimatePresence>
 
-        {/* Footer */}
-        <div className="border-t p-4 flex items-center justify-between bg-gray-50 dark:bg-gray-800">
-          <button
-            type="button"
-            onClick={currentStep === 1 ? onClose : prevStep}
-            className="flex items-center gap-2 px-4 py-2 text-gray-600 hover:text-gray-900 transition"
+        {/* Navigation Buttons */}
+        <div className="flex justify-between mt-8">
+          <button 
+            onClick={handleBack} 
+            className="flex items-center gap-2 px-6 py-3 rounded-xl font-medium text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-gray-800 transition-all"
           >
-            <ChevronLeft className="w-4 h-4" />
-            {currentStep === 1 ? 'Annuleren' : 'Vorige'}
+            <ArrowLeft className="w-5 h-5" />
+            Vorige
           </button>
-
-          {currentStep < STEPS.length ? (
-            <button
-              type="button"
-              onClick={nextStep}
-              className="flex items-center gap-2 px-6 py-2.5 bg-emerald-600 text-white rounded-lg font-medium hover:bg-emerald-700 transition"
+          
+          {currentStep < 6 ? (
+            <button 
+              onClick={handleNext} 
+              disabled={!canProceed()} 
+              className={`flex items-center gap-2 px-8 py-3 rounded-xl font-semibold transition-all ${
+                canProceed() 
+                  ? `bg-gradient-to-r ${currentGradient} text-white shadow-lg hover:shadow-xl hover:-translate-y-0.5` 
+                  : 'bg-gray-200 dark:bg-gray-700 text-gray-500 cursor-not-allowed'
+              }`}
             >
               Volgende
-              <ChevronRight className="w-4 h-4" />
+              <ArrowRight className="w-5 h-5" />
             </button>
           ) : (
-            <button
-              type="button"
-              onClick={handleSubmit}
-              disabled={submitting}
-              className="flex items-center gap-2 px-6 py-2.5 bg-gradient-to-r from-emerald-600 to-green-600 text-white rounded-lg font-medium hover:from-emerald-700 hover:to-green-700 transition disabled:opacity-50"
+            <button 
+              onClick={handleSubmit} 
+              disabled={!canProceed() || isSubmitting} 
+              className={`flex items-center gap-2 px-8 py-3 rounded-xl font-semibold transition-all ${
+                canProceed() && !isSubmitting 
+                  ? `bg-gradient-to-r ${currentGradient} text-white shadow-lg hover:shadow-xl hover:-translate-y-0.5` 
+                  : 'bg-gray-200 dark:bg-gray-700 text-gray-500 cursor-not-allowed'
+              }`}
             >
-              {submitting ? (
+              {isSubmitting ? (
                 <>
-                  <Loader2 className="w-4 h-4 animate-spin" />
-                  Verwerken...
+                  <Loader2 className="w-5 h-5 animate-spin" />
+                  Versturen...
                 </>
               ) : (
                 <>
-                  <CreditCard className="w-4 h-4" />
-                  Naar betaling
+                  Verstuur aanvraag
+                  <Sparkles className="w-5 h-5" />
                 </>
               )}
             </button>
           )}
         </div>
-      </motion.div>
-    </Wrapper>
+      </div>
+    </div>
   )
 }
