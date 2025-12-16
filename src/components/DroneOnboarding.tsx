@@ -891,22 +891,22 @@ export default function DroneOnboarding({
         </AnimatePresence>
 
         {/* Navigation Buttons */}
-        <div className="flex justify-between mt-8">
+        <div className="flex justify-between gap-4 mt-8">
           <button 
             onClick={handleBack} 
-            className="flex items-center gap-2 px-6 py-3 rounded-xl font-medium text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-gray-800 transition-all"
+            className="flex-1 px-4 py-3 rounded-lg bg-gray-100 dark:bg-gray-700 text-gray-900 dark:text-white font-semibold transition-all flex items-center justify-center gap-2 hover:bg-gray-200 dark:hover:bg-gray-600"
           >
             <ArrowLeft className="w-5 h-5" />
-            Vorige
+            Terug
           </button>
-          
+
           {currentStep < 6 ? (
             <button 
               onClick={handleNext} 
               disabled={!canProceed()} 
-              className={`flex items-center gap-2 px-8 py-3 rounded-xl font-semibold transition-all ${
+              className={`flex-1 px-4 py-3 rounded-lg font-semibold transition-all flex items-center justify-center gap-2 ${
                 canProceed() 
-                  ? `bg-gradient-to-r ${currentGradient} text-white shadow-lg hover:shadow-xl hover:-translate-y-0.5` 
+                  ? `bg-gradient-to-r ${currentGradient} text-white shadow-lg` 
                   : 'bg-gray-200 dark:bg-gray-700 text-gray-500 cursor-not-allowed'
               }`}
             >
@@ -917,23 +917,13 @@ export default function DroneOnboarding({
             <button 
               onClick={handleSubmit} 
               disabled={!canProceed() || isSubmitting} 
-              className={`flex items-center gap-2 px-8 py-3 rounded-xl font-semibold transition-all ${
-                canProceed() && !isSubmitting 
-                  ? `bg-gradient-to-r ${currentGradient} text-white shadow-lg hover:shadow-xl hover:-translate-y-0.5` 
+              className={`flex-1 px-4 py-3 rounded-lg font-semibold transition-all flex items-center justify-center gap-2 ${
+                canProceed() && !isSubmitting
+                  ? `bg-gradient-to-r ${currentGradient} text-white shadow-lg`
                   : 'bg-gray-200 dark:bg-gray-700 text-gray-500 cursor-not-allowed'
               }`}
             >
-              {isSubmitting ? (
-                <>
-                  <Loader2 className="w-5 h-5 animate-spin" />
-                  Versturen...
-                </>
-              ) : (
-                <>
-                  Verstuur aanvraag
-                  <Sparkles className="w-5 h-5" />
-                </>
-              )}
+              {isSubmitting ? 'Versturen...' : 'Verstuur aanvraag'}
             </button>
           )}
         </div>
