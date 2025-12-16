@@ -2563,7 +2563,7 @@ app.get('/api/developer/stats', verifyDeveloperSession, (req, res) => {
       },
       // Calculate monthly revenue estimate
       monthlyRevenue: projects.filter(p => p.status === 'live').reduce((sum, p) => {
-        const packagePrices = { starter: 95, professional: 179, business: 299, webshop: 299 };
+        const packagePrices = { starter: 95, professional: 179, business: 299, webshop: 299, 'webshop-pro': 419 };
         return sum + (packagePrices[p.package] || 95);
       }, 0)
     };

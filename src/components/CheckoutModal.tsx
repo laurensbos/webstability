@@ -4,9 +4,9 @@ import { motion } from 'framer-motion'
 // Pakket prijzen (moet overeenkomen met server)
 const PACKAGE_PRICES: Record<string, { monthly: number; setup: number }> = {
   starter: { monthly: 79, setup: 99 },
-  professional: { monthly: 149, setup: 99 },
-  business: { monthly: 249, setup: 99 },
-  webshop: { monthly: 249, setup: 299 }
+  professional: { monthly: 148, setup: 179 },
+  business: { monthly: 247, setup: 239 },
+  webshop: { monthly: 247, setup: 299 }
 }
 
 export default function CheckoutModal(){
