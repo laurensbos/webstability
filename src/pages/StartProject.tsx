@@ -143,7 +143,6 @@ function FloatingParticles({ activeService }: { activeService: ServiceType }) {
 export default function StartProject() {
   const [searchParams] = useSearchParams()
   const [selectedService, setSelectedService] = useState<ServiceType>(null)
-  const [hoveredService, setHoveredService] = useState<ServiceType>(null)
 
   // Check for pre-selected service from URL
   useEffect(() => {
@@ -246,7 +245,7 @@ export default function StartProject() {
   // Service selection screen
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-primary-50/30 dark:from-gray-900 dark:via-gray-900 dark:to-gray-900 relative overflow-hidden">
-      <FloatingParticles activeService={hoveredService || 'website'} />
+      <FloatingParticles activeService={selectedService || 'website'} />
       
       <Header />
       
@@ -366,7 +365,6 @@ export default function StartProject() {
           <div className="hidden sm:grid sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
             {services.map((service, index) => {
               const Icon = service.icon
-              const isHovered = hoveredService === service.id
               
               return (
                 <motion.button
@@ -374,53 +372,51 @@ export default function StartProject() {
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: 0.1 + index * 0.1 }}
-                  onMouseEnter={() => setHoveredService(service.id)}
-                  onMouseLeave={() => setHoveredService(null)}
                   onClick={() => setSelectedService(service.id)}
-                  className={`relative group text-left p-6 rounded-2xl border-2 transition-all duration-300 ${
-                    isHovered
-                      ? `border-${service.color}-300 bg-gradient-to-br from-${service.color}-50 to-white dark:from-${service.color}-900/30 dark:to-gray-800 shadow-xl shadow-${service.color}-500/10`
-                      : 'border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 hover:border-gray-300 dark:hover:border-gray-600 shadow-sm hover:shadow-md'
-                  }`}
+                  className="relative group text-left bg-white dark:bg-gray-800 rounded-2xl border-2 border-gray-200 dark:border-gray-700 overflow-hidden shadow-md hover:shadow-xl hover:border-gray-300 dark:hover:border-gray-600 transition-all duration-300 hover:-translate-y-1"
                 >
                   {/* Popular badge */}
                   {service.popular && (
-                    <div className="absolute -top-3 left-1/2 -translate-x-1/2">
-                      <span className="bg-gradient-to-r from-primary-500 to-blue-600 text-white text-xs font-bold px-3 py-1 rounded-full shadow-lg">
+                    <div className="absolute top-3 right-3 z-10">
+                      <span className="bg-gradient-to-r from-primary-500 to-blue-600 text-white text-xs font-bold px-2.5 py-1 rounded-full shadow-lg">
                         Populair
                       </span>
                     </div>
                   )}
                   
-                  {/* Icon */}
-                  <div className={`w-14 h-14 rounded-2xl bg-gradient-to-br ${service.gradient} flex items-center justify-center mb-4 shadow-lg transition-transform duration-300 ${isHovered ? 'scale-110' : ''}`}>
-                    <Icon className="w-7 h-7 text-white" />
+                  {/* Colored header with icon */}
+                  <div className={`bg-gradient-to-br ${service.gradient} p-5 flex items-center gap-4`}>
+                    <div className="w-14 h-14 rounded-2xl bg-white/20 backdrop-blur-sm flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-300">
+                      <Icon className="w-7 h-7 text-white" />
+                    </div>
+                    <div className="text-white flex-1">
+                      <h3 className="font-bold text-xl">{service.name}</h3>
+                      <p className="text-white/80 text-sm">{service.description}</p>
+                    </div>
                   </div>
                   
-                  {/* Title & Description */}
-                  <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-1">{service.name}</h3>
-                  <p className="text-sm text-gray-500 dark:text-gray-400 mb-4">{service.description}</p>
-                  
-                  {/* Price */}
-                  <div className="mb-4">
-                    <span className="text-2xl font-bold text-gray-900 dark:text-white">{service.price}</span>
-                    <span className="text-sm text-gray-500 dark:text-gray-400 ml-1">{service.priceNote}</span>
-                  </div>
-                  
-                  {/* Features */}
-                  <ul className="space-y-2 mb-6">
-                    {service.features.map((feature, i) => (
-                      <li key={i} className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-300">
-                        <Check className={`w-4 h-4 text-${service.color}-500 flex-shrink-0`} />
-                        {feature}
-                      </li>
-                    ))}
-                  </ul>
-                  
-                  {/* CTA */}
-                  <div className={`flex items-center justify-between pt-4 border-t border-gray-100 dark:border-gray-700 group-hover:border-${service.color}-100 dark:group-hover:border-${service.color}-800 transition-colors`}>
-                    <span className={`font-semibold text-${service.color}-600 dark:text-${service.color}-400`}>Starten</span>
-                    <ArrowRight className={`w-5 h-5 text-${service.color}-500 transition-transform group-hover:translate-x-1`} />
+                  <div className="p-5">
+                    {/* Price */}
+                    <div className="mb-4 pb-4 border-b border-gray-100 dark:border-gray-700">
+                      <span className="text-2xl font-bold text-gray-900 dark:text-white">{service.price}</span>
+                      <span className="text-sm text-gray-500 dark:text-gray-400 ml-1">{service.priceNote}</span>
+                    </div>
+                    
+                    {/* Features - vertical list */}
+                    <div className="space-y-2.5 mb-5">
+                      {service.features.map((feature, i) => (
+                        <div key={i} className="flex items-center gap-2.5 text-sm text-gray-600 dark:text-gray-300">
+                          <Check className="w-4 h-4 text-green-500 flex-shrink-0" />
+                          <span>{feature}</span>
+                        </div>
+                      ))}
+                    </div>
+                    
+                    {/* CTA */}
+                    <div className={`flex items-center justify-center gap-2 py-3.5 rounded-xl bg-gradient-to-r ${service.gradient} text-white font-semibold shadow-lg group-hover:shadow-xl transition-shadow`}>
+                      <span>Starten</span>
+                      <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+                    </div>
                   </div>
                 </motion.button>
               )
