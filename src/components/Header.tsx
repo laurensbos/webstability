@@ -571,7 +571,7 @@ export default function Header({ urgencyBannerVisible = false }: HeaderProps) {
                     Voer je project-ID en wachtwoord in om je project status te bekijken.
                   </p>
 
-                  <form onSubmit={handleProjectSearch}>
+                  <form onSubmit={handleProjectSearch} autoComplete="off">
                     <div className="mb-4">
                       <label htmlFor="projectId" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                         Project-ID
@@ -579,12 +579,17 @@ export default function Header({ urgencyBannerVisible = false }: HeaderProps) {
                       <input
                         type="text"
                         id="projectId"
+                        name="project-id-field"
                         value={projectIdInput}
                         onChange={(e) => setProjectIdInput(e.target.value)}
                         placeholder="Bijv. WS-ABC123"
                         className="w-full px-4 py-3 border border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-all text-lg font-mono uppercase"
                         autoFocus
-                        autoComplete="off"
+                        autoComplete="new-password"
+                        autoCorrect="off"
+                        autoCapitalize="off"
+                        spellCheck="false"
+                        data-form-type="other"
                       />
                     </div>
 
@@ -595,11 +600,13 @@ export default function Header({ urgencyBannerVisible = false }: HeaderProps) {
                       <input
                         type="password"
                         id="projectPassword"
+                        name="project-password-field"
                         value={projectPasswordInput}
                         onChange={(e) => setProjectPasswordInput(e.target.value)}
                         placeholder="Je project wachtwoord"
                         className="w-full px-4 py-3 border border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-all"
-                        autoComplete="off"
+                        autoComplete="new-password"
+                        data-form-type="other"
                       />
                     </div>
 
