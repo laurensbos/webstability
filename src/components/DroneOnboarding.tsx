@@ -357,7 +357,7 @@ export default function DroneOnboarding({
                           key={pkg.id}
                           onClick={() => updateFormData('package', pkg.id)}
                           className={`relative flex-shrink-0 w-[280px] snap-center p-6 rounded-2xl border-2 text-left transition-all ${
-                            formData.package === pkg.id ? 'border-gray-200 dark:border-gray-700 ring-2 ring-orange-500 z-10' : 'border-gray-200 dark:border-gray-700 hover:border-gray-300'
+                            formData.package === pkg.id ? 'border-gray-200 dark:border-gray-700 ring-2 ring-orange-500 z-20' : 'border-gray-200 dark:border-gray-700 hover:border-gray-300'
                           }`}
                           whileHover={{ scale: 1.02 }}
                           whileTap={{ scale: 0.98 }}
@@ -428,7 +428,7 @@ export default function DroneOnboarding({
                         onClick={() => updateFormData('package', pkg.id)} 
                         className={`relative p-6 rounded-2xl border-2 text-left transition-all ${
                           formData.package === pkg.id 
-                            ? 'border-gray-200 dark:border-gray-700 ring-2 ring-orange-500 z-10' 
+                            ? 'border-gray-200 dark:border-gray-700 ring-2 ring-orange-500 z-20' 
                             : 'border-gray-200 dark:border-gray-700 hover:border-gray-300'
                         }`}
                         whileHover={{ scale: 1.02 }} 
