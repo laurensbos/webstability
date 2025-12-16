@@ -8,8 +8,7 @@ import {
   PenTool,
   ArrowRight,
   Check,
-  Sparkles,
-  ChevronLeft
+  Sparkles
 } from 'lucide-react'
 import Header from '../components/Header'
 import Footer from '../components/Footer'
@@ -166,80 +165,58 @@ export default function StartProject() {
   // If a service is selected, show the appropriate onboarding
   if (selectedService === 'website') {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-primary-50/30 dark:from-gray-900 dark:via-gray-900 dark:to-gray-900">
-        <Header />
-        <main className="pt-4">
-          <div className="max-w-4xl mx-auto px-4 sm:px-6 mb-4">
-            <button
-              onClick={handleBack}
-              className="flex items-center gap-2 text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 transition-colors"
-            >
-              <ChevronLeft className="w-4 h-4" />
-              <span className="text-sm">Andere dienst kiezen</span>
-            </button>
-          </div>
-          <WebsiteOnboarding 
-            isStandalone={false}
-            initialPackage={(pakket as 'starter' | 'professional' | 'business') || 'professional'}
-            onClose={handleBack}
-          />
-        </main>
-        <Footer />
-      </div>
+      <>
+        <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-primary-50/30 dark:from-gray-900 dark:via-gray-900 dark:to-gray-900">
+          <Header />
+        </div>
+        <WebsiteOnboarding 
+          initialPackage={(pakket as 'starter' | 'professional' | 'business') || 'professional'}
+          onClose={handleBack}
+        />
+      </>
     )
   }
 
   if (selectedService === 'webshop') {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-emerald-50/30 dark:from-gray-900 dark:via-gray-900 dark:to-gray-900">
-        <Header />
-        <main className="pt-4">
-          <div className="max-w-4xl mx-auto px-4 sm:px-6 mb-4">
-            <button
-              onClick={handleBack}
-              className="flex items-center gap-2 text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 transition-colors"
-            >
-              <ChevronLeft className="w-4 h-4" />
-              <span className="text-sm">Andere dienst kiezen</span>
-            </button>
-          </div>
-          <WebshopOnboarding 
-            isStandalone={false}
-            onClose={handleBack}
-          />
-        </main>
-        <Footer />
-      </div>
+      <>
+        <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-emerald-50/30 dark:from-gray-900 dark:via-gray-900 dark:to-gray-900">
+          <Header />
+        </div>
+        <WebshopOnboarding 
+          initialPackage={(pakket as 'starter' | 'professional') || 'professional'}
+          onClose={handleBack}
+        />
+      </>
     )
   }
 
   if (selectedService === 'drone') {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-orange-50/30 dark:from-gray-900 dark:via-gray-900 dark:to-gray-900">
-        <Header />
-        <main className="pt-4">
-          <div className="max-w-4xl mx-auto px-4 sm:px-6 mb-4">
-            <button
-              onClick={handleBack}
-              className="flex items-center gap-2 text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 transition-colors"
-            >
-              <ChevronLeft className="w-4 h-4" />
-              <span className="text-sm">Andere dienst kiezen</span>
-            </button>
-          </div>
-          <DroneOnboarding 
-            isStandalone={false}
-            initialPackage={(pakket as 'basis' | 'professional' | 'premium') || 'professional'}
-            onClose={handleBack}
-          />
-        </main>
-        <Footer />
-      </div>
+      <>
+        <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-orange-50/30 dark:from-gray-900 dark:via-gray-900 dark:to-gray-900">
+          <Header />
+        </div>
+        <DroneOnboarding 
+          initialPackage={(pakket as 'basis' | 'professional' | 'premium') || 'professional'}
+          onClose={handleBack}
+        />
+      </>
     )
   }
 
   if (selectedService === 'logo') {
-    return <LogoOnboarding onClose={handleBack} />
+    return (
+      <>
+        <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-purple-50/30 dark:from-gray-900 dark:via-gray-900 dark:to-gray-900">
+          <Header />
+        </div>
+        <LogoOnboarding 
+          initialPackage={(pakket as 'basis' | 'uitgebreid') || 'uitgebreid'}
+          onClose={handleBack}
+        />
+      </>
+    )
   }
 
   // Service selection screen
