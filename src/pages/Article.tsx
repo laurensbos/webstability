@@ -84,7 +84,7 @@ export default function Article() {
             <ul key={elements.length} className="space-y-2 my-4">
               {currentList.map((item, i) => (
                 <li key={i} className="flex items-start gap-2">
-                  <input type="checkbox" disabled className="mt-1 rounded border-gray-300" />
+                  <input type="checkbox" disabled className="mt-1 rounded border-gray-300 dark:border-gray-600" />
                   <span className="text-gray-700 dark:text-gray-300">{item}</span>
                 </li>
               ))}
@@ -116,11 +116,11 @@ export default function Article() {
       if (tableRows.length > 0) {
         elements.push(
           <div key={elements.length} className="overflow-x-auto my-6">
-            <table className="min-w-full border border-gray-200 rounded-lg overflow-hidden">
+            <table className="min-w-full border border-gray-200 dark:border-gray-700 rounded-lg overflow-hidden">
               <thead className="bg-gray-50 dark:bg-gray-800">
                 <tr>
                   {tableRows[0].map((cell, i) => (
-                    <th key={i} className="px-4 py-3 text-left text-sm font-semibold text-gray-900 border-b">
+                    <th key={i} className="px-4 py-3 text-left text-sm font-semibold text-gray-900 dark:text-white border-b border-gray-200 dark:border-gray-700">
                       {cell}
                     </th>
                   ))}
@@ -128,9 +128,9 @@ export default function Article() {
               </thead>
               <tbody>
                 {tableRows.slice(2).map((row, i) => (
-                  <tr key={i} className={i % 2 === 0 ? 'bg-white' : 'bg-gray-50'}>
+                  <tr key={i} className={i % 2 === 0 ? 'bg-white dark:bg-gray-900' : 'bg-gray-50 dark:bg-gray-800'}>
                     {row.map((cell, j) => (
-                      <td key={j} className="px-4 py-3 text-sm text-gray-700 border-b">
+                      <td key={j} className="px-4 py-3 text-sm text-gray-700 dark:text-gray-300 border-b border-gray-200 dark:border-gray-700">
                         {cell}
                       </td>
                     ))}
@@ -174,7 +174,7 @@ export default function Article() {
       if (trimmedLine.startsWith('## ')) {
         flushList()
         elements.push(
-          <h2 key={elements.length} className="text-2xl font-bold text-gray-900 mt-10 mb-4">
+          <h2 key={elements.length} className="text-2xl font-bold text-gray-900 dark:text-white mt-10 mb-4">
             {trimmedLine.replace('## ', '')}
           </h2>
         )
@@ -184,7 +184,7 @@ export default function Article() {
       if (trimmedLine.startsWith('### ')) {
         flushList()
         elements.push(
-          <h3 key={elements.length} className="text-xl font-semibold text-gray-900 mt-8 mb-3">
+          <h3 key={elements.length} className="text-xl font-semibold text-gray-900 dark:text-white mt-8 mb-3">
             {trimmedLine.replace('### ', '')}
           </h3>
         )
@@ -195,7 +195,7 @@ export default function Article() {
       if (trimmedLine.startsWith('**') && trimmedLine.endsWith('**')) {
         flushList()
         elements.push(
-          <p key={elements.length} className="font-semibold text-gray-900 mt-6 mb-2">
+          <p key={elements.length} className="font-semibold text-gray-900 dark:text-white mt-6 mb-2">
             {trimmedLine.replace(/\*\*/g, '')}
           </p>
         )
@@ -215,7 +215,7 @@ export default function Article() {
         if (listType !== 'ul') flushList()
         listType = 'ul'
         // Handle bold in list items
-        const text = trimmedLine.replace('- ', '').replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
+        const text = trimmedLine.replace('- ', '').replace(/\*\*(.+?)\*\*/g, '<strong class="text-gray-900 dark:text-white">$1</strong>')
         currentList.push(text)
         continue
       }
@@ -224,7 +224,7 @@ export default function Article() {
       if (/^\d+\.\s/.test(trimmedLine)) {
         if (listType !== 'ol') flushList()
         listType = 'ol'
-        const text = trimmedLine.replace(/^\d+\.\s/, '').replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
+        const text = trimmedLine.replace(/^\d+\.\s/, '').replace(/\*\*(.+?)\*\*/g, '<strong class="text-gray-900 dark:text-white">$1</strong>')
         currentList.push(text)
         continue
       }
@@ -233,13 +233,13 @@ export default function Article() {
       flushList()
       // Handle inline formatting
       const formattedText = trimmedLine
-        .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
-        .replace(/`(.+?)`/g, '<code class="bg-gray-100 px-1 py-0.5 rounded text-sm">$1</code>')
+        .replace(/\*\*(.+?)\*\*/g, '<strong class="text-gray-900 dark:text-white">$1</strong>')
+        .replace(/`(.+?)`/g, '<code class="bg-gray-100 dark:bg-gray-800 px-1 py-0.5 rounded text-sm text-gray-800 dark:text-gray-200">$1</code>')
 
       elements.push(
         <p 
           key={elements.length} 
-          className="text-gray-700 leading-relaxed my-4"
+          className="text-gray-700 dark:text-gray-300 leading-relaxed my-4"
           dangerouslySetInnerHTML={{ __html: formattedText }}
         />
       )
@@ -259,16 +259,16 @@ export default function Article() {
         {/* Hero */}
         <section className="relative pt-24 pb-12 lg:pt-32 lg:pb-16 overflow-hidden">
           {/* Background gradient */}
-          <div className="absolute inset-0 bg-gradient-to-br from-slate-50 via-blue-50/40 to-slate-50" />
+          <div className="absolute inset-0 bg-gradient-to-br from-slate-50 via-blue-50/40 to-slate-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900" />
           
           {/* Animated background blobs */}
           <motion.div
-            className="absolute top-20 left-10 w-72 h-72 bg-primary-200/30 rounded-full blur-3xl"
+            className="absolute top-20 left-10 w-72 h-72 bg-primary-200/30 dark:bg-primary-900/30 rounded-full blur-3xl"
             animate={{ scale: [1, 1.2, 1], x: [0, 30, 0] }}
             transition={{ duration: 15, repeat: Infinity, ease: 'easeInOut' }}
           />
           <motion.div
-            className="absolute bottom-0 right-0 w-96 h-96 bg-blue-200/20 rounded-full blur-3xl"
+            className="absolute bottom-0 right-0 w-96 h-96 bg-blue-200/20 dark:bg-blue-900/20 rounded-full blur-3xl"
             animate={{ scale: [1.2, 1, 1.2], x: [0, -20, 0] }}
             transition={{ duration: 18, repeat: Infinity, ease: 'easeInOut' }}
           />
@@ -281,13 +281,13 @@ export default function Article() {
             <motion.nav
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
-              className="flex items-center gap-1.5 sm:gap-2 text-xs sm:text-sm text-gray-500 mb-6 sm:mb-8 overflow-x-auto"
+              className="flex items-center gap-1.5 sm:gap-2 text-xs sm:text-sm text-gray-500 dark:text-gray-400 mb-6 sm:mb-8 overflow-x-auto"
             >
-              <Link to="/" className="hover:text-primary-600 transition-colors whitespace-nowrap">Home</Link>
+              <Link to="/" className="hover:text-primary-600 dark:hover:text-primary-400 transition-colors whitespace-nowrap">Home</Link>
               <ChevronRight className="w-3 h-3 sm:w-4 sm:h-4 flex-shrink-0" />
-              <Link to="/kennisbank" className="hover:text-primary-600 transition-colors whitespace-nowrap">Kennisbank</Link>
+              <Link to="/kennisbank" className="hover:text-primary-600 dark:hover:text-primary-400 transition-colors whitespace-nowrap">Kennisbank</Link>
               <ChevronRight className="w-3 h-3 sm:w-4 sm:h-4 flex-shrink-0" />
-              <span className="text-gray-900 truncate">{article.category}</span>
+              <span className="text-gray-900 dark:text-white truncate">{article.category}</span>
             </motion.nav>
 
             {/* Back link */}
@@ -298,7 +298,7 @@ export default function Article() {
             >
               <Link 
                 to="/kennisbank"
-                className="inline-flex items-center gap-1.5 sm:gap-2 text-primary-600 hover:text-primary-700 transition-colors mb-6 sm:mb-8 text-sm sm:text-base group"
+                className="inline-flex items-center gap-1.5 sm:gap-2 text-primary-600 dark:text-primary-400 hover:text-primary-700 dark:hover:text-primary-300 transition-colors mb-6 sm:mb-8 text-sm sm:text-base group"
               >
                 <ArrowLeft className="w-3.5 h-3.5 sm:w-4 sm:h-4 group-hover:-translate-x-1 transition-transform" />
                 <span>Terug naar Kennisbank</span>
@@ -310,11 +310,11 @@ export default function Article() {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.2 }}
-              className="bg-white/80 backdrop-blur-sm rounded-2xl lg:rounded-3xl border border-gray-100 p-6 sm:p-8 lg:p-10 shadow-lg shadow-gray-900/5"
+              className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-2xl lg:rounded-3xl border border-gray-100 dark:border-gray-700 p-6 sm:p-8 lg:p-10 shadow-lg shadow-gray-900/5 dark:shadow-gray-900/20"
             >
               {/* Category badge */}
               <div className="flex items-center gap-2 mb-4">
-                <span className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-primary-100 text-primary-700 text-xs sm:text-sm font-medium rounded-full">
+                <span className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-primary-100 dark:bg-primary-900/50 text-primary-700 dark:text-primary-300 text-xs sm:text-sm font-medium rounded-full">
                   <BookOpen className="w-3.5 h-3.5" />
                   {article.category}
                 </span>
@@ -324,12 +324,12 @@ export default function Article() {
                 {article.title}
               </h1>
 
-              <p className="text-base sm:text-lg lg:text-xl text-gray-600 dark:text-gray-400 mb-6 sm:mb-8 leading-relaxed">
+              <p className="text-base sm:text-lg lg:text-xl text-gray-600 dark:text-gray-300 mb-6 sm:mb-8 leading-relaxed">
                 {article.excerpt}
               </p>
 
               {/* Meta info */}
-              <div className="flex flex-wrap items-center gap-4 sm:gap-6 text-xs sm:text-sm text-gray-500 pt-6 border-t border-gray-100 dark:border-gray-700">
+              <div className="flex flex-wrap items-center gap-4 sm:gap-6 text-xs sm:text-sm text-gray-500 dark:text-gray-400 pt-6 border-t border-gray-100 dark:border-gray-700">
                 <div className="flex items-center gap-2">
                   <div className="w-8 h-8 rounded-full bg-gradient-to-br from-primary-400 to-primary-600 flex items-center justify-center text-white font-semibold text-xs">
                     {article.author.charAt(0)}
@@ -337,11 +337,11 @@ export default function Article() {
                   <span className="font-medium text-gray-700 dark:text-gray-300">{article.author}</span>
                 </div>
                 <div className="flex items-center gap-1.5 sm:gap-2 text-gray-500 dark:text-gray-400">
-                  <Calendar className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-gray-400" />
+                  <Calendar className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-gray-400 dark:text-gray-500" />
                   <span>{formatDate(article.publishedAt)}</span>
                 </div>
                 <div className="flex items-center gap-1.5 sm:gap-2 text-gray-500 dark:text-gray-400">
-                  <Clock className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-gray-400" />
+                  <Clock className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-gray-400 dark:text-gray-500" />
                   <span>{article.readTime} min leestijd</span>
                 </div>
               </div>
@@ -359,14 +359,14 @@ export default function Article() {
               className="grid lg:grid-cols-[1fr,280px] gap-8 lg:gap-12"
             >
               {/* Main content */}
-              <article className="prose prose-sm sm:prose-base lg:prose-lg max-w-none prose-headings:text-gray-900 dark:prose-headings:text-white prose-p:text-gray-600 dark:prose-p:text-gray-300 prose-a:text-primary-600 prose-strong:text-gray-900 dark:prose-strong:text-white dark:prose-invert">
+              <article className="prose prose-sm sm:prose-base lg:prose-lg max-w-none prose-headings:text-gray-900 dark:prose-headings:text-white prose-p:text-gray-600 dark:prose-p:text-gray-300 prose-a:text-primary-600 dark:prose-a:text-primary-400 prose-strong:text-gray-900 dark:prose-strong:text-white dark:prose-invert">
                 {renderContent(article.content)}
 
                 {/* Tags */}
-                <div className="mt-8 lg:mt-12 pt-6 lg:pt-8 border-t border-gray-200 not-prose">
+                <div className="mt-8 lg:mt-12 pt-6 lg:pt-8 border-t border-gray-200 dark:border-gray-700 not-prose">
                   <div className="flex items-center gap-2 flex-wrap">
-                    <Tag className="w-4 h-4 text-gray-400" />
-                    <span className="text-sm text-gray-500 mr-1">Tags:</span>
+                    <Tag className="w-4 h-4 text-gray-400 dark:text-gray-500" />
+                    <span className="text-sm text-gray-500 dark:text-gray-400 mr-1">Tags:</span>
                     {article.tags.map((tag) => (
                       <span
                         key={tag}
@@ -390,11 +390,11 @@ export default function Article() {
                           navigator.clipboard.writeText(window.location.href)
                         }
                       }}
-                      className="p-2 bg-gray-100 dark:bg-gray-800 hover:bg-primary-100 dark:hover:bg-primary-900/30 text-gray-600 dark:text-gray-400 hover:text-primary-600 rounded-lg transition-colors"
+                      className="p-2 bg-gray-100 dark:bg-gray-800 hover:bg-primary-100 dark:hover:bg-primary-900/30 text-gray-600 dark:text-gray-400 hover:text-primary-600 dark:hover:text-primary-400 rounded-lg transition-colors"
                     >
                       <Share2 className="w-5 h-5" />
                     </button>
-                    <button className="p-2 bg-gray-100 dark:bg-gray-800 hover:bg-primary-100 dark:hover:bg-primary-900/30 text-gray-600 dark:text-gray-400 hover:text-primary-600 rounded-lg transition-colors">
+                    <button className="p-2 bg-gray-100 dark:bg-gray-800 hover:bg-primary-100 dark:hover:bg-primary-900/30 text-gray-600 dark:text-gray-400 hover:text-primary-600 dark:hover:text-primary-400 rounded-lg transition-colors">
                       <Bookmark className="w-5 h-5" />
                     </button>
                   </div>
@@ -419,7 +419,7 @@ export default function Article() {
                       </p>
                       <Link
                         to="/start"
-                        className="flex items-center justify-center gap-2 w-full py-3 bg-white dark:bg-gray-900 text-primary-600 font-semibold rounded-xl hover:bg-primary-50 transition-all group"
+                        className="flex items-center justify-center gap-2 w-full py-3 bg-white text-primary-600 font-semibold rounded-xl hover:bg-primary-50 transition-all group"
                       >
                         <span>Start je project</span>
                         <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
@@ -429,9 +429,9 @@ export default function Article() {
 
                   {/* Related articles */}
                   {relatedArticles.length > 0 && (
-                    <div className="bg-gray-50 rounded-2xl p-5">
-                      <h4 className="font-semibold text-gray-900 mb-4 flex items-center gap-2">
-                        <BookOpen className="w-4 h-4 text-primary-600" />
+                    <div className="bg-gray-50 dark:bg-gray-800 rounded-2xl p-5 border border-gray-100 dark:border-gray-700">
+                      <h4 className="font-semibold text-gray-900 dark:text-white mb-4 flex items-center gap-2">
+                        <BookOpen className="w-4 h-4 text-primary-600 dark:text-primary-400" />
                         Gerelateerde artikelen
                       </h4>
                       <div className="space-y-3">
@@ -439,13 +439,13 @@ export default function Article() {
                           <Link
                             key={related.id}
                             to={`/kennisbank/${related.id}`}
-                            className="block p-3 bg-white dark:bg-gray-900 rounded-xl hover:shadow-md transition-all border border-gray-100 group"
+                            className="block p-3 bg-white dark:bg-gray-900 rounded-xl hover:shadow-md dark:hover:shadow-gray-900/50 transition-all border border-gray-100 dark:border-gray-700 group"
                           >
-                            <span className="text-xs text-primary-600 font-medium">{related.category}</span>
-                            <h5 className="text-sm font-medium text-gray-900 mt-1 line-clamp-2 group-hover:text-primary-600 transition-colors">
+                            <span className="text-xs text-primary-600 dark:text-primary-400 font-medium">{related.category}</span>
+                            <h5 className="text-sm font-medium text-gray-900 dark:text-white mt-1 line-clamp-2 group-hover:text-primary-600 dark:group-hover:text-primary-400 transition-colors">
                               {related.title}
                             </h5>
-                            <div className="flex items-center gap-1 mt-2 text-xs text-gray-400">
+                            <div className="flex items-center gap-1 mt-2 text-xs text-gray-400 dark:text-gray-500">
                               <Clock className="w-3 h-3" />
                               <span>{related.readTime} min</span>
                             </div>
@@ -470,9 +470,9 @@ export default function Article() {
                   <Link
                     key={related.id}
                     to={`/kennisbank/${related.id}`}
-                    className="block p-4 sm:p-6 bg-white dark:bg-gray-900 rounded-xl hover:shadow-md transition-shadow"
+                    className="block p-4 sm:p-6 bg-white dark:bg-gray-900 rounded-xl hover:shadow-md dark:hover:shadow-gray-900/50 transition-shadow border border-gray-100 dark:border-gray-700"
                   >
-                    <span className="text-[10px] sm:text-xs text-primary-600 font-medium">{related.category}</span>
+                    <span className="text-[10px] sm:text-xs text-primary-600 dark:text-primary-400 font-medium">{related.category}</span>
                     <h4 className="font-semibold text-gray-900 dark:text-white text-sm sm:text-base mt-1.5 sm:mt-2 mb-1.5 sm:mb-2 line-clamp-2">{related.title}</h4>
                     <p className="text-xs sm:text-sm text-gray-600 dark:text-gray-400 line-clamp-2">{related.excerpt}</p>
                   </Link>
@@ -531,7 +531,7 @@ export default function Article() {
             >
               <Link
                 to="/start"
-                className="group inline-flex items-center justify-center gap-2 px-6 lg:px-8 py-3 lg:py-4 bg-white dark:bg-gray-900 text-primary-600 font-semibold rounded-xl hover:bg-primary-50 transition-all hover:-translate-y-0.5 shadow-lg text-sm lg:text-base"
+                className="group inline-flex items-center justify-center gap-2 px-6 lg:px-8 py-3 lg:py-4 bg-white text-primary-600 font-semibold rounded-xl hover:bg-primary-50 transition-all hover:-translate-y-0.5 shadow-lg text-sm lg:text-base"
               >
                 <span>Start je project</span>
                 <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />

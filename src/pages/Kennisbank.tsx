@@ -21,7 +21,7 @@ import Header from '../components/Header'
 import Footer from '../components/Footer'
 import { articles } from '../data/articles'
 
-// Floating particles component
+// Floating particles component with primary/blue accents
 function FloatingParticles() {
   const particles = [
     { size: 4, x: '10%', y: '20%', delay: 0, duration: 4 },
@@ -39,7 +39,7 @@ function FloatingParticles() {
       {particles.map((p, i) => (
         <motion.div
           key={i}
-          className="absolute rounded-full bg-gradient-to-br from-primary-400 to-blue-500"
+          className="absolute rounded-full bg-gradient-to-br from-primary-400 to-blue-500 dark:from-primary-500 dark:to-blue-600"
           style={{ 
             width: p.size, 
             height: p.size, 
@@ -65,12 +65,12 @@ function FloatingParticles() {
 }
 
 // Category config with icons and colors
-const categoryConfig: Record<string, { icon: typeof BookOpen; color: string; bg: string; gradient: string }> = {
-  'Kosten': { icon: DollarSign, color: 'text-emerald-600', bg: 'bg-emerald-50', gradient: 'from-emerald-500 to-green-600' },
-  'Tips': { icon: Lightbulb, color: 'text-amber-600', bg: 'bg-amber-50', gradient: 'from-amber-500 to-orange-600' },
-  'ZZP': { icon: Briefcase, color: 'text-purple-600', bg: 'bg-purple-50', gradient: 'from-purple-500 to-violet-600' },
-  'SEO': { icon: BarChart3, color: 'text-blue-600', bg: 'bg-blue-50', gradient: 'from-blue-500 to-indigo-600' },
-  'Techniek': { icon: Settings, color: 'text-rose-600', bg: 'bg-rose-50', gradient: 'from-rose-500 to-pink-600' },
+const categoryConfig: Record<string, { icon: typeof BookOpen; color: string; darkColor: string; bg: string; darkBg: string; gradient: string }> = {
+  'Kosten': { icon: DollarSign, color: 'text-emerald-600', darkColor: 'dark:text-emerald-400', bg: 'bg-emerald-50', darkBg: 'dark:bg-emerald-900/30', gradient: 'from-emerald-500 to-green-600' },
+  'Tips': { icon: Lightbulb, color: 'text-amber-600', darkColor: 'dark:text-amber-400', bg: 'bg-amber-50', darkBg: 'dark:bg-amber-900/30', gradient: 'from-amber-500 to-orange-600' },
+  'ZZP': { icon: Briefcase, color: 'text-purple-600', darkColor: 'dark:text-purple-400', bg: 'bg-purple-50', darkBg: 'dark:bg-purple-900/30', gradient: 'from-purple-500 to-violet-600' },
+  'SEO': { icon: BarChart3, color: 'text-blue-600', darkColor: 'dark:text-blue-400', bg: 'bg-blue-50', darkBg: 'dark:bg-blue-900/30', gradient: 'from-blue-500 to-indigo-600' },
+  'Techniek': { icon: Settings, color: 'text-rose-600', darkColor: 'dark:text-rose-400', bg: 'bg-rose-50', darkBg: 'dark:bg-rose-900/30', gradient: 'from-rose-500 to-pink-600' },
 }
 
 const categories = [
@@ -109,23 +109,23 @@ export default function Kennisbank() {
       
       <main>
         {/* Hero Section */}
-        <section className="relative min-h-[50vh] flex items-center overflow-hidden bg-gradient-to-br from-slate-50 via-primary-50/30 to-white pt-20">
+        <section className="relative min-h-[50vh] flex items-center overflow-hidden bg-gradient-to-br from-slate-50 via-primary-50/30 to-white dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 pt-20">
           {/* Background decorations */}
           <div className="absolute inset-0 overflow-hidden pointer-events-none">
             <motion.div 
-              className="absolute top-0 right-0 w-[900px] h-[900px] bg-gradient-to-br from-primary-200/60 via-blue-100/40 to-indigo-100/30 rounded-full blur-3xl -translate-y-1/3 translate-x-1/4"
+              className="absolute top-0 right-0 w-[900px] h-[900px] bg-gradient-to-br from-primary-200/60 via-blue-100/40 to-indigo-100/30 dark:from-primary-900/40 dark:via-blue-900/30 dark:to-indigo-900/20 rounded-full blur-3xl -translate-y-1/3 translate-x-1/4"
               animate={{ scale: [1, 1.05, 1], rotate: [0, 5, 0] }}
               transition={{ duration: 8, repeat: Infinity, ease: "easeInOut" }}
             />
             <motion.div 
-              className="absolute bottom-0 left-0 w-[700px] h-[700px] bg-gradient-to-tr from-blue-100/50 via-primary-100/40 to-transparent rounded-full blur-3xl translate-y-1/3 -translate-x-1/4"
+              className="absolute bottom-0 left-0 w-[700px] h-[700px] bg-gradient-to-tr from-blue-100/50 via-primary-100/40 to-transparent dark:from-blue-900/30 dark:via-primary-900/20 dark:to-transparent rounded-full blur-3xl translate-y-1/3 -translate-x-1/4"
               animate={{ scale: [1, 1.08, 1], rotate: [0, -5, 0] }}
               transition={{ duration: 10, repeat: Infinity, ease: "easeInOut" }}
             />
             <FloatingParticles />
-            <div className="absolute inset-0 bg-[linear-gradient(to_right,#6366f120_1px,transparent_1px),linear-gradient(to_bottom,#6366f120_1px,transparent_1px)] bg-[size:4rem_4rem] [mask-image:radial-gradient(ellipse_80%_50%_at_50%_0%,#000_70%,transparent_110%)]" />
-            <div className="absolute top-20 right-20 w-32 h-32 border border-primary-200/30 rounded-full" />
-            <div className="absolute top-24 right-24 w-24 h-24 border border-primary-300/20 rounded-full" />
+            <div className="absolute inset-0 bg-[linear-gradient(to_right,#6366f120_1px,transparent_1px),linear-gradient(to_bottom,#6366f120_1px,transparent_1px)] dark:bg-[linear-gradient(to_right,#6366f110_1px,transparent_1px),linear-gradient(to_bottom,#6366f110_1px,transparent_1px)] bg-[size:4rem_4rem] [mask-image:radial-gradient(ellipse_80%_50%_at_50%_0%,#000_70%,transparent_110%)]" />
+            <div className="absolute top-20 right-20 w-32 h-32 border border-primary-200/30 dark:border-primary-700/30 rounded-full" />
+            <div className="absolute top-24 right-24 w-24 h-24 border border-primary-300/20 dark:border-primary-600/20 rounded-full" />
           </div>
 
           <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 lg:py-20">
@@ -135,32 +135,32 @@ export default function Kennisbank() {
                   initial={{ opacity: 0, scale: 0.9 }}
                   animate={{ opacity: 1, scale: 1 }}
                   transition={{ delay: 0.1 }}
-                  className="inline-flex items-center gap-2 bg-gradient-to-r from-primary-50 to-blue-50 border border-primary-200/50 rounded-full px-4 py-2 mb-6"
+                  className="inline-flex items-center gap-2 bg-gradient-to-r from-primary-50 to-blue-50 dark:from-primary-900/50 dark:to-blue-900/50 border border-primary-200/50 dark:border-primary-700/50 rounded-full px-4 py-2 mb-6"
                 >
-                  <GraduationCap className="w-4 h-4 text-primary-600" />
-                  <span className="text-sm font-medium text-primary-700">Kennisbank</span>
+                  <GraduationCap className="w-4 h-4 text-primary-600 dark:text-primary-400" />
+                  <span className="text-sm font-medium text-primary-700 dark:text-primary-300">Kennisbank</span>
                 </motion.div>
 
-                <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold text-gray-900 mb-6 leading-tight">
+                <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold text-gray-900 dark:text-white mb-6 leading-tight">
                   Alles over websites{' '}
-                  <span className="bg-gradient-to-r from-primary-600 to-blue-600 bg-clip-text text-transparent">
+                  <span className="bg-gradient-to-r from-primary-600 to-blue-600 dark:from-primary-400 dark:to-blue-400 bg-clip-text text-transparent">
                     voor ondernemers
                   </span>
                 </h1>
 
-                <p className="text-xl text-gray-600 dark:text-gray-400 mb-8 max-w-2xl mx-auto">
+                <p className="text-xl text-gray-600 dark:text-gray-300 mb-8 max-w-2xl mx-auto">
                   Praktische tips, handleidingen en inzichten om het maximale uit je online aanwezigheid te halen.
                 </p>
 
                 {/* Search bar */}
                 <div className="relative max-w-xl mx-auto mb-8">
-                  <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
+                  <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400 dark:text-gray-500" />
                   <input
                     type="text"
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
                     placeholder="Zoek artikelen..."
-                    className="w-full pl-12 pr-4 py-4 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-2xl text-gray-900 dark:text-white placeholder-gray-400 focus:outline-none focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 transition-all shadow-lg shadow-gray-100/50 dark:shadow-gray-900/50"
+                    className="w-full pl-12 pr-4 py-4 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-2xl text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500 focus:outline-none focus:border-primary-500 dark:focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 transition-all shadow-lg shadow-gray-100/50 dark:shadow-gray-900/50"
                   />
                 </div>
 
@@ -174,9 +174,9 @@ export default function Kennisbank() {
                       transition={{ delay: 0.2 + i * 0.1 }}
                       className="text-center"
                     >
-                      <stat.icon className="w-5 h-5 text-primary-600 mx-auto mb-1" />
+                      <stat.icon className="w-5 h-5 text-primary-600 dark:text-primary-400 mx-auto mb-1" />
                       <div className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white">{stat.value}</div>
-                      <div className="text-gray-500 text-xs sm:text-sm">{stat.label}</div>
+                      <div className="text-gray-500 dark:text-gray-400 text-xs sm:text-sm">{stat.label}</div>
                     </motion.div>
                   ))}
                 </div>
@@ -234,7 +234,7 @@ export default function Kennisbank() {
         )}
 
         {/* Category Tabs */}
-        <section className="py-4 lg:py-6 border-b border-gray-100 sticky top-16 bg-white/95 backdrop-blur-xl z-40">
+        <section className="py-4 lg:py-6 border-b border-gray-100 dark:border-gray-800 sticky top-16 bg-white/95 dark:bg-gray-900/95 backdrop-blur-xl z-40">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="flex items-center gap-2 overflow-x-auto pb-2 -mx-4 px-4 sm:mx-0 sm:px-0 scrollbar-hide">
               {categories.map((category) => {
@@ -246,14 +246,14 @@ export default function Kennisbank() {
                     onClick={() => setActiveCategory(category.name)}
                     className={`flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-medium whitespace-nowrap transition-all flex-shrink-0 ${
                       isActive
-                        ? 'bg-gray-900 text-white shadow-lg'
-                        : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                        ? 'bg-gray-900 dark:bg-white text-white dark:text-gray-900 shadow-lg'
+                        : 'bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700'
                     }`}
                   >
                     <Icon className="w-4 h-4" />
                     <span>{category.name}</span>
                     <span className={`text-xs px-1.5 py-0.5 rounded-full ${
-                      isActive ? 'bg-white/20' : 'bg-gray-200'
+                      isActive ? 'bg-white/20 dark:bg-gray-900/20' : 'bg-gray-200 dark:bg-gray-700'
                     }`}>
                       {category.count}
                     </span>
@@ -266,7 +266,7 @@ export default function Kennisbank() {
 
         {/* Trending Articles */}
         {trendingArticles.length > 0 && (
-          <section className="py-12 lg:py-16 bg-gradient-to-b from-white to-gray-50">
+          <section className="py-12 lg:py-16 bg-gradient-to-b from-white to-gray-50 dark:from-gray-900 dark:to-gray-800">
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
               <div className="flex items-center gap-2 mb-8">
                 <div className="w-10 h-10 bg-gradient-to-br from-orange-500 to-amber-600 rounded-xl flex items-center justify-center">
@@ -274,7 +274,7 @@ export default function Kennisbank() {
                 </div>
                 <div>
                   <h2 className="text-xl font-bold text-gray-900 dark:text-white">Populaire artikelen</h2>
-                  <p className="text-gray-500 text-sm">Meest gelezen deze maand</p>
+                  <p className="text-gray-500 dark:text-gray-400 text-sm">Meest gelezen deze maand</p>
                 </div>
               </div>
 
@@ -289,7 +289,7 @@ export default function Kennisbank() {
                       whileInView={{ opacity: 1, y: 0 }}
                       viewport={{ once: true }}
                       transition={{ delay: index * 0.1 }}
-                      className="group bg-white dark:bg-gray-900 border border-gray-200 rounded-2xl overflow-hidden hover:shadow-xl hover:border-gray-300 hover:-translate-y-1 transition-all"
+                      className="group bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-2xl overflow-hidden hover:shadow-xl dark:hover:shadow-gray-900/50 hover:border-gray-300 dark:hover:border-gray-600 hover:-translate-y-1 transition-all"
                     >
                       <div className="relative h-44 overflow-hidden">
                         <img 
@@ -311,11 +311,11 @@ export default function Kennisbank() {
                       
                       <div className="p-5">
                         <div className="flex items-center gap-2 mb-2">
-                          <span className={`text-xs font-semibold ${config.color}`}>
+                          <span className={`text-xs font-semibold ${config.color} ${config.darkColor}`}>
                             {article.category}
                           </span>
-                          <span className="text-gray-300">•</span>
-                          <span className="flex items-center gap-1 text-gray-400 text-xs">
+                          <span className="text-gray-300 dark:text-gray-600">•</span>
+                          <span className="flex items-center gap-1 text-gray-400 dark:text-gray-500 text-xs">
                             <Clock className="w-3 h-3" />
                             {article.readTime} min
                           </span>
@@ -324,13 +324,13 @@ export default function Kennisbank() {
                           to={`/kennisbank/${article.id}`}
                           className="block"
                         >
-                          <h3 className="font-bold text-gray-900 group-hover:text-primary-600 transition-colors line-clamp-2 mb-2">
+                          <h3 className="font-bold text-gray-900 dark:text-white group-hover:text-primary-600 dark:group-hover:text-primary-400 transition-colors line-clamp-2 mb-2">
                             {article.title}
                           </h3>
-                          <p className="text-gray-500 text-sm line-clamp-2 mb-3">
+                          <p className="text-gray-500 dark:text-gray-400 text-sm line-clamp-2 mb-3">
                             {article.excerpt}
                           </p>
-                          <span className="inline-flex items-center gap-1.5 text-primary-600 font-medium text-sm group-hover:gap-2.5 transition-all">
+                          <span className="inline-flex items-center gap-1.5 text-primary-600 dark:text-primary-400 font-medium text-sm group-hover:gap-2.5 transition-all">
                             Lees meer
                             <ArrowRight className="w-4 h-4" />
                           </span>
@@ -351,19 +351,19 @@ export default function Kennisbank() {
               <h2 className="text-2xl font-bold text-gray-900 dark:text-white">
                 {activeCategory}
               </h2>
-              <span className="text-gray-500 text-sm bg-white dark:bg-gray-900 px-3 py-1 rounded-full">
+              <span className="text-gray-500 dark:text-gray-400 text-sm bg-white dark:bg-gray-900 px-3 py-1 rounded-full border border-gray-200 dark:border-gray-700">
                 {filteredArticles.length} artikel{filteredArticles.length !== 1 ? 'en' : ''}
               </span>
             </div>
 
             {filteredArticles.length === 0 ? (
               <div className="text-center py-16 bg-white dark:bg-gray-900 rounded-2xl border border-gray-200 dark:border-gray-700">
-                <Search className="w-12 h-12 text-gray-300 mx-auto mb-4" />
-                <p className="text-gray-500 text-lg mb-2">Geen artikelen gevonden</p>
-                <p className="text-gray-400 text-sm mb-4">Probeer een andere zoekterm of categorie</p>
+                <Search className="w-12 h-12 text-gray-300 dark:text-gray-600 mx-auto mb-4" />
+                <p className="text-gray-500 dark:text-gray-400 text-lg mb-2">Geen artikelen gevonden</p>
+                <p className="text-gray-400 dark:text-gray-500 text-sm mb-4">Probeer een andere zoekterm of categorie</p>
                 <button 
                   onClick={() => { setSearchQuery(''); setActiveCategory('Alle artikelen'); }}
-                  className="text-primary-600 font-medium hover:underline"
+                  className="text-primary-600 dark:text-primary-400 font-medium hover:underline"
                 >
                   Bekijk alle artikelen
                 </button>
@@ -380,7 +380,7 @@ export default function Kennisbank() {
                       whileInView={{ opacity: 1, y: 0 }}
                       viewport={{ once: true }}
                       transition={{ delay: Math.min(index * 0.05, 0.3) }}
-                      className="group bg-white dark:bg-gray-900 border border-gray-200 rounded-2xl overflow-hidden hover:shadow-xl hover:border-gray-300 hover:-translate-y-1 transition-all"
+                      className="group bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-2xl overflow-hidden hover:shadow-xl dark:hover:shadow-gray-900/50 hover:border-gray-300 dark:hover:border-gray-600 hover:-translate-y-1 transition-all"
                     >
                       <div className="relative h-44 overflow-hidden">
                         <img 
@@ -390,9 +390,9 @@ export default function Kennisbank() {
                         />
                         <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent" />
                         
-                        <div className={`absolute top-3 left-3 px-2.5 py-1 rounded-full ${config.bg} flex items-center gap-1.5`}>
-                          <CategoryIcon className={`w-3.5 h-3.5 ${config.color}`} />
-                          <span className={`text-xs font-semibold ${config.color}`}>
+                        <div className={`absolute top-3 left-3 px-2.5 py-1 rounded-full ${config.bg} ${config.darkBg} flex items-center gap-1.5`}>
+                          <CategoryIcon className={`w-3.5 h-3.5 ${config.color} ${config.darkColor}`} />
+                          <span className={`text-xs font-semibold ${config.color} ${config.darkColor}`}>
                             {article.category}
                           </span>
                         </div>
@@ -405,24 +405,24 @@ export default function Kennisbank() {
                       </div>
 
                       <div className="p-5">
-                        <div className="flex items-center gap-2 text-gray-400 text-xs mb-3">
+                        <div className="flex items-center gap-2 text-gray-400 dark:text-gray-500 text-xs mb-3">
                           <Clock className="w-3.5 h-3.5" />
                           <span>{article.readTime} min lezen</span>
                         </div>
 
                         <Link to={`/kennisbank/${article.id}`}>
-                          <h3 className="font-bold text-gray-900 group-hover:text-primary-600 transition-colors line-clamp-2 mb-2">
+                          <h3 className="font-bold text-gray-900 dark:text-white group-hover:text-primary-600 dark:group-hover:text-primary-400 transition-colors line-clamp-2 mb-2">
                             {article.title}
                           </h3>
                         </Link>
 
-                        <p className="text-gray-500 text-sm mb-4 line-clamp-2">
+                        <p className="text-gray-500 dark:text-gray-400 text-sm mb-4 line-clamp-2">
                           {article.excerpt}
                         </p>
 
                         <Link
                           to={`/kennisbank/${article.id}`}
-                          className="inline-flex items-center gap-1.5 text-primary-600 font-medium text-sm group-hover:gap-2.5 transition-all"
+                          className="inline-flex items-center gap-1.5 text-primary-600 dark:text-primary-400 font-medium text-sm group-hover:gap-2.5 transition-all"
                         >
                           Lees artikel
                           <ArrowRight className="w-4 h-4" />
