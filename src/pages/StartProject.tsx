@@ -250,34 +250,35 @@ export default function StartProject() {
       
       <Header />
       
-      <main className="relative z-10 py-12 sm:py-16 lg:py-20">
+      <main className="relative z-10 pt-24 sm:pt-28 pb-12 sm:pb-16 lg:pb-20">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
-          {/* Header */}
+          {/* Header - Compact on mobile */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            className="text-center mb-12 sm:mb-16"
+            className="text-center mb-6 sm:mb-16"
           >
             <motion.div
               initial={{ opacity: 0, scale: 0.9 }}
               animate={{ opacity: 1, scale: 1 }}
               transition={{ delay: 0.1 }}
-              className="inline-flex items-center gap-2 bg-primary-50 dark:bg-primary-900/30 border border-primary-200 dark:border-primary-700 rounded-full px-4 py-2 mb-6"
+              className="hidden sm:inline-flex items-center gap-2 bg-primary-50 dark:bg-primary-900/30 border border-primary-200 dark:border-primary-700 rounded-full px-4 py-2 mb-6"
             >
               <Sparkles className="w-4 h-4 text-primary-600 dark:text-primary-400" />
               <span className="text-sm font-medium text-primary-700 dark:text-primary-300">Start je project</span>
             </motion.div>
             
-            <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-gray-900 dark:text-white mb-4">
+            <h1 className="text-2xl sm:text-4xl lg:text-5xl font-bold text-gray-900 dark:text-white mb-2 sm:mb-4">
               Wat kunnen we voor je{' '}
               <span className="bg-gradient-to-r from-primary-600 to-blue-600 bg-clip-text text-transparent">
                 maken?
               </span>
             </h1>
             
-            <p className="text-lg sm:text-xl text-gray-600 dark:text-gray-300 max-w-2xl mx-auto">
-              Kies een dienst en doorloop onze slimme wizard. 
-              Binnen 5 minuten heb je je project aangevraagd.
+            <p className="text-sm sm:text-xl text-gray-600 dark:text-gray-300 max-w-2xl mx-auto">
+              <span className="sm:hidden">Kies een dienst en start direct.</span>
+              <span className="hidden sm:inline">Kies een dienst en doorloop onze slimme wizard. 
+              Binnen 5 minuten heb je je project aangevraagd.</span>
             </p>
           </motion.div>
 
@@ -289,7 +290,7 @@ export default function StartProject() {
               <ArrowRight className="w-3 h-3" />
             </div>
             
-            <div className="flex gap-3 overflow-x-auto pb-4 -mx-4 px-4 snap-x snap-mandatory scrollbar-hide" style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
+            <div className="flex gap-4 overflow-x-auto pb-4 -mx-4 px-4 snap-x snap-mandatory scrollbar-hide" style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
               {services.map((service, index) => {
                 const Icon = service.icon
                 
@@ -300,47 +301,47 @@ export default function StartProject() {
                     animate={{ opacity: 1, x: 0 }}
                     transition={{ delay: 0.1 + index * 0.05 }}
                     onClick={() => setSelectedService(service.id)}
-                    className="relative flex-shrink-0 w-[260px] snap-center text-left bg-white dark:bg-gray-800 rounded-2xl border border-gray-200 dark:border-gray-700 overflow-hidden shadow-sm active:scale-[0.98] transition-transform"
+                    className="relative flex-shrink-0 w-[300px] snap-center text-left bg-white dark:bg-gray-800 rounded-2xl border-2 border-gray-200 dark:border-gray-700 overflow-hidden shadow-md active:scale-[0.98] transition-transform"
                   >
                     {/* Popular badge */}
                     {service.popular && (
                       <div className="absolute top-3 right-3 z-10">
-                        <span className="bg-gradient-to-r from-primary-500 to-blue-600 text-white text-[10px] font-bold px-2 py-0.5 rounded-full">
+                        <span className="bg-gradient-to-r from-primary-500 to-blue-600 text-white text-xs font-bold px-2.5 py-1 rounded-full shadow-lg">
                           Populair
                         </span>
                       </div>
                     )}
                     
                     {/* Colored header with icon */}
-                    <div className={`bg-gradient-to-br ${service.gradient} p-4 flex items-center gap-3`}>
-                      <div className="w-11 h-11 rounded-xl bg-white/20 flex items-center justify-center">
-                        <Icon className="w-6 h-6 text-white" />
+                    <div className={`bg-gradient-to-br ${service.gradient} p-5 flex items-center gap-4`}>
+                      <div className="w-14 h-14 rounded-2xl bg-white/20 backdrop-blur-sm flex items-center justify-center shadow-lg">
+                        <Icon className="w-7 h-7 text-white" />
                       </div>
-                      <div className="text-white">
-                        <h3 className="font-bold text-lg">{service.name}</h3>
-                        <p className="text-white/80 text-xs">{service.description}</p>
+                      <div className="text-white flex-1">
+                        <h3 className="font-bold text-xl">{service.name}</h3>
+                        <p className="text-white/80 text-sm">{service.description}</p>
                       </div>
                     </div>
                     
-                    <div className="p-4">
+                    <div className="p-5">
                       {/* Price */}
-                      <div className="mb-3">
-                        <span className="text-xl font-bold text-gray-900 dark:text-white">{service.price}</span>
-                        <span className="text-xs text-gray-500 dark:text-gray-400 ml-1">{service.priceNote}</span>
+                      <div className="mb-4 pb-4 border-b border-gray-100 dark:border-gray-700">
+                        <span className="text-2xl font-bold text-gray-900 dark:text-white">{service.price}</span>
+                        <span className="text-sm text-gray-500 dark:text-gray-400 ml-1">{service.priceNote}</span>
                       </div>
                       
-                      {/* Compact features - 2x2 grid */}
-                      <div className="grid grid-cols-2 gap-1.5 mb-4">
+                      {/* Features - vertical list */}
+                      <div className="space-y-2.5 mb-5">
                         {service.features.map((feature, i) => (
-                          <div key={i} className="flex items-center gap-1.5 text-xs text-gray-600 dark:text-gray-300">
-                            <Check className="w-3 h-3 text-green-500 flex-shrink-0" />
-                            <span className="truncate">{feature}</span>
+                          <div key={i} className="flex items-center gap-2.5 text-sm text-gray-600 dark:text-gray-300">
+                            <Check className="w-4 h-4 text-green-500 flex-shrink-0" />
+                            <span>{feature}</span>
                           </div>
                         ))}
                       </div>
                       
                       {/* CTA */}
-                      <div className={`flex items-center justify-center gap-2 py-2.5 rounded-xl bg-gradient-to-r ${service.gradient} text-white font-semibold text-sm`}>
+                      <div className={`flex items-center justify-center gap-2 py-3.5 rounded-xl bg-gradient-to-r ${service.gradient} text-white font-semibold shadow-lg`}>
                         <span>Starten</span>
                         <ArrowRight className="w-4 h-4" />
                       </div>
@@ -351,11 +352,11 @@ export default function StartProject() {
             </div>
             
             {/* Dot indicators */}
-            <div className="flex justify-center gap-1.5 mt-2">
+            <div className="flex justify-center gap-2 mt-3">
               {services.map((_, index) => (
                 <div
                   key={index}
-                  className={`w-1.5 h-1.5 rounded-full ${index === 0 ? 'bg-primary-500 w-4' : 'bg-gray-300 dark:bg-gray-600'}`}
+                  className={`h-2 rounded-full transition-all ${index === 0 ? 'bg-primary-500 w-6' : 'bg-gray-300 dark:bg-gray-600 w-2'}`}
                 />
               ))}
             </div>
