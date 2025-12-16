@@ -8,7 +8,8 @@ import {
   PenTool,
   ArrowRight,
   Check,
-  Sparkles
+  Sparkles,
+  ChevronLeft
 } from 'lucide-react'
 import Header from '../components/Header'
 import Footer from '../components/Footer'
@@ -165,54 +166,80 @@ export default function StartProject() {
   // If a service is selected, show the appropriate onboarding
   if (selectedService === 'website') {
     return (
-      <>
+      <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-primary-50/30 dark:from-gray-900 dark:via-gray-900 dark:to-gray-900">
         <Header />
-        <WebsiteOnboarding 
-          initialPackage={(pakket as 'starter' | 'professional' | 'business') || 'professional'}
-          onClose={handleBack}
-          isFullPage={true}
-        />
-      </>
+        <main className="pt-4">
+          <div className="max-w-4xl mx-auto px-4 sm:px-6 mb-4">
+            <button
+              onClick={handleBack}
+              className="flex items-center gap-2 text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 transition-colors"
+            >
+              <ChevronLeft className="w-4 h-4" />
+              <span className="text-sm">Andere dienst kiezen</span>
+            </button>
+          </div>
+          <WebsiteOnboarding 
+            isStandalone={false}
+            initialPackage={(pakket as 'starter' | 'professional' | 'business') || 'professional'}
+            onClose={handleBack}
+          />
+        </main>
+        <Footer />
+      </div>
     )
   }
 
   if (selectedService === 'webshop') {
     return (
-      <>
+      <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-emerald-50/30 dark:from-gray-900 dark:via-gray-900 dark:to-gray-900">
         <Header />
-        <WebshopOnboarding 
-          initialPackage={(pakket as 'starter' | 'professional') || 'professional'}
-          onClose={handleBack}
-          isFullPage={true}
-        />
-      </>
+        <main className="pt-4">
+          <div className="max-w-4xl mx-auto px-4 sm:px-6 mb-4">
+            <button
+              onClick={handleBack}
+              className="flex items-center gap-2 text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 transition-colors"
+            >
+              <ChevronLeft className="w-4 h-4" />
+              <span className="text-sm">Andere dienst kiezen</span>
+            </button>
+          </div>
+          <WebshopOnboarding 
+            isStandalone={false}
+            onClose={handleBack}
+          />
+        </main>
+        <Footer />
+      </div>
     )
   }
 
   if (selectedService === 'drone') {
     return (
-      <>
+      <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-orange-50/30 dark:from-gray-900 dark:via-gray-900 dark:to-gray-900">
         <Header />
-        <DroneOnboarding 
-          initialPackage={(pakket as 'basis' | 'professional' | 'premium') || 'professional'}
-          onClose={handleBack}
-          isFullPage={true}
-        />
-      </>
+        <main className="pt-4">
+          <div className="max-w-4xl mx-auto px-4 sm:px-6 mb-4">
+            <button
+              onClick={handleBack}
+              className="flex items-center gap-2 text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 transition-colors"
+            >
+              <ChevronLeft className="w-4 h-4" />
+              <span className="text-sm">Andere dienst kiezen</span>
+            </button>
+          </div>
+          <DroneOnboarding 
+            isStandalone={false}
+            initialPackage={(pakket as 'basis' | 'professional' | 'premium') || 'professional'}
+            onClose={handleBack}
+          />
+        </main>
+        <Footer />
+      </div>
     )
   }
 
   if (selectedService === 'logo') {
-    return (
-      <>
-        <Header />
-        <LogoOnboarding 
-          initialPackage={(pakket as 'basis' | 'uitgebreid') || 'uitgebreid'}
-          onClose={handleBack}
-          isFullPage={true}
-        />
-      </>
-    )
+    return <LogoOnboarding onClose={handleBack} />
   }
 
   // Service selection screen
