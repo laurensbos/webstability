@@ -430,7 +430,7 @@ export default function Luchtvideografie() {
                 </span>
               </motion.h2>
             </div>
-            <div className="flex flex-wrap justify-center gap-3">
+            <div className="flex gap-3 overflow-x-auto pb-4 -mx-4 px-4 sm:mx-0 sm:px-0 scrollbar-hide sm:flex-wrap sm:justify-center">
               {useCases.map((useCase, index) => (
                 <motion.span
                   key={index}
@@ -438,7 +438,7 @@ export default function Luchtvideografie() {
                   whileInView={{ opacity: 1, scale: 1 }}
                   viewport={{ once: true }}
                   transition={{ delay: index * 0.05 }}
-                  className="px-5 py-2.5 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-full text-gray-700 dark:text-gray-300 text-sm font-medium shadow-sm hover:border-orange-300 dark:hover:border-orange-600 hover:bg-gradient-to-r hover:from-orange-50 hover:to-amber-50 dark:hover:from-orange-900/20 dark:hover:to-amber-900/20 hover:shadow-md transition-all cursor-default"
+                  className="flex-shrink-0 snap-start px-5 py-2.5 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-full text-gray-700 dark:text-gray-300 text-sm font-medium shadow-sm hover:border-orange-300 dark:hover:border-orange-600 hover:bg-gradient-to-r hover:from-orange-50 hover:to-amber-50 dark:hover:from-orange-900/20 dark:hover:to-amber-900/20 hover:shadow-md transition-all cursor-default"
                 >
                   {useCase}
                 </motion.span>
