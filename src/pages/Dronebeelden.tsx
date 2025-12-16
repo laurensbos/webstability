@@ -277,7 +277,7 @@ export default function Luchtvideografie() {
               </motion.p>
             </div>
 
-            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8">
+            <div className="flex md:grid md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6 lg:gap-8 overflow-x-auto md:overflow-visible pb-4 md:pb-0 snap-x snap-mandatory scrollbar-hide -mx-4 px-4 md:mx-0 md:px-0">
               {features.map((feature, index) => (
                 <motion.div
                   key={index}
@@ -285,7 +285,7 @@ export default function Luchtvideografie() {
                   whileInView={{ opacity: 1, y: 0 }}
                   viewport={{ once: true }}
                   transition={{ delay: index * 0.1 }}
-                  className="group p-6 bg-white dark:bg-gray-800 border border-gray-200/80 dark:border-gray-700 rounded-2xl shadow-sm hover:shadow-xl hover:border-orange-200 dark:hover:border-orange-700 hover:-translate-y-1 transition-all"
+                  className="group p-6 bg-white dark:bg-gray-800 border border-gray-200/80 dark:border-gray-700 rounded-2xl shadow-sm hover:shadow-xl hover:border-orange-200 dark:hover:border-orange-700 hover:-translate-y-1 transition-all min-w-[280px] md:min-w-0 snap-center flex-shrink-0 md:flex-shrink"
                 >
                   {/* Icon + Title row */}
                   <div className="flex items-center gap-4 mb-4">
@@ -343,7 +343,7 @@ export default function Luchtvideografie() {
               </motion.p>
             </div>
 
-            <div className="grid md:grid-cols-3 gap-6">
+            <div className="flex md:grid md:grid-cols-3 gap-4 md:gap-6 overflow-x-auto md:overflow-visible pb-4 md:pb-0 snap-x snap-mandatory scrollbar-hide -mx-4 px-4 md:mx-0 md:px-0">
               {[
                 {
                   icon: Award,
@@ -370,7 +370,7 @@ export default function Luchtvideografie() {
                   whileInView={{ opacity: 1, y: 0 }}
                   viewport={{ once: true }}
                   transition={{ delay: index * 0.1 }}
-                  className="relative p-6 bg-white/5 backdrop-blur-sm border border-white/10 rounded-2xl hover:bg-white/10 transition-all"
+                  className="relative p-6 bg-white/5 backdrop-blur-sm border border-white/10 rounded-2xl hover:bg-white/10 transition-all min-w-[280px] md:min-w-0 snap-center flex-shrink-0 md:flex-shrink"
                 >
                   <div className="absolute -top-3 right-4">
                     <span className="px-3 py-1 bg-gradient-to-r from-orange-500 to-amber-500 text-white text-xs font-semibold rounded-full shadow-lg">
@@ -496,7 +496,7 @@ export default function Luchtvideografie() {
               </motion.p>
             </div>
 
-            <div className="grid md:grid-cols-3 gap-6">
+            <div className="flex md:grid md:grid-cols-3 gap-4 md:gap-6 overflow-x-auto md:overflow-visible pb-4 md:pb-0 snap-x snap-mandatory scrollbar-hide -mx-4 px-4 md:mx-0 md:px-0">
               {portfolioVideos.map((video, index) => (
                 <motion.div
                   key={video.id}
@@ -504,7 +504,7 @@ export default function Luchtvideografie() {
                   whileInView={{ opacity: 1, y: 0 }}
                   viewport={{ once: true }}
                   transition={{ delay: index * 0.1 }}
-                  className="group relative aspect-video rounded-2xl overflow-hidden shadow-2xl shadow-black/50 ring-1 ring-orange-500/20 hover:ring-orange-500/40 transition-all hover:-translate-y-1"
+                  className="group relative aspect-video rounded-2xl overflow-hidden shadow-2xl shadow-black/50 ring-1 ring-orange-500/20 hover:ring-orange-500/40 transition-all hover:-translate-y-1 min-w-[280px] md:min-w-0 snap-center flex-shrink-0 md:flex-shrink"
                 >
                   {/* Video iframe - background mode, autoplay, muted, loop */}
                   <iframe

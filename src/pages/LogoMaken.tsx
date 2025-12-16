@@ -228,14 +228,14 @@ export default function LogoMaken() {
               </motion.p>
             </div>
 
-            {/* Logo mockup grid */}
-            <div className="grid md:grid-cols-3 gap-6 mb-12">
+            {/* Logo mockup grid - Mobile: horizontal scroll, Desktop: grid */}
+            <div className="flex md:grid md:grid-cols-3 gap-4 md:gap-6 mb-12 overflow-x-auto md:overflow-visible pb-4 md:pb-0 snap-x snap-mandatory scrollbar-hide -mx-4 px-4 md:mx-0 md:px-0">
               {/* Business card mockup */}
               <motion.div
                 initial={{ opacity: 0, y: 20 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
-                className="group relative bg-gradient-to-br from-gray-100 to-gray-50 dark:from-gray-800/50 dark:to-gray-900 rounded-2xl p-8 aspect-[4/3] flex items-center justify-center overflow-hidden border border-transparent dark:border-gray-700/50"
+                className="group relative bg-gradient-to-br from-gray-100 to-gray-50 dark:from-gray-800/50 dark:to-gray-900 rounded-2xl p-8 aspect-[4/3] flex items-center justify-center overflow-hidden border border-transparent dark:border-gray-700/50 min-w-[280px] md:min-w-0 snap-center flex-shrink-0 md:flex-shrink"
               >
                 <div className="absolute inset-0 bg-gradient-to-br from-purple-500/5 to-violet-500/5 dark:from-purple-500/10 dark:to-violet-500/10 opacity-0 group-hover:opacity-100 transition-opacity" />
                 <div className="relative">
@@ -266,7 +266,7 @@ export default function LogoMaken() {
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
                 transition={{ delay: 0.1 }}
-                className="group relative bg-gradient-to-br from-gray-100 to-gray-50 dark:from-gray-800/50 dark:to-gray-900 rounded-2xl p-8 aspect-[4/3] flex items-center justify-center overflow-hidden border border-transparent dark:border-gray-700/50"
+                className="group relative bg-gradient-to-br from-gray-100 to-gray-50 dark:from-gray-800/50 dark:to-gray-900 rounded-2xl p-8 aspect-[4/3] flex items-center justify-center overflow-hidden border border-transparent dark:border-gray-700/50 min-w-[280px] md:min-w-0 snap-center flex-shrink-0 md:flex-shrink"
               >
                 <div className="absolute inset-0 bg-gradient-to-br from-purple-500/5 to-violet-500/5 dark:from-purple-500/10 dark:to-violet-500/10 opacity-0 group-hover:opacity-100 transition-opacity" />
                 <div className="relative w-full max-w-[240px]">
@@ -308,7 +308,7 @@ export default function LogoMaken() {
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
                 transition={{ delay: 0.2 }}
-                className="group relative bg-gradient-to-br from-gray-100 to-gray-50 dark:from-gray-800/50 dark:to-gray-900 rounded-2xl p-8 aspect-[4/3] flex items-center justify-center overflow-hidden border border-transparent dark:border-gray-700/50"
+                className="group relative bg-gradient-to-br from-gray-100 to-gray-50 dark:from-gray-800/50 dark:to-gray-900 rounded-2xl p-8 aspect-[4/3] flex items-center justify-center overflow-hidden border border-transparent dark:border-gray-700/50 min-w-[280px] md:min-w-0 snap-center flex-shrink-0 md:flex-shrink"
               >
                 <div className="absolute inset-0 bg-gradient-to-br from-purple-500/5 to-violet-500/5 dark:from-purple-500/10 dark:to-violet-500/10 opacity-0 group-hover:opacity-100 transition-opacity" />
                 <div className="relative flex gap-3">
