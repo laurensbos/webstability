@@ -418,7 +418,7 @@ export default function DroneOnboarding({
     <div className={`${isStandalone ? 'min-h-screen bg-gradient-to-br from-orange-50 via-white to-amber-50' : ''}`}>
       {/* Header for standalone */}
       {isStandalone && (
-        <header className="sticky top-0 z-50 bg-white/80 backdrop-blur-lg border-b border-orange-100">
+        <header className="sticky top-0 z-50 bg-white/80 dark:bg-gray-900/80 backdrop-blur-lg border-b border-orange-100 dark:border-gray-700">
           <div className="max-w-4xl mx-auto px-4 sm:px-6 py-4">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-3">
@@ -464,16 +464,16 @@ export default function DroneOnboarding({
                           ? 'border-orange-500 bg-orange-500' 
                           : isCurrent 
                             ? 'border-orange-500 bg-white shadow-lg shadow-orange-500/20' 
-                            : 'border-gray-200 bg-gray-50'
+                            : 'border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800'
                       }`}
                     >
                       {isCompleted ? (
                         <Check className="w-5 h-5 text-white" />
                       ) : (
-                        <Icon className={`w-5 h-5 ${isCurrent ? 'text-orange-500' : 'text-gray-400'}`} />
+                        <Icon className={`w-5 h-5 ${isCurrent ? 'text-orange-500 dark:text-orange-400' : 'text-gray-400 dark:text-gray-500'}`} />
                       )}
                     </motion.div>
-                    <span className={`mt-2 text-xs font-medium hidden sm:block ${isCurrent ? 'text-orange-600' : 'text-gray-500'}`}>
+                    <span className={`mt-2 text-xs font-medium hidden sm:block ${isCurrent ? 'text-orange-600 dark:text-orange-400' : 'text-gray-500 dark:text-gray-400'}`}>
                       {step.title}
                     </span>
                   </div>
@@ -495,7 +495,7 @@ export default function DroneOnboarding({
         </div>
 
         {/* Form Content */}
-        <form onSubmit={e => e.preventDefault()} className="bg-white dark:bg-gray-900 rounded-2xl shadow-xl border border-orange-100 overflow-hidden">
+        <form onSubmit={e => e.preventDefault()} className="bg-white dark:bg-gray-900 rounded-2xl shadow-xl border border-orange-100 dark:border-gray-700 overflow-hidden">
           <div className="p-6 sm:p-8">
             <AnimatePresence mode="wait">
               {/* Step 1: Package Selection */}
@@ -509,7 +509,7 @@ export default function DroneOnboarding({
                 >
                   <div>
                     <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-1">Kies je drone pakket</h3>
-                    <p className="text-gray-500 text-sm">Selecteer het pakket dat het beste past bij je project</p>
+                    <p className="text-gray-500 dark:text-gray-400 text-sm">Selecteer het pakket dat het beste past bij je project</p>
                   </div>
 
                   <div className="grid md:grid-cols-3 gap-4">
@@ -525,7 +525,7 @@ export default function DroneOnboarding({
                           className={`relative p-5 rounded-xl border-2 text-left transition-all ${
                             isSelected
                               ? 'border-orange-500 bg-gradient-to-br from-orange-50 to-amber-50 shadow-lg shadow-orange-500/20'
-                              : 'border-gray-200 hover:border-orange-200 hover:shadow-md bg-white'
+                              : 'border-gray-200 dark:border-gray-700 hover:border-orange-200 dark:hover:border-orange-500 hover:shadow-md bg-white dark:bg-gray-800'
                           }`}
                         >
                           {pkg.popular && (
@@ -540,7 +540,7 @@ export default function DroneOnboarding({
                             <span className="text-2xl font-bold text-orange-600">€{pkg.price}</span>
                             <span className="text-sm text-gray-500 dark:text-gray-400">incl. BTW</span>
                           </div>
-                          <p className="text-xs text-gray-500 mb-3">{pkg.description}</p>
+                          <p className="text-xs text-gray-500 dark:text-gray-400 mb-3">{pkg.description}</p>
                           <ul className="space-y-1.5">
                             {pkg.features.map((feature, i) => (
                               <li key={i} className="flex items-center gap-2 text-xs text-gray-600 dark:text-gray-400">
@@ -579,12 +579,12 @@ export default function DroneOnboarding({
                 >
                   <div>
                     <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-1">Locatie & Planning</h3>
-                    <p className="text-gray-500 text-sm">Waar en wanneer gaan we filmen?</p>
+                    <p className="text-gray-500 dark:text-gray-400 text-sm">Waar en wanneer gaan we filmen?</p>
                   </div>
 
                   {/* Location Type */}
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-3">Type locatie *</label>
+                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-3">Type locatie *</label>
                     <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
                       {LOCATION_TYPES.map((type) => {
                         const Icon = type.icon
@@ -600,8 +600,8 @@ export default function DroneOnboarding({
                                 : 'border-gray-200 hover:border-orange-200'
                             }`}
                           >
-                            <Icon className={`w-5 h-5 mb-2 ${isSelected ? 'text-orange-600' : 'text-gray-400'}`} />
-                            <p className={`font-medium text-sm ${isSelected ? 'text-orange-700' : 'text-gray-700'}`}>{type.name}</p>
+                            <Icon className={`w-5 h-5 mb-2 ${isSelected ? 'text-orange-600 dark:text-orange-400' : 'text-gray-400 dark:text-gray-500'}`} />
+                            <p className={`font-medium text-sm ${isSelected ? 'text-orange-700 dark:text-orange-300' : 'text-gray-700 dark:text-gray-300'}`}>{type.name}</p>
                             <p className="text-xs text-gray-500 dark:text-gray-400">{type.description}</p>
                           </button>
                         )
@@ -613,18 +613,18 @@ export default function DroneOnboarding({
                   {/* Address */}
                   <div className="grid md:grid-cols-2 gap-4">
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1">Adres (optioneel)</label>
+                      <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Adres (optioneel)</label>
                       <input
                         type="text"
                         value={data.locationAddress}
                         onChange={e => updateData({ locationAddress: e.target.value })}
-                        className="w-full px-4 py-2.5 rounded-xl border border-gray-200 focus:ring-2 focus:ring-orange-500 focus:border-orange-500"
+                        className="w-full px-4 py-2.5 rounded-xl border border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-orange-500 focus:border-orange-500"
                         placeholder="Straatnaam + huisnummer"
                       />
                     </div>
                     <div className="grid grid-cols-2 gap-3">
                       <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">Plaats *</label>
+                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Plaats *</label>
                         <input
                           type="text"
                           value={data.locationCity}
@@ -634,12 +634,12 @@ export default function DroneOnboarding({
                         />
                       </div>
                       <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">Postcode</label>
+                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Postcode</label>
                         <input
                           type="text"
                           value={data.locationPostalCode}
                           onChange={e => updateData({ locationPostalCode: e.target.value })}
-                          className="w-full px-4 py-2.5 rounded-xl border border-gray-200 focus:ring-2 focus:ring-orange-500"
+                          className="w-full px-4 py-2.5 rounded-xl border border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-orange-500"
                           placeholder="1234 AB"
                         />
                       </div>
@@ -648,12 +648,12 @@ export default function DroneOnboarding({
 
                   {/* Location Notes */}
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">Bijzonderheden locatie</label>
+                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Bijzonderheden locatie</label>
                     <textarea
                       value={data.locationNotes}
                       onChange={e => updateData({ locationNotes: e.target.value })}
                       rows={2}
-                      className="w-full px-4 py-2.5 rounded-xl border border-gray-200 focus:ring-2 focus:ring-orange-500"
+                      className="w-full px-4 py-2.5 rounded-xl border border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-orange-500"
                       placeholder="Bijv. parkeermogelijkheden, toegang, hoogtebeperkingen..."
                     />
                   </div>
@@ -661,7 +661,7 @@ export default function DroneOnboarding({
                   {/* Date Selection */}
                   <div className="grid md:grid-cols-2 gap-4">
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1">Voorkeursdatum *</label>
+                      <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Voorkeursdatum *</label>
                       <input
                         type="date"
                         value={data.preferredDate}
@@ -671,20 +671,20 @@ export default function DroneOnboarding({
                       />
                     </div>
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1">Alternatieve datum</label>
+                      <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Alternatieve datum</label>
                       <input
                         type="date"
                         value={data.alternativeDate}
                         onChange={e => updateData({ alternativeDate: e.target.value })}
                         min={getMinDate()}
-                        className="w-full px-4 py-2.5 rounded-xl border border-gray-200 focus:ring-2 focus:ring-orange-500"
+                        className="w-full px-4 py-2.5 rounded-xl border border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-orange-500"
                       />
                     </div>
                   </div>
 
                   {/* Time Preference */}
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-3">Tijdvoorkeur *</label>
+                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-3">Tijdvoorkeur *</label>
                     <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
                       {TIME_PREFERENCES.map((time) => {
                         const Icon = time.icon
@@ -700,8 +700,8 @@ export default function DroneOnboarding({
                                 : 'border-gray-200 hover:border-orange-200'
                             }`}
                           >
-                            <Icon className={`w-5 h-5 mx-auto mb-1 ${isSelected ? 'text-orange-600' : 'text-gray-400'}`} />
-                            <p className={`font-medium text-sm ${isSelected ? 'text-orange-700' : 'text-gray-700'}`}>{time.name}</p>
+                            <Icon className={`w-5 h-5 mx-auto mb-1 ${isSelected ? 'text-orange-600 dark:text-orange-400' : 'text-gray-400 dark:text-gray-500'}`} />
+                            <p className={`font-medium text-sm ${isSelected ? 'text-orange-700 dark:text-orange-300' : 'text-gray-700 dark:text-gray-300'}`}>{time.name}</p>
                             <p className="text-xs text-gray-500 dark:text-gray-400">{time.description}</p>
                           </button>
                         )
@@ -729,11 +729,11 @@ export default function DroneOnboarding({
                 >
                   <div>
                     <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-1">Project Details</h3>
-                    <p className="text-gray-500 text-sm">Vertel ons meer over je project</p>
+                    <p className="text-gray-500 dark:text-gray-400 text-sm">Vertel ons meer over je project</p>
                   </div>
 
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">Projectnaam / Bedrijfsnaam *</label>
+                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Projectnaam / Bedrijfsnaam *</label>
                     <input
                       type="text"
                       value={data.projectName}
@@ -745,7 +745,7 @@ export default function DroneOnboarding({
                   </div>
 
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">Beschrijf wat je wilt vastleggen *</label>
+                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Beschrijf wat je wilt vastleggen *</label>
                     <textarea
                       value={data.projectDescription}
                       onChange={e => updateData({ projectDescription: e.target.value })}
@@ -758,7 +758,7 @@ export default function DroneOnboarding({
 
                   {/* Deliverables */}
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-3">Gewenste deliverables *</label>
+                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-3">Gewenste deliverables *</label>
                     <div className="grid md:grid-cols-2 gap-3">
                       {DELIVERABLES.map((deliverable) => {
                         const isSelected = data.deliverables.includes(deliverable.name)
@@ -779,7 +779,7 @@ export default function DroneOnboarding({
                               {isSelected && <Check className="w-3 h-3 text-white" />}
                             </div>
                             <div>
-                              <p className={`font-medium text-sm ${isSelected ? 'text-orange-700' : 'text-gray-700'}`}>{deliverable.name}</p>
+                              <p className={`font-medium text-sm ${isSelected ? 'text-orange-700 dark:text-orange-300' : 'text-gray-700 dark:text-gray-300'}`}>{deliverable.name}</p>
                               <p className="text-xs text-gray-500 dark:text-gray-400">{deliverable.description}</p>
                             </div>
                           </button>
@@ -791,8 +791,8 @@ export default function DroneOnboarding({
 
                   {/* Reference Material */}
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-3">Referentiemateriaal (optioneel)</label>
-                    <p className="text-xs text-gray-500 mb-3">Upload voorbeelden of geef links naar video's/foto's die je mooi vindt</p>
+                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-3">Referentiemateriaal (optioneel)</label>
+                    <p className="text-xs text-gray-500 dark:text-gray-400 mb-3">Upload voorbeelden of geef links naar video's/foto's die je mooi vindt</p>
                     
                     <div className="space-y-3">
                       {/* File Upload */}
@@ -811,9 +811,9 @@ export default function DroneOnboarding({
                           id="reference-upload"
                         />
                         <label htmlFor="reference-upload" className="cursor-pointer">
-                          <Upload className="w-8 h-8 mx-auto mb-2 text-gray-400" />
+                          <Upload className="w-8 h-8 mx-auto mb-2 text-gray-400 dark:text-gray-500" />
                           <p className="font-medium text-gray-600 dark:text-gray-400">Klik om bestanden te uploaden</p>
-                          <p className="text-xs text-gray-400">Afbeeldingen of video's</p>
+                          <p className="text-xs text-gray-400 dark:text-gray-500">Afbeeldingen of video's</p>
                         </label>
                       </div>
 
@@ -822,7 +822,7 @@ export default function DroneOnboarding({
                         <div className="space-y-2">
                           {data.referenceFiles.map((file, idx) => (
                             <div key={idx} className="flex items-center justify-between bg-orange-50 px-3 py-2 rounded-lg text-sm">
-                              <span className="flex items-center gap-2 text-gray-700 truncate">
+                              <span className="flex items-center gap-2 text-gray-700 dark:text-gray-300 truncate">
                                 <CheckCircle className="w-4 h-4 text-orange-600 flex-shrink-0" />
                                 {file.name}
                               </span>
@@ -843,12 +843,12 @@ export default function DroneOnboarding({
 
                       {/* URL Input */}
                       <div className="flex items-center gap-2">
-                        <Link className="w-4 h-4 text-gray-400" />
+                        <Link className="w-4 h-4 text-gray-400 dark:text-gray-500" />
                         <input
                           type="text"
                           value={data.referenceUrls}
                           onChange={e => updateData({ referenceUrls: e.target.value })}
-                          className="flex-1 px-4 py-2 rounded-xl border border-gray-200 focus:ring-2 focus:ring-orange-500"
+                          className="flex-1 px-4 py-2 rounded-xl border border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-orange-500"
                           placeholder="Link naar YouTube, Vimeo of Pinterest..."
                         />
                       </div>
@@ -868,22 +868,22 @@ export default function DroneOnboarding({
                 >
                   <div>
                     <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-1">Contactgegevens</h3>
-                    <p className="text-gray-500 text-sm">Hoe kunnen we je bereiken?</p>
+                    <p className="text-gray-500 dark:text-gray-400 text-sm">Hoe kunnen we je bereiken?</p>
                   </div>
 
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">Bedrijfsnaam (optioneel)</label>
+                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Bedrijfsnaam (optioneel)</label>
                     <input
                       type="text"
                       value={data.companyName}
                       onChange={e => updateData({ companyName: e.target.value })}
-                      className="w-full px-4 py-2.5 rounded-xl border border-gray-200 focus:ring-2 focus:ring-orange-500"
+                      className="w-full px-4 py-2.5 rounded-xl border border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-orange-500"
                       placeholder="Je bedrijfsnaam"
                     />
                   </div>
 
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">Contactpersoon *</label>
+                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Contactpersoon *</label>
                     <input
                       type="text"
                       value={data.contactName}
@@ -896,7 +896,7 @@ export default function DroneOnboarding({
 
                   <div className="grid md:grid-cols-2 gap-4">
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1">E-mailadres *</label>
+                      <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">E-mailadres *</label>
                       <input
                         type="email"
                         value={data.email}
@@ -907,7 +907,7 @@ export default function DroneOnboarding({
                       {errors.email && <p className="text-red-500 text-sm mt-1">{errors.email}</p>}
                     </div>
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1">Telefoonnummer *</label>
+                      <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Telefoonnummer *</label>
                       <input
                         type="tel"
                         value={data.phone}
@@ -938,7 +938,7 @@ export default function DroneOnboarding({
                 >
                   <div>
                     <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-1">Bevestig je aanvraag</h3>
-                    <p className="text-gray-500 text-sm">Controleer je gegevens en verstuur</p>
+                    <p className="text-gray-500 dark:text-gray-400 text-sm">Controleer je gegevens en verstuur</p>
                   </div>
 
                   {/* Summary */}
@@ -982,12 +982,12 @@ export default function DroneOnboarding({
 
                   {/* Additional Notes */}
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">Aanvullende opmerkingen</label>
+                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Aanvullende opmerkingen</label>
                     <textarea
                       value={data.additionalNotes}
                       onChange={e => updateData({ additionalNotes: e.target.value })}
                       rows={3}
-                      className="w-full px-4 py-2.5 rounded-xl border border-gray-200 focus:ring-2 focus:ring-orange-500"
+                      className="w-full px-4 py-2.5 rounded-xl border border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-orange-500"
                       placeholder="Nog iets dat we moeten weten?"
                     />
                   </div>
@@ -1046,7 +1046,7 @@ export default function DroneOnboarding({
 
                   {/* Terms */}
                   <div className="space-y-3">
-                    <label className={`flex items-start gap-3 p-3 rounded-xl cursor-pointer transition-colors ${errors.agreedToTerms ? 'bg-red-50 border border-red-200' : 'bg-gray-50 hover:bg-gray-100'}`}>
+                    <label className={`flex items-start gap-3 p-3 rounded-xl cursor-pointer transition-colors ${errors.agreedToTerms ? 'bg-red-50 dark:bg-red-900/30 border border-red-200 dark:border-red-800' : 'bg-gray-50 dark:bg-gray-800 hover:bg-gray-100 dark:hover:bg-gray-700'}`}>
                       <input
                         type="checkbox"
                         checked={data.agreedToTerms}
@@ -1058,7 +1058,7 @@ export default function DroneOnboarding({
                       </span>
                     </label>
 
-                    <label className={`flex items-start gap-3 p-3 rounded-xl cursor-pointer transition-colors ${errors.agreedToWeather ? 'bg-red-50 border border-red-200' : 'bg-gray-50 hover:bg-gray-100'}`}>
+                    <label className={`flex items-start gap-3 p-3 rounded-xl cursor-pointer transition-colors ${errors.agreedToWeather ? 'bg-red-50 dark:bg-red-900/30 border border-red-200 dark:border-red-800' : 'bg-gray-50 dark:bg-gray-800 hover:bg-gray-100 dark:hover:bg-gray-700'}`}>
                       <input
                         type="checkbox"
                         checked={data.agreedToWeather}
@@ -1076,7 +1076,7 @@ export default function DroneOnboarding({
           </div>
 
           {/* Footer Navigation */}
-          <div className="px-6 sm:px-8 py-4 bg-gray-50 border-t border-gray-100 flex items-center justify-between">
+          <div className="px-6 sm:px-8 py-4 bg-gray-50 dark:bg-gray-800 border-t border-gray-100 dark:border-gray-700 flex items-center justify-between">
             {currentStep > 1 ? (
               <button
                 type="button"
