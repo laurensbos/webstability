@@ -196,6 +196,8 @@ function Sidebar({
   pendingOnboarding,
   onLogout
 }: SidebarProps) {
+  const [showHelp, setShowHelp] = useState(false)
+  
   const navItemsWithBadges = NAV_ITEMS.map(item => ({
     ...item,
     badge: item.id === 'messages' ? unreadMessages : 
@@ -229,10 +231,12 @@ function Sidebar({
             : 'bg-white border-r border-gray-200'
         }`}
       >
-        {/* Logo */}
+        {/* Logo - clickable to go home */}
         <div className={`p-6 border-b ${darkMode ? 'border-gray-800' : 'border-gray-200'}`}>
           <div className="flex items-center justify-between">
-            <Logo variant={darkMode ? 'white' : 'default'} />
+            <a href="/" className="hover:opacity-80 transition-opacity">
+              <Logo variant={darkMode ? 'white' : 'default'} />
+            </a>
             <button
               onClick={() => setIsOpen(false)}
               className={`lg:hidden p-2 rounded-lg ${
@@ -289,7 +293,20 @@ function Sidebar({
         </nav>
 
         {/* Bottom section */}
-        <div className={`p-4 border-t ${darkMode ? 'border-gray-800' : 'border-gray-200'}`}>
+        <div className={`p-4 border-t ${darkMode ? 'border-gray-800' : 'border-gray-200'} space-y-2`}>
+          <motion.button
+            whileHover={{ x: 4 }}
+            whileTap={{ scale: 0.98 }}
+            onClick={() => setShowHelp(true)}
+            className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-colors ${
+              darkMode 
+                ? 'text-gray-400 hover:text-blue-400 hover:bg-blue-900/20' 
+                : 'text-gray-600 hover:text-blue-600 hover:bg-blue-50'
+            }`}
+          >
+            <HelpCircle className="w-5 h-5" />
+            <span className="font-medium">Hulp & Proces</span>
+          </motion.button>
           <motion.button
             whileHover={{ x: 4 }}
             whileTap={{ scale: 0.98 }}
@@ -305,6 +322,118 @@ function Sidebar({
           </motion.button>
         </div>
       </motion.aside>
+
+      {/* Help Modal */}
+      <AnimatePresence>
+        {showHelp && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-[60] flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm"
+            onClick={() => setShowHelp(false)}
+          >
+            <motion.div
+              initial={{ scale: 0.95, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.95, opacity: 0 }}
+              onClick={(e) => e.stopPropagation()}
+              className={`w-full max-w-2xl max-h-[85vh] overflow-y-auto rounded-2xl p-6 ${
+                darkMode ? 'bg-gray-800' : 'bg-white'
+              }`}
+            >
+              <div className="flex items-center justify-between mb-6">
+                <h2 className={`text-xl font-bold ${darkMode ? 'text-white' : 'text-gray-900'}`}>
+                  📚 Hulp & Procesoverzicht
+                </h2>
+                <button
+                  onClick={() => setShowHelp(false)}
+                  className={`p-2 rounded-lg ${darkMode ? 'hover:bg-gray-700' : 'hover:bg-gray-100'}`}
+                >
+                  <X className="w-5 h-5" />
+                </button>
+              </div>
+
+              {/* Process Steps */}
+              <div className="space-y-4">
+                <div className={`p-4 rounded-xl ${darkMode ? 'bg-gray-700/50' : 'bg-gray-50'}`}>
+                  <h3 className={`font-semibold mb-2 flex items-center gap-2 ${darkMode ? 'text-yellow-400' : 'text-yellow-600'}`}>
+                    <span className="w-6 h-6 rounded-full bg-yellow-500 text-white text-xs flex items-center justify-center">1</span>
+                    Onboarding
+                  </h3>
+                  <p className={`text-sm ${darkMode ? 'text-gray-300' : 'text-gray-600'}`}>
+                    Nieuwe klant meldt zich aan via de website. Je ontvangt de bedrijfsgegevens, wensen en evt. logo/content.
+                    Bekijk de onboarding data en neem contact op voor eventuele vragen.
+                  </p>
+                </div>
+
+                <div className={`p-4 rounded-xl ${darkMode ? 'bg-gray-700/50' : 'bg-gray-50'}`}>
+                  <h3 className={`font-semibold mb-2 flex items-center gap-2 ${darkMode ? 'text-blue-400' : 'text-blue-600'}`}>
+                    <span className="w-6 h-6 rounded-full bg-blue-500 text-white text-xs flex items-center justify-center">2</span>
+                    Design
+                  </h3>
+                  <p className={`text-sm ${darkMode ? 'text-gray-300' : 'text-gray-600'}`}>
+                    Maak het design in Figma of direct in code. Deel een preview link met de klant via berichten.
+                    <strong className="block mt-1">⚠️ Betaling wordt pas verstuurd NA goedkeuring van het design!</strong>
+                  </p>
+                </div>
+
+                <div className={`p-4 rounded-xl ${darkMode ? 'bg-gray-700/50' : 'bg-gray-50'}`}>
+                  <h3 className={`font-semibold mb-2 flex items-center gap-2 ${darkMode ? 'text-purple-400' : 'text-purple-600'}`}>
+                    <span className="w-6 h-6 rounded-full bg-purple-500 text-white text-xs flex items-center justify-center">3</span>
+                    Development
+                  </h3>
+                  <p className={`text-sm ${darkMode ? 'text-gray-300' : 'text-gray-600'}`}>
+                    Bouw de website op basis van het goedgekeurde design. Zet de staging URL in het project.
+                    Stuur een betaallink via "Betalingen" → klant betaalt via Mollie.
+                  </p>
+                </div>
+
+                <div className={`p-4 rounded-xl ${darkMode ? 'bg-gray-700/50' : 'bg-gray-50'}`}>
+                  <h3 className={`font-semibold mb-2 flex items-center gap-2 ${darkMode ? 'text-orange-400' : 'text-orange-600'}`}>
+                    <span className="w-6 h-6 rounded-full bg-orange-500 text-white text-xs flex items-center justify-center">4</span>
+                    Review
+                  </h3>
+                  <p className={`text-sm ${darkMode ? 'text-gray-300' : 'text-gray-600'}`}>
+                    Klant bekijkt de staging site en geeft feedback. Verwerk feedback en vraag om finale goedkeuring.
+                  </p>
+                </div>
+
+                <div className={`p-4 rounded-xl ${darkMode ? 'bg-gray-700/50' : 'bg-gray-50'}`}>
+                  <h3 className={`font-semibold mb-2 flex items-center gap-2 ${darkMode ? 'text-green-400' : 'text-green-600'}`}>
+                    <span className="w-6 h-6 rounded-full bg-green-500 text-white text-xs flex items-center justify-center">5</span>
+                    Live
+                  </h3>
+                  <p className={`text-sm ${darkMode ? 'text-gray-300' : 'text-gray-600'}`}>
+                    Website gaat live! Zet de live URL in het project. Klant betaalt maandelijks via Mollie abonnement.
+                  </p>
+                </div>
+              </div>
+
+              {/* Quick Tips */}
+              <div className={`mt-6 p-4 rounded-xl border ${darkMode ? 'border-blue-500/30 bg-blue-900/20' : 'border-blue-200 bg-blue-50'}`}>
+                <h3 className={`font-semibold mb-2 ${darkMode ? 'text-blue-400' : 'text-blue-700'}`}>
+                  💡 Snelle tips
+                </h3>
+                <ul className={`text-sm space-y-1 ${darkMode ? 'text-blue-300' : 'text-blue-600'}`}>
+                  <li>• <strong>Berichten:</strong> Direct chatten met klanten per project</li>
+                  <li>• <strong>Betalingen:</strong> Genereer Mollie betaallinks, beheer kortingscodes</li>
+                  <li>• <strong>Drag & drop:</strong> Sleep projecten tussen fases in Kanban view</li>
+                  <li>• <strong>Sneltoetsen:</strong> D = dark mode, Escape = sluit modals</li>
+                  <li>• <strong>Auto-refresh:</strong> Data ververst elke 30 seconden</li>
+                </ul>
+              </div>
+
+              <button
+                onClick={() => setShowHelp(false)}
+                className="w-full mt-6 py-3 bg-blue-500 hover:bg-blue-600 text-white font-semibold rounded-xl transition-colors"
+              >
+                Begrepen!
+              </button>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </>
   )
 }
@@ -1296,10 +1425,12 @@ interface ProjectsViewProps {
   darkMode: boolean
   projects: Project[]
   onUpdateProject: (project: Project) => void
+  onDeleteProject: (projectId: string) => void
   onSelectProject: (project: Project) => void
+  onNavigateToPayments?: () => void
 }
 
-function ProjectsView({ darkMode, projects, onUpdateProject, onSelectProject }: ProjectsViewProps) {
+function ProjectsView({ darkMode, projects, onUpdateProject, onDeleteProject, onSelectProject, onNavigateToPayments }: ProjectsViewProps) {
   const [viewMode, setViewMode] = useState<'kanban' | 'list'>('kanban')
   const [filterPhase, setFilterPhase] = useState<ProjectPhase | 'all'>('all')
   const [filterPayment, setFilterPayment] = useState<PaymentStatus | 'all'>('all')
@@ -1698,6 +1829,8 @@ function ProjectsView({ darkMode, projects, onUpdateProject, onSelectProject }: 
               setSelectedProject(null)
             }}
             onUpdate={onUpdateProject}
+            onDelete={onDeleteProject}
+            onPaymentClick={onNavigateToPayments}
             phases={phases}
           />
         )}
@@ -1715,10 +1848,12 @@ interface ProjectDetailModalProps {
   darkMode: boolean
   onClose: () => void
   onUpdate: (project: Project) => void
+  onDelete?: (projectId: string) => void
+  onPaymentClick?: () => void
   phases: { key: ProjectPhase; label: string; color: string }[]
 }
 
-function ProjectDetailModal({ project, darkMode, onClose, onUpdate, phases }: ProjectDetailModalProps) {
+function ProjectDetailModal({ project, darkMode, onClose, onUpdate, onDelete, onPaymentClick, phases }: ProjectDetailModalProps) {
   const [activeTab, setActiveTab] = useState<'overview' | 'messages' | 'settings'>('overview')
   const [editPhase, setEditPhase] = useState(project.phase)
   const [editPaymentStatus, setEditPaymentStatus] = useState(project.paymentStatus)
@@ -2045,11 +2180,14 @@ function ProjectDetailModal({ project, darkMode, onClose, onUpdate, phases }: Pr
 
               {/* Quick Actions */}
               <div className="grid grid-cols-2 gap-4">
-                <button className={`p-4 rounded-xl border text-left transition-colors ${
-                  darkMode 
-                    ? 'bg-gray-700/50 border-gray-600 hover:border-blue-500' 
-                    : 'bg-gray-50 border-gray-200 hover:border-blue-300'
-                }`}>
+                <a 
+                  href={`mailto:${project.contactEmail}?subject=Webstability - ${project.businessName}`}
+                  className={`p-4 rounded-xl border text-left transition-colors ${
+                    darkMode 
+                      ? 'bg-gray-700/50 border-gray-600 hover:border-blue-500' 
+                      : 'bg-gray-50 border-gray-200 hover:border-blue-300'
+                  }`}
+                >
                   <Mail className={`w-5 h-5 mb-2 ${darkMode ? 'text-blue-400' : 'text-blue-500'}`} />
                   <h4 className={`font-semibold ${darkMode ? 'text-white' : 'text-gray-900'}`}>
                     E-mail versturen
@@ -2057,12 +2195,15 @@ function ProjectDetailModal({ project, darkMode, onClose, onUpdate, phases }: Pr
                   <p className={`text-sm ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>
                     Stuur een e-mail naar de klant
                   </p>
-                </button>
-                <button className={`p-4 rounded-xl border text-left transition-colors ${
-                  darkMode 
-                    ? 'bg-gray-700/50 border-gray-600 hover:border-green-500' 
-                    : 'bg-gray-50 border-gray-200 hover:border-green-300'
-                }`}>
+                </a>
+                <button 
+                  onClick={onPaymentClick}
+                  className={`p-4 rounded-xl border text-left transition-colors ${
+                    darkMode 
+                      ? 'bg-gray-700/50 border-gray-600 hover:border-green-500' 
+                      : 'bg-gray-50 border-gray-200 hover:border-green-300'
+                  }`}
+                >
                   <CreditCard className={`w-5 h-5 mb-2 ${darkMode ? 'text-green-400' : 'text-green-500'}`} />
                   <h4 className={`font-semibold ${darkMode ? 'text-white' : 'text-gray-900'}`}>
                     Betaallink maken
@@ -2071,6 +2212,26 @@ function ProjectDetailModal({ project, darkMode, onClose, onUpdate, phases }: Pr
                     Genereer een Mollie betaallink
                   </p>
                 </button>
+              </div>
+
+              {/* Danger Zone */}
+              <div className={`mt-6 p-4 rounded-xl border ${darkMode ? 'border-red-500/30 bg-red-900/10' : 'border-red-200 bg-red-50'}`}>
+                <h4 className={`font-semibold mb-3 ${darkMode ? 'text-red-400' : 'text-red-700'}`}>
+                  ⚠️ Gevarenzone
+                </h4>
+                <div className="flex flex-wrap gap-3">
+                  <button
+                    onClick={() => {
+                      if (window.confirm(`Weet je zeker dat je het project "${project.businessName}" wilt verwijderen? Dit kan niet ongedaan worden gemaakt.`)) {
+                        onDelete?.(project.id)
+                        onClose()
+                      }
+                    }}
+                    className="px-4 py-2 bg-red-500 hover:bg-red-600 text-white text-sm font-medium rounded-lg transition-colors"
+                  >
+                    Project verwijderen
+                  </button>
+                </div>
               </div>
             </div>
           )}
@@ -4886,6 +5047,32 @@ export default function DeveloperDashboardNew() {
     }
   }
 
+  // Delete project via API and local state
+  const handleDeleteProject = async (projectId: string) => {
+    // Optimistically remove from local state
+    setProjects(prev => prev.filter(p => p.id !== projectId))
+
+    // Delete from API/database
+    try {
+      const token = sessionStorage.getItem(TOKEN_KEY)
+      const response = await fetch(`/api/projects?id=${projectId}`, {
+        method: 'DELETE',
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      })
+      
+      if (!response.ok) {
+        console.error('Failed to delete project')
+        // Reload data to restore state
+        loadData()
+      }
+    } catch (error) {
+      console.error('Error deleting project:', error)
+      loadData()
+    }
+  }
+
   // Update service request via API
   const handleUpdateService = async (updatedRequest: ServiceRequest) => {
     // Optimistically update local state
@@ -4988,7 +5175,9 @@ export default function DeveloperDashboardNew() {
                     darkMode={darkMode} 
                     projects={projects}
                     onUpdateProject={handleUpdateProject}
+                    onDeleteProject={handleDeleteProject}
                     onSelectProject={setSelectedProject}
+                    onNavigateToPayments={() => setActiveView('payments')}
                   />
                 )}
                 {activeView === 'clients' && (

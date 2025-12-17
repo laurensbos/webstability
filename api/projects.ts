@@ -89,6 +89,9 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       case 'PUT':
         return await updateProject(req, res)
       
+      case 'DELETE':
+        return await deleteProject(req, res)
+      
       default:
         return res.status(405).json({ error: 'Method not allowed' })
     }
@@ -269,4 +272,32 @@ async function updateProject(req: VercelRequest, res: VercelResponse) {
   console.log(`Project updated: ${updated.id}`)
   
   return res.status(200).json({ success: true, project: updated })
+}
+
+// DELETE - Project verwijderen
+async function deleteProject(req: VercelRequest, res: VercelResponse) {
+  const id = req.query.id as string
+  
+  if (!id) {
+    return res.status(400).json({ error: 'Project ID is verplicht' })
+  }
+  
+  const existing = await kv!.get<Project>(`project:${id}`)
+  
+  if (!existing) {
+    return res.status(404).json({ error: 'Project niet gevonden' })
+  }
+  
+  // Remove from projects set
+  await kv!.srem('projects', id)
+  
+  // Delete the project data
+  await kv!.del(`project:${id}`)
+  
+  // Also delete associated password if exists
+  await kv!.del(`project:${id}:password`)
+  
+  console.log(`Project deleted: ${id}`)
+  
+  return res.status(200).json({ success: true, message: 'Project verwijderd' })
 }
