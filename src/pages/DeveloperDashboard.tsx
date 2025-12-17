@@ -223,7 +223,7 @@ function Sidebar({
         initial={false}
         animate={{ x: isOpen ? 0 : '-100%' }}
         transition={{ type: 'spring', damping: 25, stiffness: 200 }}
-        className={`fixed left-0 top-0 bottom-0 w-72 z-50 lg:translate-x-0 lg:static lg:z-auto flex flex-col ${
+        className={`fixed left-0 top-0 bottom-0 w-72 z-50 lg:relative lg:translate-x-0 lg:z-auto flex-shrink-0 flex flex-col ${
           darkMode 
             ? 'bg-gray-900 border-r border-gray-800' 
             : 'bg-white border-r border-gray-200'
@@ -4939,7 +4939,7 @@ export default function DeveloperDashboardNew() {
       />
 
       {/* Main content area */}
-      <div className="flex-1 flex flex-col min-w-0">
+      <div className="flex-1 flex flex-col min-w-0 w-full lg:w-[calc(100%-18rem)]">
         {/* Header */}
         <Header
           darkMode={darkMode}
@@ -4956,11 +4956,12 @@ export default function DeveloperDashboardNew() {
 
         {/* Main content */}
         <main className="flex-1 p-4 lg:p-6 overflow-auto pb-24 md:pb-6 dashboard-scroll">
-          {loading ? (
-            <div className="flex items-center justify-center h-64">
-              <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500"></div>
-            </div>
-          ) : (
+          <div className="max-w-7xl mx-auto">
+            {loading ? (
+              <div className="flex items-center justify-center h-64">
+                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500"></div>
+              </div>
+            ) : (
             <AnimatePresence mode="wait">
               <motion.div
                 key={activeView}
@@ -5029,6 +5030,7 @@ export default function DeveloperDashboardNew() {
               </motion.div>
             </AnimatePresence>
           )}
+          </div>
         </main>
 
         {/* Mobile Bottom Navigation */}
