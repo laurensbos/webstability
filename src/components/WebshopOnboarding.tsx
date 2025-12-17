@@ -1045,25 +1045,29 @@ export default function WebshopOnboarding({
                           </button>
                         </div>
                       ) : (
-                        <div className="flex gap-2">
+                        <div className="flex flex-col sm:flex-row gap-2">
                           <input
                             type="text"
                             value={formData.discountCode}
                             onChange={(e) => updateFormData('discountCode', e.target.value.toUpperCase())}
                             placeholder="Bijv. GRATIS26"
+                            autoComplete="off"
+                            autoCorrect="off"
+                            autoCapitalize="characters"
+                            spellCheck="false"
                             className="flex-1 px-4 py-2.5 rounded-xl border-0 bg-gray-800/50 text-white placeholder-white/40 focus:ring-2 focus:ring-white/50 focus:outline-none text-sm"
                           />
                           <button
                             onClick={checkDiscountCode}
                             disabled={isCheckingDiscount || !formData.discountCode.trim()}
-                            className={`px-4 py-2.5 rounded-xl font-medium transition-all text-sm ${
+                            className={`w-full sm:w-auto px-4 py-2.5 rounded-xl font-medium transition-all text-sm whitespace-nowrap ${
                               formData.discountCode.trim() 
                                 ? 'bg-white text-gray-900 hover:bg-gray-100' 
                                 : 'bg-white/30 text-white/50 cursor-not-allowed'
                             }`}
                           >
                             {isCheckingDiscount ? (
-                              <Loader2 className="w-4 h-4 animate-spin" />
+                              <Loader2 className="w-4 h-4 animate-spin mx-auto" />
                             ) : (
                               'Toepassen'
                             )}
