@@ -44,12 +44,13 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       }
 
       // Return onboarding-specific data
+      const editableStatuses = ['onboarding', 'intake', 'pending', 'awaiting_payment', 'new']
       return res.status(200).json({
         projectId: project.id,
         serviceType: project.type,
         formData: project.onboardingData || {},
         currentPhase: project.status,
-        canEdit: project.status === 'onboarding' || project.status === 'intake',
+        canEdit: editableStatuses.includes(project.status),
         messages: [], // TODO: Get messages from database
         timeline: getTimeline(project.type, project.status),
         createdAt: project.createdAt,
@@ -102,18 +103,20 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         return res.status(404).json({ error: 'Project not found' })
       }
 
-      // Check if still editable
-      if (existingProject.status !== 'onboarding' && existingProject.status !== 'intake') {
+      // Check if still editable - allow during early stages
+      const editableStatuses = ['onboarding', 'intake', 'pending', 'awaiting_payment', 'new']
+      if (!editableStatuses.includes(existingProject.status)) {
         return res.status(403).json({ 
           error: 'Project kan niet meer bewerkt worden',
           canEdit: false 
         })
       }
 
-      // Update project
+      // Update project - include package if provided
       const updatedProject = {
         ...existingProject,
         type: serviceType || existingProject.type,
+        packageType: formData?.package || formData?.packageType || existingProject.packageType,
         customer: {
           name: formData?.contactName || existingProject.customer.name,
           email: formData?.contactEmail || existingProject.customer.email,

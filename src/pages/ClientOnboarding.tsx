@@ -432,13 +432,20 @@ export default function ClientOnboarding() {
       })
       
       if (response.ok) {
+        const data = await response.json()
+        // If we got a new projectId, update the URL
+        if (data.projectId && !projectId) {
+          window.history.replaceState({}, '', `/intake/${serviceType}/${data.projectId}`)
+        }
         setSuccess('Voortgang opgeslagen!')
         setTimeout(() => setSuccess(''), 3000)
       } else {
-        throw new Error('Failed to save')
+        const errorData = await response.json().catch(() => ({}))
+        throw new Error(errorData.error || 'Failed to save')
       }
     } catch (err) {
-      setError('Kon niet opslaan. Probeer opnieuw.')
+      const message = err instanceof Error ? err.message : 'Kon niet opslaan. Probeer opnieuw.'
+      setError(message)
     } finally {
       setSaving(false)
     }
@@ -489,30 +496,40 @@ export default function ClientOnboarding() {
     }
   }
 
-  // Handle package upgrade request
+  // Handle package upgrade - direct upgrade, no confirmation needed
   const handleUpgradeRequest = (newPackageId: string) => {
-    // Open a modal or redirect to upgrade page
-    // For now, we'll show a message and update the package in formData
     const packageNames: Record<string, string> = {
       'starter': 'Starter',
       'professional': 'Professioneel',
-      'business': 'Business'
+      'business': 'Business',
+      'webshopStarter': 'Webshop Starter',
+      'webshopPro': 'Webshop Pro'
+    }
+
+    const packagePrices: Record<string, string> = {
+      'starter': '€99/maand',
+      'professional': '€149/maand',
+      'business': '€249/maand',
+      'webshopStarter': '€349/maand',
+      'webshopPro': '€599/maand'
     }
     
-    if (window.confirm(
-      `Wil je upgraden naar het ${packageNames[newPackageId]} pakket?\n\n` +
-      `Dit geeft je toegang tot meer functies. ` +
-      `We nemen contact op om de upgrade te bespreken.`
-    )) {
-      // Mark upgrade request
-      setFormData(prev => ({
-        ...prev,
-        upgradeRequested: newPackageId,
-        upgradeRequestedAt: new Date().toISOString()
-      }))
-      setSuccess(`Upgrade aanvraag naar ${packageNames[newPackageId]} genoteerd! We nemen contact op.`)
-      setTimeout(() => setSuccess(''), 5000)
-    }
+    // Directly upgrade the package
+    setFormData(prev => ({
+      ...prev,
+      package: newPackageId,
+      packageType: newPackageId,
+      previousPackage: prev.package || prev.packageType,
+      upgradedAt: new Date().toISOString()
+    }))
+    
+    setSuccess(`✨ Geüpgraded naar ${packageNames[newPackageId] || newPackageId} (${packagePrices[newPackageId] || ''})`)
+    setTimeout(() => setSuccess(''), 4000)
+    
+    // Auto-save after upgrade
+    setTimeout(() => {
+      saveProgress()
+    }, 500)
   }
 
   // Render the appropriate form step based on service type and current step
