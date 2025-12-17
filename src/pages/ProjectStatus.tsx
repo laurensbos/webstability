@@ -194,8 +194,23 @@ export default function ProjectStatus() {
   const [lookupLoading, setLookupLoading] = useState(false)
   const [lookupResults, setLookupResults] = useState<Project[]>([])
   const [lookupError, setLookupError] = useState('')
+  const [lastRefresh, setLastRefresh] = useState<Date | null>(null)
 
   const phaseColors = project ? getPhaseColor(project.status) : getPhaseColor('onboarding')
+
+  // Polling for real-time updates (every 30 seconds when verified)
+  useEffect(() => {
+    if (!isVerified || !projectId) return
+
+    const pollData = () => {
+      fetchProject(projectId)
+      fetchMessages(projectId)
+      setLastRefresh(new Date())
+    }
+
+    const interval = setInterval(pollData, 30000) // Poll every 30 seconds
+    return () => clearInterval(interval)
+  }, [isVerified, projectId])
 
   // Check for existing session or password in URL
   useEffect(() => {
@@ -212,6 +227,7 @@ export default function ProjectStatus() {
       fetchMessages(projectId)
       fetchOnboardingStatus(projectId)
       setLoading(false)
+      setLastRefresh(new Date())
     } else if (pwd) {
       // Password in URL from Header modal
       verifyPassword(projectId, pwd)
@@ -887,9 +903,16 @@ export default function ProjectStatus() {
             <Link to="/" className="hover:opacity-80 transition">
               <Logo variant="white" />
             </Link>
-            <span className="px-3 py-1.5 sm:px-4 sm:py-2 bg-white/10 backdrop-blur-sm rounded-full text-white/90 text-xs sm:text-sm border border-white/20 font-medium">
-              {projectId}
-            </span>
+            <div className="flex items-center gap-3">
+              {lastRefresh && (
+                <span className="hidden sm:block text-xs text-white/50">
+                  Bijgewerkt: {lastRefresh.toLocaleTimeString('nl-NL', { hour: '2-digit', minute: '2-digit' })}
+                </span>
+              )}
+              <span className="px-3 py-1.5 sm:px-4 sm:py-2 bg-white/10 backdrop-blur-sm rounded-full text-white/90 text-xs sm:text-sm border border-white/20 font-medium">
+                {projectId}
+              </span>
+            </div>
           </div>
         </header>
 
