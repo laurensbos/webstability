@@ -2408,7 +2408,7 @@ function MessagesView({ darkMode, projects, onUpdateProject }: MessagesViewProps
     }
   }, [selectedProjectId])
 
-  const handleSendMessage = () => {
+  const handleSendMessage = async () => {
     if (!newMessage.trim() || !selectedProject) return
 
     const message: ChatMessage = {
@@ -2419,13 +2419,33 @@ function MessagesView({ darkMode, projects, onUpdateProject }: MessagesViewProps
       read: true,
     }
 
-    onUpdateProject({
+    // Optimistically update UI
+    const updatedProject = {
       ...selectedProject,
       messages: [...selectedProject.messages, message],
       updatedAt: new Date().toISOString(),
-    })
-
+    }
+    onUpdateProject(updatedProject)
     setNewMessage('')
+
+    // Send to API
+    try {
+      const token = sessionStorage.getItem('webstability_dev_token')
+      await fetch('/api/developer/messages', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify({
+          projectId: selectedProject.id,
+          message: message.message
+        })
+      })
+    } catch (error) {
+      console.error('Error sending message:', error)
+      // Could revert optimistic update here if needed
+    }
   }
 
   const getUnreadCount = (project: Project) => 
@@ -2868,7 +2888,7 @@ interface PaymentsViewProps {
   onUpdateProject: (project: Project) => void
 }
 
-// Discount codes database (in production this would come from API)
+// Discount codes loaded from API
 interface DiscountCode {
   code: string
   type: 'percentage' | 'fixed'
@@ -2880,13 +2900,6 @@ interface DiscountCode {
   active: boolean
 }
 
-const PRESET_DISCOUNT_CODES: DiscountCode[] = [
-  { code: 'WELKOM10', type: 'percentage', value: 10, description: '10% korting voor nieuwe klanten', usedCount: 15, active: true },
-  { code: 'KERST2025', type: 'percentage', value: 15, description: 'Kerst actie 15% korting', validUntil: '2025-12-31', usedCount: 8, active: true },
-  { code: 'LOYAL25', type: 'fixed', value: 25, description: '€25 korting voor terugkerende klanten', usedCount: 3, active: true },
-  { code: 'PARTNER50', type: 'percentage', value: 50, description: 'Partner korting 50%', usedCount: 2, active: false },
-]
-
 // Package prices (monthly)
 const PACKAGE_PRICING = {
   starter: { name: 'Starter', monthlyExVat: 79.34, monthlyInclVat: 96 },
@@ -2897,7 +2910,8 @@ const PACKAGE_PRICING = {
 
 function PaymentsView({ darkMode, projects, onUpdateProject }: PaymentsViewProps) {
   const [activeTab, setActiveTab] = useState<'overview' | 'create' | 'discounts'>('overview')
-  const [discountCodes, setDiscountCodes] = useState<DiscountCode[]>(PRESET_DISCOUNT_CODES)
+  const [discountCodes, setDiscountCodes] = useState<DiscountCode[]>([])
+  const [_loadingDiscounts, setLoadingDiscounts] = useState(true)
   
   // Payment link creation state
   const [selectedProjectId, setSelectedProjectId] = useState<string>('')
@@ -2908,6 +2922,33 @@ function PaymentsView({ darkMode, projects, onUpdateProject }: PaymentsViewProps
   const [customDiscount, setCustomDiscount] = useState<string>('')
   const [customDiscountType, setCustomDiscountType] = useState<'percentage' | 'fixed'>('percentage')
   const [generatedLink, setGeneratedLink] = useState<string>('')
+
+  // Load discount codes from API on mount
+  useEffect(() => {
+    loadDiscountCodes()
+  }, [])
+  
+  const loadDiscountCodes = async () => {
+    try {
+      const token = sessionStorage.getItem('webstability_dev_token')
+      const response = await fetch('/api/discounts', {
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      })
+      
+      if (response.ok) {
+        const data = await response.json()
+        if (data.success && data.discounts) {
+          setDiscountCodes(data.discounts)
+        }
+      }
+    } catch (error) {
+      console.error('Error loading discount codes:', error)
+    } finally {
+      setLoadingDiscounts(false)
+    }
+  }
   const [isGenerating, setIsGenerating] = useState(false)
   const [copySuccess, setCopySuccess] = useState(false)
 
@@ -2964,36 +3005,71 @@ function PaymentsView({ darkMode, projects, onUpdateProject }: PaymentsViewProps
 
   const prices = calculateFinalPrice()
 
-  // Generate payment link
+  // Generate payment link via Mollie API
   const generatePaymentLink = async () => {
     if (!selectedProject && !useCustomAmount) return
     
     setIsGenerating(true)
     
     try {
-      // In production, this would call the API to create a Mollie payment link
-      // For now, we simulate it
-      await new Promise(resolve => setTimeout(resolve, 1500))
+      const token = sessionStorage.getItem('webstability_dev_token')
       
-      const baseUrl = 'https://webstability.nl/betalen'
-      const params = new URLSearchParams({
-        project: selectedProjectId || 'custom',
-        amount: prices.final.toFixed(2),
-        desc: description || `Betaling ${selectedProject?.businessName || 'Custom'}`,
-        ...(selectedDiscount && { discount: selectedDiscount }),
+      // Call the payment API to create a Mollie payment
+      const response = await fetch('/api/create-payment', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify({
+          projectId: selectedProjectId || undefined,
+          amount: prices.final.toFixed(2),
+          description: description || `Betaling ${selectedProject?.businessName || 'Custom'}`,
+          discountCode: selectedDiscount || undefined,
+          customerEmail: selectedProject?.contactEmail || undefined,
+          customerName: selectedProject?.contactName || selectedProject?.businessName || undefined,
+        })
       })
       
-      const link = `${baseUrl}?${params.toString()}`
-      setGeneratedLink(link)
-      
-      // Update project with payment URL if selected
-      if (selectedProject) {
-        onUpdateProject({
-          ...selectedProject,
-          paymentUrl: link,
-          paymentStatus: 'awaiting_payment',
-          updatedAt: new Date().toISOString(),
-        })
+      if (response.ok) {
+        const data = await response.json()
+        
+        if (data.paymentUrl) {
+          setGeneratedLink(data.paymentUrl)
+          
+          // Update project with payment URL if selected
+          if (selectedProject) {
+            onUpdateProject({
+              ...selectedProject,
+              paymentUrl: data.paymentUrl,
+              paymentStatus: 'awaiting_payment',
+              updatedAt: new Date().toISOString(),
+            })
+          }
+        } else {
+          // Fallback to a local link if Mollie not configured
+          const baseUrl = window.location.origin + '/betalen'
+          const params = new URLSearchParams({
+            project: selectedProjectId || 'custom',
+            amount: prices.final.toFixed(2),
+            desc: description || `Betaling ${selectedProject?.businessName || 'Custom'}`,
+            ...(selectedDiscount && { discount: selectedDiscount }),
+          })
+          
+          const link = `${baseUrl}?${params.toString()}`
+          setGeneratedLink(link)
+          
+          if (selectedProject) {
+            onUpdateProject({
+              ...selectedProject,
+              paymentUrl: link,
+              paymentStatus: 'awaiting_payment',
+              updatedAt: new Date().toISOString(),
+            })
+          }
+        }
+      } else {
+        console.error('Failed to create payment link')
       }
     } catch (error) {
       console.error('Error generating payment link:', error)
@@ -3018,30 +3094,74 @@ function PaymentsView({ darkMode, projects, onUpdateProject }: PaymentsViewProps
       .reduce((sum, p) => sum + PACKAGE_PRICING[p.package].monthlyInclVat, 0),
   }
 
-  // Add new discount code
-  const handleAddDiscount = () => {
+  // Add new discount code via API
+  const handleAddDiscount = async () => {
     if (!newDiscount.code || !newDiscount.value) return
     
-    const code: DiscountCode = {
-      code: newDiscount.code!.toUpperCase().replace(/\s/g, ''),
-      type: newDiscount.type!,
-      value: newDiscount.value!,
-      description: newDiscount.description || '',
-      validUntil: newDiscount.validUntil,
-      maxUses: newDiscount.maxUses,
-      usedCount: 0,
-      active: true,
+    const normalizedCode = newDiscount.code!.toUpperCase().replace(/\s/g, '')
+    
+    try {
+      const token = sessionStorage.getItem('webstability_dev_token')
+      const response = await fetch('/api/discounts', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify({
+          code: normalizedCode,
+          type: newDiscount.type,
+          value: newDiscount.value,
+          description: newDiscount.description || '',
+          validUntil: newDiscount.validUntil,
+          maxUses: newDiscount.maxUses,
+        })
+      })
+      
+      if (response.ok) {
+        const data = await response.json()
+        if (data.success && data.discount) {
+          setDiscountCodes([...discountCodes, data.discount])
+        }
+      }
+    } catch (error) {
+      console.error('Error adding discount code:', error)
     }
     
-    setDiscountCodes([...discountCodes, code])
     setShowNewDiscountModal(false)
     setNewDiscount({ code: '', type: 'percentage', value: 10, description: '', active: true })
   }
 
-  const toggleDiscountActive = (code: string) => {
+  // Toggle discount active status via API
+  const toggleDiscountActive = async (code: string) => {
+    const discount = discountCodes.find(d => d.code === code)
+    if (!discount) return
+    
+    // Optimistic update
     setDiscountCodes(prev => prev.map(d => 
       d.code === code ? { ...d, active: !d.active } : d
     ))
+    
+    try {
+      const token = sessionStorage.getItem('webstability_dev_token')
+      await fetch('/api/discounts', {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify({
+          code: code,
+          active: !discount.active
+        })
+      })
+    } catch (error) {
+      console.error('Error toggling discount:', error)
+      // Revert on error
+      setDiscountCodes(prev => prev.map(d => 
+        d.code === code ? { ...d, active: discount.active } : d
+      ))
+    }
   }
 
   return (
@@ -4596,7 +4716,7 @@ export default function DeveloperDashboardNew() {
     setLoading(true)
     try {
       // Load projects from API
-      const response = await fetch('/api/developer/projects', {
+      const response = await fetch('/api/projects', {
         headers: {
           'Authorization': `Bearer ${sessionStorage.getItem(TOKEN_KEY)}`
         }
@@ -4604,11 +4724,22 @@ export default function DeveloperDashboardNew() {
       
       if (response.ok) {
         const data = await response.json()
-        if (data.success && data.projects) {
-          const mappedProjects = data.projects.map((p: any) => ({
-            ...p,
-            id: p.projectId || p.id,
+        if (data.projects) {
+          const mappedProjects: Project[] = data.projects.map((p: any) => ({
+            id: p.id,
+            projectId: p.id,
+            businessName: p.customer?.companyName || p.customer?.name || 'Onbekend',
+            contactName: p.customer?.name || '',
+            contactEmail: p.customer?.email || '',
+            contactPhone: p.customer?.phone || '',
+            package: mapPackageType(p.packageType || p.package || 'starter'),
+            phase: mapStatus(p.status),
+            paymentStatus: mapPaymentStatus(p.paymentStatus),
+            createdAt: p.createdAt,
+            updatedAt: p.updatedAt,
             messages: p.messages || [],
+            onboardingData: p.onboardingData || {},
+            type: p.type,
           }))
           setProjects(mappedProjects)
           
@@ -4617,52 +4748,46 @@ export default function DeveloperDashboardNew() {
           const packagePrices = { starter: 96, professional: 180, business: 301, webshop: 422 }
           mappedProjects.forEach((p: Project) => {
             const projectPrice = packagePrices[p.package] || 0
-            if (!clientMap.has(p.contactEmail)) {
+            if (p.contactEmail && !clientMap.has(p.contactEmail)) {
               clientMap.set(p.contactEmail, {
                 id: p.contactEmail,
-                name: p.contactName,
+                name: p.contactName || p.businessName,
                 email: p.contactEmail,
                 phone: p.contactPhone || '',
                 company: p.businessName,
                 projects: [p.id],
-                totalSpent: projectPrice,
+                totalSpent: p.paymentStatus === 'paid' ? projectPrice : 0,
                 createdAt: p.createdAt || new Date().toISOString(),
               })
-            } else {
+            } else if (p.contactEmail) {
               const existing = clientMap.get(p.contactEmail)!
               existing.projects.push(p.id)
-              existing.totalSpent += projectPrice
+              if (p.paymentStatus === 'paid') {
+                existing.totalSpent += projectPrice
+              }
             }
           })
           setClients(Array.from(clientMap.values()))
         }
       }
       
-      // Load service requests (mock data for now)
-      setServiceRequests([
-        {
-          id: 'sr-1',
-          type: 'drone',
-          clientName: 'Restaurant De Proeverij',
-          clientEmail: 'info@proeverij.nl',
-          clientPhone: '06 12345678',
-          description: 'Dronebeelden van het terras en interieur',
-          status: 'pending',
-          price: 399,
-          createdAt: new Date().toISOString(),
-        },
-        {
-          id: 'sr-2', 
-          type: 'logo',
-          clientName: 'Bakkerij Vers',
-          clientEmail: 'contact@bakkerijvers.nl',
-          clientPhone: '06 87654321',
-          description: 'Nieuw logo voor heropening',
-          status: 'in_progress',
-          price: 299,
-          createdAt: new Date(Date.now() - 86400000 * 2).toISOString(),
-        },
-      ])
+      // Load service requests from API
+      try {
+        const serviceResponse = await fetch('/api/services', {
+          headers: {
+            'Authorization': `Bearer ${sessionStorage.getItem(TOKEN_KEY)}`
+          }
+        })
+        if (serviceResponse.ok) {
+          const serviceData = await serviceResponse.json()
+          if (serviceData.services) {
+            setServiceRequests(serviceData.services)
+          }
+        }
+      } catch {
+        // Services endpoint might not exist yet, that's ok
+        console.log('Services endpoint not available')
+      }
       
       // Generate notifications from projects
       generateNotifications()
@@ -4672,6 +4797,45 @@ export default function DeveloperDashboardNew() {
     } finally {
       setLoading(false)
     }
+  }
+
+  // Helper functions for mapping API data
+  const mapStatus = (status: string): ProjectPhase => {
+    const statusMap: Record<string, ProjectPhase> = {
+      'pending': 'onboarding',
+      'onboarding': 'onboarding',
+      'intake': 'onboarding',
+      'design': 'design',
+      'development': 'development',
+      'review': 'review',
+      'revisions': 'review',
+      'live': 'live',
+    }
+    return statusMap[status] || 'onboarding'
+  }
+  
+  const mapPaymentStatus = (status: string): PaymentStatus => {
+    const paymentMap: Record<string, PaymentStatus> = {
+      'pending': 'pending',
+      'unpaid': 'pending',
+      'awaiting_payment': 'awaiting_payment',
+      'paid': 'paid',
+      'failed': 'failed',
+      'refunded': 'refunded',
+    }
+    return paymentMap[status] || 'pending'
+  }
+  
+  const mapPackageType = (pkg: string): 'starter' | 'professional' | 'business' | 'webshop' => {
+    const pkgMap: Record<string, 'starter' | 'professional' | 'business' | 'webshop'> = {
+      'starter': 'starter',
+      'professional': 'professional',
+      'professioneel': 'professional',
+      'business': 'business',
+      'premium': 'business',
+      'webshop': 'webshop',
+    }
+    return pkgMap[pkg.toLowerCase()] || 'starter'
   }
 
   const generateNotifications = () => {
@@ -4733,6 +4897,38 @@ export default function DeveloperDashboardNew() {
     setProjects([])
     setClients([])
     setNotifications([])
+  }
+
+  // Update project via API and local state
+  const handleUpdateProject = async (updatedProject: Project) => {
+    // Optimistically update local state
+    setProjects(prev => prev.map(p => 
+      p.id === updatedProject.id ? updatedProject : p
+    ))
+
+    // Update in API/database
+    try {
+      const token = sessionStorage.getItem(TOKEN_KEY)
+      const response = await fetch('/api/projects', {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify({
+          id: updatedProject.id,
+          status: updatedProject.phase,
+          paymentStatus: updatedProject.paymentStatus,
+          messages: updatedProject.messages,
+        })
+      })
+      
+      if (!response.ok) {
+        console.error('Failed to update project')
+      }
+    } catch (error) {
+      console.error('Error updating project:', error)
+    }
   }
 
   const markAllNotificationsRead = () => {
@@ -4810,11 +5006,7 @@ export default function DeveloperDashboardNew() {
                   <ProjectsView 
                     darkMode={darkMode} 
                     projects={projects}
-                    onUpdateProject={(updatedProject) => {
-                      setProjects(prev => prev.map(p => 
-                        p.id === updatedProject.id ? updatedProject : p
-                      ))
-                    }}
+                    onUpdateProject={handleUpdateProject}
                     onSelectProject={setSelectedProject}
                   />
                 )}
@@ -4830,11 +5022,7 @@ export default function DeveloperDashboardNew() {
                   <MessagesView 
                     darkMode={darkMode}
                     projects={projects}
-                    onUpdateProject={(updatedProject) => {
-                      setProjects(prev => prev.map(p => 
-                        p.id === updatedProject.id ? updatedProject : p
-                      ))
-                    }}
+                    onUpdateProject={handleUpdateProject}
                   />
                 )}
                 {activeView === 'onboarding' && <OnboardingView darkMode={darkMode} />}
@@ -4842,11 +5030,7 @@ export default function DeveloperDashboardNew() {
                   <PaymentsView 
                     darkMode={darkMode}
                     projects={projects}
-                    onUpdateProject={(updatedProject) => {
-                      setProjects(prev => prev.map(p => 
-                        p.id === updatedProject.id ? updatedProject : p
-                      ))
-                    }}
+                    onUpdateProject={handleUpdateProject}
                   />
                 )}
                 {activeView === 'services' && (
