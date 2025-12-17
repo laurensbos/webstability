@@ -134,41 +134,52 @@ const CookieConsent: React.FC<CookieConsentProps> = ({ onConsentChange }) => {
           transition={{ type: 'spring', damping: 25, stiffness: 300 }}
           className="fixed bottom-0 left-0 right-0 z-50 p-4 md:p-6"
         >
-          <div className="max-w-4xl mx-auto bg-white dark:bg-gray-900 rounded-2xl shadow-2xl border border-gray-200 overflow-hidden">
+          <div className="max-w-4xl mx-auto bg-white dark:bg-slate-900 rounded-2xl shadow-2xl border border-gray-200 dark:border-slate-700 overflow-hidden">
             {/* Main banner */}
             <div className="p-4 md:p-6">
-              <div className="flex items-start gap-4">
-                <div className="w-12 h-12 bg-blue-100 rounded-xl flex items-center justify-center flex-shrink-0">
-                  <Cookie className="w-6 h-6 text-blue-600" />
+              <div className="flex flex-col sm:flex-row items-start gap-4">
+                <div className="flex items-start gap-4 w-full sm:w-auto">
+                  <div className="w-12 h-12 bg-blue-100 dark:bg-blue-900/30 rounded-xl flex items-center justify-center flex-shrink-0">
+                    <Cookie className="w-6 h-6 text-blue-600 dark:text-blue-400" />
+                  </div>
+                  
+                  {/* Mobile close button */}
+                  <button
+                    onClick={() => saveConsent('necessary')}
+                    className="sm:hidden p-2 hover:bg-gray-100 dark:hover:bg-slate-800 rounded-lg transition-colors flex-shrink-0 ml-auto"
+                    aria-label="Sluiten"
+                  >
+                    <X className="w-5 h-5 text-gray-400 dark:text-slate-500" />
+                  </button>
                 </div>
                 
-                <div className="flex-1">
+                <div className="flex-1 w-full">
                   <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
                     Wij gebruiken cookies 🍪
                   </h3>
-                  <p className="text-gray-600 mt-1 text-sm md:text-base">
+                  <p className="text-gray-600 dark:text-slate-400 mt-1 text-sm md:text-base">
                     We gebruiken cookies om je ervaring te verbeteren en onze website te optimaliseren. 
                     Je kunt zelf kiezen welke cookies je accepteert.
                   </p>
                   
-                  <div className="flex flex-wrap items-center gap-3 mt-4">
+                  <div className="flex flex-col sm:flex-row sm:flex-wrap items-stretch sm:items-center gap-2 sm:gap-3 mt-4">
                     <button
                       onClick={() => saveConsent('all')}
-                      className="px-5 py-2.5 bg-blue-600 text-white rounded-lg font-medium hover:bg-blue-700 transition-colors text-sm"
+                      className="w-full sm:w-auto px-5 py-3 sm:py-2.5 bg-blue-600 text-white rounded-xl sm:rounded-lg font-medium hover:bg-blue-700 transition-colors text-sm"
                     >
                       Alles accepteren
                     </button>
                     
                     <button
                       onClick={() => saveConsent('necessary')}
-                      className="px-5 py-2.5 bg-gray-100 text-gray-700 rounded-lg font-medium hover:bg-gray-200 transition-colors text-sm"
+                      className="w-full sm:w-auto px-5 py-3 sm:py-2.5 bg-gray-100 dark:bg-slate-800 text-gray-700 dark:text-slate-300 rounded-xl sm:rounded-lg font-medium hover:bg-gray-200 dark:hover:bg-slate-700 transition-colors text-sm"
                     >
                       Alleen noodzakelijk
                     </button>
                     
                     <button
                       onClick={() => setShowDetails(!showDetails)}
-                      className="px-5 py-2.5 text-gray-600 rounded-lg font-medium hover:bg-gray-50 transition-colors flex items-center gap-2 text-sm"
+                      className="w-full sm:w-auto px-5 py-3 sm:py-2.5 text-gray-600 dark:text-slate-400 rounded-xl sm:rounded-lg font-medium hover:bg-gray-50 dark:hover:bg-slate-800 transition-colors flex items-center justify-center sm:justify-start gap-2 text-sm"
                     >
                       <Settings className="w-4 h-4" />
                       Aanpassen
@@ -176,12 +187,13 @@ const CookieConsent: React.FC<CookieConsentProps> = ({ onConsentChange }) => {
                   </div>
                 </div>
                 
+                {/* Desktop close button */}
                 <button
                   onClick={() => saveConsent('necessary')}
-                  className="p-2 hover:bg-gray-100 rounded-lg transition-colors flex-shrink-0"
+                  className="hidden sm:block p-2 hover:bg-gray-100 dark:hover:bg-slate-800 rounded-lg transition-colors flex-shrink-0"
                   aria-label="Sluiten"
                 >
-                  <X className="w-5 h-5 text-gray-400" />
+                  <X className="w-5 h-5 text-gray-400 dark:text-slate-500" />
                 </button>
               </div>
             </div>
@@ -194,9 +206,9 @@ const CookieConsent: React.FC<CookieConsentProps> = ({ onConsentChange }) => {
                   animate={{ height: 'auto', opacity: 1 }}
                   exit={{ height: 0, opacity: 0 }}
                   transition={{ duration: 0.2 }}
-                  className="border-t border-gray-200 overflow-hidden"
+                  className="border-t border-gray-200 dark:border-slate-700 overflow-hidden"
                 >
-                  <div className="p-4 md:p-6 bg-gray-50 space-y-4">
+                  <div className="p-4 md:p-6 bg-gray-50 dark:bg-slate-800/50 space-y-3 md:space-y-4">
                     {/* Necessary cookies */}
                     <CookieToggle
                       title="Noodzakelijke cookies"
@@ -233,7 +245,7 @@ const CookieConsent: React.FC<CookieConsentProps> = ({ onConsentChange }) => {
                     <div className="pt-2">
                       <button
                         onClick={() => saveConsent('custom')}
-                        className="px-6 py-2.5 bg-blue-600 text-white rounded-lg font-medium hover:bg-blue-700 transition-colors flex items-center gap-2"
+                        className="w-full sm:w-auto px-6 py-3 sm:py-2.5 bg-blue-600 text-white rounded-xl sm:rounded-lg font-medium hover:bg-blue-700 transition-colors flex items-center justify-center sm:justify-start gap-2"
                       >
                         <Check className="w-4 h-4" />
                         Voorkeuren opslaan
@@ -266,8 +278,8 @@ const CookieToggle: React.FC<CookieToggleProps> = ({
   onChange,
 }) => {
   return (
-    <div className="flex items-start gap-4 p-3 bg-white dark:bg-gray-900 rounded-lg">
-      <label className="relative inline-flex items-center cursor-pointer mt-0.5">
+    <div className="flex items-start gap-3 md:gap-4 p-3 bg-white dark:bg-slate-900 rounded-xl border border-gray-100 dark:border-slate-700">
+      <label className="relative inline-flex items-center cursor-pointer mt-0.5 flex-shrink-0">
         <input
           type="checkbox"
           checked={checked}
@@ -276,22 +288,23 @@ const CookieToggle: React.FC<CookieToggleProps> = ({
           className="sr-only peer"
         />
         <div className={`
-          w-11 h-6 bg-gray-200 rounded-full peer 
-          peer-checked:bg-blue-600 peer-focus:ring-2 peer-focus:ring-blue-300
+          w-11 h-6 bg-gray-200 dark:bg-slate-700 rounded-full peer 
+          peer-checked:bg-blue-600 peer-focus:ring-2 peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800
           after:content-[''] after:absolute after:top-0.5 after:left-[2px] 
-          after:bg-white dark:bg-gray-900 after:rounded-full after:h-5 after:w-5 
+          after:bg-white after:rounded-full after:h-5 after:w-5 
           after:transition-all peer-checked:after:translate-x-full
-          ${disabled ? 'opacity-60 cursor-not-allowed' : ''}
+          after:shadow-sm
+          ${disabled ? 'opacity-60 cursor-not-allowed' : 'cursor-pointer'}
         `} />
       </label>
-      <div className="flex-1">
-        <h4 className="font-medium text-gray-900 text-sm">
+      <div className="flex-1 min-w-0">
+        <h4 className="font-medium text-gray-900 dark:text-white text-sm">
           {title}
           {disabled && (
-            <span className="ml-2 text-xs text-gray-500 font-normal">(altijd aan)</span>
+            <span className="ml-2 text-xs text-gray-500 dark:text-slate-500 font-normal">(altijd aan)</span>
           )}
         </h4>
-        <p className="text-gray-600 text-sm mt-0.5">{description}</p>
+        <p className="text-gray-600 dark:text-slate-400 text-xs sm:text-sm mt-0.5">{description}</p>
       </div>
     </div>
   )

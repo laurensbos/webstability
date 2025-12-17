@@ -40,6 +40,7 @@ const DeveloperDashboard = lazy(() => import('./pages/DeveloperDashboard'))
 const Login = lazy(() => import('./pages/Login'))
 const MarketingDashboard = lazy(() => import('./pages/MarketingDashboard'))
 const Unauthorized = lazy(() => import('./pages/Unauthorized'))
+const ClientOnboarding = lazy(() => import('./pages/ClientOnboarding'))
 
 // Loading spinner component
 function PageLoader() {
@@ -82,6 +83,10 @@ createRoot(document.getElementById('root')!).render(
             <Route path="/onboarding" element={<KlantOnboarding />} />
             <Route path="/klant-onboarding/:projectId" element={<Navigate to="/onboarding/:projectId" replace />} />
             <Route path="/klant-onboarding" element={<Navigate to="/onboarding" replace />} />
+            
+            {/* New client onboarding with service-specific forms */}
+            <Route path="/intake/:projectId" element={<ClientOnboarding />} />
+            <Route path="/intake" element={<ClientOnboarding />} />
             
             {/* Project status routes - canonical path + redirects */}
             <Route path="/status/:projectId" element={<ProjectStatus />} />
