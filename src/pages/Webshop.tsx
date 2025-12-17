@@ -17,6 +17,7 @@ import { Link } from 'react-router-dom'
 import Header from '../components/Header'
 import Footer from '../components/Footer'
 import TrustpilotReviews from '../components/TrustpilotReviews'
+import WhatYouGet from '../components/WhatYouGet'
 
 // Floating particles component with green accents
 function FloatingParticles() {
@@ -105,10 +106,10 @@ const packages = [
   {
     id: 'starter',
     name: 'Starter',
-    price: 299,
-    priceExcl: 247,
-    setupFee: 362,
-    setupFeeExcl: 299,
+    price: 349,
+    priceExcl: 289,
+    setupFee: 349,
+    setupFeeExcl: 289,
     tagline: 'Perfect om te beginnen',
     popular: false,
     description: 'Perfect om te beginnen met online verkopen',
@@ -126,10 +127,10 @@ const packages = [
     id: 'professional',
     name: 'Professioneel',
     price: 599,
-    priceExcl: 496,
-    setupFee: 362,
-    setupFeeExcl: 299,
-    popular: false,
+    priceExcl: 495,
+    setupFee: 499,
+    setupFeeExcl: 413,
+    popular: true,
     description: 'Voor serieuze webshops die willen groeien',
     features: [
       'Tot 500 producten',
@@ -385,6 +386,9 @@ export default function Webshop() {
             </motion.div>
           </div>
         </section>
+
+        {/* What You Get */}
+        <WhatYouGet variant="webshop" />
 
         {/* Packages */}
         <section id="pakketten" className="py-20 bg-gradient-to-b from-gray-50 via-emerald-50/20 to-gray-50 dark:from-gray-900 dark:via-emerald-900/10 dark:to-gray-900 relative overflow-hidden">

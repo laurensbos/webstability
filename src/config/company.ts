@@ -64,8 +64,10 @@ export const packages = {
   starter: {
     id: 'starter',
     name: 'Starter',
-    priceInclVat: 29.00,
-    priceExclVat: calcExclVat(29.00), // €23.97
+    priceInclVat: 99.00,
+    priceExclVat: calcExclVat(99.00),
+    setupFeeInclVat: 149.00,
+    setupFeeExclVat: calcExclVat(149.00),
     interval: 'monthly' as const,
     intervalMonths: 1,
     description: 'Website abonnement - Starter pakket',
@@ -79,12 +81,14 @@ export const packages = {
   },
   professional: {
     id: 'professional',
-    name: 'Professional', 
-    priceInclVat: 49.00,
-    priceExclVat: calcExclVat(49.00), // €40.50
+    name: 'Pro', 
+    priceInclVat: 199.00,
+    priceExclVat: calcExclVat(199.00),
+    setupFeeInclVat: 249.00,
+    setupFeeExclVat: calcExclVat(249.00),
     interval: 'monthly' as const,
     intervalMonths: 1,
-    description: 'Website abonnement - Professional pakket',
+    description: 'Website abonnement - Pro pakket',
     features: [
       'Professionele website',
       '5 pagina\'s',
@@ -98,8 +102,10 @@ export const packages = {
   business: {
     id: 'business',
     name: 'Business',
-    priceInclVat: 79.00,
-    priceExclVat: calcExclVat(79.00), // €65.29
+    priceInclVat: 349.00,
+    priceExclVat: calcExclVat(349.00),
+    setupFeeInclVat: 499.00,
+    setupFeeExclVat: calcExclVat(499.00),
     interval: 'monthly' as const,
     intervalMonths: 1,
     description: 'Website abonnement - Business pakket',
@@ -115,14 +121,36 @@ export const packages = {
       'Google Analytics'
     ]
   },
-  webshop: {
-    id: 'webshop',
-    name: 'Webshop',
-    priceInclVat: 99.00,
-    priceExclVat: calcExclVat(99.00), // €81.82
+  webshopStarter: {
+    id: 'webshopStarter',
+    name: 'Webshop Starter',
+    priceInclVat: 349.00,
+    priceExclVat: calcExclVat(349.00),
+    setupFeeInclVat: 349.00,
+    setupFeeExclVat: calcExclVat(349.00),
     interval: 'monthly' as const,
     intervalMonths: 1,
-    description: 'Website abonnement - Webshop pakket',
+    description: 'Webshop abonnement - Starter pakket',
+    features: [
+      'Complete webshop',
+      'Tot 100 producten',
+      'Betaalintegratie',
+      'Voorraad beheer',
+      'Mobiel responsive',
+      'SSL certificaat',
+      'Hosting inbegrepen'
+    ]
+  },
+  webshopPro: {
+    id: 'webshopPro',
+    name: 'Webshop Pro',
+    priceInclVat: 599.00,
+    priceExclVat: calcExclVat(599.00),
+    setupFeeInclVat: 499.00,
+    setupFeeExclVat: calcExclVat(499.00),
+    interval: 'monthly' as const,
+    intervalMonths: 1,
+    description: 'Webshop abonnement - Pro pakket',
     features: [
       'Complete webshop',
       'Onbeperkt producten',

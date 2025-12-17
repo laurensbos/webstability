@@ -1072,7 +1072,7 @@ Google houdt van verse, werkende websites. Kapotte links en trage sites dalen in
 
 ### Bij Webstability
 
-Ons website abonnement van €49/maand is inclusief:
+Ons website abonnement van €99/maand is inclusief:
 - ✅ Dagelijkse backups
 - ✅ Wekelijkse updates
 - ✅ Security monitoring

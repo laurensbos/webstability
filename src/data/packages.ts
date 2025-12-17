@@ -16,8 +16,8 @@ export const packages: Package[] = [
   {
     id: 'starter',
     name: 'Starter',
-    price: 95,
-    priceExcl: 79,
+    price: 99,
+    priceExcl: 82,
     tagline: 'Ideaal om te beginnen',
     features: [
       'Tot 5 pagina\'s',
@@ -31,8 +31,8 @@ export const packages: Package[] = [
   {
     id: 'professional',
     name: 'Professioneel',
-    price: 179,
-    priceExcl: 148,
+    price: 199,
+    priceExcl: 165,
     tagline: 'Voor serieuze ondernemers',
     features: [
       'Tot 10 pagina\'s',
@@ -41,14 +41,14 @@ export const packages: Package[] = [
       'Social media integratie',
       'Google Analytics',
     ],
-    popular: false,
+    popular: true,
     maxPages: 10,
   },
   {
     id: 'business',
     name: 'Business',
-    price: 299,
-    priceExcl: 247,
+    price: 349,
+    priceExcl: 289,
     tagline: 'Voor groeiende bedrijven',
     features: [
       'Tot 20 pagina\'s',
@@ -63,8 +63,8 @@ export const packages: Package[] = [
   {
     id: 'webshop',
     name: 'Webshop',
-    price: 299,
-    priceExcl: 247,
+    price: 349,
+    priceExcl: 289,
     tagline: 'Start met verkopen',
     features: [
       'Tot 50 producten',

@@ -97,7 +97,7 @@ const ctaConfigs: Record<Exclude<CTAVariant, 'none'>, CTAConfig> = {
     badge: 'Complete e-commerce oplossing',
     title: 'Start vandaag nog met',
     highlight: 'online verkopen',
-    description: 'Professionele webshop met betalingen, verzending en voorraadbeheer. Wij bouwen, jij verkoopt. Vanaf €299/maand (incl. BTW).',
+    description: 'Professionele webshop met betalingen, verzending en voorraadbeheer. Wij bouwen, jij verkoopt. Vanaf €349/maand (incl. BTW).',
     buttonText: 'Start je webshop',
     buttonLink: '/start?dienst=webshop',
     gradient: {

@@ -20,6 +20,7 @@ import { Link } from 'react-router-dom'
 import Header from '../components/Header'
 import Footer from '../components/Footer'
 import TrustpilotReviews from '../components/TrustpilotReviews'
+import WhatYouGet from '../components/WhatYouGet'
 
 // Floating particles component with blue accents
 function FloatingParticles() {
@@ -108,10 +109,10 @@ const packages = [
   {
     id: 'starter',
     name: 'Starter',
-    price: 96,
-    priceExcl: 79,
-    setupFee: 242,
-    setupFeeExcl: 200,
+    price: 99,
+    priceExcl: 82,
+    setupFee: 149,
+    setupFeeExcl: 123,
     tagline: 'Perfect om te beginnen',
     description: 'Ideaal voor starters en kleine ondernemers',
     features: [
@@ -127,10 +128,10 @@ const packages = [
   {
     id: 'professional',
     name: 'Professioneel',
-    price: 180,
-    priceExcl: 149,
-    setupFee: 302,
-    setupFeeExcl: 249,
+    price: 199,
+    priceExcl: 165,
+    setupFee: 249,
+    setupFeeExcl: 206,
     tagline: 'Meest gekozen',
     description: 'Voor groeiende bedrijven',
     features: [
@@ -147,10 +148,10 @@ const packages = [
   {
     id: 'business',
     name: 'Business',
-    price: 301,
-    priceExcl: 249,
-    setupFee: 605,
-    setupFeeExcl: 500,
+    price: 349,
+    priceExcl: 289,
+    setupFee: 399,
+    setupFeeExcl: 330,
     tagline: 'Alles wat je nodig hebt',
     description: 'Complete oplossing voor gevestigde bedrijven',
     features: [
@@ -474,6 +475,9 @@ export default function Websites() {
             </div>
           </div>
         </section>
+
+        {/* What You Get */}
+        <WhatYouGet variant="website" />
 
         {/* Packages */}
         <section id="pakketten" className="py-20 bg-white dark:bg-gray-900 relative overflow-hidden">

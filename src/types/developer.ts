@@ -109,6 +109,10 @@ export interface DeveloperProject {
   lastPaymentDate?: string
   nextBillingDate?: string
   
+  // Kortingscode
+  discountCode?: string         // Gebruikte kortingscode
+  discountSavings?: number      // Bedrag bespaard met korting
+  
   // Post-launch
   monthlyChangesUsed: number
   monthlyChangesLimit: number // Gebaseerd op pakket

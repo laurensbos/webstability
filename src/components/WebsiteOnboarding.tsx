@@ -32,6 +32,13 @@ interface PackageType {
   popular?: boolean
 }
 
+interface AppliedDiscount {
+  code: string
+  description: string
+  setupDiscount: number
+  monthlyDiscount: number
+}
+
 interface FormData {
   package: string
   companyName: string
@@ -50,6 +57,40 @@ interface FormData {
   phone: string
   password: string
   confirmPassword: string
+  discountCode: string
+}
+
+// Discount code validation
+const DISCOUNT_CODES = [
+  {
+    code: 'GRATIS26',
+    description: 'Geen opstartkosten - Nieuwjaarsactie',
+    type: 'setup_free' as const,
+    validUntil: new Date('2026-03-01T23:59:59'),
+  },
+]
+
+function validateDiscount(code: string, setupFee: number): { valid: boolean; discount?: AppliedDiscount; error?: string } {
+  const normalizedCode = code.trim().toUpperCase()
+  const discountCode = DISCOUNT_CODES.find(c => c.code === normalizedCode)
+  
+  if (!discountCode) {
+    return { valid: false, error: 'Kortingscode niet gevonden' }
+  }
+  
+  if (new Date() > discountCode.validUntil) {
+    return { valid: false, error: 'Deze kortingscode is verlopen' }
+  }
+  
+  return {
+    valid: true,
+    discount: {
+      code: discountCode.code,
+      description: discountCode.description,
+      setupDiscount: discountCode.type === 'setup_free' ? setupFee : 0,
+      monthlyDiscount: 0,
+    }
+  }
 }
 
 // Packages - matching /websites page
@@ -57,10 +98,10 @@ const PACKAGES: PackageType[] = [
   {
     id: 'starter',
     name: 'Starter',
-    price: '€95',
+    price: '€99',
     priceLabel: '/maand incl. BTW',
-    setupFee: 119,
-    monthlyFee: 95,
+    setupFee: 149,
+    monthlyFee: 99,
     tagline: 'Ideaal om te beginnen',
     description: 'Perfect voor ZZP\'ers en kleine ondernemers die een professionele online aanwezigheid willen.',
     features: [
@@ -74,10 +115,10 @@ const PACKAGES: PackageType[] = [
   {
     id: 'professional',
     name: 'Professioneel',
-    price: '€179',
+    price: '€199',
     priceLabel: '/maand incl. BTW',
-    setupFee: 149,
-    monthlyFee: 179,
+    setupFee: 249,
+    monthlyFee: 199,
     tagline: 'Voor serieuze ondernemers',
     description: 'Voor ondernemers die meer willen dan een visitekaartje. Met blog en analytics.',
     features: [
@@ -88,14 +129,15 @@ const PACKAGES: PackageType[] = [
       'Google Analytics'
     ],
     gradient: 'from-primary-500 to-blue-500',
+    popular: true,
   },
   {
     id: 'business',
     name: 'Business',
-    price: '€299',
+    price: '€349',
     priceLabel: '/maand incl. BTW',
-    setupFee: 249,
-    monthlyFee: 299,
+    setupFee: 399,
+    monthlyFee: 349,
     tagline: 'Voor groeiende bedrijven',
     description: 'Alle tools om je bedrijf online te laten groeien met boekingssysteem en meer.',
     features: [
@@ -230,10 +272,52 @@ export default function WebsiteOnboarding({
     phone: '',
     password: '',
     confirmPassword: '',
+    discountCode: '',
   })
+
+  // Discount state
+  const [appliedDiscount, setAppliedDiscount] = useState<AppliedDiscount | null>(null)
+  const [discountError, setDiscountError] = useState('')
+  const [isCheckingDiscount, setIsCheckingDiscount] = useState(false)
 
   const selectedPackage = PACKAGES.find(p => p.id === formData.package)
   const currentGradient = selectedPackage?.gradient || 'from-primary-500 to-blue-500'
+
+  // Check discount code
+  const checkDiscountCode = () => {
+    if (!formData.discountCode.trim()) {
+      setDiscountError('Voer een kortingscode in')
+      return
+    }
+    
+    setIsCheckingDiscount(true)
+    setDiscountError('')
+    
+    // Simulate small delay for UX
+    setTimeout(() => {
+      const result = validateDiscount(formData.discountCode, selectedPackage?.setupFee || 0)
+      
+      if (result.valid && result.discount) {
+        setAppliedDiscount(result.discount)
+        setDiscountError('')
+      } else {
+        setDiscountError(result.error || 'Ongeldige code')
+        setAppliedDiscount(null)
+      }
+      
+      setIsCheckingDiscount(false)
+    }, 500)
+  }
+
+  const removeDiscount = () => {
+    setAppliedDiscount(null)
+    setFormData(prev => ({ ...prev, discountCode: '' }))
+  }
+
+  // Calculate final prices
+  const finalSetupFee = (selectedPackage?.setupFee || 0) - (appliedDiscount?.setupDiscount || 0)
+  const finalMonthlyFee = (selectedPackage?.monthlyFee || 0) - (appliedDiscount?.monthlyDiscount || 0)
+  const firstMonthTotal = finalSetupFee + finalMonthlyFee
 
   const updateFormData = (field: keyof FormData, value: string | string[]) => {
     setFormData(prev => ({ ...prev, [field]: value }))
@@ -344,6 +428,12 @@ export default function WebsiteOnboarding({
           password: formData.password,
           status: 'pending',
           createdAt: new Date().toISOString(),
+          // Discount information
+          discountCode: appliedDiscount?.code || null,
+          discountDescription: appliedDiscount?.description || null,
+          discountAmount: appliedDiscount ? appliedDiscount.setupDiscount + appliedDiscount.monthlyDiscount : 0,
+          finalSetupFee: finalSetupFee,
+          finalMonthlyFee: finalMonthlyFee,
         }),
       })
 
@@ -1044,12 +1134,73 @@ export default function WebsiteOnboarding({
                     <div className="space-y-3">
                       <div className="flex items-center justify-between">
                         <span className="text-gray-600 dark:text-gray-400">Eenmalige opstartkosten</span>
-                        <span className="font-medium text-gray-900 dark:text-white">€{selectedPackage?.setupFee},-</span>
+                        <div className="text-right">
+                          {appliedDiscount && appliedDiscount.setupDiscount > 0 ? (
+                            <>
+                              <span className="text-gray-400 line-through text-sm mr-2">€{selectedPackage?.setupFee},-</span>
+                              <span className="font-medium text-green-600">€{finalSetupFee},-</span>
+                            </>
+                          ) : (
+                            <span className="font-medium text-gray-900 dark:text-white">€{selectedPackage?.setupFee},-</span>
+                          )}
+                        </div>
                       </div>
                       <div className="flex items-center justify-between">
                         <span className="text-gray-600 dark:text-gray-400">Maandelijks abonnement</span>
-                        <span className="font-medium text-gray-900 dark:text-white">€{selectedPackage?.monthlyFee},-</span>
+                        <span className="font-medium text-gray-900 dark:text-white">€{finalMonthlyFee},-</span>
                       </div>
+                    </div>
+
+                    {/* Discount Code Input */}
+                    <div className="mt-4 pt-4 border-t border-gray-200 dark:border-gray-700">
+                      <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                        Kortingscode
+                      </label>
+                      {appliedDiscount ? (
+                        <div className="flex items-center justify-between p-3 bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-xl">
+                          <div className="flex items-center gap-2">
+                            <Check className="w-5 h-5 text-green-600" />
+                            <div>
+                              <span className="font-medium text-green-700 dark:text-green-400">{appliedDiscount.code}</span>
+                              <p className="text-xs text-green-600 dark:text-green-500">{appliedDiscount.description}</p>
+                            </div>
+                          </div>
+                          <button
+                            onClick={removeDiscount}
+                            className="text-gray-400 hover:text-red-500 transition-colors"
+                          >
+                            ✕
+                          </button>
+                        </div>
+                      ) : (
+                        <div className="flex gap-2">
+                          <input
+                            type="text"
+                            value={formData.discountCode}
+                            onChange={(e) => updateFormData('discountCode', e.target.value.toUpperCase())}
+                            placeholder="Bijv. GRATIS26"
+                            className="flex-1 px-4 py-2.5 rounded-xl border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-primary-500 focus:border-transparent text-sm"
+                          />
+                          <button
+                            onClick={checkDiscountCode}
+                            disabled={isCheckingDiscount || !formData.discountCode.trim()}
+                            className={`px-4 py-2.5 rounded-xl font-medium transition-all text-sm ${
+                              formData.discountCode.trim() 
+                                ? 'bg-gray-900 dark:bg-white text-white dark:text-gray-900 hover:bg-gray-800' 
+                                : 'bg-gray-200 text-gray-500 cursor-not-allowed'
+                            }`}
+                          >
+                            {isCheckingDiscount ? (
+                              <Loader2 className="w-4 h-4 animate-spin" />
+                            ) : (
+                              'Toepassen'
+                            )}
+                          </button>
+                        </div>
+                      )}
+                      {discountError && (
+                        <p className="text-red-500 text-sm mt-2">{discountError}</p>
+                      )}
                     </div>
 
                     {/* Total First Month */}
@@ -1059,14 +1210,28 @@ export default function WebsiteOnboarding({
                           <span className="font-semibold text-gray-900 dark:text-white">Eerste maand</span>
                           <p className="text-xs text-gray-500 dark:text-gray-500">Incl. opstartkosten</p>
                         </div>
-                        <span className={`text-xl sm:text-2xl font-bold bg-gradient-to-r ${currentGradient} bg-clip-text text-transparent`}>
-                          €{(selectedPackage?.setupFee || 0) + (selectedPackage?.monthlyFee || 0)},-
-                        </span>
+                        <div className="text-right">
+                          {appliedDiscount && appliedDiscount.setupDiscount > 0 && (
+                            <span className="text-gray-400 line-through text-sm block">
+                              €{(selectedPackage?.setupFee || 0) + (selectedPackage?.monthlyFee || 0)},-
+                            </span>
+                          )}
+                          <span className={`text-xl sm:text-2xl font-bold bg-gradient-to-r ${currentGradient} bg-clip-text text-transparent`}>
+                            €{firstMonthTotal},-
+                          </span>
+                        </div>
                       </div>
                       <div className="flex items-center justify-between mt-2 text-sm">
                         <span className="text-gray-500 dark:text-gray-500">Daarna per maand</span>
-                        <span className="font-medium text-gray-700 dark:text-gray-300">€{selectedPackage?.monthlyFee},-</span>
+                        <span className="font-medium text-gray-700 dark:text-gray-300">€{finalMonthlyFee},-</span>
                       </div>
+                      {appliedDiscount && (
+                        <div className="mt-3 p-2 bg-green-50 dark:bg-green-900/20 rounded-lg">
+                          <p className="text-sm text-green-700 dark:text-green-400 text-center font-medium">
+                            🎉 Je bespaart €{appliedDiscount.setupDiscount + appliedDiscount.monthlyDiscount},-!
+                          </p>
+                        </div>
+                      )}
                     </div>
 
                     <p className="text-xs text-gray-500 dark:text-gray-500 mt-4 text-center">

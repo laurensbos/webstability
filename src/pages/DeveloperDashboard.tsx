@@ -51,7 +51,9 @@ import {
   MousePointer,
   ArrowRight,
   Target,
-  Zap
+  Zap,
+  Tag,
+  Percent
 } from 'lucide-react'
 import Logo from '../components/Logo'
 import KanbanBoard, { type KanbanTask, getDefaultColumns } from '../components/KanbanBoard'
@@ -65,7 +67,7 @@ import type {
 // TYPES
 // ===========================================
 
-type DashboardTab = 'overview' | 'projects' | 'kanban' | 'clients' | 'billing' | 'services' | 'settings'
+type DashboardTab = 'overview' | 'projects' | 'kanban' | 'clients' | 'billing' | 'services' | 'discounts' | 'settings'
 
 interface Client {
   id: string
@@ -328,13 +330,19 @@ function ProjectCard({
       </div>
       
       {/* Package badge */}
-      <div className="flex items-center gap-2 mb-3">
+      <div className="flex items-center gap-2 mb-3 flex-wrap">
         <span className={`text-xs font-medium px-2 py-1 rounded-full ${phaseColor.bg} ${phaseColor.text}`}>
           {packageConfig?.name || project.package}
         </span>
         <span className={`text-xs ${darkMode ? 'text-gray-500' : 'text-gray-400'}`}>
           €{packageConfig?.priceMonthly}/m
         </span>
+        {project.discountCode && (
+          <span className="text-xs font-medium px-2 py-1 rounded-full bg-green-100 text-green-700 flex items-center gap-1">
+            <Tag className="w-3 h-3" />
+            {project.discountCode}
+          </span>
+        )}
       </div>
       
       {/* Progress bar */}
@@ -2239,6 +2247,7 @@ export default function DeveloperDashboard() {
                 { id: 'clients', label: 'Klanten', icon: Users },
                 { id: 'billing', label: 'Betalingen', icon: CreditCard },
                 { id: 'services', label: 'Services', icon: Briefcase },
+                { id: 'discounts', label: 'Kortingscodes', icon: Tag },
                 { id: 'settings', label: 'Instellingen', icon: Settings },
               ].map(tab => (
                 <motion.button
@@ -3419,6 +3428,142 @@ export default function DeveloperDashboard() {
                     <span className="px-2 py-1 bg-blue-100 text-blue-700 text-xs font-medium rounded-lg">
                       Automatische incasso
                     </span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </motion.div>
+        )}
+
+        {/* DISCOUNTS TAB */}
+        {activeTab === 'discounts' && (
+          <motion.div 
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.3 }}
+            className="space-y-6"
+          >
+            {/* Header */}
+            <div className={`p-6 rounded-xl ${darkMode ? 'bg-gray-800' : 'bg-white'} shadow-sm`}>
+              <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+                <div>
+                  <h2 className={`text-xl font-bold ${darkMode ? 'text-white' : 'text-gray-900'}`}>Kortingscodes</h2>
+                  <p className={`text-sm ${darkMode ? 'text-gray-400' : 'text-gray-500'} mt-1`}>
+                    Beheer actieve kortingscodes en bekijk gebruik
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            {/* Active Discount Codes */}
+            <div className={`p-6 rounded-xl ${darkMode ? 'bg-gray-800' : 'bg-white'} shadow-sm`}>
+              <h3 className={`text-lg font-semibold ${darkMode ? 'text-white' : 'text-gray-900'} mb-4`}>
+                Actieve Kortingscodes
+              </h3>
+              <div className="space-y-4">
+                {/* GRATIS26 Code */}
+                <div className={`p-4 rounded-lg border-2 ${darkMode ? 'bg-gray-700 border-green-500/30' : 'bg-green-50 border-green-200'}`}>
+                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                    <div className="flex items-center gap-3">
+                      <div className={`w-12 h-12 rounded-lg flex items-center justify-center ${darkMode ? 'bg-green-600' : 'bg-green-500'}`}>
+                        <Percent className="w-6 h-6 text-white" />
+                      </div>
+                      <div>
+                        <div className="flex items-center gap-2">
+                          <span className={`font-mono text-lg font-bold ${darkMode ? 'text-white' : 'text-gray-900'}`}>GRATIS26</span>
+                          <span className="px-2 py-0.5 bg-green-100 text-green-700 text-xs font-medium rounded-full">Actief</span>
+                        </div>
+                        <p className={`text-sm ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>Geen opstartkosten (100% korting op setup fee)</p>
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-4 text-sm">
+                      <div className={`text-right ${darkMode ? 'text-gray-300' : 'text-gray-600'}`}>
+                        <div className="font-medium">Geldig tot</div>
+                        <div className="font-bold">1 maart 2026</div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Usage Statistics */}
+            <div className={`p-6 rounded-xl ${darkMode ? 'bg-gray-800' : 'bg-white'} shadow-sm`}>
+              <h3 className={`text-lg font-semibold ${darkMode ? 'text-white' : 'text-gray-900'} mb-4`}>
+                Gebruik door Projecten
+              </h3>
+              <div className="space-y-3">
+                {projects.filter(p => p.discountCode).length === 0 ? (
+                  <p className={`text-sm ${darkMode ? 'text-gray-400' : 'text-gray-500'} py-8 text-center`}>
+                    Nog geen projecten met kortingscode
+                  </p>
+                ) : (
+                  projects.filter(p => p.discountCode).map(project => (
+                    <div 
+                      key={project.projectId}
+                      className={`flex flex-col sm:flex-row sm:items-center justify-between p-4 rounded-lg ${darkMode ? 'bg-gray-700' : 'bg-gray-50'} gap-3`}
+                    >
+                      <div className="flex items-center gap-3">
+                        <div className={`w-10 h-10 rounded-lg flex items-center justify-center ${darkMode ? 'bg-blue-600' : 'bg-blue-100'}`}>
+                          <Globe className={`w-5 h-5 ${darkMode ? 'text-white' : 'text-blue-600'}`} />
+                        </div>
+                        <div>
+                          <p className={`font-medium ${darkMode ? 'text-white' : 'text-gray-900'}`}>{project.businessName}</p>
+                          <p className={`text-sm ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>{project.contactName}</p>
+                        </div>
+                      </div>
+                      <div className="flex items-center gap-4">
+                        <span className={`font-mono px-2 py-1 rounded ${darkMode ? 'bg-gray-600 text-green-400' : 'bg-green-100 text-green-700'} text-sm font-medium`}>
+                          {project.discountCode}
+                        </span>
+                        {project.discountSavings && (
+                          <span className={`text-sm font-medium ${darkMode ? 'text-green-400' : 'text-green-600'}`}>
+                            -€{project.discountSavings.toFixed(2)} bespaard
+                          </span>
+                        )}
+                      </div>
+                    </div>
+                  ))
+                )}
+              </div>
+            </div>
+
+            {/* Stats Summary */}
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+              <div className={`p-4 rounded-xl ${darkMode ? 'bg-gray-800' : 'bg-white'} shadow-sm`}>
+                <div className="flex items-center gap-3">
+                  <div className={`w-10 h-10 rounded-lg flex items-center justify-center ${darkMode ? 'bg-blue-600' : 'bg-blue-100'}`}>
+                    <Tag className={`w-5 h-5 ${darkMode ? 'text-white' : 'text-blue-600'}`} />
+                  </div>
+                  <div>
+                    <p className={`text-sm ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>Codes gebruikt</p>
+                    <p className={`text-2xl font-bold ${darkMode ? 'text-white' : 'text-gray-900'}`}>
+                      {projects.filter(p => p.discountCode).length}
+                    </p>
+                  </div>
+                </div>
+              </div>
+              <div className={`p-4 rounded-xl ${darkMode ? 'bg-gray-800' : 'bg-white'} shadow-sm`}>
+                <div className="flex items-center gap-3">
+                  <div className={`w-10 h-10 rounded-lg flex items-center justify-center ${darkMode ? 'bg-green-600' : 'bg-green-100'}`}>
+                    <DollarSign className={`w-5 h-5 ${darkMode ? 'text-white' : 'text-green-600'}`} />
+                  </div>
+                  <div>
+                    <p className={`text-sm ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>Totaal korting gegeven</p>
+                    <p className={`text-2xl font-bold ${darkMode ? 'text-white' : 'text-gray-900'}`}>
+                      €{projects.reduce((sum, p) => sum + (p.discountSavings || 0), 0).toFixed(0)}
+                    </p>
+                  </div>
+                </div>
+              </div>
+              <div className={`p-4 rounded-xl ${darkMode ? 'bg-gray-800' : 'bg-white'} shadow-sm`}>
+                <div className="flex items-center gap-3">
+                  <div className={`w-10 h-10 rounded-lg flex items-center justify-center ${darkMode ? 'bg-purple-600' : 'bg-purple-100'}`}>
+                    <Percent className={`w-5 h-5 ${darkMode ? 'text-white' : 'text-purple-600'}`} />
+                  </div>
+                  <div>
+                    <p className={`text-sm ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>Actieve codes</p>
+                    <p className={`text-2xl font-bold ${darkMode ? 'text-white' : 'text-gray-900'}`}>1</p>
                   </div>
                 </div>
               </div>

@@ -95,7 +95,7 @@ Ik zag dat {{bedrijf}} nog geen website heeft en dat is zonde! In 2024 zoekt 87%
 Bij Webstability helpen we ondernemers zoals u aan een professionele website, zonder gedoe:
 
 ✓ Volledig verzorgd - wij regelen alles
-✓ Vanaf €29 per maand - geen grote investering vooraf  
+✓ Vanaf €99 per maand - geen grote investering vooraf  
 ✓ Binnen 7 dagen online
 ✓ Inclusief hosting, SSL en updates
 
@@ -121,7 +121,7 @@ Veel ondernemers denken dat een website duur en ingewikkeld is. Bij ons niet:
 • Geen technische kennis nodig
 • Wij schrijven de teksten
 • Hosting en onderhoud inbegrepen
-• Al vanaf €29 per maand
+• Al vanaf €99 per maand
 
 Meer dan 150 ondernemers gingen u voor. Zullen we eens vrijblijvend kennismaken?
 
@@ -147,7 +147,7 @@ Wat wij bieden:
 ✓ Beter vindbaar in Google
 ✓ Maandelijks aan te passen
 
-Geen grote investering vooraf - wij werken met een abonnement vanaf €29/maand.
+Geen grote investering vooraf - wij werken met een abonnement vanaf €99/maand.
 
 Interesse in een vrijblijvende website-scan? Ik laat zien wat er beter kan.
 
