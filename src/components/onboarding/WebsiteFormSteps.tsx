@@ -8,9 +8,140 @@ import {
   Settings,
   Check,
   Plus,
-  X
+  X,
+  ArrowUpRight,
+  Sparkles,
+  Lock
 } from 'lucide-react'
 import { useState } from 'react'
+
+// ===========================================
+// PACKAGE CONFIGURATION
+// ===========================================
+
+export type PackageId = 'starter' | 'professional' | 'business'
+
+export interface PackageConfig {
+  id: PackageId
+  name: string
+  price: string
+  maxPages: number
+  features: {
+    blog: boolean
+    booking: boolean
+    newsletter: boolean
+    multilang: boolean
+    analytics: boolean
+    socialFeed: boolean
+    chat: boolean
+    reviews: boolean
+  }
+}
+
+export const PACKAGE_CONFIGS: Record<PackageId, PackageConfig> = {
+  starter: {
+    id: 'starter',
+    name: 'Starter',
+    price: '€99/maand',
+    maxPages: 5,
+    features: {
+      blog: false,
+      booking: false,
+      newsletter: false,
+      multilang: false,
+      analytics: false,
+      socialFeed: false,
+      chat: false,
+      reviews: true,
+    }
+  },
+  professional: {
+    id: 'professional',
+    name: 'Professioneel',
+    price: '€199/maand',
+    maxPages: 10,
+    features: {
+      blog: true,
+      booking: false,
+      newsletter: false,
+      multilang: false,
+      analytics: true,
+      socialFeed: true,
+      chat: false,
+      reviews: true,
+    }
+  },
+  business: {
+    id: 'business',
+    name: 'Business',
+    price: '€349/maand',
+    maxPages: 20,
+    features: {
+      blog: true,
+      booking: true,
+      newsletter: true,
+      multilang: true,
+      analytics: true,
+      socialFeed: true,
+      chat: true,
+      reviews: true,
+    }
+  }
+}
+
+// Get the minimum package required for a feature
+export function getMinPackageForFeature(feature: keyof PackageConfig['features']): PackageId {
+  if (PACKAGE_CONFIGS.starter.features[feature]) return 'starter'
+  if (PACKAGE_CONFIGS.professional.features[feature]) return 'professional'
+  return 'business'
+}
+
+// ===========================================
+// UPGRADE PROMPT COMPONENT
+// ===========================================
+
+interface UpgradePromptProps {
+  currentPackage: PackageId
+  requiredPackage: PackageId
+  featureName: string
+  onUpgrade?: (packageId: PackageId) => void
+}
+
+// Exported for use in other components
+export function UpgradePrompt({ currentPackage, requiredPackage, featureName, onUpgrade }: UpgradePromptProps) {
+  const requiredConfig = PACKAGE_CONFIGS[requiredPackage]
+  const currentConfig = PACKAGE_CONFIGS[currentPackage]
+  
+  return (
+    <div className="bg-gradient-to-r from-amber-50 to-orange-50 dark:from-amber-900/20 dark:to-orange-900/20 border border-amber-200 dark:border-amber-700 rounded-xl p-4">
+      <div className="flex items-start gap-3">
+        <div className="w-10 h-10 rounded-xl bg-amber-100 dark:bg-amber-900/30 flex items-center justify-center flex-shrink-0">
+          <Sparkles className="w-5 h-5 text-amber-600 dark:text-amber-400" />
+        </div>
+        <div className="flex-1">
+          <div className="flex items-center gap-2">
+            <Lock className="w-4 h-4 text-amber-600 dark:text-amber-400" />
+            <span className="font-medium text-amber-800 dark:text-amber-300">
+              {featureName} - {requiredConfig.name} pakket vereist
+            </span>
+          </div>
+          <p className="text-sm text-amber-700 dark:text-amber-400 mt-1">
+            Je huidige pakket ({currentConfig.name}) bevat deze functie niet.
+          </p>
+          {onUpgrade && (
+            <button
+              onClick={() => onUpgrade(requiredPackage)}
+              className="mt-3 inline-flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-amber-500 to-orange-500 text-white rounded-lg font-medium text-sm hover:from-amber-600 hover:to-orange-600 transition-all"
+            >
+              Upgrade naar {requiredConfig.name}
+              <ArrowUpRight className="w-4 h-4" />
+            </button>
+          )}
+        </div>
+      </div>
+    </div>
+  )
+}
 
 // ===========================================
 // SHARED COMPONENTS
@@ -118,7 +249,8 @@ interface CheckboxGroupProps {
   columns?: number
 }
 
-function CheckboxGroup({ label, name, values, onChange, options, disabled, hint, columns = 2 }: CheckboxGroupProps) {
+// Exported for use in other components
+export function CheckboxGroup({ label, name, values, onChange, options, disabled, hint, columns = 2 }: CheckboxGroupProps) {
   const toggleValue = (val: string) => {
     if (disabled) return
     const newValues = values.includes(val) 
@@ -410,11 +542,22 @@ function TagInput({ label, name, values, onChange, placeholder, disabled, hint }
 // NOTE: These steps are for ADDITIONAL information only.
 // Basic info like companyName, designStyle, goal, pages, etc.
 // is already collected during /start onboarding.
+// Questions are filtered based on the selected package.
 
 interface FormStepProps {
   data: Record<string, any>
   onChange: (field: string, value: any) => void
   disabled?: boolean
+  packageId?: PackageId // Current package from /start
+  onUpgrade?: (packageId: PackageId) => void // Callback for upgrade
+}
+
+// Helper to get package config safely
+function getPackageConfig(packageId?: string): PackageConfig {
+  if (packageId && packageId in PACKAGE_CONFIGS) {
+    return PACKAGE_CONFIGS[packageId as PackageId]
+  }
+  return PACKAGE_CONFIGS.starter // Default to starter
 }
 
 // Step 1: Samenvatting & aanvullende bedrijfsinfo
@@ -587,10 +730,21 @@ export function WebsiteBrandingStep({ data, onChange, disabled }: FormStepProps)
   )
 }
 
-// Step 3: Doelen - alleen aanvullende details
-export function WebsiteDoelenStep({ data, onChange, disabled }: FormStepProps) {
+// Step 3: Doelen - alleen aanvullende details, pakket-afhankelijk
+export function WebsiteDoelenStep({ data, onChange, disabled, packageId, onUpgrade }: FormStepProps) {
   // Check for pre-filled goal from /start
   const hasPrefilledGoal = data.goal || data.mainGoal
+  const pkg = getPackageConfig(packageId || data.package || data.packageType)
+
+  // Filter contact options based on package
+  const contactOptions = [
+    { value: 'form', label: 'Contactformulier', available: true },
+    { value: 'email', label: 'E-mail link', available: true },
+    { value: 'phone', label: 'Telefoonnummer', available: true },
+    { value: 'whatsapp', label: 'WhatsApp knop', available: true },
+    { value: 'booking', label: 'Online afspraak maken', available: pkg.features.booking, requiredPkg: 'business' as PackageId },
+    { value: 'chat', label: 'Live chat', available: pkg.features.chat, requiredPkg: 'business' as PackageId },
+  ]
 
   return (
     <motion.div
@@ -643,30 +797,100 @@ export function WebsiteDoelenStep({ data, onChange, disabled }: FormStepProps) {
         ]}
       />
 
-      <CheckboxGroup
-        label="Welke contactmogelijkheden wil je aanbieden?"
-        name="contactMethods"
-        values={data.contactMethods || ['form', 'email']}
-        onChange={onChange}
-        disabled={disabled}
-        options={[
-          { value: 'form', label: 'Contactformulier' },
-          { value: 'email', label: 'E-mail link' },
-          { value: 'phone', label: 'Telefoonnummer' },
-          { value: 'whatsapp', label: 'WhatsApp knop' },
-          { value: 'booking', label: 'Online afspraak maken' },
-          { value: 'chat', label: 'Live chat' },
-        ]}
-        columns={2}
-      />
+      {/* Contact methods - filtered by package */}
+      <div>
+        <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
+          Welke contactmogelijkheden wil je aanbieden?
+        </span>
+        <p className="text-xs text-gray-500 dark:text-gray-400 mt-0.5">
+          Beschikbaar in je {pkg.name} pakket
+        </p>
+        <div className="mt-3 grid grid-cols-2 gap-3">
+          {contactOptions.map(opt => {
+            const isSelected = (data.contactMethods || ['form', 'email']).includes(opt.value)
+            const isLocked = !opt.available
+            
+            return (
+              <button
+                key={opt.value}
+                type="button"
+                onClick={() => {
+                  if (isLocked && onUpgrade && opt.requiredPkg) {
+                    onUpgrade(opt.requiredPkg)
+                    return
+                  }
+                  if (disabled || isLocked) return
+                  const current = data.contactMethods || ['form', 'email']
+                  const newValues = current.includes(opt.value)
+                    ? current.filter((v: string) => v !== opt.value)
+                    : [...current, opt.value]
+                  onChange('contactMethods', newValues)
+                }}
+                disabled={disabled}
+                className={`
+                  flex items-center gap-3 px-4 py-3 rounded-xl border-2 text-left transition-all relative
+                  ${isLocked 
+                    ? 'border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800/50 opacity-60'
+                    : isSelected 
+                      ? 'border-emerald-500 bg-emerald-50 dark:bg-emerald-900/20 text-emerald-700 dark:text-emerald-300' 
+                      : 'border-gray-200 dark:border-gray-600 hover:border-gray-300 dark:hover:border-gray-500 text-gray-700 dark:text-gray-300'}
+                  ${disabled ? 'cursor-not-allowed' : isLocked ? 'cursor-pointer' : 'cursor-pointer'}
+                `}
+              >
+                {isLocked && (
+                  <Lock className="w-4 h-4 text-gray-400 absolute top-2 right-2" />
+                )}
+                <div className={`
+                  w-5 h-5 rounded border-2 flex items-center justify-center flex-shrink-0
+                  ${isLocked ? 'border-gray-300 dark:border-gray-600' : isSelected ? 'border-emerald-500 bg-emerald-500' : 'border-gray-300 dark:border-gray-500'}
+                `}>
+                  {isSelected && !isLocked && <Check className="w-3 h-3 text-white" />}
+                </div>
+                <span className="text-sm font-medium">{opt.label}</span>
+              </button>
+            )
+          })}
+        </div>
+        
+        {/* Upgrade hint for locked features */}
+        {!pkg.features.booking && (
+          <div className="mt-3 p-3 bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800 rounded-lg">
+            <p className="text-xs text-amber-700 dark:text-amber-400">
+              <Sparkles className="w-3 h-3 inline mr-1" />
+              Online afspraken & Live chat beschikbaar vanaf het <strong>Business</strong> pakket.
+              {onUpgrade && (
+                <button 
+                  onClick={() => onUpgrade('business')}
+                  className="ml-1 underline hover:no-underline font-medium"
+                >
+                  Upgrade nu →
+                </button>
+              )}
+            </p>
+          </div>
+        )}
+      </div>
     </motion.div>
   )
 }
 
-// Step 4: Pagina's - details over gekozen pagina's
-export function WebsitePaginasStep({ data, onChange, disabled }: FormStepProps) {
+// Step 4: Pagina's - details over gekozen pagina's, met pakket limiet
+export function WebsitePaginasStep({ data, onChange, disabled, packageId, onUpgrade }: FormStepProps) {
   // Show pre-filled pages from /start
   const prefilledPages = data.pages || data.selectedPages || []
+  const customPages = data.customPages || []
+  const pkg = getPackageConfig(packageId || data.package || data.packageType)
+  
+  const totalPages = prefilledPages.length + customPages.length
+  const pagesRemaining = pkg.maxPages - totalPages
+  const isAtLimit = pagesRemaining <= 0
+
+  // Determine next upgrade package
+  const getNextPackage = (): PackageId | null => {
+    if (pkg.id === 'starter') return 'professional'
+    if (pkg.id === 'professional') return 'business'
+    return null
+  }
 
   return (
     <motion.div
@@ -681,6 +905,36 @@ export function WebsitePaginasStep({ data, onChange, disabled }: FormStepProps) 
         <div>
           <h3 className="font-semibold text-gray-900 dark:text-white">Pagina Details</h3>
           <p className="text-sm text-gray-500 dark:text-gray-400">Meer info over je pagina's</p>
+        </div>
+      </div>
+
+      {/* Package page limit indicator */}
+      <div className={`rounded-xl p-4 border ${
+        isAtLimit 
+          ? 'bg-red-50 dark:bg-red-900/20 border-red-200 dark:border-red-800' 
+          : 'bg-blue-50 dark:bg-blue-900/20 border-blue-200 dark:border-blue-800'
+      }`}>
+        <div className="flex items-center justify-between">
+          <div>
+            <span className={`font-medium ${isAtLimit ? 'text-red-700 dark:text-red-400' : 'text-blue-700 dark:text-blue-400'}`}>
+              {totalPages} / {pkg.maxPages} pagina's
+            </span>
+            <p className={`text-xs mt-0.5 ${isAtLimit ? 'text-red-600 dark:text-red-300' : 'text-blue-600 dark:text-blue-300'}`}>
+              {isAtLimit 
+                ? `Je ${pkg.name} pakket zit vol` 
+                : `Nog ${pagesRemaining} pagina${pagesRemaining === 1 ? '' : "'s"} beschikbaar in ${pkg.name}`
+              }
+            </p>
+          </div>
+          {isAtLimit && getNextPackage() && onUpgrade && (
+            <button
+              onClick={() => onUpgrade(getNextPackage()!)}
+              className="px-3 py-1.5 bg-gradient-to-r from-amber-500 to-orange-500 text-white rounded-lg text-sm font-medium hover:from-amber-600 hover:to-orange-600 transition-all flex items-center gap-1"
+            >
+              <Sparkles className="w-3 h-3" />
+              Meer pagina's
+            </button>
+          )}
         </div>
       </div>
 
@@ -701,15 +955,25 @@ export function WebsitePaginasStep({ data, onChange, disabled }: FormStepProps) 
         </div>
       )}
 
-      {/* Extra pagina's toevoegen */}
+      {/* Extra pagina's toevoegen - met limiet check */}
       <TagInput
         label="Extra pagina's toevoegen"
         name="customPages"
-        values={data.customPages || []}
-        onChange={onChange}
-        placeholder="Bijv. Vacatures, Partners, Projecten..."
-        disabled={disabled}
-        hint="Mis je een pagina in de lijst hierboven? Voeg hem hier toe"
+        values={customPages}
+        onChange={(name, values) => {
+          // Check if adding would exceed limit
+          if (values.length > customPages.length && prefilledPages.length + values.length > pkg.maxPages) {
+            // Would exceed limit - show upgrade prompt instead
+            if (onUpgrade && getNextPackage()) {
+              onUpgrade(getNextPackage()!)
+            }
+            return
+          }
+          onChange(name, values)
+        }}
+        placeholder={isAtLimit ? "Upgrade voor meer pagina's" : "Bijv. Vacatures, Partners, Projecten..."}
+        disabled={disabled || isAtLimit}
+        hint={isAtLimit ? undefined : "Mis je een pagina in de lijst hierboven? Voeg hem hier toe"}
       />
 
       {/* Per-page details for important pages */}
@@ -758,8 +1022,10 @@ export function WebsitePaginasStep({ data, onChange, disabled }: FormStepProps) 
   )
 }
 
-// Step 5: Content - teksten en foto's
-export function WebsiteContentStep({ data, onChange, disabled }: FormStepProps) {
+// Step 5: Content - teksten en foto's, pakket-specifiek
+export function WebsiteContentStep({ data, onChange, disabled, packageId, onUpgrade }: FormStepProps) {
+  const pkg = getPackageConfig(packageId || data.package || data.packageType)
+
   return (
     <motion.div
       initial={{ opacity: 0, y: 10 }}
@@ -803,6 +1069,40 @@ export function WebsiteContentStep({ data, onChange, disabled }: FormStepProps) 
         ]}
       />
 
+      {/* Blog content - only for Professional and Business */}
+      {pkg.features.blog ? (
+        <RadioGroup
+          label="Wil je blog artikelen op je website?"
+          name="wantsBlog"
+          value={data.wantsBlog || ''}
+          onChange={onChange}
+          disabled={disabled}
+          options={[
+            { value: 'yes', label: 'Ja, ik wil een blog', description: 'We helpen met de opzet en eerste artikelen' },
+            { value: 'later', label: 'Misschien later', description: 'We bereiden de functie voor' },
+            { value: 'no', label: 'Nee, geen blog nodig' },
+          ]}
+        />
+      ) : (
+        <div className="bg-gray-50 dark:bg-gray-800/50 border border-gray-200 dark:border-gray-700 rounded-xl p-4 opacity-60">
+          <div className="flex items-center gap-2 text-gray-500 dark:text-gray-400">
+            <Lock className="w-4 h-4" />
+            <span className="font-medium">Blog functionaliteit</span>
+          </div>
+          <p className="text-xs text-gray-400 dark:text-gray-500 mt-1">
+            Beschikbaar vanaf het Professioneel pakket.
+            {onUpgrade && (
+              <button 
+                onClick={() => onUpgrade('professional')}
+                className="ml-1 text-primary-500 underline hover:no-underline"
+              >
+                Upgrade →
+              </button>
+            )}
+          </p>
+        </div>
+      )}
+
       <TextArea
         label="Specifieke content wensen"
         name="contentNotes"
@@ -822,8 +1122,10 @@ export function WebsiteContentStep({ data, onChange, disabled }: FormStepProps) 
   )
 }
 
-// Step 6: Planning & Extra - deadline en aanvullingen
-export function WebsiteExtraStep({ data, onChange, disabled }: FormStepProps) {
+// Step 6: Planning & Extra - deadline en aanvullingen, pakket samenvatting
+export function WebsiteExtraStep({ data, onChange, disabled, packageId, onUpgrade }: FormStepProps) {
+  const pkg = getPackageConfig(packageId || data.package || data.packageType)
+
   return (
     <motion.div
       initial={{ opacity: 0, y: 10 }}
@@ -837,6 +1139,49 @@ export function WebsiteExtraStep({ data, onChange, disabled }: FormStepProps) {
         <div>
           <h3 className="font-semibold text-gray-900 dark:text-white">Planning & Afronding</h3>
           <p className="text-sm text-gray-500 dark:text-gray-400">Laatste details voor je project</p>
+        </div>
+      </div>
+
+      {/* Package summary */}
+      <div className="bg-gradient-to-r from-primary-50 to-blue-50 dark:from-primary-900/20 dark:to-blue-900/20 border border-primary-200 dark:border-primary-800 rounded-xl p-4">
+        <div className="flex items-center justify-between mb-3">
+          <div>
+            <span className="font-semibold text-primary-700 dark:text-primary-300">{pkg.name} pakket</span>
+            <span className="text-sm text-primary-600 dark:text-primary-400 ml-2">{pkg.price}</span>
+          </div>
+          {pkg.id !== 'business' && onUpgrade && (
+            <button
+              onClick={() => onUpgrade(pkg.id === 'starter' ? 'professional' : 'business')}
+              className="text-xs px-3 py-1 bg-primary-500 text-white rounded-full hover:bg-primary-600 transition-colors"
+            >
+              Upgrade
+            </button>
+          )}
+        </div>
+        <div className="flex flex-wrap gap-2 text-xs">
+          <span className="px-2 py-1 bg-white dark:bg-gray-800 rounded text-gray-600 dark:text-gray-400">
+            Max {pkg.maxPages} pagina's
+          </span>
+          {pkg.features.blog && (
+            <span className="px-2 py-1 bg-green-100 dark:bg-green-900/30 rounded text-green-700 dark:text-green-400">
+              ✓ Blog
+            </span>
+          )}
+          {pkg.features.booking && (
+            <span className="px-2 py-1 bg-green-100 dark:bg-green-900/30 rounded text-green-700 dark:text-green-400">
+              ✓ Boekingen
+            </span>
+          )}
+          {pkg.features.newsletter && (
+            <span className="px-2 py-1 bg-green-100 dark:bg-green-900/30 rounded text-green-700 dark:text-green-400">
+              ✓ Nieuwsbrief
+            </span>
+          )}
+          {pkg.features.multilang && (
+            <span className="px-2 py-1 bg-green-100 dark:bg-green-900/30 rounded text-green-700 dark:text-green-400">
+              ✓ Meerdere talen
+            </span>
+          )}
         </div>
       </div>
 
@@ -863,6 +1208,33 @@ export function WebsiteExtraStep({ data, onChange, disabled }: FormStepProps) {
           value={data.specificDeadline || ''}
           onChange={onChange}
           placeholder="Bijv. 1 februari 2025"
+          disabled={disabled}
+        />
+      )}
+
+      {/* Multilang - only for Business */}
+      {pkg.features.multilang && (
+        <RadioGroup
+          label="Wil je de website in meerdere talen?"
+          name="wantsMultilang"
+          value={data.wantsMultilang || ''}
+          onChange={onChange}
+          disabled={disabled}
+          options={[
+            { value: 'no', label: 'Nee, alleen Nederlands' },
+            { value: 'en', label: 'Nederlands + Engels' },
+            { value: 'multi', label: 'Meerdere talen', description: 'Specificeer hieronder' },
+          ]}
+        />
+      )}
+
+      {data.wantsMultilang === 'multi' && (
+        <TextInput
+          label="Welke talen?"
+          name="languages"
+          value={data.languages || ''}
+          onChange={onChange}
+          placeholder="Bijv. Nederlands, Engels, Duits, Frans"
           disabled={disabled}
         />
       )}

@@ -489,15 +489,46 @@ export default function ClientOnboarding() {
     }
   }
 
+  // Handle package upgrade request
+  const handleUpgradeRequest = (newPackageId: string) => {
+    // Open a modal or redirect to upgrade page
+    // For now, we'll show a message and update the package in formData
+    const packageNames: Record<string, string> = {
+      'starter': 'Starter',
+      'professional': 'Professioneel',
+      'business': 'Business'
+    }
+    
+    if (window.confirm(
+      `Wil je upgraden naar het ${packageNames[newPackageId]} pakket?\n\n` +
+      `Dit geeft je toegang tot meer functies. ` +
+      `We nemen contact op om de upgrade te bespreken.`
+    )) {
+      // Mark upgrade request
+      setFormData(prev => ({
+        ...prev,
+        upgradeRequested: newPackageId,
+        upgradeRequestedAt: new Date().toISOString()
+      }))
+      setSuccess(`Upgrade aanvraag naar ${packageNames[newPackageId]} genoteerd! We nemen contact op.`)
+      setTimeout(() => setSuccess(''), 5000)
+    }
+  }
+
   // Render the appropriate form step based on service type and current step
   const renderFormStep = () => {
     const stepId = currentStepConfig?.id
     if (!stepId) return null
 
+    // Get current package from formData
+    const currentPackage = formData.package || formData.packageType || 'starter'
+
     const formProps = {
       data: formData,
       onChange: updateField,
-      disabled: !canEdit
+      disabled: !canEdit,
+      packageId: currentPackage,
+      onUpgrade: handleUpgradeRequest
     }
 
     // Get the step component based on service type
