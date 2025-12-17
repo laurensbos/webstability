@@ -338,8 +338,8 @@ export default function WebsiteOnboarding({
       
       <div className="relative z-10 max-w-4xl mx-auto px-4 py-12">
         {/* Progress Steps */}
-        <div className="mb-12">
-          <div className="flex items-center justify-between max-w-2xl mx-auto">
+        <div className="mb-12 overflow-hidden">
+          <div className="flex items-center justify-center max-w-2xl mx-auto overflow-x-auto scrollbar-hide" style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
             {STEPS.map((step, index) => {
               const Icon = step.icon
               const isActive = currentStep === step.id
@@ -441,6 +441,13 @@ export default function WebsiteOnboarding({
                             </li>
                           ))}
                         </ul>
+                        {formData.package === pkg.id && (
+                          <motion.div className="absolute top-4 right-4" initial={{ scale: 0 }} animate={{ scale: 1 }}>
+                            <div className={`w-6 h-6 rounded-full bg-gradient-to-r ${pkg.gradient} flex items-center justify-center`}>
+                              <Check className="w-4 h-4 text-white" />
+                            </div>
+                          </motion.div>
+                        )}
                       </motion.button>
                     ))}
                   </div>

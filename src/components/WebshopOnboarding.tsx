@@ -250,8 +250,8 @@ export default function WebshopOnboarding({
       
       <div className="relative z-10 max-w-4xl mx-auto px-4 py-12">
         {/* Step Indicator */}
-        <div className="mb-12">
-          <div className="flex items-center justify-between max-w-2xl mx-auto">
+        <div className="mb-12 overflow-hidden">
+          <div className="flex items-center justify-center max-w-2xl mx-auto overflow-x-auto scrollbar-hide" style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
             {STEPS.map((step, index) => {
               const Icon = step.icon
               const isActive = currentStep === step.id
