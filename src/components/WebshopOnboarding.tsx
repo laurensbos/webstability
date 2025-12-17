@@ -22,6 +22,8 @@ interface PackageType {
   name: string
   price: string
   priceLabel?: string
+  setupFee: number
+  monthlyFee: number
   tagline?: string
   description: string
   features: string[]
@@ -57,6 +59,8 @@ const PACKAGES: PackageType[] = [
     name: 'Starter',
     price: '€299',
     priceLabel: '/maand incl. BTW',
+    setupFee: 249,
+    monthlyFee: 299,
     tagline: 'Ideaal om te beginnen',
     description: 'Perfect om te beginnen met online verkopen.',
     features: ['Tot 50 producten', 'iDEAL & creditcard', 'Basis verzendopties', 'Order management', 'E-mail notificaties'],
@@ -67,6 +71,8 @@ const PACKAGES: PackageType[] = [
     name: 'Professioneel',
     price: '€599',
     priceLabel: '/maand incl. BTW',
+    setupFee: 299,
+    monthlyFee: 599,
     description: 'Voor serieuze webshops die willen groeien.',
     features: ['Tot 500 producten', 'Alle betaalmethodes', 'Geavanceerde verzending', 'Koppeling met boekhouden', 'Kortingscodes systeem', 'Klantaccounts'],
     gradient: 'from-green-500 to-teal-500',
@@ -375,12 +381,13 @@ export default function WebshopOnboarding({
                         <p className="text-xs text-gray-500 dark:text-gray-400 mb-2">{pkg.tagline}</p>
                       )}
                       
-                      <div className="text-2xl font-bold text-gray-900 dark:text-white mb-1">
+                      <div className="text-2xl font-bold text-gray-900 dark:text-white mb-0.5">
                         {pkg.price}
                         <span className="text-sm font-normal text-gray-500 dark:text-gray-400">
                           {pkg.priceLabel}
                         </span>
                       </div>
+                      <p className="text-xs text-gray-500 dark:text-gray-400 mb-3">+ €{pkg.setupFee},- eenmalige opstartkosten</p>
                       
                       <p className="text-sm text-gray-600 dark:text-gray-400 mb-4">{pkg.description}</p>
                       
@@ -451,12 +458,13 @@ export default function WebshopOnboarding({
                          <p className="text-xs text-gray-500 dark:text-gray-400 mb-2">{pkg.tagline}</p>
                        )}
                        
-                       <div className="text-2xl font-bold text-gray-900 dark:text-white mb-1">
+                       <div className="text-2xl font-bold text-gray-900 dark:text-white mb-0.5">
                          {pkg.price}
                          <span className="text-sm font-normal text-gray-500 dark:text-gray-400">
                            {pkg.priceLabel}
                          </span>
                        </div>
+                       <p className="text-xs text-gray-500 dark:text-gray-400 mb-3">+ €{pkg.setupFee},- eenmalige opstartkosten</p>
                        
                        <p className="text-sm text-gray-600 dark:text-gray-400 mb-4">{pkg.description}</p>
                        
@@ -882,6 +890,61 @@ export default function WebshopOnboarding({
                         )}
                       </button>
                     </div>
+                  </div>
+
+                  {/* Cost Summary */}
+                  <div className={`mt-6 p-4 sm:p-6 rounded-2xl bg-gradient-to-br ${currentGradient} bg-opacity-5 border border-gray-200 dark:border-gray-700`}>
+                    <h4 className="font-semibold text-gray-900 dark:text-white mb-4 flex items-center gap-2">
+                      <Sparkles className="w-5 h-5" />
+                      Kostenoverzicht
+                    </h4>
+                    
+                    {/* Package Info */}
+                    <div className="mb-4 pb-4 border-b border-gray-200 dark:border-gray-700">
+                      <div className="flex items-center justify-between mb-1">
+                        <span className="text-gray-600 dark:text-gray-400">Pakket</span>
+                        <span className={`font-semibold bg-gradient-to-r ${currentGradient} bg-clip-text text-transparent`}>
+                          {selectedPackage?.name}
+                        </span>
+                      </div>
+                      <div className="flex items-center justify-between text-sm">
+                        <span className="text-gray-500 dark:text-gray-500">Webshop</span>
+                        <span className="text-gray-700 dark:text-gray-300">{formData.shopName}</span>
+                      </div>
+                    </div>
+
+                    {/* Cost Breakdown */}
+                    <div className="space-y-3">
+                      <div className="flex items-center justify-between">
+                        <span className="text-gray-600 dark:text-gray-400">Eenmalige opstartkosten</span>
+                        <span className="font-medium text-gray-900 dark:text-white">€{selectedPackage?.setupFee},-</span>
+                      </div>
+                      <div className="flex items-center justify-between">
+                        <span className="text-gray-600 dark:text-gray-400">Maandelijks abonnement</span>
+                        <span className="font-medium text-gray-900 dark:text-white">€{selectedPackage?.monthlyFee},-</span>
+                      </div>
+                    </div>
+
+                    {/* Total First Month */}
+                    <div className="mt-4 pt-4 border-t border-gray-200 dark:border-gray-700">
+                      <div className="flex items-center justify-between">
+                        <div>
+                          <span className="font-semibold text-gray-900 dark:text-white">Eerste maand</span>
+                          <p className="text-xs text-gray-500 dark:text-gray-500">Incl. opstartkosten</p>
+                        </div>
+                        <span className={`text-xl sm:text-2xl font-bold bg-gradient-to-r ${currentGradient} bg-clip-text text-transparent`}>
+                          €{(selectedPackage?.setupFee || 0) + (selectedPackage?.monthlyFee || 0)},-
+                        </span>
+                      </div>
+                      <div className="flex items-center justify-between mt-2 text-sm">
+                        <span className="text-gray-500 dark:text-gray-500">Daarna per maand</span>
+                        <span className="font-medium text-gray-700 dark:text-gray-300">€{selectedPackage?.monthlyFee},-</span>
+                      </div>
+                    </div>
+
+                    <p className="text-xs text-gray-500 dark:text-gray-500 mt-4 text-center">
+                      Alle prijzen zijn inclusief BTW • Maandelijks opzegbaar
+                    </p>
                   </div>
                 </div>
               </div>

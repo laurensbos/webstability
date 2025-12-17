@@ -701,17 +701,56 @@ export default function LogoOnboarding({
                     )}
                   </div>
                   
-                  <div className={`p-4 rounded-xl bg-gradient-to-r ${currentGradient} bg-opacity-10`}>
-                    <h4 className="font-semibold text-gray-900 dark:text-white mb-2 flex items-center gap-2">
-                      <Sparkles className="w-4 h-4" />
-                      Samenvatting
+                  {/* Cost Summary */}
+                  <div className={`p-4 sm:p-6 rounded-2xl bg-gradient-to-br ${currentGradient} bg-opacity-5 border border-gray-200 dark:border-gray-700`}>
+                    <h4 className="font-semibold text-gray-900 dark:text-white mb-4 flex items-center gap-2">
+                      <Sparkles className="w-5 h-5" />
+                      Kostenoverzicht
                     </h4>
-                    <ul className="text-sm text-gray-700 dark:text-gray-300 space-y-1">
-                      <li>Pakket: {selectedPackage?.name} - {selectedPackage?.price}</li>
-                      <li>Bedrijf: {formData.companyName}</li>
-                      <li>Stijl: {formData.logoStyles.join(', ')}</li>
-                      <li>Kleuren: {formData.colorPreferences.join(', ')}</li>
-                    </ul>
+                    
+                    {/* Package Info */}
+                    <div className="mb-4 pb-4 border-b border-gray-200 dark:border-gray-700">
+                      <div className="flex items-center justify-between mb-1">
+                        <span className="text-gray-600 dark:text-gray-400">Pakket</span>
+                        <span className={`font-semibold bg-gradient-to-r ${currentGradient} bg-clip-text text-transparent`}>
+                          {selectedPackage?.name}
+                        </span>
+                      </div>
+                      <div className="flex items-center justify-between text-sm">
+                        <span className="text-gray-500 dark:text-gray-500">Bedrijf</span>
+                        <span className="text-gray-700 dark:text-gray-300">{formData.companyName}</span>
+                      </div>
+                    </div>
+
+                    {/* What's included */}
+                    <div className="space-y-2 mb-4">
+                      <span className="text-sm text-gray-600 dark:text-gray-400">Inbegrepen:</span>
+                      <ul className="text-sm text-gray-700 dark:text-gray-300 space-y-1">
+                        {selectedPackage?.features.map((feature, i) => (
+                          <li key={i} className="flex items-center gap-2">
+                            <Check className="w-4 h-4 text-purple-500" />
+                            {feature}
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+
+                    {/* Total */}
+                    <div className="pt-4 border-t border-gray-200 dark:border-gray-700">
+                      <div className="flex items-center justify-between">
+                        <div>
+                          <span className="font-semibold text-gray-900 dark:text-white">Totaal</span>
+                          <p className="text-xs text-gray-500 dark:text-gray-500">Eenmalige kosten</p>
+                        </div>
+                        <span className={`text-xl sm:text-2xl font-bold bg-gradient-to-r ${currentGradient} bg-clip-text text-transparent`}>
+                          {selectedPackage?.price}
+                        </span>
+                      </div>
+                    </div>
+
+                    <p className="text-xs text-gray-500 dark:text-gray-500 mt-4 text-center">
+                      Prijs is inclusief BTW • Geen verborgen kosten
+                    </p>
                   </div>
                 </div>
               </div>
