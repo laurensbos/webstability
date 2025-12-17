@@ -41,7 +41,8 @@ interface FormData {
   estimatedProducts: string
   targetAudience: string
   designStyle: string
-  brandColors: string
+  brandColors: string[]
+  customColor: string
   hasLogo: boolean
   hasProductPhotos: boolean
   inspirationUrls: string
@@ -176,7 +177,8 @@ export default function WebshopOnboarding({
     estimatedProducts: '',
     targetAudience: '',
     designStyle: '',
-    brandColors: '',
+    brandColors: [],
+    customColor: '',
     hasLogo: false,
     hasProductPhotos: false,
     inspirationUrls: '',
@@ -188,8 +190,17 @@ export default function WebshopOnboarding({
   const selectedPackage = PACKAGES.find(p => p.id === formData.package)
   const currentGradient = selectedPackage?.gradient || 'from-emerald-500 to-green-500'
 
-  const updateFormData = (field: keyof FormData, value: string | boolean) => {
+  const updateFormData = (field: keyof FormData, value: string | boolean | string[]) => {
     setFormData(prev => ({ ...prev, [field]: value }))
+  }
+
+  const toggleBrandColor = (colorId: string) => {
+    const current = formData.brandColors
+    if (current.includes(colorId)) {
+      updateFormData('brandColors', current.filter(c => c !== colorId))
+    } else {
+      updateFormData('brandColors', [...current, colorId])
+    }
   }
 
   const canProceed = (): boolean => {
@@ -665,16 +676,16 @@ export default function WebshopOnboarding({
                   
                   <div>
                     <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                      Huisstijl kleuren
+                      Huisstijl kleuren <span className="text-gray-400 font-normal">- selecteer 1 of meer</span>
                     </label>
                     <div className="grid grid-cols-5 sm:grid-cols-10 gap-2 mb-3">
                       {COLOR_OPTIONS.map((color) => {
-                        const isSelected = formData.brandColors === color.name || formData.brandColors === color.hex
+                        const isSelected = formData.brandColors.includes(color.id)
                         return (
                           <button
                             key={color.id}
                             type="button"
-                            onClick={() => updateFormData('brandColors', color.name)}
+                            onClick={() => toggleBrandColor(color.id)}
                             className={`group relative aspect-square rounded-xl border-2 transition-all ${
                               isSelected
                                 ? 'border-emerald-500 scale-110 z-10'
@@ -692,29 +703,53 @@ export default function WebshopOnboarding({
                         )
                       })}
                     </div>
+                    {formData.brandColors.length > 0 && (
+                      <div className="flex flex-wrap gap-2 mb-3">
+                        {formData.brandColors.map((colorId) => {
+                          const color = COLOR_OPTIONS.find(c => c.id === colorId)
+                          if (!color) return null
+                          return (
+                            <span 
+                              key={colorId}
+                              className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-emerald-100 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-300 text-sm"
+                            >
+                              <span className={`w-3 h-3 ${color.color} rounded-full`} />
+                              {color.name}
+                              <button 
+                                type="button"
+                                onClick={() => toggleBrandColor(colorId)}
+                                className="hover:text-emerald-900 dark:hover:text-emerald-100 ml-0.5"
+                              >
+                                ×
+                              </button>
+                            </span>
+                          )
+                        })}
+                      </div>
+                    )}
                     <div className="flex items-center gap-3">
                       <div className="relative flex-1">
                         <input 
                           type="text" 
-                          value={formData.brandColors} 
-                          onChange={e => updateFormData('brandColors', e.target.value)} 
+                          value={formData.customColor} 
+                          onChange={e => updateFormData('customColor', e.target.value)} 
                           className="w-full pl-12 pr-4 py-3 rounded-xl border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 text-gray-900 dark:text-white focus:ring-emerald-500 focus:border-emerald-500 transition-all"
                           placeholder="Of typ een kleur / hex code"
                         />
                         <div 
                           className="absolute left-3 top-1/2 -translate-y-1/2 w-6 h-6 rounded-md border border-gray-300 dark:border-gray-600"
                           style={{ 
-                            backgroundColor: formData.brandColors.startsWith('#') 
-                              ? formData.brandColors 
-                              : COLOR_OPTIONS.find(c => c.name === formData.brandColors)?.hex || '#E5E7EB'
+                            backgroundColor: formData.customColor.startsWith('#') 
+                              ? formData.customColor 
+                              : '#E5E7EB'
                           }}
                         />
                       </div>
                       <label className="relative cursor-pointer">
                         <input
                           type="color"
-                          value={COLOR_OPTIONS.find(c => c.name === formData.brandColors)?.hex || (formData.brandColors.startsWith('#') ? formData.brandColors : '#22C55E')}
-                          onChange={(e) => updateFormData('brandColors', e.target.value)}
+                          value={formData.customColor.startsWith('#') ? formData.customColor : '#22C55E'}
+                          onChange={(e) => updateFormData('customColor', e.target.value)}
                           className="sr-only"
                         />
                         <div className="w-12 h-12 rounded-xl border-2 border-gray-300 dark:border-gray-600 hover:border-emerald-500 transition-colors flex items-center justify-center bg-gradient-to-br from-red-500 via-green-500 to-blue-500">
@@ -722,15 +757,6 @@ export default function WebshopOnboarding({
                         </div>
                       </label>
                     </div>
-                    {formData.brandColors && (
-                      <button
-                        type="button"
-                        onClick={() => updateFormData('brandColors', '')}
-                        className="mt-2 text-xs text-gray-500 hover:text-gray-700 dark:hover:text-gray-300"
-                      >
-                        Kleur wissen
-                      </button>
-                    )}
                   </div>
                   
                   <div className="flex items-center gap-4">

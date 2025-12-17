@@ -36,7 +36,8 @@ interface FormData {
   industry: string
   currentWebsite: string
   designStyle: string
-  colorPreference: string
+  colorPreferences: string[]
+  customColor: string
   competitors: string
   goal: string
   targetAudience: string
@@ -209,7 +210,8 @@ export default function WebsiteOnboarding({
     industry: '',
     currentWebsite: '',
     designStyle: '',
-    colorPreference: '',
+    colorPreferences: [],
+    customColor: '',
     competitors: '',
     goal: '',
     targetAudience: '',
@@ -227,6 +229,15 @@ export default function WebsiteOnboarding({
 
   const updateFormData = (field: keyof FormData, value: string | string[]) => {
     setFormData(prev => ({ ...prev, [field]: value }))
+  }
+
+  const toggleColorPreference = (colorId: string) => {
+    const current = formData.colorPreferences
+    if (current.includes(colorId)) {
+      updateFormData('colorPreferences', current.filter(c => c !== colorId))
+    } else {
+      updateFormData('colorPreferences', [...current, colorId])
+    }
   }
 
   // Get page limit based on selected package
@@ -312,7 +323,8 @@ export default function WebsiteOnboarding({
           industry: formData.industry,
           currentWebsite: formData.currentWebsite,
           designStyle: formData.designStyle,
-          colorPreference: formData.colorPreference,
+          colorPreferences: formData.colorPreferences,
+          customColor: formData.customColor,
           competitors: formData.competitors,
           goal: formData.goal,
           targetAudience: formData.targetAudience,
@@ -610,16 +622,16 @@ export default function WebsiteOnboarding({
 
                   <div>
                     <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                      Kleurvoorkeur (optioneel)
+                      Kleurvoorkeur (optioneel) <span className="text-gray-400 font-normal">- selecteer 1 of meer</span>
                     </label>
                     <div className="grid grid-cols-5 sm:grid-cols-10 gap-2 mb-3">
                       {COLOR_OPTIONS.map((color) => {
-                        const isSelected = formData.colorPreference === color.name || formData.colorPreference === color.hex
+                        const isSelected = formData.colorPreferences.includes(color.id)
                         return (
                           <button
                             key={color.id}
                             type="button"
-                            onClick={() => updateFormData('colorPreference', color.name)}
+                            onClick={() => toggleColorPreference(color.id)}
                             className={`group relative aspect-square rounded-xl border-2 transition-all ${
                               isSelected
                                 ? 'border-primary-500 scale-110 z-10'
@@ -637,29 +649,53 @@ export default function WebsiteOnboarding({
                         )
                       })}
                     </div>
+                    {formData.colorPreferences.length > 0 && (
+                      <div className="flex flex-wrap gap-2 mb-3">
+                        {formData.colorPreferences.map((colorId) => {
+                          const color = COLOR_OPTIONS.find(c => c.id === colorId)
+                          if (!color) return null
+                          return (
+                            <span 
+                              key={colorId}
+                              className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-primary-100 dark:bg-primary-900/30 text-primary-700 dark:text-primary-300 text-sm"
+                            >
+                              <span className={`w-3 h-3 ${color.color} rounded-full`} />
+                              {color.name}
+                              <button 
+                                type="button"
+                                onClick={() => toggleColorPreference(colorId)}
+                                className="hover:text-primary-900 dark:hover:text-primary-100 ml-0.5"
+                              >
+                                ×
+                              </button>
+                            </span>
+                          )
+                        })}
+                      </div>
+                    )}
                     <div className="flex items-center gap-3">
                       <div className="relative flex-1">
                         <input
                           type="text"
-                          value={formData.colorPreference}
-                          onChange={(e) => updateFormData('colorPreference', e.target.value)}
+                          value={formData.customColor}
+                          onChange={(e) => updateFormData('customColor', e.target.value)}
                           className="w-full pl-12 pr-4 py-3 rounded-xl border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-primary-500 focus:border-transparent"
                           placeholder="Of typ een kleur / hex code"
                         />
                         <div 
                           className="absolute left-3 top-1/2 -translate-y-1/2 w-6 h-6 rounded-md border border-gray-300 dark:border-gray-600"
                           style={{ 
-                            backgroundColor: formData.colorPreference.startsWith('#') 
-                              ? formData.colorPreference 
-                              : COLOR_OPTIONS.find(c => c.name === formData.colorPreference)?.hex || '#E5E7EB'
+                            backgroundColor: formData.customColor.startsWith('#') 
+                              ? formData.customColor 
+                              : '#E5E7EB'
                           }}
                         />
                       </div>
                       <label className="relative cursor-pointer">
                         <input
                           type="color"
-                          value={COLOR_OPTIONS.find(c => c.name === formData.colorPreference)?.hex || (formData.colorPreference.startsWith('#') ? formData.colorPreference : '#3B82F6')}
-                          onChange={(e) => updateFormData('colorPreference', e.target.value)}
+                          value={formData.customColor.startsWith('#') ? formData.customColor : '#3B82F6'}
+                          onChange={(e) => updateFormData('customColor', e.target.value)}
                           className="sr-only"
                         />
                         <div className="w-12 h-12 rounded-xl border-2 border-gray-300 dark:border-gray-600 hover:border-primary-500 transition-colors flex items-center justify-center bg-gradient-to-br from-red-500 via-green-500 to-blue-500">
@@ -667,15 +703,6 @@ export default function WebsiteOnboarding({
                         </div>
                       </label>
                     </div>
-                    {formData.colorPreference && (
-                      <button
-                        type="button"
-                        onClick={() => updateFormData('colorPreference', '')}
-                        className="mt-2 text-xs text-gray-500 hover:text-gray-700 dark:hover:text-gray-300"
-                      >
-                        Kleur wissen
-                      </button>
-                    )}
                   </div>
 
                   <div>
