@@ -466,29 +466,30 @@ export default function ProjectStatus() {
     }
     
     return (
-      <div className="min-h-screen bg-gradient-to-b from-gray-50 to-white">
+      <div className="min-h-screen bg-gradient-to-b from-gray-900 via-gray-900 to-gray-950">
         {/* Hero Section */}
-        <div className="relative bg-gradient-to-br from-blue-600 via-blue-500 to-indigo-600 overflow-hidden">
-          <FloatingParticles />
-          
-          {/* Decorative Elements */}
+        <div className="relative overflow-hidden">
+          {/* Animated Background */}
           <div className="absolute inset-0">
-            <div className="absolute top-20 left-10 w-64 h-64 bg-white/10 rounded-full blur-3xl" />
-            <div className="absolute bottom-10 right-10 w-96 h-96 bg-indigo-400/20 rounded-full blur-3xl" />
+            <div className="absolute inset-0 bg-gradient-to-br from-blue-600/20 via-indigo-600/10 to-purple-600/20" />
+            <div className="absolute top-0 left-1/4 w-96 h-96 bg-blue-500/20 rounded-full blur-[120px] animate-pulse" />
+            <div className="absolute bottom-0 right-1/4 w-80 h-80 bg-indigo-500/20 rounded-full blur-[100px] animate-pulse" style={{ animationDelay: '1s' }} />
           </div>
+          
+          <FloatingParticles />
           
           <header className="relative z-10 border-b border-white/10">
             <div className="max-w-7xl mx-auto px-4 py-4 flex justify-between items-center">
               <Link to="/" className="hover:opacity-80 transition">
-                <Logo />
+                <Logo variant="white" />
               </Link>
             </div>
           </header>
 
-          <div className="relative z-10 max-w-4xl mx-auto px-4 py-12 md:py-16 text-center">
+          <div className="relative z-10 max-w-4xl mx-auto px-4 pt-12 pb-20 sm:pt-16 sm:pb-24 text-center">
             <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
+              initial={{ opacity: 0, scale: 0.9 }}
+              animate={{ opacity: 1, scale: 1 }}
               className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/10 backdrop-blur-sm border border-white/20 text-white/90 text-sm mb-6"
             >
               <Search className="w-4 h-4" />
@@ -499,7 +500,7 @@ export default function ProjectStatus() {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.1 }}
-              className="text-3xl md:text-4xl lg:text-5xl font-bold text-white mb-4"
+              className="text-3xl sm:text-4xl lg:text-5xl font-bold text-white mb-4"
             >
               Bekijk de voortgang van je project
             </motion.h1>
@@ -508,37 +509,37 @@ export default function ProjectStatus() {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.2 }}
-              className="text-lg text-blue-100 max-w-2xl mx-auto"
+              className="text-base sm:text-lg text-gray-400 max-w-2xl mx-auto"
             >
               Vul je e-mailadres of Project ID in om real-time updates te zien
             </motion.p>
           </div>
         </div>
 
-        <main className="max-w-xl mx-auto px-4 -mt-8 pb-16 relative z-20">
+        <main className="max-w-xl mx-auto px-4 -mt-12 pb-12 sm:pb-16 relative z-20">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.3 }}
-            className="bg-white dark:bg-gray-900 rounded-2xl shadow-xl border border-gray-100 p-8"
+            className="bg-gray-800/80 backdrop-blur-xl rounded-2xl sm:rounded-3xl shadow-2xl border border-gray-700/50 p-6 sm:p-8"
           >
             <form onSubmit={handleLookup}>
               <div className="mb-6">
-                <label className="block text-sm font-medium text-gray-700 mb-2">
+                <label className="block text-sm font-medium text-gray-300 mb-3">
                   E-mailadres of Project ID
                 </label>
                 <div className="relative">
-                  <Mail className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
+                  <Mail className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-500" />
                   <input
                     type="text"
                     value={lookupQuery}
                     onChange={(e) => setLookupQuery(e.target.value)}
                     placeholder="jouw@email.nl of WS-MJ1G8LH1"
-                    className="w-full pl-12 pr-4 py-4 border-2 border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition text-lg"
+                    className="w-full pl-12 pr-4 py-4 bg-gray-900/50 border border-gray-700 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition text-white placeholder-gray-500"
                     required
                   />
                 </div>
-                <p className="text-sm text-gray-500 mt-2">
+                <p className="text-sm text-gray-500 mt-3">
                   Je vindt je Project ID in de welkomstmail die je hebt ontvangen.
                 </p>
               </div>
@@ -547,7 +548,7 @@ export default function ProjectStatus() {
                 <motion.div
                   initial={{ opacity: 0, y: -10 }}
                   animate={{ opacity: 1, y: 0 }}
-                  className="mb-4 p-4 bg-red-50 border border-red-200 rounded-xl text-red-700 text-sm flex items-center gap-2"
+                  className="mb-4 p-4 bg-red-500/10 border border-red-500/30 rounded-xl text-red-400 text-sm flex items-center gap-2"
                 >
                   <AlertCircle className="w-5 h-5 flex-shrink-0" />
                   {lookupError}
@@ -559,7 +560,7 @@ export default function ProjectStatus() {
                 disabled={lookupLoading}
                 whileHover={{ scale: 1.02 }}
                 whileTap={{ scale: 0.98 }}
-                className="w-full bg-gradient-to-r from-blue-600 to-indigo-600 text-white py-4 rounded-xl font-semibold hover:from-blue-700 hover:to-indigo-700 transition flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed shadow-lg shadow-blue-500/25"
+                className="w-full bg-gradient-to-r from-blue-600 to-indigo-600 text-white py-4 rounded-xl font-semibold hover:from-blue-500 hover:to-indigo-500 transition flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed shadow-lg shadow-blue-500/25"
               >
                 {lookupLoading ? (
                   <>
@@ -579,9 +580,9 @@ export default function ProjectStatus() {
               <motion.div
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
-                className="mt-6 border-t pt-6"
+                className="mt-6 border-t border-gray-700/50 pt-6"
               >
-                <h3 className="text-sm font-medium text-gray-700 mb-3">
+                <h3 className="text-sm font-medium text-gray-300 mb-3">
                   Meerdere projecten gevonden ({lookupResults.length})
                 </h3>
                 <div className="space-y-2">
@@ -589,24 +590,24 @@ export default function ProjectStatus() {
                     <Link
                       key={p.projectId}
                       to={`/status/${p.projectId}`}
-                      className="block p-4 bg-gray-50 hover:bg-blue-50 rounded-xl border-2 border-transparent hover:border-blue-200 transition group"
+                      className="block p-4 bg-gray-900/50 hover:bg-gray-700/50 rounded-xl border border-gray-700 hover:border-blue-500/50 transition group"
                     >
                       <div className="flex items-center justify-between">
                         <div>
-                          <p className="font-semibold text-gray-900 group-hover:text-blue-600 transition">{p.businessName}</p>
-                          <p className="text-xs text-gray-500 dark:text-gray-400">{p.projectId}</p>
+                          <p className="font-semibold text-white group-hover:text-blue-400 transition">{p.businessName}</p>
+                          <p className="text-xs text-gray-500">{p.projectId}</p>
                         </div>
                         <div className="flex items-center gap-2">
                           <span className={`px-3 py-1 rounded-full text-xs font-medium ${
-                            p.status === 'live' ? 'bg-green-100 text-green-700' :
-                            p.status === 'review' ? 'bg-cyan-100 text-cyan-700' :
-                            p.status === 'development' ? 'bg-purple-100 text-purple-700' :
-                            p.status === 'design' ? 'bg-amber-100 text-amber-700' :
-                            'bg-blue-100 text-blue-700'
+                            p.status === 'live' ? 'bg-green-500/20 text-green-400' :
+                            p.status === 'review' ? 'bg-cyan-500/20 text-cyan-400' :
+                            p.status === 'development' ? 'bg-purple-500/20 text-purple-400' :
+                            p.status === 'design' ? 'bg-amber-500/20 text-amber-400' :
+                            'bg-blue-500/20 text-blue-400'
                           }`}>
                             {p.status}
                           </span>
-                          <ChevronRight className="w-4 h-4 text-gray-400 group-hover:text-blue-500 transition" />
+                          <ChevronRight className="w-4 h-4 text-gray-600 group-hover:text-blue-400 transition" />
                         </div>
                       </div>
                     </Link>
@@ -621,18 +622,18 @@ export default function ProjectStatus() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.5 }}
-            className="mt-8 flex flex-wrap justify-center gap-6 text-sm text-gray-500 dark:text-gray-400"
+            className="mt-8 flex flex-wrap justify-center gap-4 sm:gap-6 text-xs sm:text-sm text-gray-500"
           >
             <div className="flex items-center gap-2">
-              <Shield className="w-5 h-5 text-green-500" />
+              <Shield className="w-4 h-4 sm:w-5 sm:h-5 text-green-500" />
               <span>SSL beveiligd</span>
             </div>
             <div className="flex items-center gap-2">
-              <Clock className="w-5 h-5 text-blue-500" />
+              <Clock className="w-4 h-4 sm:w-5 sm:h-5 text-blue-500" />
               <span>24/7 toegang</span>
             </div>
             <div className="flex items-center gap-2">
-              <Star className="w-5 h-5 text-amber-500" />
+              <Star className="w-4 h-4 sm:w-5 sm:h-5 text-amber-500" />
               <span>Real-time updates</span>
             </div>
           </motion.div>
@@ -644,10 +645,13 @@ export default function ProjectStatus() {
   // Loading state
   if (loading) {
     return (
-      <div className="min-h-screen bg-gradient-to-b from-gray-50 to-white flex items-center justify-center">
+      <div className="min-h-screen bg-gradient-to-b from-gray-50 to-white dark:from-gray-950 dark:to-gray-900 flex items-center justify-center">
         <div className="text-center">
-          <Loader2 className="w-12 h-12 animate-spin text-blue-600 mx-auto mb-4" />
-          <p className="text-gray-600 dark:text-gray-400">Project laden...</p>
+          <div className="relative">
+            <div className="w-16 h-16 rounded-full bg-gradient-to-r from-blue-500 to-indigo-600 animate-pulse mx-auto mb-4" />
+            <Loader2 className="w-8 h-8 animate-spin text-white absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 mb-4" />
+          </div>
+          <p className="text-gray-600 dark:text-gray-400 font-medium">Project laden...</p>
         </div>
       </div>
     )
@@ -656,32 +660,33 @@ export default function ProjectStatus() {
   // Password verification required
   if (!isVerified && projectId) {
     return (
-      <div className="min-h-screen bg-gradient-to-b from-gray-50 to-white">
+      <div className="min-h-screen bg-gradient-to-b from-gray-900 via-gray-900 to-gray-950">
         {/* Hero Section */}
-        <div className="relative bg-gradient-to-br from-blue-600 via-blue-500 to-indigo-600 overflow-hidden">
-          <FloatingParticles />
-          
-          {/* Decorative Elements */}
+        <div className="relative overflow-hidden">
+          {/* Animated Background */}
           <div className="absolute inset-0">
-            <div className="absolute top-20 left-10 w-64 h-64 bg-white/10 rounded-full blur-3xl" />
-            <div className="absolute bottom-10 right-10 w-96 h-96 bg-indigo-400/20 rounded-full blur-3xl" />
+            <div className="absolute inset-0 bg-gradient-to-br from-blue-600/20 via-indigo-600/10 to-purple-600/20" />
+            <div className="absolute top-0 left-1/4 w-96 h-96 bg-blue-500/20 rounded-full blur-[120px] animate-pulse" />
+            <div className="absolute bottom-0 right-1/4 w-80 h-80 bg-indigo-500/20 rounded-full blur-[100px] animate-pulse" style={{ animationDelay: '1s' }} />
           </div>
+          
+          <FloatingParticles />
           
           <header className="relative z-10 border-b border-white/10">
             <div className="max-w-7xl mx-auto px-4 py-4 flex justify-between items-center">
               <Link to="/" className="hover:opacity-80 transition">
                 <Logo variant="white" />
               </Link>
-              <span className="px-4 py-2 bg-white/10 backdrop-blur-sm rounded-full text-white/90 text-sm border border-white/20">
+              <span className="px-3 py-1.5 sm:px-4 sm:py-2 bg-white/10 backdrop-blur-sm rounded-full text-white/90 text-xs sm:text-sm border border-white/20 font-medium">
                 Project: {projectId}
               </span>
             </div>
           </header>
 
-          <div className="relative z-10 max-w-4xl mx-auto px-4 py-12 md:py-16 text-center">
+          <div className="relative z-10 max-w-4xl mx-auto px-4 pt-12 pb-20 sm:pt-16 sm:pb-24 text-center">
             <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
+              initial={{ opacity: 0, scale: 0.9 }}
+              animate={{ opacity: 1, scale: 1 }}
               className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/10 backdrop-blur-sm border border-white/20 text-white/90 text-sm mb-6"
             >
               <Lock className="w-4 h-4" />
@@ -692,54 +697,54 @@ export default function ProjectStatus() {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.1 }}
-              className="text-3xl md:text-4xl lg:text-5xl font-bold text-white mb-4"
+              className="text-3xl sm:text-4xl lg:text-5xl font-bold text-white mb-4"
             >
-              Project: {projectId}
+              Project: <span className="bg-gradient-to-r from-blue-400 to-indigo-400 bg-clip-text text-transparent">{projectId}</span>
             </motion.h1>
             
             <motion.p
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.2 }}
-              className="text-lg text-blue-100 max-w-2xl mx-auto"
+              className="text-base sm:text-lg text-gray-400 max-w-2xl mx-auto"
             >
-              Voer je wachtwoord in om de voortgang te bekijken
+              Voer je wachtwoord in om de voortgang te bekijken.
             </motion.p>
           </div>
         </div>
 
-        <main className="max-w-md mx-auto px-4 -mt-8 pb-16 relative z-20">
+        <main className="max-w-md mx-auto px-4 -mt-12 pb-12 sm:pb-16 relative z-20">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.3 }}
-            className="bg-white dark:bg-gray-900 rounded-2xl shadow-xl border border-gray-100 p-8"
+            className="bg-gray-800/80 backdrop-blur-xl rounded-2xl sm:rounded-3xl shadow-2xl border border-gray-700/50 p-6 sm:p-8"
           >
             <form onSubmit={handlePasswordSubmit}>
               <div className="mb-6">
-                <label className="block text-sm font-medium text-gray-700 mb-2">
+                <label className="block text-sm font-medium text-gray-300 mb-3">
                   Wachtwoord
                 </label>
                 <div className="relative">
-                  <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
+                  <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-500" />
                   <input
                     type={showPassword ? 'text' : 'password'}
                     value={passwordInput}
                     onChange={(e) => setPasswordInput(e.target.value)}
                     placeholder="Je project wachtwoord"
-                    className="w-full pl-12 pr-12 py-4 border-2 border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition text-lg"
+                    className="w-full pl-12 pr-12 py-4 bg-gray-900/50 border-2 border-gray-700 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition text-white placeholder-gray-500"
                     required
                     autoFocus
                   />
                   <button
                     type="button"
                     onClick={() => setShowPassword(!showPassword)}
-                    className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 dark:text-gray-400"
+                    className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-300 transition"
                   >
                     {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
                   </button>
                 </div>
-                <p className="text-sm text-gray-500 mt-2">
+                <p className="text-sm text-gray-500 mt-3">
                   Je wachtwoord heb je ingesteld bij het starten van je project.
                 </p>
               </div>
@@ -748,20 +753,22 @@ export default function ProjectStatus() {
                 <motion.div
                   initial={{ opacity: 0, y: -10 }}
                   animate={{ opacity: 1, y: 0 }}
-                  className="mb-6 p-4 bg-red-50 border border-red-200 rounded-xl flex items-start gap-3"
+                  className="mb-6 p-4 bg-red-500/10 border border-red-500/30 rounded-xl flex items-start gap-3"
                 >
-                  <AlertCircle className="w-5 h-5 text-red-500 flex-shrink-0 mt-0.5" />
+                  <AlertCircle className="w-5 h-5 text-red-400 flex-shrink-0 mt-0.5" />
                   <div>
-                    <p className="text-red-700 font-medium">Verificatie mislukt</p>
-                    <p className="text-red-600 text-sm">{verifyError}</p>
+                    <p className="text-red-400 font-medium">Verificatie mislukt</p>
+                    <p className="text-red-400/80 text-sm">{verifyError}</p>
                   </div>
                 </motion.div>
               )}
 
-              <button
+              <motion.button
                 type="submit"
                 disabled={verifyLoading || !passwordInput.trim()}
-                className="w-full py-4 bg-gradient-to-r from-blue-600 to-indigo-600 text-white font-bold rounded-xl hover:from-blue-700 hover:to-indigo-700 transition shadow-lg shadow-blue-600/25 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+                whileHover={{ scale: 1.02 }}
+                whileTap={{ scale: 0.98 }}
+                className="w-full py-4 bg-gradient-to-r from-blue-600 to-indigo-600 text-white font-bold rounded-xl hover:from-blue-500 hover:to-indigo-500 transition shadow-lg shadow-blue-600/25 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
               >
                 {verifyLoading ? (
                   <>
@@ -774,17 +781,34 @@ export default function ProjectStatus() {
                     Bekijk project
                   </>
                 )}
-              </button>
+              </motion.button>
             </form>
 
-            <div className="mt-6 pt-6 border-t border-gray-100 text-center">
+            <div className="mt-6 pt-6 border-t border-gray-700/50 text-center">
               <p className="text-sm text-gray-500 mb-2">Wachtwoord vergeten?</p>
-              <a 
-                href="mailto:info@webstability.nl?subject=Wachtwoord vergeten"
-                className="text-sm text-blue-600 hover:text-blue-700 font-medium"
+              <Link 
+                to="/wachtwoord-vergeten"
+                className="text-sm text-blue-400 hover:text-blue-300 font-medium transition"
               >
                 Neem contact op met ons team
-              </a>
+              </Link>
+            </div>
+          </motion.div>
+
+          {/* Security badges */}
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 0.5 }}
+            className="mt-8 flex flex-wrap justify-center gap-4 sm:gap-6 text-sm text-gray-500"
+          >
+            <div className="flex items-center gap-2">
+              <Shield className="w-4 h-4 text-green-500" />
+              <span>SSL beveiligd</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <Lock className="w-4 h-4 text-blue-500" />
+              <span>Privé toegang</span>
             </div>
           </motion.div>
         </main>
@@ -795,22 +819,32 @@ export default function ProjectStatus() {
   // Error state
   if (error || !project) {
     return (
-      <div className="min-h-screen bg-gradient-to-b from-gray-50 to-white">
-        <div className="relative bg-gradient-to-br from-red-500 via-red-600 to-rose-600 overflow-hidden">
+      <div className="min-h-screen bg-gradient-to-b from-gray-900 via-gray-900 to-gray-950">
+        <div className="relative overflow-hidden">
+          {/* Animated Background */}
+          <div className="absolute inset-0">
+            <div className="absolute inset-0 bg-gradient-to-br from-red-600/20 via-rose-600/10 to-orange-600/20" />
+            <div className="absolute top-0 left-1/4 w-96 h-96 bg-red-500/20 rounded-full blur-[120px]" />
+          </div>
+          
           <header className="relative z-10 border-b border-white/10">
             <div className="max-w-7xl mx-auto px-4 py-4 flex justify-between items-center">
               <Link to="/" className="hover:opacity-80 transition">
-                <Logo />
+                <Logo variant="white" />
               </Link>
             </div>
           </header>
-          <div className="relative z-10 max-w-4xl mx-auto px-4 py-12 text-center">
-            <div className="w-20 h-20 bg-white/20 rounded-full flex items-center justify-center mx-auto mb-4">
-              <AlertCircle className="w-10 h-10 text-white" />
-            </div>
-            <h1 className="text-3xl font-bold text-white mb-2">Project niet gevonden</h1>
-            <p className="text-red-100">
-              We konden geen project vinden met ID: <strong>{projectId}</strong>
+          <div className="relative z-10 max-w-4xl mx-auto px-4 py-12 sm:py-16 text-center">
+            <motion.div
+              initial={{ opacity: 0, scale: 0.9 }}
+              animate={{ opacity: 1, scale: 1 }}
+              className="w-20 h-20 bg-red-500/20 rounded-2xl flex items-center justify-center mx-auto mb-6"
+            >
+              <AlertCircle className="w-10 h-10 text-red-400" />
+            </motion.div>
+            <h1 className="text-2xl sm:text-3xl font-bold text-white mb-3">Project niet gevonden</h1>
+            <p className="text-gray-400">
+              We konden geen project vinden met ID: <code className="text-red-400 bg-red-500/10 px-2 py-1 rounded">{projectId}</code>
             </p>
           </div>
         </div>
@@ -818,11 +852,12 @@ export default function ProjectStatus() {
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            className="bg-white dark:bg-gray-900 rounded-2xl shadow-xl p-8 text-center"
+            className="bg-gray-800/80 backdrop-blur-xl rounded-2xl shadow-2xl border border-gray-700/50 p-6 sm:p-8 text-center"
           >
+            <p className="text-gray-400 mb-6">Controleer of je Project ID correct is of neem contact met ons op.</p>
             <Link
               to="/status"
-              className="inline-flex items-center gap-2 px-6 py-3 bg-blue-600 text-white rounded-xl font-semibold hover:bg-blue-700 transition"
+              className="inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-blue-600 to-indigo-600 text-white rounded-xl font-semibold hover:from-blue-500 hover:to-indigo-500 transition shadow-lg"
             >
               Probeer een ander Project ID
             </Link>
@@ -835,36 +870,37 @@ export default function ProjectStatus() {
   const progressPercentage = getProgressPercentage(project.status)
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-gray-50 to-white">
+    <div className="min-h-screen bg-gradient-to-b from-gray-900 via-gray-900 to-gray-950">
       {/* Hero Section with Dynamic Colors */}
-      <div className={`relative bg-gradient-to-br ${phaseColors.gradient} overflow-hidden`}>
-        <FloatingParticles />
-        
-        {/* Decorative Elements */}
+      <div className="relative overflow-hidden">
+        {/* Animated Background */}
         <div className="absolute inset-0">
-          <div className="absolute top-20 left-10 w-64 h-64 bg-white/10 rounded-full blur-3xl" />
-          <div className="absolute bottom-10 right-10 w-96 h-96 bg-white/10 rounded-full blur-3xl" />
+          <div className={`absolute inset-0 bg-gradient-to-br ${phaseColors.gradient} opacity-20`} />
+          <div className="absolute top-0 left-1/4 w-96 h-96 bg-blue-500/15 rounded-full blur-[120px] animate-pulse" />
+          <div className="absolute bottom-0 right-1/4 w-80 h-80 bg-indigo-500/15 rounded-full blur-[100px] animate-pulse" style={{ animationDelay: '1s' }} />
         </div>
+        
+        <FloatingParticles />
         
         <header className="relative z-10 border-b border-white/10">
           <div className="max-w-7xl mx-auto px-4 py-4 flex justify-between items-center">
             <Link to="/" className="hover:opacity-80 transition">
-              <Logo />
+              <Logo variant="white" />
             </Link>
-            <span className="px-4 py-2 bg-white/10 backdrop-blur-sm rounded-full text-white/90 text-sm border border-white/20">
+            <span className="px-3 py-1.5 sm:px-4 sm:py-2 bg-white/10 backdrop-blur-sm rounded-full text-white/90 text-xs sm:text-sm border border-white/20 font-medium">
               {projectId}
             </span>
           </div>
         </header>
 
-        <div className="relative z-10 max-w-4xl mx-auto px-4 py-8 md:py-12">
+        <div className="relative z-10 max-w-4xl mx-auto px-4 py-6 sm:py-10">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             className="text-center"
           >
             {/* Phase Badge */}
-            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/10 backdrop-blur-sm border border-white/20 text-white/90 text-sm mb-4">
+            <div className={`inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/10 backdrop-blur-sm border border-white/20 text-white/90 text-sm mb-4`}>
               {STATUS_STEPS.find(s => s.key === project.status)?.icon && (
                 <span className="w-5 h-5">
                   {(() => {
@@ -876,28 +912,28 @@ export default function ProjectStatus() {
               {STATUS_STEPS.find(s => s.key === project.status)?.label}
             </div>
             
-            <h1 className="text-3xl md:text-4xl font-bold text-white mb-2">
+            <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold text-white mb-2">
               {project.businessName}
             </h1>
             
             {project.package && (
-              <p className="text-lg text-white/80 mb-6">
+              <p className="text-base sm:text-lg text-white/70 mb-6">
                 {project.package}
               </p>
             )}
             
             {/* Progress Bar in Hero */}
             <div className="max-w-md mx-auto">
-              <div className="flex justify-between text-sm text-white/80 mb-2">
+              <div className="flex justify-between text-sm text-white/70 mb-2">
                 <span>Voortgang</span>
-                <span className="font-semibold">{progressPercentage}%</span>
+                <span className="font-semibold text-white">{progressPercentage}%</span>
               </div>
-              <div className="h-3 bg-white/20 rounded-full overflow-hidden backdrop-blur-sm">
+              <div className="h-3 bg-white/10 rounded-full overflow-hidden backdrop-blur-sm">
                 <motion.div
                   initial={{ width: 0 }}
                   animate={{ width: `${progressPercentage}%` }}
                   transition={{ duration: 1, ease: 'easeOut' }}
-                  className="h-full bg-white dark:bg-gray-900 rounded-full shadow-lg"
+                  className={`h-full bg-gradient-to-r ${phaseColors.gradient} rounded-full shadow-lg`}
                   role="progressbar"
                   aria-valuenow={progressPercentage}
                   aria-valuemin={0}
@@ -907,26 +943,28 @@ export default function ProjectStatus() {
             </div>
 
             {project.estimatedCompletion && (
-              <div className="mt-6 inline-flex items-center gap-2 text-white/80">
+              <div className="mt-6 inline-flex items-center gap-2 text-white/70">
                 <Calendar className="w-5 h-5" />
-                <span>Geschatte oplevering: {project.estimatedCompletion}</span>
+                <span>Geschatte oplevering: <span className="text-white font-medium">{project.estimatedCompletion}</span></span>
               </div>
             )}
           </motion.div>
         </div>
       </div>
 
-      <main className="max-w-3xl mx-auto px-4 py-8 md:py-12">
+      <main className="max-w-3xl mx-auto px-4 py-6 sm:py-10">
         {/* Status Message */}
         {project.statusMessage && (
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            className={`mb-8 p-5 ${phaseColors.light} rounded-2xl border-2 border-${phaseColors.text.replace('text-', '')}/20`}
+            className={`mb-6 p-4 sm:p-5 bg-gray-800/60 backdrop-blur-sm rounded-xl sm:rounded-2xl border border-gray-700/50`}
           >
             <div className="flex items-start gap-3">
-              <Sparkles className={`w-6 h-6 ${phaseColors.text} flex-shrink-0 mt-0.5`} />
-              <p className="text-gray-800">{project.statusMessage}</p>
+              <div className={`w-10 h-10 ${phaseColors.bg} rounded-lg flex items-center justify-center flex-shrink-0`}>
+                <Sparkles className="w-5 h-5 text-white" />
+              </div>
+              <p className="text-gray-300 pt-2">{project.statusMessage}</p>
             </div>
           </motion.div>
         )}
@@ -936,18 +974,18 @@ export default function ProjectStatus() {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.1 }}
-          className="bg-white dark:bg-gray-900 rounded-2xl shadow-xl border border-gray-100 p-6 md:p-8 mb-8"
+          className="bg-gray-800/60 backdrop-blur-sm rounded-xl sm:rounded-2xl border border-gray-700/50 p-4 sm:p-6 md:p-8 mb-6"
         >
-          <h2 className="text-xl font-bold text-gray-900 mb-6 flex items-center gap-2">
-            <Clock className={`w-6 h-6 ${phaseColors.text}`} />
+          <h2 className="text-lg sm:text-xl font-bold text-white mb-6 flex items-center gap-2">
+            <Clock className={`w-5 h-5 sm:w-6 sm:h-6 ${phaseColors.text}`} />
             Project Voortgang
           </h2>
           
           <div className="relative">
             {/* Vertical Progress Line */}
-            <div className="absolute left-6 top-6 bottom-6 w-0.5 bg-gray-200 hidden md:block" />
+            <div className="absolute left-5 sm:left-6 top-6 bottom-6 w-0.5 bg-gray-700 hidden md:block" />
             
-            <div className="space-y-4">
+            <div className="space-y-3 sm:space-y-4">
               {STATUS_STEPS.map((step, index) => {
                 const status = getStepStatus(step.key)
                 const Icon = step.icon
@@ -958,36 +996,36 @@ export default function ProjectStatus() {
                     initial={{ opacity: 0, x: -20 }}
                     animate={{ opacity: 1, x: 0 }}
                     transition={{ delay: 0.1 + index * 0.1 }}
-                    className={`flex items-start gap-4 relative ${
-                      status === 'pending' ? 'opacity-50' : ''
+                    className={`flex items-start gap-3 sm:gap-4 relative ${
+                      status === 'pending' ? 'opacity-40' : ''
                     }`}
                   >
                     <div className={`
-                      w-12 h-12 rounded-xl flex items-center justify-center flex-shrink-0 z-10 transition-all
-                      ${status === 'completed' ? 'bg-green-100 shadow-md' : ''}
-                      ${status === 'current' ? `${phaseColors.light} ring-4 ${phaseColors.ring} shadow-lg` : ''}
-                      ${status === 'pending' ? 'bg-gray-100' : ''}
+                      w-10 h-10 sm:w-12 sm:h-12 rounded-lg sm:rounded-xl flex items-center justify-center flex-shrink-0 z-10 transition-all
+                      ${status === 'completed' ? 'bg-green-500/20 ring-2 ring-green-500/30' : ''}
+                      ${status === 'current' ? `${phaseColors.bg} ring-4 ring-white/10 shadow-lg` : ''}
+                      ${status === 'pending' ? 'bg-gray-700/50' : ''}
                     `}>
                       {status === 'completed' ? (
-                        <CheckCircle2 className="w-6 h-6 text-green-600" />
+                        <CheckCircle2 className="w-5 h-5 sm:w-6 sm:h-6 text-green-400" />
                       ) : status === 'current' ? (
-                        <Icon className={`w-6 h-6 ${phaseColors.text}`} />
+                        <Icon className="w-5 h-5 sm:w-6 sm:h-6 text-white" />
                       ) : (
-                        <Circle className="w-6 h-6 text-gray-400" />
+                        <Circle className="w-5 h-5 sm:w-6 sm:h-6 text-gray-500" />
                       )}
                     </div>
-                    <div className="flex-1 pt-2">
-                      <h3 className={`font-semibold ${
-                        status === 'current' ? phaseColors.text : 'text-gray-900'
+                    <div className="flex-1 pt-1 sm:pt-2">
+                      <h3 className={`font-semibold text-sm sm:text-base ${
+                        status === 'current' ? 'text-white' : status === 'completed' ? 'text-green-400' : 'text-gray-400'
                       }`}>
                         {step.label}
                         {status === 'current' && (
-                          <span className={`ml-2 text-sm font-normal ${phaseColors.text} opacity-75`}>
+                          <span className="ml-2 text-xs font-normal text-white/60">
                             (huidige fase)
                           </span>
                         )}
                       </h3>
-                      <p className="text-gray-600 text-sm">{step.description}</p>
+                      <p className="text-gray-500 text-xs sm:text-sm">{step.description}</p>
                     </div>
                   </motion.div>
                 )
@@ -1002,29 +1040,29 @@ export default function ProjectStatus() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.2 }}
-            className="bg-white dark:bg-gray-900 rounded-2xl shadow-xl border border-gray-100 p-6 md:p-8 mb-8"
+            className="bg-gray-800/60 backdrop-blur-sm rounded-xl sm:rounded-2xl border border-gray-700/50 p-4 sm:p-6 md:p-8 mb-6"
           >
-            <h2 className="text-xl font-bold text-gray-900 mb-6 flex items-center gap-2">
-              <Sparkles className={`w-6 h-6 ${phaseColors.text}`} />
+            <h2 className="text-lg sm:text-xl font-bold text-white mb-6 flex items-center gap-2">
+              <Sparkles className={`w-5 h-5 sm:w-6 sm:h-6 ${phaseColors.text}`} />
               Updates
             </h2>
             <div className="space-y-6">
               {Array.from(groupUpdatesByDate(project.updates)).map(([date, updates]) => (
                 <div key={date}>
-                  <div className="flex items-center gap-2 text-sm text-gray-500 mb-3">
+                  <div className="flex items-center gap-2 text-sm text-gray-400 mb-3">
                     <Calendar className="w-4 h-4" />
                     <span className="font-medium">{date}</span>
                     {updates.length > 1 && (
-                      <span className={`${phaseColors.light} ${phaseColors.text} text-xs px-2 py-0.5 rounded-full font-medium`}>
+                      <span className={`${phaseColors.bg} text-white text-xs px-2 py-0.5 rounded-full font-medium`}>
                         {updates.length} updates
                       </span>
                     )}
                   </div>
-                  <div className={`space-y-3 border-l-4 ${phaseColors.bg} pl-4`}>
+                  <div className={`space-y-3 border-l-2 ${phaseColors.bg} pl-4`}>
                     {updates.map((update, index) => (
                       <div key={index} className="py-2">
-                        <h3 className="font-semibold text-gray-900 dark:text-white">{update.title}</h3>
-                        <p className="text-gray-600 text-sm">{update.message}</p>
+                        <h3 className="font-semibold text-white">{update.title}</h3>
+                        <p className="text-gray-400 text-sm">{update.message}</p>
                       </div>
                     ))}
                   </div>
@@ -1039,33 +1077,33 @@ export default function ProjectStatus() {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.25 }}
-          className="bg-white dark:bg-gray-900 rounded-2xl shadow-xl border border-gray-100 p-6 md:p-8 mb-8"
+          className="bg-gray-800/60 backdrop-blur-sm rounded-xl sm:rounded-2xl border border-gray-700/50 p-4 sm:p-6 md:p-8 mb-6"
         >
           <div className="flex items-center gap-3 mb-6">
-            <div className={`w-12 h-12 ${phaseColors.light} rounded-xl flex items-center justify-center`}>
-              <Building2 className={`w-6 h-6 ${phaseColors.text}`} />
+            <div className={`w-10 h-10 sm:w-12 sm:h-12 ${phaseColors.bg} rounded-lg sm:rounded-xl flex items-center justify-center`}>
+              <Building2 className="w-5 h-5 sm:w-6 sm:h-6 text-white" />
             </div>
             <div>
-              <h2 className="text-xl font-bold text-gray-900 dark:text-white">Projectgegevens</h2>
-              <p className="text-gray-600 text-sm">Overzicht van je project</p>
+              <h2 className="text-lg sm:text-xl font-bold text-white">Projectgegevens</h2>
+              <p className="text-gray-400 text-sm">Overzicht van je project</p>
             </div>
           </div>
 
-          <div className="grid md:grid-cols-2 gap-6">
+          <div className="grid md:grid-cols-2 gap-4 sm:gap-6">
             {/* Project Info */}
             <div className="space-y-4">
-              <h3 className="font-semibold text-gray-700 flex items-center gap-2">
+              <h3 className="font-semibold text-gray-300 flex items-center gap-2 text-sm">
                 <CreditCard className="w-4 h-4" />
                 Project
               </h3>
-              <div className="bg-gray-50 rounded-xl p-4 space-y-3">
+              <div className="bg-gray-900/50 rounded-xl p-4 space-y-3">
                 <div className="flex justify-between">
                   <span className="text-gray-500 text-sm">Project ID</span>
-                  <span className="font-mono text-sm font-medium text-gray-900 dark:text-white">{projectId}</span>
+                  <span className="font-mono text-sm font-medium text-white">{projectId}</span>
                 </div>
                 <div className="flex justify-between">
                   <span className="text-gray-500 text-sm">Pakket</span>
-                  <span className="text-sm font-medium text-gray-900 dark:text-white">{project.package || 'Starter'}</span>
+                  <span className="text-sm font-medium text-white">{project.package || 'Starter'}</span>
                 </div>
                 <div className="flex justify-between">
                   <span className="text-gray-500 text-sm">Status</span>
@@ -1076,7 +1114,7 @@ export default function ProjectStatus() {
                 {project.estimatedCompletion && (
                   <div className="flex justify-between">
                     <span className="text-gray-500 text-sm">Geschatte oplevering</span>
-                    <span className="text-sm font-medium text-gray-900 dark:text-white">{project.estimatedCompletion}</span>
+                    <span className="text-sm font-medium text-white">{project.estimatedCompletion}</span>
                   </div>
                 )}
               </div>
@@ -1084,39 +1122,39 @@ export default function ProjectStatus() {
 
             {/* Contact Info */}
             <div className="space-y-4">
-              <h3 className="font-semibold text-gray-700 flex items-center gap-2">
+              <h3 className="font-semibold text-gray-300 flex items-center gap-2 text-sm">
                 <User className="w-4 h-4" />
                 Contactgegevens
               </h3>
-              <div className="bg-gray-50 rounded-xl p-4 space-y-3">
+              <div className="bg-gray-900/50 rounded-xl p-4 space-y-3">
                 {project.contactName && (
                   <div className="flex justify-between">
                     <span className="text-gray-500 text-sm">Naam</span>
-                    <span className="text-sm font-medium text-gray-900 dark:text-white">{project.contactName}</span>
+                    <span className="text-sm font-medium text-white">{project.contactName}</span>
                   </div>
                 )}
                 {project.contactEmail && (
                   <div className="flex justify-between">
                     <span className="text-gray-500 text-sm">Email</span>
-                    <span className="text-sm font-medium text-gray-900 dark:text-white">{project.contactEmail}</span>
+                    <span className="text-sm font-medium text-white truncate ml-4">{project.contactEmail}</span>
                   </div>
                 )}
                 {project.contactPhone && (
                   <div className="flex justify-between">
                     <span className="text-gray-500 text-sm">Telefoon</span>
-                    <span className="text-sm font-medium text-gray-900 dark:text-white">{project.contactPhone}</span>
+                    <span className="text-sm font-medium text-white">{project.contactPhone}</span>
                   </div>
                 )}
                 {!project.contactName && !project.contactEmail && (
-                  <p className="text-gray-400 text-sm italic">Geen gegevens beschikbaar</p>
+                  <p className="text-gray-500 text-sm italic">Geen gegevens beschikbaar</p>
                 )}
               </div>
               <Link
                 to={`/onboarding/${projectId}`}
                 className={`flex items-center justify-center gap-2 w-full py-2 px-4 rounded-lg text-sm font-medium transition ${
                   onboardingCompleted
-                    ? 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-                    : 'bg-primary-50 text-primary-700 hover:bg-primary-100'
+                    ? 'bg-gray-700 text-gray-300 hover:bg-gray-600'
+                    : `${phaseColors.bg} text-white hover:opacity-90`
                 }`}
               >
                 <Settings className="w-4 h-4" />
@@ -1131,39 +1169,37 @@ export default function ProjectStatus() {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.3 }}
-          className="grid md:grid-cols-2 lg:grid-cols-3 gap-4 mb-8"
+          className="grid sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4 mb-6"
         >
           {/* Onboarding Checklist - Dynamic */}
           <Link
             to={`/onboarding/${projectId}`}
-            className={`bg-white dark:bg-gray-900 rounded-xl p-5 shadow-lg border-2 transition group ${
+            className={`bg-gray-800/60 backdrop-blur-sm rounded-xl p-4 sm:p-5 border transition group ${
               onboardingCompleted 
-                ? 'border-green-200 hover:border-green-300 hover:shadow-xl' 
-                : 'border-blue-200 hover:border-blue-300 hover:shadow-xl'
+                ? 'border-green-500/30 hover:border-green-500/50 hover:bg-gray-800/80' 
+                : 'border-blue-500/30 hover:border-blue-500/50 hover:bg-gray-800/80'
             }`}
           >
-            <div className="flex items-center gap-4">
-              <div className={`w-12 h-12 rounded-xl flex items-center justify-center group-hover:scale-110 transition relative ${
-                onboardingCompleted ? 'bg-green-100' : 'bg-blue-100'
+            <div className="flex items-center gap-3 sm:gap-4">
+              <div className={`w-10 h-10 sm:w-12 sm:h-12 rounded-lg sm:rounded-xl flex items-center justify-center group-hover:scale-110 transition relative ${
+                onboardingCompleted ? 'bg-green-500/20' : 'bg-blue-500/20'
               }`}>
-                <FileText className={`w-6 h-6 ${onboardingCompleted ? 'text-green-600' : 'text-blue-600'}`} />
+                <FileText className={`w-5 h-5 sm:w-6 sm:h-6 ${onboardingCompleted ? 'text-green-400' : 'text-blue-400'}`} />
                 {onboardingCompleted && (
-                  <div className="absolute -top-1 -right-1 w-5 h-5 bg-green-500 rounded-full flex items-center justify-center">
-                    <CheckCircle2 className="w-3 h-3 text-white" />
+                  <div className="absolute -top-1 -right-1 w-4 h-4 sm:w-5 sm:h-5 bg-green-500 rounded-full flex items-center justify-center">
+                    <CheckCircle2 className="w-2.5 h-2.5 sm:w-3 sm:h-3 text-white" />
                   </div>
                 )}
               </div>
-              <div className="flex-1">
-                <div className="flex items-center gap-2">
-                  <h3 className={`font-semibold transition ${
-                    onboardingCompleted 
-                      ? 'text-green-700 group-hover:text-green-800' 
-                      : 'text-gray-900 group-hover:text-blue-600'
-                  }`}>
-                    {onboardingCompleted ? 'Onboarding voltooid' : 'Onboarding Checklist'}
-                  </h3>
-                </div>
-                <p className="text-sm text-gray-600 dark:text-gray-400">
+              <div className="flex-1 min-w-0">
+                <h3 className={`font-semibold text-sm sm:text-base transition ${
+                  onboardingCompleted 
+                    ? 'text-green-400' 
+                    : 'text-white'
+                }`}>
+                  {onboardingCompleted ? 'Onboarding voltooid' : 'Onboarding Checklist'}
+                </h3>
+                <p className="text-xs sm:text-sm text-gray-500 truncate">
                   {onboardingCompleted 
                     ? onboardingDate 
                       ? `Ingevuld op ${new Date(onboardingDate).toLocaleDateString('nl-NL', { day: 'numeric', month: 'short' })}`
@@ -1172,8 +1208,8 @@ export default function ProjectStatus() {
                   }
                 </p>
               </div>
-              <ChevronRight className={`w-5 h-5 transition group-hover:translate-x-1 ${
-                onboardingCompleted ? 'text-green-400' : 'text-gray-400'
+              <ChevronRight className={`w-5 h-5 transition group-hover:translate-x-1 flex-shrink-0 ${
+                onboardingCompleted ? 'text-green-500/50' : 'text-gray-600'
               }`} />
             </div>
           </Link>
@@ -1183,17 +1219,17 @@ export default function ProjectStatus() {
             href={`https://wa.me/${WHATSAPP_NUMBER}?text=Hallo! Ik heb een vraag over mijn project ${projectId}`}
             target="_blank"
             rel="noopener noreferrer"
-            className="bg-white dark:bg-gray-900 rounded-xl p-5 shadow-lg border border-gray-100 hover:shadow-xl hover:border-green-200 transition group"
+            className="bg-gray-800/60 backdrop-blur-sm rounded-xl p-4 sm:p-5 border border-gray-700/50 hover:border-green-500/50 hover:bg-gray-800/80 transition group"
           >
-            <div className="flex items-center gap-4">
-              <div className="w-12 h-12 bg-green-100 rounded-xl flex items-center justify-center group-hover:scale-110 transition">
-                <Phone className="w-6 h-6 text-green-600" />
+            <div className="flex items-center gap-3 sm:gap-4">
+              <div className="w-10 h-10 sm:w-12 sm:h-12 bg-green-500/20 rounded-lg sm:rounded-xl flex items-center justify-center group-hover:scale-110 transition">
+                <Phone className="w-5 h-5 sm:w-6 sm:h-6 text-green-400" />
               </div>
-              <div className="flex-1">
-                <h3 className="font-semibold text-gray-900 group-hover:text-green-600 transition">WhatsApp</h3>
-                <p className="text-sm text-gray-600 dark:text-gray-400">Stel je vraag via WhatsApp</p>
+              <div className="flex-1 min-w-0">
+                <h3 className="font-semibold text-white text-sm sm:text-base group-hover:text-green-400 transition">WhatsApp</h3>
+                <p className="text-xs sm:text-sm text-gray-500">Stel je vraag via WhatsApp</p>
               </div>
-              <ExternalLink className="w-4 h-4 text-gray-400 group-hover:text-green-500 transition" />
+              <ExternalLink className="w-4 h-4 text-gray-600 group-hover:text-green-400 transition flex-shrink-0" />
             </div>
           </a>
 
@@ -1203,17 +1239,17 @@ export default function ProjectStatus() {
               href={project.googleDriveUrl}
               target="_blank"
               rel="noopener noreferrer"
-              className="bg-white dark:bg-gray-900 rounded-xl p-5 shadow-lg border border-gray-100 hover:shadow-xl hover:border-amber-200 transition group"
+              className="bg-gray-800/60 backdrop-blur-sm rounded-xl p-4 sm:p-5 border border-gray-700/50 hover:border-amber-500/50 hover:bg-gray-800/80 transition group"
             >
-              <div className="flex items-center gap-4">
-                <div className="w-12 h-12 bg-amber-100 rounded-xl flex items-center justify-center group-hover:scale-110 transition">
-                  <FolderOpen className="w-6 h-6 text-amber-600" />
+              <div className="flex items-center gap-3 sm:gap-4">
+                <div className="w-10 h-10 sm:w-12 sm:h-12 bg-amber-500/20 rounded-lg sm:rounded-xl flex items-center justify-center group-hover:scale-110 transition">
+                  <FolderOpen className="w-5 h-5 sm:w-6 sm:h-6 text-amber-400" />
                 </div>
-                <div className="flex-1">
-                  <h3 className="font-semibold text-gray-900 group-hover:text-amber-600 transition">Bestanden</h3>
-                  <p className="text-sm text-gray-600 dark:text-gray-400">Bekijk gedeelde bestanden</p>
+                <div className="flex-1 min-w-0">
+                  <h3 className="font-semibold text-white text-sm sm:text-base group-hover:text-amber-400 transition">Bestanden</h3>
+                  <p className="text-xs sm:text-sm text-gray-500">Bekijk gedeelde bestanden</p>
                 </div>
-                <ExternalLink className="w-4 h-4 text-gray-400 group-hover:text-amber-500 transition" />
+                <ExternalLink className="w-4 h-4 text-gray-600 group-hover:text-amber-400 transition flex-shrink-0" />
               </div>
             </a>
           )}
@@ -1224,34 +1260,36 @@ export default function ProjectStatus() {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.35 }}
-          className={`bg-gradient-to-br ${phaseColors.gradient} rounded-2xl shadow-xl p-6 md:p-8 text-white mb-8`}
+          className="bg-gray-800/60 backdrop-blur-sm rounded-xl sm:rounded-2xl border border-gray-700/50 overflow-hidden mb-6"
         >
-          <div className="flex items-center justify-between mb-6">
-            <div className="flex items-center gap-3">
-              <div className="w-12 h-12 bg-white/20 rounded-xl flex items-center justify-center">
-                <MessageSquare className="w-6 h-6 text-white" />
+          <div className={`bg-gradient-to-r ${phaseColors.gradient} p-4 sm:p-6`}>
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 sm:w-12 sm:h-12 bg-white/20 rounded-lg sm:rounded-xl flex items-center justify-center">
+                  <MessageSquare className="w-5 h-5 sm:w-6 sm:h-6 text-white" />
+                </div>
+                <div>
+                  <h2 className="text-lg sm:text-xl font-bold text-white">Direct Contact</h2>
+                  <p className="text-white/70 text-xs sm:text-sm">Chat met je developer</p>
+                </div>
               </div>
-              <div>
-                <h2 className="text-xl font-bold">Direct Contact</h2>
-                <p className="text-white/80 text-sm">Chat met je developer</p>
-              </div>
+              {messages.filter(m => !m.read && m.from === 'developer').length > 0 && (
+                <span className="px-2 py-1 sm:px-3 sm:py-1 bg-red-500 text-white text-xs sm:text-sm font-bold rounded-full animate-pulse">
+                  {messages.filter(m => !m.read && m.from === 'developer').length} nieuw
+                </span>
+              )}
             </div>
-            {messages.filter(m => !m.read && m.from === 'developer').length > 0 && (
-              <span className="px-3 py-1 bg-red-500 text-white text-sm font-bold rounded-full animate-pulse">
-                {messages.filter(m => !m.read && m.from === 'developer').length} nieuw
-              </span>
-            )}
           </div>
 
           {/* Chat Window */}
-          <div className="bg-white dark:bg-gray-900 rounded-xl overflow-hidden">
+          <div>
             {/* Messages */}
-            <div className="h-72 overflow-y-auto p-4 space-y-3 bg-gray-50 dark:bg-gray-800">
+            <div className="h-64 sm:h-72 overflow-y-auto p-4 space-y-3 bg-gray-900/50">
               {messages.length === 0 ? (
-                <div className="h-full flex flex-col items-center justify-center text-gray-400">
-                  <MessageSquare className="w-12 h-12 mb-2 opacity-50" />
-                  <p className="font-medium">Nog geen berichten</p>
-                  <p className="text-sm">Stel je vraag en we reageren zo snel mogelijk!</p>
+                <div className="h-full flex flex-col items-center justify-center text-gray-500">
+                  <MessageSquare className="w-10 h-10 sm:w-12 sm:h-12 mb-2 opacity-50" />
+                  <p className="font-medium text-sm sm:text-base">Nog geen berichten</p>
+                  <p className="text-xs sm:text-sm text-center">Stel je vraag en we reageren zo snel mogelijk!</p>
                 </div>
               ) : (
                 messages.map((msg) => (
@@ -1259,17 +1297,17 @@ export default function ProjectStatus() {
                     key={msg.id}
                     className={`flex ${msg.from === 'client' ? 'justify-end' : 'justify-start'}`}
                   >
-                    <div className={`max-w-[80%] rounded-2xl p-4 ${
+                    <div className={`max-w-[85%] sm:max-w-[80%] rounded-2xl p-3 sm:p-4 ${
                       msg.from === 'client'
-                        ? `${phaseColors.bg} text-white rounded-br-md`
-                        : 'bg-white dark:bg-gray-900 text-gray-900 shadow-md rounded-bl-md'
+                        ? `bg-gradient-to-r ${phaseColors.gradient} text-white rounded-br-md`
+                        : 'bg-gray-800 text-white border border-gray-700 rounded-bl-md'
                     }`}>
                       {msg.from === 'developer' && (
                         <p className={`text-xs font-semibold ${phaseColors.text} mb-1`}>Team Webstability</p>
                       )}
                       <p className="text-sm whitespace-pre-wrap">{msg.message}</p>
                       <p className={`text-xs mt-2 ${
-                        msg.from === 'client' ? 'text-white/70' : 'text-gray-400'
+                        msg.from === 'client' ? 'text-white/70' : 'text-gray-500'
                       }`}>
                         {new Date(msg.date).toLocaleString('nl-NL', { 
                           day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' 
@@ -1283,14 +1321,14 @@ export default function ProjectStatus() {
             </div>
 
             {/* Input */}
-            <div className="p-4 border-t bg-white dark:bg-gray-900 dark:bg-gray-900">
+            <div className="p-3 sm:p-4 border-t border-gray-700/50 bg-gray-800/80">
               <div className="flex gap-2">
                 <input
                   type="text"
                   value={newMessage}
                   onChange={(e) => setNewMessage(e.target.value)}
                   placeholder="Typ je vraag of opmerking..."
-                  className="flex-1 px-4 py-3 border-2 border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-gray-900 transition"
+                  className="flex-1 px-3 sm:px-4 py-2.5 sm:py-3 bg-gray-900/50 border border-gray-700 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-white placeholder-gray-500 text-sm sm:text-base transition"
                   onKeyPress={(e) => e.key === 'Enter' && !messageLoading && sendMessage()}
                 />
                 <motion.button
@@ -1298,7 +1336,7 @@ export default function ProjectStatus() {
                   disabled={messageLoading || !newMessage.trim()}
                   whileHover={{ scale: 1.02 }}
                   whileTap={{ scale: 0.98 }}
-                  className={`px-5 py-3 ${phaseColors.bg} hover:opacity-90 text-white rounded-xl transition disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2`}
+                  className={`px-4 sm:px-5 py-2.5 sm:py-3 bg-gradient-to-r ${phaseColors.gradient} hover:opacity-90 text-white rounded-xl transition disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2`}
                 >
                   {messageLoading ? (
                     <Loader2 className="w-5 h-5 animate-spin" />
@@ -1323,15 +1361,15 @@ export default function ProjectStatus() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.4 }}
-            className="bg-white dark:bg-gray-900 rounded-2xl shadow-xl border border-gray-100 p-6 md:p-8 mb-8"
+            className="bg-gray-800/60 backdrop-blur-sm rounded-xl sm:rounded-2xl border border-gray-700/50 p-4 sm:p-6 md:p-8 mb-6"
           >
             <div className="flex items-center gap-3 mb-6">
-              <div className="w-12 h-12 bg-purple-100 rounded-xl flex items-center justify-center">
-                <Palette className="w-6 h-6 text-purple-600" />
+              <div className="w-10 h-10 sm:w-12 sm:h-12 bg-purple-500/20 rounded-lg sm:rounded-xl flex items-center justify-center">
+                <Palette className="w-5 h-5 sm:w-6 sm:h-6 text-purple-400" />
               </div>
               <div>
-                <h2 className="text-xl font-bold text-gray-900 dark:text-white">Design Preview</h2>
-                <p className="text-gray-600 text-sm">Bekijk je ontwerp en geef feedback</p>
+                <h2 className="text-lg sm:text-xl font-bold text-white">Design Preview</h2>
+                <p className="text-gray-400 text-xs sm:text-sm">Bekijk je ontwerp en geef feedback</p>
               </div>
             </div>
 
@@ -1339,16 +1377,16 @@ export default function ProjectStatus() {
               href={project.designPreviewUrl}
               target="_blank"
               rel="noopener noreferrer"
-              className="block mb-6 p-6 bg-gradient-to-r from-purple-50 to-blue-50 rounded-xl border-2 border-dashed border-purple-200 hover:border-purple-400 transition text-center group"
+              className="block mb-6 p-4 sm:p-6 bg-gradient-to-r from-purple-500/10 to-blue-500/10 rounded-xl border border-purple-500/30 hover:border-purple-500/50 transition text-center group"
             >
-              <ExternalLink className="w-10 h-10 text-purple-600 mx-auto mb-3 group-hover:scale-110 transition" />
-              <p className="font-semibold text-purple-900 mb-1">Bekijk design preview</p>
-              <p className="text-sm text-purple-600 truncate">{project.designPreviewUrl}</p>
+              <ExternalLink className="w-8 h-8 sm:w-10 sm:h-10 text-purple-400 mx-auto mb-3 group-hover:scale-110 transition" />
+              <p className="font-semibold text-white mb-1 text-sm sm:text-base">Bekijk design preview</p>
+              <p className="text-xs sm:text-sm text-purple-400 truncate">{project.designPreviewUrl}</p>
             </a>
 
             {!feedbackSent ? (
               <div className="space-y-4">
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
+                <label className="block text-sm font-medium text-gray-300">
                   Heb je feedback of opmerkingen?
                 </label>
                 <textarea
@@ -1356,7 +1394,7 @@ export default function ProjectStatus() {
                   onChange={(e) => setFeedbackText(e.target.value)}
                   placeholder="Deel hier je feedback over het design..."
                   rows={3}
-                  className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-purple-500 transition"
+                  className="w-full px-4 py-3 bg-gray-900/50 border border-gray-700 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-purple-500 text-white placeholder-gray-500 transition text-sm"
                 />
                 <div className="flex flex-col sm:flex-row gap-3">
                   <motion.button
@@ -1364,7 +1402,7 @@ export default function ProjectStatus() {
                     disabled={feedbackLoading}
                     whileHover={{ scale: 1.02 }}
                     whileTap={{ scale: 0.98 }}
-                    className="flex-1 flex items-center justify-center gap-2 px-6 py-3 bg-green-500 hover:bg-green-600 text-white font-semibold rounded-xl transition disabled:opacity-50 shadow-lg shadow-green-500/25"
+                    className="flex-1 flex items-center justify-center gap-2 px-4 sm:px-6 py-3 bg-green-500 hover:bg-green-400 text-white font-semibold rounded-xl transition disabled:opacity-50 shadow-lg shadow-green-500/25 text-sm sm:text-base"
                   >
                     <ThumbsUp className="w-5 h-5" />
                     Goedkeuren
@@ -1374,7 +1412,7 @@ export default function ProjectStatus() {
                     disabled={feedbackLoading || !feedbackText.trim()}
                     whileHover={{ scale: 1.02 }}
                     whileTap={{ scale: 0.98 }}
-                    className="flex-1 flex items-center justify-center gap-2 px-6 py-3 bg-amber-500 hover:bg-amber-600 text-white font-semibold rounded-xl transition disabled:opacity-50 shadow-lg shadow-amber-500/25"
+                    className="flex-1 flex items-center justify-center gap-2 px-4 sm:px-6 py-3 bg-amber-500 hover:bg-amber-400 text-white font-semibold rounded-xl transition disabled:opacity-50 shadow-lg shadow-amber-500/25 text-sm sm:text-base"
                   >
                     <Edit3 className="w-5 h-5" />
                     Feedback sturen
@@ -1382,10 +1420,10 @@ export default function ProjectStatus() {
                 </div>
               </div>
             ) : (
-              <div className="bg-green-50 rounded-xl p-6 text-center border border-green-200">
-                <CheckCircle2 className="w-12 h-12 text-green-600 mx-auto mb-3" />
-                <p className="font-semibold text-green-900 text-lg">Bedankt voor je feedback!</p>
-                <p className="text-sm text-green-700">We gaan ermee aan de slag.</p>
+              <div className="bg-green-500/10 rounded-xl p-6 text-center border border-green-500/30">
+                <CheckCircle2 className="w-10 h-10 sm:w-12 sm:h-12 text-green-400 mx-auto mb-3" />
+                <p className="font-semibold text-white text-base sm:text-lg">Bedankt voor je feedback!</p>
+                <p className="text-sm text-green-400">We gaan ermee aan de slag.</p>
               </div>
             )}
           </motion.div>
@@ -1434,7 +1472,7 @@ export default function ProjectStatus() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.46 }}
-            className="mb-8"
+            className="mb-6"
           >
             <PaymentSection
               projectId={projectId || ''}
@@ -1458,7 +1496,7 @@ export default function ProjectStatus() {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.46 }}
-          className="mb-8"
+          className="mb-6"
         >
           <TaskList
             tasks={DEMO_TASKS}
@@ -1477,25 +1515,25 @@ export default function ProjectStatus() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.4 }}
-            className="bg-white dark:bg-gray-900 rounded-2xl shadow-xl border border-gray-100 p-6 md:p-8 mb-8"
+            className="bg-gray-800/60 backdrop-blur-sm rounded-xl sm:rounded-2xl border border-gray-700/50 p-4 sm:p-6 md:p-8 mb-6"
           >
-            <div className="flex items-center justify-between mb-6">
+            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
               <div className="flex items-center gap-3">
-                <div className="w-12 h-12 bg-blue-100 rounded-xl flex items-center justify-center">
-                  <Edit3 className="w-6 h-6 text-blue-600" />
+                <div className="w-10 h-10 sm:w-12 sm:h-12 bg-blue-500/20 rounded-lg sm:rounded-xl flex items-center justify-center">
+                  <Edit3 className="w-5 h-5 sm:w-6 sm:h-6 text-blue-400" />
                 </div>
                 <div>
-                  <h2 className="text-xl font-bold text-gray-900 dark:text-white">Aanpassing aanvragen</h2>
-                  <p className="text-gray-600 text-sm">Wil je iets laten wijzigen aan je website?</p>
+                  <h2 className="text-lg sm:text-xl font-bold text-white">Aanpassing aanvragen</h2>
+                  <p className="text-gray-400 text-xs sm:text-sm">Wil je iets laten wijzigen aan je website?</p>
                 </div>
               </div>
               {project.revisionsTotal && (
-                <div className="text-right px-4 py-2 bg-gray-50 rounded-xl">
-                  <p className="text-sm text-gray-500 dark:text-gray-400">Revisies</p>
+                <div className="text-left sm:text-right px-4 py-2 bg-gray-900/50 rounded-xl">
+                  <p className="text-xs sm:text-sm text-gray-500">Revisies</p>
                   <p className={`text-lg font-bold ${
                     (project.revisionsUsed || 0) >= project.revisionsTotal 
-                      ? 'text-red-600' 
-                      : 'text-gray-900'
+                      ? 'text-red-400' 
+                      : 'text-white'
                   }`}>
                     {project.revisionsUsed || 0} / {project.revisionsTotal}
                   </p>
@@ -1508,11 +1546,11 @@ export default function ProjectStatus() {
                 href={project.liveUrl}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="flex items-center gap-2 mb-6 p-4 bg-green-50 rounded-xl text-green-700 hover:bg-green-100 transition border border-green-200 group"
+                className="flex items-center gap-2 mb-6 p-4 bg-green-500/10 rounded-xl text-green-400 hover:bg-green-500/20 transition border border-green-500/30 group"
               >
                 <Rocket className="w-5 h-5" />
-                <span className="font-medium truncate flex-1">{project.liveUrl}</span>
-                <ExternalLink className="w-4 h-4 group-hover:translate-x-1 transition" />
+                <span className="font-medium truncate flex-1 text-sm sm:text-base">{project.liveUrl}</span>
+                <ExternalLink className="w-4 h-4 group-hover:translate-x-1 transition flex-shrink-0" />
               </a>
             )}
 
@@ -1523,24 +1561,24 @@ export default function ProjectStatus() {
                   onChange={(e) => setChangeRequestText(e.target.value)}
                   placeholder="Beschrijf wat je wilt laten aanpassen..."
                   rows={4}
-                  className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition"
+                  className="w-full px-4 py-3 bg-gray-900/50 border border-gray-700 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-white placeholder-gray-500 transition text-sm"
                 />
                 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Prioriteit</label>
+                  <label className="block text-sm font-medium text-gray-300 mb-2">Prioriteit</label>
                   <div className="flex gap-2">
                     {(['low', 'normal', 'urgent'] as const).map((priority) => (
                       <button
                         key={priority}
                         onClick={() => setChangePriority(priority)}
-                        className={`flex-1 py-3 px-4 rounded-xl border-2 text-sm font-medium transition ${
+                        className={`flex-1 py-2.5 sm:py-3 px-3 sm:px-4 rounded-xl border text-xs sm:text-sm font-medium transition ${
                           changePriority === priority
                             ? priority === 'urgent' 
-                              ? 'border-red-500 bg-red-50 text-red-700'
+                              ? 'border-red-500 bg-red-500/20 text-red-400'
                               : priority === 'normal'
-                              ? 'border-blue-500 bg-blue-50 text-blue-700'
-                              : 'border-gray-400 bg-gray-50 text-gray-700'
-                            : 'border-gray-200 text-gray-500 hover:border-gray-300'
+                              ? 'border-blue-500 bg-blue-500/20 text-blue-400'
+                              : 'border-gray-500 bg-gray-500/20 text-gray-300'
+                            : 'border-gray-700 text-gray-500 hover:border-gray-600'
                         }`}
                       >
                         {PRIORITY_CONFIG[priority].label}
@@ -1554,20 +1592,20 @@ export default function ProjectStatus() {
                   disabled={changeRequestLoading || !changeRequestText.trim()}
                   whileHover={{ scale: 1.02 }}
                   whileTap={{ scale: 0.98 }}
-                  className="w-full flex items-center justify-center gap-2 px-6 py-4 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-xl transition disabled:opacity-50 shadow-lg shadow-blue-500/25"
+                  className="w-full flex items-center justify-center gap-2 px-6 py-3 sm:py-4 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white font-semibold rounded-xl transition disabled:opacity-50 shadow-lg shadow-blue-500/25 text-sm sm:text-base"
                 >
                   <Send className="w-5 h-5" />
                   Aanpassing aanvragen
                 </motion.button>
               </div>
             ) : (
-              <div className="bg-blue-50 rounded-xl p-6 text-center border border-blue-200">
-                <CheckCircle2 className="w-12 h-12 text-blue-600 mx-auto mb-3" />
-                <p className="font-semibold text-blue-900 text-lg">Aanvraag ontvangen!</p>
-                <p className="text-sm text-blue-700 mb-4">We nemen zo snel mogelijk contact met je op.</p>
+              <div className="bg-blue-500/10 rounded-xl p-6 text-center border border-blue-500/30">
+                <CheckCircle2 className="w-10 h-10 sm:w-12 sm:h-12 text-blue-400 mx-auto mb-3" />
+                <p className="font-semibold text-white text-base sm:text-lg">Aanvraag ontvangen!</p>
+                <p className="text-sm text-blue-400 mb-4">We nemen zo snel mogelijk contact met je op.</p>
                 <button
                   onClick={() => setChangeRequestSent(false)}
-                  className="text-blue-600 hover:text-blue-700 text-sm font-medium underline"
+                  className="text-blue-400 hover:text-blue-300 text-sm font-medium underline"
                 >
                   Nog een aanpassing aanvragen
                 </button>
@@ -1582,41 +1620,41 @@ export default function ProjectStatus() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.45 }}
-            className="bg-white dark:bg-gray-900 rounded-2xl shadow-xl border border-gray-100 p-6 md:p-8 mb-8"
+            className="bg-gray-800/60 backdrop-blur-sm rounded-xl sm:rounded-2xl border border-gray-700/50 p-4 sm:p-6 md:p-8 mb-6"
           >
             <div className="flex items-center gap-3 mb-6">
-              <div className="w-12 h-12 bg-purple-100 rounded-xl flex items-center justify-center">
-                <FileText className="w-6 h-6 text-purple-600" />
+              <div className="w-10 h-10 sm:w-12 sm:h-12 bg-purple-500/20 rounded-lg sm:rounded-xl flex items-center justify-center">
+                <FileText className="w-5 h-5 sm:w-6 sm:h-6 text-purple-400" />
               </div>
               <div>
-                <h2 className="text-xl font-bold text-gray-900 dark:text-white">Mijn Aanvragen</h2>
-                <p className="text-gray-600 text-sm">
+                <h2 className="text-lg sm:text-xl font-bold text-white">Mijn Aanvragen</h2>
+                <p className="text-gray-400 text-xs sm:text-sm">
                   {project.changeRequests.length} aanvra{project.changeRequests.length === 1 ? 'ag' : 'gen'}
                 </p>
               </div>
             </div>
 
-            <div className="space-y-4">
+            <div className="space-y-3 sm:space-y-4">
               {project.changeRequests.slice().reverse().map((request) => (
                 <div
                   key={request.id}
-                  className={`border-2 rounded-xl p-5 transition ${
+                  className={`border rounded-xl p-4 sm:p-5 transition ${
                     request.status === 'completed'
-                      ? 'border-green-200 bg-green-50'
+                      ? 'border-green-500/30 bg-green-500/10'
                       : request.status === 'in_progress'
-                      ? 'border-blue-200 bg-blue-50'
-                      : 'border-gray-200 bg-gray-50'
+                      ? 'border-blue-500/30 bg-blue-500/10'
+                      : 'border-gray-700 bg-gray-900/50'
                   }`}
                 >
-                  <div className="flex items-start justify-between gap-4">
+                  <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-3 sm:gap-4">
                     <div className="flex-1 min-w-0">
-                      <div className="flex items-center gap-2 mb-3">
-                        <span className={`inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-semibold ${
+                      <div className="flex flex-wrap items-center gap-2 mb-3">
+                        <span className={`inline-flex items-center gap-1 px-2 sm:px-3 py-1 rounded-full text-xs font-semibold ${
                           request.status === 'completed'
-                            ? 'bg-green-200 text-green-800'
+                            ? 'bg-green-500/20 text-green-400'
                             : request.status === 'in_progress'
-                            ? 'bg-blue-200 text-blue-800'
-                            : 'bg-gray-200 text-gray-700'
+                            ? 'bg-blue-500/20 text-blue-400'
+                            : 'bg-gray-700 text-gray-300'
                         }`}>
                           {request.status === 'completed' ? (
                             <><CheckCircle2 className="w-3 h-3" /> Afgerond</>
@@ -1626,21 +1664,25 @@ export default function ProjectStatus() {
                             <><Clock className="w-3 h-3" /> In de wacht</>
                           )}
                         </span>
-                        <span className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-medium ${
-                          PRIORITY_CONFIG[request.priority].bgColor
-                        } ${PRIORITY_CONFIG[request.priority].color}`}>
+                        <span className={`inline-flex items-center px-2 sm:px-3 py-1 rounded-full text-xs font-medium ${
+                          request.priority === 'urgent'
+                            ? 'bg-red-500/20 text-red-400'
+                            : request.priority === 'normal'
+                            ? 'bg-blue-500/20 text-blue-400'
+                            : 'bg-gray-700 text-gray-400'
+                        }`}>
                           {PRIORITY_CONFIG[request.priority].label}
                         </span>
                       </div>
-                      <p className="text-gray-900 dark:text-white">{request.request}</p>
+                      <p className="text-white text-sm sm:text-base">{request.request}</p>
                       {request.response && (
-                        <div className="mt-4 pt-4 border-t border-gray-200 dark:border-gray-700">
+                        <div className="mt-4 pt-4 border-t border-gray-700">
                           <p className="text-xs font-medium text-gray-500 mb-1">Reactie developer:</p>
-                          <p className="text-gray-700 dark:text-gray-300">{request.response}</p>
+                          <p className="text-gray-300 text-sm">{request.response}</p>
                         </div>
                       )}
                     </div>
-                    <div className="text-right text-xs text-gray-500 whitespace-nowrap">
+                    <div className="text-xs text-gray-500 whitespace-nowrap">
                       {new Date(request.date).toLocaleDateString('nl-NL', {
                         day: 'numeric',
                         month: 'short'
@@ -1658,24 +1700,24 @@ export default function ProjectStatus() {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.5 }}
-          className="bg-white dark:bg-gray-900 rounded-2xl shadow-xl border border-gray-100 p-6 md:p-8"
+          className="bg-gray-800/60 backdrop-blur-sm rounded-xl sm:rounded-2xl border border-gray-700/50 p-4 sm:p-6 md:p-8"
         >
           <button
             onClick={() => setShowFaq(!showFaq)}
             className="w-full flex items-center justify-between"
           >
             <div className="flex items-center gap-3">
-              <div className="w-12 h-12 bg-amber-100 rounded-xl flex items-center justify-center">
-                <HelpCircle className="w-6 h-6 text-amber-600" />
+              <div className="w-10 h-10 sm:w-12 sm:h-12 bg-amber-500/20 rounded-lg sm:rounded-xl flex items-center justify-center">
+                <HelpCircle className="w-5 h-5 sm:w-6 sm:h-6 text-amber-400" />
               </div>
               <div className="text-left">
-                <h2 className="text-xl font-bold text-gray-900 dark:text-white">Veelgestelde vragen</h2>
-                <p className="text-gray-600 text-sm">
+                <h2 className="text-lg sm:text-xl font-bold text-white">Veelgestelde vragen</h2>
+                <p className="text-gray-400 text-xs sm:text-sm">
                   Over de {STATUS_STEPS.find(s => s.key === project.status)?.label.toLowerCase()}-fase
                 </p>
               </div>
             </div>
-            <ChevronDown className={`w-6 h-6 text-gray-400 transition-transform ${showFaq ? 'rotate-180' : ''}`} />
+            <ChevronDown className={`w-5 h-5 sm:w-6 sm:h-6 text-gray-500 transition-transform flex-shrink-0 ${showFaq ? 'rotate-180' : ''}`} />
           </button>
 
           <AnimatePresence>
@@ -1688,9 +1730,9 @@ export default function ProjectStatus() {
               >
                 <div className="mt-6 space-y-4">
                   {PHASE_FAQS[project.status]?.map((faq, index) => (
-                    <div key={index} className={`border-l-4 ${phaseColors.bg} pl-4 py-2`}>
-                      <h4 className="font-semibold text-gray-900 dark:text-white">{faq.question}</h4>
-                      <p className="text-gray-600 text-sm mt-1">{faq.answer}</p>
+                    <div key={index} className={`border-l-2 ${phaseColors.bg} pl-4 py-2`}>
+                      <h4 className="font-semibold text-white text-sm sm:text-base">{faq.question}</h4>
+                      <p className="text-gray-400 text-xs sm:text-sm mt-1">{faq.answer}</p>
                     </div>
                   ))}
                 </div>
@@ -1704,18 +1746,18 @@ export default function ProjectStatus() {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.55 }}
-          className="mt-8 flex flex-wrap justify-center gap-6 text-sm text-gray-500 dark:text-gray-400"
+          className="mt-8 flex flex-wrap justify-center gap-4 sm:gap-6 text-xs sm:text-sm text-gray-500"
         >
           <div className="flex items-center gap-2">
-            <Shield className="w-5 h-5 text-green-500" />
+            <Shield className="w-4 h-4 sm:w-5 sm:h-5 text-green-500" />
             <span>Veilig & beveiligd</span>
           </div>
           <div className="flex items-center gap-2">
-            <Clock className="w-5 h-5 text-blue-500" />
+            <Clock className="w-4 h-4 sm:w-5 sm:h-5 text-blue-500" />
             <span>Snelle reactietijd</span>
           </div>
           <div className="flex items-center gap-2">
-            <Star className="w-5 h-5 text-amber-500" />
+            <Star className="w-4 h-4 sm:w-5 sm:h-5 text-amber-500" />
             <span>100+ tevreden klanten</span>
           </div>
         </motion.div>
