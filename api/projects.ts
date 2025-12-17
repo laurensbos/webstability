@@ -10,7 +10,7 @@
 
 import type { VercelRequest, VercelResponse } from '@vercel/node'
 import { Redis } from '@upstash/redis'
-import { sendWelcomeEmail, sendProjectCreatedEmail, isSmtpConfigured } from './lib/smtp'
+import { sendWelcomeEmail, sendProjectCreatedEmail, isSmtpConfigured } from './lib/smtp.js'
 
 // Check if Redis is configured
 const REDIS_URL = process.env.UPSTASH_REDIS_REST_URL
