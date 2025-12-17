@@ -11,6 +11,27 @@ import {
 import { useState } from 'react'
 
 // ===========================================
+// LOGO SERVICE INFO
+// ===========================================
+
+export const LOGO_SERVICE_INFO = {
+  name: 'Logo Ontwerp',
+  price: '€199',
+  priceType: 'eenmalig' as const,
+  includes: [
+    'Intake gesprek',
+    'Moodboard met stijlrichtingen',
+    '3 unieke concepten',
+    '2 revisierondes',
+    'Alle bestandsformaten (PNG, SVG, PDF)',
+    'Kleur- en zwart-wit versie',
+    'Favicon voor website',
+    'Stijlgids met kleurcodes',
+    'Vectorbestanden (AI, EPS)',
+  ]
+}
+
+// ===========================================
 // SHARED FORM COMPONENTS
 // ===========================================
 

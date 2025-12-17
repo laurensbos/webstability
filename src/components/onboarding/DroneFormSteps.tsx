@@ -9,6 +9,26 @@ import {
 } from 'lucide-react'
 
 // ===========================================
+// DRONE SERVICE INFO
+// ===========================================
+
+export const DRONE_SERVICE_INFO = {
+  name: 'Drone Opnames',
+  price: '€299',
+  priceType: 'eenmalig' as const,
+  includes: [
+    'Professionele 4K video opnames',
+    'Hoge resolutie foto\'s',
+    'Tot 2 uur op locatie',
+    'Nabewerking & kleurcorrectie',
+    'Gecertificeerd drone piloot (A1/A2)',
+    'Verzekerd tot €1 miljoen',
+    'Ruwe bestanden inbegrepen',
+    'Levering binnen 5 werkdagen',
+  ]
+}
+
+// ===========================================
 // SHARED FORM COMPONENTS
 // ===========================================
 

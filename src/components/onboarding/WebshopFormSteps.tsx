@@ -7,9 +7,134 @@ import {
   Image,
   Check,
   Plus,
-  X
+  X,
+  ArrowUpRight,
+  Sparkles,
+  Lock
 } from 'lucide-react'
 import { useState } from 'react'
+
+// ===========================================
+// PACKAGE CONFIGURATION FOR WEBSHOP
+// ===========================================
+
+export type WebshopPackageId = 'webshopStarter' | 'webshopPro'
+
+export interface WebshopPackageConfig {
+  id: WebshopPackageId
+  name: string
+  price: string
+  maxProducts: number
+  features: {
+    unlimitedProducts: boolean
+    advancedFilters: boolean
+    multiCurrency: boolean
+    abandonedCart: boolean
+    loyaltyProgram: boolean
+    b2bPortal: boolean
+    analytics: boolean
+    blog: boolean
+  }
+}
+
+export const WEBSHOP_PACKAGE_CONFIGS: Record<WebshopPackageId, WebshopPackageConfig> = {
+  webshopStarter: {
+    id: 'webshopStarter',
+    name: 'Webshop Starter',
+    price: '€349/maand',
+    maxProducts: 100,
+    features: {
+      unlimitedProducts: false,
+      advancedFilters: false,
+      multiCurrency: false,
+      abandonedCart: false,
+      loyaltyProgram: false,
+      b2bPortal: false,
+      analytics: false,
+      blog: false,
+    }
+  },
+  webshopPro: {
+    id: 'webshopPro',
+    name: 'Webshop Pro',
+    price: '€599/maand',
+    maxProducts: 999999,
+    features: {
+      unlimitedProducts: true,
+      advancedFilters: true,
+      multiCurrency: true,
+      abandonedCart: true,
+      loyaltyProgram: true,
+      b2bPortal: true,
+      analytics: true,
+      blog: true,
+    }
+  }
+}
+
+// Get the minimum package required for a feature
+export function getMinWebshopPackageForFeature(feature: keyof WebshopPackageConfig['features']): WebshopPackageId {
+  if (WEBSHOP_PACKAGE_CONFIGS.webshopStarter.features[feature]) return 'webshopStarter'
+  return 'webshopPro'
+}
+
+// ===========================================
+// UPGRADE PROMPT COMPONENT
+// ===========================================
+
+interface UpgradePromptProps {
+  currentPackage: WebshopPackageId
+  requiredPackage: WebshopPackageId
+  featureName: string
+  onUpgrade?: (packageId: WebshopPackageId) => void
+}
+
+export function WebshopUpgradePrompt({ currentPackage, requiredPackage, featureName, onUpgrade }: UpgradePromptProps) {
+  const requiredConfig = WEBSHOP_PACKAGE_CONFIGS[requiredPackage]
+  const currentConfig = WEBSHOP_PACKAGE_CONFIGS[currentPackage]
+  
+  return (
+    <div className="bg-gradient-to-r from-amber-50 to-orange-50 dark:from-amber-900/20 dark:to-orange-900/20 border border-amber-200 dark:border-amber-700 rounded-xl p-4">
+      <div className="flex flex-col sm:flex-row items-start gap-3">
+        <div className="w-10 h-10 rounded-xl bg-amber-100 dark:bg-amber-900/30 flex items-center justify-center flex-shrink-0">
+          <Sparkles className="w-5 h-5 text-amber-600 dark:text-amber-400" />
+        </div>
+        <div className="flex-1">
+          <div className="flex items-center gap-2">
+            <Lock className="w-4 h-4 text-amber-600 dark:text-amber-400" />
+            <span className="font-medium text-amber-800 dark:text-amber-300">
+              {featureName} - {requiredConfig.name} vereist
+            </span>
+          </div>
+          <p className="text-sm text-amber-700 dark:text-amber-400 mt-1">
+            Je huidige pakket ({currentConfig.name}) bevat deze functie niet.
+          </p>
+          {onUpgrade && (
+            <button
+              onClick={() => onUpgrade(requiredPackage)}
+              className="mt-3 inline-flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-amber-500 to-orange-500 text-white rounded-lg font-medium text-sm hover:from-amber-600 hover:to-orange-600 transition-all"
+            >
+              Upgrade naar {requiredConfig.name}
+              <ArrowUpRight className="w-4 h-4" />
+            </button>
+          )}
+        </div>
+      </div>
+    </div>
+  )
+}
+
+// ===========================================
+// FORM STEP PROPS
+// ===========================================
+
+interface FormStepProps {
+  data: Record<string, any>
+  onChange: (name: string, value: any) => void
+  disabled?: boolean
+  packageId?: WebshopPackageId
+  onUpgrade?: (packageId: WebshopPackageId) => void
+}
 
 // Import shared components from WebsiteFormSteps
 // We'll create a shared file later, for now duplicate the essentials
@@ -283,16 +408,6 @@ function TagInput({ label, name, values, onChange, placeholder, disabled, hint }
 }
 
 // ===========================================
-// FORM STEP PROPS
-// ===========================================
-
-interface FormStepProps {
-  data: Record<string, any>
-  onChange: (field: string, value: any) => void
-  disabled?: boolean
-}
-
-// ===========================================
 // WEBSHOP FORM STEPS
 // ===========================================
 
@@ -437,8 +552,15 @@ export function WebshopBrandingStep({ data, onChange, disabled }: FormStepProps)
   )
 }
 
-// Step 3: Producten
-export function WebshopProductenStep({ data, onChange, disabled }: FormStepProps) {
+// Step 3: Producten - with package-based limits
+export function WebshopProductenStep({ data, onChange, disabled, packageId = 'webshopStarter', onUpgrade }: FormStepProps) {
+  const currentPackage = WEBSHOP_PACKAGE_CONFIGS[packageId] || WEBSHOP_PACKAGE_CONFIGS.webshopStarter
+  const isPro = packageId === 'webshopPro'
+  
+  // Check if user selected more products than their package allows
+  const selectedProductCount = data.estimatedProductCount || ''
+  const needsUpgrade = !isPro && (selectedProductCount === '200-500' || selectedProductCount === '500+')
+
   return (
     <motion.div
       initial={{ opacity: 0, y: 10 }}
@@ -451,7 +573,12 @@ export function WebshopProductenStep({ data, onChange, disabled }: FormStepProps
         </div>
         <div>
           <h3 className="font-semibold text-gray-900 dark:text-white">Producten</h3>
-          <p className="text-sm text-gray-500 dark:text-gray-400">Informatie over je productassortiment</p>
+          <p className="text-sm text-gray-500 dark:text-gray-400">
+            Informatie over je productassortiment
+            <span className="ml-2 text-emerald-600 dark:text-emerald-400">
+              (max {isPro ? 'onbeperkt' : currentPackage.maxProducts} producten)
+            </span>
+          </p>
         </div>
       </div>
 
@@ -471,13 +598,31 @@ export function WebshopProductenStep({ data, onChange, disabled }: FormStepProps
         value={data.estimatedProductCount || ''}
         onChange={onChange}
         disabled={disabled}
-        options={[
+        options={isPro ? [
           { value: '1-50', label: '1 - 50 producten', description: 'Klein assortiment' },
           { value: '50-200', label: '50 - 200 producten', description: 'Gemiddeld assortiment' },
           { value: '200-500', label: '200 - 500 producten', description: 'Groot assortiment' },
           { value: '500+', label: '500+ producten', description: 'Zeer groot assortiment' },
+        ] : [
+          { value: '1-50', label: '1 - 50 producten', description: 'Klein assortiment' },
+          { value: '50-100', label: '50 - 100 producten', description: 'Tot pakket limiet' },
         ]}
       />
+
+      {needsUpgrade && (
+        <WebshopUpgradePrompt
+          currentPackage={packageId}
+          requiredPackage="webshopPro"
+          featureName="Meer dan 100 producten"
+          onUpgrade={onUpgrade}
+        />
+      )}
+
+      {!isPro && !needsUpgrade && (
+        <div className="text-sm text-gray-500 dark:text-gray-400 bg-gray-50 dark:bg-gray-800 rounded-lg p-3">
+          💡 Meer producten nodig? Upgrade naar <strong>Webshop Pro</strong> voor onbeperkt producten.
+        </div>
+      )}
 
       <RadioGroup
         label="Productbeschrijvingen"
@@ -576,20 +721,32 @@ export function WebshopBetalingStep({ data, onChange, disabled }: FormStepProps)
   )
 }
 
-// Step 5: Features
-export function WebshopFeaturesStep({ data, onChange, disabled }: FormStepProps) {
-  const featureOptions = [
-    { value: 'inventory', label: 'Voorraadbeheer' },
-    { value: 'customerAccounts', label: 'Klantaccounts' },
-    { value: 'discountCodes', label: 'Kortingscodes' },
-    { value: 'giftCards', label: 'Cadeaubonnen' },
-    { value: 'reviews', label: 'Productreviews' },
-    { value: 'newsletter', label: 'Nieuwsbrief' },
-    { value: 'wishlist', label: 'Verlanglijst' },
-    { value: 'compareProducts', label: 'Producten vergelijken' },
-    { value: 'filterSearch', label: 'Uitgebreide filters' },
-    { value: 'multipleImages', label: 'Meerdere productfoto\'s' },
+// Step 5: Features - with package-based filtering
+export function WebshopFeaturesStep({ data, onChange, disabled, packageId = 'webshopStarter', onUpgrade }: FormStepProps) {
+  const currentPackage = WEBSHOP_PACKAGE_CONFIGS[packageId] || WEBSHOP_PACKAGE_CONFIGS.webshopStarter
+  
+  // Base features available for all packages
+  const baseFeatureOptions = [
+    { value: 'inventory', label: 'Voorraadbeheer', proOnly: false },
+    { value: 'customerAccounts', label: 'Klantaccounts', proOnly: false },
+    { value: 'discountCodes', label: 'Kortingscodes', proOnly: false },
+    { value: 'giftCards', label: 'Cadeaubonnen', proOnly: false },
+    { value: 'reviews', label: 'Productreviews', proOnly: false },
+    { value: 'multipleImages', label: 'Meerdere productfoto\'s', proOnly: false },
   ]
+  
+  // Pro-only features
+  const proFeatureOptions = [
+    { value: 'newsletter', label: 'Nieuwsbrief integratie', proOnly: true },
+    { value: 'wishlist', label: 'Verlanglijst', proOnly: true },
+    { value: 'compareProducts', label: 'Producten vergelijken', proOnly: true },
+    { value: 'filterSearch', label: 'Geavanceerde filters & zoeken', proOnly: true },
+    { value: 'abandonedCart', label: 'Verlaten winkelwagen e-mails', proOnly: true },
+    { value: 'loyaltyProgram', label: 'Loyaliteitsprogramma', proOnly: true },
+  ]
+  
+  const isPro = packageId === 'webshopPro'
+  const visibleProFeatures = isPro ? proFeatureOptions : []
 
   return (
     <motion.div
@@ -603,19 +760,68 @@ export function WebshopFeaturesStep({ data, onChange, disabled }: FormStepProps)
         </div>
         <div>
           <h3 className="font-semibold text-gray-900 dark:text-white">Functionaliteiten</h3>
-          <p className="text-sm text-gray-500 dark:text-gray-400">Welke features wil je in je webshop?</p>
+          <p className="text-sm text-gray-500 dark:text-gray-400">
+            Welke features wil je in je webshop?
+            <span className="ml-2 text-emerald-600 dark:text-emerald-400">
+              ({currentPackage.name})
+            </span>
+          </p>
         </div>
       </div>
 
-      <CheckboxGroup
-        label="Selecteer de functies die je nodig hebt"
-        name="features"
-        values={data.features || ['inventory', 'discountCodes']}
-        onChange={onChange}
-        options={featureOptions}
-        disabled={disabled}
-        columns={2}
-      />
+      {/* Package summary */}
+      <div className="bg-emerald-50 dark:bg-emerald-900/20 border border-emerald-200 dark:border-emerald-700 rounded-xl p-4">
+        <div className="flex items-center gap-2 mb-2">
+          <Package className="w-5 h-5 text-emerald-600 dark:text-emerald-400" />
+          <span className="font-medium text-emerald-800 dark:text-emerald-300">
+            {currentPackage.name} - {currentPackage.price}
+          </span>
+        </div>
+        <p className="text-sm text-emerald-700 dark:text-emerald-400">
+          {isPro ? 'Onbeperkt producten + alle premium functies' : `Tot ${currentPackage.maxProducts} producten`}
+        </p>
+      </div>
+
+      {/* Base features */}
+      <div>
+        <span className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-3 block">
+          Standaard functies (inbegrepen)
+        </span>
+        <CheckboxGroup
+          label=""
+          name="features"
+          values={data.features || ['inventory', 'discountCodes']}
+          onChange={onChange}
+          options={baseFeatureOptions}
+          disabled={disabled}
+          columns={2}
+        />
+      </div>
+
+      {/* Pro features */}
+      {isPro ? (
+        <div>
+          <span className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-3 block">
+            Pro functies
+          </span>
+          <CheckboxGroup
+            label=""
+            name="proFeatures"
+            values={data.proFeatures || []}
+            onChange={onChange}
+            options={visibleProFeatures}
+            disabled={disabled}
+            columns={2}
+          />
+        </div>
+      ) : (
+        <WebshopUpgradePrompt
+          currentPackage={packageId}
+          requiredPackage="webshopPro"
+          featureName="Premium functies (nieuwsbrief, verlanglijst, etc.)"
+          onUpgrade={onUpgrade}
+        />
+      )}
 
       <TextInput
         label="Bestaand domein"
