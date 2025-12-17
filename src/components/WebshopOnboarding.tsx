@@ -982,64 +982,64 @@ export default function WebshopOnboarding({
                   </div>
 
                   {/* Cost Summary */}
-                  <div className={`mt-6 p-4 sm:p-6 rounded-2xl bg-gradient-to-br ${currentGradient} bg-opacity-5 border border-gray-200 dark:border-gray-700`}>
-                    <h4 className="font-semibold text-gray-900 dark:text-white mb-4 flex items-center gap-2">
+                  <div className="mt-6 p-4 sm:p-6 rounded-2xl bg-gradient-to-br from-emerald-500 to-green-500 dark:from-emerald-600 dark:to-green-600">
+                    <h4 className="font-semibold text-white mb-4 flex items-center gap-2">
                       <Sparkles className="w-5 h-5" />
                       Kostenoverzicht
                     </h4>
                     
                     {/* Package Info */}
-                    <div className="mb-4 pb-4 border-b border-gray-200 dark:border-gray-700">
+                    <div className="mb-4 pb-4 border-b border-white/20">
                       <div className="flex items-center justify-between mb-1">
-                        <span className="text-gray-600 dark:text-gray-400">Pakket</span>
-                        <span className={`font-semibold bg-gradient-to-r ${currentGradient} bg-clip-text text-transparent`}>
+                        <span className="text-white/80">Pakket</span>
+                        <span className="font-semibold text-white">
                           {selectedPackage?.name}
                         </span>
                       </div>
                       <div className="flex items-center justify-between text-sm">
-                        <span className="text-gray-500 dark:text-gray-500">Webshop</span>
-                        <span className="text-gray-700 dark:text-gray-300">{formData.shopName}</span>
+                        <span className="text-white/70">Webshop</span>
+                        <span className="text-white">{formData.shopName}</span>
                       </div>
                     </div>
 
                     {/* Cost Breakdown */}
                     <div className="space-y-3">
                       <div className="flex items-center justify-between">
-                        <span className="text-gray-600 dark:text-gray-400">Eenmalige opstartkosten</span>
+                        <span className="text-white/80">Eenmalige opstartkosten</span>
                         <div className="text-right">
                           {appliedDiscount && appliedDiscount.setupDiscount > 0 ? (
                             <>
-                              <span className="text-gray-400 line-through text-sm mr-2">€{selectedPackage?.setupFee},-</span>
-                              <span className="font-medium text-green-600">€{finalSetupFee},-</span>
+                              <span className="text-white/50 line-through text-sm mr-2">€{selectedPackage?.setupFee},-</span>
+                              <span className="font-medium text-green-200">€{finalSetupFee},-</span>
                             </>
                           ) : (
-                            <span className="font-medium text-gray-900 dark:text-white">€{selectedPackage?.setupFee},-</span>
+                            <span className="font-medium text-white">€{selectedPackage?.setupFee},-</span>
                           )}
                         </div>
                       </div>
                       <div className="flex items-center justify-between">
-                        <span className="text-gray-600 dark:text-gray-400">Maandelijks abonnement</span>
-                        <span className="font-medium text-gray-900 dark:text-white">€{finalMonthlyFee},-</span>
+                        <span className="text-white/80">Maandelijks abonnement</span>
+                        <span className="font-medium text-white">€{finalMonthlyFee},-</span>
                       </div>
                     </div>
 
                     {/* Discount Code Input */}
-                    <div className="mt-4 pt-4 border-t border-gray-200 dark:border-gray-700">
-                      <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                    <div className="mt-4 pt-4 border-t border-white/20">
+                      <label className="block text-sm font-medium text-white mb-2">
                         Kortingscode
                       </label>
                       {appliedDiscount ? (
-                        <div className="flex items-center justify-between p-3 bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-xl">
+                        <div className="flex items-center justify-between p-3 bg-green-400/20 border border-green-300/30 rounded-xl">
                           <div className="flex items-center gap-2">
-                            <Check className="w-5 h-5 text-green-600" />
+                            <Check className="w-5 h-5 text-green-200" />
                             <div>
-                              <span className="font-medium text-green-700 dark:text-green-400">{appliedDiscount.code}</span>
-                              <p className="text-xs text-green-600 dark:text-green-500">{appliedDiscount.description}</p>
+                              <span className="font-medium text-green-100">{appliedDiscount.code}</span>
+                              <p className="text-xs text-green-200/80">{appliedDiscount.description}</p>
                             </div>
                           </div>
                           <button
                             onClick={removeDiscount}
-                            className="text-gray-400 hover:text-red-500 transition-colors"
+                            className="text-white/50 hover:text-red-300 transition-colors"
                           >
                             ✕
                           </button>
@@ -1051,15 +1051,15 @@ export default function WebshopOnboarding({
                             value={formData.discountCode}
                             onChange={(e) => updateFormData('discountCode', e.target.value.toUpperCase())}
                             placeholder="Bijv. GRATIS26"
-                            className="flex-1 px-4 py-2.5 rounded-xl border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-emerald-500 focus:border-transparent text-sm"
+                            className="flex-1 px-4 py-2.5 rounded-xl border-0 bg-gray-800/50 text-white placeholder-white/40 focus:ring-2 focus:ring-white/50 focus:outline-none text-sm"
                           />
                           <button
                             onClick={checkDiscountCode}
                             disabled={isCheckingDiscount || !formData.discountCode.trim()}
                             className={`px-4 py-2.5 rounded-xl font-medium transition-all text-sm ${
                               formData.discountCode.trim() 
-                                ? 'bg-gray-900 dark:bg-white text-white dark:text-gray-900 hover:bg-gray-800' 
-                                : 'bg-gray-200 text-gray-500 cursor-not-allowed'
+                                ? 'bg-white text-gray-900 hover:bg-gray-100' 
+                                : 'bg-white/30 text-white/50 cursor-not-allowed'
                             }`}
                           >
                             {isCheckingDiscount ? (
@@ -1071,42 +1071,42 @@ export default function WebshopOnboarding({
                         </div>
                       )}
                       {discountError && (
-                        <p className="text-red-500 text-sm mt-2">{discountError}</p>
+                        <p className="text-red-200 text-sm mt-2">{discountError}</p>
                       )}
                     </div>
 
                     {/* Total First Month */}
-                    <div className="mt-4 pt-4 border-t border-gray-200 dark:border-gray-700">
+                    <div className="mt-4 pt-4 border-t border-white/20">
                       <div className="flex items-center justify-between">
                         <div>
-                          <span className="font-semibold text-gray-900 dark:text-white">Eerste maand</span>
-                          <p className="text-xs text-gray-500 dark:text-gray-500">Incl. opstartkosten</p>
+                          <span className="font-semibold text-white">Eerste maand</span>
+                          <p className="text-xs text-white/60">Incl. opstartkosten</p>
                         </div>
                         <div className="text-right">
                           {appliedDiscount && appliedDiscount.setupDiscount > 0 && (
-                            <span className="text-gray-400 line-through text-sm block">
+                            <span className="text-white/50 line-through text-sm block">
                               €{(selectedPackage?.setupFee || 0) + (selectedPackage?.monthlyFee || 0)},-
                             </span>
                           )}
-                          <span className={`text-xl sm:text-2xl font-bold bg-gradient-to-r ${currentGradient} bg-clip-text text-transparent`}>
+                          <span className="text-xl sm:text-2xl font-bold text-white">
                             €{firstMonthTotal},-
                           </span>
                         </div>
                       </div>
                       <div className="flex items-center justify-between mt-2 text-sm">
-                        <span className="text-gray-500 dark:text-gray-500">Daarna per maand</span>
-                        <span className="font-medium text-gray-700 dark:text-gray-300">€{finalMonthlyFee},-</span>
+                        <span className="text-white/60">Daarna per maand</span>
+                        <span className="font-medium text-white">€{finalMonthlyFee},-</span>
                       </div>
                       {appliedDiscount && (
-                        <div className="mt-3 p-2 bg-green-50 dark:bg-green-900/20 rounded-lg">
-                          <p className="text-sm text-green-700 dark:text-green-400 text-center font-medium">
+                        <div className="mt-3 p-2 bg-green-400/20 rounded-lg">
+                          <p className="text-sm text-green-100 text-center font-medium">
                             🎉 Je bespaart €{appliedDiscount.setupDiscount + appliedDiscount.monthlyDiscount},-!
                           </p>
                         </div>
                       )}
                     </div>
 
-                    <p className="text-xs text-gray-500 dark:text-gray-500 mt-4 text-center">
+                    <p className="text-xs text-white/50 mt-4 text-center">
                       Alle prijzen zijn inclusief BTW • Maandelijks opzegbaar
                     </p>
                   </div>

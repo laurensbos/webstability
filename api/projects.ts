@@ -11,10 +11,14 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node'
 import { Redis } from '@upstash/redis'
 
-const kv = new Redis({
-  url: process.env.UPSTASH_REDIS_REST_URL || '',
-  token: process.env.UPSTASH_REDIS_REST_TOKEN || ''
-})
+// Check if Redis is configured
+const REDIS_URL = process.env.UPSTASH_REDIS_REST_URL
+const REDIS_TOKEN = process.env.UPSTASH_REDIS_REST_TOKEN
+
+// Only create Redis client if credentials are available
+const kv = REDIS_URL && REDIS_TOKEN 
+  ? new Redis({ url: REDIS_URL, token: REDIS_TOKEN })
+  : null
 
 interface Project {
   id: string
@@ -57,6 +61,16 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     return res.status(200).end()
   }
 
+  // Check if Redis is configured
+  if (!kv) {
+    console.error('Upstash Redis not configured. Set UPSTASH_REDIS_REST_URL and UPSTASH_REDIS_REST_TOKEN environment variables.')
+    return res.status(503).json({ 
+      error: 'Database niet geconfigureerd',
+      message: 'Neem contact op met support: info@webstability.nl',
+      details: 'Upstash Redis environment variables missing'
+    })
+  }
+
   try {
     switch (req.method) {
       case 'GET':
@@ -86,7 +100,7 @@ async function getProjects(req: VercelRequest, res: VercelResponse) {
   
   // Specifiek project ophalen
   if (id) {
-    const project = await kv.get<Project>(`project:${id}`)
+    const project = await kv!.get<Project>(`project:${id}`)
     
     if (!project) {
       return res.status(404).json({ error: 'Project niet gevonden' })
@@ -96,14 +110,14 @@ async function getProjects(req: VercelRequest, res: VercelResponse) {
   }
   
   // Alle projecten ophalen
-  const ids = await kv.smembers('projects') as string[]
+  const ids = await kv!.smembers('projects') as string[]
   
   if (!ids || ids.length === 0) {
     return res.status(200).json({ projects: [] })
   }
   
   const projects = await Promise.all(
-    ids.map(id => kv.get<Project>(`project:${id}`))
+    ids.map(id => kv!.get<Project>(`project:${id}`))
   )
   
   const validProjects = projects.filter((p): p is Project => p !== null)
@@ -150,8 +164,8 @@ async function createProject(req: VercelRequest, res: VercelResponse) {
     updatedAt: new Date().toISOString()
   }
   
-  await kv.set(`project:${project.id}`, project)
-  await kv.sadd('projects', project.id)
+  await kv!.set(`project:${project.id}`, project)
+  await kv!.sadd('projects', project.id)
   
   console.log(`Project created: ${project.id} - ${project.type}`)
   
@@ -166,7 +180,7 @@ async function updateProject(req: VercelRequest, res: VercelResponse) {
     return res.status(400).json({ error: 'Project ID is verplicht' })
   }
   
-  const existing = await kv.get<Project>(`project:${body.id}`)
+  const existing = await kv!.get<Project>(`project:${body.id}`)
   
   if (!existing) {
     return res.status(404).json({ error: 'Project niet gevonden' })
@@ -180,7 +194,7 @@ async function updateProject(req: VercelRequest, res: VercelResponse) {
     updatedAt: new Date().toISOString()
   }
   
-  await kv.set(`project:${updated.id}`, updated)
+  await kv!.set(`project:${updated.id}`, updated)
   
   console.log(`Project updated: ${updated.id}`)
   
