@@ -72,6 +72,7 @@ function TextArea({ label, name, value, onChange, placeholder, required, disable
   )
 }
 
+// Select component - exported for potential use in other form steps
 interface SelectProps {
   label: string
   name: string
@@ -83,7 +84,7 @@ interface SelectProps {
   hint?: string
 }
 
-function Select({ label, name, value, onChange, options, required, disabled, hint }: SelectProps) {
+export function Select({ label, name, value, onChange, options, required, disabled, hint }: SelectProps) {
   return (
     <label className="block">
       <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
@@ -215,6 +216,7 @@ function RadioGroup({ label, name, value, onChange, options, disabled, hint }: R
   )
 }
 
+// ColorPicker component - kept for potential future use
 interface ColorPickerProps {
   label: string
   name: string
@@ -237,7 +239,8 @@ const COLOR_OPTIONS = [
   { name: 'Wit', hex: '#F9FAFB' },
 ]
 
-function ColorPicker({ label, name, values, onChange, disabled, hint }: ColorPickerProps) {
+// Exported for potential use in other form steps
+export function ColorPicker({ label, name, values, onChange, disabled, hint }: ColorPickerProps) {
   const [customColor, setCustomColor] = useState('')
 
   const toggleColor = (hex: string) => {
@@ -404,6 +407,9 @@ function TagInput({ label, name, values, onChange, placeholder, disabled, hint }
 // ===========================================
 // WEBSITE FORM STEPS
 // ===========================================
+// NOTE: These steps are for ADDITIONAL information only.
+// Basic info like companyName, designStyle, goal, pages, etc.
+// is already collected during /start onboarding.
 
 interface FormStepProps {
   data: Record<string, any>
@@ -411,8 +417,11 @@ interface FormStepProps {
   disabled?: boolean
 }
 
-// Step 1: Bedrijf
+// Step 1: Samenvatting & aanvullende bedrijfsinfo
 export function WebsiteBedrijfStep({ data, onChange, disabled }: FormStepProps) {
+  // Show pre-filled data from /start as read-only summary
+  const hasPrefilledData = data.businessName || data.companyName || data.contactEmail
+
   return (
     <motion.div
       initial={{ opacity: 0, y: 10 }}
@@ -424,80 +433,73 @@ export function WebsiteBedrijfStep({ data, onChange, disabled }: FormStepProps) 
           <Building2 className="w-5 h-5 text-primary-600 dark:text-primary-400" />
         </div>
         <div>
-          <h3 className="font-semibold text-gray-900 dark:text-white">Bedrijfsinformatie</h3>
-          <p className="text-sm text-gray-500 dark:text-gray-400">Vertel ons over je bedrijf</p>
+          <h3 className="font-semibold text-gray-900 dark:text-white">Bedrijfsgegevens</h3>
+          <p className="text-sm text-gray-500 dark:text-gray-400">Controleer en vul aan</p>
         </div>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <TextInput
-          label="Bedrijfsnaam"
-          name="businessName"
-          value={data.businessName || ''}
-          onChange={onChange}
-          placeholder="Bijv. Jansen & Zn"
-          required
-          disabled={disabled}
-        />
-        <TextInput
-          label="Contactpersoon"
-          name="contactName"
-          value={data.contactName || ''}
-          onChange={onChange}
-          placeholder="Voornaam Achternaam"
-          required
-          disabled={disabled}
-        />
-      </div>
+      {/* Show pre-filled summary from /start */}
+      {hasPrefilledData && (
+        <div className="bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-xl p-4 mb-6">
+          <div className="flex items-center gap-2 text-green-700 dark:text-green-400 font-medium mb-2">
+            <Check className="w-4 h-4" />
+            Gegevens overgenomen van je aanmelding
+          </div>
+          <div className="grid grid-cols-2 gap-2 text-sm text-green-600 dark:text-green-300">
+            {(data.businessName || data.companyName) && (
+              <div>Bedrijf: <strong>{data.businessName || data.companyName}</strong></div>
+            )}
+            {data.contactEmail && (
+              <div>Email: <strong>{data.contactEmail}</strong></div>
+            )}
+            {data.industry && (
+              <div>Branche: <strong>{data.industry}</strong></div>
+            )}
+          </div>
+        </div>
+      )}
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <TextInput
-          label="E-mailadres"
-          name="contactEmail"
-          value={data.contactEmail || ''}
-          onChange={onChange}
-          placeholder="email@bedrijf.nl"
-          type="email"
-          required
-          disabled={disabled}
-        />
-        <TextInput
-          label="Telefoonnummer"
-          name="contactPhone"
-          value={data.contactPhone || ''}
-          onChange={onChange}
-          placeholder="06-12345678"
-          type="tel"
-          disabled={disabled}
-        />
-      </div>
-
+      {/* Only ask for ADDITIONAL info not collected at /start */}
       <TextArea
-        label="Beschrijf je bedrijf"
+        label="Beschrijf je bedrijf uitgebreider"
         name="aboutBusiness"
-        value={data.aboutBusiness || ''}
+        value={data.aboutBusiness || data.uniqueFeatures || ''}
         onChange={onChange}
-        placeholder="Wat doet je bedrijf? Welke producten/diensten bied je aan?"
+        placeholder="Vertel ons meer over wat je bedrijf uniek maakt, je diensten/producten, en je verhaal..."
         required
         disabled={disabled}
-        hint="Dit helpt ons de juiste tone-of-voice te vinden"
+        hint="Dit helpt ons de juiste toon en stijl te vinden voor je website"
+        rows={4}
       />
 
       <TextArea
-        label="Doelgroep"
-        name="targetAudience"
-        value={data.targetAudience || ''}
+        label="Meer over je doelgroep"
+        name="targetAudienceDetails"
+        value={data.targetAudienceDetails || ''}
         onChange={onChange}
-        placeholder="Wie zijn je klanten? B2B of B2C? Leeftijd, interesses, etc."
+        placeholder="Wie zijn je ideale klanten? Leeftijd, interesses, problemen die je oplost..."
         disabled={disabled}
-        hint="Hoe beter we je doelgroep kennen, hoe beter het design"
+        hint="Hoe beter we je doelgroep kennen, hoe effectiever de website"
+      />
+
+      <TextInput
+        label="Gewenste domeinnaam (optioneel)"
+        name="preferredDomain"
+        value={data.preferredDomain || data.existingDomain || ''}
+        onChange={onChange}
+        placeholder="bijv. www.jouwbedrijf.nl"
+        disabled={disabled}
+        hint="Heb je al een domeinnaam of een voorkeur? Laat het leeg als je hulp wilt"
       />
     </motion.div>
   )
 }
 
-// Step 2: Branding
+// Step 2: Logo & Huisstijl - alleen aanvullende vragen
 export function WebsiteBrandingStep({ data, onChange, disabled }: FormStepProps) {
+  // Show pre-filled design preferences
+  const hasPrefilledDesign = data.designStyle || (data.brandColors && data.brandColors.length > 0) || (data.colorPreferences && data.colorPreferences.length > 0)
+
   return (
     <motion.div
       initial={{ opacity: 0, y: 10 }}
@@ -509,11 +511,33 @@ export function WebsiteBrandingStep({ data, onChange, disabled }: FormStepProps)
           <Palette className="w-5 h-5 text-purple-600 dark:text-purple-400" />
         </div>
         <div>
-          <h3 className="font-semibold text-gray-900 dark:text-white">Branding & Huisstijl</h3>
-          <p className="text-sm text-gray-500 dark:text-gray-400">Je visuele identiteit</p>
+          <h3 className="font-semibold text-gray-900 dark:text-white">Logo & Huisstijl</h3>
+          <p className="text-sm text-gray-500 dark:text-gray-400">Details over je branding</p>
         </div>
       </div>
 
+      {/* Show pre-filled summary */}
+      {hasPrefilledDesign && (
+        <div className="bg-purple-50 dark:bg-purple-900/20 border border-purple-200 dark:border-purple-800 rounded-xl p-4 mb-6">
+          <div className="flex items-center gap-2 text-purple-700 dark:text-purple-400 font-medium mb-2">
+            <Check className="w-4 h-4" />
+            Gekozen voorkeuren
+          </div>
+          <div className="flex flex-wrap gap-3 text-sm text-purple-600 dark:text-purple-300">
+            {data.designStyle && (
+              <span className="px-2 py-1 bg-purple-100 dark:bg-purple-900/30 rounded">Stijl: {data.designStyle}</span>
+            )}
+            {(data.brandColors || data.colorPreferences)?.map((color: string) => (
+              <span key={color} className="flex items-center gap-1 px-2 py-1 bg-purple-100 dark:bg-purple-900/30 rounded">
+                <span className="w-3 h-3 rounded-full" style={{ backgroundColor: color }} />
+                {color}
+              </span>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* Logo specifieke vragen */}
       <RadioGroup
         label="Heb je al een logo?"
         name="hasLogo"
@@ -521,7 +545,7 @@ export function WebsiteBrandingStep({ data, onChange, disabled }: FormStepProps)
         onChange={onChange}
         disabled={disabled}
         options={[
-          { value: 'yes', label: 'Ja, ik heb een logo', description: 'Upload je logo in de volgende stap' },
+          { value: 'yes', label: 'Ja, ik heb een logo', description: 'Stuur het logo naar info@webstability.nl' },
           { value: 'no', label: 'Nee, nog niet', description: 'We kunnen een logo voor je ontwerpen (apart te bestellen)' },
           { value: 'need_refresh', label: 'Ja, maar ik wil een nieuw logo', description: 'We bespreken de mogelijkheden' },
         ]}
@@ -533,36 +557,12 @@ export function WebsiteBrandingStep({ data, onChange, disabled }: FormStepProps)
           name="logoDescription"
           value={data.logoDescription || ''}
           onChange={onChange}
-          placeholder="Beschrijf je logo kort of stuur het per e-mail"
+          placeholder="Beschrijf je logo kort (kleuren, vorm, stijl)"
           disabled={disabled}
           rows={2}
+          hint="Upload je logobestanden via e-mail naar info@webstability.nl"
         />
       )}
-
-      <ColorPicker
-        label="Welke kleuren passen bij je merk?"
-        name="brandColors"
-        values={data.brandColors || []}
-        onChange={onChange}
-        disabled={disabled}
-        hint="Selecteer 1-3 kleuren die je merk vertegenwoordigen"
-      />
-
-      <Select
-        label="Welke stijl past bij je bedrijf?"
-        name="designStyle"
-        value={data.designStyle || ''}
-        onChange={onChange}
-        disabled={disabled}
-        options={[
-          { value: 'modern', label: 'Modern & Minimalistisch' },
-          { value: 'classic', label: 'Klassiek & Tijdloos' },
-          { value: 'bold', label: 'Bold & Opvallend' },
-          { value: 'playful', label: 'Speels & Vriendelijk' },
-          { value: 'luxury', label: 'Luxe & Exclusief' },
-          { value: 'corporate', label: 'Zakelijk & Professioneel' },
-        ]}
-      />
 
       <TagInput
         label="Inspiratie websites"
@@ -571,14 +571,27 @@ export function WebsiteBrandingStep({ data, onChange, disabled }: FormStepProps)
         onChange={onChange}
         placeholder="https://..."
         disabled={disabled}
-        hint="Voeg websites toe die je mooi vindt (druk Enter om toe te voegen)"
+        hint="Websites die je mooi vindt qua design (druk Enter)"
+      />
+
+      <TextArea
+        label="Extra wensen voor het design"
+        name="designNotes"
+        value={data.designNotes || ''}
+        onChange={onChange}
+        placeholder="Zijn er specifieke elementen die je wilt? Of juist dingen die je wilt vermijden?"
+        disabled={disabled}
+        rows={3}
       />
     </motion.div>
   )
 }
 
-// Step 3: Doelen
+// Step 3: Doelen - alleen aanvullende details
 export function WebsiteDoelenStep({ data, onChange, disabled }: FormStepProps) {
+  // Check for pre-filled goal from /start
+  const hasPrefilledGoal = data.goal || data.mainGoal
+
   return (
     <motion.div
       initial={{ opacity: 0, y: 10 }}
@@ -590,80 +603,70 @@ export function WebsiteDoelenStep({ data, onChange, disabled }: FormStepProps) {
           <Target className="w-5 h-5 text-emerald-600 dark:text-emerald-400" />
         </div>
         <div>
-          <h3 className="font-semibold text-gray-900 dark:text-white">Doelen & Doel</h3>
-          <p className="text-sm text-gray-500 dark:text-gray-400">Wat wil je bereiken met je website?</p>
+          <h3 className="font-semibold text-gray-900 dark:text-white">Doelen & Conversie</h3>
+          <p className="text-sm text-gray-500 dark:text-gray-400">Hoe kunnen we je website laten werken?</p>
         </div>
       </div>
 
-      <RadioGroup
-        label="Wat is het hoofddoel van je website?"
-        name="mainGoal"
-        value={data.mainGoal || ''}
-        onChange={onChange}
-        disabled={disabled}
-        options={[
-          { value: 'leads', label: 'Meer klanten & leads genereren', description: 'Bezoekers omzetten naar contactaanvragen' },
-          { value: 'information', label: 'Informeren over mijn bedrijf', description: 'Digitaal visitekaartje met alle info' },
-          { value: 'brand', label: 'Merkbekendheid vergroten', description: 'Professionele uitstraling en zichtbaarheid' },
-          { value: 'sales', label: 'Online verkopen', description: 'Producten of diensten direct verkopen' },
-          { value: 'other', label: 'Anders', description: 'Vul hieronder in' },
-        ]}
-      />
-
-      {data.mainGoal === 'other' && (
-        <TextInput
-          label="Beschrijf je doel"
-          name="mainGoalOther"
-          value={data.mainGoalOther || ''}
-          onChange={onChange}
-          placeholder="Wat wil je bereiken?"
-          disabled={disabled}
-        />
+      {/* Show pre-filled goal */}
+      {hasPrefilledGoal && (
+        <div className="bg-emerald-50 dark:bg-emerald-900/20 border border-emerald-200 dark:border-emerald-800 rounded-xl p-4 mb-6">
+          <div className="flex items-center gap-2 text-emerald-700 dark:text-emerald-400 font-medium">
+            <Check className="w-4 h-4" />
+            Hoofddoel: <strong>{data.goal || data.mainGoal}</strong>
+          </div>
+        </div>
       )}
 
-      <Select
-        label="Type website"
-        name="websiteType"
-        value={data.websiteType || ''}
+      {/* Aanvullende vragen over conversie */}
+      <TextArea
+        label="Wat moet een bezoeker doen op je website?"
+        name="callToAction"
+        value={data.callToAction || ''}
+        onChange={onChange}
+        placeholder="Bijv. contact opnemen, offerte aanvragen, direct bellen, producten bekijken..."
+        required
+        disabled={disabled}
+        hint="De belangrijkste actie die je bezoekers wilt laten nemen"
+      />
+
+      <RadioGroup
+        label="Hoe snel wil je dat bezoekers actie ondernemen?"
+        name="conversionSpeed"
+        value={data.conversionSpeed || ''}
         onChange={onChange}
         disabled={disabled}
         options={[
-          { value: 'business', label: 'Bedrijfswebsite' },
-          { value: 'portfolio', label: 'Portfolio / Showcase' },
-          { value: 'blog', label: 'Blog / Kennisplatform' },
-          { value: 'landing', label: 'Landingspagina' },
-          { value: 'other', label: 'Anders' },
+          { value: 'direct', label: 'Direct contact', description: 'Telefoon/WhatsApp prominent zichtbaar' },
+          { value: 'considered', label: 'Na informeren', description: 'Eerst lezen over diensten, dan contact' },
+          { value: 'long', label: 'Langere oriëntatie', description: 'Blog, cases, reviews eerst bekijken' },
         ]}
       />
 
-      <TagInput
-        label="Concurrenten"
-        name="competitors"
-        values={data.competitors || []}
+      <CheckboxGroup
+        label="Welke contactmogelijkheden wil je aanbieden?"
+        name="contactMethods"
+        values={data.contactMethods || ['form', 'email']}
         onChange={onChange}
-        placeholder="Website of bedrijfsnaam"
         disabled={disabled}
-        hint="Ken je concurrenten met een goede website? Voeg ze toe"
+        options={[
+          { value: 'form', label: 'Contactformulier' },
+          { value: 'email', label: 'E-mail link' },
+          { value: 'phone', label: 'Telefoonnummer' },
+          { value: 'whatsapp', label: 'WhatsApp knop' },
+          { value: 'booking', label: 'Online afspraak maken' },
+          { value: 'chat', label: 'Live chat' },
+        ]}
+        columns={2}
       />
     </motion.div>
   )
 }
 
-// Step 4: Pagina's
+// Step 4: Pagina's - details over gekozen pagina's
 export function WebsitePaginasStep({ data, onChange, disabled }: FormStepProps) {
-  const pageOptions = [
-    { value: 'home', label: 'Home' },
-    { value: 'about', label: 'Over ons' },
-    { value: 'services', label: 'Diensten' },
-    { value: 'products', label: 'Producten' },
-    { value: 'portfolio', label: 'Portfolio / Cases' },
-    { value: 'team', label: 'Team' },
-    { value: 'contact', label: 'Contact' },
-    { value: 'blog', label: 'Blog / Nieuws' },
-    { value: 'faq', label: 'FAQ' },
-    { value: 'pricing', label: 'Prijzen' },
-    { value: 'vacatures', label: 'Vacatures / Werken bij' },
-  ]
+  // Show pre-filled pages from /start
+  const prefilledPages = data.pages || data.selectedPages || []
 
   return (
     <motion.div
@@ -676,35 +679,86 @@ export function WebsitePaginasStep({ data, onChange, disabled }: FormStepProps) 
           <FileText className="w-5 h-5 text-amber-600 dark:text-amber-400" />
         </div>
         <div>
-          <h3 className="font-semibold text-gray-900 dark:text-white">Pagina's</h3>
-          <p className="text-sm text-gray-500 dark:text-gray-400">Welke pagina's wil je op je website?</p>
+          <h3 className="font-semibold text-gray-900 dark:text-white">Pagina Details</h3>
+          <p className="text-sm text-gray-500 dark:text-gray-400">Meer info over je pagina's</p>
         </div>
       </div>
 
-      <CheckboxGroup
-        label="Selecteer de pagina's die je nodig hebt"
-        name="selectedPages"
-        values={data.selectedPages || ['home', 'contact']}
-        onChange={onChange}
-        options={pageOptions}
-        disabled={disabled}
-        columns={2}
-      />
+      {/* Show pre-selected pages */}
+      {prefilledPages.length > 0 && (
+        <div className="bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800 rounded-xl p-4 mb-6">
+          <div className="flex items-center gap-2 text-amber-700 dark:text-amber-400 font-medium mb-2">
+            <Check className="w-4 h-4" />
+            Geselecteerde pagina's ({prefilledPages.length})
+          </div>
+          <div className="flex flex-wrap gap-2">
+            {prefilledPages.map((page: string) => (
+              <span key={page} className="px-2 py-1 bg-amber-100 dark:bg-amber-900/30 text-amber-700 dark:text-amber-300 rounded text-sm">
+                {page}
+              </span>
+            ))}
+          </div>
+        </div>
+      )}
 
+      {/* Extra pagina's toevoegen */}
       <TagInput
-        label="Extra pagina's"
+        label="Extra pagina's toevoegen"
         name="customPages"
         values={data.customPages || []}
         onChange={onChange}
-        placeholder="Eigen pagina toevoegen..."
+        placeholder="Bijv. Vacatures, Partners, Projecten..."
         disabled={disabled}
-        hint="Mis je een pagina? Voeg hem hier toe"
+        hint="Mis je een pagina in de lijst hierboven? Voeg hem hier toe"
       />
+
+      {/* Per-page details for important pages */}
+      <div className="space-y-4">
+        <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
+          Details per pagina (optioneel)
+        </span>
+        
+        {(prefilledPages.includes('Home') || prefilledPages.includes('home')) && (
+          <TextArea
+            label="Wat moet op de homepage staan?"
+            name="homePageDetails"
+            value={data.homePageDetails || ''}
+            onChange={onChange}
+            placeholder="Belangrijkste boodschap, USP's, featured content..."
+            disabled={disabled}
+            rows={2}
+          />
+        )}
+
+        {(prefilledPages.includes('Diensten') || prefilledPages.includes('services') || prefilledPages.includes('Services')) && (
+          <TextArea
+            label="Welke diensten wil je tonen?"
+            name="servicesDetails"
+            value={data.servicesDetails || ''}
+            onChange={onChange}
+            placeholder="Lijst van diensten, prijzen, pakketten..."
+            disabled={disabled}
+            rows={2}
+          />
+        )}
+
+        {(prefilledPages.includes('Over ons') || prefilledPages.includes('about') || prefilledPages.includes('About')) && (
+          <TextArea
+            label="Wat moet op 'Over ons' komen?"
+            name="aboutPageDetails"
+            value={data.aboutPageDetails || ''}
+            onChange={onChange}
+            placeholder="Team foto's, geschiedenis, missie/visie..."
+            disabled={disabled}
+            rows={2}
+          />
+        )}
+      </div>
     </motion.div>
   )
 }
 
-// Step 5: Content
+// Step 5: Content - teksten en foto's
 export function WebsiteContentStep({ data, onChange, disabled }: FormStepProps) {
   return (
     <motion.div
@@ -729,9 +783,9 @@ export function WebsiteContentStep({ data, onChange, disabled }: FormStepProps) 
         onChange={onChange}
         disabled={disabled}
         options={[
-          { value: 'yes', label: 'Ja, ik lever de teksten aan' },
+          { value: 'yes', label: 'Ja, ik lever de teksten aan', description: 'Stuur teksten naar info@webstability.nl' },
           { value: 'partial', label: 'Gedeeltelijk, ik heb hulp nodig' },
-          { value: 'no', label: 'Nee, ik wil hulp bij het schrijven', description: 'We kunnen AI-gegenereerde teksten maken (gratis inbegrepen)' },
+          { value: 'no', label: 'Nee, ik wil hulp bij het schrijven', description: 'We maken AI-gegenereerde teksten (gratis inbegrepen)' },
         ]}
       />
 
@@ -742,41 +796,34 @@ export function WebsiteContentStep({ data, onChange, disabled }: FormStepProps) 
         onChange={onChange}
         disabled={disabled}
         options={[
-          { value: 'yes', label: 'Ja, ik heb goede foto\'s' },
+          { value: 'yes', label: 'Ja, ik heb goede foto\'s', description: 'Stuur foto\'s naar info@webstability.nl' },
           { value: 'some', label: 'Een paar, maar niet genoeg' },
-          { value: 'no', label: 'Nee, ik gebruik liever stockfoto\'s' },
+          { value: 'no', label: 'Nee, gebruik stockfoto\'s', description: 'We zoeken passende stockfoto\'s uit' },
           { value: 'need_shoot', label: 'Nee, ik wil een fotoshoot', description: 'We kunnen dit voor je regelen' },
         ]}
       />
 
       <TextArea
-        label="Notities over content"
+        label="Specifieke content wensen"
         name="contentNotes"
         value={data.contentNotes || ''}
         onChange={onChange}
-        placeholder="Speciale wensen voor teksten of foto's?"
+        placeholder="Heb je speciale wensen voor teksten, foto's of video's?"
         disabled={disabled}
         rows={3}
       />
+
+      <div className="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-xl p-4">
+        <p className="text-sm text-blue-700 dark:text-blue-300">
+          💡 <strong>Tip:</strong> Stuur je content (teksten, logo, foto's) naar <strong>info@webstability.nl</strong> met je projectnummer.
+        </p>
+      </div>
     </motion.div>
   )
 }
 
-// Step 6: Extra features
+// Step 6: Planning & Extra - deadline en aanvullingen
 export function WebsiteExtraStep({ data, onChange, disabled }: FormStepProps) {
-  const featureOptions = [
-    { value: 'contactForm', label: 'Contactformulier' },
-    { value: 'blog', label: 'Blog functionaliteit' },
-    { value: 'booking', label: 'Online boekingssysteem' },
-    { value: 'newsletter', label: 'Nieuwsbrief aanmelding' },
-    { value: 'googleMaps', label: 'Google Maps integratie' },
-    { value: 'reviews', label: 'Reviews / Testimonials' },
-    { value: 'chat', label: 'Live chat widget' },
-    { value: 'multilang', label: 'Meerdere talen' },
-    { value: 'analytics', label: 'Google Analytics' },
-    { value: 'social', label: 'Social media feeds' },
-  ]
-
   return (
     <motion.div
       initial={{ opacity: 0, y: 10 }}
@@ -788,45 +835,42 @@ export function WebsiteExtraStep({ data, onChange, disabled }: FormStepProps) {
           <Settings className="w-5 h-5 text-violet-600 dark:text-violet-400" />
         </div>
         <div>
-          <h3 className="font-semibold text-gray-900 dark:text-white">Extra Features</h3>
-          <p className="text-sm text-gray-500 dark:text-gray-400">Functionaliteiten voor je website</p>
+          <h3 className="font-semibold text-gray-900 dark:text-white">Planning & Afronding</h3>
+          <p className="text-sm text-gray-500 dark:text-gray-400">Laatste details voor je project</p>
         </div>
       </div>
 
-      <CheckboxGroup
-        label="Welke functies wil je op je website?"
-        name="features"
-        values={data.features || ['contactForm']}
+      {/* Deadline */}
+      <RadioGroup
+        label="Wanneer wil je de website live hebben?"
+        name="deadline"
+        value={data.deadline || ''}
         onChange={onChange}
-        options={featureOptions}
         disabled={disabled}
-        columns={2}
+        options={[
+          { value: 'asap', label: 'Zo snel mogelijk', description: 'Binnen 1-2 weken' },
+          { value: 'month', label: 'Binnen een maand' },
+          { value: 'quarter', label: 'Binnen 3 maanden' },
+          { value: 'flexible', label: 'Geen haast', description: 'Kwaliteit boven snelheid' },
+          { value: 'specific', label: 'Specifieke datum' },
+        ]}
       />
 
-      <TextInput
-        label="Bestaand domein"
-        name="existingDomain"
-        value={data.existingDomain || ''}
-        onChange={onChange}
-        placeholder="www.jouwbedrijf.nl"
-        disabled={disabled}
-        hint="Heb je al een domeinnaam? Zo niet, dan helpen we je kiezen"
-      />
-
-      <TextArea
-        label="Overige wensen of opmerkingen"
-        name="additionalNotes"
-        value={data.additionalNotes || ''}
-        onChange={onChange}
-        placeholder="Is er nog iets dat we moeten weten?"
-        disabled={disabled}
-        rows={4}
-      />
+      {data.deadline === 'specific' && (
+        <TextInput
+          label="Gewenste lanceerdatum"
+          name="specificDeadline"
+          value={data.specificDeadline || ''}
+          onChange={onChange}
+          placeholder="Bijv. 1 februari 2025"
+          disabled={disabled}
+        />
+      )}
 
       {/* Social media links */}
       <div>
-        <span className="text-sm font-medium text-gray-700 dark:text-gray-300">Social media links</span>
-        <p className="text-xs text-gray-500 dark:text-gray-400 mt-0.5">Vul de links in die je wilt tonen</p>
+        <span className="text-sm font-medium text-gray-700 dark:text-gray-300">Social media links (optioneel)</span>
+        <p className="text-xs text-gray-500 dark:text-gray-400 mt-0.5">Links die je op de website wilt tonen</p>
         <div className="mt-3 grid grid-cols-1 md:grid-cols-2 gap-3">
           <TextInput
             label="Facebook"
@@ -853,14 +897,36 @@ export function WebsiteExtraStep({ data, onChange, disabled }: FormStepProps) {
             disabled={disabled}
           />
           <TextInput
-            label="Twitter/X"
-            name="socialTwitter"
-            value={data.socialTwitter || ''}
+            label="Overige"
+            name="socialOther"
+            value={data.socialOther || ''}
             onChange={onChange}
-            placeholder="https://x.com/..."
+            placeholder="TikTok, YouTube, etc."
             disabled={disabled}
           />
         </div>
+      </div>
+
+      {/* Final notes */}
+      <TextArea
+        label="Overige wensen of opmerkingen"
+        name="additionalNotes"
+        value={data.additionalNotes || data.extraFeatures || ''}
+        onChange={onChange}
+        placeholder="Is er nog iets dat we moeten weten? Speciale wensen, vragen, of andere opmerkingen..."
+        disabled={disabled}
+        rows={4}
+      />
+
+      {/* Ready indicator */}
+      <div className="bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-xl p-4">
+        <div className="flex items-center gap-2 text-green-700 dark:text-green-400 font-medium">
+          <Check className="w-5 h-5" />
+          Bijna klaar!
+        </div>
+        <p className="text-sm text-green-600 dark:text-green-300 mt-1">
+          Na het indienen nemen we binnen 24 uur contact op om het design te bespreken.
+        </p>
       </div>
     </motion.div>
   )

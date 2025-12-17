@@ -329,10 +329,65 @@ export default function ClientOnboarding() {
     }
   }, [projectId, searchParams])
 
-  // Load project data
+  // Load project data from /api/projects OR /api/client-onboarding
   const loadProjectData = async (id: string) => {
     setLoading(true)
     try {
+      // First try to load from projects API (data from /start)
+      const projectResponse = await fetch(`/api/projects?id=${id}`)
+      if (projectResponse.ok) {
+        const projectResult = await projectResponse.json()
+        const project = projectResult.project
+        
+        if (project) {
+          // Map project data to form data format
+          const mappedData: Record<string, any> = {
+            // Pre-fill from project customer data
+            businessName: project.customer?.companyName || '',
+            contactName: project.customer?.name || '',
+            contactEmail: project.customer?.email || '',
+            contactPhone: project.customer?.phone || '',
+            
+            // Pre-fill from onboarding data (from /start)
+            ...project.onboardingData,
+            
+            // Map field names that differ between /start and /intake
+            aboutBusiness: project.onboardingData?.uniqueFeatures || '',
+            targetAudience: project.onboardingData?.targetAudience || '',
+            brandColors: project.onboardingData?.colorPreferences || [],
+            designStyle: project.onboardingData?.designStyle || '',
+            mainGoal: project.onboardingData?.goal || '',
+            selectedPages: project.onboardingData?.pages || [],
+          }
+          
+          setFormData(mappedData)
+          setServiceType(project.type || 'website')
+          setCurrentPhase(project.status || 'intake')
+          setCanEdit(project.status === 'intake' || project.status === 'onboarding')
+          setProjectFound(true)
+          
+          // Initialize timeline
+          import('../types/onboarding').then(({ getDefaultTimeline }) => {
+            const defaultTimeline = getDefaultTimeline(project.type || 'website')
+            // Mark intake as active or completed based on status
+            const updatedTimeline = defaultTimeline.map(step => {
+              if (step.id === 'intake') {
+                return { ...step, status: project.status === 'intake' ? 'active' as const : 'completed' as const }
+              }
+              if (step.id === 'design' && (project.status === 'design' || project.status === 'development')) {
+                return { ...step, status: 'active' as const }
+              }
+              return step
+            })
+            setTimeline(updatedTimeline)
+          })
+          
+          setLoading(false)
+          return
+        }
+      }
+      
+      // Fallback: Try client-onboarding API
       const response = await fetch(`/api/client-onboarding?projectId=${id}`)
       if (response.ok) {
         const data = await response.json()
