@@ -1,7 +1,9 @@
 import React from 'react'
 import { Navigate, useLocation } from 'react-router-dom'
 import { useAuth } from '@/contexts/AuthContext'
-import { Loader2 } from 'lucide-react'
+import { Loader2, Lock, User } from 'lucide-react'
+import { motion, AnimatePresence } from 'framer-motion'
+import Logo from './Logo'
 
 interface ProtectedRouteProps {
   children: React.ReactNode
@@ -202,80 +204,120 @@ const FallbackLogin: React.FC<{ children: React.ReactNode; requireRole?: 'develo
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-emerald-50 to-teal-50 p-4">
-      <div className="w-full max-w-md">
-        <div className="bg-white rounded-2xl shadow-xl p-8">
-          {/* Logo */}
-          <div className="flex justify-center mb-6">
-            <div className="flex items-center gap-2">
-              <div className="w-10 h-10 bg-gradient-to-br from-emerald-500 to-teal-600 rounded-xl flex items-center justify-center">
-                <svg className="w-6 h-6 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                  <path d="M12 2L2 7l10 5 10-5-10-5z" />
-                  <path d="M2 17l10 5 10-5" />
-                  <path d="M2 12l10 5 10-5" />
-                </svg>
-              </div>
-              <span className="text-xl font-bold text-gray-900 dark:text-white">Webstability</span>
-            </div>
-          </div>
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-gray-900 via-blue-900 to-indigo-900 p-4 relative overflow-hidden">
+      {/* Background decorations */}
+      <div className="absolute inset-0 overflow-hidden pointer-events-none">
+        <motion.div
+          animate={{ 
+            x: [0, 100, 0], 
+            y: [0, -50, 0],
+            scale: [1, 1.2, 1]
+          }}
+          transition={{ repeat: Infinity, duration: 20, ease: 'easeInOut' }}
+          className="absolute -top-40 -left-40 w-96 h-96 bg-blue-500/20 rounded-full blur-3xl"
+        />
+        <motion.div
+          animate={{ 
+            x: [0, -80, 0], 
+            y: [0, 80, 0],
+            scale: [1, 1.3, 1]
+          }}
+          transition={{ repeat: Infinity, duration: 25, ease: 'easeInOut' }}
+          className="absolute -bottom-40 -right-40 w-96 h-96 bg-indigo-500/20 rounded-full blur-3xl"
+        />
+        <div className="absolute inset-0 bg-[linear-gradient(to_right,#ffffff08_1px,transparent_1px),linear-gradient(to_bottom,#ffffff08_1px,transparent_1px)] bg-[size:4rem_4rem]" />
+      </div>
 
-          <div className="text-center mb-8">
-            <h1 className="text-2xl font-bold text-gray-900 dark:text-white">
-              {requireRole === 'developer' ? 'Developer Dashboard' : requireRole === 'admin' ? 'Admin Dashboard' : 'Marketing Dashboard'}
-            </h1>
-            <p className="text-gray-600 mt-2">
-              Log in om toegang te krijgen.
-            </p>
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        className="w-full max-w-md relative z-10"
+      >
+        {/* Logo */}
+        <motion.div 
+          initial={{ opacity: 0, scale: 0.9 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ delay: 0.1 }}
+          className="text-center mb-8"
+        >
+          <div className="flex justify-center mb-4">
+            <Logo variant="white" size="lg" />
           </div>
+          <h1 className="text-2xl font-bold text-white">
+            {requireRole === 'developer' ? 'Developer Dashboard' : requireRole === 'admin' ? 'Admin Dashboard' : 'Marketing Dashboard'}
+          </h1>
+          <p className="text-blue-200 mt-1">Log in om toegang te krijgen.</p>
+        </motion.div>
 
-          <form onSubmit={handleLogin} className="space-y-4">
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                Gebruikersnaam
-              </label>
+        {/* Login form */}
+        <motion.form
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.2 }}
+          onSubmit={handleLogin}
+          className="bg-white/10 backdrop-blur-xl rounded-2xl p-6 sm:p-8 border border-white/20 shadow-2xl space-y-5"
+        >
+          <div>
+            <label className="block text-sm font-medium text-blue-100 mb-2">
+              Naam
+            </label>
+            <div className="relative">
+              <User className="absolute left-3 sm:left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-blue-300" />
               <input
                 type="text"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500"
-                placeholder="Vul je gebruikersnaam in"
+                className="w-full pl-10 sm:pl-12 pr-4 py-3 bg-white/10 border border-white/20 rounded-xl text-white placeholder-blue-300/70 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all text-base"
+                placeholder="Gebruikersnaam"
                 required
               />
             </div>
+          </div>
 
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                Wachtwoord
-              </label>
+          <div>
+            <label className="block text-sm font-medium text-blue-100 mb-2">
+              Wachtwoord
+            </label>
+            <div className="relative">
+              <Lock className="absolute left-3 sm:left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-blue-300" />
               <input
                 type="password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500"
+                className="w-full pl-10 sm:pl-12 pr-4 py-3 bg-white/10 border border-white/20 rounded-xl text-white placeholder-blue-300/70 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all text-base"
                 placeholder="••••••••"
                 required
               />
             </div>
+          </div>
 
+          <AnimatePresence>
             {error && (
-              <div className="text-red-600 text-sm bg-red-50 p-3 rounded-xl">
+              <motion.div
+                initial={{ opacity: 0, y: -10 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -10 }}
+                className="p-3 bg-red-500/20 border border-red-500/30 rounded-xl text-red-200 text-sm"
+              >
                 {error}
-              </div>
+              </motion.div>
             )}
+          </AnimatePresence>
 
-            <button
-              type="submit"
-              className="w-full py-3 px-4 bg-gradient-to-r from-emerald-600 to-teal-600 text-white rounded-xl font-semibold hover:from-emerald-700 hover:to-teal-700 transition-all shadow-lg shadow-emerald-500/25"
-            >
-              Inloggen
-            </button>
-          </form>
-        </div>
+          <motion.button
+            whileHover={{ scale: 1.02 }}
+            whileTap={{ scale: 0.98 }}
+            type="submit"
+            className="w-full py-3 bg-gradient-to-r from-blue-500 to-indigo-500 text-white font-semibold rounded-xl hover:from-blue-600 hover:to-indigo-600 transition-all shadow-lg"
+          >
+            Inloggen
+          </motion.button>
+        </motion.form>
 
-        <p className="text-center text-sm text-gray-500 mt-6">
-          © {new Date().getFullYear()} Webstability. Alle rechten voorbehouden.
+        <p className="text-center text-blue-300/60 text-sm mt-6">
+          © {new Date().getFullYear()} Webstability
         </p>
-      </div>
+      </motion.div>
     </div>
   )
 }

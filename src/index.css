@@ -276,3 +276,96 @@ h1, h2, h3, h4, h5, h6,
     text-decoration: underline;
   }
 }
+
+/* ===========================================
+   DEVELOPER DASHBOARD - MOBILE OPTIMIZATIONS
+   =========================================== */
+
+/* Safe area insets for notched devices */
+.pb-safe {
+  padding-bottom: env(safe-area-inset-bottom, 0);
+}
+
+.pt-safe {
+  padding-top: env(safe-area-inset-top, 0);
+}
+
+/* Mobile bottom navigation safe area */
+.mobile-bottom-nav {
+  padding-bottom: calc(0.75rem + env(safe-area-inset-bottom, 0));
+}
+
+/* Prevent body scroll when mobile sidebar is open */
+.overflow-hidden {
+  overflow: hidden;
+}
+
+/* Touch-friendly tap targets */
+@media (max-width: 768px) {
+  .touch-target {
+    min-height: 44px;
+    min-width: 44px;
+  }
+}
+
+/* Hide scrollbars on mobile while keeping scroll functionality */
+.hide-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+.hide-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
+/* Mobile-optimized modals */
+@media (max-width: 640px) {
+  .mobile-modal {
+    max-height: calc(100vh - env(safe-area-inset-top, 0) - env(safe-area-inset-bottom, 0) - 2rem);
+  }
+}
+
+/* Better touch scrolling */
+.scroll-touch {
+  -webkit-overflow-scrolling: touch;
+}
+
+/* Prevent text selection on interactive elements */
+.no-select {
+  -webkit-user-select: none;
+  user-select: none;
+}
+
+/* Mobile-friendly inputs */
+@media (max-width: 768px) {
+  input, textarea, select {
+    font-size: 16px !important; /* Prevents zoom on iOS */
+  }
+}
+
+/* Dashboard content area with bottom nav compensation */
+.dashboard-content-mobile {
+  padding-bottom: calc(5rem + env(safe-area-inset-bottom, 0));
+}
+
+/* Smooth momentum scrolling for dashboard views */
+.dashboard-scroll {
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior-y: contain;
+}
+
+/* Mobile card shadows - reduced for performance */
+@media (max-width: 768px) {
+  .shadow-mobile-optimized {
+    box-shadow: 0 1px 3px 0 rgb(0 0 0 / 0.1);
+  }
+}
+
+/* Haptic-style active states for touch */
+@media (hover: none) {
+  .touch-active:active {
+    transform: scale(0.97);
+    transition: transform 0.1s ease;
+  }
+}

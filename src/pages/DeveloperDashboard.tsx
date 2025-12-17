@@ -1,73 +1,102 @@
-import { useState, useEffect } from 'react'
+import React, { useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import {
-  Lock,
-  LogOut,
   LayoutDashboard,
   Users,
+  User,
+  MessageSquare,
   FolderKanban,
+  CreditCard,
+  Settings,
+  LogOut,
+  Menu,
+  X,
+  Bell,
+  Search,
+  Moon,
+  Sun,
+  ChevronRight,
+  Plus,
+  HelpCircle,
+  Briefcase,
+  FileText,
+  Link2,
+  TrendingUp,
   Clock,
   CheckCircle2,
   AlertCircle,
-  MessageSquare,
-  FileText,
+  Rocket,
+  Loader2,
+  Lock,
+  Wallet,
+  TrendingDown,
   Palette,
   Code,
-  Rocket,
-  ChevronRight,
-  Search,
-  Edit3,
-  Send,
+  Eye,
+  Camera,
+  Plane,
+  PenTool,
+  Calendar,
   ExternalLink,
+  LayoutGrid,
+  List,
   Mail,
   Phone,
   Globe,
-  Calendar,
-  TrendingUp,
-  CreditCard,
-  RefreshCw,
-  Settings,
-  Upload,
-  Download,
-  Pause,
-  MoreVertical,
-  ArrowUpRight,
-  Bell,
-  Moon,
-  Sun,
-  Plus,
-  Camera,
-  PenTool,
-  X,
-  Check,
-  Save,
-  Building,
-  BarChart3,
-  DollarSign,
-  Briefcase,
-  HelpCircle,
-  BookOpen,
-  Lightbulb,
-  MousePointer,
-  ArrowRight,
-  Target,
-  Zap,
-  Tag,
-  Percent
+  Send,
 } from 'lucide-react'
 import Logo from '../components/Logo'
-import KanbanBoard, { type KanbanTask, getDefaultColumns } from '../components/KanbanBoard'
-import type { 
-  DeveloperProject, 
-  ProjectPhase, 
-  PackageConfig
-} from '../types/developer'
 
 // ===========================================
 // TYPES
 // ===========================================
 
-type DashboardTab = 'overview' | 'projects' | 'kanban' | 'clients' | 'billing' | 'services' | 'discounts' | 'settings'
+type DashboardView = 
+  | 'overview' 
+  | 'projects' 
+  | 'clients' 
+  | 'messages' 
+  | 'onboarding'
+  | 'payments' 
+  | 'services' 
+  | 'settings'
+
+type ProjectPhase = 'onboarding' | 'design' | 'development' | 'review' | 'live'
+type PaymentStatus = 'pending' | 'awaiting_payment' | 'paid' | 'failed' | 'refunded'
+type ServiceType = 'drone' | 'logo' | 'foto' | 'tekst' | 'seo'
+
+interface Project {
+  id: string
+  projectId: string
+  businessName: string
+  contactName: string
+  contactEmail: string
+  contactPhone: string
+  package: 'starter' | 'professional' | 'business' | 'webshop'
+  phase: ProjectPhase
+  paymentStatus: PaymentStatus
+  paymentUrl?: string
+  mollieCustomerId?: string
+  createdAt: string
+  updatedAt: string
+  estimatedCompletion?: string
+  stagingUrl?: string
+  liveUrl?: string
+  designApproved?: boolean
+  designApprovedAt?: string
+  messages: ChatMessage[]
+  onboardingData?: Record<string, any>
+  discountCode?: string
+  internalNotes?: string
+}
+
+interface ChatMessage {
+  id: string
+  date: string
+  from: 'client' | 'developer'
+  message: string
+  read: boolean
+}
 
 interface Client {
   id: string
@@ -75,17 +104,14 @@ interface Client {
   email: string
   phone: string
   company: string
-  address?: string
-  city?: string
-  projects: string[] // projectIds
+  projects: string[]
   totalSpent: number
   createdAt: string
-  notes?: string
 }
 
 interface ServiceRequest {
   id: string
-  type: 'drone' | 'logo' | 'foto' | 'tekst' | 'seo'
+  type: ServiceType
   clientName: string
   clientEmail: string
   clientPhone: string
@@ -93,13 +119,11 @@ interface ServiceRequest {
   status: 'pending' | 'in_progress' | 'completed' | 'cancelled'
   price?: number
   createdAt: string
-  completedAt?: string
-  notes?: string
 }
 
 interface Notification {
   id: string
-  type: 'message' | 'change_request' | 'payment' | 'deadline' | 'service'
+  type: 'message' | 'payment' | 'onboarding' | 'service'
   title: string
   message: string
   projectId?: string
@@ -108,67 +132,551 @@ interface Notification {
 }
 
 // ===========================================
-// CONSTANTEN
+// CONSTANTS
 // ===========================================
 
-const API_BASE = '/api/developer'
+const DEV_PASSWORD = 'N45eqtu2!jz8j0v'
 const AUTH_KEY = 'webstability_dev_auth'
 const TOKEN_KEY = 'webstability_dev_token'
 const DARK_MODE_KEY = 'webstability_dark_mode'
 
-// Lokaal developer wachtwoord (voor development mode)
-const DEV_PASSWORD = 'N45eqtu2!jz8j0v'
-
-// Phase kleuren
-const phaseColors: Record<ProjectPhase, { bg: string; text: string; border: string }> = {
-  onboarding: { bg: 'bg-blue-100', text: 'text-blue-700', border: 'border-blue-200' },
-  design: { bg: 'bg-amber-100', text: 'text-amber-700', border: 'border-amber-200' },
-  development: { bg: 'bg-purple-100', text: 'text-purple-700', border: 'border-purple-200' },
-  review: { bg: 'bg-cyan-100', text: 'text-cyan-700', border: 'border-cyan-200' },
-  live: { bg: 'bg-green-100', text: 'text-green-700', border: 'border-green-200' },
+const PACKAGE_CONFIG = {
+  starter: { name: 'Starter', price: 96, color: 'blue' },
+  professional: { name: 'Professioneel', price: 180, color: 'purple' },
+  business: { name: 'Business', price: 301, color: 'amber' },
+  webshop: { name: 'Webshop', price: 422, color: 'emerald' },
 }
 
-// Phase icons
-const PhaseIcon = ({ phase, className = "w-5 h-5" }: { phase: ProjectPhase; className?: string }) => {
-  switch (phase) {
-    case 'onboarding': return <FileText className={className} />
-    case 'design': return <Palette className={className} />
-    case 'development': return <Code className={className} />
-    case 'review': return <MessageSquare className={className} />
-    case 'live': return <Rocket className={className} />
-  }
+const PHASE_CONFIG: Record<ProjectPhase, { label: string; color: string; bg: string; icon: typeof FileText }> = {
+  onboarding: { label: 'Onboarding', color: 'text-blue-600', bg: 'bg-blue-100', icon: FileText },
+  design: { label: 'Design', color: 'text-amber-600', bg: 'bg-amber-100', icon: Palette },
+  development: { label: 'Development', color: 'text-purple-600', bg: 'bg-purple-100', icon: Code },
+  review: { label: 'Review', color: 'text-cyan-600', bg: 'bg-cyan-100', icon: Eye },
+  live: { label: 'Live', color: 'text-green-600', bg: 'bg-green-100', icon: Rocket },
+}
+
+const _SERVICE_CONFIG: Record<ServiceType, { name: string; icon: typeof Camera; color: string }> = {
+  drone: { name: 'Dronebeelden', icon: Plane, color: 'orange' },
+  logo: { name: 'Logo Design', icon: PenTool, color: 'purple' },
+  foto: { name: 'Fotografie', icon: Camera, color: 'pink' },
+  tekst: { name: 'Tekstschrijven', icon: FileText, color: 'blue' },
+  seo: { name: 'SEO Optimalisatie', icon: TrendingUp, color: 'green' },
 }
 
 // ===========================================
-// SUBCOMPONENTEN
+// SKELETON LOADING COMPONENTS
 // ===========================================
 
-// Statistiek kaart met animaties
-function StatCard({ 
-  icon: Icon, 
-  label, 
-  value, 
-  subValue, 
-  trend,
-  color = 'blue',
-  darkMode = false,
-  delay = 0
-}: { 
-  icon: typeof Clock
+interface SkeletonProps {
+  className?: string
+  darkMode?: boolean
+}
+
+function Skeleton({ className = '', darkMode = false }: SkeletonProps) {
+  return (
+    <div 
+      className={`animate-pulse rounded ${darkMode ? 'bg-gray-700' : 'bg-gray-200'} ${className}`}
+    />
+  )
+}
+
+function StatCardSkeleton({ darkMode }: { darkMode: boolean }) {
+  return (
+    <div className={`p-6 rounded-2xl ${darkMode ? 'bg-gray-800' : 'bg-white'} shadow-sm`}>
+      <div className="flex items-center justify-between">
+        <div className="flex-1">
+          <Skeleton darkMode={darkMode} className="h-4 w-24 mb-2" />
+          <Skeleton darkMode={darkMode} className="h-8 w-16 mb-1" />
+          <Skeleton darkMode={darkMode} className="h-3 w-32" />
+        </div>
+        <Skeleton darkMode={darkMode} className="w-12 h-12 rounded-xl" />
+      </div>
+    </div>
+  )
+}
+
+function ProjectCardSkeleton({ darkMode }: { darkMode: boolean }) {
+  return (
+    <div className={`p-4 rounded-xl ${darkMode ? 'bg-gray-800' : 'bg-white'} shadow-sm`}>
+      <div className="flex items-start gap-3">
+        <Skeleton darkMode={darkMode} className="w-10 h-10 rounded-xl flex-shrink-0" />
+        <div className="flex-1 min-w-0">
+          <Skeleton darkMode={darkMode} className="h-5 w-3/4 mb-2" />
+          <Skeleton darkMode={darkMode} className="h-3 w-1/2 mb-3" />
+          <div className="flex gap-2">
+            <Skeleton darkMode={darkMode} className="h-6 w-20 rounded-full" />
+            <Skeleton darkMode={darkMode} className="h-6 w-16 rounded-full" />
+          </div>
+        </div>
+      </div>
+    </div>
+  )
+}
+
+function TableRowSkeleton({ darkMode, columns = 5 }: { darkMode: boolean; columns?: number }) {
+  return (
+    <tr className={darkMode ? 'bg-gray-800/50' : 'bg-white'}>
+      {Array.from({ length: columns }).map((_, i) => (
+        <td key={i} className="px-4 py-4">
+          <Skeleton darkMode={darkMode} className={`h-4 ${i === 0 ? 'w-32' : 'w-20'}`} />
+        </td>
+      ))}
+    </tr>
+  )
+}
+
+// ===========================================
+// NAVIGATION CONFIG
+// ===========================================
+
+const NAV_ITEMS: { id: DashboardView; label: string; icon: typeof LayoutDashboard; badge?: number }[] = [
+  { id: 'overview', label: 'Dashboard', icon: LayoutDashboard },
+  { id: 'projects', label: 'Projecten', icon: FolderKanban },
+  { id: 'clients', label: 'Klanten', icon: Users },
+  { id: 'messages', label: 'Berichten', icon: MessageSquare },
+  { id: 'onboarding', label: 'Onboarding', icon: FileText },
+  { id: 'payments', label: 'Betalingen', icon: CreditCard },
+  { id: 'services', label: 'Services', icon: Briefcase },
+  { id: 'settings', label: 'Instellingen', icon: Settings },
+]
+
+// ===========================================
+// SIDEBAR COMPONENT
+// ===========================================
+
+interface SidebarProps {
+  activeView: DashboardView
+  setActiveView: (view: DashboardView) => void
+  darkMode: boolean
+  isOpen: boolean
+  setIsOpen: (open: boolean) => void
+  unreadMessages: number
+  pendingOnboarding: number
+  onLogout: () => void
+}
+
+function Sidebar({ 
+  activeView, 
+  setActiveView, 
+  darkMode, 
+  isOpen, 
+  setIsOpen,
+  unreadMessages,
+  pendingOnboarding,
+  onLogout
+}: SidebarProps) {
+  const navItemsWithBadges = NAV_ITEMS.map(item => ({
+    ...item,
+    badge: item.id === 'messages' ? unreadMessages : 
+           item.id === 'onboarding' ? pendingOnboarding : 
+           undefined
+  }))
+
+  return (
+    <>
+      {/* Mobile overlay */}
+      <AnimatePresence>
+        {isOpen && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            onClick={() => setIsOpen(false)}
+            className="fixed inset-0 bg-black/50 backdrop-blur-sm z-40 lg:hidden"
+          />
+        )}
+      </AnimatePresence>
+
+      {/* Sidebar */}
+      <motion.aside
+        initial={false}
+        animate={{ x: isOpen ? 0 : '-100%' }}
+        transition={{ type: 'spring', damping: 25, stiffness: 200 }}
+        className={`fixed left-0 top-0 bottom-0 w-72 z-50 lg:translate-x-0 lg:static lg:z-auto flex flex-col ${
+          darkMode 
+            ? 'bg-gray-900 border-r border-gray-800' 
+            : 'bg-white border-r border-gray-200'
+        }`}
+      >
+        {/* Logo */}
+        <div className={`p-6 border-b ${darkMode ? 'border-gray-800' : 'border-gray-200'}`}>
+          <div className="flex items-center justify-between">
+            <Logo variant={darkMode ? 'white' : 'default'} />
+            <button
+              onClick={() => setIsOpen(false)}
+              className={`lg:hidden p-2 rounded-lg ${
+                darkMode ? 'hover:bg-gray-800 text-gray-400' : 'hover:bg-gray-100 text-gray-500'
+              }`}
+            >
+              <X className="w-5 h-5" />
+            </button>
+          </div>
+          <p className={`text-xs mt-2 ${darkMode ? 'text-gray-500' : 'text-gray-400'}`}>
+            Developer Dashboard
+          </p>
+        </div>
+
+        {/* Navigation */}
+        <nav className="flex-1 p-4 space-y-1 overflow-y-auto">
+          {navItemsWithBadges.map((item) => {
+            const isActive = activeView === item.id
+            const Icon = item.icon
+            
+            return (
+              <motion.button
+                key={item.id}
+                whileHover={{ x: 4 }}
+                whileTap={{ scale: 0.98 }}
+                onClick={() => {
+                  setActiveView(item.id)
+                  setIsOpen(false)
+                }}
+                className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl text-left transition-all ${
+                  isActive
+                    ? darkMode
+                      ? 'bg-blue-600 text-white shadow-lg shadow-blue-600/20'
+                      : 'bg-gradient-to-r from-blue-500 to-blue-600 text-white shadow-lg shadow-blue-500/20'
+                    : darkMode
+                      ? 'text-gray-400 hover:text-white hover:bg-gray-800'
+                      : 'text-gray-600 hover:text-gray-900 hover:bg-gray-100'
+                }`}
+              >
+                <Icon className="w-5 h-5 flex-shrink-0" />
+                <span className="font-medium">{item.label}</span>
+                {item.badge !== undefined && item.badge > 0 && (
+                  <span className={`ml-auto px-2 py-0.5 text-xs font-bold rounded-full ${
+                    isActive 
+                      ? 'bg-white/20 text-white' 
+                      : 'bg-red-500 text-white'
+                  }`}>
+                    {item.badge > 99 ? '99+' : item.badge}
+                  </span>
+                )}
+              </motion.button>
+            )
+          })}
+        </nav>
+
+        {/* Bottom section */}
+        <div className={`p-4 border-t ${darkMode ? 'border-gray-800' : 'border-gray-200'}`}>
+          <motion.button
+            whileHover={{ x: 4 }}
+            whileTap={{ scale: 0.98 }}
+            onClick={onLogout}
+            className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-colors ${
+              darkMode 
+                ? 'text-gray-400 hover:text-red-400 hover:bg-red-900/20' 
+                : 'text-gray-600 hover:text-red-600 hover:bg-red-50'
+            }`}
+          >
+            <LogOut className="w-5 h-5" />
+            <span className="font-medium">Uitloggen</span>
+          </motion.button>
+        </div>
+      </motion.aside>
+    </>
+  )
+}
+
+// ===========================================
+// HEADER COMPONENT
+// ===========================================
+
+interface HeaderProps {
+  darkMode: boolean
+  setDarkMode: (dark: boolean) => void
+  onMenuClick: () => void
+  notifications: Notification[]
+  onMarkAllRead: () => void
+  searchTerm: string
+  setSearchTerm: (term: string) => void
+  activeView: DashboardView
+}
+
+function Header({ 
+  darkMode, 
+  setDarkMode, 
+  onMenuClick, 
+  notifications,
+  onMarkAllRead,
+  searchTerm,
+  setSearchTerm,
+  activeView
+}: HeaderProps) {
+  const [showNotifications, setShowNotifications] = useState(false)
+  const unreadCount = notifications.filter(n => !n.read).length
+
+  return (
+    <header className={`sticky top-0 z-30 ${
+      darkMode 
+        ? 'bg-gray-900/80 border-b border-gray-800' 
+        : 'bg-white/80 border-b border-gray-200'
+    } backdrop-blur-xl`}>
+      <div className="flex items-center justify-between h-16 px-4 lg:px-6">
+        {/* Left side */}
+        <div className="flex items-center gap-4">
+          {/* Mobile menu button */}
+          <button
+            onClick={onMenuClick}
+            className={`lg:hidden p-2 rounded-lg ${
+              darkMode ? 'hover:bg-gray-800 text-gray-400' : 'hover:bg-gray-100 text-gray-500'
+            }`}
+          >
+            <Menu className="w-6 h-6" />
+          </button>
+
+          {/* Page title - Mobile */}
+          <h1 className={`lg:hidden text-lg font-bold ${darkMode ? 'text-white' : 'text-gray-900'}`}>
+            {NAV_ITEMS.find(item => item.id === activeView)?.label}
+          </h1>
+
+          {/* Search - Desktop */}
+          <div className="hidden lg:block relative">
+            <Search className={`absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 ${
+              darkMode ? 'text-gray-500' : 'text-gray-400'
+            }`} />
+            <input
+              type="text"
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              placeholder="Zoeken..."
+              className={`w-64 pl-10 pr-4 py-2 rounded-xl border-0 focus:ring-2 focus:ring-blue-500 ${
+                darkMode 
+                  ? 'bg-gray-800 text-white placeholder-gray-500' 
+                  : 'bg-gray-100 text-gray-900 placeholder-gray-400'
+              }`}
+            />
+          </div>
+        </div>
+
+        {/* Right side */}
+        <div className="flex items-center gap-2">
+          {/* Search button - Mobile */}
+          <button className={`lg:hidden p-2 rounded-lg ${
+            darkMode ? 'hover:bg-gray-800 text-gray-400' : 'hover:bg-gray-100 text-gray-500'
+          }`}>
+            <Search className="w-5 h-5" />
+          </button>
+
+          {/* Notifications */}
+          <div className="relative">
+            <motion.button
+              whileTap={{ scale: 0.95 }}
+              onClick={() => setShowNotifications(!showNotifications)}
+              className={`relative p-2 rounded-lg ${
+                darkMode ? 'hover:bg-gray-800 text-gray-400' : 'hover:bg-gray-100 text-gray-500'
+              }`}
+            >
+              <Bell className="w-5 h-5" />
+              {unreadCount > 0 && (
+                <span className="absolute -top-0.5 -right-0.5 w-5 h-5 bg-red-500 text-white text-xs font-bold rounded-full flex items-center justify-center">
+                  {unreadCount > 9 ? '9+' : unreadCount}
+                </span>
+              )}
+            </motion.button>
+
+            {/* Notifications dropdown */}
+            <AnimatePresence>
+              {showNotifications && (
+                <motion.div
+                  initial={{ opacity: 0, y: 10, scale: 0.95 }}
+                  animate={{ opacity: 1, y: 0, scale: 1 }}
+                  exit={{ opacity: 0, y: 10, scale: 0.95 }}
+                  className={`absolute right-0 top-full mt-2 w-80 rounded-2xl shadow-xl border overflow-hidden ${
+                    darkMode ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-200'
+                  }`}
+                >
+                  <div className={`flex items-center justify-between p-4 border-b ${
+                    darkMode ? 'border-gray-700' : 'border-gray-200'
+                  }`}>
+                    <h3 className={`font-semibold ${darkMode ? 'text-white' : 'text-gray-900'}`}>
+                      Meldingen
+                    </h3>
+                    {unreadCount > 0 && (
+                      <button
+                        onClick={onMarkAllRead}
+                        className="text-sm text-blue-500 hover:text-blue-600"
+                      >
+                        Alles gelezen
+                      </button>
+                    )}
+                  </div>
+                  <div className="max-h-80 overflow-y-auto">
+                    {notifications.length === 0 ? (
+                      <div className={`p-8 text-center ${darkMode ? 'text-gray-500' : 'text-gray-400'}`}>
+                        <Bell className="w-8 h-8 mx-auto mb-2 opacity-50" />
+                        <p>Geen meldingen</p>
+                      </div>
+                    ) : (
+                      notifications.slice(0, 10).map(n => (
+                        <div
+                          key={n.id}
+                          className={`p-4 border-b last:border-0 cursor-pointer transition-colors ${
+                            darkMode 
+                              ? `border-gray-700 ${n.read ? '' : 'bg-gray-750'} hover:bg-gray-700`
+                              : `border-gray-100 ${n.read ? '' : 'bg-blue-50/50'} hover:bg-gray-50`
+                          }`}
+                        >
+                          <div className="flex items-start gap-3">
+                            <div className={`p-2 rounded-lg flex-shrink-0 ${
+                              n.type === 'message' ? 'bg-blue-100 text-blue-600' :
+                              n.type === 'payment' ? 'bg-green-100 text-green-600' :
+                              n.type === 'onboarding' ? 'bg-purple-100 text-purple-600' :
+                              'bg-amber-100 text-amber-600'
+                            }`}>
+                              {n.type === 'message' ? <MessageSquare className="w-4 h-4" /> :
+                               n.type === 'payment' ? <CreditCard className="w-4 h-4" /> :
+                               n.type === 'onboarding' ? <FileText className="w-4 h-4" /> :
+                               <Briefcase className="w-4 h-4" />}
+                            </div>
+                            <div className="flex-1 min-w-0">
+                              <p className={`font-medium text-sm ${darkMode ? 'text-white' : 'text-gray-900'}`}>
+                                {n.title}
+                              </p>
+                              <p className={`text-sm truncate ${darkMode ? 'text-gray-400' : 'text-gray-600'}`}>
+                                {n.message}
+                              </p>
+                              <p className={`text-xs mt-1 ${darkMode ? 'text-gray-500' : 'text-gray-400'}`}>
+                                {new Date(n.createdAt).toLocaleDateString('nl-NL')}
+                              </p>
+                            </div>
+                            {!n.read && (
+                              <div className="w-2 h-2 bg-blue-500 rounded-full flex-shrink-0 mt-2" />
+                            )}
+                          </div>
+                        </div>
+                      ))
+                    )}
+                  </div>
+                </motion.div>
+              )}
+            </AnimatePresence>
+          </div>
+
+          {/* Dark mode toggle */}
+          <motion.button
+            whileTap={{ scale: 0.95 }}
+            onClick={() => setDarkMode(!darkMode)}
+            className={`p-2 rounded-lg ${
+              darkMode ? 'hover:bg-gray-800 text-gray-400' : 'hover:bg-gray-100 text-gray-500'
+            }`}
+          >
+            <motion.div
+              initial={false}
+              animate={{ rotate: darkMode ? 180 : 0 }}
+              transition={{ duration: 0.3 }}
+            >
+              {darkMode ? <Sun className="w-5 h-5" /> : <Moon className="w-5 h-5" />}
+            </motion.div>
+          </motion.button>
+
+          {/* Help */}
+          <button className={`hidden sm:flex p-2 rounded-lg ${
+            darkMode ? 'hover:bg-gray-800 text-gray-400' : 'hover:bg-gray-100 text-gray-500'
+          }`}>
+            <HelpCircle className="w-5 h-5" />
+          </button>
+        </div>
+      </div>
+    </header>
+  )
+}
+
+// ===========================================
+// MOBILE BOTTOM NAVIGATION
+// ===========================================
+
+interface MobileBottomNavProps {
+  activeView: DashboardView
+  setActiveView: (view: DashboardView) => void
+  darkMode: boolean
+  unreadMessages: number
+}
+
+function MobileBottomNav({ activeView, setActiveView, darkMode, unreadMessages }: MobileBottomNavProps) {
+  const mobileNavItems: { id: DashboardView; icon: typeof LayoutDashboard; label: string }[] = [
+    { id: 'overview', icon: LayoutDashboard, label: 'Home' },
+    { id: 'projects', icon: FolderKanban, label: 'Projecten' },
+    { id: 'messages', icon: MessageSquare, label: 'Chat' },
+    { id: 'payments', icon: CreditCard, label: 'Betalen' },
+    { id: 'settings', icon: Settings, label: 'Meer' },
+  ]
+
+  return (
+    <nav className={`lg:hidden fixed bottom-0 left-0 right-0 z-40 border-t safe-area-pb ${
+      darkMode 
+        ? 'bg-gray-900/95 border-gray-800 backdrop-blur-xl' 
+        : 'bg-white/95 border-gray-200 backdrop-blur-xl'
+    }`}>
+      <div className="flex items-center justify-around h-16 px-2">
+        {mobileNavItems.map(item => {
+          const isActive = activeView === item.id
+          const Icon = item.icon
+          const showBadge = item.id === 'messages' && unreadMessages > 0
+
+          return (
+            <motion.button
+              key={item.id}
+              whileTap={{ scale: 0.9 }}
+              onClick={() => setActiveView(item.id)}
+              className={`relative flex flex-col items-center justify-center gap-0.5 px-3 py-1.5 rounded-xl min-w-[60px] transition-colors ${
+                isActive
+                  ? darkMode
+                    ? 'text-blue-400'
+                    : 'text-blue-600'
+                  : darkMode
+                    ? 'text-gray-500'
+                    : 'text-gray-400'
+              }`}
+            >
+              <div className="relative">
+                <Icon className={`w-6 h-6 ${isActive ? 'scale-110' : ''} transition-transform`} />
+                {showBadge && (
+                  <span className="absolute -top-1 -right-1 w-4 h-4 bg-red-500 text-white text-[10px] font-bold rounded-full flex items-center justify-center">
+                    {unreadMessages > 9 ? '9+' : unreadMessages}
+                  </span>
+                )}
+              </div>
+              <span className={`text-[10px] font-medium ${isActive ? 'opacity-100' : 'opacity-70'}`}>
+                {item.label}
+              </span>
+              {isActive && (
+                <motion.div
+                  layoutId="mobileNavIndicator"
+                  className="absolute -top-1 left-1/2 -translate-x-1/2 w-1 h-1 bg-blue-500 rounded-full"
+                />
+              )}
+            </motion.button>
+          )
+        })}
+      </div>
+    </nav>
+  )
+}
+
+// ===========================================
+// STAT CARD COMPONENT
+// ===========================================
+
+interface StatCardProps {
+  icon: typeof TrendingUp
   label: string
   value: string | number
   subValue?: string
-  trend?: { value: number; isPositive: boolean }
-  color?: 'blue' | 'green' | 'amber' | 'purple' | 'red'
-  darkMode?: boolean
+  trend?: { value: number; positive: boolean }
+  color: 'blue' | 'green' | 'amber' | 'purple' | 'red' | 'cyan'
+  darkMode: boolean
   delay?: number
-}) {
+}
+
+function StatCard({ icon: Icon, label, value, subValue, trend, color, darkMode, delay = 0 }: StatCardProps) {
   const colorClasses = {
     blue: 'from-blue-500 to-blue-600',
-    green: 'from-green-500 to-green-600',
-    amber: 'from-amber-500 to-amber-600',
-    purple: 'from-purple-500 to-purple-600',
-    red: 'from-red-500 to-red-600',
+    green: 'from-green-500 to-emerald-600',
+    amber: 'from-amber-500 to-orange-600',
+    purple: 'from-purple-500 to-violet-600',
+    red: 'from-red-500 to-rose-600',
+    cyan: 'from-cyan-500 to-blue-600',
   }
 
   return (
@@ -176,1126 +684,3005 @@ function StatCard({
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay }}
-      whileHover={{ scale: 1.02, y: -2 }}
-      className={`rounded-2xl border p-4 sm:p-6 transition-all duration-300 cursor-default ${
+      className={`p-5 rounded-2xl border transition-all hover:shadow-lg ${
         darkMode 
-          ? 'bg-gray-800 border-gray-700 hover:border-gray-600 hover:shadow-lg hover:shadow-gray-900/50' 
-          : 'bg-white border-gray-200 hover:shadow-lg hover:border-gray-300'
+          ? 'bg-gray-800 border-gray-700 hover:border-gray-600' 
+          : 'bg-white border-gray-200 hover:border-gray-300'
       }`}
     >
-      <div className="flex items-start justify-between mb-3 sm:mb-4">
-        <motion.div 
-          whileHover={{ rotate: [0, -10, 10, 0] }}
-          transition={{ duration: 0.5 }}
-          className={`p-2.5 sm:p-3 rounded-xl bg-gradient-to-br ${colorClasses[color]} text-white shadow-lg`}
-        >
-          <Icon className="w-5 h-5 sm:w-6 sm:h-6" />
-        </motion.div>
+      <div className="flex items-start justify-between mb-4">
+        <div className={`p-3 rounded-xl bg-gradient-to-br ${colorClasses[color]} text-white shadow-lg`}>
+          <Icon className="w-5 h-5" />
+        </div>
         {trend && (
-          <motion.div 
-            initial={{ opacity: 0, x: 10 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ delay: delay + 0.2 }}
-            className={`flex items-center gap-1 text-sm font-medium ${trend.isPositive ? 'text-green-600' : 'text-red-600'}`}
-          >
-            <TrendingUp className={`w-4 h-4 ${!trend.isPositive ? 'rotate-180' : ''}`} />
-            {trend.value}%
-          </motion.div>
-        )}
-      </div>
-      <motion.div 
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ delay: delay + 0.1 }}
-        className={`text-2xl sm:text-3xl font-bold mb-1 ${darkMode ? 'text-white' : 'text-gray-900'}`}
-      >
-        {value}
-      </motion.div>
-      <div className={`text-xs sm:text-sm ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>{label}</div>
-      {subValue && <div className={`text-xs mt-1 ${darkMode ? 'text-gray-500' : 'text-gray-400'}`}>{subValue}</div>}
-    </motion.div>
-  )
-}
-
-// Project kaart met verbeterde animaties
-function ProjectCard({ 
-  project, 
-  onClick,
-  onQuickAction,
-  darkMode = false
-}: { 
-  project: DeveloperProject
-  onClick: () => void
-  onQuickAction: (action: string) => void
-  darkMode?: boolean
-}) {
-  const [showActions, setShowActions] = useState(false)
-  const phaseColor = phaseColors[project.phase]
-  const packageConfig = getPackageConfig(project.package)
-  
-  const progress = calculateProgress(project)
-  const hasUnreadMessages = project.messages?.some(m => !m.read && m.from === 'client')
-  const hasPendingChanges = project.changeRequests?.some(cr => cr.status === 'pending')
-  
-  return (
-    <motion.div
-      initial={{ opacity: 0, scale: 0.95 }}
-      animate={{ opacity: 1, scale: 1 }}
-      whileHover={{ scale: 1.02, y: -2 }}
-      whileTap={{ scale: 0.98 }}
-      transition={{ type: 'spring', stiffness: 300, damping: 20 }}
-      className={`group rounded-xl border p-4 transition-all cursor-pointer relative ${
-        darkMode 
-          ? 'bg-gray-800 border-gray-700 hover:border-blue-500 hover:shadow-lg hover:shadow-blue-500/10' 
-          : 'bg-white border-gray-200 hover:shadow-lg hover:border-blue-200'
-      }`}
-      onClick={onClick}
-    >
-      {/* Quick action menu */}
-      <div className="absolute top-3 right-3">
-        <button
-          onClick={(e) => { e.stopPropagation(); setShowActions(!showActions) }}
-          className={`p-1.5 rounded-lg opacity-0 group-hover:opacity-100 transition-all ${
-            darkMode 
-              ? 'text-gray-500 hover:text-white hover:bg-gray-700' 
-              : 'text-gray-400 hover:text-gray-600 hover:bg-gray-100'
-          }`}
-        >
-          <MoreVertical className="w-4 h-4" />
-        </button>
-        
-        <AnimatePresence>
-          {showActions && (
-            <motion.div
-              initial={{ opacity: 0, scale: 0.9 }}
-              animate={{ opacity: 1, scale: 1 }}
-              exit={{ opacity: 0, scale: 0.9 }}
-              className={`absolute right-0 top-8 rounded-lg shadow-xl border py-1 z-10 min-w-[160px] ${
-                darkMode 
-                  ? 'bg-gray-800 border-gray-700' 
-                  : 'bg-white border-gray-200'
-              }`}
-              onClick={(e) => e.stopPropagation()}
-            >
-              <button
-                onClick={() => { onQuickAction('email'); setShowActions(false) }}
-                className={`w-full px-4 py-2 text-left text-sm flex items-center gap-2 ${
-                  darkMode ? 'text-gray-300 hover:bg-gray-700' : 'text-gray-700 hover:bg-gray-50'
-                }`}
-              >
-                <Mail className="w-4 h-4" /> Email sturen
-              </button>
-              <button
-                onClick={() => { onQuickAction('update'); setShowActions(false) }}
-                className={`w-full px-4 py-2 text-left text-sm flex items-center gap-2 ${
-                  darkMode ? 'text-gray-300 hover:bg-gray-700' : 'text-gray-700 hover:bg-gray-50'
-                }`}
-              >
-                <RefreshCw className="w-4 h-4" /> Status update
-              </button>
-              <button
-                onClick={() => { onQuickAction('staging'); setShowActions(false) }}
-                className={`w-full px-4 py-2 text-left text-sm flex items-center gap-2 ${
-                  darkMode ? 'text-gray-300 hover:bg-gray-700' : 'text-gray-700 hover:bg-gray-50'
-                }`}
-              >
-                <ExternalLink className="w-4 h-4" /> Staging bekijken
-              </button>
-              <hr className={`my-1 ${darkMode ? 'border-gray-700' : ''}`} />
-              <button
-                onClick={() => { onQuickAction('pause'); setShowActions(false) }}
-                className={`w-full px-4 py-2 text-left text-sm flex items-center gap-2 ${
-                  darkMode ? 'text-amber-400 hover:bg-amber-900/30' : 'text-amber-600 hover:bg-amber-50'
-                }`}
-              >
-                <Pause className="w-4 h-4" /> Pauzeren
-              </button>
-            </motion.div>
-          )}
-        </AnimatePresence>
-      </div>
-      
-      {/* Header */}
-      <div className="flex items-start gap-3 mb-3">
-        <motion.div 
-          whileHover={{ rotate: 10 }}
-          className={`p-2 rounded-lg ${phaseColor.bg}`}
-        >
-          <PhaseIcon phase={project.phase} className={`w-4 h-4 ${phaseColor.text}`} />
-        </motion.div>
-        <div className="flex-1 min-w-0">
-          <h3 className={`font-semibold truncate ${darkMode ? 'text-white' : 'text-gray-900'}`}>{project.businessName}</h3>
-          <p className={`text-xs ${darkMode ? 'text-gray-500' : 'text-gray-500'}`}>{project.projectId}</p>
-        </div>
-      </div>
-      
-      {/* Package badge */}
-      <div className="flex items-center gap-2 mb-3 flex-wrap">
-        <span className={`text-xs font-medium px-2 py-1 rounded-full ${phaseColor.bg} ${phaseColor.text}`}>
-          {packageConfig?.name || project.package}
-        </span>
-        <span className={`text-xs ${darkMode ? 'text-gray-500' : 'text-gray-400'}`}>
-          €{packageConfig?.priceMonthly}/m
-        </span>
-        {project.discountCode && (
-          <span className="text-xs font-medium px-2 py-1 rounded-full bg-green-100 text-green-700 flex items-center gap-1">
-            <Tag className="w-3 h-3" />
-            {project.discountCode}
-          </span>
-        )}
-      </div>
-      
-      {/* Progress bar */}
-      <div className="mb-3">
-        <div className="flex items-center justify-between text-xs mb-1">
-          <span className={darkMode ? 'text-gray-400' : 'text-gray-500'}>Voortgang</span>
-          <span className={`font-medium ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>{progress}%</span>
-        </div>
-        <div className={`h-2 rounded-full overflow-hidden ${darkMode ? 'bg-gray-700' : 'bg-gray-100'}`}>
-          <motion.div 
-            initial={{ width: 0 }}
-            animate={{ width: `${progress}%` }}
-            transition={{ duration: 1, ease: 'easeOut' }}
-            className="h-full bg-gradient-to-r from-blue-500 to-indigo-500 rounded-full"
-          />
-        </div>
-      </div>
-      
-      {/* Meta info */}
-      <div className={`flex items-center justify-between text-xs ${darkMode ? 'text-gray-500' : 'text-gray-500'}`}>
-        <div className="flex items-center gap-1">
-          <Calendar className="w-3.5 h-3.5" />
-          {project.estimatedCompletion ? formatDate(project.estimatedCompletion) : 'Geen deadline'}
-        </div>
-        <div className="flex items-center gap-2">
-          {hasUnreadMessages && (
-            <motion.span 
-              animate={{ scale: [1, 1.2, 1] }}
-              transition={{ repeat: Infinity, duration: 2 }}
-              className="w-2 h-2 bg-blue-500 rounded-full" 
-              title="Nieuw bericht" 
-            />
-          )}
-          {hasPendingChanges && (
-            <span className="w-2 h-2 bg-amber-500 rounded-full" title="Wijzigingsverzoek" />
-          )}
-        </div>
-      </div>
-    </motion.div>
-  )
-}
-
-// Kanban kolom met dark mode
-function KanbanColumn({ 
-  phase, 
-  projects,
-  onProjectClick,
-  onQuickAction,
-  darkMode = false
-}: { 
-  phase: ProjectPhase
-  projects: DeveloperProject[]
-  onProjectClick: (project: DeveloperProject) => void
-  onQuickAction: (project: DeveloperProject, action: string) => void
-  darkMode?: boolean
-}) {
-  const phaseInfo = {
-    onboarding: { label: 'Onboarding', icon: FileText, color: 'blue' },
-    design: { label: 'Design', icon: Palette, color: 'amber' },
-    development: { label: 'Development', icon: Code, color: 'purple' },
-    review: { label: 'Review', icon: MessageSquare, color: 'cyan' },
-    live: { label: 'Live', icon: Rocket, color: 'green' },
-  }
-  
-  const info = phaseInfo[phase]
-  const Icon = info.icon
-  
-  return (
-    <motion.div 
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      className="flex-1 min-w-[260px] sm:min-w-[280px] max-w-[320px]"
-    >
-      <div className="flex items-center gap-2 mb-4">
-        <div className={`p-1.5 rounded-lg bg-${info.color}-100`}>
-          <Icon className={`w-4 h-4 text-${info.color}-600`} />
-        </div>
-        <h3 className={`font-semibold ${darkMode ? 'text-white' : 'text-gray-900'}`}>{info.label}</h3>
-        <span className={`ml-auto text-sm px-2 py-0.5 rounded-full ${
-          darkMode ? 'text-gray-400 bg-gray-700' : 'text-gray-400 bg-gray-100'
-        }`}>
-          {projects.length}
-        </span>
-      </div>
-      
-      <div className="space-y-3">
-        {projects.map((project, index) => (
-          <motion.div
-            key={project.projectId}
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: index * 0.05 }}
-          >
-            <ProjectCard
-              project={project}
-              onClick={() => onProjectClick(project)}
-              onQuickAction={(action) => onQuickAction(project, action)}
-              darkMode={darkMode}
-            />
-          </motion.div>
-        ))}
-        
-        {projects.length === 0 && (
-          <div className={`text-center py-8 text-sm border-2 border-dashed rounded-xl ${
-            darkMode ? 'text-gray-500 border-gray-700' : 'text-gray-400 border-gray-200'
+          <div className={`flex items-center gap-1 text-sm font-medium ${
+            trend.positive ? 'text-green-500' : 'text-red-500'
           }`}>
-            Geen projecten
+            {trend.positive ? <TrendingUp className="w-4 h-4" /> : <TrendingDown className="w-4 h-4" />}
+            {trend.value}%
           </div>
         )}
       </div>
+      <div className={`text-2xl font-bold mb-1 ${darkMode ? 'text-white' : 'text-gray-900'}`}>
+        {value}
+      </div>
+      <div className={`text-sm ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>{label}</div>
+      {subValue && (
+        <div className={`text-xs mt-1 ${darkMode ? 'text-gray-500' : 'text-gray-400'}`}>{subValue}</div>
+      )}
     </motion.div>
   )
 }
 
-// Project detail sidebar
-function ProjectDetailPanel({ 
-  project, 
-  onClose,
-  onUpdate,
-  onSendEmail,
-  onPhaseChange
-}: { 
-  project: DeveloperProject
-  onClose: () => void
-  onUpdate: (updates: Partial<DeveloperProject>) => void
-  onSendEmail: (template: string) => void
-  onPhaseChange: (phase: ProjectPhase) => void
-}) {
-  const [activeTab, setActiveTab] = useState<'overview' | 'tasks' | 'messages' | 'changes' | 'settings'>('overview')
-  const packageConfig = getPackageConfig(project.package)
-  
-  const tabs = [
-    { id: 'overview', label: 'Overzicht', icon: LayoutDashboard },
-    { id: 'tasks', label: 'Taken', icon: CheckCircle2 },
-    { id: 'messages', label: 'Berichten', icon: MessageSquare, badge: project.messages?.filter(m => !m.read && m.from === 'client').length },
-    { id: 'changes', label: 'Wijzigingen', icon: Edit3, badge: project.changeRequests?.filter(cr => cr.status === 'pending').length },
-    { id: 'settings', label: 'Instellingen', icon: Settings },
-  ]
-  
+// ===========================================
+// LOGIN SCREEN
+// ===========================================
+
+interface LoginScreenProps {
+  onLogin: (password: string) => Promise<boolean>
+}
+
+function LoginScreen({ onLogin }: LoginScreenProps) {
+  const [password, setPassword] = useState('')
+  const [error, setError] = useState('')
+  const [loading, setLoading] = useState(false)
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault()
+    setLoading(true)
+    setError('')
+    
+    const success = await onLogin(password)
+    if (!success) {
+      setError('Onjuist wachtwoord')
+    }
+    setLoading(false)
+  }
+
   return (
-    <motion.div
-      initial={{ x: '100%' }}
-      animate={{ x: 0 }}
-      exit={{ x: '100%' }}
-      transition={{ type: 'spring', damping: 25 }}
-      className="fixed right-0 top-0 bottom-0 w-full max-w-2xl bg-white shadow-2xl z-50 flex flex-col"
-    >
-      {/* Header */}
-      <div className="flex items-center justify-between p-6 border-b border-gray-200">
-        <div className="flex items-center gap-4">
-          <button
-            onClick={onClose}
-            className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
-          >
-            <ChevronRight className="w-5 h-5" />
-          </button>
-          <div>
-            <h2 className="text-xl font-bold text-gray-900">{project.businessName}</h2>
-            <p className="text-sm text-gray-500">{project.projectId} • {packageConfig?.name}</p>
+    <div className="min-h-screen bg-gradient-to-br from-gray-900 via-blue-900 to-indigo-900 flex items-center justify-center p-4 relative overflow-hidden">
+      {/* Background decorations */}
+      <div className="absolute inset-0 overflow-hidden pointer-events-none">
+        <motion.div
+          animate={{ 
+            x: [0, 100, 0], 
+            y: [0, -50, 0],
+            scale: [1, 1.2, 1]
+          }}
+          transition={{ repeat: Infinity, duration: 20, ease: 'easeInOut' }}
+          className="absolute -top-40 -left-40 w-96 h-96 bg-blue-500/20 rounded-full blur-3xl"
+        />
+        <motion.div
+          animate={{ 
+            x: [0, -80, 0], 
+            y: [0, 80, 0],
+            scale: [1, 1.3, 1]
+          }}
+          transition={{ repeat: Infinity, duration: 25, ease: 'easeInOut' }}
+          className="absolute -bottom-40 -right-40 w-96 h-96 bg-indigo-500/20 rounded-full blur-3xl"
+        />
+        <div className="absolute inset-0 bg-[linear-gradient(to_right,#ffffff08_1px,transparent_1px),linear-gradient(to_bottom,#ffffff08_1px,transparent_1px)] bg-[size:4rem_4rem]" />
+      </div>
+
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        className="w-full max-w-md relative z-10"
+      >
+        {/* Logo */}
+        <motion.div 
+          initial={{ opacity: 0, scale: 0.9 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ delay: 0.1 }}
+          className="text-center mb-8"
+        >
+          <div className="flex justify-center mb-4">
+            <Logo variant="white" size="lg" />
           </div>
-        </div>
-        
-        <div className="flex items-center gap-2">
-          <select
-            value={project.phase}
-            onChange={(e) => onPhaseChange(e.target.value as ProjectPhase)}
-            className={`px-3 py-1.5 rounded-lg text-sm font-medium border-2 ${phaseColors[project.phase].bg} ${phaseColors[project.phase].text} ${phaseColors[project.phase].border}`}
+          <h1 className="text-2xl font-bold text-white">Developer Dashboard</h1>
+          <p className="text-blue-200 mt-1">Log in om door te gaan</p>
+        </motion.div>
+
+        {/* Login form */}
+        <motion.form
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.2 }}
+          onSubmit={handleSubmit}
+          className="bg-white/10 backdrop-blur-xl rounded-2xl p-8 border border-white/20 shadow-2xl"
+        >
+          <div className="mb-6">
+            <label className="block text-sm font-medium text-blue-100 mb-2">
+              Wachtwoord
+            </label>
+            <div className="relative">
+              <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-blue-300" />
+              <input
+                type="password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                className="w-full pl-12 pr-4 py-3 bg-white/10 border border-white/20 rounded-xl text-white placeholder-blue-300 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                placeholder="••••••••••••"
+                autoFocus
+              />
+            </div>
+          </div>
+
+          <AnimatePresence>
+            {error && (
+              <motion.div
+                initial={{ opacity: 0, y: -10 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -10 }}
+                className="mb-4 p-3 bg-red-500/20 border border-red-500/30 rounded-xl text-red-200 text-sm flex items-center gap-2"
+              >
+                <AlertCircle className="w-4 h-4 flex-shrink-0" />
+                {error}
+              </motion.div>
+            )}
+          </AnimatePresence>
+
+          <motion.button
+            whileHover={{ scale: 1.02 }}
+            whileTap={{ scale: 0.98 }}
+            type="submit"
+            disabled={loading}
+            className="w-full py-3 bg-gradient-to-r from-blue-500 to-indigo-500 text-white font-semibold rounded-xl hover:from-blue-600 hover:to-indigo-600 transition-all shadow-lg disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
           >
-            <option value="onboarding">Onboarding</option>
-            <option value="design">Design</option>
-            <option value="development">Development</option>
-            <option value="review">Review</option>
-            <option value="live">Live</option>
-          </select>
-        </div>
-      </div>
-      
-      {/* Tabs */}
-      <div className="flex border-b border-gray-200 px-6">
-        {tabs.map(tab => (
-          <button
-            key={tab.id}
-            onClick={() => setActiveTab(tab.id as typeof activeTab)}
-            className={`flex items-center gap-2 px-4 py-3 text-sm font-medium border-b-2 transition-colors ${
-              activeTab === tab.id
-                ? 'border-blue-500 text-blue-600'
-                : 'border-transparent text-gray-500 hover:text-gray-700'
-            }`}
-          >
-            <tab.icon className="w-4 h-4" />
-            {tab.label}
-            {tab.badge ? (
-              <span className="ml-1 px-1.5 py-0.5 text-xs bg-red-500 text-white rounded-full">
-                {tab.badge}
-              </span>
-            ) : null}
-          </button>
-        ))}
-      </div>
-      
-      {/* Content */}
-      <div className="flex-1 overflow-y-auto p-6">
-        {activeTab === 'overview' && (
-          <ProjectOverviewTab project={project} packageConfig={packageConfig} onSendEmail={onSendEmail} />
-        )}
-        {activeTab === 'tasks' && (
-          <ProjectTasksTab project={project} packageConfig={packageConfig} onUpdate={onUpdate} />
-        )}
-        {activeTab === 'messages' && (
-          <ProjectMessagesTab project={project} onUpdate={onUpdate} />
-        )}
-        {activeTab === 'changes' && (
-          <ProjectChangesTab project={project} onUpdate={onUpdate} />
-        )}
-        {activeTab === 'settings' && (
-          <ProjectSettingsTab project={project} packageConfig={packageConfig} onUpdate={onUpdate} />
-        )}
-      </div>
-    </motion.div>
+            {loading ? (
+              <>
+                <Loader2 className="w-5 h-5 animate-spin" />
+                Bezig...
+              </>
+            ) : (
+              'Inloggen'
+            )}
+          </motion.button>
+        </motion.form>
+
+        <p className="text-center text-blue-300/60 text-sm mt-6">
+          © {new Date().getFullYear()} Webstability
+        </p>
+      </motion.div>
+    </div>
   )
 }
 
-// Overview tab
-function ProjectOverviewTab({ 
-  project, 
-  packageConfig,
-  onSendEmail
-}: { 
-  project: DeveloperProject
-  packageConfig: PackageConfig | null
-  onSendEmail: (template: string) => void
-}) {
+// ===========================================
+// OVERVIEW VIEW - UITGEBREID
+// ===========================================
+
+interface OverviewViewProps {
+  darkMode: boolean
+  projects: Project[]
+  clients: Client[]
+  serviceRequests: ServiceRequest[]
+  setActiveView: (view: DashboardView) => void
+  onSelectProject: (project: Project) => void
+}
+
+function OverviewView({ darkMode, projects, clients, serviceRequests, setActiveView, onSelectProject }: OverviewViewProps) {
+  const stats = {
+    totalProjects: projects.length,
+    activeProjects: projects.filter(p => p.phase !== 'live').length,
+    liveProjects: projects.filter(p => p.phase === 'live').length,
+    unreadMessages: projects.reduce((acc, p) => 
+      acc + p.messages.filter(m => !m.read && m.from === 'client').length, 0
+    ),
+    pendingPayments: projects.filter(p => p.paymentStatus === 'awaiting_payment').length,
+    monthlyRevenue: projects.filter(p => p.phase === 'live').reduce((acc, p) => 
+      acc + (PACKAGE_CONFIG[p.package]?.price || 0), 0
+    ),
+    totalClients: clients.length,
+    pendingServices: serviceRequests.filter(s => s.status === 'pending').length,
+    projectsThisMonth: projects.filter(p => {
+      const date = new Date(p.createdAt)
+      const now = new Date()
+      return date.getMonth() === now.getMonth() && date.getFullYear() === now.getFullYear()
+    }).length,
+  }
+
+  const readyToGoLive = projects.filter(p => p.paymentStatus === 'paid' && p.phase === 'review')
+  const awaitingPayment = projects.filter(p => p.designApproved && p.paymentStatus === 'awaiting_payment')
+  const inProgress = projects.filter(p => ['design', 'development'].includes(p.phase))
+  const recentMessages = projects
+    .flatMap(p => p.messages.filter(m => m.from === 'client').map(m => ({ ...m, project: p })))
+    .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
+    .slice(0, 5)
+
+  // Bereken projecten per fase voor grafiek
+  const phaseDistribution = {
+    onboarding: projects.filter(p => p.phase === 'onboarding').length,
+    design: projects.filter(p => p.phase === 'design').length,
+    development: projects.filter(p => p.phase === 'development').length,
+    review: projects.filter(p => p.phase === 'review').length,
+    live: projects.filter(p => p.phase === 'live').length,
+  }
+
   return (
     <div className="space-y-6">
-      {/* Quick stats */}
-      <div className="grid grid-cols-3 gap-4">
-        <div className="bg-gray-50 rounded-xl p-4">
-          <div className="text-2xl font-bold text-gray-900">{calculateProgress(project)}%</div>
-          <div className="text-sm text-gray-500">Voortgang</div>
+      {/* Welcome header met datum */}
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4"
+      >
+        <div>
+          <h1 className={`text-2xl sm:text-3xl font-bold ${darkMode ? 'text-white' : 'text-gray-900'}`}>
+            Welkom terug! 👋
+          </h1>
+          <p className={`mt-1 ${darkMode ? 'text-gray-400' : 'text-gray-600'}`}>
+            {new Date().toLocaleDateString('nl-NL', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' })}
+          </p>
         </div>
-        <div className="bg-gray-50 rounded-xl p-4">
-          <div className="text-2xl font-bold text-gray-900">{project.revisionsUsed}/{project.revisionsTotal}</div>
-          <div className="text-sm text-gray-500">Revisies</div>
+        <div className="flex gap-2">
+          <motion.button
+            whileHover={{ scale: 1.02 }}
+            whileTap={{ scale: 0.98 }}
+            onClick={() => setActiveView('projects')}
+            className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-blue-500 to-blue-600 text-white font-medium rounded-xl shadow-lg shadow-blue-500/20"
+          >
+            <Plus className="w-4 h-4" />
+            <span className="hidden sm:inline">Nieuw project</span>
+          </motion.button>
         </div>
-        <div className="bg-gray-50 rounded-xl p-4">
-          <div className="text-2xl font-bold text-gray-900">{project.hoursSpent || 0}u</div>
-          <div className="text-sm text-gray-500">Besteed</div>
-        </div>
+      </motion.div>
+
+      {/* Hoofd stats grid */}
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+        <StatCard
+          icon={FolderKanban}
+          label="Actieve projecten"
+          value={stats.activeProjects}
+          subValue={`${stats.liveProjects} live`}
+          trend={stats.projectsThisMonth > 0 ? { value: stats.projectsThisMonth, positive: true } : undefined}
+          color="blue"
+          darkMode={darkMode}
+          delay={0}
+        />
+        <StatCard
+          icon={MessageSquare}
+          label="Ongelezen berichten"
+          value={stats.unreadMessages}
+          color={stats.unreadMessages > 0 ? 'red' : 'purple'}
+          darkMode={darkMode}
+          delay={0.05}
+        />
+        <StatCard
+          icon={Wallet}
+          label="MRR"
+          value={`€${stats.monthlyRevenue}`}
+          subValue={`${stats.liveProjects} abonnementen`}
+          color="green"
+          darkMode={darkMode}
+          delay={0.1}
+        />
+        <StatCard
+          icon={CreditCard}
+          label="Wacht op betaling"
+          value={stats.pendingPayments}
+          color="amber"
+          darkMode={darkMode}
+          delay={0.15}
+        />
       </div>
-      
-      {/* Contact info */}
-      <div className="bg-white border border-gray-200 rounded-xl p-4">
-        <h3 className="font-semibold text-gray-900 mb-3">Contactgegevens</h3>
-        <div className="space-y-2 text-sm">
-          <div className="flex items-center gap-3 text-gray-600">
-            <Users className="w-4 h-4 text-gray-400" />
-            {project.contactName}
-          </div>
-          <div className="flex items-center gap-3 text-gray-600">
-            <Mail className="w-4 h-4 text-gray-400" />
-            <a href={`mailto:${project.contactEmail}`} className="text-blue-600 hover:underline">
-              {project.contactEmail}
-            </a>
-          </div>
-          {project.contactPhone && (
-            <div className="flex items-center gap-3 text-gray-600">
-              <Phone className="w-4 h-4 text-gray-400" />
-              <a href={`tel:${project.contactPhone}`} className="text-blue-600 hover:underline">
-                {project.contactPhone}
-              </a>
+
+      {/* Urgente acties sectie */}
+      <div className="grid lg:grid-cols-2 gap-6">
+        {/* Klaar om live te gaan */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.2 }}
+          className={`p-6 rounded-2xl border-2 ${
+            readyToGoLive.length > 0
+              ? darkMode 
+                ? 'bg-green-900/20 border-green-500/50' 
+                : 'bg-green-50 border-green-200'
+              : darkMode
+                ? 'bg-gray-800 border-gray-700'
+                : 'bg-white border-gray-200'
+          }`}
+        >
+          <div className="flex items-center gap-3 mb-4">
+            <div className={`p-2 rounded-xl ${readyToGoLive.length > 0 ? 'bg-green-500' : darkMode ? 'bg-gray-700' : 'bg-gray-200'}`}>
+              <Rocket className={`w-5 h-5 ${readyToGoLive.length > 0 ? 'text-white' : darkMode ? 'text-gray-400' : 'text-gray-500'}`} />
             </div>
-          )}
-        </div>
-      </div>
-      
-      {/* Onboarding Checklist Data */}
-      {project.onboardingChecklist && (
-        <div className="bg-gradient-to-br from-blue-50 to-indigo-50 border border-blue-200 rounded-xl p-4">
-          <h3 className="font-semibold text-gray-900 mb-3 flex items-center gap-2">
-            <FileText className="w-4 h-4 text-blue-600" />
-            Onboarding Checklist
-            <span className="text-xs bg-green-100 text-green-700 px-2 py-0.5 rounded-full ml-auto">
-              Ingevuld
-            </span>
-          </h3>
-          <div className="space-y-3 text-sm">
-            {project.onboardingChecklist.aboutText && (
-              <div>
-                <span className="text-gray-500 text-xs uppercase tracking-wide">Over het bedrijf</span>
-                <p className="text-gray-900 mt-1 bg-white rounded-lg p-2 border border-blue-100 text-sm">
-                  {project.onboardingChecklist.aboutText}
-                </p>
-              </div>
-            )}
-            {project.onboardingChecklist.services && (
-              <div>
-                <span className="text-gray-500 text-xs uppercase tracking-wide">Diensten/Producten</span>
-                <p className="text-gray-900 mt-1 bg-white rounded-lg p-2 border border-blue-100 text-sm">
-                  {project.onboardingChecklist.services}
-                </p>
-              </div>
-            )}
-            {project.onboardingChecklist.uniqueSellingPoints && (
-              <div>
-                <span className="text-gray-500 text-xs uppercase tracking-wide">Unique Selling Points</span>
-                <p className="text-gray-900 mt-1 bg-white rounded-lg p-2 border border-blue-100 text-sm">
-                  {project.onboardingChecklist.uniqueSellingPoints}
-                </p>
-              </div>
-            )}
-            <div className="grid grid-cols-2 gap-3 pt-2 border-t border-blue-100">
-              {project.onboardingChecklist.hasLogo && (
-                <div>
-                  <span className="text-gray-500 text-xs">Logo</span>
-                  <p className="font-medium text-gray-900">
-                    {project.onboardingChecklist.hasLogo === 'ja_vector' && 'Ja (vector)'}
-                    {project.onboardingChecklist.hasLogo === 'ja_afbeelding' && 'Ja (afbeelding)'}
-                    {project.onboardingChecklist.hasLogo === 'nee_nodig' && 'Logo nodig'}
-                    {project.onboardingChecklist.hasLogo === 'nee_niet_nodig' && 'Alleen tekst'}
-                  </p>
-                </div>
-              )}
-              {project.onboardingChecklist.brandColors && (
-                <div>
-                  <span className="text-gray-500 text-xs">Kleuren</span>
-                  <p className="font-medium text-gray-900">{project.onboardingChecklist.brandColors}</p>
-                </div>
-              )}
-            </div>
-            {project.onboardingChecklist.photos && (
-              <div>
-                <span className="text-gray-500 text-xs uppercase tracking-wide">Foto's/Media</span>
-                <p className="text-gray-900 mt-1 bg-white rounded-lg p-2 border border-blue-100 text-sm break-all">
-                  {project.onboardingChecklist.photos}
-                </p>
-              </div>
-            )}
-            {project.onboardingChecklist.competitors && (
-              <div>
-                <span className="text-gray-500 text-xs uppercase tracking-wide">Inspiratie websites</span>
-                <p className="text-gray-900 mt-1 bg-white rounded-lg p-2 border border-blue-100 text-sm break-all">
-                  {project.onboardingChecklist.competitors}
-                </p>
-              </div>
-            )}
-            {project.onboardingChecklist.extraWishes && (
-              <div>
-                <span className="text-gray-500 text-xs uppercase tracking-wide">Extra wensen</span>
-                <p className="text-gray-900 mt-1 bg-white rounded-lg p-2 border border-blue-100 text-sm">
-                  {project.onboardingChecklist.extraWishes}
-                </p>
-              </div>
-            )}
-            {project.onboardingChecklist.submittedAt && (
-              <p className="text-xs text-gray-400 pt-2 border-t border-blue-100">
-                Ingevuld op {new Date(project.onboardingChecklist.submittedAt).toLocaleDateString('nl-NL', {
-                  day: 'numeric',
-                  month: 'long',
-                  year: 'numeric',
-                  hour: '2-digit',
-                  minute: '2-digit'
-                })}
+            <div>
+              <h3 className={`font-semibold ${darkMode ? 'text-white' : 'text-gray-900'}`}>
+                {readyToGoLive.length > 0 ? '🚀 Klaar om live te gaan!' : 'Livegang'}
+              </h3>
+              <p className={`text-sm ${readyToGoLive.length > 0 ? (darkMode ? 'text-green-400' : 'text-green-700') : (darkMode ? 'text-gray-400' : 'text-gray-500')}`}>
+                {readyToGoLive.length > 0 
+                  ? `${readyToGoLive.length} project${readyToGoLive.length > 1 ? 'en' : ''} klaar`
+                  : 'Geen projecten klaar voor livegang'}
               </p>
-            )}
-          </div>
-        </div>
-      )}
-      
-      {/* Webshop Design Preferences (if available) */}
-      {project.onboardingData?.webshopStyle && (
-        <div className="bg-gradient-to-br from-emerald-50 to-green-50 border border-emerald-200 rounded-xl p-4">
-          <h3 className="font-semibold text-gray-900 mb-3 flex items-center gap-2">
-            <Palette className="w-4 h-4 text-emerald-600" />
-            Webshop Design Voorkeuren
-          </h3>
-          <div className="space-y-3 text-sm">
-            <div className="flex items-center justify-between">
-              <span className="text-gray-600">Stijl</span>
-              <span className="font-medium text-gray-900">
-                {project.onboardingData.webshopStyle === 'modern' && 'Modern & Clean'}
-                {project.onboardingData.webshopStyle === 'bold' && 'Bold & Opvallend'}
-                {project.onboardingData.webshopStyle === 'elegant' && 'Elegant & Premium'}
-                {project.onboardingData.webshopStyle === 'playful' && 'Speels & Creatief'}
-                {project.onboardingData.webshopStyle === 'minimalist' && 'Minimalistisch'}
-                {project.onboardingData.webshopStyle === 'traditional' && 'Klassiek & Betrouwbaar'}
-              </span>
             </div>
-            {project.onboardingData.webshopColors && project.onboardingData.webshopColors.length > 0 && (
-              <div className="flex items-center justify-between">
-                <span className="text-gray-600">Kleuren</span>
-                <div className="flex gap-1">
-                  {project.onboardingData.webshopColors.map((colorId: string, idx: number) => {
-                    const colorMap: Record<string, string> = {
-                      blue: '#3B82F6', green: '#10B981', purple: '#8B5CF6', red: '#EF4444',
-                      orange: '#F97316', yellow: '#EAB308', pink: '#EC4899', teal: '#14B8A6',
-                      black: '#1F2937', gray: '#6B7280', brown: '#92400E', gold: '#D4AF37'
-                    }
-                    return (
-                      <div
-                        key={idx}
-                        className="w-6 h-6 rounded-full border-2 border-white shadow"
-                        style={{ backgroundColor: colorMap[colorId] || colorId }}
-                        title={colorId}
-                      />
-                    )
-                  })}
+          </div>
+          {readyToGoLive.length > 0 ? (
+            <div className="space-y-3">
+              {readyToGoLive.slice(0, 3).map(p => (
+                <div
+                  key={p.id}
+                  onClick={() => onSelectProject(p)}
+                  className={`flex items-center justify-between p-4 rounded-xl cursor-pointer transition-colors ${
+                    darkMode ? 'bg-gray-800 hover:bg-gray-750' : 'bg-white hover:bg-gray-50'
+                  }`}
+                >
+                  <div className="flex items-center gap-3">
+                    <div className="p-2 bg-green-100 rounded-lg">
+                      <CheckCircle2 className="w-5 h-5 text-green-600" />
+                    </div>
+                    <div>
+                      <p className={`font-medium ${darkMode ? 'text-white' : 'text-gray-900'}`}>
+                        {p.businessName}
+                      </p>
+                      <p className={`text-sm ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>
+                        {PACKAGE_CONFIG[p.package]?.name} • €{PACKAGE_CONFIG[p.package]?.price}/m
+                      </p>
+                    </div>
+                  </div>
+                  <button 
+                    onClick={(e) => { e.stopPropagation(); }}
+                    className="px-4 py-2 bg-green-500 hover:bg-green-600 text-white font-medium rounded-xl transition-colors flex items-center gap-2"
+                  >
+                    <Rocket className="w-4 h-4" />
+                    <span className="hidden sm:inline">Zet live</span>
+                  </button>
                 </div>
-              </div>
-            )}
-            {project.onboardingData.webshopCustomColor && (
-              <div className="flex items-center justify-between">
-                <span className="text-gray-600">Custom kleur</span>
-                <div className="flex items-center gap-2">
-                  <div
-                    className="w-5 h-5 rounded border border-gray-300"
-                    style={{ backgroundColor: project.onboardingData.webshopCustomColor }}
-                  />
-                  <span className="font-mono text-xs text-gray-700">{project.onboardingData.webshopCustomColor}</span>
+              ))}
+            </div>
+          ) : (
+            <div className={`text-center py-4 ${darkMode ? 'text-gray-500' : 'text-gray-400'}`}>
+              <p className="text-sm">Projecten verschijnen hier wanneer ze betaald zijn en klaar voor livegang</p>
+            </div>
+          )}
+        </motion.div>
+
+        {/* Wacht op betaling */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.25 }}
+          className={`p-6 rounded-2xl border-2 ${
+            awaitingPayment.length > 0
+              ? darkMode 
+                ? 'bg-amber-900/20 border-amber-500/50' 
+                : 'bg-amber-50 border-amber-200'
+              : darkMode
+                ? 'bg-gray-800 border-gray-700'
+                : 'bg-white border-gray-200'
+          }`}
+        >
+          <div className="flex items-center gap-3 mb-4">
+            <div className={`p-2 rounded-xl ${awaitingPayment.length > 0 ? 'bg-amber-500' : darkMode ? 'bg-gray-700' : 'bg-gray-200'}`}>
+              <CreditCard className={`w-5 h-5 ${awaitingPayment.length > 0 ? 'text-white' : darkMode ? 'text-gray-400' : 'text-gray-500'}`} />
+            </div>
+            <div>
+              <h3 className={`font-semibold ${darkMode ? 'text-white' : 'text-gray-900'}`}>
+                {awaitingPayment.length > 0 ? '💳 Wacht op betaling' : 'Betalingen'}
+              </h3>
+              <p className={`text-sm ${awaitingPayment.length > 0 ? (darkMode ? 'text-amber-400' : 'text-amber-700') : (darkMode ? 'text-gray-400' : 'text-gray-500')}`}>
+                {awaitingPayment.length > 0 
+                  ? `${awaitingPayment.length} project${awaitingPayment.length > 1 ? 'en' : ''} wacht${awaitingPayment.length === 1 ? '' : 'en'}`
+                  : 'Geen openstaande betalingen'}
+              </p>
+            </div>
+          </div>
+          {awaitingPayment.length > 0 ? (
+            <div className="space-y-3">
+              {awaitingPayment.slice(0, 3).map(p => (
+                <div
+                  key={p.id}
+                  onClick={() => onSelectProject(p)}
+                  className={`flex items-center justify-between p-4 rounded-xl cursor-pointer transition-colors ${
+                    darkMode ? 'bg-gray-800 hover:bg-gray-750' : 'bg-white hover:bg-gray-50'
+                  }`}
+                >
+                  <div className="flex items-center gap-3">
+                    <div className="p-2 bg-amber-100 rounded-lg">
+                      <Clock className="w-5 h-5 text-amber-600" />
+                    </div>
+                    <div>
+                      <p className={`font-medium ${darkMode ? 'text-white' : 'text-gray-900'}`}>
+                        {p.businessName}
+                      </p>
+                      <p className={`text-sm ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>
+                        €{PACKAGE_CONFIG[p.package]?.price}/maand
+                      </p>
+                    </div>
+                  </div>
+                  <button 
+                    onClick={(e) => { e.stopPropagation(); setActiveView('payments'); }}
+                    className="px-3 py-1.5 bg-amber-100 text-amber-700 text-sm font-medium rounded-lg hover:bg-amber-200 transition-colors"
+                  >
+                    Betaallink
+                  </button>
                 </div>
+              ))}
+            </div>
+          ) : (
+            <div className={`text-center py-4 ${darkMode ? 'text-gray-500' : 'text-gray-400'}`}>
+              <p className="text-sm">Alle betalingen zijn up-to-date! 🎉</p>
+            </div>
+          )}
+        </motion.div>
+      </div>
+
+      {/* Pipeline overview + Recente berichten */}
+      <div className="grid lg:grid-cols-3 gap-6">
+        {/* Project Pipeline */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.3 }}
+          className={`lg:col-span-2 p-6 rounded-2xl border ${
+            darkMode ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-200'
+          }`}
+        >
+          <div className="flex items-center justify-between mb-6">
+            <h3 className={`font-semibold ${darkMode ? 'text-white' : 'text-gray-900'}`}>
+              Project Pipeline
+            </h3>
+            <button
+              onClick={() => setActiveView('projects')}
+              className="text-sm text-blue-500 hover:text-blue-600 font-medium"
+            >
+              Bekijk alle
+            </button>
+          </div>
+          
+          {/* Pipeline visualisatie */}
+          <div className="flex flex-wrap gap-3 mb-6">
+            {Object.entries(PHASE_CONFIG).map(([phase, config]) => {
+              const count = phaseDistribution[phase as ProjectPhase]
+              const PhaseIcon = config.icon
+              return (
+                <motion.div
+                  key={phase}
+                  whileHover={{ scale: 1.02 }}
+                  className={`flex-1 min-w-[100px] p-4 rounded-xl cursor-pointer transition-colors ${
+                    darkMode ? 'bg-gray-700 hover:bg-gray-650' : 'bg-gray-50 hover:bg-gray-100'
+                  }`}
+                  onClick={() => setActiveView('projects')}
+                >
+                  <div className="flex items-center gap-2 mb-2">
+                    <div className={`p-1.5 rounded-lg ${config.bg}`}>
+                      <PhaseIcon className={`w-3.5 h-3.5 ${config.color}`} />
+                    </div>
+                    <span className={`text-xs font-medium ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>
+                      {config.label}
+                    </span>
+                  </div>
+                  <p className={`text-2xl font-bold ${darkMode ? 'text-white' : 'text-gray-900'}`}>
+                    {count}
+                  </p>
+                </motion.div>
+              )
+            })}
+          </div>
+
+          {/* Projecten in progress */}
+          {inProgress.length > 0 && (
+            <div>
+              <p className={`text-sm font-medium mb-3 ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>
+                In uitvoering ({inProgress.length})
+              </p>
+              <div className="space-y-2">
+                {inProgress.slice(0, 4).map(p => {
+                  const phase = PHASE_CONFIG[p.phase]
+                  const PhaseIcon = phase.icon
+                  return (
+                    <div
+                      key={p.id}
+                      onClick={() => onSelectProject(p)}
+                      className={`flex items-center gap-3 p-3 rounded-xl cursor-pointer transition-colors ${
+                        darkMode ? 'hover:bg-gray-700' : 'hover:bg-gray-50'
+                      }`}
+                    >
+                      <div className={`p-2 rounded-lg ${phase.bg}`}>
+                        <PhaseIcon className={`w-4 h-4 ${phase.color}`} />
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <p className={`font-medium truncate ${darkMode ? 'text-white' : 'text-gray-900'}`}>
+                          {p.businessName}
+                        </p>
+                        <p className={`text-sm ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>
+                          {PACKAGE_CONFIG[p.package]?.name} • {phase.label}
+                        </p>
+                      </div>
+                      <ChevronRight className={`w-5 h-5 flex-shrink-0 ${darkMode ? 'text-gray-500' : 'text-gray-400'}`} />
+                    </div>
+                  )
+                })}
               </div>
-            )}
-            {project.onboardingData.webshopExampleSites && (
-              <div>
-                <span className="text-gray-600 block mb-1">Voorbeeldsites</span>
-                <p className="text-gray-900 text-xs bg-white rounded-lg p-2 border border-emerald-100">
-                  {project.onboardingData.webshopExampleSites}
-                </p>
-              </div>
-            )}
-            {project.onboardingData.webshopBrandAssets && (
-              <div>
-                <span className="text-gray-600 block mb-1">Huisstijl/Branding</span>
-                <p className="text-gray-900 text-xs bg-white rounded-lg p-2 border border-emerald-100">
-                  {project.onboardingData.webshopBrandAssets}
-                </p>
+            </div>
+          )}
+        </motion.div>
+
+        {/* Recente berichten */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.35 }}
+          className={`p-6 rounded-2xl border ${
+            darkMode ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-200'
+          }`}
+        >
+          <div className="flex items-center justify-between mb-4">
+            <h3 className={`font-semibold ${darkMode ? 'text-white' : 'text-gray-900'}`}>
+              Recente berichten
+            </h3>
+            <button
+              onClick={() => setActiveView('messages')}
+              className="text-sm text-blue-500 hover:text-blue-600 font-medium"
+            >
+              Bekijk alle
+            </button>
+          </div>
+          <div className="space-y-3">
+            {recentMessages.length > 0 ? (
+              recentMessages.map((msg) => (
+                <div
+                  key={msg.id}
+                  onClick={() => onSelectProject(msg.project)}
+                  className={`p-3 rounded-xl cursor-pointer transition-colors ${
+                    !msg.read ? (darkMode ? 'bg-blue-900/20' : 'bg-blue-50') : ''
+                  } ${darkMode ? 'hover:bg-gray-700' : 'hover:bg-gray-50'}`}
+                >
+                  <div className="flex items-start gap-3">
+                    <div className={`p-2 rounded-full flex-shrink-0 ${
+                      !msg.read ? 'bg-blue-500' : darkMode ? 'bg-gray-700' : 'bg-gray-200'
+                    }`}>
+                      <MessageSquare className={`w-3 h-3 ${!msg.read ? 'text-white' : darkMode ? 'text-gray-400' : 'text-gray-500'}`} />
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <p className={`text-sm font-medium truncate ${darkMode ? 'text-white' : 'text-gray-900'}`}>
+                        {msg.project.contactName}
+                      </p>
+                      <p className={`text-sm truncate ${darkMode ? 'text-gray-400' : 'text-gray-600'}`}>
+                        {msg.message}
+                      </p>
+                      <p className={`text-xs mt-1 ${darkMode ? 'text-gray-500' : 'text-gray-400'}`}>
+                        {new Date(msg.date).toLocaleDateString('nl-NL', { day: 'numeric', month: 'short' })}
+                      </p>
+                    </div>
+                    {!msg.read && (
+                      <div className="w-2 h-2 bg-blue-500 rounded-full flex-shrink-0 mt-2" />
+                    )}
+                  </div>
+                </div>
+              ))
+            ) : (
+              <div className={`text-center py-8 ${darkMode ? 'text-gray-500' : 'text-gray-400'}`}>
+                <MessageSquare className="w-8 h-8 mx-auto mb-2 opacity-50" />
+                <p className="text-sm">Geen berichten</p>
               </div>
             )}
           </div>
-        </div>
-      )}
-      
-      {/* Quick actions */}
-      <div className="bg-white border border-gray-200 rounded-xl p-4">
-        <h3 className="font-semibold text-gray-900 mb-3">Snelle acties</h3>
-        <div className="grid grid-cols-2 gap-2">
-          <button 
-            onClick={() => onSendEmail('welcome')}
-            className="flex items-center gap-2 px-4 py-2.5 bg-blue-50 text-blue-700 rounded-lg hover:bg-blue-100 transition-colors text-sm font-medium"
-          >
-            <Mail className="w-4 h-4" />
-            Welkomstmail
-          </button>
-          <button 
-            onClick={() => onSendEmail('materials_reminder')}
-            className="flex items-center gap-2 px-4 py-2.5 bg-amber-50 text-amber-700 rounded-lg hover:bg-amber-100 transition-colors text-sm font-medium"
-          >
-            <Upload className="w-4 h-4" />
-            Herinnering
-          </button>
-          <button 
-            onClick={() => onSendEmail('design_ready')}
-            className="flex items-center gap-2 px-4 py-2.5 bg-purple-50 text-purple-700 rounded-lg hover:bg-purple-100 transition-colors text-sm font-medium"
-          >
-            <Palette className="w-4 h-4" />
-            Design klaar
-          </button>
-          <button 
-            onClick={() => onSendEmail('live_announcement')}
-            className="flex items-center gap-2 px-4 py-2.5 bg-green-50 text-green-700 rounded-lg hover:bg-green-100 transition-colors text-sm font-medium"
-          >
-            <Rocket className="w-4 h-4" />
-            Website live
-          </button>
-        </div>
+        </motion.div>
       </div>
-      
-      {/* Links */}
-      <div className="bg-white border border-gray-200 rounded-xl p-4">
-        <h3 className="font-semibold text-gray-900 mb-3">Project links</h3>
-        <div className="space-y-2">
-          {project.googleDriveUrl && (
-            <a 
-              href={project.googleDriveUrl} 
-              target="_blank" 
-              rel="noopener noreferrer"
-              className="flex items-center gap-3 p-2 rounded-lg hover:bg-gray-50 transition-colors"
+
+      {/* Snelle acties */}
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.4 }}
+        className={`p-6 rounded-2xl border ${
+          darkMode ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-200'
+        }`}
+      >
+        <h3 className={`font-semibold mb-4 ${darkMode ? 'text-white' : 'text-gray-900'}`}>
+          Snelle acties
+        </h3>
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+          {[
+            { icon: Plus, label: 'Nieuw project', color: 'bg-blue-500', view: 'projects' as DashboardView },
+            { icon: Users, label: 'Klanten beheren', color: 'bg-green-500', view: 'clients' as DashboardView },
+            { icon: Link2, label: 'Betaallink maken', color: 'bg-amber-500', view: 'payments' as DashboardView },
+            { icon: Briefcase, label: 'Services', color: 'bg-purple-500', view: 'services' as DashboardView },
+          ].map((action) => (
+            <motion.button
+              key={action.label}
+              whileHover={{ scale: 1.02, y: -2 }}
+              whileTap={{ scale: 0.98 }}
+              onClick={() => setActiveView(action.view)}
+              className={`flex flex-col items-center gap-3 p-4 rounded-xl transition-colors ${
+                darkMode ? 'bg-gray-700 hover:bg-gray-600' : 'bg-gray-50 hover:bg-gray-100'
+              }`}
             >
-              <div className="p-2 bg-yellow-100 rounded-lg">
-                <Download className="w-4 h-4 text-yellow-700" />
+              <div className={`p-3 rounded-xl ${action.color}`}>
+                <action.icon className="w-5 h-5 text-white" />
               </div>
-              <div className="flex-1">
-                <div className="text-sm font-medium text-gray-900">Google Drive</div>
-                <div className="text-xs text-gray-500">Materialen en assets</div>
+              <span className={`font-medium text-sm text-center ${darkMode ? 'text-white' : 'text-gray-900'}`}>
+                {action.label}
+              </span>
+            </motion.button>
+          ))}
+        </div>
+      </motion.div>
+
+      {/* Services overzicht (als er pending zijn) */}
+      {stats.pendingServices > 0 && (
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.45 }}
+          className={`p-6 rounded-2xl border-2 ${
+            darkMode ? 'bg-purple-900/20 border-purple-500/50' : 'bg-purple-50 border-purple-200'
+          }`}
+        >
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              <div className="p-2 bg-purple-500 rounded-xl">
+                <Briefcase className="w-5 h-5 text-white" />
               </div>
-              <ExternalLink className="w-4 h-4 text-gray-400" />
-            </a>
+              <div>
+                <h3 className={`font-semibold ${darkMode ? 'text-white' : 'text-gray-900'}`}>
+                  Service aanvragen
+                </h3>
+                <p className={`text-sm ${darkMode ? 'text-purple-400' : 'text-purple-700'}`}>
+                  {stats.pendingServices} nieuwe aanvra{stats.pendingServices === 1 ? 'ag' : 'gen'}
+                </p>
+              </div>
+            </div>
+            <button
+              onClick={() => setActiveView('services')}
+              className="px-4 py-2 bg-purple-500 hover:bg-purple-600 text-white font-medium rounded-xl transition-colors flex items-center gap-2"
+            >
+              Bekijken
+              <ChevronRight className="w-4 h-4" />
+            </button>
+          </div>
+        </motion.div>
+      )}
+    </div>
+  )
+}
+
+// ===========================================
+// PROJECTS VIEW - Full Kanban & List view
+// ===========================================
+
+interface ProjectsViewProps {
+  darkMode: boolean
+  projects: Project[]
+  onUpdateProject: (project: Project) => void
+  onSelectProject: (project: Project) => void
+}
+
+function ProjectsView({ darkMode, projects, onUpdateProject, onSelectProject }: ProjectsViewProps) {
+  const [viewMode, setViewMode] = useState<'kanban' | 'list'>('kanban')
+  const [filterPhase, setFilterPhase] = useState<ProjectPhase | 'all'>('all')
+  const [filterPayment, setFilterPayment] = useState<PaymentStatus | 'all'>('all')
+  const [searchQuery, setSearchQuery] = useState('')
+  const [selectedProject, setSelectedProject] = useState<Project | null>(null)
+  const [showProjectModal, setShowProjectModal] = useState(false)
+
+  const phases: { key: ProjectPhase; label: string; color: string; bgColor: string }[] = [
+    { key: 'onboarding', label: 'Onboarding', color: 'bg-yellow-500', bgColor: darkMode ? 'bg-yellow-900/20' : 'bg-yellow-50' },
+    { key: 'design', label: 'Design', color: 'bg-blue-500', bgColor: darkMode ? 'bg-blue-900/20' : 'bg-blue-50' },
+    { key: 'development', label: 'Development', color: 'bg-purple-500', bgColor: darkMode ? 'bg-purple-900/20' : 'bg-purple-50' },
+    { key: 'review', label: 'Review', color: 'bg-orange-500', bgColor: darkMode ? 'bg-orange-900/20' : 'bg-orange-50' },
+    { key: 'live', label: 'Live', color: 'bg-green-500', bgColor: darkMode ? 'bg-green-900/20' : 'bg-green-50' },
+  ]
+
+  const filteredProjects = projects.filter(p => {
+    const matchesPhase = filterPhase === 'all' || p.phase === filterPhase
+    const matchesPayment = filterPayment === 'all' || p.paymentStatus === filterPayment
+    const matchesSearch = searchQuery === '' || 
+      p.businessName.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      p.contactName.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      p.contactEmail.toLowerCase().includes(searchQuery.toLowerCase())
+    return matchesPhase && matchesPayment && matchesSearch
+  })
+
+  const getProjectsByPhase = (phase: ProjectPhase) => 
+    filteredProjects.filter(p => p.phase === phase)
+
+  const _handlePhaseChange = (project: Project, newPhase: ProjectPhase) => {
+    onUpdateProject({ ...project, phase: newPhase, updatedAt: new Date().toISOString() })
+  }
+
+  const openProjectDetail = (project: Project) => {
+    setSelectedProject(project)
+    setShowProjectModal(true)
+    onSelectProject(project)
+  }
+
+  const getPaymentBadge = (status: PaymentStatus) => {
+    const badges = {
+      pending: { label: 'In afwachting', color: 'bg-gray-500' },
+      awaiting_payment: { label: 'Wacht op betaling', color: 'bg-yellow-500' },
+      paid: { label: 'Betaald', color: 'bg-green-500' },
+      failed: { label: 'Mislukt', color: 'bg-red-500' },
+      refunded: { label: 'Terugbetaald', color: 'bg-purple-500' },
+    }
+    return badges[status]
+  }
+
+  const getPackageBadge = (pkg: Project['package']) => {
+    const badges = {
+      starter: { label: 'Starter', color: 'bg-gray-500', price: '€96/m' },
+      professional: { label: 'Professional', color: 'bg-blue-500', price: '€180/m' },
+      business: { label: 'Business', color: 'bg-purple-500', price: '€301/m' },
+      webshop: { label: 'Webshop', color: 'bg-orange-500', price: '€422/m' },
+    }
+    return badges[pkg]
+  }
+
+  // Project Card Component
+  const ProjectCard = ({ project }: { project: Project }) => {
+    const payment = getPaymentBadge(project.paymentStatus)
+    const pkg = getPackageBadge(project.package)
+    const unreadCount = project.messages.filter(m => !m.read && m.from === 'client').length
+
+    return (
+      <motion.div
+        layout
+        initial={{ opacity: 0, scale: 0.95 }}
+        animate={{ opacity: 1, scale: 1 }}
+        exit={{ opacity: 0, scale: 0.95 }}
+        whileHover={{ y: -2 }}
+        onClick={() => openProjectDetail(project)}
+        className={`p-4 rounded-xl border cursor-pointer transition-all ${
+          darkMode 
+            ? 'bg-gray-800/50 border-gray-700 hover:border-blue-500/50' 
+            : 'bg-white border-gray-200 hover:border-blue-300 shadow-sm hover:shadow-md'
+        }`}
+      >
+        <div className="flex items-start justify-between mb-3">
+          <div className="flex-1 min-w-0">
+            <h4 className={`font-semibold truncate ${darkMode ? 'text-white' : 'text-gray-900'}`}>
+              {project.businessName}
+            </h4>
+            <p className={`text-sm truncate ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>
+              {project.contactName}
+            </p>
+          </div>
+          {unreadCount > 0 && (
+            <span className="px-2 py-0.5 bg-red-500 text-white text-xs font-bold rounded-full">
+              {unreadCount}
+            </span>
           )}
+        </div>
+
+        <div className="flex flex-wrap gap-1.5 mb-3">
+          <span className={`px-2 py-0.5 text-xs font-medium text-white rounded-full ${pkg.color}`}>
+            {pkg.label}
+          </span>
+          <span className={`px-2 py-0.5 text-xs font-medium text-white rounded-full ${payment.color}`}>
+            {payment.label}
+          </span>
+        </div>
+
+        <div className={`flex items-center justify-between text-xs ${darkMode ? 'text-gray-500' : 'text-gray-400'}`}>
+          <span className="flex items-center gap-1">
+            <Calendar className="w-3 h-3" />
+            {new Date(project.createdAt).toLocaleDateString('nl-NL', { day: 'numeric', month: 'short' })}
+          </span>
           {project.stagingUrl && (
             <a 
               href={project.stagingUrl} 
               target="_blank" 
               rel="noopener noreferrer"
-              className="flex items-center gap-3 p-2 rounded-lg hover:bg-gray-50 transition-colors"
+              onClick={(e) => e.stopPropagation()}
+              className="flex items-center gap-1 text-blue-500 hover:text-blue-400"
             >
-              <div className="p-2 bg-purple-100 rounded-lg">
-                <Globe className="w-4 h-4 text-purple-700" />
-              </div>
-              <div className="flex-1">
-                <div className="text-sm font-medium text-gray-900">Staging</div>
-                <div className="text-xs text-gray-500">{project.stagingUrl}</div>
-              </div>
-              <ExternalLink className="w-4 h-4 text-gray-400" />
-            </a>
-          )}
-          {project.liveUrl && (
-            <a 
-              href={project.liveUrl} 
-              target="_blank" 
-              rel="noopener noreferrer"
-              className="flex items-center gap-3 p-2 rounded-lg hover:bg-gray-50 transition-colors"
-            >
-              <div className="p-2 bg-green-100 rounded-lg">
-                <Rocket className="w-4 h-4 text-green-700" />
-              </div>
-              <div className="flex-1">
-                <div className="text-sm font-medium text-gray-900">Live website</div>
-                <div className="text-xs text-gray-500">{project.liveUrl}</div>
-              </div>
-              <ExternalLink className="w-4 h-4 text-gray-400" />
+              <ExternalLink className="w-3 h-3" />
+              Preview
             </a>
           )}
         </div>
+      </motion.div>
+    )
+  }
+
+  // Kanban Column Component
+  const KanbanColumn = ({ phase }: { phase: typeof phases[0] }) => {
+    const phaseProjects = getProjectsByPhase(phase.key)
+    
+    return (
+      <div className={`flex-1 min-w-[280px] max-w-[320px] rounded-2xl ${phase.bgColor} p-4`}>
+        <div className="flex items-center justify-between mb-4">
+          <div className="flex items-center gap-2">
+            <div className={`w-3 h-3 rounded-full ${phase.color}`} />
+            <h3 className={`font-semibold ${darkMode ? 'text-white' : 'text-gray-900'}`}>
+              {phase.label}
+            </h3>
+          </div>
+          <span className={`px-2 py-0.5 text-sm font-medium rounded-full ${
+            darkMode ? 'bg-gray-700 text-gray-300' : 'bg-white text-gray-600'
+          }`}>
+            {phaseProjects.length}
+          </span>
+        </div>
+
+        <div className="space-y-3 min-h-[200px]">
+          <AnimatePresence>
+            {phaseProjects.map(project => (
+              <ProjectCard key={project.id} project={project} />
+            ))}
+          </AnimatePresence>
+          
+          {phaseProjects.length === 0 && (
+            <div className={`p-4 text-center text-sm rounded-xl border-2 border-dashed ${
+              darkMode ? 'border-gray-700 text-gray-500' : 'border-gray-200 text-gray-400'
+            }`}>
+              Geen projecten
+            </div>
+          )}
+        </div>
       </div>
-      
-      {/* Package info */}
-      {packageConfig && (
-        <div className="bg-gradient-to-br from-gray-50 to-gray-100 border border-gray-200 rounded-xl p-4">
-          <div className="flex items-center justify-between mb-3">
-            <h3 className="font-semibold text-gray-900">Pakket: {packageConfig.name}</h3>
-            <span className="text-sm font-medium text-gray-500">
-              €{packageConfig.priceMonthly}/maand
-            </span>
+    )
+  }
+
+  return (
+    <div className="space-y-6">
+      {/* Header */}
+      <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
+        <div>
+          <h1 className={`text-2xl font-bold ${darkMode ? 'text-white' : 'text-gray-900'}`}>
+            Projecten
+          </h1>
+          <p className={`${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>
+            {filteredProjects.length} project{filteredProjects.length !== 1 ? 'en' : ''} gevonden
+          </p>
+        </div>
+
+        <div className="flex flex-wrap items-center gap-3">
+          {/* Search */}
+          <div className="relative">
+            <Search className={`absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 ${darkMode ? 'text-gray-500' : 'text-gray-400'}`} />
+            <input
+              type="text"
+              placeholder="Zoeken..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className={`pl-9 pr-4 py-2 rounded-xl border w-48 ${
+                darkMode 
+                  ? 'bg-gray-800 border-gray-700 text-white placeholder-gray-500' 
+                  : 'bg-white border-gray-200 text-gray-900 placeholder-gray-400'
+              } focus:outline-none focus:ring-2 focus:ring-blue-500/50`}
+            />
           </div>
-          <div className="grid grid-cols-2 gap-3 text-sm">
-            <div className="flex items-center gap-2 text-gray-600">
-              <FileText className="w-4 h-4 text-gray-400" />
-              {packageConfig.maxPages === 'unlimited' ? 'Onbeperkt' : `Max ${packageConfig.maxPages}`} pagina's
-            </div>
-            <div className="flex items-center gap-2 text-gray-600">
-              <RefreshCw className="w-4 h-4 text-gray-400" />
-              {packageConfig.revisionsIncluded} revisierondes
-            </div>
-            <div className="flex items-center gap-2 text-gray-600">
-              <Clock className="w-4 h-4 text-gray-400" />
-              {packageConfig.supportResponseTime} response
-            </div>
-            <div className="flex items-center gap-2 text-gray-600">
-              <Edit3 className="w-4 h-4 text-gray-400" />
-              {project.monthlyChangesLimit}x/maand wijzigingen
-            </div>
+
+          {/* Phase Filter */}
+          <select
+            value={filterPhase}
+            onChange={(e) => setFilterPhase(e.target.value as ProjectPhase | 'all')}
+            className={`px-3 py-2 rounded-xl border ${
+              darkMode 
+                ? 'bg-gray-800 border-gray-700 text-white' 
+                : 'bg-white border-gray-200 text-gray-900'
+            } focus:outline-none focus:ring-2 focus:ring-blue-500/50`}
+          >
+            <option value="all">Alle fases</option>
+            {phases.map(p => (
+              <option key={p.key} value={p.key}>{p.label}</option>
+            ))}
+          </select>
+
+          {/* Payment Filter */}
+          <select
+            value={filterPayment}
+            onChange={(e) => setFilterPayment(e.target.value as PaymentStatus | 'all')}
+            className={`px-3 py-2 rounded-xl border ${
+              darkMode 
+                ? 'bg-gray-800 border-gray-700 text-white' 
+                : 'bg-white border-gray-200 text-gray-900'
+            } focus:outline-none focus:ring-2 focus:ring-blue-500/50`}
+          >
+            <option value="all">Alle betalingen</option>
+            <option value="pending">In afwachting</option>
+            <option value="awaiting_payment">Wacht op betaling</option>
+            <option value="paid">Betaald</option>
+            <option value="failed">Mislukt</option>
+          </select>
+
+          {/* View Toggle */}
+          <div className={`flex rounded-xl border p-1 ${darkMode ? 'bg-gray-800 border-gray-700' : 'bg-gray-100 border-gray-200'}`}>
+            <button
+              onClick={() => setViewMode('kanban')}
+              className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-colors ${
+                viewMode === 'kanban'
+                  ? 'bg-blue-500 text-white'
+                  : darkMode ? 'text-gray-400 hover:text-white' : 'text-gray-600 hover:text-gray-900'
+              }`}
+            >
+              <LayoutGrid className="w-4 h-4" />
+            </button>
+            <button
+              onClick={() => setViewMode('list')}
+              className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-colors ${
+                viewMode === 'list'
+                  ? 'bg-blue-500 text-white'
+                  : darkMode ? 'text-gray-400 hover:text-white' : 'text-gray-600 hover:text-gray-900'
+              }`}
+            >
+              <List className="w-4 h-4" />
+            </button>
           </div>
+        </div>
+      </div>
+
+      {/* Kanban View */}
+      {viewMode === 'kanban' && (
+        <div className="flex gap-4 overflow-x-auto pb-4 -mx-4 px-4 lg:mx-0 lg:px-0">
+          {phases.map(phase => (
+            <KanbanColumn key={phase.key} phase={phase} />
+          ))}
+        </div>
+      )}
+
+      {/* List View */}
+      {viewMode === 'list' && (
+        <div className={`rounded-2xl border overflow-hidden ${
+          darkMode ? 'bg-gray-800/50 border-gray-700' : 'bg-white border-gray-200'
+        }`}>
+          <div className="overflow-x-auto">
+            <table className="w-full">
+              <thead className={darkMode ? 'bg-gray-800' : 'bg-gray-50'}>
+                <tr>
+                  <th className={`px-4 py-3 text-left text-xs font-semibold uppercase tracking-wider ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>
+                    Project
+                  </th>
+                  <th className={`px-4 py-3 text-left text-xs font-semibold uppercase tracking-wider ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>
+                    Pakket
+                  </th>
+                  <th className={`px-4 py-3 text-left text-xs font-semibold uppercase tracking-wider ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>
+                    Fase
+                  </th>
+                  <th className={`px-4 py-3 text-left text-xs font-semibold uppercase tracking-wider ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>
+                    Betaling
+                  </th>
+                  <th className={`px-4 py-3 text-left text-xs font-semibold uppercase tracking-wider ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>
+                    Aangemaakt
+                  </th>
+                  <th className={`px-4 py-3 text-left text-xs font-semibold uppercase tracking-wider ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>
+                    Acties
+                  </th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-gray-200 dark:divide-gray-700">
+                {filteredProjects.map(project => {
+                  const payment = getPaymentBadge(project.paymentStatus)
+                  const pkg = getPackageBadge(project.package)
+                  const phase = phases.find(p => p.key === project.phase)
+                  const unreadCount = project.messages.filter(m => !m.read && m.from === 'client').length
+
+                  return (
+                    <tr 
+                      key={project.id}
+                      onClick={() => openProjectDetail(project)}
+                      className={`cursor-pointer transition-colors ${
+                        darkMode ? 'hover:bg-gray-700/50' : 'hover:bg-gray-50'
+                      }`}
+                    >
+                      <td className="px-4 py-4">
+                        <div className="flex items-center gap-3">
+                          <div className={`w-10 h-10 rounded-xl flex items-center justify-center font-bold text-white ${pkg.color}`}>
+                            {project.businessName.charAt(0)}
+                          </div>
+                          <div>
+                            <div className="flex items-center gap-2">
+                              <span className={`font-semibold ${darkMode ? 'text-white' : 'text-gray-900'}`}>
+                                {project.businessName}
+                              </span>
+                              {unreadCount > 0 && (
+                                <span className="px-1.5 py-0.5 bg-red-500 text-white text-xs font-bold rounded-full">
+                                  {unreadCount}
+                                </span>
+                              )}
+                            </div>
+                            <span className={`text-sm ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>
+                              {project.contactName} • {project.contactEmail}
+                            </span>
+                          </div>
+                        </div>
+                      </td>
+                      <td className="px-4 py-4">
+                        <span className={`px-2 py-1 text-xs font-medium text-white rounded-full ${pkg.color}`}>
+                          {pkg.label}
+                        </span>
+                      </td>
+                      <td className="px-4 py-4">
+                        <span className={`px-2 py-1 text-xs font-medium text-white rounded-full ${phase?.color}`}>
+                          {phase?.label}
+                        </span>
+                      </td>
+                      <td className="px-4 py-4">
+                        <span className={`px-2 py-1 text-xs font-medium text-white rounded-full ${payment.color}`}>
+                          {payment.label}
+                        </span>
+                      </td>
+                      <td className={`px-4 py-4 text-sm ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>
+                        {new Date(project.createdAt).toLocaleDateString('nl-NL')}
+                      </td>
+                      <td className="px-4 py-4">
+                        <div className="flex items-center gap-2">
+                          {project.stagingUrl && (
+                            <a
+                              href={project.stagingUrl}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              onClick={(e) => e.stopPropagation()}
+                              className="p-2 rounded-lg hover:bg-blue-500/10 text-blue-500 transition-colors"
+                              title="Preview bekijken"
+                            >
+                              <ExternalLink className="w-4 h-4" />
+                            </a>
+                          )}
+                          <button
+                            onClick={(e) => {
+                              e.stopPropagation()
+                              openProjectDetail(project)
+                            }}
+                            className={`p-2 rounded-lg transition-colors ${
+                              darkMode ? 'hover:bg-gray-700 text-gray-400' : 'hover:bg-gray-100 text-gray-500'
+                            }`}
+                            title="Details"
+                          >
+                            <Eye className="w-4 h-4" />
+                          </button>
+                        </div>
+                      </td>
+                    </tr>
+                  )
+                })}
+              </tbody>
+            </table>
+          </div>
+
+          {filteredProjects.length === 0 && (
+            <div className={`p-12 text-center ${darkMode ? 'text-gray-500' : 'text-gray-400'}`}>
+              <FolderKanban className="w-12 h-12 mx-auto mb-4 opacity-50" />
+              <p>Geen projecten gevonden</p>
+            </div>
+          )}
+        </div>
+      )}
+
+      {/* Project Detail Modal */}
+      <AnimatePresence>
+        {showProjectModal && selectedProject && (
+          <ProjectDetailModal
+            project={selectedProject}
+            darkMode={darkMode}
+            onClose={() => {
+              setShowProjectModal(false)
+              setSelectedProject(null)
+            }}
+            onUpdate={onUpdateProject}
+            phases={phases}
+          />
+        )}
+      </AnimatePresence>
+    </div>
+  )
+}
+
+// ===========================================
+// PROJECT DETAIL MODAL
+// ===========================================
+
+interface ProjectDetailModalProps {
+  project: Project
+  darkMode: boolean
+  onClose: () => void
+  onUpdate: (project: Project) => void
+  phases: { key: ProjectPhase; label: string; color: string }[]
+}
+
+function ProjectDetailModal({ project, darkMode, onClose, onUpdate, phases }: ProjectDetailModalProps) {
+  const [activeTab, setActiveTab] = useState<'overview' | 'messages' | 'settings'>('overview')
+  const [editPhase, setEditPhase] = useState(project.phase)
+  const [editPaymentStatus, setEditPaymentStatus] = useState(project.paymentStatus)
+  const [internalNotes, setInternalNotes] = useState(project.internalNotes || '')
+  const [newMessage, setNewMessage] = useState('')
+  const [isSaving, setIsSaving] = useState(false)
+
+  const handleSave = async () => {
+    setIsSaving(true)
+    onUpdate({
+      ...project,
+      phase: editPhase,
+      paymentStatus: editPaymentStatus,
+      internalNotes,
+      updatedAt: new Date().toISOString(),
+    })
+    setIsSaving(false)
+  }
+
+  const handleSendMessage = () => {
+    if (!newMessage.trim()) return
+    
+    const newMsg: ChatMessage = {
+      id: `msg-${Date.now()}`,
+      date: new Date().toISOString(),
+      from: 'developer',
+      message: newMessage.trim(),
+      read: true,
+    }
+    
+    onUpdate({
+      ...project,
+      messages: [...project.messages, newMsg],
+      updatedAt: new Date().toISOString(),
+    })
+    setNewMessage('')
+  }
+
+  const getPackagePrice = (pkg: Project['package']) => {
+    const prices = { starter: 96, professional: 180, business: 301, webshop: 422 }
+    return prices[pkg]
+  }
+
+  return (
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm"
+      onClick={onClose}
+    >
+      <motion.div
+        initial={{ scale: 0.95, opacity: 0 }}
+        animate={{ scale: 1, opacity: 1 }}
+        exit={{ scale: 0.95, opacity: 0 }}
+        onClick={(e) => e.stopPropagation()}
+        className={`w-full max-w-4xl max-h-[90vh] overflow-hidden rounded-2xl ${
+          darkMode ? 'bg-gray-800' : 'bg-white'
+        } shadow-2xl`}
+      >
+        {/* Header */}
+        <div className={`p-6 border-b ${darkMode ? 'border-gray-700' : 'border-gray-200'}`}>
+          <div className="flex items-start justify-between">
+            <div>
+              <h2 className={`text-xl font-bold ${darkMode ? 'text-white' : 'text-gray-900'}`}>
+                {project.businessName}
+              </h2>
+              <p className={`${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>
+                {project.contactName} • {project.contactEmail}
+              </p>
+            </div>
+            <button
+              onClick={onClose}
+              className={`p-2 rounded-xl transition-colors ${
+                darkMode ? 'hover:bg-gray-700 text-gray-400' : 'hover:bg-gray-100 text-gray-500'
+              }`}
+            >
+              <X className="w-5 h-5" />
+            </button>
+          </div>
+
+          {/* Tabs */}
+          <div className="flex gap-2 mt-4">
+            {(['overview', 'messages', 'settings'] as const).map(tab => (
+              <button
+                key={tab}
+                onClick={() => setActiveTab(tab)}
+                className={`px-4 py-2 rounded-xl text-sm font-medium transition-colors ${
+                  activeTab === tab
+                    ? 'bg-blue-500 text-white'
+                    : darkMode ? 'text-gray-400 hover:bg-gray-700' : 'text-gray-600 hover:bg-gray-100'
+                }`}
+              >
+                {tab === 'overview' && 'Overzicht'}
+                {tab === 'messages' && `Berichten (${project.messages.length})`}
+                {tab === 'settings' && 'Instellingen'}
+              </button>
+            ))}
+          </div>
+        </div>
+
+        {/* Content */}
+        <div className="p-6 overflow-y-auto max-h-[calc(90vh-200px)]">
+          {activeTab === 'overview' && (
+            <div className="space-y-6">
+              {/* Quick Stats */}
+              <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+                <div className={`p-4 rounded-xl ${darkMode ? 'bg-gray-700/50' : 'bg-gray-50'}`}>
+                  <p className={`text-sm ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>Pakket</p>
+                  <p className={`font-semibold capitalize ${darkMode ? 'text-white' : 'text-gray-900'}`}>
+                    {project.package}
+                  </p>
+                  <p className="text-sm text-blue-500">€{getPackagePrice(project.package)}/maand</p>
+                </div>
+                <div className={`p-4 rounded-xl ${darkMode ? 'bg-gray-700/50' : 'bg-gray-50'}`}>
+                  <p className={`text-sm ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>Fase</p>
+                  <select
+                    value={editPhase}
+                    onChange={(e) => setEditPhase(e.target.value as ProjectPhase)}
+                    className={`mt-1 w-full px-2 py-1 rounded-lg border text-sm font-semibold ${
+                      darkMode 
+                        ? 'bg-gray-700 border-gray-600 text-white' 
+                        : 'bg-white border-gray-200 text-gray-900'
+                    }`}
+                  >
+                    {phases.map(p => (
+                      <option key={p.key} value={p.key}>{p.label}</option>
+                    ))}
+                  </select>
+                </div>
+                <div className={`p-4 rounded-xl ${darkMode ? 'bg-gray-700/50' : 'bg-gray-50'}`}>
+                  <p className={`text-sm ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>Betaling</p>
+                  <select
+                    value={editPaymentStatus}
+                    onChange={(e) => setEditPaymentStatus(e.target.value as PaymentStatus)}
+                    className={`mt-1 w-full px-2 py-1 rounded-lg border text-sm font-semibold ${
+                      darkMode 
+                        ? 'bg-gray-700 border-gray-600 text-white' 
+                        : 'bg-white border-gray-200 text-gray-900'
+                    }`}
+                  >
+                    <option value="pending">In afwachting</option>
+                    <option value="awaiting_payment">Wacht op betaling</option>
+                    <option value="paid">Betaald</option>
+                    <option value="failed">Mislukt</option>
+                    <option value="refunded">Terugbetaald</option>
+                  </select>
+                </div>
+                <div className={`p-4 rounded-xl ${darkMode ? 'bg-gray-700/50' : 'bg-gray-50'}`}>
+                  <p className={`text-sm ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>Aangemaakt</p>
+                  <p className={`font-semibold ${darkMode ? 'text-white' : 'text-gray-900'}`}>
+                    {new Date(project.createdAt).toLocaleDateString('nl-NL')}
+                  </p>
+                </div>
+              </div>
+
+              {/* Contact Info */}
+              <div className={`p-4 rounded-xl ${darkMode ? 'bg-gray-700/50' : 'bg-gray-50'}`}>
+                <h3 className={`font-semibold mb-3 ${darkMode ? 'text-white' : 'text-gray-900'}`}>
+                  Contactgegevens
+                </h3>
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                  <div className="flex items-center gap-2">
+                    <User className={`w-4 h-4 ${darkMode ? 'text-gray-400' : 'text-gray-500'}`} />
+                    <span className={darkMode ? 'text-gray-300' : 'text-gray-700'}>{project.contactName}</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <Mail className={`w-4 h-4 ${darkMode ? 'text-gray-400' : 'text-gray-500'}`} />
+                    <a href={`mailto:${project.contactEmail}`} className="text-blue-500 hover:underline">
+                      {project.contactEmail}
+                    </a>
+                  </div>
+                  {project.contactPhone && (
+                    <div className="flex items-center gap-2">
+                      <Phone className={`w-4 h-4 ${darkMode ? 'text-gray-400' : 'text-gray-500'}`} />
+                      <a href={`tel:${project.contactPhone}`} className="text-blue-500 hover:underline">
+                        {project.contactPhone}
+                      </a>
+                    </div>
+                  )}
+                </div>
+              </div>
+
+              {/* URLs */}
+              {(project.stagingUrl || project.liveUrl) && (
+                <div className={`p-4 rounded-xl ${darkMode ? 'bg-gray-700/50' : 'bg-gray-50'}`}>
+                  <h3 className={`font-semibold mb-3 ${darkMode ? 'text-white' : 'text-gray-900'}`}>
+                    Links
+                  </h3>
+                  <div className="flex flex-wrap gap-3">
+                    {project.stagingUrl && (
+                      <a
+                        href={project.stagingUrl}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="flex items-center gap-2 px-4 py-2 bg-blue-500 text-white rounded-xl hover:bg-blue-600 transition-colors"
+                      >
+                        <ExternalLink className="w-4 h-4" />
+                        Staging Preview
+                      </a>
+                    )}
+                    {project.liveUrl && (
+                      <a
+                        href={project.liveUrl}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="flex items-center gap-2 px-4 py-2 bg-green-500 text-white rounded-xl hover:bg-green-600 transition-colors"
+                      >
+                        <Globe className="w-4 h-4" />
+                        Live Website
+                      </a>
+                    )}
+                  </div>
+                </div>
+              )}
+
+              {/* Internal Notes */}
+              <div>
+                <h3 className={`font-semibold mb-3 ${darkMode ? 'text-white' : 'text-gray-900'}`}>
+                  Interne notities
+                </h3>
+                <textarea
+                  value={internalNotes}
+                  onChange={(e) => setInternalNotes(e.target.value)}
+                  placeholder="Voeg interne notities toe..."
+                  rows={4}
+                  className={`w-full px-4 py-3 rounded-xl border resize-none ${
+                    darkMode 
+                      ? 'bg-gray-700 border-gray-600 text-white placeholder-gray-500' 
+                      : 'bg-gray-50 border-gray-200 text-gray-900 placeholder-gray-400'
+                  } focus:outline-none focus:ring-2 focus:ring-blue-500/50`}
+                />
+              </div>
+
+              {/* Save Button */}
+              <button
+                onClick={handleSave}
+                disabled={isSaving}
+                className="w-full py-3 bg-blue-500 hover:bg-blue-600 text-white font-semibold rounded-xl transition-colors disabled:opacity-50"
+              >
+                {isSaving ? 'Opslaan...' : 'Wijzigingen opslaan'}
+              </button>
+            </div>
+          )}
+
+          {activeTab === 'messages' && (
+            <div className="space-y-4">
+              {/* Messages List */}
+              <div className={`h-[400px] overflow-y-auto p-4 rounded-xl ${
+                darkMode ? 'bg-gray-700/50' : 'bg-gray-50'
+              }`}>
+                {project.messages.length === 0 ? (
+                  <div className={`h-full flex items-center justify-center ${darkMode ? 'text-gray-500' : 'text-gray-400'}`}>
+                    <div className="text-center">
+                      <MessageSquare className="w-12 h-12 mx-auto mb-2 opacity-50" />
+                      <p>Nog geen berichten</p>
+                    </div>
+                  </div>
+                ) : (
+                  <div className="space-y-3">
+                    {project.messages.map(msg => (
+                      <div
+                        key={msg.id}
+                        className={`flex ${msg.from === 'developer' ? 'justify-end' : 'justify-start'}`}
+                      >
+                        <div className={`max-w-[70%] p-3 rounded-2xl ${
+                          msg.from === 'developer'
+                            ? 'bg-blue-500 text-white'
+                            : darkMode ? 'bg-gray-600 text-white' : 'bg-white text-gray-900 shadow-sm'
+                        }`}>
+                          <p className="text-sm">{msg.message}</p>
+                          <p className={`text-xs mt-1 ${
+                            msg.from === 'developer' ? 'text-blue-200' : darkMode ? 'text-gray-400' : 'text-gray-500'
+                          }`}>
+                            {new Date(msg.date).toLocaleString('nl-NL')}
+                          </p>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+
+              {/* Send Message */}
+              <div className="flex gap-2">
+                <input
+                  type="text"
+                  value={newMessage}
+                  onChange={(e) => setNewMessage(e.target.value)}
+                  onKeyDown={(e) => e.key === 'Enter' && handleSendMessage()}
+                  placeholder="Typ een bericht..."
+                  className={`flex-1 px-4 py-3 rounded-xl border ${
+                    darkMode 
+                      ? 'bg-gray-700 border-gray-600 text-white placeholder-gray-500' 
+                      : 'bg-gray-50 border-gray-200 text-gray-900 placeholder-gray-400'
+                  } focus:outline-none focus:ring-2 focus:ring-blue-500/50`}
+                />
+                <button
+                  onClick={handleSendMessage}
+                  disabled={!newMessage.trim()}
+                  className="px-6 py-3 bg-blue-500 hover:bg-blue-600 text-white font-semibold rounded-xl transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  <Send className="w-5 h-5" />
+                </button>
+              </div>
+            </div>
+          )}
+
+          {activeTab === 'settings' && (
+            <div className="space-y-6">
+              <div className={`p-4 rounded-xl ${darkMode ? 'bg-yellow-900/20 border border-yellow-500/50' : 'bg-yellow-50 border border-yellow-200'}`}>
+                <div className="flex items-start gap-3">
+                  <AlertCircle className="w-5 h-5 text-yellow-500 flex-shrink-0 mt-0.5" />
+                  <div>
+                    <h4 className={`font-semibold ${darkMode ? 'text-yellow-400' : 'text-yellow-800'}`}>
+                      Projectinstellingen
+                    </h4>
+                    <p className={`text-sm ${darkMode ? 'text-yellow-500' : 'text-yellow-700'}`}>
+                      Hier komen geavanceerde instellingen zoals project verwijderen, archiveren, etc.
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+              {/* Quick Actions */}
+              <div className="grid grid-cols-2 gap-4">
+                <button className={`p-4 rounded-xl border text-left transition-colors ${
+                  darkMode 
+                    ? 'bg-gray-700/50 border-gray-600 hover:border-blue-500' 
+                    : 'bg-gray-50 border-gray-200 hover:border-blue-300'
+                }`}>
+                  <Mail className={`w-5 h-5 mb-2 ${darkMode ? 'text-blue-400' : 'text-blue-500'}`} />
+                  <h4 className={`font-semibold ${darkMode ? 'text-white' : 'text-gray-900'}`}>
+                    E-mail versturen
+                  </h4>
+                  <p className={`text-sm ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>
+                    Stuur een e-mail naar de klant
+                  </p>
+                </button>
+                <button className={`p-4 rounded-xl border text-left transition-colors ${
+                  darkMode 
+                    ? 'bg-gray-700/50 border-gray-600 hover:border-green-500' 
+                    : 'bg-gray-50 border-gray-200 hover:border-green-300'
+                }`}>
+                  <CreditCard className={`w-5 h-5 mb-2 ${darkMode ? 'text-green-400' : 'text-green-500'}`} />
+                  <h4 className={`font-semibold ${darkMode ? 'text-white' : 'text-gray-900'}`}>
+                    Betaallink maken
+                  </h4>
+                  <p className={`text-sm ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>
+                    Genereer een Mollie betaallink
+                  </p>
+                </button>
+              </div>
+            </div>
+          )}
+        </div>
+      </motion.div>
+    </motion.div>
+  )
+}
+
+// ===========================================
+// CLIENTS VIEW
+// ===========================================
+
+interface ClientsViewProps {
+  darkMode: boolean
+  clients: Client[]
+  projects: Project[]
+  onSelectClient: (client: Client) => void
+}
+
+function ClientsView({ darkMode, clients, projects, onSelectClient }: ClientsViewProps) {
+  const [searchQuery, setSearchQuery] = useState('')
+  const [sortBy, setSortBy] = useState<'name' | 'projects' | 'spent' | 'date'>('date')
+  const [_selectedClient, setSelectedClient] = useState<Client | null>(null)
+
+  const filteredClients = clients
+    .filter(c => {
+      const matchesSearch = searchQuery === '' ||
+        c.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        c.email.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        c.company.toLowerCase().includes(searchQuery.toLowerCase())
+      return matchesSearch
+    })
+    .sort((a, b) => {
+      switch (sortBy) {
+        case 'name': return a.name.localeCompare(b.name)
+        case 'projects': return b.projects.length - a.projects.length
+        case 'spent': return b.totalSpent - a.totalSpent
+        case 'date': return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+        default: return 0
+      }
+    })
+
+  const getClientProjects = (client: Client) => 
+    projects.filter(p => client.projects.includes(p.id))
+
+  return (
+    <div className="space-y-6">
+      {/* Header */}
+      <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
+        <div>
+          <h1 className={`text-2xl font-bold ${darkMode ? 'text-white' : 'text-gray-900'}`}>
+            Klanten
+          </h1>
+          <p className={`${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>
+            {filteredClients.length} klant{filteredClients.length !== 1 ? 'en' : ''} gevonden
+          </p>
+        </div>
+
+        <div className="flex flex-wrap items-center gap-3">
+          {/* Search */}
+          <div className="relative">
+            <Search className={`absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 ${darkMode ? 'text-gray-500' : 'text-gray-400'}`} />
+            <input
+              type="text"
+              placeholder="Zoek klant..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className={`pl-9 pr-4 py-2 rounded-xl border w-56 ${
+                darkMode 
+                  ? 'bg-gray-800 border-gray-700 text-white placeholder-gray-500' 
+                  : 'bg-white border-gray-200 text-gray-900 placeholder-gray-400'
+              } focus:outline-none focus:ring-2 focus:ring-blue-500/50`}
+            />
+          </div>
+
+          {/* Sort */}
+          <select
+            value={sortBy}
+            onChange={(e) => setSortBy(e.target.value as typeof sortBy)}
+            className={`px-3 py-2 rounded-xl border ${
+              darkMode 
+                ? 'bg-gray-800 border-gray-700 text-white' 
+                : 'bg-white border-gray-200 text-gray-900'
+            } focus:outline-none focus:ring-2 focus:ring-blue-500/50`}
+          >
+            <option value="date">Nieuwste eerst</option>
+            <option value="name">Naam A-Z</option>
+            <option value="projects">Meeste projecten</option>
+            <option value="spent">Hoogste omzet</option>
+          </select>
+        </div>
+      </div>
+
+      {/* Clients Grid */}
+      <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
+        {filteredClients.map(client => {
+          const clientProjects = getClientProjects(client)
+          
+          return (
+            <motion.div
+              key={client.id}
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              whileHover={{ y: -4 }}
+              onClick={() => {
+                setSelectedClient(client)
+                onSelectClient(client)
+              }}
+              className={`p-5 rounded-2xl border cursor-pointer transition-all ${
+                darkMode 
+                  ? 'bg-gray-800/50 border-gray-700 hover:border-blue-500/50' 
+                  : 'bg-white border-gray-200 hover:border-blue-300 shadow-sm hover:shadow-lg'
+              }`}
+            >
+              <div className="flex items-start gap-4">
+                <div className="w-12 h-12 rounded-full bg-gradient-to-br from-blue-500 to-purple-500 flex items-center justify-center text-white font-bold text-lg flex-shrink-0">
+                  {client.name.charAt(0)}
+                </div>
+                <div className="flex-1 min-w-0">
+                  <h3 className={`font-semibold truncate ${darkMode ? 'text-white' : 'text-gray-900'}`}>
+                    {client.name}
+                  </h3>
+                  <p className={`text-sm truncate ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>
+                    {client.company}
+                  </p>
+                </div>
+              </div>
+
+              <div className="mt-4 space-y-2">
+                <div className="flex items-center gap-2">
+                  <Mail className={`w-4 h-4 ${darkMode ? 'text-gray-500' : 'text-gray-400'}`} />
+                  <a 
+                    href={`mailto:${client.email}`}
+                    onClick={(e) => e.stopPropagation()}
+                    className="text-sm text-blue-500 hover:underline truncate"
+                  >
+                    {client.email}
+                  </a>
+                </div>
+                {client.phone && (
+                  <div className="flex items-center gap-2">
+                    <Phone className={`w-4 h-4 ${darkMode ? 'text-gray-500' : 'text-gray-400'}`} />
+                    <a 
+                      href={`tel:${client.phone}`}
+                      onClick={(e) => e.stopPropagation()}
+                      className="text-sm text-blue-500 hover:underline"
+                    >
+                      {client.phone}
+                    </a>
+                  </div>
+                )}
+              </div>
+
+              <div className={`mt-4 pt-4 border-t flex items-center justify-between ${
+                darkMode ? 'border-gray-700' : 'border-gray-100'
+              }`}>
+                <div className="flex items-center gap-4">
+                  <div className="text-center">
+                    <p className={`text-lg font-bold ${darkMode ? 'text-white' : 'text-gray-900'}`}>
+                      {client.projects.length}
+                    </p>
+                    <p className={`text-xs ${darkMode ? 'text-gray-500' : 'text-gray-400'}`}>
+                      project{client.projects.length !== 1 ? 'en' : ''}
+                    </p>
+                  </div>
+                  <div className="text-center">
+                    <p className={`text-lg font-bold text-green-500`}>
+                      €{client.totalSpent}
+                    </p>
+                    <p className={`text-xs ${darkMode ? 'text-gray-500' : 'text-gray-400'}`}>
+                      /maand
+                    </p>
+                  </div>
+                </div>
+                <ChevronRight className={`w-5 h-5 ${darkMode ? 'text-gray-600' : 'text-gray-300'}`} />
+              </div>
+
+              {/* Project badges */}
+              {clientProjects.length > 0 && (
+                <div className="mt-3 flex flex-wrap gap-1">
+                  {clientProjects.slice(0, 3).map(p => (
+                    <span
+                      key={p.id}
+                      className={`px-2 py-0.5 text-xs rounded-full ${
+                        darkMode ? 'bg-gray-700 text-gray-300' : 'bg-gray-100 text-gray-600'
+                      }`}
+                    >
+                      {p.businessName}
+                    </span>
+                  ))}
+                  {clientProjects.length > 3 && (
+                    <span className={`px-2 py-0.5 text-xs rounded-full ${
+                      darkMode ? 'bg-gray-700 text-gray-400' : 'bg-gray-100 text-gray-500'
+                    }`}>
+                      +{clientProjects.length - 3} meer
+                    </span>
+                  )}
+                </div>
+              )}
+            </motion.div>
+          )
+        })}
+      </div>
+
+      {filteredClients.length === 0 && (
+        <div className={`p-12 text-center rounded-2xl border ${
+          darkMode ? 'bg-gray-800/50 border-gray-700 text-gray-500' : 'bg-gray-50 border-gray-200 text-gray-400'
+        }`}>
+          <Users className="w-12 h-12 mx-auto mb-4 opacity-50" />
+          <p>Geen klanten gevonden</p>
         </div>
       )}
     </div>
   )
 }
 
-// Tasks tab placeholder
-function ProjectTasksTab({ 
-  project: _project, 
-  packageConfig,
-  onUpdate: _onUpdate 
-}: { 
-  project: DeveloperProject
-  packageConfig: PackageConfig | null
-  onUpdate: (updates: Partial<DeveloperProject>) => void
-}) {
-  const tasks = packageConfig?.developerTasks || []
-  
-  return (
-    <div className="space-y-4">
-      <div className="flex items-center justify-between">
-        <h3 className="font-semibold text-gray-900">Developer taken</h3>
-        <span className="text-sm text-gray-500">
-          {tasks.filter(t => t.required).length} taken
-        </span>
-      </div>
-      
-      {['onboarding', 'design', 'development', 'review', 'live'].map(phase => {
-        const phaseTasks = tasks.filter(t => t.phase === phase)
-        if (phaseTasks.length === 0) return null
-        
-        return (
-          <div key={phase} className="border border-gray-200 rounded-xl overflow-hidden">
-            <div className={`px-4 py-2 ${phaseColors[phase as ProjectPhase].bg} ${phaseColors[phase as ProjectPhase].text} font-medium text-sm`}>
-              {phase.charAt(0).toUpperCase() + phase.slice(1)}
-            </div>
-            <div className="divide-y divide-gray-100">
-              {phaseTasks.map(task => (
-                <div key={task.id} className="flex items-center gap-3 px-4 py-3 hover:bg-gray-50">
-                  <input type="checkbox" className="w-4 h-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500" />
-                  <div className="flex-1">
-                    <div className="text-sm font-medium text-gray-900">{task.title}</div>
-                    <div className="text-xs text-gray-500">{task.description}</div>
-                  </div>
-                  {task.estimatedHours && (
-                    <span className="text-xs text-gray-400">{task.estimatedHours}u</span>
-                  )}
-                </div>
-              ))}
-            </div>
-          </div>
-        )
-      })}
-    </div>
-  )
+// ===========================================
+// MESSAGES VIEW - Full Chat Interface
+// ===========================================
+
+interface MessagesViewProps {
+  darkMode: boolean
+  projects: Project[]
+  onUpdateProject: (project: Project) => void
 }
 
-// Messages tab placeholder
-function ProjectMessagesTab({ 
-  project,
-  onUpdate: _onUpdate 
-}: { 
-  project: DeveloperProject
-  onUpdate: (updates: Partial<DeveloperProject>) => void
-}) {
+function MessagesView({ darkMode, projects, onUpdateProject }: MessagesViewProps) {
+  const [selectedProjectId, setSelectedProjectId] = useState<string | null>(null)
   const [newMessage, setNewMessage] = useState('')
-  
+  const [searchQuery, setSearchQuery] = useState('')
+  const [filterUnread, setFilterUnread] = useState(false)
+  const messagesEndRef = React.useRef<HTMLDivElement>(null)
+
+  // Get projects with messages, sorted by last message date
+  const projectsWithMessages = projects
+    .filter(p => {
+      const hasMessages = p.messages.length > 0
+      const matchesSearch = searchQuery === '' ||
+        p.businessName.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        p.contactName.toLowerCase().includes(searchQuery.toLowerCase())
+      const matchesUnread = !filterUnread || p.messages.some(m => !m.read && m.from === 'client')
+      return hasMessages && matchesSearch && matchesUnread
+    })
+    .sort((a, b) => {
+      const lastMsgA = a.messages[a.messages.length - 1]?.date || a.createdAt
+      const lastMsgB = b.messages[b.messages.length - 1]?.date || b.createdAt
+      return new Date(lastMsgB).getTime() - new Date(lastMsgA).getTime()
+    })
+
+  // Projects without messages (for starting new conversations)
+  const projectsWithoutMessages = projects.filter(p => 
+    p.messages.length === 0 &&
+    (searchQuery === '' || 
+      p.businessName.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      p.contactName.toLowerCase().includes(searchQuery.toLowerCase()))
+  )
+
+  const selectedProject = projects.find(p => p.id === selectedProjectId)
+
+  // Scroll to bottom when messages change
+  useEffect(() => {
+    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' })
+  }, [selectedProject?.messages])
+
+  // Mark messages as read when project is selected
+  useEffect(() => {
+    if (selectedProject) {
+      const hasUnread = selectedProject.messages.some(m => !m.read && m.from === 'client')
+      if (hasUnread) {
+        onUpdateProject({
+          ...selectedProject,
+          messages: selectedProject.messages.map(m => ({
+            ...m,
+            read: m.from === 'client' ? true : m.read
+          }))
+        })
+      }
+    }
+  }, [selectedProjectId])
+
+  const handleSendMessage = () => {
+    if (!newMessage.trim() || !selectedProject) return
+
+    const message: ChatMessage = {
+      id: `msg-${Date.now()}`,
+      date: new Date().toISOString(),
+      from: 'developer',
+      message: newMessage.trim(),
+      read: true,
+    }
+
+    onUpdateProject({
+      ...selectedProject,
+      messages: [...selectedProject.messages, message],
+      updatedAt: new Date().toISOString(),
+    })
+
+    setNewMessage('')
+  }
+
+  const getUnreadCount = (project: Project) => 
+    project.messages.filter(m => !m.read && m.from === 'client').length
+
+  const getLastMessage = (project: Project) => {
+    const lastMsg = project.messages[project.messages.length - 1]
+    if (!lastMsg) return null
+    return {
+      text: lastMsg.message.substring(0, 50) + (lastMsg.message.length > 50 ? '...' : ''),
+      date: lastMsg.date,
+      from: lastMsg.from,
+    }
+  }
+
+  const formatMessageDate = (dateStr: string) => {
+    const date = new Date(dateStr)
+    const now = new Date()
+    const diffDays = Math.floor((now.getTime() - date.getTime()) / (1000 * 60 * 60 * 24))
+    
+    if (diffDays === 0) {
+      return date.toLocaleTimeString('nl-NL', { hour: '2-digit', minute: '2-digit' })
+    } else if (diffDays === 1) {
+      return 'Gisteren'
+    } else if (diffDays < 7) {
+      return date.toLocaleDateString('nl-NL', { weekday: 'short' })
+    } else {
+      return date.toLocaleDateString('nl-NL', { day: 'numeric', month: 'short' })
+    }
+  }
+
+  // Quick reply templates
+  const quickReplies = [
+    "Bedankt voor je bericht! Ik ga er direct mee aan de slag.",
+    "De wijzigingen zijn doorgevoerd. Kun je even kijken of het goed is?",
+    "Ik neem zo snel mogelijk contact met je op.",
+    "De website is klaar voor review. Laat me weten wat je ervan vindt!",
+    "Prima, dat gaan we regelen!",
+  ]
+
   return (
-    <div className="flex flex-col h-full">
-      <div className="flex-1 space-y-4 mb-4">
-        {project.messages?.length === 0 && (
-          <div className="text-center py-12 text-gray-400">
-            Nog geen berichten
+    <div className="h-[calc(100vh-180px)] flex rounded-2xl overflow-hidden border"
+      style={{ 
+        borderColor: darkMode ? 'rgb(55, 65, 81)' : 'rgb(229, 231, 235)',
+        backgroundColor: darkMode ? 'rgb(31, 41, 55)' : 'white'
+      }}
+    >
+      {/* Conversations List */}
+      <div className={`w-full md:w-80 lg:w-96 flex-shrink-0 border-r flex flex-col ${
+        darkMode ? 'border-gray-700 bg-gray-800/50' : 'border-gray-200 bg-gray-50'
+      } ${selectedProjectId ? 'hidden md:flex' : 'flex'}`}>
+        {/* Search & Filter Header */}
+        <div className={`p-4 border-b ${darkMode ? 'border-gray-700' : 'border-gray-200'}`}>
+          <h2 className={`text-lg font-bold mb-3 ${darkMode ? 'text-white' : 'text-gray-900'}`}>
+            Berichten
+          </h2>
+          <div className="relative mb-3">
+            <Search className={`absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 ${darkMode ? 'text-gray-500' : 'text-gray-400'}`} />
+            <input
+              type="text"
+              placeholder="Zoek conversatie..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className={`w-full pl-9 pr-4 py-2 rounded-xl border text-sm ${
+                darkMode 
+                  ? 'bg-gray-700 border-gray-600 text-white placeholder-gray-500' 
+                  : 'bg-white border-gray-200 text-gray-900 placeholder-gray-400'
+              } focus:outline-none focus:ring-2 focus:ring-blue-500/50`}
+            />
           </div>
-        )}
-        
-        {project.messages?.map(message => (
-          <div
-            key={message.id}
-            className={`flex ${message.from === 'developer' ? 'justify-end' : 'justify-start'}`}
-          >
-            <div className={`max-w-[80%] rounded-2xl px-4 py-3 ${
-              message.from === 'developer'
+          <button
+            onClick={() => setFilterUnread(!filterUnread)}
+            className={`w-full px-3 py-2 rounded-xl text-sm font-medium transition-colors flex items-center justify-center gap-2 ${
+              filterUnread
                 ? 'bg-blue-500 text-white'
-                : 'bg-gray-100 text-gray-900'
-            }`}>
-              <p className="text-sm">{message.message}</p>
-              <p className={`text-xs mt-1 ${
-                message.from === 'developer' ? 'text-blue-100' : 'text-gray-400'
+                : darkMode ? 'bg-gray-700 text-gray-300 hover:bg-gray-600' : 'bg-white text-gray-600 hover:bg-gray-100 border border-gray-200'
+            }`}
+          >
+            <Bell className="w-4 h-4" />
+            {filterUnread ? 'Alle berichten tonen' : 'Alleen ongelezen'}
+          </button>
+        </div>
+
+        {/* Conversations List */}
+        <div className="flex-1 overflow-y-auto">
+          {/* Active Conversations */}
+          {projectsWithMessages.length > 0 && (
+            <div className="p-2">
+              {projectsWithMessages.map(project => {
+                const unread = getUnreadCount(project)
+                const lastMsg = getLastMessage(project)
+                const isSelected = selectedProjectId === project.id
+
+                return (
+                  <motion.button
+                    key={project.id}
+                    onClick={() => setSelectedProjectId(project.id)}
+                    whileHover={{ scale: 1.01 }}
+                    whileTap={{ scale: 0.99 }}
+                    className={`w-full p-3 rounded-xl text-left transition-all mb-1 ${
+                      isSelected
+                        ? 'bg-blue-500 text-white'
+                        : darkMode 
+                          ? 'hover:bg-gray-700' 
+                          : 'hover:bg-white hover:shadow-sm'
+                    }`}
+                  >
+                    <div className="flex items-start gap-3">
+                      <div className={`w-10 h-10 rounded-full flex items-center justify-center font-bold text-sm flex-shrink-0 ${
+                        isSelected ? 'bg-white/20 text-white' : 'bg-gradient-to-br from-blue-500 to-purple-500 text-white'
+                      }`}>
+                        {project.businessName.charAt(0)}
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-center justify-between gap-2">
+                          <h4 className={`font-semibold truncate text-sm ${
+                            isSelected ? 'text-white' : darkMode ? 'text-white' : 'text-gray-900'
+                          }`}>
+                            {project.businessName}
+                          </h4>
+                          {lastMsg && (
+                            <span className={`text-xs flex-shrink-0 ${
+                              isSelected ? 'text-white/70' : darkMode ? 'text-gray-500' : 'text-gray-400'
+                            }`}>
+                              {formatMessageDate(lastMsg.date)}
+                            </span>
+                          )}
+                        </div>
+                        <p className={`text-xs truncate ${
+                          isSelected ? 'text-white/70' : darkMode ? 'text-gray-500' : 'text-gray-500'
+                        }`}>
+                          {project.contactName}
+                        </p>
+                        {lastMsg && (
+                          <p className={`text-sm truncate mt-1 ${
+                            isSelected 
+                              ? 'text-white/80' 
+                              : unread > 0 
+                                ? darkMode ? 'text-white font-medium' : 'text-gray-900 font-medium'
+                                : darkMode ? 'text-gray-400' : 'text-gray-500'
+                          }`}>
+                            {lastMsg.from === 'developer' && (
+                              <span className="opacity-70">Jij: </span>
+                            )}
+                            {lastMsg.text}
+                          </p>
+                        )}
+                      </div>
+                      {unread > 0 && !isSelected && (
+                        <span className="px-2 py-0.5 bg-blue-500 text-white text-xs font-bold rounded-full flex-shrink-0">
+                          {unread}
+                        </span>
+                      )}
+                    </div>
+                  </motion.button>
+                )
+              })}
+            </div>
+          )}
+
+          {/* Start New Conversation */}
+          {projectsWithoutMessages.length > 0 && !filterUnread && (
+            <div className={`p-2 border-t ${darkMode ? 'border-gray-700' : 'border-gray-200'}`}>
+              <p className={`px-3 py-2 text-xs font-semibold uppercase tracking-wider ${
+                darkMode ? 'text-gray-500' : 'text-gray-400'
               }`}>
-                {formatDate(message.date)}
+                Start gesprek met
+              </p>
+              {projectsWithoutMessages.slice(0, 5).map(project => (
+                <button
+                  key={project.id}
+                  onClick={() => setSelectedProjectId(project.id)}
+                  className={`w-full p-3 rounded-xl text-left transition-colors mb-1 flex items-center gap-3 ${
+                    darkMode ? 'hover:bg-gray-700' : 'hover:bg-white hover:shadow-sm'
+                  }`}
+                >
+                  <div className={`w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold ${
+                    darkMode ? 'bg-gray-700 text-gray-400' : 'bg-gray-200 text-gray-500'
+                  }`}>
+                    {project.businessName.charAt(0)}
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <p className={`font-medium text-sm truncate ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>
+                      {project.businessName}
+                    </p>
+                    <p className={`text-xs truncate ${darkMode ? 'text-gray-500' : 'text-gray-400'}`}>
+                      {project.contactName}
+                    </p>
+                  </div>
+                  <Plus className={`w-4 h-4 ${darkMode ? 'text-gray-600' : 'text-gray-300'}`} />
+                </button>
+              ))}
+            </div>
+          )}
+
+          {/* Empty State */}
+          {projectsWithMessages.length === 0 && projectsWithoutMessages.length === 0 && (
+            <div className={`p-8 text-center ${darkMode ? 'text-gray-500' : 'text-gray-400'}`}>
+              <MessageSquare className="w-12 h-12 mx-auto mb-3 opacity-50" />
+              <p>Geen conversaties gevonden</p>
+            </div>
+          )}
+        </div>
+      </div>
+
+      {/* Chat Area */}
+      <div className={`flex-1 flex flex-col ${!selectedProjectId ? 'hidden md:flex' : 'flex'}`}>
+        {selectedProject ? (
+          <>
+            {/* Chat Header */}
+            <div className={`p-4 border-b flex items-center gap-4 ${
+              darkMode ? 'border-gray-700 bg-gray-800' : 'border-gray-200 bg-white'
+            }`}>
+              <button
+                onClick={() => setSelectedProjectId(null)}
+                className={`md:hidden p-2 rounded-xl ${
+                  darkMode ? 'hover:bg-gray-700 text-gray-400' : 'hover:bg-gray-100 text-gray-500'
+                }`}
+              >
+                <ChevronRight className="w-5 h-5 rotate-180" />
+              </button>
+              
+              <div className="w-10 h-10 rounded-full bg-gradient-to-br from-blue-500 to-purple-500 flex items-center justify-center text-white font-bold">
+                {selectedProject.businessName.charAt(0)}
+              </div>
+              
+              <div className="flex-1 min-w-0">
+                <h3 className={`font-semibold truncate ${darkMode ? 'text-white' : 'text-gray-900'}`}>
+                  {selectedProject.businessName}
+                </h3>
+                <p className={`text-sm truncate ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>
+                  {selectedProject.contactName} • {selectedProject.contactEmail}
+                </p>
+              </div>
+
+              <div className="flex items-center gap-2">
+                {selectedProject.stagingUrl && (
+                  <a
+                    href={selectedProject.stagingUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className={`p-2 rounded-xl transition-colors ${
+                      darkMode ? 'hover:bg-gray-700 text-gray-400' : 'hover:bg-gray-100 text-gray-500'
+                    }`}
+                    title="Preview bekijken"
+                  >
+                    <ExternalLink className="w-5 h-5" />
+                  </a>
+                )}
+                <a
+                  href={`mailto:${selectedProject.contactEmail}`}
+                  className={`p-2 rounded-xl transition-colors ${
+                    darkMode ? 'hover:bg-gray-700 text-gray-400' : 'hover:bg-gray-100 text-gray-500'
+                  }`}
+                  title="E-mail versturen"
+                >
+                  <Mail className="w-5 h-5" />
+                </a>
+              </div>
+            </div>
+
+            {/* Messages Area */}
+            <div className={`flex-1 overflow-y-auto p-4 space-y-4 ${
+              darkMode ? 'bg-gray-900/50' : 'bg-gray-50'
+            }`}>
+              {selectedProject.messages.length === 0 ? (
+                <div className={`h-full flex items-center justify-center ${
+                  darkMode ? 'text-gray-500' : 'text-gray-400'
+                }`}>
+                  <div className="text-center">
+                    <MessageSquare className="w-16 h-16 mx-auto mb-4 opacity-50" />
+                    <p className="text-lg font-medium mb-2">Start het gesprek</p>
+                    <p className="text-sm">Stuur een bericht naar {selectedProject.contactName}</p>
+                  </div>
+                </div>
+              ) : (
+                <>
+                  {selectedProject.messages.map((msg, index) => {
+                    const showDate = index === 0 || 
+                      new Date(msg.date).toDateString() !== new Date(selectedProject.messages[index - 1].date).toDateString()
+                    
+                    return (
+                      <div key={msg.id}>
+                        {showDate && (
+                          <div className="flex items-center justify-center my-4">
+                            <span className={`px-3 py-1 rounded-full text-xs ${
+                              darkMode ? 'bg-gray-800 text-gray-500' : 'bg-white text-gray-400 shadow-sm'
+                            }`}>
+                              {new Date(msg.date).toLocaleDateString('nl-NL', {
+                                weekday: 'long',
+                                day: 'numeric',
+                                month: 'long',
+                              })}
+                            </span>
+                          </div>
+                        )}
+                        <div className={`flex ${msg.from === 'developer' ? 'justify-end' : 'justify-start'}`}>
+                          <motion.div
+                            initial={{ opacity: 0, y: 10, scale: 0.95 }}
+                            animate={{ opacity: 1, y: 0, scale: 1 }}
+                            className={`max-w-[75%] ${
+                              msg.from === 'developer'
+                                ? 'bg-blue-500 text-white rounded-2xl rounded-br-md'
+                                : darkMode 
+                                  ? 'bg-gray-800 text-white rounded-2xl rounded-bl-md' 
+                                  : 'bg-white text-gray-900 rounded-2xl rounded-bl-md shadow-sm'
+                            } px-4 py-3`}
+                          >
+                            <p className="text-sm whitespace-pre-wrap">{msg.message}</p>
+                            <p className={`text-xs mt-1 ${
+                              msg.from === 'developer' 
+                                ? 'text-blue-200' 
+                                : darkMode ? 'text-gray-500' : 'text-gray-400'
+                            }`}>
+                              {new Date(msg.date).toLocaleTimeString('nl-NL', {
+                                hour: '2-digit',
+                                minute: '2-digit',
+                              })}
+                              {msg.from === 'developer' && (
+                                <CheckCircle2 className="w-3 h-3 inline ml-1" />
+                              )}
+                            </p>
+                          </motion.div>
+                        </div>
+                      </div>
+                    )
+                  })}
+                  <div ref={messagesEndRef} />
+                </>
+              )}
+            </div>
+
+            {/* Quick Replies */}
+            <div className={`px-4 py-2 border-t flex gap-2 overflow-x-auto ${
+              darkMode ? 'border-gray-700 bg-gray-800/50' : 'border-gray-200 bg-white'
+            }`}>
+              {quickReplies.map((reply, i) => (
+                <button
+                  key={i}
+                  onClick={() => setNewMessage(reply)}
+                  className={`px-3 py-1.5 rounded-full text-xs font-medium whitespace-nowrap transition-colors flex-shrink-0 ${
+                    darkMode 
+                      ? 'bg-gray-700 text-gray-300 hover:bg-gray-600' 
+                      : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                  }`}
+                >
+                  {reply.substring(0, 30)}...
+                </button>
+              ))}
+            </div>
+
+            {/* Message Input */}
+            <div className={`p-4 border-t ${
+              darkMode ? 'border-gray-700 bg-gray-800' : 'border-gray-200 bg-white'
+            }`}>
+              <div className="flex gap-3">
+                <div className="flex-1 relative">
+                  <textarea
+                    value={newMessage}
+                    onChange={(e) => setNewMessage(e.target.value)}
+                    onKeyDown={(e) => {
+                      if (e.key === 'Enter' && !e.shiftKey) {
+                        e.preventDefault()
+                        handleSendMessage()
+                      }
+                    }}
+                    placeholder="Typ een bericht..."
+                    rows={1}
+                    className={`w-full px-4 py-3 rounded-2xl border resize-none ${
+                      darkMode 
+                        ? 'bg-gray-700 border-gray-600 text-white placeholder-gray-500' 
+                        : 'bg-gray-50 border-gray-200 text-gray-900 placeholder-gray-400'
+                    } focus:outline-none focus:ring-2 focus:ring-blue-500/50`}
+                    style={{ minHeight: '48px', maxHeight: '120px' }}
+                  />
+                </div>
+                <button
+                  onClick={handleSendMessage}
+                  disabled={!newMessage.trim()}
+                  className={`px-5 rounded-2xl font-semibold transition-all flex items-center gap-2 ${
+                    newMessage.trim()
+                      ? 'bg-blue-500 hover:bg-blue-600 text-white'
+                      : darkMode 
+                        ? 'bg-gray-700 text-gray-500 cursor-not-allowed' 
+                        : 'bg-gray-100 text-gray-400 cursor-not-allowed'
+                  }`}
+                >
+                  <Send className="w-5 h-5" />
+                </button>
+              </div>
+              <p className={`text-xs mt-2 ${darkMode ? 'text-gray-500' : 'text-gray-400'}`}>
+                Enter om te verzenden, Shift+Enter voor nieuwe regel
+              </p>
+            </div>
+          </>
+        ) : (
+          /* Empty State - No conversation selected */
+          <div className={`flex-1 flex items-center justify-center ${
+            darkMode ? 'bg-gray-900/50' : 'bg-gray-50'
+          }`}>
+            <div className="text-center">
+              <div className={`w-20 h-20 rounded-full mx-auto mb-4 flex items-center justify-center ${
+                darkMode ? 'bg-gray-800' : 'bg-white shadow-lg'
+              }`}>
+                <MessageSquare className={`w-10 h-10 ${darkMode ? 'text-gray-600' : 'text-gray-300'}`} />
+              </div>
+              <h3 className={`text-xl font-semibold mb-2 ${darkMode ? 'text-white' : 'text-gray-900'}`}>
+                Selecteer een gesprek
+              </h3>
+              <p className={`${darkMode ? 'text-gray-500' : 'text-gray-400'}`}>
+                Kies een conversatie aan de linkerkant om berichten te bekijken
               </p>
             </div>
           </div>
-        ))}
-      </div>
-      
-      <div className="flex gap-2">
-        <input
-          type="text"
-          value={newMessage}
-          onChange={(e) => setNewMessage(e.target.value)}
-          placeholder="Typ een bericht..."
-          className="flex-1 px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-        />
-        <button className="px-4 py-3 bg-blue-500 text-white rounded-xl hover:bg-blue-600 transition-colors">
-          <Send className="w-5 h-5" />
-        </button>
+        )}
       </div>
     </div>
   )
 }
 
-// Changes tab placeholder
-function ProjectChangesTab({ 
-  project,
-  onUpdate: _onUpdate 
-}: { 
-  project: DeveloperProject
-  onUpdate: (updates: Partial<DeveloperProject>) => void
-}) {
-  const pendingChanges = project.changeRequests?.filter(cr => cr.status === 'pending') || []
-  const otherChanges = project.changeRequests?.filter(cr => cr.status !== 'pending') || []
+function OnboardingView({ darkMode }: { darkMode: boolean }) {
+  return (
+    <div className={`p-8 text-center ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>
+      <FileText className="w-12 h-12 mx-auto mb-4 opacity-50" />
+      <h2 className={`text-xl font-semibold mb-2 ${darkMode ? 'text-white' : 'text-gray-900'}`}>
+        Onboarding Aanvragen
+      </h2>
+      <p>Wordt uitgebreid in stap 6...</p>
+    </div>
+  )
+}
+
+// ===========================================
+// PAYMENTS VIEW - Mollie Betaallinks & Kortingscodes
+// ===========================================
+
+interface PaymentsViewProps {
+  darkMode: boolean
+  projects: Project[]
+  onUpdateProject: (project: Project) => void
+}
+
+// Discount codes database (in production this would come from API)
+interface DiscountCode {
+  code: string
+  type: 'percentage' | 'fixed'
+  value: number // percentage (0-100) or fixed amount in euros
+  description: string
+  validUntil?: string
+  maxUses?: number
+  usedCount: number
+  active: boolean
+}
+
+const PRESET_DISCOUNT_CODES: DiscountCode[] = [
+  { code: 'WELKOM10', type: 'percentage', value: 10, description: '10% korting voor nieuwe klanten', usedCount: 15, active: true },
+  { code: 'KERST2025', type: 'percentage', value: 15, description: 'Kerst actie 15% korting', validUntil: '2025-12-31', usedCount: 8, active: true },
+  { code: 'LOYAL25', type: 'fixed', value: 25, description: '€25 korting voor terugkerende klanten', usedCount: 3, active: true },
+  { code: 'PARTNER50', type: 'percentage', value: 50, description: 'Partner korting 50%', usedCount: 2, active: false },
+]
+
+// Package prices (monthly)
+const PACKAGE_PRICING = {
+  starter: { name: 'Starter', monthlyExVat: 79.34, monthlyInclVat: 96 },
+  professional: { name: 'Professional', monthlyExVat: 148.76, monthlyInclVat: 180 },
+  business: { name: 'Business', monthlyExVat: 248.76, monthlyInclVat: 301 },
+  webshop: { name: 'Webshop', monthlyExVat: 348.76, monthlyInclVat: 422 },
+}
+
+function PaymentsView({ darkMode, projects, onUpdateProject }: PaymentsViewProps) {
+  const [activeTab, setActiveTab] = useState<'overview' | 'create' | 'discounts'>('overview')
+  const [discountCodes, setDiscountCodes] = useState<DiscountCode[]>(PRESET_DISCOUNT_CODES)
   
-  return (
-    <div className="space-y-6">
-      {/* Monthly changes counter */}
-      <div className="bg-blue-50 border border-blue-200 rounded-xl p-4">
-        <div className="flex items-center justify-between">
-          <div>
-            <div className="text-sm font-medium text-blue-900">Maandelijkse wijzigingen</div>
-            <div className="text-xs text-blue-600">Reset op de 1e van elke maand</div>
-          </div>
-          <div className="text-2xl font-bold text-blue-700">
-            {project.monthlyChangesUsed}/{project.monthlyChangesLimit}
-          </div>
-        </div>
-      </div>
-      
-      {/* Pending changes */}
-      {pendingChanges.length > 0 && (
-        <div>
-          <h3 className="font-semibold text-gray-900 mb-3">In afwachting ({pendingChanges.length})</h3>
-          <div className="space-y-3">
-            {pendingChanges.map(change => (
-              <div key={change.id} className="bg-amber-50 border border-amber-200 rounded-xl p-4">
-                <div className="flex items-start justify-between mb-2">
-                  <span className={`px-2 py-0.5 text-xs font-medium rounded-full ${
-                    change.priority === 'urgent' 
-                      ? 'bg-red-100 text-red-700' 
-                      : change.priority === 'normal'
-                        ? 'bg-blue-100 text-blue-700'
-                        : 'bg-gray-100 text-gray-700'
-                  }`}>
-                    {change.priority === 'urgent' ? 'Urgent' : change.priority === 'normal' ? 'Normaal' : 'Laag'}
-                  </span>
-                  <span className="text-xs text-gray-400">{formatDate(change.date)}</span>
-                </div>
-                <p className="text-sm text-gray-900 mb-3">{change.request}</p>
-                <div className="flex gap-2">
-                  <button className="flex-1 py-2 bg-green-500 text-white text-sm font-medium rounded-lg hover:bg-green-600 transition-colors">
-                    Accepteren
-                  </button>
-                  <button className="flex-1 py-2 bg-gray-200 text-gray-700 text-sm font-medium rounded-lg hover:bg-gray-300 transition-colors">
-                    Afwijzen
-                  </button>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      )}
-      
-      {/* History */}
-      {otherChanges.length > 0 && (
-        <div>
-          <h3 className="font-semibold text-gray-900 mb-3">Geschiedenis</h3>
-          <div className="space-y-2">
-            {otherChanges.map(change => (
-              <div key={change.id} className="flex items-center gap-3 p-3 bg-gray-50 rounded-lg">
-                {change.status === 'completed' ? (
-                  <CheckCircle2 className="w-5 h-5 text-green-500" />
-                ) : change.status === 'rejected' ? (
-                  <AlertCircle className="w-5 h-5 text-red-500" />
-                ) : (
-                  <Clock className="w-5 h-5 text-blue-500" />
-                )}
-                <div className="flex-1 min-w-0">
-                  <p className="text-sm text-gray-900 truncate">{change.request}</p>
-                  <p className="text-xs text-gray-400">{formatDate(change.date)}</p>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      )}
-      
-      {pendingChanges.length === 0 && otherChanges.length === 0 && (
-        <div className="text-center py-12 text-gray-400">
-          Geen wijzigingsverzoeken
-        </div>
-      )}
-    </div>
-  )
-}
+  // Payment link creation state
+  const [selectedProjectId, setSelectedProjectId] = useState<string>('')
+  const [customAmount, setCustomAmount] = useState<string>('')
+  const [useCustomAmount, setUseCustomAmount] = useState(false)
+  const [description, setDescription] = useState('')
+  const [selectedDiscount, setSelectedDiscount] = useState<string>('')
+  const [customDiscount, setCustomDiscount] = useState<string>('')
+  const [customDiscountType, setCustomDiscountType] = useState<'percentage' | 'fixed'>('percentage')
+  const [generatedLink, setGeneratedLink] = useState<string>('')
+  const [isGenerating, setIsGenerating] = useState(false)
+  const [copySuccess, setCopySuccess] = useState(false)
 
-// Settings tab placeholder
-function ProjectSettingsTab({ 
-  project, 
-  packageConfig: _packageConfig,
-  onUpdate: _onUpdate 
-}: { 
-  project: DeveloperProject
-  packageConfig: PackageConfig | null
-  onUpdate: (updates: Partial<DeveloperProject>) => void
-}) {
-  return (
-    <div className="space-y-6">
-      {/* URLs */}
-      <div className="bg-white border border-gray-200 rounded-xl p-4">
-        <h3 className="font-semibold text-gray-900 mb-4">Project URLs</h3>
-        <div className="space-y-4">
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Google Drive URL</label>
-            <input
-              type="url"
-              defaultValue={project.googleDriveUrl}
-              placeholder="https://drive.google.com/..."
-              className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500"
-            />
-          </div>
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Staging URL</label>
-            <input
-              type="url"
-              defaultValue={project.stagingUrl}
-              placeholder="https://staging.example.com"
-              className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500"
-            />
-          </div>
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Live URL</label>
-            <input
-              type="url"
-              defaultValue={project.liveUrl}
-              placeholder="https://www.example.com"
-              className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500"
-            />
-          </div>
-        </div>
-      </div>
-      
-      {/* Internal notes */}
-      <div className="bg-white border border-gray-200 rounded-xl p-4">
-        <h3 className="font-semibold text-gray-900 mb-4">Interne notities</h3>
-        <textarea
-          defaultValue={project.internalNotes}
-          rows={4}
-          placeholder="Notities voor jezelf (niet zichtbaar voor klant)..."
-          className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500"
-        />
-      </div>
-      
-      {/* Danger zone */}
-      <div className="bg-red-50 border border-red-200 rounded-xl p-4">
-        <h3 className="font-semibold text-red-900 mb-2">Gevaarlijke zone</h3>
-        <p className="text-sm text-red-600 mb-4">Deze acties kunnen niet ongedaan worden gemaakt.</p>
-        <div className="flex gap-2">
-          <button className="px-4 py-2 bg-amber-500 text-white text-sm font-medium rounded-lg hover:bg-amber-600 transition-colors">
-            Project pauzeren
-          </button>
-          <button className="px-4 py-2 bg-red-500 text-white text-sm font-medium rounded-lg hover:bg-red-600 transition-colors">
-            Project annuleren
-          </button>
-        </div>
-      </div>
-    </div>
-  )
-}
-
-// ===========================================
-// HELPER FUNCTIES
-// ===========================================
-
-function getPackageConfig(packageId: string): PackageConfig | null {
-  // Import zou normaal uit types komen
-  const configs: Record<string, PackageConfig> = {
-    starter: {
-      id: 'starter',
-      name: 'Starter',
-      priceMonthly: 96,
-      priceSetup: 181,
-      maxPages: 5,
-      revisionsIncluded: 2,
-      monthlyChanges: 1,
-      supportResponseTime: '48u',
-      features: [],
-      developerTasks: [],
-      clientPermissions: [],
-    },
-    professional: {
-      id: 'professional',
-      name: 'Professioneel',
-      priceMonthly: 180,
-      priceSetup: 241,
-      maxPages: 10,
-      revisionsIncluded: 3,
-      monthlyChanges: 3,
-      supportResponseTime: '24u',
-      features: [],
-      developerTasks: [],
-      clientPermissions: [],
-    },
-    business: {
-      id: 'business',
-      name: 'Business',
-      priceMonthly: 301,
-      priceSetup: 362,
-      maxPages: 20,
-      revisionsIncluded: 5,
-      monthlyChanges: 5,
-      supportResponseTime: '4u',
-      features: [],
-      developerTasks: [],
-      clientPermissions: [],
-    },
-    webshop: {
-      id: 'webshop',
-      name: 'Webshop',
-      priceMonthly: 422,
-      priceSetup: 362,
-      maxPages: 'unlimited',
-      revisionsIncluded: 5,
-      monthlyChanges: 5,
-      supportResponseTime: '4u',
-      features: [],
-      developerTasks: [],
-      clientPermissions: [],
-    },
-  }
-  return configs[packageId] || null
-}
-
-function calculateProgress(project: DeveloperProject): number {
-  const phaseProgress: Record<ProjectPhase, number> = {
-    onboarding: 10,
-    design: 30,
-    development: 70,
-    review: 90,
-    live: 100,
-  }
-  return phaseProgress[project.phase] || 0
-}
-
-function formatDate(dateStr: string): string {
-  const date = new Date(dateStr)
-  return date.toLocaleDateString('nl-NL', { 
-    day: 'numeric', 
-    month: 'short',
-    year: date.getFullYear() !== new Date().getFullYear() ? 'numeric' : undefined
+  // New discount code state
+  const [showNewDiscountModal, setShowNewDiscountModal] = useState(false)
+  const [newDiscount, setNewDiscount] = useState<Partial<DiscountCode>>({
+    code: '',
+    type: 'percentage',
+    value: 10,
+    description: '',
+    active: true,
   })
-}
 
-// ===========================================
-// TOOLTIP COMPONENT
-// ===========================================
+  const selectedProject = projects.find(p => p.id === selectedProjectId)
 
-function Tooltip({ children, text, darkMode }: { children: React.ReactNode; text: string; darkMode: boolean }) {
-  const [show, setShow] = useState(false)
-  
+  // Calculate final price
+  const calculateFinalPrice = () => {
+    if (!selectedProject && !useCustomAmount) return { original: 0, discount: 0, final: 0 }
+    
+    let originalPrice = useCustomAmount 
+      ? parseFloat(customAmount) || 0
+      : PACKAGE_PRICING[selectedProject?.package || 'starter'].monthlyInclVat
+
+    let discountAmount = 0
+    
+    // Apply selected preset discount
+    if (selectedDiscount) {
+      const discount = discountCodes.find(d => d.code === selectedDiscount)
+      if (discount) {
+        if (discount.type === 'percentage') {
+          discountAmount = originalPrice * (discount.value / 100)
+        } else {
+          discountAmount = discount.value
+        }
+      }
+    }
+    
+    // Or apply custom discount
+    if (customDiscount && !selectedDiscount) {
+      const value = parseFloat(customDiscount) || 0
+      if (customDiscountType === 'percentage') {
+        discountAmount = originalPrice * (value / 100)
+      } else {
+        discountAmount = value
+      }
+    }
+
+    return {
+      original: originalPrice,
+      discount: discountAmount,
+      final: Math.max(0, originalPrice - discountAmount)
+    }
+  }
+
+  const prices = calculateFinalPrice()
+
+  // Generate payment link
+  const generatePaymentLink = async () => {
+    if (!selectedProject && !useCustomAmount) return
+    
+    setIsGenerating(true)
+    
+    try {
+      // In production, this would call the API to create a Mollie payment link
+      // For now, we simulate it
+      await new Promise(resolve => setTimeout(resolve, 1500))
+      
+      const baseUrl = 'https://webstability.nl/betalen'
+      const params = new URLSearchParams({
+        project: selectedProjectId || 'custom',
+        amount: prices.final.toFixed(2),
+        desc: description || `Betaling ${selectedProject?.businessName || 'Custom'}`,
+        ...(selectedDiscount && { discount: selectedDiscount }),
+      })
+      
+      const link = `${baseUrl}?${params.toString()}`
+      setGeneratedLink(link)
+      
+      // Update project with payment URL if selected
+      if (selectedProject) {
+        onUpdateProject({
+          ...selectedProject,
+          paymentUrl: link,
+          paymentStatus: 'awaiting_payment',
+          updatedAt: new Date().toISOString(),
+        })
+      }
+    } catch (error) {
+      console.error('Error generating payment link:', error)
+    } finally {
+      setIsGenerating(false)
+    }
+  }
+
+  const copyToClipboard = async (text: string) => {
+    await navigator.clipboard.writeText(text)
+    setCopySuccess(true)
+    setTimeout(() => setCopySuccess(false), 2000)
+  }
+
+  // Payment stats
+  const stats = {
+    totalPaid: projects.filter(p => p.paymentStatus === 'paid').length,
+    awaiting: projects.filter(p => p.paymentStatus === 'awaiting_payment').length,
+    failed: projects.filter(p => p.paymentStatus === 'failed').length,
+    monthlyRevenue: projects
+      .filter(p => p.paymentStatus === 'paid')
+      .reduce((sum, p) => sum + PACKAGE_PRICING[p.package].monthlyInclVat, 0),
+  }
+
+  // Add new discount code
+  const handleAddDiscount = () => {
+    if (!newDiscount.code || !newDiscount.value) return
+    
+    const code: DiscountCode = {
+      code: newDiscount.code!.toUpperCase().replace(/\s/g, ''),
+      type: newDiscount.type!,
+      value: newDiscount.value!,
+      description: newDiscount.description || '',
+      validUntil: newDiscount.validUntil,
+      maxUses: newDiscount.maxUses,
+      usedCount: 0,
+      active: true,
+    }
+    
+    setDiscountCodes([...discountCodes, code])
+    setShowNewDiscountModal(false)
+    setNewDiscount({ code: '', type: 'percentage', value: 10, description: '', active: true })
+  }
+
+  const toggleDiscountActive = (code: string) => {
+    setDiscountCodes(prev => prev.map(d => 
+      d.code === code ? { ...d, active: !d.active } : d
+    ))
+  }
+
   return (
-    <div className="relative inline-block">
-      <div
-        onMouseEnter={() => setShow(true)}
-        onMouseLeave={() => setShow(false)}
-      >
-        {children}
+    <div className="space-y-6">
+      {/* Header with tabs */}
+      <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
+        <div>
+          <h1 className={`text-2xl font-bold ${darkMode ? 'text-white' : 'text-gray-900'}`}>
+            Betalingen & Mollie
+          </h1>
+          <p className={`${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>
+            Beheer betaallinks en kortingscodes
+          </p>
+        </div>
+
+        <div className={`flex rounded-xl border p-1 ${darkMode ? 'bg-gray-800 border-gray-700' : 'bg-gray-100 border-gray-200'}`}>
+          {(['overview', 'create', 'discounts'] as const).map(tab => (
+            <button
+              key={tab}
+              onClick={() => setActiveTab(tab)}
+              className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
+                activeTab === tab
+                  ? 'bg-blue-500 text-white'
+                  : darkMode ? 'text-gray-400 hover:text-white' : 'text-gray-600 hover:text-gray-900'
+              }`}
+            >
+              {tab === 'overview' && 'Overzicht'}
+              {tab === 'create' && 'Betaallink maken'}
+              {tab === 'discounts' && 'Kortingscodes'}
+            </button>
+          ))}
+        </div>
       </div>
+
+      {/* Overview Tab */}
+      {activeTab === 'overview' && (
+        <div className="space-y-6">
+          {/* Stats */}
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+            <div className={`p-5 rounded-2xl ${darkMode ? 'bg-green-900/20 border border-green-500/30' : 'bg-green-50 border border-green-200'}`}>
+              <div className="flex items-center gap-3 mb-2">
+                <div className="p-2 bg-green-500 rounded-xl">
+                  <CheckCircle2 className="w-5 h-5 text-white" />
+                </div>
+                <span className={`text-sm ${darkMode ? 'text-green-400' : 'text-green-700'}`}>Betaald</span>
+              </div>
+              <p className={`text-2xl font-bold ${darkMode ? 'text-white' : 'text-gray-900'}`}>{stats.totalPaid}</p>
+            </div>
+
+            <div className={`p-5 rounded-2xl ${darkMode ? 'bg-yellow-900/20 border border-yellow-500/30' : 'bg-yellow-50 border border-yellow-200'}`}>
+              <div className="flex items-center gap-3 mb-2">
+                <div className="p-2 bg-yellow-500 rounded-xl">
+                  <Clock className="w-5 h-5 text-white" />
+                </div>
+                <span className={`text-sm ${darkMode ? 'text-yellow-400' : 'text-yellow-700'}`}>Wachtend</span>
+              </div>
+              <p className={`text-2xl font-bold ${darkMode ? 'text-white' : 'text-gray-900'}`}>{stats.awaiting}</p>
+            </div>
+
+            <div className={`p-5 rounded-2xl ${darkMode ? 'bg-red-900/20 border border-red-500/30' : 'bg-red-50 border border-red-200'}`}>
+              <div className="flex items-center gap-3 mb-2">
+                <div className="p-2 bg-red-500 rounded-xl">
+                  <AlertCircle className="w-5 h-5 text-white" />
+                </div>
+                <span className={`text-sm ${darkMode ? 'text-red-400' : 'text-red-700'}`}>Mislukt</span>
+              </div>
+              <p className={`text-2xl font-bold ${darkMode ? 'text-white' : 'text-gray-900'}`}>{stats.failed}</p>
+            </div>
+
+            <div className={`p-5 rounded-2xl ${darkMode ? 'bg-blue-900/20 border border-blue-500/30' : 'bg-blue-50 border border-blue-200'}`}>
+              <div className="flex items-center gap-3 mb-2">
+                <div className="p-2 bg-blue-500 rounded-xl">
+                  <Wallet className="w-5 h-5 text-white" />
+                </div>
+                <span className={`text-sm ${darkMode ? 'text-blue-400' : 'text-blue-700'}`}>Maandomzet</span>
+              </div>
+              <p className={`text-2xl font-bold ${darkMode ? 'text-white' : 'text-gray-900'}`}>€{stats.monthlyRevenue.toFixed(0)}</p>
+            </div>
+          </div>
+
+          {/* Recent Payments */}
+          <div className={`rounded-2xl border overflow-hidden ${darkMode ? 'bg-gray-800/50 border-gray-700' : 'bg-white border-gray-200'}`}>
+            <div className={`px-6 py-4 border-b ${darkMode ? 'border-gray-700' : 'border-gray-200'}`}>
+              <h2 className={`font-semibold ${darkMode ? 'text-white' : 'text-gray-900'}`}>
+                Recente betalingen
+              </h2>
+            </div>
+            <div className="overflow-x-auto">
+              <table className="w-full">
+                <thead className={darkMode ? 'bg-gray-800' : 'bg-gray-50'}>
+                  <tr>
+                    <th className={`px-6 py-3 text-left text-xs font-semibold uppercase ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>Project</th>
+                    <th className={`px-6 py-3 text-left text-xs font-semibold uppercase ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>Pakket</th>
+                    <th className={`px-6 py-3 text-left text-xs font-semibold uppercase ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>Bedrag</th>
+                    <th className={`px-6 py-3 text-left text-xs font-semibold uppercase ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>Status</th>
+                    <th className={`px-6 py-3 text-left text-xs font-semibold uppercase ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>Acties</th>
+                  </tr>
+                </thead>
+                <tbody className={`divide-y ${darkMode ? 'divide-gray-700' : 'divide-gray-200'}`}>
+                  {projects.slice(0, 10).map(project => {
+                    const pkg = PACKAGE_PRICING[project.package]
+                    const statusColors = {
+                      pending: 'bg-gray-500',
+                      awaiting_payment: 'bg-yellow-500',
+                      paid: 'bg-green-500',
+                      failed: 'bg-red-500',
+                      refunded: 'bg-purple-500',
+                    }
+                    const statusLabels = {
+                      pending: 'In afwachting',
+                      awaiting_payment: 'Wacht op betaling',
+                      paid: 'Betaald',
+                      failed: 'Mislukt',
+                      refunded: 'Terugbetaald',
+                    }
+
+                    return (
+                      <tr key={project.id} className={darkMode ? 'hover:bg-gray-700/50' : 'hover:bg-gray-50'}>
+                        <td className="px-6 py-4">
+                          <div>
+                            <p className={`font-medium ${darkMode ? 'text-white' : 'text-gray-900'}`}>{project.businessName}</p>
+                            <p className={`text-sm ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>{project.contactEmail}</p>
+                          </div>
+                        </td>
+                        <td className={`px-6 py-4 ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>
+                          {pkg.name}
+                        </td>
+                        <td className={`px-6 py-4 font-semibold ${darkMode ? 'text-white' : 'text-gray-900'}`}>
+                          €{pkg.monthlyInclVat}/m
+                        </td>
+                        <td className="px-6 py-4">
+                          <span className={`px-2 py-1 text-xs font-medium text-white rounded-full ${statusColors[project.paymentStatus]}`}>
+                            {statusLabels[project.paymentStatus]}
+                          </span>
+                        </td>
+                        <td className="px-6 py-4">
+                          <div className="flex items-center gap-2">
+                            {project.paymentUrl && (
+                              <button
+                                onClick={() => copyToClipboard(project.paymentUrl!)}
+                                className="p-2 text-blue-500 hover:bg-blue-500/10 rounded-lg transition-colors"
+                                title="Kopieer betaallink"
+                              >
+                                <Link2 className="w-4 h-4" />
+                              </button>
+                            )}
+                            <button
+                              onClick={() => {
+                                setSelectedProjectId(project.id)
+                                setActiveTab('create')
+                              }}
+                              className={`p-2 rounded-lg transition-colors ${
+                                darkMode ? 'text-gray-400 hover:bg-gray-700' : 'text-gray-500 hover:bg-gray-100'
+                              }`}
+                              title="Nieuwe betaallink"
+                            >
+                              <Plus className="w-4 h-4" />
+                            </button>
+                          </div>
+                        </td>
+                      </tr>
+                    )
+                  })}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Create Payment Link Tab */}
+      {activeTab === 'create' && (
+        <div className="grid lg:grid-cols-2 gap-6">
+          {/* Form */}
+          <div className={`p-6 rounded-2xl border ${darkMode ? 'bg-gray-800/50 border-gray-700' : 'bg-white border-gray-200'}`}>
+            <h2 className={`text-lg font-semibold mb-6 ${darkMode ? 'text-white' : 'text-gray-900'}`}>
+              Nieuwe betaallink aanmaken
+            </h2>
+
+            <div className="space-y-5">
+              {/* Project Selection */}
+              <div>
+                <label className={`block text-sm font-medium mb-2 ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>
+                  Project
+                </label>
+                <select
+                  value={selectedProjectId}
+                  onChange={(e) => {
+                    setSelectedProjectId(e.target.value)
+                    setUseCustomAmount(false)
+                  }}
+                  disabled={useCustomAmount}
+                  className={`w-full px-4 py-3 rounded-xl border ${
+                    darkMode 
+                      ? 'bg-gray-700 border-gray-600 text-white' 
+                      : 'bg-gray-50 border-gray-200 text-gray-900'
+                  } focus:outline-none focus:ring-2 focus:ring-blue-500/50 disabled:opacity-50`}
+                >
+                  <option value="">Selecteer project...</option>
+                  {projects.map(p => (
+                    <option key={p.id} value={p.id}>
+                      {p.businessName} - {PACKAGE_PRICING[p.package].name} (€{PACKAGE_PRICING[p.package].monthlyInclVat}/m)
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              {/* Or Custom Amount */}
+              <div className="flex items-center gap-3">
+                <div className={`flex-1 h-px ${darkMode ? 'bg-gray-700' : 'bg-gray-200'}`} />
+                <span className={`text-sm ${darkMode ? 'text-gray-500' : 'text-gray-400'}`}>of</span>
+                <div className={`flex-1 h-px ${darkMode ? 'bg-gray-700' : 'bg-gray-200'}`} />
+              </div>
+
+              <div>
+                <label className="flex items-center gap-2 mb-2">
+                  <input
+                    type="checkbox"
+                    checked={useCustomAmount}
+                    onChange={(e) => {
+                      setUseCustomAmount(e.target.checked)
+                      if (e.target.checked) setSelectedProjectId('')
+                    }}
+                    className="w-4 h-4 rounded border-gray-300 text-blue-500 focus:ring-blue-500"
+                  />
+                  <span className={`text-sm font-medium ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>
+                    Eigen bedrag invoeren
+                  </span>
+                </label>
+                {useCustomAmount && (
+                  <div className="relative">
+                    <span className={`absolute left-4 top-1/2 -translate-y-1/2 ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>€</span>
+                    <input
+                      type="number"
+                      value={customAmount}
+                      onChange={(e) => setCustomAmount(e.target.value)}
+                      placeholder="0.00"
+                      step="0.01"
+                      className={`w-full pl-8 pr-4 py-3 rounded-xl border ${
+                        darkMode 
+                          ? 'bg-gray-700 border-gray-600 text-white placeholder-gray-500' 
+                          : 'bg-gray-50 border-gray-200 text-gray-900 placeholder-gray-400'
+                      } focus:outline-none focus:ring-2 focus:ring-blue-500/50`}
+                    />
+                  </div>
+                )}
+              </div>
+
+              {/* Description */}
+              <div>
+                <label className={`block text-sm font-medium mb-2 ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>
+                  Beschrijving (optioneel)
+                </label>
+                <input
+                  type="text"
+                  value={description}
+                  onChange={(e) => setDescription(e.target.value)}
+                  placeholder="bv. Website ontwikkeling januari 2025"
+                  className={`w-full px-4 py-3 rounded-xl border ${
+                    darkMode 
+                      ? 'bg-gray-700 border-gray-600 text-white placeholder-gray-500' 
+                      : 'bg-gray-50 border-gray-200 text-gray-900 placeholder-gray-400'
+                  } focus:outline-none focus:ring-2 focus:ring-blue-500/50`}
+                />
+              </div>
+
+              {/* Discount Selection */}
+              <div>
+                <label className={`block text-sm font-medium mb-2 ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>
+                  Kortingscode toepassen
+                </label>
+                <select
+                  value={selectedDiscount}
+                  onChange={(e) => {
+                    setSelectedDiscount(e.target.value)
+                    if (e.target.value) setCustomDiscount('')
+                  }}
+                  className={`w-full px-4 py-3 rounded-xl border ${
+                    darkMode 
+                      ? 'bg-gray-700 border-gray-600 text-white' 
+                      : 'bg-gray-50 border-gray-200 text-gray-900'
+                  } focus:outline-none focus:ring-2 focus:ring-blue-500/50`}
+                >
+                  <option value="">Geen kortingscode</option>
+                  {discountCodes.filter(d => d.active).map(d => (
+                    <option key={d.code} value={d.code}>
+                      {d.code} - {d.type === 'percentage' ? `${d.value}%` : `€${d.value}`} ({d.description})
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              {/* Or Custom Discount */}
+              {!selectedDiscount && (
+                <div>
+                  <label className={`block text-sm font-medium mb-2 ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>
+                    Of directe korting geven
+                  </label>
+                  <div className="flex gap-2">
+                    <select
+                      value={customDiscountType}
+                      onChange={(e) => setCustomDiscountType(e.target.value as 'percentage' | 'fixed')}
+                      className={`px-3 py-3 rounded-xl border ${
+                        darkMode 
+                          ? 'bg-gray-700 border-gray-600 text-white' 
+                          : 'bg-gray-50 border-gray-200 text-gray-900'
+                      } focus:outline-none focus:ring-2 focus:ring-blue-500/50`}
+                    >
+                      <option value="percentage">%</option>
+                      <option value="fixed">€</option>
+                    </select>
+                    <input
+                      type="number"
+                      value={customDiscount}
+                      onChange={(e) => setCustomDiscount(e.target.value)}
+                      placeholder={customDiscountType === 'percentage' ? 'bv. 10' : 'bv. 25'}
+                      className={`flex-1 px-4 py-3 rounded-xl border ${
+                        darkMode 
+                          ? 'bg-gray-700 border-gray-600 text-white placeholder-gray-500' 
+                          : 'bg-gray-50 border-gray-200 text-gray-900 placeholder-gray-400'
+                      } focus:outline-none focus:ring-2 focus:ring-blue-500/50`}
+                    />
+                  </div>
+                </div>
+              )}
+
+              {/* Generate Button */}
+              <button
+                onClick={generatePaymentLink}
+                disabled={isGenerating || (!selectedProjectId && !useCustomAmount) || (useCustomAmount && !customAmount)}
+                className="w-full py-3 bg-blue-500 hover:bg-blue-600 text-white font-semibold rounded-xl transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+              >
+                {isGenerating ? (
+                  <>
+                    <Loader2 className="w-5 h-5 animate-spin" />
+                    Genereren...
+                  </>
+                ) : (
+                  <>
+                    <Link2 className="w-5 h-5" />
+                    Betaallink genereren
+                  </>
+                )}
+              </button>
+            </div>
+          </div>
+
+          {/* Preview */}
+          <div className={`p-6 rounded-2xl border ${darkMode ? 'bg-gray-800/50 border-gray-700' : 'bg-white border-gray-200'}`}>
+            <h2 className={`text-lg font-semibold mb-6 ${darkMode ? 'text-white' : 'text-gray-900'}`}>
+              Betalingsoverzicht
+            </h2>
+
+            <div className="space-y-4">
+              {/* Project Info */}
+              {selectedProject && (
+                <div className={`p-4 rounded-xl ${darkMode ? 'bg-gray-700/50' : 'bg-gray-50'}`}>
+                  <p className={`text-sm ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>Project</p>
+                  <p className={`font-semibold ${darkMode ? 'text-white' : 'text-gray-900'}`}>{selectedProject.businessName}</p>
+                  <p className={`text-sm ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>
+                    {selectedProject.contactName} • {PACKAGE_PRICING[selectedProject.package].name}
+                  </p>
+                </div>
+              )}
+
+              {/* Price Breakdown */}
+              <div className={`p-4 rounded-xl space-y-3 ${darkMode ? 'bg-gray-700/50' : 'bg-gray-50'}`}>
+                <div className="flex justify-between">
+                  <span className={darkMode ? 'text-gray-400' : 'text-gray-500'}>Originele prijs</span>
+                  <span className={darkMode ? 'text-white' : 'text-gray-900'}>€{prices.original.toFixed(2)}</span>
+                </div>
+                
+                {prices.discount > 0 && (
+                  <div className="flex justify-between text-green-500">
+                    <span>Korting</span>
+                    <span>-€{prices.discount.toFixed(2)}</span>
+                  </div>
+                )}
+                
+                <div className={`pt-3 border-t flex justify-between ${darkMode ? 'border-gray-600' : 'border-gray-200'}`}>
+                  <span className={`font-semibold ${darkMode ? 'text-white' : 'text-gray-900'}`}>Te betalen</span>
+                  <span className={`text-xl font-bold ${darkMode ? 'text-white' : 'text-gray-900'}`}>€{prices.final.toFixed(2)}</span>
+                </div>
+              </div>
+
+              {/* Generated Link */}
+              {generatedLink && (
+                <motion.div
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  className={`p-4 rounded-xl border-2 ${
+                    darkMode ? 'bg-green-900/20 border-green-500/50' : 'bg-green-50 border-green-200'
+                  }`}
+                >
+                  <div className="flex items-center gap-2 mb-3">
+                    <CheckCircle2 className="w-5 h-5 text-green-500" />
+                    <span className={`font-semibold ${darkMode ? 'text-green-400' : 'text-green-700'}`}>
+                      Betaallink gegenereerd!
+                    </span>
+                  </div>
+                  
+                  <div className={`p-3 rounded-lg mb-3 break-all text-sm ${
+                    darkMode ? 'bg-gray-800 text-gray-300' : 'bg-white text-gray-600'
+                  }`}>
+                    {generatedLink}
+                  </div>
+                  
+                  <div className="flex gap-2">
+                    <button
+                      onClick={() => copyToClipboard(generatedLink)}
+                      className={`flex-1 py-2 rounded-xl font-medium transition-colors flex items-center justify-center gap-2 ${
+                        copySuccess
+                          ? 'bg-green-500 text-white'
+                          : 'bg-blue-500 hover:bg-blue-600 text-white'
+                      }`}
+                    >
+                      {copySuccess ? (
+                        <>
+                          <CheckCircle2 className="w-4 h-4" />
+                          Gekopieerd!
+                        </>
+                      ) : (
+                        <>
+                          <Link2 className="w-4 h-4" />
+                          Kopieer link
+                        </>
+                      )}
+                    </button>
+                    <button
+                      onClick={() => window.open(`mailto:${selectedProject?.contactEmail}?subject=Betaallink&body=Beste ${selectedProject?.contactName},%0D%0A%0D%0AHierbij de betaallink: ${encodeURIComponent(generatedLink)}%0D%0A%0D%0AMet vriendelijke groet`)}
+                      className={`px-4 py-2 rounded-xl font-medium transition-colors ${
+                        darkMode ? 'bg-gray-700 hover:bg-gray-600 text-white' : 'bg-gray-100 hover:bg-gray-200 text-gray-700'
+                      }`}
+                    >
+                      <Mail className="w-4 h-4" />
+                    </button>
+                  </div>
+                </motion.div>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Discount Codes Tab */}
+      {activeTab === 'discounts' && (
+        <div className="space-y-6">
+          {/* Add New Code Button */}
+          <div className="flex justify-end">
+            <button
+              onClick={() => setShowNewDiscountModal(true)}
+              className="px-4 py-2 bg-blue-500 hover:bg-blue-600 text-white font-medium rounded-xl transition-colors flex items-center gap-2"
+            >
+              <Plus className="w-4 h-4" />
+              Nieuwe kortingscode
+            </button>
+          </div>
+
+          {/* Discount Codes Grid */}
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
+            {discountCodes.map(code => (
+              <motion.div
+                key={code.code}
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                className={`p-5 rounded-2xl border transition-all ${
+                  code.active
+                    ? darkMode 
+                      ? 'bg-gray-800/50 border-gray-700' 
+                      : 'bg-white border-gray-200'
+                    : darkMode
+                      ? 'bg-gray-800/30 border-gray-700/50 opacity-60'
+                      : 'bg-gray-50 border-gray-200 opacity-60'
+                }`}
+              >
+                <div className="flex items-start justify-between mb-3">
+                  <div className={`px-3 py-1 rounded-lg font-mono font-bold text-sm ${
+                    code.active
+                      ? 'bg-blue-500 text-white'
+                      : darkMode ? 'bg-gray-700 text-gray-400' : 'bg-gray-200 text-gray-500'
+                  }`}>
+                    {code.code}
+                  </div>
+                  <button
+                    onClick={() => toggleDiscountActive(code.code)}
+                    className={`p-1.5 rounded-lg transition-colors ${
+                      code.active
+                        ? 'bg-green-500/10 text-green-500 hover:bg-green-500/20'
+                        : darkMode ? 'bg-gray-700 text-gray-500 hover:bg-gray-600' : 'bg-gray-100 text-gray-400 hover:bg-gray-200'
+                    }`}
+                  >
+                    {code.active ? <CheckCircle2 className="w-4 h-4" /> : <X className="w-4 h-4" />}
+                  </button>
+                </div>
+
+                <div className={`text-2xl font-bold mb-2 ${darkMode ? 'text-white' : 'text-gray-900'}`}>
+                  {code.type === 'percentage' ? `${code.value}%` : `€${code.value}`}
+                  <span className={`text-sm font-normal ml-2 ${darkMode ? 'text-gray-500' : 'text-gray-400'}`}>korting</span>
+                </div>
+
+                <p className={`text-sm mb-4 ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>
+                  {code.description || 'Geen beschrijving'}
+                </p>
+
+                <div className={`flex items-center justify-between text-xs ${darkMode ? 'text-gray-500' : 'text-gray-400'}`}>
+                  <span>{code.usedCount}x gebruikt</span>
+                  {code.validUntil && (
+                    <span>Geldig t/m {new Date(code.validUntil).toLocaleDateString('nl-NL')}</span>
+                  )}
+                </div>
+              </motion.div>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* New Discount Modal */}
       <AnimatePresence>
-        {show && (
+        {showNewDiscountModal && (
           <motion.div
-            initial={{ opacity: 0, y: 5 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: 5 }}
-            className={`absolute bottom-full left-1/2 -translate-x-1/2 mb-2 px-3 py-1.5 text-xs font-medium rounded-lg whitespace-nowrap z-50 ${
-              darkMode ? 'bg-gray-700 text-white' : 'bg-gray-900 text-white'
-            }`}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm"
+            onClick={() => setShowNewDiscountModal(false)}
           >
-            {text}
-            <div className={`absolute top-full left-1/2 -translate-x-1/2 border-4 border-transparent ${
-              darkMode ? 'border-t-gray-700' : 'border-t-gray-900'
-            }`} />
+            <motion.div
+              initial={{ scale: 0.95, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.95, opacity: 0 }}
+              onClick={(e) => e.stopPropagation()}
+              className={`w-full max-w-md rounded-2xl p-6 ${darkMode ? 'bg-gray-800' : 'bg-white'} shadow-2xl`}
+            >
+              <div className="flex items-center justify-between mb-6">
+                <h3 className={`text-lg font-bold ${darkMode ? 'text-white' : 'text-gray-900'}`}>
+                  Nieuwe kortingscode
+                </h3>
+                <button
+                  onClick={() => setShowNewDiscountModal(false)}
+                  className={`p-2 rounded-xl ${darkMode ? 'hover:bg-gray-700 text-gray-400' : 'hover:bg-gray-100 text-gray-500'}`}
+                >
+                  <X className="w-5 h-5" />
+                </button>
+              </div>
+
+              <div className="space-y-4">
+                <div>
+                  <label className={`block text-sm font-medium mb-2 ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>
+                    Code
+                  </label>
+                  <input
+                    type="text"
+                    value={newDiscount.code}
+                    onChange={(e) => setNewDiscount({ ...newDiscount, code: e.target.value.toUpperCase() })}
+                    placeholder="bv. ZOMER2025"
+                    className={`w-full px-4 py-3 rounded-xl border font-mono ${
+                      darkMode 
+                        ? 'bg-gray-700 border-gray-600 text-white placeholder-gray-500' 
+                        : 'bg-gray-50 border-gray-200 text-gray-900 placeholder-gray-400'
+                    } focus:outline-none focus:ring-2 focus:ring-blue-500/50`}
+                  />
+                </div>
+
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <label className={`block text-sm font-medium mb-2 ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>
+                      Type
+                    </label>
+                    <select
+                      value={newDiscount.type}
+                      onChange={(e) => setNewDiscount({ ...newDiscount, type: e.target.value as 'percentage' | 'fixed' })}
+                      className={`w-full px-4 py-3 rounded-xl border ${
+                        darkMode 
+                          ? 'bg-gray-700 border-gray-600 text-white' 
+                          : 'bg-gray-50 border-gray-200 text-gray-900'
+                      } focus:outline-none focus:ring-2 focus:ring-blue-500/50`}
+                    >
+                      <option value="percentage">Percentage (%)</option>
+                      <option value="fixed">Vast bedrag (€)</option>
+                    </select>
+                  </div>
+                  <div>
+                    <label className={`block text-sm font-medium mb-2 ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>
+                      Waarde
+                    </label>
+                    <input
+                      type="number"
+                      value={newDiscount.value}
+                      onChange={(e) => setNewDiscount({ ...newDiscount, value: parseFloat(e.target.value) })}
+                      placeholder="10"
+                      className={`w-full px-4 py-3 rounded-xl border ${
+                        darkMode 
+                          ? 'bg-gray-700 border-gray-600 text-white placeholder-gray-500' 
+                          : 'bg-gray-50 border-gray-200 text-gray-900 placeholder-gray-400'
+                      } focus:outline-none focus:ring-2 focus:ring-blue-500/50`}
+                    />
+                  </div>
+                </div>
+
+                <div>
+                  <label className={`block text-sm font-medium mb-2 ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>
+                    Beschrijving
+                  </label>
+                  <input
+                    type="text"
+                    value={newDiscount.description}
+                    onChange={(e) => setNewDiscount({ ...newDiscount, description: e.target.value })}
+                    placeholder="bv. Zomeractie korting"
+                    className={`w-full px-4 py-3 rounded-xl border ${
+                      darkMode 
+                        ? 'bg-gray-700 border-gray-600 text-white placeholder-gray-500' 
+                        : 'bg-gray-50 border-gray-200 text-gray-900 placeholder-gray-400'
+                    } focus:outline-none focus:ring-2 focus:ring-blue-500/50`}
+                  />
+                </div>
+
+                <div>
+                  <label className={`block text-sm font-medium mb-2 ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>
+                    Geldig tot (optioneel)
+                  </label>
+                  <input
+                    type="date"
+                    value={newDiscount.validUntil || ''}
+                    onChange={(e) => setNewDiscount({ ...newDiscount, validUntil: e.target.value })}
+                    className={`w-full px-4 py-3 rounded-xl border ${
+                      darkMode 
+                        ? 'bg-gray-700 border-gray-600 text-white' 
+                        : 'bg-gray-50 border-gray-200 text-gray-900'
+                    } focus:outline-none focus:ring-2 focus:ring-blue-500/50`}
+                  />
+                </div>
+
+                <button
+                  onClick={handleAddDiscount}
+                  disabled={!newDiscount.code || !newDiscount.value}
+                  className="w-full py-3 bg-blue-500 hover:bg-blue-600 text-white font-semibold rounded-xl transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  Kortingscode toevoegen
+                </button>
+              </div>
+            </motion.div>
           </motion.div>
         )}
       </AnimatePresence>
@@ -1304,393 +3691,827 @@ function Tooltip({ children, text, darkMode }: { children: React.ReactNode; text
 }
 
 // ===========================================
-// ONBOARDING MODAL
+// SERVICES VIEW - Extra Services Management
 // ===========================================
 
-const onboardingSteps = [
-  {
-    icon: Target,
-    title: 'Welkom bij het Developer Dashboard!',
-    description: 'Hier beheer je al je projecten, klanten en service aanvragen. Laten we even een korte rondleiding maken.',
-    color: 'from-blue-500 to-indigo-600'
+interface ServicesViewProps {
+  darkMode: boolean
+  serviceRequests: ServiceRequest[]
+  onUpdateRequest: (request: ServiceRequest) => void
+}
+
+const SERVICE_DETAILS: Record<ServiceType, { 
+  name: string
+  icon: typeof Camera
+  color: string
+  bgColor: string
+  description: string
+  basePrice: number
+}> = {
+  drone: { 
+    name: 'Dronebeelden', 
+    icon: Plane, 
+    color: 'text-orange-500',
+    bgColor: 'bg-orange-500',
+    description: 'Professionele luchtfotografie en video',
+    basePrice: 399
   },
-  {
-    icon: FolderKanban,
-    title: 'Projecten beheren',
-    description: 'Bekijk alle projecten in kanban- of lijstweergave. Volg de voortgang van elk project en communiceer met klanten.',
-    color: 'from-purple-500 to-pink-600'
+  logo: { 
+    name: 'Logo Design', 
+    icon: PenTool, 
+    color: 'text-purple-500',
+    bgColor: 'bg-purple-500',
+    description: 'Custom logo ontwerp met revisierondes',
+    basePrice: 299
   },
-  {
-    icon: Users,
-    title: 'Klantenbeheer',
-    description: 'Houd alle klantgegevens bij elkaar. Zie welke projecten bij welke klant horen en track hun uitgaven.',
-    color: 'from-green-500 to-emerald-600'
+  foto: { 
+    name: 'Fotografie', 
+    icon: Camera, 
+    color: 'text-pink-500',
+    bgColor: 'bg-pink-500',
+    description: 'Productfotografie en bedrijfsfoto\'s',
+    basePrice: 349
   },
-  {
-    icon: Briefcase,
-    title: 'Service Aanvragen',
-    description: 'Beheer extra diensten zoals drone opnames, logo ontwerp en fotografie. Alles op één plek.',
-    color: 'from-amber-500 to-orange-600'
+  tekst: { 
+    name: 'Tekstschrijven', 
+    icon: FileText, 
+    color: 'text-blue-500',
+    bgColor: 'bg-blue-500',
+    description: 'SEO-geoptimaliseerde webteksten',
+    basePrice: 199
   },
-  {
-    icon: Zap,
-    title: 'Klaar om te beginnen!',
-    description: 'Gebruik de help knop rechtsboven als je vragen hebt. Veel succes!',
-    color: 'from-cyan-500 to-blue-600'
+  seo: { 
+    name: 'SEO Optimalisatie', 
+    icon: TrendingUp, 
+    color: 'text-green-500',
+    bgColor: 'bg-green-500',
+    description: 'Zoekmachine optimalisatie pakket',
+    basePrice: 449
+  },
+}
+
+function ServicesView({ darkMode, serviceRequests, onUpdateRequest }: ServicesViewProps) {
+  const [filterStatus, setFilterStatus] = useState<ServiceRequest['status'] | 'all'>('all')
+  const [filterType, setFilterType] = useState<ServiceType | 'all'>('all')
+  const [selectedRequest, setSelectedRequest] = useState<ServiceRequest | null>(null)
+  const [showQuoteModal, setShowQuoteModal] = useState(false)
+  const [quotePrice, setQuotePrice] = useState('')
+  const [quoteNotes, setQuoteNotes] = useState('')
+
+  const filteredRequests = serviceRequests.filter(r => {
+    const matchesStatus = filterStatus === 'all' || r.status === filterStatus
+    const matchesType = filterType === 'all' || r.type === filterType
+    return matchesStatus && matchesType
+  })
+
+  const stats = {
+    pending: serviceRequests.filter(r => r.status === 'pending').length,
+    inProgress: serviceRequests.filter(r => r.status === 'in_progress').length,
+    completed: serviceRequests.filter(r => r.status === 'completed').length,
+    totalRevenue: serviceRequests
+      .filter(r => r.status === 'completed')
+      .reduce((sum, r) => sum + (r.price || 0), 0),
   }
-]
 
-function OnboardingModal({ 
-  step, 
-  onNext, 
-  onSkip, 
-  darkMode 
-}: { 
-  step: number
-  onNext: () => void
-  onSkip: () => void
-  darkMode: boolean
-}) {
-  const currentStep = onboardingSteps[step]
-  const Icon = currentStep.icon
+  const handleStatusChange = (request: ServiceRequest, newStatus: ServiceRequest['status']) => {
+    onUpdateRequest({ ...request, status: newStatus })
+  }
+
+  const handleSendQuote = () => {
+    if (!selectedRequest || !quotePrice) return
+    
+    onUpdateRequest({
+      ...selectedRequest,
+      price: parseFloat(quotePrice),
+      status: 'pending',
+    })
+    
+    setShowQuoteModal(false)
+    setSelectedRequest(null)
+    setQuotePrice('')
+    setQuoteNotes('')
+  }
+
+  const getStatusBadge = (status: ServiceRequest['status']) => {
+    const badges = {
+      pending: { label: 'In afwachting', color: 'bg-yellow-500' },
+      in_progress: { label: 'In uitvoering', color: 'bg-blue-500' },
+      completed: { label: 'Afgerond', color: 'bg-green-500' },
+      cancelled: { label: 'Geannuleerd', color: 'bg-gray-500' },
+    }
+    return badges[status]
+  }
 
   return (
-    <>
-      <motion.div
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        exit={{ opacity: 0 }}
-        className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50"
-        onClick={onSkip}
-      />
-      <motion.div
-        initial={{ opacity: 0, scale: 0.9, y: 20 }}
-        animate={{ opacity: 1, scale: 1, y: 0 }}
-        exit={{ opacity: 0, scale: 0.9, y: 20 }}
-        className={`fixed inset-0 z-50 flex items-center justify-center p-4`}
-      >
-        <div className={`w-full max-w-md p-8 rounded-2xl shadow-2xl ${
-          darkMode ? 'bg-gray-800' : 'bg-white'
-        }`}>
-        <motion.div
-          key={step}
-          initial={{ opacity: 0, x: 20 }}
-          animate={{ opacity: 1, x: 0 }}
-          className="text-center"
-        >
-          <motion.div
-            whileHover={{ scale: 1.05, rotate: 5 }}
-            className={`w-20 h-20 mx-auto mb-6 rounded-2xl bg-gradient-to-br ${currentStep.color} flex items-center justify-center shadow-lg`}
-          >
-            <Icon className="w-10 h-10 text-white" />
-          </motion.div>
-          
-          <h2 className={`text-2xl font-bold mb-3 ${darkMode ? 'text-white' : 'text-gray-900'}`}>
-            {currentStep.title}
-          </h2>
-          <p className={`mb-8 ${darkMode ? 'text-gray-400' : 'text-gray-600'}`}>
-            {currentStep.description}
+    <div className="space-y-6">
+      {/* Header */}
+      <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
+        <div>
+          <h1 className={`text-2xl font-bold ${darkMode ? 'text-white' : 'text-gray-900'}`}>
+            Extra Services
+          </h1>
+          <p className={`${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>
+            Beheer service aanvragen voor drone, logo, foto, tekst en SEO
           </p>
-          
-          {/* Progress dots */}
-          <div className="flex justify-center gap-2 mb-6">
-            {onboardingSteps.map((_, i) => (
-              <motion.div
-                key={i}
-                animate={{ scale: i === step ? 1.2 : 1 }}
-                className={`w-2 h-2 rounded-full transition-colors ${
-                  i === step 
-                    ? 'bg-blue-500' 
-                    : i < step 
-                      ? 'bg-blue-300' 
-                      : darkMode ? 'bg-gray-600' : 'bg-gray-200'
-                }`}
-              />
-            ))}
-          </div>
-          
-          <div className="flex gap-3">
-            <button
-              onClick={onSkip}
-              className={`flex-1 py-3 rounded-xl font-medium transition-colors ${
-                darkMode 
-                  ? 'bg-gray-700 text-gray-300 hover:bg-gray-600' 
-                  : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
-              }`}
-            >
-              Overslaan
-            </button>
-            <motion.button
-              whileHover={{ scale: 1.02 }}
-              whileTap={{ scale: 0.98 }}
-              onClick={onNext}
-              className="flex-1 py-3 bg-gradient-to-r from-blue-500 to-indigo-600 text-white rounded-xl font-medium flex items-center justify-center gap-2 shadow-lg"
-            >
-              {step === onboardingSteps.length - 1 ? 'Aan de slag!' : 'Volgende'}
-              <ArrowRight className="w-4 h-4" />
-            </motion.button>
-          </div>
-        </motion.div>
         </div>
-      </motion.div>
-    </>
-  )
-}
 
-// ===========================================
-// HELP MODAL
-// ===========================================
-
-function HelpModal({ onClose, darkMode }: { onClose: () => void; darkMode: boolean }) {
-  const [activeTab, setActiveTab] = useState<'handleiding' | 'tips' | 'sneltoetsen'>('handleiding')
-
-  const tabs = [
-    { id: 'handleiding', label: 'Handleiding', icon: BookOpen },
-    { id: 'tips', label: 'Tips', icon: Lightbulb },
-    { id: 'sneltoetsen', label: 'Sneltoetsen', icon: MousePointer }
-  ]
-
-  return (
-    <>
-      <motion.div
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        exit={{ opacity: 0 }}
-        className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50"
-        onClick={onClose}
-      />
-      <motion.div
-        initial={{ opacity: 0, scale: 0.9 }}
-        animate={{ opacity: 1, scale: 1 }}
-        exit={{ opacity: 0, scale: 0.9 }}
-        className={`fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full max-w-2xl max-h-[80vh] rounded-2xl shadow-2xl z-50 overflow-hidden ${
-          darkMode ? 'bg-gray-800' : 'bg-white'
-        }`}
-      >
-        {/* Header */}
-        <div className={`flex items-center justify-between p-6 border-b ${darkMode ? 'border-gray-700' : 'border-gray-200'}`}>
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-xl flex items-center justify-center">
-              <HelpCircle className="w-5 h-5 text-white" />
-            </div>
-            <h2 className={`text-xl font-bold ${darkMode ? 'text-white' : 'text-gray-900'}`}>
-              Hulp & Documentatie
-            </h2>
-          </div>
-          <button
-            onClick={onClose}
-            className={`p-2 rounded-lg transition-colors ${
-              darkMode ? 'hover:bg-gray-700 text-gray-400' : 'hover:bg-gray-100 text-gray-500'
-            }`}
+        <div className="flex flex-wrap items-center gap-3">
+          <select
+            value={filterType}
+            onChange={(e) => setFilterType(e.target.value as ServiceType | 'all')}
+            className={`px-3 py-2 rounded-xl border ${
+              darkMode 
+                ? 'bg-gray-800 border-gray-700 text-white' 
+                : 'bg-white border-gray-200 text-gray-900'
+            } focus:outline-none focus:ring-2 focus:ring-blue-500/50`}
           >
-            <X className="w-5 h-5" />
-          </button>
+            <option value="all">Alle types</option>
+            {Object.entries(SERVICE_DETAILS).map(([key, s]) => (
+              <option key={key} value={key}>{s.name}</option>
+            ))}
+          </select>
+
+          <select
+            value={filterStatus}
+            onChange={(e) => setFilterStatus(e.target.value as ServiceRequest['status'] | 'all')}
+            className={`px-3 py-2 rounded-xl border ${
+              darkMode 
+                ? 'bg-gray-800 border-gray-700 text-white' 
+                : 'bg-white border-gray-200 text-gray-900'
+            } focus:outline-none focus:ring-2 focus:ring-blue-500/50`}
+          >
+            <option value="all">Alle statussen</option>
+            <option value="pending">In afwachting</option>
+            <option value="in_progress">In uitvoering</option>
+            <option value="completed">Afgerond</option>
+            <option value="cancelled">Geannuleerd</option>
+          </select>
         </div>
-        
-        {/* Tabs */}
-        <div className={`flex border-b ${darkMode ? 'border-gray-700' : 'border-gray-200'}`}>
-          {tabs.map(tab => (
-            <button
-              key={tab.id}
-              onClick={() => setActiveTab(tab.id as typeof activeTab)}
-              className={`flex-1 flex items-center justify-center gap-2 px-4 py-3 text-sm font-medium transition-colors ${
-                activeTab === tab.id
-                  ? darkMode 
-                    ? 'text-blue-400 border-b-2 border-blue-400 bg-gray-700/50' 
-                    : 'text-blue-600 border-b-2 border-blue-600 bg-blue-50/50'
-                  : darkMode 
-                    ? 'text-gray-400 hover:text-white' 
-                    : 'text-gray-500 hover:text-gray-700'
+      </div>
+
+      {/* Stats */}
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+        <div className={`p-5 rounded-2xl ${darkMode ? 'bg-yellow-900/20 border border-yellow-500/30' : 'bg-yellow-50 border border-yellow-200'}`}>
+          <div className="flex items-center gap-3 mb-2">
+            <div className="p-2 bg-yellow-500 rounded-xl">
+              <Clock className="w-5 h-5 text-white" />
+            </div>
+            <span className={`text-sm ${darkMode ? 'text-yellow-400' : 'text-yellow-700'}`}>Nieuw</span>
+          </div>
+          <p className={`text-2xl font-bold ${darkMode ? 'text-white' : 'text-gray-900'}`}>{stats.pending}</p>
+        </div>
+
+        <div className={`p-5 rounded-2xl ${darkMode ? 'bg-blue-900/20 border border-blue-500/30' : 'bg-blue-50 border border-blue-200'}`}>
+          <div className="flex items-center gap-3 mb-2">
+            <div className="p-2 bg-blue-500 rounded-xl">
+              <Loader2 className="w-5 h-5 text-white" />
+            </div>
+            <span className={`text-sm ${darkMode ? 'text-blue-400' : 'text-blue-700'}`}>In uitvoering</span>
+          </div>
+          <p className={`text-2xl font-bold ${darkMode ? 'text-white' : 'text-gray-900'}`}>{stats.inProgress}</p>
+        </div>
+
+        <div className={`p-5 rounded-2xl ${darkMode ? 'bg-green-900/20 border border-green-500/30' : 'bg-green-50 border border-green-200'}`}>
+          <div className="flex items-center gap-3 mb-2">
+            <div className="p-2 bg-green-500 rounded-xl">
+              <CheckCircle2 className="w-5 h-5 text-white" />
+            </div>
+            <span className={`text-sm ${darkMode ? 'text-green-400' : 'text-green-700'}`}>Afgerond</span>
+          </div>
+          <p className={`text-2xl font-bold ${darkMode ? 'text-white' : 'text-gray-900'}`}>{stats.completed}</p>
+        </div>
+
+        <div className={`p-5 rounded-2xl ${darkMode ? 'bg-purple-900/20 border border-purple-500/30' : 'bg-purple-50 border border-purple-200'}`}>
+          <div className="flex items-center gap-3 mb-2">
+            <div className="p-2 bg-purple-500 rounded-xl">
+              <Wallet className="w-5 h-5 text-white" />
+            </div>
+            <span className={`text-sm ${darkMode ? 'text-purple-400' : 'text-purple-700'}`}>Omzet</span>
+          </div>
+          <p className={`text-2xl font-bold ${darkMode ? 'text-white' : 'text-gray-900'}`}>€{stats.totalRevenue}</p>
+        </div>
+      </div>
+
+      {/* Service Requests Grid */}
+      <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
+        {filteredRequests.map(request => {
+          const service = SERVICE_DETAILS[request.type]
+          const status = getStatusBadge(request.status)
+          const ServiceIcon = service.icon
+
+          return (
+            <motion.div
+              key={request.id}
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              className={`p-5 rounded-2xl border transition-all hover:shadow-lg ${
+                darkMode 
+                  ? 'bg-gray-800/50 border-gray-700 hover:border-gray-600' 
+                  : 'bg-white border-gray-200 hover:border-gray-300'
               }`}
             >
-              <tab.icon className="w-4 h-4" />
-              {tab.label}
-            </button>
-          ))}
-        </div>
-        
-        {/* Content */}
-        <div className="p-6 overflow-y-auto max-h-[calc(80vh-180px)]">
-          <AnimatePresence mode="wait">
-            {activeTab === 'handleiding' && (
-              <motion.div
-                key="handleiding"
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -10 }}
-                className="space-y-4"
-              >
-                <HelpSection 
-                  title="Projecten beheren" 
-                  icon={FolderKanban}
-                  darkMode={darkMode}
-                >
-                  <p>Gebruik de Projecten tab om alle lopende projecten te zien. Je kunt schakelen tussen kanban en lijst weergave.</p>
-                  <ul className="list-disc list-inside mt-2 space-y-1">
-                    <li>Klik op een project voor details</li>
-                    <li>Wijzig de fase via de dropdown</li>
-                    <li>Stuur emails direct vanuit het systeem</li>
-                  </ul>
-                </HelpSection>
-                
-                <HelpSection 
-                  title="Klanten" 
-                  icon={Users}
-                  darkMode={darkMode}
-                >
-                  <p>Het klantenoverzicht toont alle klanten met hun projecten en totale uitgaven.</p>
-                </HelpSection>
-                
-                <HelpSection 
-                  title="Service aanvragen" 
-                  icon={Briefcase}
-                  darkMode={darkMode}
-                >
-                  <p>Beheer extra diensten zoals drone opnames, logo ontwerp, fotografie en tekstschrijven.</p>
-                </HelpSection>
-                
-                <HelpSection 
-                  title="Betalingen" 
-                  icon={CreditCard}
-                  darkMode={darkMode}
-                >
-                  <p>Bekijk MRR, openstaande facturen en recente betalingen. Alles wordt automatisch via Mollie verwerkt.</p>
-                </HelpSection>
-              </motion.div>
-            )}
-            
-            {activeTab === 'tips' && (
-              <motion.div
-                key="tips"
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -10 }}
-                className="space-y-4"
-              >
-                <TipCard 
-                  emoji="🚀" 
-                  title="Snelle status updates"
-                  description="Gebruik de quick action menu (drie puntjes) op projectkaarten voor snelle acties."
-                  darkMode={darkMode}
-                />
-                <TipCard 
-                  emoji="🔔" 
-                  title="Meldingen bijhouden"
-                  description="Check regelmatig de meldingen voor nieuwe berichten en wijzigingsverzoeken."
-                  darkMode={darkMode}
-                />
-                <TipCard 
-                  emoji="🌙" 
-                  title="Dark mode"
-                  description="Schakel dark mode in via het zon/maan icoon rechtsboven voor minder belasting van je ogen."
-                  darkMode={darkMode}
-                />
-                <TipCard 
-                  emoji="📊" 
-                  title="Dashboard overview"
-                  description="Het overzicht toont direct welke projecten klaar zijn om live te gaan of wachten op betaling."
-                  darkMode={darkMode}
-                />
-                <TipCard 
-                  emoji="⚡" 
-                  title="Kanban Board"
-                  description="Gebruik de Kanban tab voor een visueel overzicht van alle taken en hun voortgang."
-                  darkMode={darkMode}
-                />
-              </motion.div>
-            )}
-            
-            {activeTab === 'sneltoetsen' && (
-              <motion.div
-                key="sneltoetsen"
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -10 }}
-                className="space-y-3"
-              >
-                <ShortcutItem shortcut="?" description="Open dit helpmenu" darkMode={darkMode} />
-                <ShortcutItem shortcut="D" description="Toggle dark mode" darkMode={darkMode} />
-                <ShortcutItem shortcut="O" description="Ga naar Overzicht" darkMode={darkMode} />
-                <ShortcutItem shortcut="P" description="Ga naar Projecten" darkMode={darkMode} />
-                <ShortcutItem shortcut="K" description="Ga naar Kanban" darkMode={darkMode} />
-                <ShortcutItem shortcut="C" description="Ga naar Klanten" darkMode={darkMode} />
-                <ShortcutItem shortcut="N" description="Open meldingen" darkMode={darkMode} />
-                <ShortcutItem shortcut="Esc" description="Sluit modals/panels" darkMode={darkMode} />
-              </motion.div>
-            )}
-          </AnimatePresence>
-        </div>
-      </motion.div>
-    </>
-  )
-}
+              {/* Header */}
+              <div className="flex items-start justify-between mb-4">
+                <div className="flex items-center gap-3">
+                  <div className={`p-2 rounded-xl ${service.bgColor}`}>
+                    <ServiceIcon className="w-5 h-5 text-white" />
+                  </div>
+                  <div>
+                    <h3 className={`font-semibold ${darkMode ? 'text-white' : 'text-gray-900'}`}>
+                      {service.name}
+                    </h3>
+                    <p className={`text-sm ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>
+                      {request.clientName}
+                    </p>
+                  </div>
+                </div>
+                <span className={`px-2 py-1 text-xs font-medium text-white rounded-full ${status.color}`}>
+                  {status.label}
+                </span>
+              </div>
 
-function HelpSection({ 
-  title, 
-  icon: Icon, 
-  children, 
-  darkMode 
-}: { 
-  title: string
-  icon: typeof FolderKanban
-  children: React.ReactNode
-  darkMode: boolean
-}) {
-  return (
-    <div className={`p-4 rounded-xl ${darkMode ? 'bg-gray-700/50' : 'bg-gray-50'}`}>
-      <div className="flex items-center gap-2 mb-2">
-        <Icon className={`w-5 h-5 ${darkMode ? 'text-blue-400' : 'text-blue-600'}`} />
-        <h3 className={`font-semibold ${darkMode ? 'text-white' : 'text-gray-900'}`}>{title}</h3>
+              {/* Description */}
+              <p className={`text-sm mb-4 line-clamp-2 ${darkMode ? 'text-gray-300' : 'text-gray-600'}`}>
+                {request.description}
+              </p>
+
+              {/* Price & Date */}
+              <div className={`flex items-center justify-between text-sm mb-4 ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>
+                <span className="flex items-center gap-1">
+                  <Calendar className="w-4 h-4" />
+                  {new Date(request.createdAt).toLocaleDateString('nl-NL')}
+                </span>
+                {request.price && (
+                  <span className={`font-semibold ${darkMode ? 'text-white' : 'text-gray-900'}`}>
+                    €{request.price}
+                  </span>
+                )}
+              </div>
+
+              {/* Contact */}
+              <div className={`flex gap-2 mb-4 text-xs ${darkMode ? 'text-gray-500' : 'text-gray-400'}`}>
+                <a href={`mailto:${request.clientEmail}`} className="hover:text-blue-500 truncate">
+                  {request.clientEmail}
+                </a>
+                {request.clientPhone && (
+                  <>
+                    <span>•</span>
+                    <a href={`tel:${request.clientPhone}`} className="hover:text-blue-500">
+                      {request.clientPhone}
+                    </a>
+                  </>
+                )}
+              </div>
+
+              {/* Actions */}
+              <div className="flex gap-2">
+                {request.status === 'pending' && (
+                  <>
+                    <button
+                      onClick={() => handleStatusChange(request, 'in_progress')}
+                      className="flex-1 py-2 bg-blue-500 hover:bg-blue-600 text-white text-sm font-medium rounded-xl transition-colors"
+                    >
+                      Starten
+                    </button>
+                    <button
+                      onClick={() => {
+                        setSelectedRequest(request)
+                        setQuotePrice(request.price?.toString() || service.basePrice.toString())
+                        setShowQuoteModal(true)
+                      }}
+                      className={`px-3 py-2 rounded-xl text-sm font-medium transition-colors ${
+                        darkMode 
+                          ? 'bg-gray-700 hover:bg-gray-600 text-white' 
+                          : 'bg-gray-100 hover:bg-gray-200 text-gray-700'
+                      }`}
+                    >
+                      Offerte
+                    </button>
+                  </>
+                )}
+                {request.status === 'in_progress' && (
+                  <button
+                    onClick={() => handleStatusChange(request, 'completed')}
+                    className="flex-1 py-2 bg-green-500 hover:bg-green-600 text-white text-sm font-medium rounded-xl transition-colors"
+                  >
+                    Afronden
+                  </button>
+                )}
+                {request.status === 'completed' && (
+                  <div className={`flex-1 py-2 text-center text-sm ${darkMode ? 'text-green-400' : 'text-green-600'}`}>
+                    ✓ Afgerond
+                  </div>
+                )}
+              </div>
+            </motion.div>
+          )
+        })}
       </div>
-      <div className={`text-sm ${darkMode ? 'text-gray-300' : 'text-gray-600'}`}>
-        {children}
-      </div>
+
+      {filteredRequests.length === 0 && (
+        <div className={`p-12 text-center rounded-2xl border ${
+          darkMode ? 'bg-gray-800/50 border-gray-700 text-gray-500' : 'bg-gray-50 border-gray-200 text-gray-400'
+        }`}>
+          <Briefcase className="w-12 h-12 mx-auto mb-4 opacity-50" />
+          <p>Geen service aanvragen gevonden</p>
+        </div>
+      )}
+
+      {/* Quote Modal */}
+      <AnimatePresence>
+        {showQuoteModal && selectedRequest && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm"
+            onClick={() => setShowQuoteModal(false)}
+          >
+            <motion.div
+              initial={{ scale: 0.95, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.95, opacity: 0 }}
+              onClick={(e) => e.stopPropagation()}
+              className={`w-full max-w-md rounded-2xl p-6 ${darkMode ? 'bg-gray-800' : 'bg-white'} shadow-2xl`}
+            >
+              <div className="flex items-center justify-between mb-6">
+                <h3 className={`text-lg font-bold ${darkMode ? 'text-white' : 'text-gray-900'}`}>
+                  Offerte versturen
+                </h3>
+                <button
+                  onClick={() => setShowQuoteModal(false)}
+                  className={`p-2 rounded-xl ${darkMode ? 'hover:bg-gray-700 text-gray-400' : 'hover:bg-gray-100 text-gray-500'}`}
+                >
+                  <X className="w-5 h-5" />
+                </button>
+              </div>
+
+              <div className={`p-4 rounded-xl mb-4 ${darkMode ? 'bg-gray-700/50' : 'bg-gray-50'}`}>
+                <p className={`text-sm ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>Klant</p>
+                <p className={`font-semibold ${darkMode ? 'text-white' : 'text-gray-900'}`}>{selectedRequest.clientName}</p>
+                <p className={`text-sm ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>
+                  {SERVICE_DETAILS[selectedRequest.type].name}
+                </p>
+              </div>
+
+              <div className="space-y-4">
+                <div>
+                  <label className={`block text-sm font-medium mb-2 ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>
+                    Prijs (incl. BTW)
+                  </label>
+                  <div className="relative">
+                    <span className={`absolute left-4 top-1/2 -translate-y-1/2 ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>€</span>
+                    <input
+                      type="number"
+                      value={quotePrice}
+                      onChange={(e) => setQuotePrice(e.target.value)}
+                      className={`w-full pl-8 pr-4 py-3 rounded-xl border ${
+                        darkMode 
+                          ? 'bg-gray-700 border-gray-600 text-white' 
+                          : 'bg-gray-50 border-gray-200 text-gray-900'
+                      } focus:outline-none focus:ring-2 focus:ring-blue-500/50`}
+                    />
+                  </div>
+                  <p className={`text-xs mt-1 ${darkMode ? 'text-gray-500' : 'text-gray-400'}`}>
+                    Richtprijs: €{SERVICE_DETAILS[selectedRequest.type].basePrice}
+                  </p>
+                </div>
+
+                <div>
+                  <label className={`block text-sm font-medium mb-2 ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>
+                    Notities (optioneel)
+                  </label>
+                  <textarea
+                    value={quoteNotes}
+                    onChange={(e) => setQuoteNotes(e.target.value)}
+                    placeholder="Extra informatie voor de klant..."
+                    rows={3}
+                    className={`w-full px-4 py-3 rounded-xl border resize-none ${
+                      darkMode 
+                        ? 'bg-gray-700 border-gray-600 text-white placeholder-gray-500' 
+                        : 'bg-gray-50 border-gray-200 text-gray-900 placeholder-gray-400'
+                    } focus:outline-none focus:ring-2 focus:ring-blue-500/50`}
+                  />
+                </div>
+
+                <button
+                  onClick={handleSendQuote}
+                  disabled={!quotePrice}
+                  className="w-full py-3 bg-blue-500 hover:bg-blue-600 text-white font-semibold rounded-xl transition-colors disabled:opacity-50"
+                >
+                  Offerte versturen
+                </button>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   )
 }
 
-function TipCard({ 
-  emoji, 
-  title, 
-  description, 
-  darkMode 
-}: { 
-  emoji: string
-  title: string
-  description: string
+// ===========================================
+// SETTINGS VIEW - Profile & Configuration
+// ===========================================
+
+interface SettingsViewProps {
   darkMode: boolean
-}) {
-  return (
-    <motion.div
-      whileHover={{ scale: 1.01 }}
-      className={`flex items-start gap-4 p-4 rounded-xl ${darkMode ? 'bg-gray-700/50' : 'bg-gray-50'}`}
-    >
-      <span className="text-2xl">{emoji}</span>
-      <div>
-        <h3 className={`font-semibold mb-1 ${darkMode ? 'text-white' : 'text-gray-900'}`}>{title}</h3>
-        <p className={`text-sm ${darkMode ? 'text-gray-400' : 'text-gray-600'}`}>{description}</p>
-      </div>
-    </motion.div>
-  )
+  setDarkMode: (value: boolean) => void
 }
 
-function ShortcutItem({ 
-  shortcut, 
-  description, 
-  darkMode 
-}: { 
-  shortcut: string
-  description: string
-  darkMode: boolean
-}) {
+function SettingsView({ darkMode, setDarkMode }: SettingsViewProps) {
+  const [activeSection, setActiveSection] = useState<'profile' | 'notifications' | 'api' | 'danger'>('profile')
+  
+  // Profile settings
+  const [profileData, setProfileData] = useState({
+    name: 'Developer',
+    email: 'developer@webstability.nl',
+    phone: '+31 6 12345678',
+    avatar: '',
+  })
+  
+  // Notification settings
+  const [notifications, setNotifications] = useState({
+    emailNewProject: true,
+    emailNewMessage: true,
+    emailPayment: true,
+    pushNewProject: false,
+    pushNewMessage: true,
+    pushPayment: true,
+    weeklyReport: true,
+  })
+
+  // API Keys (mock)
+  const [apiKeys] = useState([
+    { id: 'key-1', name: 'Mollie Live', key: 'live_xxxxxxxxxxxxxxxx', created: '2024-01-15' },
+    { id: 'key-2', name: 'Mollie Test', key: 'test_xxxxxxxxxxxxxxxx', created: '2024-01-15' },
+  ])
+
+  const [showApiKey, setShowApiKey] = useState<string | null>(null)
+  const [isSaving, setIsSaving] = useState(false)
+  const [saveSuccess, setSaveSuccess] = useState(false)
+
+  const handleSave = async () => {
+    setIsSaving(true)
+    await new Promise(resolve => setTimeout(resolve, 1000))
+    setIsSaving(false)
+    setSaveSuccess(true)
+    setTimeout(() => setSaveSuccess(false), 3000)
+  }
+
+  const sections = [
+    { id: 'profile', label: 'Profiel', icon: User },
+    { id: 'notifications', label: 'Notificaties', icon: Bell },
+    { id: 'api', label: 'API Sleutels', icon: Lock },
+    { id: 'danger', label: 'Gevaarzone', icon: AlertCircle },
+  ]
+
   return (
-    <div className={`flex items-center justify-between p-3 rounded-lg ${darkMode ? 'bg-gray-700/50' : 'bg-gray-50'}`}>
-      <span className={darkMode ? 'text-gray-300' : 'text-gray-600'}>{description}</span>
-      <kbd className={`px-3 py-1 rounded-lg text-sm font-mono font-medium ${
-        darkMode ? 'bg-gray-600 text-gray-200' : 'bg-white text-gray-700 shadow-sm border border-gray-200'
+    <div className="flex flex-col lg:flex-row gap-6">
+      {/* Sidebar */}
+      <div className={`lg:w-64 flex-shrink-0 p-4 rounded-2xl border ${
+        darkMode ? 'bg-gray-800/50 border-gray-700' : 'bg-white border-gray-200'
       }`}>
-        {shortcut}
-      </kbd>
+        <h2 className={`text-lg font-bold mb-4 px-3 ${darkMode ? 'text-white' : 'text-gray-900'}`}>
+          Instellingen
+        </h2>
+        <nav className="space-y-1">
+          {sections.map(section => {
+            const Icon = section.icon
+            const isActive = activeSection === section.id
+            return (
+              <button
+                key={section.id}
+                onClick={() => setActiveSection(section.id as typeof activeSection)}
+                className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-left transition-colors ${
+                  isActive
+                    ? 'bg-blue-500 text-white'
+                    : darkMode 
+                      ? 'text-gray-400 hover:bg-gray-700 hover:text-white' 
+                      : 'text-gray-600 hover:bg-gray-100 hover:text-gray-900'
+                }`}
+              >
+                <Icon className="w-5 h-5" />
+                <span className="font-medium">{section.label}</span>
+              </button>
+            )
+          })}
+        </nav>
+
+        {/* Dark Mode Toggle */}
+        <div className={`mt-6 pt-6 border-t ${darkMode ? 'border-gray-700' : 'border-gray-200'}`}>
+          <button
+            onClick={() => setDarkMode(!darkMode)}
+            className={`w-full flex items-center justify-between px-3 py-2.5 rounded-xl transition-colors ${
+              darkMode 
+                ? 'bg-gray-700 text-white' 
+                : 'bg-gray-100 text-gray-900'
+            }`}
+          >
+            <div className="flex items-center gap-3">
+              {darkMode ? <Moon className="w-5 h-5" /> : <Sun className="w-5 h-5" />}
+              <span className="font-medium">Thema</span>
+            </div>
+            <span className={`text-sm ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>
+              {darkMode ? 'Donker' : 'Licht'}
+            </span>
+          </button>
+        </div>
+      </div>
+
+      {/* Content */}
+      <div className={`flex-1 p-6 rounded-2xl border ${
+        darkMode ? 'bg-gray-800/50 border-gray-700' : 'bg-white border-gray-200'
+      }`}>
+        {/* Profile Section */}
+        {activeSection === 'profile' && (
+          <div className="space-y-6">
+            <div>
+              <h3 className={`text-xl font-bold mb-1 ${darkMode ? 'text-white' : 'text-gray-900'}`}>
+                Profiel
+              </h3>
+              <p className={darkMode ? 'text-gray-400' : 'text-gray-500'}>
+                Beheer je persoonlijke gegevens
+              </p>
+            </div>
+
+            {/* Avatar */}
+            <div className="flex items-center gap-4">
+              <div className="w-20 h-20 rounded-full bg-gradient-to-br from-blue-500 to-purple-500 flex items-center justify-center text-white text-2xl font-bold">
+                {profileData.name.charAt(0)}
+              </div>
+              <div>
+                <button className="px-4 py-2 bg-blue-500 hover:bg-blue-600 text-white text-sm font-medium rounded-xl transition-colors">
+                  Foto wijzigen
+                </button>
+                <p className={`text-xs mt-1 ${darkMode ? 'text-gray-500' : 'text-gray-400'}`}>
+                  JPG, PNG max 2MB
+                </p>
+              </div>
+            </div>
+
+            {/* Form */}
+            <div className="grid md:grid-cols-2 gap-4">
+              <div>
+                <label className={`block text-sm font-medium mb-2 ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>
+                  Naam
+                </label>
+                <input
+                  type="text"
+                  value={profileData.name}
+                  onChange={(e) => setProfileData({ ...profileData, name: e.target.value })}
+                  className={`w-full px-4 py-3 rounded-xl border ${
+                    darkMode 
+                      ? 'bg-gray-700 border-gray-600 text-white' 
+                      : 'bg-gray-50 border-gray-200 text-gray-900'
+                  } focus:outline-none focus:ring-2 focus:ring-blue-500/50`}
+                />
+              </div>
+              <div>
+                <label className={`block text-sm font-medium mb-2 ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>
+                  E-mail
+                </label>
+                <input
+                  type="email"
+                  value={profileData.email}
+                  onChange={(e) => setProfileData({ ...profileData, email: e.target.value })}
+                  className={`w-full px-4 py-3 rounded-xl border ${
+                    darkMode 
+                      ? 'bg-gray-700 border-gray-600 text-white' 
+                      : 'bg-gray-50 border-gray-200 text-gray-900'
+                  } focus:outline-none focus:ring-2 focus:ring-blue-500/50`}
+                />
+              </div>
+              <div>
+                <label className={`block text-sm font-medium mb-2 ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>
+                  Telefoon
+                </label>
+                <input
+                  type="tel"
+                  value={profileData.phone}
+                  onChange={(e) => setProfileData({ ...profileData, phone: e.target.value })}
+                  className={`w-full px-4 py-3 rounded-xl border ${
+                    darkMode 
+                      ? 'bg-gray-700 border-gray-600 text-white' 
+                      : 'bg-gray-50 border-gray-200 text-gray-900'
+                  } focus:outline-none focus:ring-2 focus:ring-blue-500/50`}
+                />
+              </div>
+            </div>
+
+            {/* Save Button */}
+            <div className="flex items-center gap-4">
+              <button
+                onClick={handleSave}
+                disabled={isSaving}
+                className="px-6 py-3 bg-blue-500 hover:bg-blue-600 text-white font-semibold rounded-xl transition-colors disabled:opacity-50 flex items-center gap-2"
+              >
+                {isSaving ? (
+                  <>
+                    <Loader2 className="w-5 h-5 animate-spin" />
+                    Opslaan...
+                  </>
+                ) : saveSuccess ? (
+                  <>
+                    <CheckCircle2 className="w-5 h-5" />
+                    Opgeslagen!
+                  </>
+                ) : (
+                  'Wijzigingen opslaan'
+                )}
+              </button>
+            </div>
+          </div>
+        )}
+
+        {/* Notifications Section */}
+        {activeSection === 'notifications' && (
+          <div className="space-y-6">
+            <div>
+              <h3 className={`text-xl font-bold mb-1 ${darkMode ? 'text-white' : 'text-gray-900'}`}>
+                Notificaties
+              </h3>
+              <p className={darkMode ? 'text-gray-400' : 'text-gray-500'}>
+                Beheer je notificatie voorkeuren
+              </p>
+            </div>
+
+            {/* Email Notifications */}
+            <div className={`p-5 rounded-xl ${darkMode ? 'bg-gray-700/50' : 'bg-gray-50'}`}>
+              <h4 className={`font-semibold mb-4 flex items-center gap-2 ${darkMode ? 'text-white' : 'text-gray-900'}`}>
+                <Mail className="w-5 h-5" />
+                E-mail notificaties
+              </h4>
+              <div className="space-y-3">
+                {[
+                  { key: 'emailNewProject', label: 'Nieuw project aangemaakt' },
+                  { key: 'emailNewMessage', label: 'Nieuw bericht van klant' },
+                  { key: 'emailPayment', label: 'Betaling ontvangen' },
+                  { key: 'weeklyReport', label: 'Wekelijks overzicht' },
+                ].map(item => (
+                  <label key={item.key} className="flex items-center justify-between cursor-pointer">
+                    <span className={darkMode ? 'text-gray-300' : 'text-gray-700'}>{item.label}</span>
+                    <div 
+                      onClick={() => setNotifications(prev => ({ ...prev, [item.key]: !prev[item.key as keyof typeof prev] }))}
+                      className={`w-12 h-6 rounded-full transition-colors relative ${
+                        notifications[item.key as keyof typeof notifications] ? 'bg-blue-500' : darkMode ? 'bg-gray-600' : 'bg-gray-300'
+                      }`}
+                    >
+                      <div className={`absolute w-5 h-5 bg-white rounded-full top-0.5 transition-transform ${
+                        notifications[item.key as keyof typeof notifications] ? 'translate-x-6' : 'translate-x-0.5'
+                      }`} />
+                    </div>
+                  </label>
+                ))}
+              </div>
+            </div>
+
+            {/* Push Notifications */}
+            <div className={`p-5 rounded-xl ${darkMode ? 'bg-gray-700/50' : 'bg-gray-50'}`}>
+              <h4 className={`font-semibold mb-4 flex items-center gap-2 ${darkMode ? 'text-white' : 'text-gray-900'}`}>
+                <Bell className="w-5 h-5" />
+                Push notificaties
+              </h4>
+              <div className="space-y-3">
+                {[
+                  { key: 'pushNewProject', label: 'Nieuw project aangemaakt' },
+                  { key: 'pushNewMessage', label: 'Nieuw bericht van klant' },
+                  { key: 'pushPayment', label: 'Betaling ontvangen' },
+                ].map(item => (
+                  <label key={item.key} className="flex items-center justify-between cursor-pointer">
+                    <span className={darkMode ? 'text-gray-300' : 'text-gray-700'}>{item.label}</span>
+                    <div 
+                      onClick={() => setNotifications(prev => ({ ...prev, [item.key]: !prev[item.key as keyof typeof prev] }))}
+                      className={`w-12 h-6 rounded-full transition-colors relative ${
+                        notifications[item.key as keyof typeof notifications] ? 'bg-blue-500' : darkMode ? 'bg-gray-600' : 'bg-gray-300'
+                      }`}
+                    >
+                      <div className={`absolute w-5 h-5 bg-white rounded-full top-0.5 transition-transform ${
+                        notifications[item.key as keyof typeof notifications] ? 'translate-x-6' : 'translate-x-0.5'
+                      }`} />
+                    </div>
+                  </label>
+                ))}
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* API Keys Section */}
+        {activeSection === 'api' && (
+          <div className="space-y-6">
+            <div>
+              <h3 className={`text-xl font-bold mb-1 ${darkMode ? 'text-white' : 'text-gray-900'}`}>
+                API Sleutels
+              </h3>
+              <p className={darkMode ? 'text-gray-400' : 'text-gray-500'}>
+                Beheer je API sleutels voor externe integraties
+              </p>
+            </div>
+
+            <div className="space-y-4">
+              {apiKeys.map(apiKey => (
+                <div
+                  key={apiKey.id}
+                  className={`p-4 rounded-xl border ${
+                    darkMode ? 'bg-gray-700/50 border-gray-600' : 'bg-gray-50 border-gray-200'
+                  }`}
+                >
+                  <div className="flex items-center justify-between mb-2">
+                    <h4 className={`font-semibold ${darkMode ? 'text-white' : 'text-gray-900'}`}>
+                      {apiKey.name}
+                    </h4>
+                    <span className={`text-xs ${darkMode ? 'text-gray-500' : 'text-gray-400'}`}>
+                      Aangemaakt: {new Date(apiKey.created).toLocaleDateString('nl-NL')}
+                    </span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <code className={`flex-1 px-3 py-2 rounded-lg text-sm font-mono ${
+                      darkMode ? 'bg-gray-800 text-gray-300' : 'bg-white text-gray-600'
+                    }`}>
+                      {showApiKey === apiKey.id ? apiKey.key : '••••••••••••••••'}
+                    </code>
+                    <button
+                      onClick={() => setShowApiKey(showApiKey === apiKey.id ? null : apiKey.id)}
+                      className={`p-2 rounded-lg transition-colors ${
+                        darkMode ? 'hover:bg-gray-600 text-gray-400' : 'hover:bg-gray-200 text-gray-500'
+                      }`}
+                    >
+                      <Eye className="w-4 h-4" />
+                    </button>
+                    <button
+                      onClick={() => navigator.clipboard.writeText(apiKey.key)}
+                      className={`p-2 rounded-lg transition-colors ${
+                        darkMode ? 'hover:bg-gray-600 text-gray-400' : 'hover:bg-gray-200 text-gray-500'
+                      }`}
+                    >
+                      <Link2 className="w-4 h-4" />
+                    </button>
+                  </div>
+                </div>
+              ))}
+            </div>
+
+            <button className={`px-4 py-2 rounded-xl font-medium transition-colors flex items-center gap-2 ${
+              darkMode 
+                ? 'bg-gray-700 hover:bg-gray-600 text-white' 
+                : 'bg-gray-100 hover:bg-gray-200 text-gray-700'
+            }`}>
+              <Plus className="w-4 h-4" />
+              Nieuwe API sleutel
+            </button>
+          </div>
+        )}
+
+        {/* Danger Zone Section */}
+        {activeSection === 'danger' && (
+          <div className="space-y-6">
+            <div>
+              <h3 className={`text-xl font-bold mb-1 ${darkMode ? 'text-white' : 'text-gray-900'}`}>
+                Gevaarzone
+              </h3>
+              <p className={darkMode ? 'text-gray-400' : 'text-gray-500'}>
+                Wees voorzichtig met deze acties
+              </p>
+            </div>
+
+            <div className={`p-5 rounded-xl border-2 ${
+              darkMode ? 'bg-red-900/10 border-red-500/30' : 'bg-red-50 border-red-200'
+            }`}>
+              <h4 className={`font-semibold mb-2 ${darkMode ? 'text-red-400' : 'text-red-700'}`}>
+                Wachtwoord wijzigen
+              </h4>
+              <p className={`text-sm mb-4 ${darkMode ? 'text-red-400/70' : 'text-red-600'}`}>
+                Wijzig je wachtwoord. Je wordt uitgelogd op alle apparaten.
+              </p>
+              <button className="px-4 py-2 bg-red-500 hover:bg-red-600 text-white font-medium rounded-xl transition-colors">
+                Wachtwoord wijzigen
+              </button>
+            </div>
+
+            <div className={`p-5 rounded-xl border-2 ${
+              darkMode ? 'bg-red-900/10 border-red-500/30' : 'bg-red-50 border-red-200'
+            }`}>
+              <h4 className={`font-semibold mb-2 ${darkMode ? 'text-red-400' : 'text-red-700'}`}>
+                Cache wissen
+              </h4>
+              <p className={`text-sm mb-4 ${darkMode ? 'text-red-400/70' : 'text-red-600'}`}>
+                Wis alle lokale cache data. Dit kan tijdelijk de prestaties beïnvloeden.
+              </p>
+              <button 
+                onClick={() => {
+                  localStorage.clear()
+                  sessionStorage.clear()
+                  window.location.reload()
+                }}
+                className="px-4 py-2 bg-red-500 hover:bg-red-600 text-white font-medium rounded-xl transition-colors"
+              >
+                Cache wissen
+              </button>
+            </div>
+          </div>
+        )}
+      </div>
     </div>
   )
 }
@@ -1699,53 +4520,44 @@ function ShortcutItem({
 // MAIN COMPONENT
 // ===========================================
 
-export default function DeveloperDashboard() {
+export default function DeveloperDashboardNew() {
+  // Auth state
   const [isAuthenticated, setIsAuthenticated] = useState(false)
-  const [password, setPassword] = useState('')
-  const [error, setError] = useState('')
-  const [isLoading, setIsLoading] = useState(false)
-  const [projects, setProjects] = useState<DeveloperProject[]>([])
-  const [selectedProject, setSelectedProject] = useState<DeveloperProject | null>(null)
-  const [view, setView] = useState<'kanban' | 'list'>('kanban')
-  const [searchTerm, setSearchTerm] = useState('')
-  const [filterPackage, setFilterPackage] = useState<string>('all')
   
-  // Nieuwe state voor uitgebreide dashboard
-  const [activeTab, setActiveTab] = useState<DashboardTab>('projects')
+  // UI state
+  const [activeView, setActiveView] = useState<DashboardView>('overview')
+  const [sidebarOpen, setSidebarOpen] = useState(false)
+  const [searchTerm, setSearchTerm] = useState('')
   const [darkMode, setDarkMode] = useState(() => {
     if (typeof window !== 'undefined') {
       return localStorage.getItem(DARK_MODE_KEY) === 'true'
     }
     return false
   })
-  const [notifications, setNotifications] = useState<Notification[]>([])
-  const [showNotifications, setShowNotifications] = useState(false)
+
+  // Data state
+  const [projects, setProjects] = useState<Project[]>([])
   const [clients, setClients] = useState<Client[]>([])
-  const [selectedClient, setSelectedClient] = useState<Client | null>(null)
   const [serviceRequests, setServiceRequests] = useState<ServiceRequest[]>([])
-  const [showPasswordChange, setShowPasswordChange] = useState(false)
-  const [newPassword, setNewPassword] = useState('')
-  const [confirmPassword, setConfirmPassword] = useState('')
+  const [notifications, setNotifications] = useState<Notification[]>([])
+  const [selectedProject, setSelectedProject] = useState<Project | null>(null)
+  const [loading, setLoading] = useState(false)
   
-  // Add client modal
-  const [showAddClientModal, setShowAddClientModal] = useState(false)
-  const [newClient, setNewClient] = useState({
-    name: '',
-    email: '',
-    phone: '',
-    company: ''
-  })
-  
-  // Help/Onboarding state
-  const [showHelp, setShowHelp] = useState(false)
-  const [showOnboarding, setShowOnboarding] = useState(() => {
-    if (typeof window !== 'undefined') {
-      return !localStorage.getItem('webstability_dev_onboarding_complete')
+  // Log selected project for debugging (will be used in project detail view)
+  useEffect(() => {
+    if (selectedProject) {
+      console.log('Selected project:', selectedProject.businessName)
     }
-    return false
-  })
-  const [onboardingStep, setOnboardingStep] = useState(0)
-  
+  }, [selectedProject])
+
+  // Check auth on mount
+  useEffect(() => {
+    const token = sessionStorage.getItem(TOKEN_KEY)
+    if (token) {
+      setIsAuthenticated(true)
+    }
+  }, [])
+
   // Dark mode effect
   useEffect(() => {
     if (darkMode) {
@@ -1756,142 +4568,144 @@ export default function DeveloperDashboard() {
     localStorage.setItem(DARK_MODE_KEY, String(darkMode))
   }, [darkMode])
 
+  // Load data when authenticated
+  useEffect(() => {
+    if (isAuthenticated) {
+      loadData()
+    }
+  }, [isAuthenticated])
+
   // Keyboard shortcuts
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
-      // Alleen als niet in een input veld
-      if (e.target instanceof HTMLInputElement || e.target instanceof HTMLTextAreaElement) {
-        return
-      }
+      if (e.target instanceof HTMLInputElement || e.target instanceof HTMLTextAreaElement) return
       
-      // Escape sluit modals
       if (e.key === 'Escape') {
-        if (showHelp) setShowHelp(false)
-        if (showOnboarding) setShowOnboarding(false)
-        if (selectedProject) setSelectedProject(null)
-        if (selectedClient) setSelectedClient(null)
-        if (showNotifications) setShowNotifications(false)
+        setSidebarOpen(false)
       }
-      
-      // ? opent help
-      if (e.key === '?' || (e.shiftKey && e.key === '/')) {
-        e.preventDefault()
-        setShowHelp(true)
-      }
-      
-      // D toggle dark mode
       if (e.key === 'd' || e.key === 'D') {
         setDarkMode(!darkMode)
-      }
-      
-      // O ga naar overview
-      if (e.key === 'o' || e.key === 'O') {
-        setActiveTab('overview')
-      }
-      
-      // P ga naar projecten
-      if (e.key === 'p' || e.key === 'P') {
-        setActiveTab('projects')
-      }
-      
-      // K ga naar kanban
-      if (e.key === 'k' || e.key === 'K') {
-        setActiveTab('kanban')
-      }
-      
-      // C ga naar klanten
-      if (e.key === 'c' || e.key === 'C') {
-        setActiveTab('clients')
-      }
-      
-      // N toggle notificaties
-      if (e.key === 'n' || e.key === 'N') {
-        setShowNotifications(!showNotifications)
       }
     }
     
     document.addEventListener('keydown', handleKeyDown)
     return () => document.removeEventListener('keydown', handleKeyDown)
-  }, [showHelp, showOnboarding, selectedProject, selectedClient, showNotifications, darkMode])
+  }, [darkMode])
 
-  // Helper function to get auth token
-  const getAuthToken = () => sessionStorage.getItem(TOKEN_KEY)
-
-  // Auth check
-  useEffect(() => {
-    const token = sessionStorage.getItem(TOKEN_KEY)
-    if (token) {
-      setIsAuthenticated(true)
-    }
-  }, [])
-
-  // Load projects
-  useEffect(() => {
-    if (isAuthenticated) {
-      loadProjects()
-    }
-  }, [isAuthenticated])
-
-  const loadProjects = async () => {
+  const loadData = async () => {
+    setLoading(true)
     try {
-      setIsLoading(true)
-      const response = await fetch(`${API_BASE}/projects`, {
+      // Load projects from API
+      const response = await fetch('/api/developer/projects', {
         headers: {
-          'Authorization': `Bearer ${getAuthToken()}`
+          'Authorization': `Bearer ${sessionStorage.getItem(TOKEN_KEY)}`
         }
       })
+      
       if (response.ok) {
         const data = await response.json()
-        if (data.success) {
-          // Transform to DeveloperProject format
-          const transformedProjects = data.projects.map((p: any) => ({
+        if (data.success && data.projects) {
+          const mappedProjects = data.projects.map((p: any) => ({
             ...p,
-            phase: p.status || 'onboarding',
-            status: 'active',
-            hoursSpent: 0,
-            hoursEstimate: 20,
-            revisionsUsed: p.revisionsUsed || 0,
-            revisionsTotal: p.revisionsTotal || 3,
+            id: p.projectId || p.id,
             messages: p.messages || [],
-            changeRequests: p.changeRequests || [],
-            updates: p.updates || [],
-            monthlyChangesUsed: p.monthlyChangesUsed || 0,
-            monthlyChangesLimit: getPackageConfig(p.package)?.monthlyChanges || 4,
-            internalNotes: p.internalNotes || '',
           }))
-          setProjects(transformedProjects)
+          setProjects(mappedProjects)
+          
+          // Generate clients from projects
+          const clientMap = new Map<string, Client>()
+          const packagePrices = { starter: 96, professional: 180, business: 301, webshop: 422 }
+          mappedProjects.forEach((p: Project) => {
+            const projectPrice = packagePrices[p.package] || 0
+            if (!clientMap.has(p.contactEmail)) {
+              clientMap.set(p.contactEmail, {
+                id: p.contactEmail,
+                name: p.contactName,
+                email: p.contactEmail,
+                phone: p.contactPhone || '',
+                company: p.businessName,
+                projects: [p.id],
+                totalSpent: projectPrice,
+                createdAt: p.createdAt || new Date().toISOString(),
+              })
+            } else {
+              const existing = clientMap.get(p.contactEmail)!
+              existing.projects.push(p.id)
+              existing.totalSpent += projectPrice
+            }
+          })
+          setClients(Array.from(clientMap.values()))
         }
-      } else if (response.status === 401) {
-        // Token expired
-        handleLogout()
       }
-    } catch (e) {
-      console.error('Error loading projects:', e)
+      
+      // Load service requests (mock data for now)
+      setServiceRequests([
+        {
+          id: 'sr-1',
+          type: 'drone',
+          clientName: 'Restaurant De Proeverij',
+          clientEmail: 'info@proeverij.nl',
+          clientPhone: '06 12345678',
+          description: 'Dronebeelden van het terras en interieur',
+          status: 'pending',
+          price: 399,
+          createdAt: new Date().toISOString(),
+        },
+        {
+          id: 'sr-2', 
+          type: 'logo',
+          clientName: 'Bakkerij Vers',
+          clientEmail: 'contact@bakkerijvers.nl',
+          clientPhone: '06 87654321',
+          description: 'Nieuw logo voor heropening',
+          status: 'in_progress',
+          price: 299,
+          createdAt: new Date(Date.now() - 86400000 * 2).toISOString(),
+        },
+      ])
+      
+      // Generate notifications from projects
+      generateNotifications()
+      
+    } catch (error) {
+      console.error('Error loading data:', error)
     } finally {
-      setIsLoading(false)
+      setLoading(false)
     }
   }
 
-  const handleLogin = async (e: React.FormEvent) => {
-    e.preventDefault()
-    setIsLoading(true)
-    setError('')
+  const generateNotifications = () => {
+    const newNotifications: Notification[] = []
     
-    // Lokale development mode check
-    const isDev = import.meta.env.DEV
+    projects.forEach(p => {
+      p.messages.filter(m => !m.read && m.from === 'client').forEach(m => {
+        newNotifications.push({
+          id: `msg-${m.id}`,
+          type: 'message',
+          title: 'Nieuw bericht',
+          message: `${p.contactName}: ${m.message.substring(0, 50)}...`,
+          projectId: p.id,
+          read: false,
+          createdAt: m.date,
+        })
+      })
+    })
     
-    if (isDev && password === DEV_PASSWORD) {
-      // Lokaal direct inloggen
+    setNotifications(newNotifications)
+  }
+
+  const handleLogin = async (password: string): Promise<boolean> => {
+    // Local dev check
+    if (password === DEV_PASSWORD) {
       sessionStorage.setItem(TOKEN_KEY, 'dev-token')
       sessionStorage.setItem(AUTH_KEY, 'true')
       setIsAuthenticated(true)
-      setError('')
-      setIsLoading(false)
-      return
+      return true
     }
     
+    // API login
     try {
-      const response = await fetch(`${API_BASE}/login`, {
+      const response = await fetch('/api/developer/login', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ password })
@@ -1903,2088 +4717,168 @@ export default function DeveloperDashboard() {
         sessionStorage.setItem(TOKEN_KEY, data.token)
         sessionStorage.setItem(AUTH_KEY, 'true')
         setIsAuthenticated(true)
-        setError('')
-      } else {
-        setError(data.message || 'Onjuist wachtwoord')
+        return true
       }
-    } catch (err) {
-      // In dev mode, check wachtwoord lokaal als API faalt
-      if (isDev && password === DEV_PASSWORD) {
-        sessionStorage.setItem(TOKEN_KEY, 'dev-token')
-        sessionStorage.setItem(AUTH_KEY, 'true')
-        setIsAuthenticated(true)
-        setError('')
-      } else {
-        setError('Er is een fout opgetreden. Probeer het opnieuw.')
-        console.error('Login error:', err)
-      }
-    } finally {
-      setIsLoading(false)
+    } catch (error) {
+      console.error('Login error:', error)
     }
+    
+    return false
   }
 
   const handleLogout = () => {
-    sessionStorage.removeItem(AUTH_KEY)
     sessionStorage.removeItem(TOKEN_KEY)
+    sessionStorage.removeItem(AUTH_KEY)
     setIsAuthenticated(false)
-  }
-
-  // Generate clients from projects
-  useEffect(() => {
-    if (projects.length > 0) {
-      const clientMap = new Map<string, Client>()
-      
-      projects.forEach(p => {
-        const existingClient = clientMap.get(p.contactEmail)
-        if (existingClient) {
-          existingClient.projects.push(p.projectId)
-          existingClient.totalSpent += (getPackageConfig(p.package)?.priceSetup || 0)
-        } else {
-          clientMap.set(p.contactEmail, {
-            id: `client-${p.contactEmail.replace(/[^a-z0-9]/gi, '')}`,
-            name: p.contactName,
-            email: p.contactEmail,
-            phone: p.contactPhone,
-            company: p.businessName,
-            projects: [p.projectId],
-            totalSpent: getPackageConfig(p.package)?.priceSetup || 0,
-            createdAt: p.createdAt,
-          })
-        }
-      })
-      
-      setClients(Array.from(clientMap.values()))
-    }
-  }, [projects])
-
-  // Generate notifications from projects
-  useEffect(() => {
-    const newNotifications: Notification[] = []
-    
-    projects.forEach(p => {
-      // Ongelezen berichten
-      p.messages?.filter(m => !m.read && m.from === 'client').forEach(m => {
-        newNotifications.push({
-          id: `msg-${m.id}`,
-          type: 'message',
-          title: 'Nieuw bericht',
-          message: `${p.contactName} heeft een bericht gestuurd`,
-          projectId: p.projectId,
-          read: false,
-          createdAt: m.date,
-        })
-      })
-      
-      // Wijzigingsverzoeken
-      p.changeRequests?.filter(cr => cr.status === 'pending').forEach(cr => {
-        newNotifications.push({
-          id: `cr-${cr.id}`,
-          type: 'change_request',
-          title: 'Wijzigingsverzoek',
-          message: `${p.businessName}: ${cr.request.substring(0, 50)}...`,
-          projectId: p.projectId,
-          read: false,
-          createdAt: cr.date,
-        })
-      })
-    })
-    
-    setNotifications(newNotifications.sort((a, b) => 
-      new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
-    ))
-  }, [projects])
-
-  // Mock service requests voor nu (later uit API)
-  useEffect(() => {
-    if (isAuthenticated && serviceRequests.length === 0) {
-      setServiceRequests([
-        {
-          id: 'sr-1',
-          type: 'drone',
-          clientName: 'Demo Klant',
-          clientEmail: 'demo@example.com',
-          clientPhone: '06 12345678',
-          description: 'Dronebeelden voor restaurant - binnenkant en terras',
-          status: 'pending',
-          price: 399,
-          createdAt: new Date().toISOString(),
-        },
-        {
-          id: 'sr-2',
-          type: 'logo',
-          clientName: 'Bakkerij Test',
-          clientEmail: 'bakker@example.com',
-          clientPhone: '06 87654321',
-          description: 'Logo ontwerp voor nieuwe bakkerij',
-          status: 'in_progress',
-          price: 399,
-          createdAt: new Date(Date.now() - 86400000).toISOString(),
-        },
-      ])
-    }
-  }, [isAuthenticated, serviceRequests.length])
-
-  const updateClient = (clientId: string, updates: Partial<Client>) => {
-    setClients(prev => prev.map(c => 
-      c.id === clientId ? { ...c, ...updates } : c
-    ))
-    setSelectedClient(null)
-  }
-
-  const updateServiceRequest = (id: string, updates: Partial<ServiceRequest>) => {
-    setServiceRequests(prev => prev.map(sr => 
-      sr.id === id ? { ...sr, ...updates } : sr
-    ))
-  }
-
-  const markNotificationRead = (id: string) => {
-    setNotifications(prev => prev.map(n => 
-      n.id === id ? { ...n, read: true } : n
-    ))
+    setProjects([])
+    setClients([])
+    setNotifications([])
   }
 
   const markAllNotificationsRead = () => {
     setNotifications(prev => prev.map(n => ({ ...n, read: true })))
   }
 
-  const unreadNotifications = notifications.filter(n => !n.read).length
+  // Calculate badge counts
+  const unreadMessages = projects.reduce((acc, p) => 
+    acc + p.messages.filter(m => !m.read && m.from === 'client').length, 0
+  )
+  const pendingOnboarding = projects.filter(p => p.phase === 'onboarding').length
 
-  // Filter projects
-  const filteredProjects = projects.filter(p => {
-    const matchesSearch = !searchTerm || 
-      p.businessName.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      p.projectId.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      p.contactEmail.toLowerCase().includes(searchTerm.toLowerCase())
-    const matchesPackage = filterPackage === 'all' || p.package === filterPackage
-    return matchesSearch && matchesPackage
-  })
-
-  // Group by phase for kanban
-  const projectsByPhase = {
-    onboarding: filteredProjects.filter(p => p.phase === 'onboarding'),
-    design: filteredProjects.filter(p => p.phase === 'design'),
-    development: filteredProjects.filter(p => p.phase === 'development'),
-    review: filteredProjects.filter(p => p.phase === 'review'),
-    live: filteredProjects.filter(p => p.phase === 'live'),
-  }
-
-  // Stats
-  const stats = {
-    total: projects.length,
-    active: projects.filter(p => p.phase !== 'live').length,
-    pendingMessages: projects.reduce((acc, p) => acc + (p.messages?.filter(m => !m.read && m.from === 'client').length || 0), 0),
-    pendingChanges: projects.reduce((acc, p) => acc + (p.changeRequests?.filter(cr => cr.status === 'pending').length || 0), 0),
-    monthlyRevenue: projects.reduce((acc, p) => {
-      const config = getPackageConfig(p.package)
-      return acc + (config?.priceMonthly || 0)
-    }, 0),
-  }
-
-  // Login screen
+  // Show login if not authenticated
   if (!isAuthenticated) {
-    return (
-      <div className="min-h-screen bg-gradient-to-br from-gray-900 via-blue-900 to-indigo-900 flex items-center justify-center p-4 relative overflow-hidden">
-        {/* Animated background elements */}
-        <div className="absolute inset-0 overflow-hidden">
-          <motion.div
-            animate={{ 
-              x: [0, 100, 0], 
-              y: [0, -50, 0],
-              scale: [1, 1.2, 1]
-            }}
-            transition={{ repeat: Infinity, duration: 20, ease: 'easeInOut' }}
-            className="absolute -top-40 -left-40 w-80 h-80 bg-blue-500/10 rounded-full blur-3xl"
-          />
-          <motion.div
-            animate={{ 
-              x: [0, -80, 0], 
-              y: [0, 80, 0],
-              scale: [1, 1.3, 1]
-            }}
-            transition={{ repeat: Infinity, duration: 25, ease: 'easeInOut' }}
-            className="absolute -bottom-40 -right-40 w-96 h-96 bg-indigo-500/10 rounded-full blur-3xl"
-          />
-        </div>
-        
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="w-full max-w-md relative z-10"
-        >
-          <motion.div 
-            initial={{ opacity: 0, scale: 0.9 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ delay: 0.1 }}
-            className="text-center mb-8"
-          >
-            <motion.div 
-              whileHover={{ scale: 1.05 }}
-              className="flex justify-center mb-4"
-            >
-              <Logo variant="white" size="lg" />
-            </motion.div>
-            <motion.h1 
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.2 }}
-              className="text-2xl font-bold text-white"
-            >
-              Developer Dashboard
-            </motion.h1>
-            <motion.p 
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.3 }}
-              className="text-blue-200"
-            >
-              Log in om door te gaan
-            </motion.p>
-          </motion.div>
-
-          <motion.form 
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.4 }}
-            onSubmit={handleLogin} 
-            className="bg-white/10 backdrop-blur-xl rounded-2xl p-6 sm:p-8 border border-white/20 shadow-2xl"
-          >
-            <div className="mb-6">
-              <label className="block text-sm font-medium text-blue-100 mb-2">
-                Wachtwoord
-              </label>
-              <div className="relative">
-                <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-blue-300" />
-                <input
-                  type="password"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  className="w-full pl-12 pr-4 py-3 bg-white/10 border border-white/20 rounded-xl text-white placeholder-blue-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all"
-                  placeholder="••••••••••••"
-                  autoFocus
-                />
-              </div>
-            </div>
-
-            <AnimatePresence>
-              {error && (
-                <motion.div 
-                  initial={{ opacity: 0, y: -10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, y: -10 }}
-                  className="mb-4 p-3 bg-red-500/20 border border-red-500/30 rounded-lg text-red-200 text-sm"
-                >
-                  {error}
-                </motion.div>
-              )}
-            </AnimatePresence>
-
-            <motion.button
-              whileHover={{ scale: 1.02 }}
-              whileTap={{ scale: 0.98 }}
-              type="submit"
-              disabled={isLoading}
-              className="w-full py-3 bg-gradient-to-r from-blue-500 to-indigo-500 text-white font-semibold rounded-xl hover:from-blue-600 hover:to-indigo-600 transition-all shadow-lg disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
-            >
-              {isLoading ? (
-                <>
-                  <RefreshCw className="w-4 h-4 animate-spin" />
-                  Bezig...
-                </>
-              ) : (
-                'Inloggen'
-              )}
-            </motion.button>
-          </motion.form>
-        </motion.div>
-      </div>
-    )
+    return <LoginScreen onLogin={handleLogin} />
   }
 
   return (
-    <div className={`min-h-screen transition-colors duration-300 ${darkMode ? 'dark bg-gray-900' : 'bg-gray-50'}`}>
-      {/* Onboarding Modal */}
-      <AnimatePresence>
-        {showOnboarding && isAuthenticated && (
-          <OnboardingModal
-            step={onboardingStep}
-            onNext={() => {
-              if (onboardingStep < onboardingSteps.length - 1) {
-                setOnboardingStep(onboardingStep + 1)
-              } else {
-                localStorage.setItem('webstability_dev_onboarding_complete', 'true')
-                setShowOnboarding(false)
-              }
-            }}
-            onSkip={() => {
-              localStorage.setItem('webstability_dev_onboarding_complete', 'true')
-              setShowOnboarding(false)
-            }}
-            darkMode={darkMode}
-          />
-        )}
-      </AnimatePresence>
+    <div className={`min-h-screen flex ${darkMode ? 'dark bg-gray-900' : 'bg-gray-50'}`}>
+      {/* Sidebar */}
+      <Sidebar
+        activeView={activeView}
+        setActiveView={setActiveView}
+        darkMode={darkMode}
+        isOpen={sidebarOpen}
+        setIsOpen={setSidebarOpen}
+        unreadMessages={unreadMessages}
+        pendingOnboarding={pendingOnboarding}
+        onLogout={handleLogout}
+      />
 
-      {/* Help Modal */}
-      <AnimatePresence>
-        {showHelp && (
-          <HelpModal onClose={() => setShowHelp(false)} darkMode={darkMode} />
-        )}
-      </AnimatePresence>
+      {/* Main content area */}
+      <div className="flex-1 flex flex-col min-w-0">
+        {/* Header */}
+        <Header
+          darkMode={darkMode}
+          setDarkMode={setDarkMode}
+          onMenuClick={() => setSidebarOpen(true)}
+          notifications={notifications}
+          onMarkAllRead={markAllNotificationsRead}
+          searchTerm={searchTerm}
+          setSearchTerm={setSearchTerm}
+          activeView={activeView}
+        />
 
-      {/* Header */}
-      <header className={`${darkMode ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-200'} border-b sticky top-0 z-40 transition-colors duration-300`}>
-        <div className="max-w-[1800px] mx-auto px-4 sm:px-6 h-16 flex items-center justify-between">
-          <div className="flex items-center gap-3 sm:gap-6">
-            <Logo variant={darkMode ? 'white' : 'default'} />
-            <div className={`hidden sm:block h-6 w-px ${darkMode ? 'bg-gray-700' : 'bg-gray-200'}`} />
-            
-            {/* Navigation Tabs - Responsive */}
-            <nav className="flex items-center gap-0.5 sm:gap-1 overflow-x-auto">
-              {[
-                { id: 'overview', label: 'Overzicht', icon: LayoutDashboard },
-                { id: 'projects', label: 'Projecten', icon: FolderKanban },
-                { id: 'kanban', label: 'Kanban', icon: BarChart3 },
-                { id: 'clients', label: 'Klanten', icon: Users },
-                { id: 'billing', label: 'Betalingen', icon: CreditCard },
-                { id: 'services', label: 'Services', icon: Briefcase },
-                { id: 'discounts', label: 'Kortingscodes', icon: Tag },
-                { id: 'settings', label: 'Instellingen', icon: Settings },
-              ].map(tab => (
-                <motion.button
-                  key={tab.id}
-                  whileHover={{ scale: 1.02 }}
-                  whileTap={{ scale: 0.98 }}
-                  onClick={() => setActiveTab(tab.id as DashboardTab)}
-                  className={`flex items-center gap-1.5 sm:gap-2 px-2 sm:px-4 py-2 rounded-lg text-xs sm:text-sm font-medium transition-colors ${
-                    activeTab === tab.id 
-                      ? darkMode 
-                        ? 'bg-blue-600 text-white' 
-                        : 'bg-blue-50 text-blue-600'
-                      : darkMode
-                        ? 'text-gray-400 hover:text-white hover:bg-gray-700'
-                        : 'text-gray-600 hover:text-gray-900 hover:bg-gray-100'
-                  }`}
-                >
-                  <tab.icon className="w-4 h-4" />
-                  <span className="hidden md:inline">{tab.label}</span>
-                </motion.button>
-              ))}
-            </nav>
-          </div>
-          
-          <div className="flex items-center gap-1 sm:gap-3">
-            {/* Search (only on projects tab) */}
-            {activeTab === 'projects' && (
-              <div className="relative hidden sm:block">
-                <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
-                <input
-                  type="text"
-                  value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value)}
-                  placeholder="Zoek project..."
-                  className={`w-48 lg:w-64 pl-10 pr-4 py-2 border-0 rounded-lg focus:ring-2 focus:ring-blue-500 text-sm ${
-                    darkMode ? 'bg-gray-700 text-white placeholder-gray-400' : 'bg-gray-100'
-                  }`}
-                />
-              </div>
-            )}
-            
-            {/* Help Button */}
-            <Tooltip text="Hulp & Documentatie" darkMode={darkMode}>
-              <motion.button 
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-                onClick={() => setShowHelp(true)}
-                className={`p-2 rounded-lg transition-colors ${
-                  darkMode ? 'text-gray-400 hover:text-white hover:bg-gray-700' : 'text-gray-400 hover:text-gray-600 hover:bg-gray-100'
-                }`}
-              >
-                <HelpCircle className="w-5 h-5" />
-              </motion.button>
-            </Tooltip>
-            
-            {/* Notifications */}
-            <div className="relative">
-              <Tooltip text="Meldingen" darkMode={darkMode}>
-                <motion.button 
-                  whileHover={{ scale: 1.05 }}
-                  whileTap={{ scale: 0.95 }}
-                  onClick={() => setShowNotifications(!showNotifications)}
-                  className={`relative p-2 rounded-lg transition-colors ${
-                    darkMode ? 'text-gray-400 hover:text-white hover:bg-gray-700' : 'text-gray-400 hover:text-gray-600 hover:bg-gray-100'
-                  }`}
-                >
-                  <Bell className="w-5 h-5" />
-                  {unreadNotifications > 0 && (
-                    <motion.span 
-                      initial={{ scale: 0 }}
-                      animate={{ scale: 1 }}
-                      className="absolute -top-1 -right-1 w-5 h-5 bg-red-500 text-white text-xs font-bold rounded-full flex items-center justify-center"
-                    >
-                      {unreadNotifications > 9 ? '9+' : unreadNotifications}
-                    </motion.span>
-                  )}
-                </motion.button>
-              </Tooltip>
-              
-              <AnimatePresence>
-                {showNotifications && (
-                  <motion.div
-                    initial={{ opacity: 0, y: 10 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    exit={{ opacity: 0, y: 10 }}
-                    className={`absolute right-0 top-12 w-80 rounded-xl shadow-xl border overflow-hidden z-50 ${
-                      darkMode ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-200'
-                    }`}
-                  >
-                    <div className={`flex items-center justify-between p-4 border-b ${darkMode ? 'border-gray-700' : 'border-gray-200'}`}>
-                      <h3 className={`font-semibold ${darkMode ? 'text-white' : 'text-gray-900'}`}>Meldingen</h3>
-                      {unreadNotifications > 0 && (
-                        <button 
-                          onClick={markAllNotificationsRead}
-                          className="text-sm text-blue-500 hover:text-blue-600"
-                        >
-                          Alles gelezen
-                        </button>
-                      )}
-                    </div>
-                    <div className="max-h-80 overflow-y-auto">
-                      {notifications.length === 0 ? (
-                        <div className={`p-6 text-center ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>
-                          <Bell className="w-8 h-8 mx-auto mb-2 opacity-50" />
-                          <p>Geen meldingen</p>
-                        </div>
-                      ) : (
-                        notifications.slice(0, 10).map(n => (
-                          <div 
-                            key={n.id} 
-                            onClick={() => markNotificationRead(n.id)}
-                            className={`p-4 border-b cursor-pointer transition-colors ${
-                              darkMode 
-                                ? `border-gray-700 ${n.read ? 'bg-gray-800' : 'bg-gray-750'} hover:bg-gray-700`
-                                : `border-gray-100 ${n.read ? 'bg-white' : 'bg-blue-50'} hover:bg-gray-50`
-                            }`}
-                          >
-                            <div className="flex items-start gap-3">
-                              <div className={`p-2 rounded-lg ${
-                                n.type === 'message' ? 'bg-blue-100 text-blue-600' :
-                                n.type === 'change_request' ? 'bg-amber-100 text-amber-600' :
-                                'bg-gray-100 text-gray-600'
-                              }`}>
-                                {n.type === 'message' ? <MessageSquare className="w-4 h-4" /> :
-                                 n.type === 'change_request' ? <Edit3 className="w-4 h-4" /> :
-                                 <Bell className="w-4 h-4" />}
-                              </div>
-                              <div className="flex-1 min-w-0">
-                                <p className={`font-medium text-sm ${darkMode ? 'text-white' : 'text-gray-900'}`}>{n.title}</p>
-                                <p className={`text-sm truncate ${darkMode ? 'text-gray-400' : 'text-gray-600'}`}>{n.message}</p>
-                                <p className={`text-xs mt-1 ${darkMode ? 'text-gray-500' : 'text-gray-400'}`}>
-                                  {formatDate(n.createdAt)}
-                                </p>
-                              </div>
-                              {!n.read && <div className="w-2 h-2 bg-blue-500 rounded-full mt-2" />}
-                            </div>
-                          </div>
-                        ))
-                      )}
-                    </div>
-                  </motion.div>
-                )}
-              </AnimatePresence>
+        {/* Main content */}
+        <main className="flex-1 p-4 lg:p-6 overflow-auto pb-24 md:pb-6 dashboard-scroll">
+          {loading ? (
+            <div className="flex items-center justify-center h-64">
+              <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500"></div>
             </div>
-            
-            {/* Dark mode toggle */}
-            <Tooltip text={darkMode ? 'Lichte modus' : 'Donkere modus'} darkMode={darkMode}>
-              <motion.button
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-                onClick={() => setDarkMode(!darkMode)}
-                className={`p-2 rounded-lg transition-colors ${
-                  darkMode ? 'text-gray-400 hover:text-white hover:bg-gray-700' : 'text-gray-400 hover:text-gray-600 hover:bg-gray-100'
-                }`}
-              >
-                <motion.div
-                  initial={false}
-                  animate={{ rotate: darkMode ? 180 : 0 }}
-                  transition={{ duration: 0.3 }}
-                >
-                  {darkMode ? <Sun className="w-5 h-5" /> : <Moon className="w-5 h-5" />}
-                </motion.div>
-              </motion.button>
-            </Tooltip>
-            
-            {/* Logout */}
-            <Tooltip text="Uitloggen" darkMode={darkMode}>
-              <motion.button
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-                onClick={handleLogout}
-                className={`p-2 rounded-lg transition-colors ${
-                  darkMode ? 'text-gray-400 hover:text-white hover:bg-gray-700' : 'text-gray-400 hover:text-gray-600 hover:bg-gray-100'
-                }`}
-              >
-                <LogOut className="w-5 h-5" />
-              </motion.button>
-            </Tooltip>
-          </div>
-        </div>
-      </header>
-
-      {/* Main content */}
-      <main className="max-w-[1800px] mx-auto px-4 sm:px-6 py-4 sm:py-8">
-        
-        {/* OVERVIEW TAB */}
-        {activeTab === 'overview' && (
-          <>
-            {/* Welcome message when no projects */}
-            {projects.length === 0 ? (
+          ) : (
+            <AnimatePresence mode="wait">
               <motion.div
-                initial={{ opacity: 0, y: 20 }}
+                key={activeView}
+                initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
-                className={`text-center py-12 sm:py-20 ${darkMode ? 'text-white' : 'text-gray-900'}`}
+                exit={{ opacity: 0, y: -10 }}
+                transition={{ duration: 0.2 }}
               >
-                <motion.div 
-                  initial={{ scale: 0 }}
-                  animate={{ scale: 1 }}
-                  transition={{ type: 'spring', stiffness: 200, damping: 15, delay: 0.1 }}
-                  className={`w-20 h-20 sm:w-24 sm:h-24 mx-auto mb-6 rounded-2xl flex items-center justify-center ${
-                    darkMode ? 'bg-gradient-to-br from-gray-800 to-gray-700' : 'bg-gradient-to-br from-blue-50 to-indigo-100'
-                  }`}
-                >
-                  <motion.div
-                    animate={{ rotate: [0, 10, -10, 0] }}
-                    transition={{ repeat: Infinity, duration: 4, ease: 'easeInOut' }}
-                  >
-                    <LayoutDashboard className={`w-10 h-10 sm:w-12 sm:h-12 ${darkMode ? 'text-blue-400' : 'text-blue-500'}`} />
-                  </motion.div>
-                </motion.div>
-                <motion.h2 
-                  initial={{ opacity: 0, y: 10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 0.2 }}
-                  className="text-xl sm:text-2xl font-bold mb-2"
-                >
-                  Welkom bij het Developer Dashboard!
-                </motion.h2>
-                <motion.p 
-                  initial={{ opacity: 0, y: 10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 0.3 }}
-                  className={`max-w-md mx-auto mb-8 px-4 ${darkMode ? 'text-gray-400' : 'text-gray-600'}`}
-                >
-                  Hier beheer je al je projecten, klanten en service aanvragen. 
-                  Er zijn nog geen projecten om te tonen.
-                </motion.p>
-                <motion.div 
-                  initial={{ opacity: 0, y: 10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 0.4 }}
-                  className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center px-4"
-                >
-                  <motion.button
-                    whileHover={{ scale: 1.02 }}
-                    whileTap={{ scale: 0.98 }}
-                    onClick={() => setActiveTab('projects')}
-                    className="inline-flex items-center justify-center gap-2 px-6 py-3 bg-gradient-to-r from-blue-500 to-indigo-500 text-white font-semibold rounded-xl hover:from-blue-600 hover:to-indigo-600 transition-all shadow-lg"
-                  >
-                    <Plus className="w-5 h-5" />
-                    Nieuw project
-                  </motion.button>
-                  <motion.button
-                    whileHover={{ scale: 1.02 }}
-                    whileTap={{ scale: 0.98 }}
-                    onClick={() => setActiveTab('services')}
-                    className={`inline-flex items-center justify-center gap-2 px-6 py-3 font-semibold rounded-xl transition-all ${
-                      darkMode 
-                        ? 'bg-gray-700 text-white hover:bg-gray-600' 
-                        : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-                    }`}
-                  >
-                    <Briefcase className="w-5 h-5" />
-                    Service aanvragen
-                  </motion.button>
-                </motion.div>
+                {activeView === 'overview' && (
+                  <OverviewView
+                    darkMode={darkMode}
+                    projects={projects}
+                    clients={clients}
+                    serviceRequests={serviceRequests}
+                    setActiveView={setActiveView}
+                    onSelectProject={(project) => {
+                      setSelectedProject(project)
+                      setActiveView('projects')
+                    }}
+                  />
+                )}
+                {activeView === 'projects' && (
+                  <ProjectsView 
+                    darkMode={darkMode} 
+                    projects={projects}
+                    onUpdateProject={(updatedProject) => {
+                      setProjects(prev => prev.map(p => 
+                        p.id === updatedProject.id ? updatedProject : p
+                      ))
+                    }}
+                    onSelectProject={setSelectedProject}
+                  />
+                )}
+                {activeView === 'clients' && (
+                  <ClientsView 
+                    darkMode={darkMode}
+                    clients={clients}
+                    projects={projects}
+                    onSelectClient={() => {}}
+                  />
+                )}
+                {activeView === 'messages' && (
+                  <MessagesView 
+                    darkMode={darkMode}
+                    projects={projects}
+                    onUpdateProject={(updatedProject) => {
+                      setProjects(prev => prev.map(p => 
+                        p.id === updatedProject.id ? updatedProject : p
+                      ))
+                    }}
+                  />
+                )}
+                {activeView === 'onboarding' && <OnboardingView darkMode={darkMode} />}
+                {activeView === 'payments' && (
+                  <PaymentsView 
+                    darkMode={darkMode}
+                    projects={projects}
+                    onUpdateProject={(updatedProject) => {
+                      setProjects(prev => prev.map(p => 
+                        p.id === updatedProject.id ? updatedProject : p
+                      ))
+                    }}
+                  />
+                )}
+                {activeView === 'services' && (
+                  <ServicesView 
+                    darkMode={darkMode}
+                    serviceRequests={serviceRequests}
+                    onUpdateRequest={(updatedRequest) => {
+                      setServiceRequests(prev => prev.map(r => 
+                        r.id === updatedRequest.id ? updatedRequest : r
+                      ))
+                    }}
+                  />
+                )}
+                {activeView === 'settings' && (
+                  <SettingsView 
+                    darkMode={darkMode}
+                    setDarkMode={setDarkMode}
+                  />
+                )}
               </motion.div>
-            ) : (
-              <>
-                {/* Stats */}
-                <div className="grid grid-cols-2 md:grid-cols-5 gap-3 sm:gap-4 mb-6 sm:mb-8">
-                  <StatCard icon={FolderKanban} label="Totaal projecten" value={stats.total} color="blue" darkMode={darkMode} delay={0} />
-                  <StatCard icon={Clock} label="Actieve projecten" value={stats.active} color="amber" darkMode={darkMode} delay={0.05} />
-                  <StatCard icon={MessageSquare} label="Ongelezen berichten" value={stats.pendingMessages} color="purple" darkMode={darkMode} delay={0.1} />
-                  <StatCard icon={Edit3} label="Wijzigingsverzoeken" value={stats.pendingChanges} color="red" darkMode={darkMode} delay={0.15} />
-                  <StatCard icon={CreditCard} label="Maandelijks" value={`€${stats.monthlyRevenue}`} color="green" darkMode={darkMode} delay={0.2} />
-                </div>
+            </AnimatePresence>
+          )}
+        </main>
 
-                {/* Quick Actions */}
-                <motion.div 
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 0.25 }}
-                  className={`p-4 sm:p-6 rounded-2xl mb-6 sm:mb-8 ${darkMode ? 'bg-gray-800' : 'bg-white border border-gray-200'}`}
-                >
-                  <h3 className={`font-semibold mb-4 ${darkMode ? 'text-white' : 'text-gray-900'}`}>Snelle acties</h3>
-                  <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
-                    <motion.button 
-                      whileHover={{ scale: 1.02 }}
-                      whileTap={{ scale: 0.98 }}
-                      onClick={() => setActiveTab('projects')}
-                      className={`flex items-center gap-2 sm:gap-3 p-3 sm:p-4 rounded-xl transition-colors ${
-                        darkMode ? 'bg-gray-700 hover:bg-gray-600 text-white' : 'bg-gray-50 hover:bg-gray-100 text-gray-900'
-                      }`}
-                    >
-                      <div className="p-2 bg-blue-500 rounded-lg">
-                        <Plus className="w-5 h-5 text-white" />
-                      </div>
-                      <span className="font-medium text-sm sm:text-base">Nieuw project</span>
-                    </motion.button>
-                    <motion.button 
-                      whileHover={{ scale: 1.02 }}
-                      whileTap={{ scale: 0.98 }}
-                      onClick={() => setActiveTab('clients')}
-                      className={`flex items-center gap-2 sm:gap-3 p-3 sm:p-4 rounded-xl transition-colors ${
-                        darkMode ? 'bg-gray-700 hover:bg-gray-600 text-white' : 'bg-gray-50 hover:bg-gray-100 text-gray-900'
-                      }`}
-                    >
-                      <div className="p-2 bg-green-500 rounded-lg">
-                        <Users className="w-5 h-5 text-white" />
-                      </div>
-                      <span className="font-medium text-sm sm:text-base">Klanten beheren</span>
-                    </motion.button>
-                    <motion.button 
-                      whileHover={{ scale: 1.02 }}
-                      whileTap={{ scale: 0.98 }}
-                      onClick={() => setActiveTab('services')}
-                      className={`flex items-center gap-2 sm:gap-3 p-3 sm:p-4 rounded-xl transition-colors ${
-                        darkMode ? 'bg-gray-700 hover:bg-gray-600 text-white' : 'bg-gray-50 hover:bg-gray-100 text-gray-900'
-                      }`}
-                    >
-                      <div className="p-2 bg-purple-500 rounded-lg">
-                        <Camera className="w-5 h-5 text-white" />
-                      </div>
-                      <span className="font-medium text-sm sm:text-base">Service requests</span>
-                    </motion.button>
-                    <motion.button 
-                      whileHover={{ scale: 1.02 }}
-                      whileTap={{ scale: 0.98 }}
-                      className={`flex items-center gap-2 sm:gap-3 p-3 sm:p-4 rounded-xl transition-colors ${
-                        darkMode ? 'bg-gray-700 hover:bg-gray-600 text-white' : 'bg-gray-50 hover:bg-gray-100 text-gray-900'
-                      }`}
-                    >
-                      <div className="p-2 bg-amber-500 rounded-lg">
-                        <BarChart3 className="w-5 h-5 text-white" />
-                      </div>
-                      <span className="font-medium text-sm sm:text-base">Rapportage</span>
-                    </motion.button>
-                  </div>
-                </motion.div>
-
-                {/* 🔔 ACTIE VEREIST - Projecten die betaald zijn en live kunnen */}
-                {projects.filter(p => p.paymentStatus === 'paid' && p.phase === 'review').length > 0 && (
-                  <motion.div
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    className={`p-6 rounded-2xl mb-8 border-2 ${
-                      darkMode 
-                        ? 'bg-green-900/20 border-green-500' 
-                        : 'bg-green-50 border-green-200'
-                    }`}
-                  >
-                    <div className="flex items-center gap-3 mb-4">
-                      <div className="p-2 bg-green-500 rounded-lg">
-                        <Rocket className="w-5 h-5 text-white" />
-                      </div>
-                      <div>
-                        <h3 className={`font-semibold ${darkMode ? 'text-white' : 'text-gray-900'}`}>
-                          🚀 Klaar om live te gaan!
-                        </h3>
-                        <p className={`text-sm ${darkMode ? 'text-green-400' : 'text-green-700'}`}>
-                          Deze projecten zijn betaald en wachten op livegang
-                        </p>
-                      </div>
-                    </div>
-                    <div className="space-y-3">
-                      {projects
-                        .filter(p => p.paymentStatus === 'paid' && p.phase === 'review')
-                        .map(p => (
-                          <div 
-                            key={p.projectId}
-                            onClick={() => { setSelectedProject(p); setActiveTab('projects') }}
-                            className={`flex items-center justify-between p-4 rounded-xl cursor-pointer transition-colors ${
-                              darkMode ? 'bg-gray-800 hover:bg-gray-700' : 'bg-white hover:bg-gray-50 border border-gray-200'
-                            }`}
-                          >
-                            <div className="flex items-center gap-3">
-                              <div className="p-2 bg-green-100 rounded-lg">
-                                <CheckCircle2 className="w-5 h-5 text-green-600" />
-                              </div>
-                              <div>
-                                <p className={`font-medium ${darkMode ? 'text-white' : 'text-gray-900'}`}>{p.businessName}</p>
-                                <p className={`text-sm ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>
-                                  Betaald op {p.paymentCompletedAt ? new Date(p.paymentCompletedAt).toLocaleDateString('nl-NL') : 'vandaag'}
-                                </p>
-                              </div>
-                            </div>
-                            <button
-                              onClick={(e) => {
-                                e.stopPropagation()
-                                // Open project en zet naar live fase
-                                setSelectedProject(p)
-                                setActiveTab('projects')
-                              }}
-                              className="px-4 py-2 bg-green-500 hover:bg-green-600 text-white font-medium rounded-lg transition-colors flex items-center gap-2"
-                            >
-                              <Rocket className="w-4 h-4" />
-                              Zet live
-                            </button>
-                          </div>
-                        ))}
-                    </div>
-                  </motion.div>
-                )}
-
-                {/* Wacht op betaling - Design goedgekeurd maar nog niet betaald */}
-                {projects.filter(p => p.designApproved && p.paymentStatus === 'awaiting_payment').length > 0 && (
-                  <motion.div
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    className={`p-6 rounded-2xl mb-8 border-2 ${
-                      darkMode 
-                        ? 'bg-amber-900/20 border-amber-500' 
-                        : 'bg-amber-50 border-amber-200'
-                    }`}
-                  >
-                    <div className="flex items-center gap-3 mb-4">
-                      <div className="p-2 bg-amber-500 rounded-lg">
-                        <CreditCard className="w-5 h-5 text-white" />
-                      </div>
-                      <div>
-                        <h3 className={`font-semibold ${darkMode ? 'text-white' : 'text-gray-900'}`}>
-                          💳 Wacht op betaling
-                        </h3>
-                        <p className={`text-sm ${darkMode ? 'text-amber-400' : 'text-amber-700'}`}>
-                          Design goedgekeurd, wacht op eerste abonnementsbetaling
-                        </p>
-                      </div>
-                    </div>
-                    <div className="space-y-3">
-                      {projects
-                        .filter(p => p.designApproved && p.paymentStatus === 'awaiting_payment')
-                        .map(p => (
-                          <div 
-                            key={p.projectId}
-                            onClick={() => { setSelectedProject(p); setActiveTab('projects') }}
-                            className={`flex items-center justify-between p-4 rounded-xl cursor-pointer transition-colors ${
-                              darkMode ? 'bg-gray-800 hover:bg-gray-700' : 'bg-white hover:bg-gray-50 border border-gray-200'
-                            }`}
-                          >
-                            <div className="flex items-center gap-3">
-                              <div className="p-2 bg-amber-100 rounded-lg">
-                                <Clock className="w-5 h-5 text-amber-600" />
-                              </div>
-                              <div>
-                                <p className={`font-medium ${darkMode ? 'text-white' : 'text-gray-900'}`}>{p.businessName}</p>
-                                <p className={`text-sm ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>
-                                  Design goedgekeurd op {p.designApprovedAt ? new Date(p.designApprovedAt).toLocaleDateString('nl-NL') : '-'}
-                                </p>
-                              </div>
-                            </div>
-                            <span className="px-3 py-1 bg-amber-100 text-amber-700 text-sm font-medium rounded-full">
-                              Wacht op betaling
-                            </span>
-                          </div>
-                        ))}
-                    </div>
-                  </motion.div>
-                )}
-
-                {/* Recent activity and revenue side by side */}
-                <div className="grid md:grid-cols-2 gap-6">
-                  {/* Recent projects */}
-                  <div className={`p-6 rounded-2xl ${darkMode ? 'bg-gray-800' : 'bg-white border border-gray-200'}`}>
-                    <h3 className={`font-semibold mb-4 ${darkMode ? 'text-white' : 'text-gray-900'}`}>Recente projecten</h3>
-                    <div className="space-y-3">
-                      {projects.slice(0, 5).map(p => (
-                        <div 
-                          key={p.projectId}
-                          onClick={() => { setSelectedProject(p); setActiveTab('projects') }}
-                          className={`flex items-center gap-3 p-3 rounded-xl cursor-pointer transition-colors ${
-                            darkMode ? 'hover:bg-gray-700' : 'hover:bg-gray-50'
-                          }`}
-                        >
-                          <div className={`p-2 rounded-lg ${phaseColors[p.phase].bg}`}>
-                            <PhaseIcon phase={p.phase} className={`w-4 h-4 ${phaseColors[p.phase].text}`} />
-                          </div>
-                          <div className="flex-1 min-w-0">
-                            <p className={`font-medium truncate ${darkMode ? 'text-white' : 'text-gray-900'}`}>{p.businessName}</p>
-                            <p className={`text-sm ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>
-                              {getPackageConfig(p.package)?.name} • {p.phase}
-                            </p>
-                          </div>
-                          <ChevronRight className={`w-5 h-5 ${darkMode ? 'text-gray-500' : 'text-gray-400'}`} />
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-
-                  {/* Revenue overview */}
-                  <div className={`p-6 rounded-2xl ${darkMode ? 'bg-gray-800' : 'bg-white border border-gray-200'}`}>
-                    <h3 className={`font-semibold mb-4 ${darkMode ? 'text-white' : 'text-gray-900'}`}>Revenue overzicht</h3>
-                    <div className="space-y-4">
-                      <div className={`p-4 rounded-xl ${darkMode ? 'bg-gray-700' : 'bg-green-50'}`}>
-                        <div className="flex items-center justify-between mb-2">
-                          <span className={darkMode ? 'text-gray-400' : 'text-gray-600'}>Maandelijks inkomen</span>
-                          <DollarSign className={`w-5 h-5 ${darkMode ? 'text-green-400' : 'text-green-600'}`} />
-                        </div>
-                        <p className={`text-3xl font-bold ${darkMode ? 'text-white' : 'text-gray-900'}`}>
-                          €{stats.monthlyRevenue}
-                        </p>
-                        <p className={`text-sm mt-1 ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>
-                          van {projects.filter(p => p.phase === 'live').length} actieve abonnementen
-                        </p>
-                      </div>
-                      <div className="grid grid-cols-2 gap-4">
-                        <div className={`p-4 rounded-xl ${darkMode ? 'bg-gray-700' : 'bg-blue-50'}`}>
-                          <p className={`text-sm ${darkMode ? 'text-gray-400' : 'text-gray-600'}`}>Setup fees (dit jaar)</p>
-                          <p className={`text-xl font-bold ${darkMode ? 'text-white' : 'text-gray-900'}`}>
-                            €{projects.reduce((acc, p) => acc + (getPackageConfig(p.package)?.priceSetup || 0), 0)}
-                          </p>
-                        </div>
-                        <div className={`p-4 rounded-xl ${darkMode ? 'bg-gray-700' : 'bg-purple-50'}`}>
-                          <p className={`text-sm ${darkMode ? 'text-gray-400' : 'text-gray-600'}`}>Projecten in pipeline</p>
-                          <p className={`text-xl font-bold ${darkMode ? 'text-white' : 'text-gray-900'}`}>
-                            {stats.active}
-                          </p>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </>
-            )}
-          </>
-        )}
-
-        {/* PROJECTS TAB */}
-        {activeTab === 'projects' && (
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.3 }}
-          >
-            {/* Toolbar */}
-            <div className={`flex items-center justify-between mb-6 p-4 rounded-xl ${darkMode ? 'bg-gray-800' : 'bg-white border border-gray-200'}`}>
-              <div className="flex items-center gap-4">
-                <select
-                  value={filterPackage}
-                  onChange={(e) => setFilterPackage(e.target.value)}
-                  className={`px-3 py-2 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 ${
-                    darkMode ? 'bg-gray-700 border-gray-600 text-white' : 'bg-gray-100 border-0'
-                  }`}
-                >
-                  <option value="all">Alle pakketten</option>
-                  <option value="starter">Starter</option>
-                  <option value="professional">Professioneel</option>
-                  <option value="business">Business</option>
-                  <option value="webshop">Webshop</option>
-                </select>
-              </div>
-              
-              <div className={`flex rounded-lg p-1 ${darkMode ? 'bg-gray-700' : 'bg-gray-100'}`}>
-                <button
-                  onClick={() => setView('kanban')}
-                  className={`px-3 py-1.5 rounded-md text-sm font-medium transition-colors ${
-                    view === 'kanban' 
-                      ? darkMode ? 'bg-gray-600 text-white' : 'bg-white text-gray-900 shadow-sm' 
-                      : darkMode ? 'text-gray-400 hover:text-white' : 'text-gray-500 hover:text-gray-700'
-                  }`}
-                >
-                  Kanban
-                </button>
-                <button
-                  onClick={() => setView('list')}
-                  className={`px-3 py-1.5 rounded-md text-sm font-medium transition-colors ${
-                    view === 'list' 
-                      ? darkMode ? 'bg-gray-600 text-white' : 'bg-white text-gray-900 shadow-sm' 
-                      : darkMode ? 'text-gray-400 hover:text-white' : 'text-gray-500 hover:text-gray-700'
-                  }`}
-                >
-                  Lijst
-                </button>
-              </div>
-            </div>
-
-            {/* Kanban view */}
-            {view === 'kanban' && (
-              <div className="flex gap-4 sm:gap-6 overflow-x-auto pb-4 -mx-4 px-4 sm:mx-0 sm:px-0">
-                {(['onboarding', 'design', 'development', 'review', 'live'] as ProjectPhase[]).map((phase, index) => (
-                  <motion.div
-                    key={phase}
-                    initial={{ opacity: 0, x: 20 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    transition={{ delay: index * 0.1 }}
-                  >
-                    <KanbanColumn
-                      phase={phase}
-                      projects={projectsByPhase[phase]}
-                      onProjectClick={(project) => setSelectedProject(project)}
-                      onQuickAction={(project, action) => {
-                        console.log('Quick action:', action, project.projectId)
-                      }}
-                      darkMode={darkMode}
-                    />
-                  </motion.div>
-                ))}
-              </div>
-            )}
-
-            {/* List view */}
-            {view === 'list' && (
-              <div className={`rounded-xl border overflow-hidden ${darkMode ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-200'}`}>
-                <table className="w-full">
-                  <thead className={darkMode ? 'bg-gray-750 border-b border-gray-700' : 'bg-gray-50 border-b border-gray-200'}>
-                    <tr>
-                      <th className={`px-6 py-3 text-left text-xs font-medium uppercase ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>Project</th>
-                      <th className={`px-6 py-3 text-left text-xs font-medium uppercase ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>Pakket</th>
-                      <th className={`px-6 py-3 text-left text-xs font-medium uppercase ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>Fase</th>
-                      <th className={`px-6 py-3 text-left text-xs font-medium uppercase ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>Voortgang</th>
-                      <th className={`px-6 py-3 text-left text-xs font-medium uppercase ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>Deadline</th>
-                      <th className={`px-6 py-3 text-left text-xs font-medium uppercase ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>Acties</th>
-                    </tr>
-                  </thead>
-                  <tbody className={darkMode ? 'divide-y divide-gray-700' : 'divide-y divide-gray-200'}>
-                    {filteredProjects.map(project => (
-                      <tr 
-                        key={project.projectId} 
-                        className={`cursor-pointer ${darkMode ? 'hover:bg-gray-700' : 'hover:bg-gray-50'}`}
-                        onClick={() => setSelectedProject(project)}
-                      >
-                        <td className="px-6 py-4">
-                          <div className={`font-medium ${darkMode ? 'text-white' : 'text-gray-900'}`}>{project.businessName}</div>
-                          <div className={`text-sm ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>{project.projectId}</div>
-                        </td>
-                        <td className="px-6 py-4">
-                          <span className={`text-sm ${darkMode ? 'text-gray-300' : 'text-gray-600'}`}>{getPackageConfig(project.package)?.name}</span>
-                        </td>
-                        <td className="px-6 py-4">
-                          <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium ${phaseColors[project.phase].bg} ${phaseColors[project.phase].text}`}>
-                            <PhaseIcon phase={project.phase} className="w-3.5 h-3.5" />
-                            {project.phase.charAt(0).toUpperCase() + project.phase.slice(1)}
-                          </span>
-                        </td>
-                        <td className="px-6 py-4">
-                          <div className="flex items-center gap-2">
-                            <div className={`w-20 h-2 rounded-full overflow-hidden ${darkMode ? 'bg-gray-700' : 'bg-gray-200'}`}>
-                              <div 
-                                className="h-full bg-blue-500 rounded-full"
-                                style={{ width: `${calculateProgress(project)}%` }}
-                              />
-                            </div>
-                            <span className={`text-sm ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>{calculateProgress(project)}%</span>
-                          </div>
-                        </td>
-                        <td className={`px-6 py-4 text-sm ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>
-                          {project.estimatedCompletion ? formatDate(project.estimatedCompletion) : '-'}
-                        </td>
-                        <td className="px-6 py-4">
-                          <button className={`p-2 rounded-lg transition-colors ${
-                            darkMode ? 'text-gray-400 hover:text-blue-400 hover:bg-gray-700' : 'text-gray-400 hover:text-blue-600 hover:bg-blue-50'
-                          }`}>
-                            <ArrowUpRight className="w-4 h-4" />
-                          </button>
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
-            )}
-          </motion.div>
-        )}
-
-        {/* KANBAN TAB */}
-        {activeTab === 'kanban' && (
-          <motion.div 
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.3 }}
-            className="space-y-6"
-          >
-            <div className="flex items-center justify-between">
-              <h2 className={`text-xl font-bold ${darkMode ? 'text-white' : 'text-gray-900'}`}>
-                Kanban Board
-              </h2>
-              <button
-                onClick={() => {
-                  alert('Nieuwe taak toevoegen is nog niet geïmplementeerd. Taken worden automatisch gegenereerd vanuit projecten.')
-                }}
-                className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg font-medium hover:bg-blue-700 transition"
-              >
-                <Plus className="w-4 h-4" />
-                Nieuwe taak
-              </button>
-            </div>
-
-            <KanbanBoard
-              columns={getDefaultColumns(
-                projects.flatMap((project) => {
-                  const tasks: KanbanTask[] = []
-                  
-                  // Convert project phase to column
-                  const columnMapping: Record<string, string> = {
-                    'onboarding': 'todo',
-                    'design': 'in_progress',
-                    'development': 'in_progress',
-                    'review': 'review',
-                    'live': 'done',
-                  }
-                  
-                  // Create a task for each project based on its phase
-                  tasks.push({
-                    id: project.projectId,
-                    title: project.businessName,
-                    description: `${project.package} - ${project.phase}`,
-                    projectId: columnMapping[project.phase] || 'backlog',
-                    projectName: project.projectId,
-                    priority: 'normal',
-                    dueDate: project.estimatedCompletion,
-                    commentsCount: project.messages?.length || 0,
-                    createdAt: project.createdAt,
-                  })
-                  
-                  return tasks
-                })
-              )}
-              onTaskMove={(taskId, fromColumn, toColumn) => {
-                console.log(`Moving task ${taskId} from ${fromColumn} to ${toColumn}`)
-                // In production: update project phase via API
-              }}
-              onTaskClick={(task) => {
-                const project = projects.find(p => p.projectId === task.id)
-                if (project) {
-                  setSelectedProject(project)
-                }
-              }}
-              onAddTask={(columnId) => {
-                alert(`Taak toevoegen aan ${columnId} is nog niet geïmplementeerd. Taken worden automatisch gegenereerd vanuit projecten.`)
-              }}
-              onDeleteTask={(taskId, columnId) => {
-                console.log(`Deleting task ${taskId} from ${columnId}`)
-                // In production: delete task via API
-              }}
-              darkMode={darkMode}
-            />
-          </motion.div>
-        )}
-
-        {/* CLIENTS TAB */}
-        {activeTab === 'clients' && (
-          <motion.div 
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.3 }}
-            className="space-y-6"
-          >
-            <div className="flex items-center justify-between">
-              <h2 className={`text-xl font-bold ${darkMode ? 'text-white' : 'text-gray-900'}`}>
-                Klanten ({clients.length})
-              </h2>
-              <motion.button
-                whileHover={{ scale: 1.02 }}
-                whileTap={{ scale: 0.98 }}
-                onClick={() => setShowAddClientModal(true)}
-                className="flex items-center gap-2 px-4 py-2 bg-blue-500 text-white font-medium rounded-xl hover:bg-blue-600 transition-colors"
-              >
-                <Plus className="w-4 h-4" />
-                Klant toevoegen
-              </motion.button>
-            </div>
-
-            <div className="grid gap-4">
-              {clients.map(client => (
-                <motion.div
-                  key={client.id}
-                  initial={{ opacity: 0, y: 10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  className={`p-6 rounded-2xl ${darkMode ? 'bg-gray-800' : 'bg-white border border-gray-200'}`}
-                >
-                  <div className="flex items-start justify-between">
-                    <div className="flex items-start gap-4">
-                      <div className={`w-14 h-14 rounded-xl flex items-center justify-center ${
-                        darkMode ? 'bg-gray-700' : 'bg-blue-50'
-                      }`}>
-                        <Building className={`w-7 h-7 ${darkMode ? 'text-blue-400' : 'text-blue-500'}`} />
-                      </div>
-                      <div>
-                        <h3 className={`text-lg font-semibold ${darkMode ? 'text-white' : 'text-gray-900'}`}>
-                          {client.company}
-                        </h3>
-                        <p className={`text-sm ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>{client.name}</p>
-                        <div className="flex items-center gap-4 mt-2">
-                          <a href={`mailto:${client.email}`} className="flex items-center gap-1 text-sm text-blue-500 hover:text-blue-600">
-                            <Mail className="w-4 h-4" />
-                            {client.email}
-                          </a>
-                          {client.phone && (
-                            <a href={`tel:${client.phone}`} className="flex items-center gap-1 text-sm text-blue-500 hover:text-blue-600">
-                              <Phone className="w-4 h-4" />
-                              {client.phone}
-                            </a>
-                          )}
-                        </div>
-                      </div>
-                    </div>
-                    
-                    <div className="flex items-center gap-2">
-                      <button
-                        onClick={() => setSelectedClient(client)}
-                        className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
-                          darkMode 
-                            ? 'bg-gray-700 text-white hover:bg-gray-600' 
-                            : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-                        }`}
-                      >
-                        <Edit3 className="w-4 h-4" />
-                      </button>
-                    </div>
-                  </div>
-                  
-                  <div className={`mt-4 pt-4 border-t ${darkMode ? 'border-gray-700' : 'border-gray-200'}`}>
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center gap-6">
-                        <div>
-                          <p className={`text-xs ${darkMode ? 'text-gray-500' : 'text-gray-400'}`}>Projecten</p>
-                          <p className={`font-semibold ${darkMode ? 'text-white' : 'text-gray-900'}`}>
-                            {client.projects.length}
-                          </p>
-                        </div>
-                        <div>
-                          <p className={`text-xs ${darkMode ? 'text-gray-500' : 'text-gray-400'}`}>Totaal besteed</p>
-                          <p className={`font-semibold ${darkMode ? 'text-white' : 'text-gray-900'}`}>
-                            €{client.totalSpent}
-                          </p>
-                        </div>
-                        <div>
-                          <p className={`text-xs ${darkMode ? 'text-gray-500' : 'text-gray-400'}`}>Klant sinds</p>
-                          <p className={`font-semibold ${darkMode ? 'text-white' : 'text-gray-900'}`}>
-                            {formatDate(client.createdAt)}
-                          </p>
-                        </div>
-                      </div>
-                      <div className="flex gap-2">
-                        {client.projects.map(pId => {
-                          const project = projects.find(p => p.projectId === pId)
-                          if (!project) return null
-                          return (
-                            <span 
-                              key={pId}
-                              className={`inline-flex items-center gap-1 px-2 py-1 rounded-full text-xs font-medium ${phaseColors[project.phase].bg} ${phaseColors[project.phase].text}`}
-                            >
-                              <PhaseIcon phase={project.phase} className="w-3 h-3" />
-                              {project.package}
-                            </span>
-                          )
-                        })}
-                      </div>
-                    </div>
-                  </div>
-                </motion.div>
-              ))}
-
-              {clients.length === 0 && (
-                <div className={`text-center py-12 rounded-2xl ${darkMode ? 'bg-gray-800' : 'bg-gray-50'}`}>
-                  <Users className={`w-12 h-12 mx-auto mb-4 ${darkMode ? 'text-gray-600' : 'text-gray-300'}`} />
-                  <p className={`mb-4 ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>Nog geen klanten</p>
-                  <motion.button
-                    whileHover={{ scale: 1.02 }}
-                    whileTap={{ scale: 0.98 }}
-                    onClick={() => setShowAddClientModal(true)}
-                    className="inline-flex items-center gap-2 px-4 py-2 bg-blue-500 text-white font-medium rounded-xl hover:bg-blue-600 transition-colors"
-                  >
-                    <Plus className="w-4 h-4" />
-                    Eerste klant toevoegen
-                  </motion.button>
-                </div>
-              )}
-            </div>
-          </motion.div>
-        )}
-
-        {/* SERVICES TAB */}
-        {activeTab === 'services' && (
-          <motion.div 
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.3 }}
-            className="space-y-6"
-          >
-            <div className="flex items-center justify-between">
-              <h2 className={`text-xl font-bold ${darkMode ? 'text-white' : 'text-gray-900'}`}>
-                Service Aanvragen
-              </h2>
-              <div className={`flex gap-2 p-1 rounded-lg ${darkMode ? 'bg-gray-800' : 'bg-gray-100'}`}>
-                {['all', 'drone', 'logo', 'foto', 'tekst'].map(type => (
-                  <button
-                    key={type}
-                    className={`px-3 py-1.5 rounded-md text-sm font-medium transition-colors ${
-                      darkMode 
-                        ? 'text-gray-400 hover:text-white hover:bg-gray-700' 
-                        : 'text-gray-600 hover:text-gray-900 hover:bg-white'
-                    }`}
-                  >
-                    {type === 'all' ? 'Alle' : type.charAt(0).toUpperCase() + type.slice(1)}
-                  </button>
-                ))}
-              </div>
-            </div>
-
-            <div className="grid gap-4">
-              {serviceRequests.map(sr => (
-                <motion.div
-                  key={sr.id}
-                  initial={{ opacity: 0, y: 10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  className={`p-6 rounded-2xl ${darkMode ? 'bg-gray-800' : 'bg-white border border-gray-200'}`}
-                >
-                  <div className="flex items-start justify-between">
-                    <div className="flex items-start gap-4">
-                      <div className={`w-12 h-12 rounded-xl flex items-center justify-center ${
-                        sr.type === 'drone' ? 'bg-blue-100 text-blue-600' :
-                        sr.type === 'logo' ? 'bg-purple-100 text-purple-600' :
-                        sr.type === 'foto' ? 'bg-amber-100 text-amber-600' :
-                        'bg-green-100 text-green-600'
-                      }`}>
-                        {sr.type === 'drone' ? <Camera className="w-6 h-6" /> :
-                         sr.type === 'logo' ? <PenTool className="w-6 h-6" /> :
-                         sr.type === 'foto' ? <Camera className="w-6 h-6" /> :
-                         <FileText className="w-6 h-6" />}
-                      </div>
-                      <div>
-                        <div className="flex items-center gap-2">
-                          <h3 className={`font-semibold ${darkMode ? 'text-white' : 'text-gray-900'}`}>
-                            {sr.type === 'drone' ? 'Dronebeelden' :
-                             sr.type === 'logo' ? 'Logo ontwerp' :
-                             sr.type === 'foto' ? 'Fotografie' : 'Tekstschrijven'}
-                          </h3>
-                          <span className={`px-2 py-0.5 rounded-full text-xs font-medium ${
-                            sr.status === 'pending' ? 'bg-amber-100 text-amber-700' :
-                            sr.status === 'in_progress' ? 'bg-blue-100 text-blue-700' :
-                            sr.status === 'completed' ? 'bg-green-100 text-green-700' :
-                            'bg-red-100 text-red-700'
-                          }`}>
-                            {sr.status === 'pending' ? 'In afwachting' :
-                             sr.status === 'in_progress' ? 'Bezig' :
-                             sr.status === 'completed' ? 'Afgerond' : 'Geannuleerd'}
-                          </span>
-                        </div>
-                        <p className={`text-sm mt-1 ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>{sr.clientName}</p>
-                        <p className={`text-sm mt-2 ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>{sr.description}</p>
-                      </div>
-                    </div>
-                    
-                    <div className="text-right">
-                      {sr.price && (
-                        <p className={`text-lg font-bold ${darkMode ? 'text-white' : 'text-gray-900'}`}>
-                          €{sr.price}
-                        </p>
-                      )}
-                      <p className={`text-xs ${darkMode ? 'text-gray-500' : 'text-gray-400'}`}>
-                        {formatDate(sr.createdAt)}
-                      </p>
-                    </div>
-                  </div>
-                  
-                  <div className={`mt-4 pt-4 border-t flex items-center justify-between ${darkMode ? 'border-gray-700' : 'border-gray-200'}`}>
-                    <div className="flex items-center gap-4">
-                      <a href={`mailto:${sr.clientEmail}`} className="flex items-center gap-1 text-sm text-blue-500 hover:text-blue-600">
-                        <Mail className="w-4 h-4" />
-                        {sr.clientEmail}
-                      </a>
-                      <a href={`tel:${sr.clientPhone}`} className="flex items-center gap-1 text-sm text-blue-500 hover:text-blue-600">
-                        <Phone className="w-4 h-4" />
-                        {sr.clientPhone}
-                      </a>
-                    </div>
-                    <div className="flex gap-2">
-                      {sr.status === 'pending' && (
-                        <>
-                          <button
-                            onClick={() => updateServiceRequest(sr.id, { status: 'in_progress' })}
-                            className="px-3 py-1.5 bg-blue-500 text-white text-sm font-medium rounded-lg hover:bg-blue-600 transition-colors"
-                          >
-                            Start
-                          </button>
-                          <button
-                            onClick={() => updateServiceRequest(sr.id, { status: 'cancelled' })}
-                            className={`px-3 py-1.5 text-sm font-medium rounded-lg transition-colors ${
-                              darkMode ? 'bg-gray-700 text-gray-300 hover:bg-gray-600' : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-                            }`}
-                          >
-                            Annuleren
-                          </button>
-                        </>
-                      )}
-                      {sr.status === 'in_progress' && (
-                        <button
-                          onClick={() => updateServiceRequest(sr.id, { status: 'completed', completedAt: new Date().toISOString() })}
-                          className="px-3 py-1.5 bg-green-500 text-white text-sm font-medium rounded-lg hover:bg-green-600 transition-colors flex items-center gap-1"
-                        >
-                          <Check className="w-4 h-4" />
-                          Afronden
-                        </button>
-                      )}
-                    </div>
-                  </div>
-                </motion.div>
-              ))}
-
-              {serviceRequests.length === 0 && (
-                <div className={`text-center py-12 rounded-2xl ${darkMode ? 'bg-gray-800' : 'bg-gray-50'}`}>
-                  <Briefcase className={`w-12 h-12 mx-auto mb-4 ${darkMode ? 'text-gray-600' : 'text-gray-300'}`} />
-                  <p className={darkMode ? 'text-gray-400' : 'text-gray-500'}>Geen service aanvragen</p>
-                </div>
-              )}
-            </div>
-          </motion.div>
-        )}
-
-        {/* BILLING TAB */}
-        {activeTab === 'billing' && (
-          <motion.div 
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.3 }}
-            className="space-y-6"
-          >
-            <div className="flex items-center justify-between">
-              <h2 className={`text-xl font-bold ${darkMode ? 'text-white' : 'text-gray-900'}`}>
-                Betalingen & Facturen
-              </h2>
-            </div>
-
-            {/* Billing Stats */}
-            <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-              <div className={`p-6 rounded-2xl ${darkMode ? 'bg-gray-800' : 'bg-white border border-gray-200'}`}>
-                <div className="flex items-center gap-3 mb-2">
-                  <div className="w-10 h-10 bg-green-100 rounded-xl flex items-center justify-center">
-                    <TrendingUp className="w-5 h-5 text-green-600" />
-                  </div>
-                  <span className={`text-sm ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>MRR</span>
-                </div>
-                <p className={`text-2xl font-bold ${darkMode ? 'text-white' : 'text-gray-900'}`}>
-                  €{(projects.filter(p => p.phase !== 'live').length * 49).toLocaleString()}
-                </p>
-                <p className="text-sm text-green-600">+12% vs vorige maand</p>
-              </div>
-
-              <div className={`p-6 rounded-2xl ${darkMode ? 'bg-gray-800' : 'bg-white border border-gray-200'}`}>
-                <div className="flex items-center gap-3 mb-2">
-                  <div className="w-10 h-10 bg-blue-100 rounded-xl flex items-center justify-center">
-                    <CreditCard className="w-5 h-5 text-blue-600" />
-                  </div>
-                  <span className={`text-sm ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>Actieve abonnementen</span>
-                </div>
-                <p className={`text-2xl font-bold ${darkMode ? 'text-white' : 'text-gray-900'}`}>
-                  {projects.filter(p => p.phase === 'live').length}
-                </p>
-              </div>
-
-              <div className={`p-6 rounded-2xl ${darkMode ? 'bg-gray-800' : 'bg-white border border-gray-200'}`}>
-                <div className="flex items-center gap-3 mb-2">
-                  <div className="w-10 h-10 bg-amber-100 rounded-xl flex items-center justify-center">
-                    <Clock className="w-5 h-5 text-amber-600" />
-                  </div>
-                  <span className={`text-sm ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>Openstaand</span>
-                </div>
-                <p className={`text-2xl font-bold ${darkMode ? 'text-white' : 'text-gray-900'}`}>€0</p>
-              </div>
-
-              <div className={`p-6 rounded-2xl ${darkMode ? 'bg-gray-800' : 'bg-white border border-gray-200'}`}>
-                <div className="flex items-center gap-3 mb-2">
-                  <div className="w-10 h-10 bg-purple-100 rounded-xl flex items-center justify-center">
-                    <DollarSign className="w-5 h-5 text-purple-600" />
-                  </div>
-                  <span className={`text-sm ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>Deze maand</span>
-                </div>
-                <p className={`text-2xl font-bold ${darkMode ? 'text-white' : 'text-gray-900'}`}>
-                  €{(projects.length * 49).toLocaleString()}
-                </p>
-              </div>
-            </div>
-
-            {/* Recent Payments */}
-            <div className={`p-6 rounded-2xl ${darkMode ? 'bg-gray-800' : 'bg-white border border-gray-200'}`}>
-              <h3 className={`font-semibold mb-4 ${darkMode ? 'text-white' : 'text-gray-900'}`}>
-                Recente betalingen
-              </h3>
-              
-              <div className="space-y-3">
-                {projects.slice(0, 5).map((project) => (
-                  <div 
-                    key={project.projectId}
-                    className={`flex items-center justify-between p-4 rounded-xl ${darkMode ? 'bg-gray-700' : 'bg-gray-50'}`}
-                  >
-                    <div className="flex items-center gap-4">
-                      <div className="w-10 h-10 bg-green-100 rounded-full flex items-center justify-center">
-                        <CheckCircle2 className="w-5 h-5 text-green-600" />
-                      </div>
-                      <div>
-                        <p className={`font-medium ${darkMode ? 'text-white' : 'text-gray-900'}`}>
-                          {project.businessName}
-                        </p>
-                        <p className={`text-sm ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>
-                          {project.package} • Automatische incasso
-                        </p>
-                      </div>
-                    </div>
-                    <div className="text-right">
-                      <p className={`font-semibold ${darkMode ? 'text-white' : 'text-gray-900'}`}>
-                        €{project.package === 'starter' ? '29,00' : project.package === 'professional' ? '49,00' : '79,00'}
-                      </p>
-                      <p className={`text-sm ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>
-                        {new Date().toLocaleDateString('nl-NL')}
-                      </p>
-                    </div>
-                  </div>
-                ))}
-
-                {projects.length === 0 && (
-                  <div className="text-center py-8">
-                    <CreditCard className={`w-12 h-12 mx-auto mb-3 ${darkMode ? 'text-gray-600' : 'text-gray-300'}`} />
-                    <p className={darkMode ? 'text-gray-400' : 'text-gray-500'}>Nog geen betalingen</p>
-                  </div>
-                )}
-              </div>
-            </div>
-
-            {/* Quick Actions */}
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-              <button 
-                onClick={() => alert('Factuur maken is nog niet geïmplementeerd. Dit wordt binnenkort toegevoegd.')}
-                className={`p-4 rounded-xl text-left transition ${
-                darkMode 
-                  ? 'bg-gray-800 hover:bg-gray-700' 
-                  : 'bg-white border border-gray-200 hover:border-blue-300 hover:shadow-md'
-              }`}>
-                <FileText className={`w-6 h-6 mb-2 ${darkMode ? 'text-blue-400' : 'text-blue-600'}`} />
-                <p className={`font-medium ${darkMode ? 'text-white' : 'text-gray-900'}`}>Factuur maken</p>
-                <p className={`text-sm ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>
-                  Handmatig een factuur aanmaken
-                </p>
-              </button>
-
-              <button 
-                onClick={() => alert('Betaallink sturen is nog niet geïmplementeerd. Dit wordt binnenkort toegevoegd.')}
-                className={`p-4 rounded-xl text-left transition ${
-                darkMode 
-                  ? 'bg-gray-800 hover:bg-gray-700' 
-                  : 'bg-white border border-gray-200 hover:border-blue-300 hover:shadow-md'
-              }`}>
-                <Mail className={`w-6 h-6 mb-2 ${darkMode ? 'text-green-400' : 'text-green-600'}`} />
-                <p className={`font-medium ${darkMode ? 'text-white' : 'text-gray-900'}`}>Betaallink sturen</p>
-                <p className={`text-sm ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>
-                  Stuur een betaalverzoek naar klant
-                </p>
-              </button>
-
-              <button 
-                onClick={() => alert('Export is nog niet geïmplementeerd. Dit wordt binnenkort toegevoegd.')}
-                className={`p-4 rounded-xl text-left transition ${
-                darkMode 
-                  ? 'bg-gray-800 hover:bg-gray-700' 
-                  : 'bg-white border border-gray-200 hover:border-blue-300 hover:shadow-md'
-              }`}>
-                <Download className={`w-6 h-6 mb-2 ${darkMode ? 'text-purple-400' : 'text-purple-600'}`} />
-                <p className={`font-medium ${darkMode ? 'text-white' : 'text-gray-900'}`}>Export</p>
-                <p className={`text-sm ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>
-                  Download alle facturen
-                </p>
-              </button>
-            </div>
-
-            {/* Mollie Info */}
-            <div className={`p-6 rounded-2xl border-2 border-dashed ${
-              darkMode ? 'border-gray-700 bg-gray-800/50' : 'border-gray-200 bg-gray-50'
-            }`}>
-              <div className="flex items-start gap-4">
-                <div className="w-12 h-12 bg-gradient-to-br from-blue-500 to-purple-500 rounded-xl flex items-center justify-center text-white font-bold">
-                  M
-                </div>
-                <div>
-                  <h3 className={`font-semibold ${darkMode ? 'text-white' : 'text-gray-900'}`}>
-                    Mollie Integratie
-                  </h3>
-                  <p className={`text-sm ${darkMode ? 'text-gray-400' : 'text-gray-500'} mb-3`}>
-                    Alle betalingen worden automatisch verwerkt via Mollie. 
-                    Subscriptions worden maandelijks geïncasseerd.
-                  </p>
-                  <div className="flex gap-2">
-                    <span className="px-2 py-1 bg-green-100 text-green-700 text-xs font-medium rounded-lg">
-                      ✓ Verbonden
-                    </span>
-                    <span className="px-2 py-1 bg-blue-100 text-blue-700 text-xs font-medium rounded-lg">
-                      iDEAL
-                    </span>
-                    <span className="px-2 py-1 bg-blue-100 text-blue-700 text-xs font-medium rounded-lg">
-                      Automatische incasso
-                    </span>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </motion.div>
-        )}
-
-        {/* DISCOUNTS TAB */}
-        {activeTab === 'discounts' && (
-          <motion.div 
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.3 }}
-            className="space-y-6"
-          >
-            {/* Header */}
-            <div className={`p-6 rounded-xl ${darkMode ? 'bg-gray-800' : 'bg-white'} shadow-sm`}>
-              <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-                <div>
-                  <h2 className={`text-xl font-bold ${darkMode ? 'text-white' : 'text-gray-900'}`}>Kortingscodes</h2>
-                  <p className={`text-sm ${darkMode ? 'text-gray-400' : 'text-gray-500'} mt-1`}>
-                    Beheer actieve kortingscodes en bekijk gebruik
-                  </p>
-                </div>
-              </div>
-            </div>
-
-            {/* Active Discount Codes */}
-            <div className={`p-6 rounded-xl ${darkMode ? 'bg-gray-800' : 'bg-white'} shadow-sm`}>
-              <h3 className={`text-lg font-semibold ${darkMode ? 'text-white' : 'text-gray-900'} mb-4`}>
-                Actieve Kortingscodes
-              </h3>
-              <div className="space-y-4">
-                {/* GRATIS26 Code */}
-                <div className={`p-4 rounded-lg border-2 ${darkMode ? 'bg-gray-700 border-green-500/30' : 'bg-green-50 border-green-200'}`}>
-                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-                    <div className="flex items-center gap-3">
-                      <div className={`w-12 h-12 rounded-lg flex items-center justify-center ${darkMode ? 'bg-green-600' : 'bg-green-500'}`}>
-                        <Percent className="w-6 h-6 text-white" />
-                      </div>
-                      <div>
-                        <div className="flex items-center gap-2">
-                          <span className={`font-mono text-lg font-bold ${darkMode ? 'text-white' : 'text-gray-900'}`}>GRATIS26</span>
-                          <span className="px-2 py-0.5 bg-green-100 text-green-700 text-xs font-medium rounded-full">Actief</span>
-                        </div>
-                        <p className={`text-sm ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>Geen opstartkosten (100% korting op setup fee)</p>
-                      </div>
-                    </div>
-                    <div className="flex items-center gap-4 text-sm">
-                      <div className={`text-right ${darkMode ? 'text-gray-300' : 'text-gray-600'}`}>
-                        <div className="font-medium">Geldig tot</div>
-                        <div className="font-bold">1 maart 2026</div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            {/* Usage Statistics */}
-            <div className={`p-6 rounded-xl ${darkMode ? 'bg-gray-800' : 'bg-white'} shadow-sm`}>
-              <h3 className={`text-lg font-semibold ${darkMode ? 'text-white' : 'text-gray-900'} mb-4`}>
-                Gebruik door Projecten
-              </h3>
-              <div className="space-y-3">
-                {projects.filter(p => p.discountCode).length === 0 ? (
-                  <p className={`text-sm ${darkMode ? 'text-gray-400' : 'text-gray-500'} py-8 text-center`}>
-                    Nog geen projecten met kortingscode
-                  </p>
-                ) : (
-                  projects.filter(p => p.discountCode).map(project => (
-                    <div 
-                      key={project.projectId}
-                      className={`flex flex-col sm:flex-row sm:items-center justify-between p-4 rounded-lg ${darkMode ? 'bg-gray-700' : 'bg-gray-50'} gap-3`}
-                    >
-                      <div className="flex items-center gap-3">
-                        <div className={`w-10 h-10 rounded-lg flex items-center justify-center ${darkMode ? 'bg-blue-600' : 'bg-blue-100'}`}>
-                          <Globe className={`w-5 h-5 ${darkMode ? 'text-white' : 'text-blue-600'}`} />
-                        </div>
-                        <div>
-                          <p className={`font-medium ${darkMode ? 'text-white' : 'text-gray-900'}`}>{project.businessName}</p>
-                          <p className={`text-sm ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>{project.contactName}</p>
-                        </div>
-                      </div>
-                      <div className="flex items-center gap-4">
-                        <span className={`font-mono px-2 py-1 rounded ${darkMode ? 'bg-gray-600 text-green-400' : 'bg-green-100 text-green-700'} text-sm font-medium`}>
-                          {project.discountCode}
-                        </span>
-                        {project.discountSavings && (
-                          <span className={`text-sm font-medium ${darkMode ? 'text-green-400' : 'text-green-600'}`}>
-                            -€{project.discountSavings.toFixed(2)} bespaard
-                          </span>
-                        )}
-                      </div>
-                    </div>
-                  ))
-                )}
-              </div>
-            </div>
-
-            {/* Stats Summary */}
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-              <div className={`p-4 rounded-xl ${darkMode ? 'bg-gray-800' : 'bg-white'} shadow-sm`}>
-                <div className="flex items-center gap-3">
-                  <div className={`w-10 h-10 rounded-lg flex items-center justify-center ${darkMode ? 'bg-blue-600' : 'bg-blue-100'}`}>
-                    <Tag className={`w-5 h-5 ${darkMode ? 'text-white' : 'text-blue-600'}`} />
-                  </div>
-                  <div>
-                    <p className={`text-sm ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>Codes gebruikt</p>
-                    <p className={`text-2xl font-bold ${darkMode ? 'text-white' : 'text-gray-900'}`}>
-                      {projects.filter(p => p.discountCode).length}
-                    </p>
-                  </div>
-                </div>
-              </div>
-              <div className={`p-4 rounded-xl ${darkMode ? 'bg-gray-800' : 'bg-white'} shadow-sm`}>
-                <div className="flex items-center gap-3">
-                  <div className={`w-10 h-10 rounded-lg flex items-center justify-center ${darkMode ? 'bg-green-600' : 'bg-green-100'}`}>
-                    <DollarSign className={`w-5 h-5 ${darkMode ? 'text-white' : 'text-green-600'}`} />
-                  </div>
-                  <div>
-                    <p className={`text-sm ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>Totaal korting gegeven</p>
-                    <p className={`text-2xl font-bold ${darkMode ? 'text-white' : 'text-gray-900'}`}>
-                      €{projects.reduce((sum, p) => sum + (p.discountSavings || 0), 0).toFixed(0)}
-                    </p>
-                  </div>
-                </div>
-              </div>
-              <div className={`p-4 rounded-xl ${darkMode ? 'bg-gray-800' : 'bg-white'} shadow-sm`}>
-                <div className="flex items-center gap-3">
-                  <div className={`w-10 h-10 rounded-lg flex items-center justify-center ${darkMode ? 'bg-purple-600' : 'bg-purple-100'}`}>
-                    <Percent className={`w-5 h-5 ${darkMode ? 'text-white' : 'text-purple-600'}`} />
-                  </div>
-                  <div>
-                    <p className={`text-sm ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>Actieve codes</p>
-                    <p className={`text-2xl font-bold ${darkMode ? 'text-white' : 'text-gray-900'}`}>1</p>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </motion.div>
-        )}
-
-        {/* SETTINGS TAB */}
-        {activeTab === 'settings' && (
-          <motion.div 
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.3 }}
-            className="max-w-2xl space-y-6"
-          >
-            <h2 className={`text-xl font-bold ${darkMode ? 'text-white' : 'text-gray-900'}`}>Instellingen</h2>
-            
-            {/* Appearance */}
-            <div className={`p-6 rounded-2xl ${darkMode ? 'bg-gray-800' : 'bg-white border border-gray-200'}`}>
-              <h3 className={`font-semibold mb-4 ${darkMode ? 'text-white' : 'text-gray-900'}`}>Weergave</h3>
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className={darkMode ? 'text-white' : 'text-gray-900'}>Dark mode</p>
-                  <p className={`text-sm ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>Schakel over naar donkere weergave</p>
-                </div>
-                <button
-                  onClick={() => setDarkMode(!darkMode)}
-                  className={`relative w-14 h-8 rounded-full transition-colors ${darkMode ? 'bg-blue-500' : 'bg-gray-200'}`}
-                >
-                  <div className={`absolute top-1 w-6 h-6 bg-white rounded-full shadow transition-all ${darkMode ? 'left-7' : 'left-1'}`} />
-                </button>
-              </div>
-            </div>
-
-            {/* Password change */}
-            <div className={`p-6 rounded-2xl ${darkMode ? 'bg-gray-800' : 'bg-white border border-gray-200'}`}>
-              <h3 className={`font-semibold mb-4 ${darkMode ? 'text-white' : 'text-gray-900'}`}>Wachtwoord wijzigen</h3>
-              
-              {!showPasswordChange ? (
-                <button
-                  onClick={() => setShowPasswordChange(true)}
-                  className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
-                    darkMode ? 'bg-gray-700 text-white hover:bg-gray-600' : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-                  }`}
-                >
-                  Wachtwoord wijzigen
-                </button>
-              ) : (
-                <div className="space-y-4">
-                  <div>
-                    <label className={`block text-sm font-medium mb-1 ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>
-                      Nieuw wachtwoord
-                    </label>
-                    <input
-                      type="password"
-                      value={newPassword}
-                      onChange={(e) => setNewPassword(e.target.value)}
-                      className={`w-full px-4 py-2 rounded-lg border ${
-                        darkMode 
-                          ? 'bg-gray-700 border-gray-600 text-white' 
-                          : 'bg-white border-gray-200'
-                      }`}
-                    />
-                  </div>
-                  <div>
-                    <label className={`block text-sm font-medium mb-1 ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>
-                      Bevestig wachtwoord
-                    </label>
-                    <input
-                      type="password"
-                      value={confirmPassword}
-                      onChange={(e) => setConfirmPassword(e.target.value)}
-                      className={`w-full px-4 py-2 rounded-lg border ${
-                        darkMode 
-                          ? 'bg-gray-700 border-gray-600 text-white' 
-                          : 'bg-white border-gray-200'
-                      }`}
-                    />
-                  </div>
-                  <div className="flex gap-2">
-                    <button
-                      onClick={() => {
-                        // TODO: Save password to server
-                        alert('Wachtwoord wijzigen is nog niet geïmplementeerd')
-                        setShowPasswordChange(false)
-                        setNewPassword('')
-                        setConfirmPassword('')
-                      }}
-                      disabled={!newPassword || newPassword !== confirmPassword}
-                      className="px-4 py-2 bg-blue-500 text-white text-sm font-medium rounded-lg hover:bg-blue-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
-                    >
-                      <Save className="w-4 h-4" />
-                      Opslaan
-                    </button>
-                    <button
-                      onClick={() => {
-                        setShowPasswordChange(false)
-                        setNewPassword('')
-                        setConfirmPassword('')
-                      }}
-                      className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
-                        darkMode ? 'bg-gray-700 text-white hover:bg-gray-600' : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-                      }`}
-                    >
-                      Annuleren
-                    </button>
-                  </div>
-                </div>
-              )}
-            </div>
-
-            {/* Notifications */}
-            <div className={`p-6 rounded-2xl ${darkMode ? 'bg-gray-800' : 'bg-white border border-gray-200'}`}>
-              <h3 className={`font-semibold mb-4 ${darkMode ? 'text-white' : 'text-gray-900'}`}>Notificaties</h3>
-              <div className="space-y-4">
-                {[
-                  { id: 'email_messages', label: 'E-mail bij nieuw bericht', desc: 'Ontvang een e-mail wanneer een klant een bericht stuurt' },
-                  { id: 'email_changes', label: 'E-mail bij wijzigingsverzoek', desc: 'Ontvang een e-mail bij nieuwe wijzigingsverzoeken' },
-                  { id: 'email_payments', label: 'E-mail bij betaling', desc: 'Ontvang een e-mail bij binnenkomende betalingen' },
-                ].map(setting => (
-                  <div key={setting.id} className="flex items-center justify-between">
-                    <div>
-                      <p className={darkMode ? 'text-white' : 'text-gray-900'}>{setting.label}</p>
-                      <p className={`text-sm ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>{setting.desc}</p>
-                    </div>
-                    <button className={`relative w-14 h-8 rounded-full transition-colors bg-blue-500`}>
-                      <div className="absolute top-1 left-7 w-6 h-6 bg-white rounded-full shadow" />
-                    </button>
-                  </div>
-                ))}
-              </div>
-            </div>
-
-            {/* Danger zone */}
-            <div className={`p-6 rounded-2xl border-2 ${darkMode ? 'bg-gray-800 border-red-900' : 'bg-red-50 border-red-200'}`}>
-              <h3 className={`font-semibold mb-2 ${darkMode ? 'text-red-400' : 'text-red-700'}`}>Gevaarlijke zone</h3>
-              <p className={`text-sm mb-4 ${darkMode ? 'text-gray-400' : 'text-gray-600'}`}>
-                Deze acties zijn permanent en kunnen niet ongedaan worden gemaakt.
-              </p>
-              <button className="px-4 py-2 bg-red-500 text-white text-sm font-medium rounded-lg hover:bg-red-600 transition-colors">
-                Alle data wissen
-              </button>
-            </div>
-          </motion.div>
-        )}
-      </main>
-
-      {/* Add Client Modal */}
-      <AnimatePresence>
-        {showAddClientModal && (
-          <>
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              className="fixed inset-0 bg-black/50 z-50"
-              onClick={() => setShowAddClientModal(false)}
-            />
-            <motion.div
-              initial={{ opacity: 0, scale: 0.95 }}
-              animate={{ opacity: 1, scale: 1 }}
-              exit={{ opacity: 0, scale: 0.95 }}
-              className={`fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full max-w-md z-50 rounded-2xl shadow-2xl overflow-hidden ${
-                darkMode ? 'bg-gray-800' : 'bg-white'
-              }`}
-            >
-              <div className={`p-6 border-b ${darkMode ? 'border-gray-700' : 'border-gray-200'}`}>
-                <div className="flex items-center justify-between">
-                  <h2 className={`text-xl font-bold ${darkMode ? 'text-white' : 'text-gray-900'}`}>
-                    Nieuwe klant toevoegen
-                  </h2>
-                  <button
-                    onClick={() => setShowAddClientModal(false)}
-                    className={`p-2 rounded-lg transition-colors ${
-                      darkMode ? 'hover:bg-gray-700 text-gray-400' : 'hover:bg-gray-100 text-gray-500'
-                    }`}
-                  >
-                    <X className="w-5 h-5" />
-                  </button>
-                </div>
-              </div>
-              
-              <form onSubmit={(e) => {
-                e.preventDefault()
-                const newClientData: Client = {
-                  id: `client-${Date.now()}`,
-                  name: newClient.name,
-                  email: newClient.email,
-                  phone: newClient.phone,
-                  company: newClient.company,
-                  projects: [],
-                  totalSpent: 0,
-                  createdAt: new Date().toISOString(),
-                }
-                setClients(prev => [...prev, newClientData])
-                setNewClient({ name: '', email: '', phone: '', company: '' })
-                setShowAddClientModal(false)
-              }} className="p-6 space-y-4">
-                <div>
-                  <label className={`block text-sm font-medium mb-1 ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>
-                    Bedrijfsnaam *
-                  </label>
-                  <input
-                    type="text"
-                    required
-                    value={newClient.company}
-                    onChange={(e) => setNewClient(prev => ({ ...prev, company: e.target.value }))}
-                    className={`w-full px-4 py-2 rounded-lg border ${
-                      darkMode 
-                        ? 'bg-gray-700 border-gray-600 text-white' 
-                        : 'bg-white border-gray-200'
-                    }`}
-                    placeholder="Bakkerij De Gouden Korrel"
-                  />
-                </div>
-                
-                <div>
-                  <label className={`block text-sm font-medium mb-1 ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>
-                    Contactpersoon *
-                  </label>
-                  <input
-                    type="text"
-                    required
-                    value={newClient.name}
-                    onChange={(e) => setNewClient(prev => ({ ...prev, name: e.target.value }))}
-                    className={`w-full px-4 py-2 rounded-lg border ${
-                      darkMode 
-                        ? 'bg-gray-700 border-gray-600 text-white' 
-                        : 'bg-white border-gray-200'
-                    }`}
-                    placeholder="Jan Bakker"
-                  />
-                </div>
-                
-                <div>
-                  <label className={`block text-sm font-medium mb-1 ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>
-                    E-mail *
-                  </label>
-                  <input
-                    type="email"
-                    required
-                    value={newClient.email}
-                    onChange={(e) => setNewClient(prev => ({ ...prev, email: e.target.value }))}
-                    className={`w-full px-4 py-2 rounded-lg border ${
-                      darkMode 
-                        ? 'bg-gray-700 border-gray-600 text-white' 
-                        : 'bg-white border-gray-200'
-                    }`}
-                    placeholder="info@bedrijf.nl"
-                  />
-                </div>
-                
-                <div>
-                  <label className={`block text-sm font-medium mb-1 ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>
-                    Telefoon
-                  </label>
-                  <input
-                    type="tel"
-                    value={newClient.phone}
-                    onChange={(e) => setNewClient(prev => ({ ...prev, phone: e.target.value }))}
-                    className={`w-full px-4 py-2 rounded-lg border ${
-                      darkMode 
-                        ? 'bg-gray-700 border-gray-600 text-white' 
-                        : 'bg-white border-gray-200'
-                    }`}
-                    placeholder="06-12345678"
-                  />
-                </div>
-                
-                <div className="flex justify-end gap-3 pt-4">
-                  <button
-                    type="button"
-                    onClick={() => setShowAddClientModal(false)}
-                    className={`px-4 py-2 rounded-lg font-medium transition-colors ${
-                      darkMode 
-                        ? 'bg-gray-700 text-white hover:bg-gray-600' 
-                        : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-                    }`}
-                  >
-                    Annuleren
-                  </button>
-                  <button
-                    type="submit"
-                    className="px-4 py-2 bg-blue-500 text-white font-medium rounded-lg hover:bg-blue-600 transition-colors flex items-center gap-2"
-                  >
-                    <Plus className="w-4 h-4" />
-                    Toevoegen
-                  </button>
-                </div>
-              </form>
-            </motion.div>
-          </>
-        )}
-      </AnimatePresence>
-
-      {/* Client edit modal */}
-      <AnimatePresence>
-        {selectedClient && (
-          <>
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              className="fixed inset-0 bg-black/50 z-50"
-              onClick={() => setSelectedClient(null)}
-            />
-            <motion.div
-              initial={{ opacity: 0, scale: 0.95 }}
-              animate={{ opacity: 1, scale: 1 }}
-              exit={{ opacity: 0, scale: 0.95 }}
-              className={`fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full max-w-lg rounded-2xl shadow-2xl z-50 ${
-                darkMode ? 'bg-gray-800' : 'bg-white'
-              }`}
-            >
-              <div className={`flex items-center justify-between p-6 border-b ${darkMode ? 'border-gray-700' : 'border-gray-200'}`}>
-                <h3 className={`text-lg font-semibold ${darkMode ? 'text-white' : 'text-gray-900'}`}>Klant bewerken</h3>
-                <button onClick={() => setSelectedClient(null)} className={darkMode ? 'text-gray-400 hover:text-white' : 'text-gray-400 hover:text-gray-600'}>
-                  <X className="w-5 h-5" />
-                </button>
-              </div>
-              <div className="p-6 space-y-4">
-                <div>
-                  <label className={`block text-sm font-medium mb-1 ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>Naam</label>
-                  <input
-                    type="text"
-                    defaultValue={selectedClient.name}
-                    className={`w-full px-4 py-2 rounded-lg border ${darkMode ? 'bg-gray-700 border-gray-600 text-white' : 'bg-white border-gray-200'}`}
-                  />
-                </div>
-                <div>
-                  <label className={`block text-sm font-medium mb-1 ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>Bedrijf</label>
-                  <input
-                    type="text"
-                    defaultValue={selectedClient.company}
-                    className={`w-full px-4 py-2 rounded-lg border ${darkMode ? 'bg-gray-700 border-gray-600 text-white' : 'bg-white border-gray-200'}`}
-                  />
-                </div>
-                <div>
-                  <label className={`block text-sm font-medium mb-1 ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>E-mail</label>
-                  <input
-                    type="email"
-                    defaultValue={selectedClient.email}
-                    className={`w-full px-4 py-2 rounded-lg border ${darkMode ? 'bg-gray-700 border-gray-600 text-white' : 'bg-white border-gray-200'}`}
-                  />
-                </div>
-                <div>
-                  <label className={`block text-sm font-medium mb-1 ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>Telefoon</label>
-                  <input
-                    type="tel"
-                    defaultValue={selectedClient.phone}
-                    className={`w-full px-4 py-2 rounded-lg border ${darkMode ? 'bg-gray-700 border-gray-600 text-white' : 'bg-white border-gray-200'}`}
-                  />
-                </div>
-                <div>
-                  <label className={`block text-sm font-medium mb-1 ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>Notities</label>
-                  <textarea
-                    rows={3}
-                    defaultValue={selectedClient.notes || ''}
-                    placeholder="Interne notities..."
-                    className={`w-full px-4 py-2 rounded-lg border resize-none ${darkMode ? 'bg-gray-700 border-gray-600 text-white placeholder-gray-500' : 'bg-white border-gray-200'}`}
-                  />
-                </div>
-              </div>
-              <div className={`flex justify-end gap-2 p-6 border-t ${darkMode ? 'border-gray-700' : 'border-gray-200'}`}>
-                <button
-                  onClick={() => setSelectedClient(null)}
-                  className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
-                    darkMode ? 'bg-gray-700 text-white hover:bg-gray-600' : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-                  }`}
-                >
-                  Annuleren
-                </button>
-                <button
-                  onClick={() => updateClient(selectedClient.id, {})}
-                  className="px-4 py-2 bg-blue-500 text-white text-sm font-medium rounded-lg hover:bg-blue-600 transition-colors flex items-center gap-2"
-                >
-                  <Save className="w-4 h-4" />
-                  Opslaan
-                </button>
-              </div>
-            </motion.div>
-          </>
-        )}
-      </AnimatePresence>
-
-      {/* Project detail panel */}
-      <AnimatePresence>
-        {selectedProject && (
-          <>
-            {/* Overlay */}
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              className="fixed inset-0 bg-black/20 z-40"
-              onClick={() => setSelectedProject(null)}
-            />
-            
-            {/* Panel */}
-            <ProjectDetailPanel
-              project={selectedProject}
-              onClose={() => setSelectedProject(null)}
-              onUpdate={(updates) => {
-                // Update project
-                setProjects(prev => prev.map(p => 
-                  p.projectId === selectedProject.projectId ? { ...p, ...updates } : p
-                ))
-              }}
-              onSendEmail={(template) => {
-                console.log('Send email:', template)
-              }}
-              onPhaseChange={(phase) => {
-                setProjects(prev => prev.map(p => 
-                  p.projectId === selectedProject.projectId ? { ...p, phase } : p
-                ))
-                setSelectedProject({ ...selectedProject, phase })
-              }}
-            />
-          </>
-        )}
-      </AnimatePresence>
+        {/* Mobile Bottom Navigation */}
+        <MobileBottomNav
+          activeView={activeView}
+          setActiveView={setActiveView}
+          darkMode={darkMode}
+          unreadMessages={unreadMessages}
+        />
+      </div>
     </div>
   )
 }
