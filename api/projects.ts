@@ -210,13 +210,14 @@ async function createProject(req: VercelRequest, res: VercelResponse) {
   // Send confirmation emails
   if (isSmtpConfigured()) {
     try {
-      // Send welcome email to customer
+      // Send welcome email to customer (include password if provided)
       const welcomeResult = await sendWelcomeEmail({
         email: project.customer.email,
         name: project.customer.companyName || project.customer.name || 'daar',
         projectId: project.id,
         package: project.packageType,
         type: project.type,
+        password: body.password, // Include plain password in welcome email
       })
       console.log(`Welcome email sent: ${welcomeResult.success ? 'OK' : welcomeResult.error}`)
       

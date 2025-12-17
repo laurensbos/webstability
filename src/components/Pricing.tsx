@@ -54,10 +54,20 @@ export default function Pricing() {
 						whileInView={{ opacity: 1, y: 0 }}
 						viewport={{ once: true }}
 						transition={{ delay: 0.2 }}
-						className="text-gray-600 dark:text-gray-400 text-base lg:text-lg"
+						className="text-gray-600 dark:text-gray-400 text-base lg:text-lg mb-4"
 					>
 						Alle pakketten inclusief hosting, onderhoud en support. Geen verborgen kosten.
 					</motion.p>
+					<motion.div
+						initial={{ opacity: 0, y: 20 }}
+						whileInView={{ opacity: 1, y: 0 }}
+						viewport={{ once: true }}
+						transition={{ delay: 0.3 }}
+						className="inline-flex items-center gap-2 px-4 py-2 bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400 rounded-full text-sm font-medium"
+					>
+						<Check className="w-4 h-4" />
+						Betaling pas na goedkeuring design
+					</motion.div>
 				</div>
 
 				{/* Mobile: Horizontal scroll carousel */}

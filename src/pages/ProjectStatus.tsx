@@ -33,14 +33,16 @@ import {
   User,
   Building2,
   CreditCard,
-  Settings
+  Settings,
+  Receipt,
+  Download
 } from 'lucide-react'
 import Logo from '../components/Logo'
 import PreviewLink from '../components/PreviewLink'
 import FeedbackModule from '../components/FeedbackModule'
 import TaskList, { type Task } from '../components/TaskList'
 import PaymentSection from '../components/PaymentSection'
-import type { Project, ProjectPhase, ProjectMessage } from '../types/project'
+import type { Project, ProjectPhase, ProjectMessage, Invoice } from '../types/project'
 import { getProgressPercentage, groupUpdatesByDate, PHASE_FAQS, PRIORITY_CONFIG } from '../types/project'
 
 // Demo tasks voor de takenlijst
@@ -1511,6 +1513,111 @@ export default function ProjectStatus() {
                 })
               }}
             />
+          </motion.div>
+        )}
+
+        {/* Invoices Section - Show if there are invoices */}
+        {project.invoices && project.invoices.length > 0 && (
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.47 }}
+            className="bg-gray-800/60 backdrop-blur-sm rounded-xl sm:rounded-2xl border border-gray-700/50 p-4 sm:p-6 md:p-8 mb-6"
+          >
+            <div className="flex items-center gap-3 mb-6">
+              <div className="w-10 h-10 sm:w-12 sm:h-12 bg-emerald-500/20 rounded-lg sm:rounded-xl flex items-center justify-center">
+                <Receipt className="w-5 h-5 sm:w-6 sm:h-6 text-emerald-400" />
+              </div>
+              <div>
+                <h2 className="text-lg sm:text-xl font-bold text-white">Facturen</h2>
+                <p className="text-gray-400 text-xs sm:text-sm">
+                  {project.invoices.length} factuur{project.invoices.length !== 1 ? 'en' : ''}
+                </p>
+              </div>
+            </div>
+
+            <div className="space-y-3">
+              {project.invoices.map((invoice: Invoice) => (
+                <div
+                  key={invoice.id}
+                  className={`flex items-center justify-between p-4 rounded-xl border transition ${
+                    invoice.status === 'paid'
+                      ? 'bg-green-500/10 border-green-500/30'
+                      : invoice.status === 'overdue'
+                      ? 'bg-red-500/10 border-red-500/30'
+                      : 'bg-gray-900/50 border-gray-700'
+                  }`}
+                >
+                  <div className="flex items-center gap-4">
+                    <div className={`w-10 h-10 rounded-lg flex items-center justify-center ${
+                      invoice.status === 'paid'
+                        ? 'bg-green-500/20'
+                        : invoice.status === 'overdue'
+                        ? 'bg-red-500/20'
+                        : 'bg-gray-700'
+                    }`}>
+                      {invoice.status === 'paid' ? (
+                        <CheckCircle2 className="w-5 h-5 text-green-400" />
+                      ) : invoice.status === 'overdue' ? (
+                        <AlertCircle className="w-5 h-5 text-red-400" />
+                      ) : (
+                        <CreditCard className="w-5 h-5 text-gray-400" />
+                      )}
+                    </div>
+                    <div>
+                      <p className="font-medium text-white text-sm sm:text-base">{invoice.description}</p>
+                      <p className="text-xs text-gray-500">
+                        {new Date(invoice.date).toLocaleDateString('nl-NL', { day: 'numeric', month: 'long', year: 'numeric' })}
+                      </p>
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-4">
+                    <div className="text-right">
+                      <p className="font-bold text-white">€{invoice.amount.toFixed(2)}</p>
+                      <span className={`text-xs font-medium ${
+                        invoice.status === 'paid'
+                          ? 'text-green-400'
+                          : invoice.status === 'overdue'
+                          ? 'text-red-400'
+                          : invoice.status === 'sent'
+                          ? 'text-blue-400'
+                          : 'text-gray-400'
+                      }`}>
+                        {invoice.status === 'paid' ? 'Betaald' :
+                         invoice.status === 'overdue' ? 'Te laat' :
+                         invoice.status === 'sent' ? 'Openstaand' :
+                         invoice.status === 'draft' ? 'Concept' : 'Geannuleerd'}
+                      </span>
+                    </div>
+                    {invoice.paymentUrl && invoice.status !== 'paid' && (
+                      <a
+                        href={invoice.paymentUrl}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="px-4 py-2 bg-gradient-to-r from-blue-600 to-indigo-600 text-white text-sm font-medium rounded-lg hover:from-blue-500 hover:to-indigo-500 transition"
+                      >
+                        Betalen
+                      </a>
+                    )}
+                    {invoice.status === 'paid' && (
+                      <button className="p-2 text-gray-400 hover:text-white transition">
+                        <Download className="w-5 h-5" />
+                      </button>
+                    )}
+                  </div>
+                </div>
+              ))}
+            </div>
+
+            {/* Payment Notice */}
+            <div className="mt-4 p-4 bg-blue-500/10 border border-blue-500/30 rounded-xl">
+              <p className="text-sm text-blue-400 flex items-start gap-2">
+                <Shield className="w-4 h-4 flex-shrink-0 mt-0.5" />
+                <span>
+                  Betalingen worden veilig afgehandeld via Mollie. Je betaalt pas na goedkeuring van het design.
+                </span>
+              </p>
+            </div>
           </motion.div>
         )}
 

@@ -257,6 +257,7 @@ export const sendWelcomeEmail = async (customer: {
   projectId: string
   package: string
   type?: string
+  password?: string
 }) => {
   const colors = getServiceColor(customer.type)
   const serviceLabel = {
@@ -281,10 +282,34 @@ export const sendWelcomeEmail = async (customer: {
     </p>
     
     <!-- Project ID Card -->
-    <div style="background: ${colors.gradient}; border-radius: 12px; padding: 24px; margin-bottom: 32px; text-align: center;">
+    <div style="background: ${colors.gradient}; border-radius: 12px; padding: 24px; margin-bottom: 24px; text-align: center;">
       <p style="margin: 0 0 8px; color: rgba(255,255,255,0.8); font-size: 14px;">Je project ID</p>
       <p style="margin: 0; color: white; font-size: 24px; font-weight: 700; font-family: monospace; letter-spacing: 2px;">${customer.projectId}</p>
     </div>
+    
+    ${customer.password ? `
+    <!-- Login Credentials Card -->
+    <div style="background: linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%); border: 2px solid #10b981; border-radius: 12px; padding: 24px; margin-bottom: 24px;">
+      <h3 style="margin: 0 0 16px; font-size: 16px; font-weight: 600; color: #166534;">🔐 Je login gegevens voor het klantportaal</h3>
+      <table role="presentation" width="100%" cellspacing="0" cellpadding="0">
+        <tr>
+          <td style="padding: 8px 0;">
+            <p style="margin: 0; color: #64748b; font-size: 14px;">Project ID:</p>
+            <p style="margin: 4px 0 0; color: #0f172a; font-size: 16px; font-weight: 600; font-family: monospace;">${customer.projectId}</p>
+          </td>
+        </tr>
+        <tr>
+          <td style="padding: 8px 0;">
+            <p style="margin: 0; color: #64748b; font-size: 14px;">Wachtwoord:</p>
+            <p style="margin: 4px 0 0; color: #0f172a; font-size: 16px; font-weight: 600; font-family: monospace;">${customer.password}</p>
+          </td>
+        </tr>
+      </table>
+      <p style="margin: 16px 0 0; color: #15803d; font-size: 13px;">
+        💡 Bewaar deze gegevens goed! Je kunt hiermee inloggen op <a href="https://webstability.nl/status/${customer.projectId}" style="color: #10b981;">webstability.nl/status/${customer.projectId}</a>
+      </p>
+    </div>
+    ` : ''}
     
     <!-- Steps -->
     <h2 style="margin: 0 0 20px; font-size: 18px; font-weight: 600; color: #0f172a;">Zo werkt het:</h2>
@@ -328,8 +353,23 @@ export const sendWelcomeEmail = async (customer: {
                 <div style="width: 36px; height: 36px; background: ${colors.primary}; border-radius: 50%; color: white; font-weight: 700; font-size: 16px; text-align: center; line-height: 36px;">3</div>
               </td>
               <td style="vertical-align: top;">
-                <p style="margin: 0 0 4px; font-weight: 600; color: #0f172a;">Feedback geven</p>
+                <p style="margin: 0 0 4px; font-weight: 600; color: #0f172a;">Feedback & goedkeuren</p>
                 <p style="margin: 0; color: #64748b; font-size: 14px;">Bekijk het design en geef feedback. Tot 3 revisies inbegrepen!</p>
+              </td>
+            </tr>
+          </table>
+        </td>
+      </tr>
+      <tr>
+        <td style="padding: 16px 0; border-bottom: 1px solid #f1f5f9;">
+          <table role="presentation" cellspacing="0" cellpadding="0">
+            <tr>
+              <td style="width: 48px; vertical-align: top;">
+                <div style="width: 36px; height: 36px; background: #f59e0b; border-radius: 50%; color: white; font-weight: 700; font-size: 16px; text-align: center; line-height: 36px;">€</div>
+              </td>
+              <td style="vertical-align: top;">
+                <p style="margin: 0 0 4px; font-weight: 600; color: #0f172a;">Betaling</p>
+                <p style="margin: 0; color: #64748b; font-size: 14px;"><strong style="color: #10b981;">Pas na goedkeuring van het design</strong> — vrijblijvend starten!</p>
               </td>
             </tr>
           </table>
@@ -344,7 +384,7 @@ export const sendWelcomeEmail = async (customer: {
               </td>
               <td style="vertical-align: top;">
                 <p style="margin: 0 0 4px; font-weight: 600; color: #0f172a;">Live!</p>
-                <p style="margin: 0; color: #64748b; font-size: 14px;">Na goedkeuring gaat je ${serviceLabel} direct live.</p>
+                <p style="margin: 0; color: #64748b; font-size: 14px;">Na betaling gaat je ${serviceLabel} direct live.</p>
               </td>
             </tr>
           </table>

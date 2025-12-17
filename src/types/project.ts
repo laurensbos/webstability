@@ -55,6 +55,17 @@ export interface ProjectTask {
 
 export type PaymentStatus = 'not_required' | 'pending' | 'awaiting_payment' | 'paid' | 'failed'
 
+export interface Invoice {
+  id: string
+  date: string
+  dueDate?: string
+  description: string
+  amount: number
+  status: 'draft' | 'sent' | 'paid' | 'overdue' | 'cancelled'
+  paidAt?: string
+  paymentUrl?: string
+}
+
 export interface Project {
   projectId: string
   businessName: string
@@ -79,6 +90,7 @@ export interface Project {
   changeRequests?: ChangeRequest[]
   feedback?: FeedbackItem[]
   tasks?: ProjectTask[]
+  invoices?: Invoice[]
   revisionsUsed?: number
   revisionsTotal?: number
   googleDriveUrl?: string

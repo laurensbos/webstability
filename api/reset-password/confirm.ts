@@ -68,33 +68,35 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       })
     }
 
-    // Get reset token data
-    const resetData = await kv.get<ResetToken>(`reset:${token}`)
+    // Hash the provided token to compare with stored hash
+    const tokenHash = createHash('sha256').update(token).digest('hex')
+    const projectId = req.body.projectId?.trim().toUpperCase()
 
-    if (!resetData) {
+    if (!projectId) {
+      return res.status(400).json({ 
+        success: false, 
+        message: 'Project ID is verplicht'
+      })
+    }
+
+    // Get stored reset token hash
+    const storedHash = await kv.get<string>(`project:${projectId}:reset`)
+
+    if (!storedHash || storedHash !== tokenHash) {
       return res.status(400).json({ 
         success: false, 
         message: 'Ongeldige of verlopen reset link'
       })
     }
 
-    // Check if token is expired
-    if (Date.now() > resetData.expiry) {
-      await kv.del(`reset:${token}`)
-      return res.status(400).json({ 
-        success: false, 
-        message: 'Reset link is verlopen. Vraag een nieuwe aan.'
-      })
-    }
-
     // Update password hash
     const passwordHash = hashPassword(newPassword)
-    await kv.set(`project:${resetData.projectId}:password`, passwordHash)
+    await kv.set(`project:${projectId}:password`, passwordHash)
 
     // Delete used token
-    await kv.del(`reset:${token}`)
+    await kv.del(`project:${projectId}:reset`)
 
-    console.log(`Password reset completed for project: ${resetData.projectId}`)
+    console.log(`Password reset completed for project: ${projectId}`)
 
     return res.status(200).json({ 
       success: true,

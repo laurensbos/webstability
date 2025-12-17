@@ -36,6 +36,7 @@ const Luchtvideografie = lazy(() => import('./pages/Dronebeelden'))
 const StartService = lazy(() => import('./pages/StartService'))
 const BedanktService = lazy(() => import('./pages/BedanktService'))
 const ResetPassword = lazy(() => import('./pages/ResetPassword'))
+const WachtwoordResetten = lazy(() => import('./pages/WachtwoordResetten'))
 const DeveloperDashboard = lazy(() => import('./pages/DeveloperDashboard'))
 const Login = lazy(() => import('./pages/Login'))
 const MarketingDashboard = lazy(() => import('./pages/MarketingDashboard'))
@@ -119,6 +120,8 @@ createRoot(document.getElementById('root')!).render(
             
             {/* Password reset */}
             <Route path="/reset-password" element={<ResetPassword />} />
+            <Route path="/wachtwoord-resetten" element={<WachtwoordResetten />} />
+            <Route path="/wachtwoord-vergeten" element={<WachtwoordResetten />} />
             
             {/* Developer dashboard - protected */}
             <Route 

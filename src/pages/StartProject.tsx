@@ -302,6 +302,18 @@ export default function StartProject() {
               <span className="hidden sm:inline">Kies een dienst en doorloop onze slimme wizard. 
               Binnen 5 minuten heb je je project aangevraagd.</span>
             </p>
+            
+            {/* Payment after design approval badge */}
+            <motion.div
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.3 }}
+              className="inline-flex items-center gap-2 px-4 py-2 mt-4 bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400 rounded-full text-sm font-medium"
+            >
+              <Check className="w-4 h-4" />
+              <span className="hidden sm:inline">Betaling pas na goedkeuring design — start vrijblijvend</span>
+              <span className="sm:hidden">Betaling na design goedkeuring</span>
+            </motion.div>
           </motion.div>
 
           {/* Service Cards - Mobile Carousel */}
