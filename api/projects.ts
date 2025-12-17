@@ -134,31 +134,55 @@ async function getProjects(req: VercelRequest, res: VercelResponse) {
 async function createProject(req: VercelRequest, res: VercelResponse) {
   const body = req.body
   
-  if (!body.type || !body.customer?.email) {
+  // Support both formats: customer.email OR email at top level
+  const customerEmail = body.customer?.email || body.email
+  const customerName = body.customer?.name || body.companyName || ''
+  const customerPhone = body.customer?.phone || body.phone
+  
+  if (!body.type || !customerEmail) {
     return res.status(400).json({ 
-      error: 'Verplichte velden ontbreken: type, customer.email' 
+      error: 'Verplichte velden ontbreken: type, email',
+      received: { type: body.type, email: customerEmail }
     })
   }
   
-  const id = body.id || `PRJ-${Date.now()}`
+  const id = body.id || body.projectId || `PRJ-${Date.now()}`
   
   const project: Project = {
     id,
     status: body.status || 'onboarding',
     type: body.type,
-    packageType: body.packageType || 'starter',
+    packageType: body.packageType || body.package || 'starter',
     customer: {
-      name: body.customer.name || '',
-      email: body.customer.email,
-      phone: body.customer.phone,
-      companyName: body.customer.companyName,
-      address: body.customer.address,
-      kvk: body.customer.kvk,
-      btw: body.customer.btw
+      name: customerName,
+      email: customerEmail,
+      phone: customerPhone,
+      companyName: body.customer?.companyName || body.companyName,
+      address: body.customer?.address,
+      kvk: body.customer?.kvk,
+      btw: body.customer?.btw
     },
     paymentStatus: body.paymentStatus || 'pending',
     paymentId: body.paymentId,
-    onboardingData: body.onboardingData,
+    onboardingData: body.onboardingData || {
+      // Store all the onboarding form data
+      industry: body.industry,
+      currentWebsite: body.currentWebsite,
+      designStyle: body.designStyle,
+      colorPreferences: body.colorPreferences,
+      customColor: body.customColor,
+      competitors: body.competitors,
+      goal: body.goal,
+      targetAudience: body.targetAudience,
+      uniqueFeatures: body.uniqueFeatures,
+      pages: body.pages,
+      extraFeatures: body.extraFeatures,
+      discountCode: body.discountCode,
+      discountDescription: body.discountDescription,
+      discountAmount: body.discountAmount,
+      finalSetupFee: body.finalSetupFee,
+      finalMonthlyFee: body.finalMonthlyFee,
+    },
     tasks: body.tasks || [],
     createdAt: body.createdAt || new Date().toISOString(),
     updatedAt: new Date().toISOString()
