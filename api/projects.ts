@@ -10,7 +10,13 @@
 
 import type { VercelRequest, VercelResponse } from '@vercel/node'
 import { Redis } from '@upstash/redis'
+import { createHash } from 'crypto'
 import { sendWelcomeEmail, sendProjectCreatedEmail, isSmtpConfigured } from './lib/smtp.js'
+
+// Simple password hashing (use bcrypt in production for better security)
+function hashPassword(password: string): string {
+  return createHash('sha256').update(password).digest('hex')
+}
 
 // Check if Redis is configured
 const REDIS_URL = process.env.UPSTASH_REDIS_REST_URL
@@ -191,6 +197,13 @@ async function createProject(req: VercelRequest, res: VercelResponse) {
   
   await kv!.set(`project:${project.id}`, project)
   await kv!.sadd('projects', project.id)
+  
+  // Store password hash separately for security
+  if (body.password) {
+    const passwordHash = hashPassword(body.password)
+    await kv!.set(`project:${project.id}:password`, passwordHash)
+    console.log(`Password hash stored for project: ${project.id}`)
+  }
   
   console.log(`Project created: ${project.id} - ${project.type}`)
   

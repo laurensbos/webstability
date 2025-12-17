@@ -1150,7 +1150,7 @@ export default function ProjectStatus() {
                 )}
               </div>
               <Link
-                to={`/onboarding/${projectId}`}
+                to={`/intake/${projectId}`}
                 className={`flex items-center justify-center gap-2 w-full py-2 px-4 rounded-lg text-sm font-medium transition ${
                   onboardingCompleted
                     ? 'bg-gray-700 text-gray-300 hover:bg-gray-600'
@@ -1173,7 +1173,7 @@ export default function ProjectStatus() {
         >
           {/* Onboarding Checklist - Dynamic */}
           <Link
-            to={`/onboarding/${projectId}`}
+            to={`/intake/${projectId}`}
             className={`bg-gray-800/60 backdrop-blur-sm rounded-xl p-4 sm:p-5 border transition group ${
               onboardingCompleted 
                 ? 'border-green-500/30 hover:border-green-500/50 hover:bg-gray-800/80' 

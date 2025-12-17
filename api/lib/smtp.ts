@@ -353,7 +353,7 @@ export const sendWelcomeEmail = async (customer: {
     </table>
     
     <div style="text-align: center; margin-bottom: 24px;">
-      <a href="https://webstability.nl/onboarding/${customer.projectId}" style="display: inline-block; background: ${colors.gradient}; color: white; padding: 16px 40px; border-radius: 10px; text-decoration: none; font-weight: 600; font-size: 16px;">
+      <a href="https://webstability.nl/intake/${customer.projectId}" style="display: inline-block; background: ${colors.gradient}; color: white; padding: 16px 40px; border-radius: 10px; text-decoration: none; font-weight: 600; font-size: 16px;">
         Start Onboarding →
       </a>
     </div>

@@ -205,7 +205,7 @@ export default function Bedankt() {
             {/* Action Buttons */}
             <div className="space-y-2">
               <Link
-                to={`/onboarding/${projectId}`}
+                to={`/intake/${projectId}`}
                 className="flex items-center justify-center gap-2 w-full px-4 py-3 bg-white text-gray-900 rounded-xl font-semibold hover:bg-gray-50 transition-colors shadow-lg"
               >
                 Start onboarding

@@ -49,7 +49,7 @@ const EMAIL_TEMPLATES: Record<NotificationType, (data: NotificationData) => Emai
       <h2>Volgende stap: Onboarding</h2>
       <p>Om je website te kunnen bouwen hebben we wat informatie van je nodig. Klik op onderstaande knop om de onboarding te starten.</p>
       
-      <a href="https://webstability.nl/onboarding/${data.projectId}" style="display: inline-block; background: linear-gradient(to right, #2563eb, #4f46e5); color: white; padding: 16px 32px; border-radius: 12px; text-decoration: none; font-weight: bold; margin: 20px 0;">
+      <a href="https://webstability.nl/intake/${data.projectId}" style="display: inline-block; background: linear-gradient(to right, #2563eb, #4f46e5); color: white; padding: 16px 32px; border-radius: 12px; text-decoration: none; font-weight: bold; margin: 20px 0;">
         Start Onboarding →
       </a>
       
