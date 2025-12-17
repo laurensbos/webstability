@@ -39,6 +39,7 @@ interface FormData {
   industry: string
   logoStyles: string[]
   colorPreferences: string[]
+  customColor: string
   existingLogo: boolean
   competitors: string
   brandValues: string[]
@@ -77,14 +78,14 @@ const LOGO_STYLES = [
 ]
 
 const COLOR_OPTIONS = [
-  { id: 'blauw', name: 'Blauw', color: 'bg-blue-500' },
-  { id: 'groen', name: 'Groen', color: 'bg-green-500' },
-  { id: 'rood', name: 'Rood', color: 'bg-red-500' },
-  { id: 'oranje', name: 'Oranje', color: 'bg-orange-500' },
-  { id: 'paars', name: 'Paars', color: 'bg-purple-500' },
-  { id: 'zwart', name: 'Zwart', color: 'bg-gray-900' },
-  { id: 'goud', name: 'Goud', color: 'bg-amber-500' },
-  { id: 'roze', name: 'Roze', color: 'bg-pink-500' },
+  { id: 'blauw', name: 'Blauw', color: 'bg-blue-500', hex: '#3B82F6' },
+  { id: 'groen', name: 'Groen', color: 'bg-green-500', hex: '#22C55E' },
+  { id: 'rood', name: 'Rood', color: 'bg-red-500', hex: '#EF4444' },
+  { id: 'oranje', name: 'Oranje', color: 'bg-orange-500', hex: '#F97316' },
+  { id: 'paars', name: 'Paars', color: 'bg-purple-500', hex: '#A855F7' },
+  { id: 'zwart', name: 'Zwart', color: 'bg-gray-900', hex: '#111827' },
+  { id: 'goud', name: 'Goud', color: 'bg-amber-500', hex: '#F59E0B' },
+  { id: 'roze', name: 'Roze', color: 'bg-pink-500', hex: '#EC4899' },
 ]
 
 const BRAND_VALUES = [
@@ -153,6 +154,7 @@ export default function LogoOnboarding({
     industry: '',
     logoStyles: [],
     colorPreferences: [],
+    customColor: '',
     existingLogo: false,
     competitors: '',
     brandValues: [],
@@ -441,30 +443,72 @@ export default function LogoOnboarding({
                     <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                       Kleurvoorkeuren * <span className="text-gray-400">(selecteer 1 of meer)</span>
                     </label>
-                    <div className="grid grid-cols-4 gap-2">
+                    <div className="grid grid-cols-4 sm:grid-cols-8 gap-2 mb-3">
                       {COLOR_OPTIONS.map((color) => {
                         const isSelected = formData.colorPreferences.includes(color.id)
                         return (
                           <button 
                             key={color.id} 
+                            type="button"
                             onClick={() => toggleArrayItem('colorPreferences', color.id)} 
-                            className={`p-3 rounded-xl border-2 text-center transition-all ${
+                            className={`group relative aspect-square rounded-xl border-2 transition-all ${
                               isSelected 
-                                ? 'border-purple-500 bg-purple-50 dark:bg-purple-900/20' 
-                                : 'border-gray-200 dark:border-gray-700 hover:border-gray-300'
+                                ? 'border-purple-500 scale-110 z-10' 
+                                : 'border-gray-200 dark:border-gray-700 hover:border-gray-300 hover:scale-105'
                             }`}
+                            title={color.name}
                           >
-                            <div className={`w-8 h-8 ${color.color} rounded-full mx-auto mb-1 ${isSelected ? 'ring-2 ring-purple-500 ring-offset-2' : ''}`} />
-                            <span className={`text-xs font-medium ${
-                              isSelected 
-                                ? 'text-purple-600 dark:text-purple-400' 
-                                : 'text-gray-700 dark:text-gray-300'
-                            }`}>
-                              {color.name}
-                            </span>
+                            <div className={`absolute inset-1 ${color.color} rounded-lg`} />
+                            {isSelected && (
+                              <div className="absolute inset-0 flex items-center justify-center">
+                                <Check className="w-4 h-4 text-white drop-shadow-md" />
+                              </div>
+                            )}
+                            <span className="sr-only">{color.name}</span>
                           </button>
                         )
                       })}
+                    </div>
+                    <div className="flex flex-wrap gap-2 text-xs">
+                      {formData.colorPreferences.map((colorId) => {
+                        const color = COLOR_OPTIONS.find(c => c.id === colorId) || { name: colorId, color: 'bg-gray-500' }
+                        return (
+                          <span 
+                            key={colorId}
+                            className="inline-flex items-center gap-1.5 px-2 py-1 rounded-full bg-purple-100 dark:bg-purple-900/30 text-purple-700 dark:text-purple-300"
+                          >
+                            <span className={`w-3 h-3 ${color.color} rounded-full`} />
+                            {color.name}
+                            <button 
+                              type="button"
+                              onClick={() => toggleArrayItem('colorPreferences', colorId)}
+                              className="hover:text-purple-900 dark:hover:text-purple-100"
+                            >
+                              ×
+                            </button>
+                          </span>
+                        )
+                      })}
+                    </div>
+                    <div className="flex items-center gap-3 mt-3">
+                      <input
+                        type="text"
+                        value={formData.customColor || ''}
+                        onChange={(e) => updateFormData('customColor', e.target.value)}
+                        className="flex-1 px-4 py-2.5 rounded-xl border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white text-sm focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                        placeholder="Of typ een kleur / hex code"
+                      />
+                      <label className="relative cursor-pointer">
+                        <input
+                          type="color"
+                          value={formData.customColor?.startsWith('#') ? formData.customColor : '#A855F7'}
+                          onChange={(e) => updateFormData('customColor', e.target.value)}
+                          className="sr-only"
+                        />
+                        <div className="w-10 h-10 rounded-xl border-2 border-gray-300 dark:border-gray-600 hover:border-purple-500 transition-colors flex items-center justify-center bg-gradient-to-br from-red-500 via-green-500 to-blue-500">
+                          <Palette className="w-4 h-4 text-white drop-shadow-md" />
+                        </div>
+                      </label>
                     </div>
                   </div>
                   

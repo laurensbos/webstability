@@ -109,6 +109,19 @@ const STEPS = [
   { id: 6, title: 'Account', icon: Lock },
 ]
 
+const COLOR_OPTIONS = [
+  { id: 'blauw', name: 'Blauw', color: 'bg-blue-500', hex: '#3B82F6' },
+  { id: 'groen', name: 'Groen', color: 'bg-green-500', hex: '#22C55E' },
+  { id: 'rood', name: 'Rood', color: 'bg-red-500', hex: '#EF4444' },
+  { id: 'oranje', name: 'Oranje', color: 'bg-orange-500', hex: '#F97316' },
+  { id: 'paars', name: 'Paars', color: 'bg-purple-500', hex: '#A855F7' },
+  { id: 'zwart', name: 'Zwart', color: 'bg-gray-900', hex: '#111827' },
+  { id: 'goud', name: 'Goud', color: 'bg-amber-500', hex: '#F59E0B' },
+  { id: 'roze', name: 'Roze', color: 'bg-pink-500', hex: '#EC4899' },
+  { id: 'teal', name: 'Teal', color: 'bg-teal-500', hex: '#14B8A6' },
+  { id: 'indigo', name: 'Indigo', color: 'bg-indigo-500', hex: '#6366F1' },
+]
+
 const PAGE_OPTIONS = [
   'Home', 'Over ons', 'Diensten', 'Portfolio', 'Contact', 
   'Blog', 'FAQ', 'Prijzen', 'Team', 'Vacatures'
@@ -599,13 +612,70 @@ export default function WebsiteOnboarding({
                     <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                       Kleurvoorkeur (optioneel)
                     </label>
-                    <input
-                      type="text"
-                      value={formData.colorPreference}
-                      onChange={(e) => updateFormData('colorPreference', e.target.value)}
-                      className="w-full px-4 py-3 rounded-xl border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-primary-500 focus:border-transparent"
-                      placeholder="bijv. Blauw en wit, of #FF5500"
-                    />
+                    <div className="grid grid-cols-5 sm:grid-cols-10 gap-2 mb-3">
+                      {COLOR_OPTIONS.map((color) => {
+                        const isSelected = formData.colorPreference === color.name || formData.colorPreference === color.hex
+                        return (
+                          <button
+                            key={color.id}
+                            type="button"
+                            onClick={() => updateFormData('colorPreference', color.name)}
+                            className={`group relative aspect-square rounded-xl border-2 transition-all ${
+                              isSelected
+                                ? 'border-primary-500 scale-110 z-10'
+                                : 'border-gray-200 dark:border-gray-700 hover:border-gray-300 hover:scale-105'
+                            }`}
+                            title={color.name}
+                          >
+                            <div className={`absolute inset-1 ${color.color} rounded-lg`} />
+                            {isSelected && (
+                              <div className="absolute inset-0 flex items-center justify-center">
+                                <Check className="w-4 h-4 text-white drop-shadow-md" />
+                              </div>
+                            )}
+                          </button>
+                        )
+                      })}
+                    </div>
+                    <div className="flex items-center gap-3">
+                      <div className="relative flex-1">
+                        <input
+                          type="text"
+                          value={formData.colorPreference}
+                          onChange={(e) => updateFormData('colorPreference', e.target.value)}
+                          className="w-full pl-12 pr-4 py-3 rounded-xl border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                          placeholder="Of typ een kleur / hex code"
+                        />
+                        <div 
+                          className="absolute left-3 top-1/2 -translate-y-1/2 w-6 h-6 rounded-md border border-gray-300 dark:border-gray-600"
+                          style={{ 
+                            backgroundColor: formData.colorPreference.startsWith('#') 
+                              ? formData.colorPreference 
+                              : COLOR_OPTIONS.find(c => c.name === formData.colorPreference)?.hex || '#E5E7EB'
+                          }}
+                        />
+                      </div>
+                      <label className="relative cursor-pointer">
+                        <input
+                          type="color"
+                          value={COLOR_OPTIONS.find(c => c.name === formData.colorPreference)?.hex || (formData.colorPreference.startsWith('#') ? formData.colorPreference : '#3B82F6')}
+                          onChange={(e) => updateFormData('colorPreference', e.target.value)}
+                          className="sr-only"
+                        />
+                        <div className="w-12 h-12 rounded-xl border-2 border-gray-300 dark:border-gray-600 hover:border-primary-500 transition-colors flex items-center justify-center bg-gradient-to-br from-red-500 via-green-500 to-blue-500">
+                          <Palette className="w-5 h-5 text-white drop-shadow-md" />
+                        </div>
+                      </label>
+                    </div>
+                    {formData.colorPreference && (
+                      <button
+                        type="button"
+                        onClick={() => updateFormData('colorPreference', '')}
+                        className="mt-2 text-xs text-gray-500 hover:text-gray-700 dark:hover:text-gray-300"
+                      >
+                        Kleur wissen
+                      </button>
+                    )}
                   </div>
 
                   <div>
