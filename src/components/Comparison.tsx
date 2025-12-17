@@ -1,317 +1,305 @@
 import { motion } from 'framer-motion'
-import { Check, X, AlertCircle, ArrowRight, Sparkles, Clock, Building2, Wrench } from 'lucide-react'
+import { Check, X, Clock, Zap, HeartHandshake, TrendingUp, ArrowRight } from 'lucide-react'
 
-const comparisonOptions = [
-  {
-    id: 'webbureau',
-    name: 'Webbureau',
-    tagline: 'Freelancer of agency',
-    highlight: false,
-    icon: Building2,
-    color: 'gray',
-    pricing: {
-      monthly: '€200-500/maand',
-      setup: '€2.000-10.000+',
-    },
-    features: [
-      { label: 'Professioneel design', value: 'Op maat gemaakt', positive: true },
-      { label: 'Technisch onderhoud', value: 'Vaak extra kosten', positive: null },
-      { label: 'Wijzigingen doorvoeren', value: '€50-150/uur', positive: false },
-      { label: 'Support & hulp', value: 'Beperkt inbegrepen', positive: null },
-      { label: 'Flexibiliteit', value: 'Je zit eraan vast', positive: false },
-      { label: 'Jouw tijdsinvestering', value: '10-20 uur meetings', positive: false },
-    ],
-  },
-  {
-    id: 'zelf',
-    name: 'Zelf maken',
-    tagline: 'Wix, Squarespace, etc.',
-    highlight: false,
-    icon: Wrench,
-    color: 'gray',
-    pricing: {
-      monthly: '€0-50/maand',
-      setup: '€0-100',
-    },
-    features: [
-      { label: 'Professioneel design', value: 'Templates', positive: false },
-      { label: 'Technisch onderhoud', value: 'Zelf doen', positive: false },
-      { label: 'Wijzigingen doorvoeren', value: 'Zelf leren', positive: false },
-      { label: 'Support & hulp', value: 'Forums/documentatie', positive: false },
-      { label: 'Flexibiliteit', value: 'Flexibel', positive: true },
-      { label: 'Jouw tijdsinvestering', value: '50-200+ uur', positive: false },
-    ],
-  },
-  {
-    id: 'webstability',
-    name: 'Webstability',
-    tagline: 'Website abonnement',
-    highlight: true,
-    icon: Sparkles,
-    color: 'primary',
-    pricing: {
-      monthly: '€99/maand',
-      setup: '€149 eenmalig',
-    },
-    features: [
-      { label: 'Professioneel design', value: 'Op maat gemaakt', positive: true },
-      { label: 'Technisch onderhoud', value: 'Volledig verzorgd', positive: true },
-      { label: 'Wijzigingen doorvoeren', value: 'Wij regelen het', positive: true },
-      { label: 'Support & hulp', value: 'Persoonlijk contact', positive: true },
-      { label: 'Flexibiliteit', value: 'Maandelijks opzegbaar', positive: true },
-      { label: 'Jouw tijdsinvestering', value: '~2 uur intake', positive: true },
-    ],
-  },
+const comparisons = [
+	{
+		category: 'Tijdsinvestering',
+		icon: Clock,
+		diy: { value: '50-200+ uur', bad: true },
+		webstability: { value: '~2 uur intake', good: true },
+	},
+	{
+		category: 'Opstartkosten',
+		icon: TrendingUp,
+		diy: { value: '€0-100', neutral: true },
+		webstability: { value: '€149 eenmalig', good: true },
+	},
+	{
+		category: 'Maandelijkse kosten',
+		icon: TrendingUp,
+		diy: { value: '€20-50 + je tijd', bad: true },
+		webstability: { value: 'Vanaf €99/maand', good: true },
+	},
+	{
+		category: 'Professioneel design',
+		icon: Zap,
+		diy: { value: 'Templates', bad: true },
+		webstability: { value: 'Op maat gemaakt', good: true },
+	},
+	{
+		category: 'Technisch onderhoud',
+		icon: Zap,
+		diy: { value: 'Zelf uitzoeken', bad: true },
+		webstability: { value: 'Wij regelen alles', good: true },
+	},
+	{
+		category: 'Wijzigingen',
+		icon: HeartHandshake,
+		diy: { value: 'Zelf leren & doen', bad: true },
+		webstability: { value: 'Onbeperkt inbegrepen', good: true },
+	},
+	{
+		category: 'Support',
+		icon: HeartHandshake,
+		diy: { value: 'Forums & YouTube', bad: true },
+		webstability: { value: 'Persoonlijk contact', good: true },
+	},
+	{
+		category: 'Flexibiliteit',
+		icon: HeartHandshake,
+		diy: { value: 'Gebonden aan platform', neutral: true },
+		webstability: { value: 'Maandelijks opzegbaar', good: true },
+	},
 ]
 
-function FeatureIcon({ positive }: { positive: boolean | null }) {
-  if (positive === true) {
-    return <Check className="w-4 h-4 text-green-500 flex-shrink-0" />
-  }
-  if (positive === false) {
-    return <X className="w-4 h-4 text-red-400 flex-shrink-0" />
-  }
-  return <AlertCircle className="w-4 h-4 text-amber-500 flex-shrink-0" />
-}
-
 export default function Comparison() {
-  return (
-    <section id="comparison" className="py-16 lg:py-24 bg-gradient-to-b from-white to-gray-50 dark:from-gray-900 dark:to-gray-800 relative overflow-hidden">
-      {/* Background decoration */}
-      <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute -top-40 -left-40 w-80 h-80 bg-gradient-to-br from-primary-100/40 to-primary-200/20 dark:from-primary-900/30 dark:to-primary-900/20 rounded-full blur-3xl" />
-        <div className="absolute -bottom-40 -right-40 w-96 h-96 bg-gradient-to-tl from-blue-100/30 to-primary-100/20 dark:from-blue-900/20 dark:to-primary-900/10 rounded-full blur-3xl" />
-      </div>
+	return (
+		<section id="comparison" className="py-12 lg:py-20 bg-gray-50 dark:bg-gray-800/50">
+			<div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
+				{/* Header */}
+				<div className="text-center mb-8 lg:mb-12">
+					<motion.div
+						initial={{ opacity: 0, y: 10 }}
+						whileInView={{ opacity: 1, y: 0 }}
+						viewport={{ once: true }}
+						className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-red-100 dark:bg-red-900/30 text-red-600 dark:text-red-400 text-sm font-medium mb-4"
+					>
+						<Clock className="w-4 h-4" />
+						Stop met tijd verspillen
+					</motion.div>
 
-      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-        {/* Header */}
-        <div className="text-center max-w-3xl mx-auto mb-12 lg:mb-16">
-          <motion.span
-            initial={{ opacity: 0, y: 10 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary-50 dark:bg-primary-900/30 text-primary-600 dark:text-primary-400 text-sm font-medium mb-4"
-          >
-            <Clock className="w-4 h-4" />
-            Vergelijk je opties
-          </motion.span>
-          
-          <motion.h2
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ delay: 0.1 }}
-            className="text-3xl sm:text-4xl lg:text-5xl font-bold text-gray-900 dark:text-white mb-4"
-          >
-            Bespaar{' '}
-            <span className="bg-gradient-to-r from-primary-600 to-blue-600 bg-clip-text text-transparent">
-              duizenden euro's
-            </span>{' '}
-            én tijd
-          </motion.h2>
-          <motion.p
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ delay: 0.2 }}
-            className="text-gray-600 dark:text-gray-400 text-lg"
-          >
-            Een traditioneel webbureau vraagt €3.000+ en weken werk. Zelf bouwen kost je eindeloos veel tijd.
-          </motion.p>
-        </div>
+					<motion.h2
+						initial={{ opacity: 0, y: 20 }}
+						whileInView={{ opacity: 1, y: 0 }}
+						viewport={{ once: true }}
+						transition={{ delay: 0.1 }}
+						className="text-2xl sm:text-3xl lg:text-4xl font-bold text-gray-900 dark:text-white mb-3"
+					>
+						Zelf bouwen vs.{' '}
+						<span className="text-primary-600">Webstability</span>
+					</motion.h2>
+					<motion.p
+						initial={{ opacity: 0, y: 20 }}
+						whileInView={{ opacity: 1, y: 0 }}
+						viewport={{ once: true }}
+						transition={{ delay: 0.2 }}
+						className="text-gray-600 dark:text-gray-400 max-w-2xl mx-auto"
+					>
+						Wix, Squarespace of WordPress zelf leren kost je <strong>50-200 uur</strong>. Wij doen het voor je
+						zodat jij kunt focussen op je bedrijf.
+					</motion.p>
+				</div>
 
-        {/* Mobile: Scrollable cards */}
-        <div className="md:hidden space-y-4">
-          {comparisonOptions.map((option, index) => {
-            const Icon = option.icon
-            const isHighlighted = option.highlight
-            
-            return (
-              <motion.div
-                key={option.id}
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ delay: index * 0.1 }}
-                className={`rounded-2xl p-5 bg-white dark:bg-gray-800 border shadow-md ${
-                  isHighlighted
-                    ? 'border-primary-500'
-                    : 'border-gray-200 dark:border-gray-700'
-                }`}
-              >
-                {/* Header */}
-                <div className="flex items-center gap-3 mb-4">
-                  <div className={`w-10 h-10 rounded-xl flex items-center justify-center ${
-                    isHighlighted
-                      ? 'bg-primary-100 dark:bg-primary-900/50'
-                      : 'bg-gray-100 dark:bg-gray-700'
-                  }`}>
-                    <Icon className={`w-5 h-5 ${isHighlighted ? 'text-primary-600 dark:text-primary-400' : 'text-gray-600 dark:text-gray-300'}`} />
-                  </div>
-                  <div className="flex-1">
-                    <h3 className="font-bold text-gray-900 dark:text-white">{option.name}</h3>
-                    <p className="text-sm text-gray-500 dark:text-gray-400">{option.tagline}</p>
-                  </div>
-                  <div className="text-right">
-                    <p className={`font-bold ${isHighlighted ? 'text-primary-600 dark:text-primary-400' : 'text-gray-900 dark:text-white'}`}>
-                      {option.pricing.monthly}
-                    </p>
-                    <p className="text-xs text-gray-500 dark:text-gray-400">
-                      + {option.pricing.setup}
-                    </p>
-                  </div>
-                </div>
+				{/* Mobile: Compact comparison cards */}
+				<div className="lg:hidden">
+					<motion.div
+						initial={{ opacity: 0, y: 20 }}
+						whileInView={{ opacity: 1, y: 0 }}
+						viewport={{ once: true }}
+						className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-gray-200 dark:border-gray-700 overflow-hidden"
+					>
+						{/* Header row */}
+						<div className="grid grid-cols-3 bg-gray-50 dark:bg-gray-700/50 border-b border-gray-200 dark:border-gray-600">
+							<div className="p-3 text-xs font-medium text-gray-500 dark:text-gray-400">Vergelijking</div>
+							<div className="p-3 text-center">
+								<span className="text-xs font-semibold text-gray-600 dark:text-gray-300">DIY</span>
+								<span className="block text-[10px] text-gray-400">Wix, WP, etc.</span>
+							</div>
+							<div className="p-3 text-center bg-primary-50 dark:bg-primary-900/30">
+								<span className="text-xs font-semibold text-primary-600 dark:text-primary-400">
+									Webstability
+								</span>
+								<span className="block text-[10px] text-primary-500/70">Abonnement</span>
+							</div>
+						</div>
 
-                {/* Features - compact grid */}
-                <div className="grid grid-cols-2 gap-2 mb-4">
-                  {option.features.slice(0, 4).map((feature, i) => (
-                    <div key={i} className="flex items-center gap-2">
-                      {isHighlighted ? (
-                        <Check className="w-3.5 h-3.5 text-primary-500 flex-shrink-0" />
-                      ) : (
-                        <span className="w-3.5 h-3.5 flex-shrink-0">
-                          {feature.positive === true && <Check className="w-3.5 h-3.5 text-green-500" />}
-                          {feature.positive === false && <X className="w-3.5 h-3.5 text-red-400" />}
-                          {feature.positive === null && <AlertCircle className="w-3.5 h-3.5 text-amber-500" />}
-                        </span>
-                      )}
-                      <span className="text-xs text-gray-600 dark:text-gray-400 truncate">{feature.value}</span>
-                    </div>
-                  ))}
-                </div>
+						{/* Comparison rows */}
+						{comparisons.map((item, index) => (
+							<div
+								key={index}
+								className={`grid grid-cols-3 items-center ${
+									index !== comparisons.length - 1
+										? 'border-b border-gray-100 dark:border-gray-700'
+										: ''
+								}`}
+							>
+								<div className="p-3">
+									<span className="text-xs font-medium text-gray-700 dark:text-gray-300">
+										{item.category}
+									</span>
+								</div>
+								<div className="p-3 text-center">
+									<span
+										className={`text-xs ${
+											item.diy.bad
+												? 'text-red-500'
+												: item.diy.neutral
+												? 'text-gray-500'
+												: 'text-green-500'
+										}`}
+									>
+										{item.diy.bad && <X className="w-3 h-3 inline mr-1" />}
+										{item.diy.value}
+									</span>
+								</div>
+								<div className="p-3 text-center bg-primary-50/50 dark:bg-primary-900/20">
+									<span className="text-xs text-green-600 dark:text-green-400 font-medium">
+										<Check className="w-3 h-3 inline mr-1" />
+										{item.webstability.value}
+									</span>
+								</div>
+							</div>
+						))}
+					</motion.div>
 
-                {/* CTA for highlighted */}
-                {isHighlighted && (
-                  <a
-                    href="/start"
-                    className="w-full flex items-center justify-center gap-2 px-5 py-2.5 bg-primary-500 hover:bg-primary-600 text-white font-semibold rounded-xl transition-colors text-sm group"
-                  >
-                    Start je project
-                    <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
-                  </a>
-                )}
-              </motion.div>
-            )
-          })}
-        </div>
+					{/* Mobile CTA */}
+					<motion.div
+						initial={{ opacity: 0, y: 20 }}
+						whileInView={{ opacity: 1, y: 0 }}
+						viewport={{ once: true }}
+						transition={{ delay: 0.3 }}
+						className="mt-6 text-center"
+					>
+						<a
+							href="/start"
+							className="inline-flex items-center justify-center gap-2 w-full px-6 py-3.5 bg-primary-500 hover:bg-primary-600 text-white font-semibold rounded-xl transition-colors group"
+						>
+							Start vandaag nog
+							<ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+						</a>
+						<p className="mt-3 text-xs text-gray-500 dark:text-gray-400">
+							Betaling pas na goedkeuring design
+						</p>
+					</motion.div>
+				</div>
 
-        {/* Desktop: Comparison Cards */}
-        <div className="hidden md:grid md:grid-cols-3 gap-6 lg:gap-8 items-stretch">
-          {comparisonOptions.map((option, index) => {
-            const Icon = option.icon
-            const isHighlighted = option.highlight
-            
-            return (
-              <motion.div
-                key={option.id}
-                initial={{ opacity: 0, y: 30 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ delay: index * 0.1 }}
-                className={`relative rounded-2xl p-6 lg:p-8 bg-white dark:bg-gray-800 border shadow-lg flex flex-col ${
-                  isHighlighted
-                    ? 'border-primary-500'
-                    : 'border-gray-200 dark:border-gray-700'
-                }`}
-              >
-                {/* Header */}
-                <div className="text-center mb-6">
-                  <div className={`inline-flex items-center justify-center w-12 h-12 rounded-xl mb-4 ${
-                    isHighlighted
-                      ? 'bg-primary-100 dark:bg-primary-900/50'
-                      : 'bg-gray-100 dark:bg-gray-700'
-                  }`}>
-                    <Icon className={`w-6 h-6 ${isHighlighted ? 'text-primary-600 dark:text-primary-400' : 'text-gray-600 dark:text-gray-300'}`} />
-                  </div>
-                  <h3 className="text-xl font-bold mb-1 text-gray-900 dark:text-white">
-                    {option.name}
-                  </h3>
-                  <p className="text-sm text-gray-500 dark:text-gray-400">
-                    {option.tagline}
-                  </p>
-                </div>
+				{/* Desktop: Side by side cards */}
+				<div className="hidden lg:grid lg:grid-cols-2 gap-8">
+					{/* DIY Card */}
+					<motion.div
+						initial={{ opacity: 0, x: -20 }}
+						whileInView={{ opacity: 1, x: 0 }}
+						viewport={{ once: true }}
+						className="bg-white dark:bg-gray-800 rounded-2xl p-6 border border-gray-200 dark:border-gray-700 shadow-md"
+					>
+						<div className="flex items-center gap-3 mb-6">
+							<div className="w-12 h-12 rounded-xl bg-gray-100 dark:bg-gray-700 flex items-center justify-center">
+								<Clock className="w-6 h-6 text-gray-500" />
+							</div>
+							<div>
+								<h3 className="font-bold text-xl text-gray-900 dark:text-white">Zelf bouwen</h3>
+								<p className="text-sm text-gray-500 dark:text-gray-400">Wix, Squarespace, WordPress</p>
+							</div>
+						</div>
 
-                {/* Pricing */}
-                <div className={`rounded-xl p-4 mb-6 ${
-                  isHighlighted
-                    ? 'bg-primary-50 dark:bg-primary-900/30'
-                    : 'bg-gray-50 dark:bg-gray-700/50'
-                }`}>
-                  <div className="text-center">
-                    <p className={`text-2xl font-bold ${isHighlighted ? 'text-primary-600 dark:text-primary-400' : 'text-gray-900 dark:text-white'}`}>
-                      {option.pricing.monthly}
-                    </p>
-                    <p className="text-sm text-gray-500 dark:text-gray-400">
-                      Opstartkosten: {option.pricing.setup}
-                    </p>
-                  </div>
-                </div>
+						<ul className="space-y-4">
+							{comparisons.map((item, index) => (
+								<li key={index} className="flex items-start gap-3">
+									<span
+										className={`w-5 h-5 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5 ${
+											item.diy.bad
+												? 'bg-red-100 dark:bg-red-900/30'
+												: 'bg-amber-100 dark:bg-amber-900/30'
+										}`}
+									>
+										{item.diy.bad ? (
+											<X className="w-3 h-3 text-red-500" />
+										) : (
+											<span className="w-1.5 h-1.5 rounded-full bg-amber-500" />
+										)}
+									</span>
+									<div>
+										<p className="text-sm font-medium text-gray-700 dark:text-gray-300">
+											{item.category}
+										</p>
+										<p className={`text-sm ${item.diy.bad ? 'text-red-500' : 'text-gray-500'}`}>
+											{item.diy.value}
+										</p>
+									</div>
+								</li>
+							))}
+						</ul>
 
-                {/* Features */}
-                <ul className="space-y-3 flex-grow">
-                  {option.features.map((feature, i) => (
-                    <li key={i} className="flex items-start gap-3">
-                      {isHighlighted ? (
-                        <Check className="w-4 h-4 text-primary-500 flex-shrink-0 mt-0.5" />
-                      ) : (
-                        <FeatureIcon positive={feature.positive} />
-                      )}
-                      <div className="flex-1 min-w-0">
-                        <p className="text-sm font-medium text-gray-700 dark:text-gray-300">
-                          {feature.label}
-                        </p>
-                        <p className="text-sm text-gray-500 dark:text-gray-400">
-                          {feature.value}
-                        </p>
-                      </div>
-                    </li>
-                  ))}
-                </ul>
+						<div className="mt-6 p-4 bg-red-50 dark:bg-red-900/20 rounded-xl text-center">
+							<p className="text-sm text-red-600 dark:text-red-400 font-medium">
+								⏱️ Totale tijdsinvestering: 50-200+ uur
+							</p>
+							<p className="text-xs text-red-500/70 mt-1">Dat is 1-4 weken fulltime werk</p>
+						</div>
+					</motion.div>
 
-                {/* CTA for highlighted */}
-                {isHighlighted && (
-                  <a
-                    href="/start"
-                    className="mt-6 w-full flex items-center justify-center gap-2 px-6 py-3 bg-primary-500 hover:bg-primary-600 text-white font-semibold rounded-xl transition-colors group"
-                  >
-                    Start je project
-                    <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
-                  </a>
-                )}
+					{/* Webstability Card */}
+					<motion.div
+						initial={{ opacity: 0, x: 20 }}
+						whileInView={{ opacity: 1, x: 0 }}
+						viewport={{ once: true }}
+						className="bg-white dark:bg-gray-800 rounded-2xl p-6 border-2 border-primary-500 shadow-lg shadow-primary-100 dark:shadow-primary-900/20"
+					>
+						<div className="flex items-center gap-3 mb-6">
+							<div className="w-12 h-12 rounded-xl bg-primary-100 dark:bg-primary-900/50 flex items-center justify-center">
+								<Zap className="w-6 h-6 text-primary-600 dark:text-primary-400" />
+							</div>
+							<div>
+								<h3 className="font-bold text-xl text-gray-900 dark:text-white">Webstability</h3>
+								<p className="text-sm text-primary-600 dark:text-primary-400">Wij doen alles voor je</p>
+							</div>
+						</div>
 
-                {/* Spacer for non-highlighted cards to align with CTA height */}
-                {!isHighlighted && (
-                  <div className="mt-6 h-[52px]" />
-                )}
-              </motion.div>
-            )
-          })}
-        </div>
+						<ul className="space-y-4">
+							{comparisons.map((item, index) => (
+								<li key={index} className="flex items-start gap-3">
+									<span className="w-5 h-5 rounded-full bg-green-100 dark:bg-green-900/30 flex items-center justify-center flex-shrink-0 mt-0.5">
+										<Check className="w-3 h-3 text-green-600 dark:text-green-400" />
+									</span>
+									<div>
+										<p className="text-sm font-medium text-gray-700 dark:text-gray-300">
+											{item.category}
+										</p>
+										<p className="text-sm text-green-600 dark:text-green-400">
+											{item.webstability.value}
+										</p>
+									</div>
+								</li>
+							))}
+						</ul>
 
-        {/* Bottom CTA */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ delay: 0.4 }}
-          className="mt-12 text-center"
-        >
-          <div className="inline-flex flex-wrap items-center justify-center gap-6 text-sm text-gray-500 dark:text-gray-400">
-            <span className="flex items-center gap-2">
-              <Check className="w-4 h-4 text-green-500" />
-              Geen verplichtingen
-            </span>
-            <span className="flex items-center gap-2">
-              <Check className="w-4 h-4 text-green-500" />
-              Maandelijks opzegbaar
-            </span>
-            <span className="flex items-center gap-2">
-              <Check className="w-4 h-4 text-green-500" />
-              Niet-goed-geld-terug
-            </span>
-          </div>
-        </motion.div>
-      </div>
-    </section>
-  )
+						<div className="mt-6">
+							<a
+								href="/start"
+								className="w-full flex items-center justify-center gap-2 px-6 py-3.5 bg-primary-500 hover:bg-primary-600 text-white font-semibold rounded-xl transition-colors group"
+							>
+								Start je project
+								<ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+							</a>
+							<p className="text-center text-xs text-gray-500 dark:text-gray-400 mt-3">
+								✓ Betaling pas na goedkeuring design
+							</p>
+						</div>
+					</motion.div>
+				</div>
+
+				{/* Trust badges */}
+				<motion.div
+					initial={{ opacity: 0, y: 20 }}
+					whileInView={{ opacity: 1, y: 0 }}
+					viewport={{ once: true }}
+					transition={{ delay: 0.4 }}
+					className="mt-8 lg:mt-12 flex flex-wrap items-center justify-center gap-4 lg:gap-8 text-sm text-gray-500 dark:text-gray-400"
+				>
+					<span className="flex items-center gap-2">
+						<Check className="w-4 h-4 text-green-500" />
+						Geen verplichtingen
+					</span>
+					<span className="flex items-center gap-2">
+						<Check className="w-4 h-4 text-green-500" />
+						Maandelijks opzegbaar
+					</span>
+					<span className="flex items-center gap-2">
+						<Check className="w-4 h-4 text-green-500" />
+						Niet-goed-geld-terug
+					</span>
+				</motion.div>
+			</div>
+		</section>
+	)
 }

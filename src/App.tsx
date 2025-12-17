@@ -11,7 +11,6 @@ import Comparison from './components/Comparison'
 import Portfolio from './components/Portfolio'
 import ExtraServices from './components/ExtraServices'
 import DashboardPreview from './components/DashboardPreview'
-import WhatYouGet from './components/WhatYouGet'
 import './index.css'
 
 export default function App() {
@@ -20,13 +19,12 @@ export default function App() {
       <Header urgencyBannerVisible={false} />
       <main>
         <Hero />
+        <Comparison />
         <Portfolio />
         <Pricing />
-        <WhatYouGet variant="general" />
-        <Comparison />
         <Testimonials />
-        <Features />
         <HowItWorks />
+        <Features />
         <DashboardPreview />
         <DomainChecker />
         <ExtraServices />
