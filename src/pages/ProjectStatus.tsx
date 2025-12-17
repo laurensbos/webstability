@@ -197,10 +197,11 @@ export default function ProjectStatus() {
   const [lookupResults, setLookupResults] = useState<Project[]>([])
   const [lookupError, setLookupError] = useState('')
   const [lastRefresh, setLastRefresh] = useState<Date | null>(null)
+  const [chatFocused, setChatFocused] = useState(false)
 
   const phaseColors = project ? getPhaseColor(project.status) : getPhaseColor('onboarding')
 
-  // Polling for real-time updates (every 30 seconds when verified)
+  // Polling for real-time updates - faster when chat is focused
   useEffect(() => {
     if (!isVerified || !projectId) return
 
@@ -210,9 +211,11 @@ export default function ProjectStatus() {
       setLastRefresh(new Date())
     }
 
-    const interval = setInterval(pollData, 30000) // Poll every 30 seconds
+    // Poll every 5 seconds when chat is focused, otherwise every 30 seconds
+    const pollInterval = chatFocused ? 5000 : 30000
+    const interval = setInterval(pollData, pollInterval)
     return () => clearInterval(interval)
-  }, [isVerified, projectId])
+  }, [isVerified, projectId, chatFocused])
 
   // Check for existing session or password in URL
   useEffect(() => {
@@ -1355,6 +1358,8 @@ export default function ProjectStatus() {
                   placeholder="Typ je vraag of opmerking..."
                   className="flex-1 px-3 sm:px-4 py-2.5 sm:py-3 bg-gray-900/50 border border-gray-700 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-white placeholder-gray-500 text-sm sm:text-base transition"
                   onKeyPress={(e) => e.key === 'Enter' && !messageLoading && sendMessage()}
+                  onFocus={() => setChatFocused(true)}
+                  onBlur={() => setChatFocused(false)}
                 />
                 <motion.button
                   onClick={sendMessage}

@@ -16,24 +16,34 @@
  *     kvk?: string,
  *     btw?: string
  *   },
- *   redirectUrl: string
+ *   redirectUrl: string,
+ *   discountCode?: string  // Optional discount code
  * }
  * 
  * Response: {
  *   success: boolean,
  *   checkoutUrl?: string,
  *   paymentId?: string,
+ *   discount?: { code, type, value, savings },
  *   error?: string
  * }
  */
 
 import type { VercelRequest, VercelResponse } from '@vercel/node'
+import { Redis } from '@upstash/redis'
 
 const MOLLIE_API_URL = 'https://api.mollie.com/v2'
 const MOLLIE_API_KEY = process.env.MOLLIE_API_KEY || ''
 const BASE_URL = process.env.VERCEL_URL 
   ? `https://${process.env.VERCEL_URL}` 
   : 'https://webstability.nl'
+
+// Redis for discount codes
+const REDIS_URL = process.env.UPSTASH_REDIS_REST_URL
+const REDIS_TOKEN = process.env.UPSTASH_REDIS_REST_TOKEN
+const kv = REDIS_URL && REDIS_TOKEN 
+  ? new Redis({ url: REDIS_URL, token: REDIS_TOKEN })
+  : null
 
 // BTW percentage
 const VAT_RATE = 0.21
@@ -44,6 +54,17 @@ const PACKAGE_PRICES: Record<string, { name: string; price: number }> = {
   professional: { name: 'Professional', price: 49.00 },
   business: { name: 'Business', price: 79.00 },
   webshop: { name: 'Webshop', price: 99.00 }
+}
+
+interface DiscountCode {
+  code: string
+  type: 'percentage' | 'fixed'
+  value: number
+  description: string
+  validUntil?: string
+  maxUses?: number
+  usedCount: number
+  active: boolean
 }
 
 interface CreatePaymentRequest {
@@ -64,6 +85,7 @@ interface CreatePaymentRequest {
     btw?: string
   }
   redirectUrl: string
+  discountCode?: string
 }
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
@@ -103,32 +125,58 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     console.log(`[Payment] Pakket: ${pkg.name}, Prijs: €${pkg.price}`)
     console.log(`[Payment] Klant: ${body.customer.email}`)
     
+    // Kortingscode validatie en prijsberekening
+    let finalPrice = pkg.price
+    let discountInfo: { code: string; type: string; value: number; savings: number } | null = null
+    
+    if (body.discountCode && kv) {
+      const discount = await validateAndApplyDiscount(body.discountCode, pkg.price)
+      if (discount) {
+        finalPrice = discount.finalPrice
+        discountInfo = {
+          code: discount.code,
+          type: discount.type,
+          value: discount.value,
+          savings: discount.savings
+        }
+        console.log(`[Payment] Kortingscode ${discount.code} toegepast: -€${discount.savings.toFixed(2)}`)
+      }
+    }
+    
     // Stap 1: Maak of vind Mollie klant
     const customerId = await getOrCreateCustomer(body.customer, body.projectId)
     console.log(`[Payment] Mollie klant: ${customerId}`)
     
     // Stap 2: Maak eerste betaling (voor mandate)
-    const priceExclVat = Math.round((pkg.price / (1 + VAT_RATE)) * 100) / 100
-    const vatAmount = Math.round((pkg.price - priceExclVat) * 100) / 100
+    const priceExclVat = Math.round((finalPrice / (1 + VAT_RATE)) * 100) / 100
+    const vatAmount = Math.round((finalPrice - priceExclVat) * 100) / 100
     
     const payment = await createFirstPayment({
       customerId,
       projectId: body.projectId,
       packageType: body.packageType,
       packageName: pkg.name,
-      amount: pkg.price,
+      amount: finalPrice,
+      originalAmount: pkg.price,
       priceExclVat,
       vatAmount,
-      redirectUrl: body.redirectUrl
+      redirectUrl: body.redirectUrl,
+      discountCode: discountInfo?.code
     })
     
     console.log(`[Payment] ✅ Betaling aangemaakt: ${payment.id}`)
     console.log(`[Payment] Checkout URL: ${payment.checkoutUrl}`)
     
+    // Update usedCount van kortingscode
+    if (discountInfo && kv) {
+      await incrementDiscountUsage(discountInfo.code)
+    }
+    
     return res.status(200).json({
       success: true,
       paymentId: payment.id,
-      checkoutUrl: payment.checkoutUrl
+      checkoutUrl: payment.checkoutUrl,
+      discount: discountInfo
     })
     
   } catch (error) {
@@ -138,6 +186,83 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       success: false,
       error: error instanceof Error ? error.message : 'Er ging iets mis bij het aanmaken van de betaling'
     })
+  }
+}
+
+// ===========================================
+// DISCOUNT FUNCTIONS
+// ===========================================
+
+async function validateAndApplyDiscount(
+  code: string,
+  originalPrice: number
+): Promise<{ code: string; type: string; value: number; finalPrice: number; savings: number } | null> {
+  if (!kv) return null
+  
+  try {
+    const discountData = await kv.get(`discount:${code.toUpperCase()}`) as DiscountCode | null
+    
+    if (!discountData) {
+      console.log(`[Payment] Kortingscode ${code} niet gevonden`)
+      return null
+    }
+    
+    // Check of de code actief is
+    if (!discountData.active) {
+      console.log(`[Payment] Kortingscode ${code} is niet actief`)
+      return null
+    }
+    
+    // Check vervaldatum
+    if (discountData.validUntil) {
+      const validUntil = new Date(discountData.validUntil)
+      if (validUntil < new Date()) {
+        console.log(`[Payment] Kortingscode ${code} is verlopen`)
+        return null
+      }
+    }
+    
+    // Check max uses
+    if (discountData.maxUses && discountData.usedCount >= discountData.maxUses) {
+      console.log(`[Payment] Kortingscode ${code} is maximaal aantal keer gebruikt`)
+      return null
+    }
+    
+    // Bereken korting
+    let savings = 0
+    if (discountData.type === 'percentage') {
+      savings = Math.round(originalPrice * (discountData.value / 100) * 100) / 100
+    } else if (discountData.type === 'fixed') {
+      savings = Math.min(discountData.value, originalPrice) // Nooit meer dan de prijs
+    }
+    
+    const finalPrice = Math.max(0, originalPrice - savings)
+    
+    return {
+      code: discountData.code,
+      type: discountData.type,
+      value: discountData.value,
+      finalPrice,
+      savings
+    }
+  } catch (error) {
+    console.error('[Payment] Discount validation error:', error)
+    return null
+  }
+}
+
+async function incrementDiscountUsage(code: string): Promise<void> {
+  if (!kv) return
+  
+  try {
+    const discountData = await kv.get(`discount:${code.toUpperCase()}`) as DiscountCode | null
+    if (discountData) {
+      discountData.usedCount = (discountData.usedCount || 0) + 1
+      await kv.set(`discount:${code.toUpperCase()}`, discountData)
+      console.log(`[Payment] Kortingscode ${code} usedCount verhoogd naar ${discountData.usedCount}`)
+    }
+  } catch (error) {
+    console.error('[Payment] Error incrementing discount usage:', error)
   }
 }
 
@@ -186,10 +311,19 @@ async function createFirstPayment(data: {
   packageType: string
   packageName: string
   amount: number
+  originalAmount?: number
   priceExclVat: number
   vatAmount: number
   redirectUrl: string
+  discountCode?: string
 }): Promise<{ id: string; checkoutUrl: string }> {
+  // Beschrijving met korting info als van toepassing
+  let description = `Webstability - ${data.packageName} (eerste maand)`
+  if (data.discountCode && data.originalAmount && data.originalAmount !== data.amount) {
+    const savings = data.originalAmount - data.amount
+    description += ` - Korting: €${savings.toFixed(2)}`
+  }
+  
   const response = await fetch(`${MOLLIE_API_URL}/payments`, {
     method: 'POST',
     headers: {
@@ -201,7 +335,7 @@ async function createFirstPayment(data: {
         value: data.amount.toFixed(2),
         currency: 'EUR'
       },
-      description: `Webstability - ${data.packageName} (eerste maand)`,
+      description,
       redirectUrl: data.redirectUrl,
       webhookUrl: `${BASE_URL}/api/mollie-webhook`,
       
@@ -215,7 +349,9 @@ async function createFirstPayment(data: {
         type: 'first_payment',
         priceExclVat: data.priceExclVat,
         vatAmount: data.vatAmount,
-        vatRate: VAT_RATE
+        vatRate: VAT_RATE,
+        originalAmount: data.originalAmount,
+        discountCode: data.discountCode
       }
     })
   })
