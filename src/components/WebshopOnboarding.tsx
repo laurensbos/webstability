@@ -804,14 +804,28 @@ export default function WebshopOnboarding({
           </button>
           
           <button 
-            onClick={handleNext} 
-            className="flex-1 px-4 py-3 rounded-lg bg-emerald-500 text-white font-semibold transition-all flex items-center justify-center gap-2 hover:bg-emerald-600"
+            onClick={currentStep === 6 ? handleSubmit : handleNext} 
+            disabled={isSubmitting}
+            className={`flex-1 px-4 py-3 rounded-lg bg-emerald-500 text-white font-semibold transition-all flex items-center justify-center gap-2 hover:bg-emerald-600 ${isSubmitting ? 'opacity-70 cursor-wait' : ''}`}
           >
-            Volgende
-            <ArrowRight className="w-5 h-5" />
+            {currentStep === 6 ? (
+              isSubmitting ? (
+                <>
+                  <Loader2 className="w-4 h-4 animate-spin mr-2" />
+                  Verwerken...
+                </>
+              ) : (
+                'Volgende'
+              )
+            ) : (
+              <>
+                Volgende
+                <ArrowRight className="w-5 h-5" />
+              </>
+            )}
           </button>
-        </div>
-      </div>
-    </div>
-  )
-}
+         </div>
+       </div>
+     </div>
+   )
+ }

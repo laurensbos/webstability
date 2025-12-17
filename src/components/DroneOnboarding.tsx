@@ -13,7 +13,6 @@ import {
   Lock,
   Eye,
   EyeOff,
-  Loader2,
   Home,
   Trees,
   Factory,
