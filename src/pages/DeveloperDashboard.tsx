@@ -44,6 +44,7 @@ import {
   Phone,
   Globe,
   Send,
+  RefreshCw,
 } from 'lucide-react'
 import Logo from '../components/Logo'
 
@@ -153,76 +154,6 @@ const PHASE_CONFIG: Record<ProjectPhase, { label: string; color: string; bg: str
   development: { label: 'Development', color: 'text-purple-600', bg: 'bg-purple-100', icon: Code },
   review: { label: 'Review', color: 'text-cyan-600', bg: 'bg-cyan-100', icon: Eye },
   live: { label: 'Live', color: 'text-green-600', bg: 'bg-green-100', icon: Rocket },
-}
-
-const _SERVICE_CONFIG: Record<ServiceType, { name: string; icon: typeof Camera; color: string }> = {
-  drone: { name: 'Dronebeelden', icon: Plane, color: 'orange' },
-  logo: { name: 'Logo Design', icon: PenTool, color: 'purple' },
-  foto: { name: 'Fotografie', icon: Camera, color: 'pink' },
-  tekst: { name: 'Tekstschrijven', icon: FileText, color: 'blue' },
-  seo: { name: 'SEO Optimalisatie', icon: TrendingUp, color: 'green' },
-}
-
-// ===========================================
-// SKELETON LOADING COMPONENTS
-// ===========================================
-
-interface SkeletonProps {
-  className?: string
-  darkMode?: boolean
-}
-
-function Skeleton({ className = '', darkMode = false }: SkeletonProps) {
-  return (
-    <div 
-      className={`animate-pulse rounded ${darkMode ? 'bg-gray-700' : 'bg-gray-200'} ${className}`}
-    />
-  )
-}
-
-function StatCardSkeleton({ darkMode }: { darkMode: boolean }) {
-  return (
-    <div className={`p-6 rounded-2xl ${darkMode ? 'bg-gray-800' : 'bg-white'} shadow-sm`}>
-      <div className="flex items-center justify-between">
-        <div className="flex-1">
-          <Skeleton darkMode={darkMode} className="h-4 w-24 mb-2" />
-          <Skeleton darkMode={darkMode} className="h-8 w-16 mb-1" />
-          <Skeleton darkMode={darkMode} className="h-3 w-32" />
-        </div>
-        <Skeleton darkMode={darkMode} className="w-12 h-12 rounded-xl" />
-      </div>
-    </div>
-  )
-}
-
-function ProjectCardSkeleton({ darkMode }: { darkMode: boolean }) {
-  return (
-    <div className={`p-4 rounded-xl ${darkMode ? 'bg-gray-800' : 'bg-white'} shadow-sm`}>
-      <div className="flex items-start gap-3">
-        <Skeleton darkMode={darkMode} className="w-10 h-10 rounded-xl flex-shrink-0" />
-        <div className="flex-1 min-w-0">
-          <Skeleton darkMode={darkMode} className="h-5 w-3/4 mb-2" />
-          <Skeleton darkMode={darkMode} className="h-3 w-1/2 mb-3" />
-          <div className="flex gap-2">
-            <Skeleton darkMode={darkMode} className="h-6 w-20 rounded-full" />
-            <Skeleton darkMode={darkMode} className="h-6 w-16 rounded-full" />
-          </div>
-        </div>
-      </div>
-    </div>
-  )
-}
-
-function TableRowSkeleton({ darkMode, columns = 5 }: { darkMode: boolean; columns?: number }) {
-  return (
-    <tr className={darkMode ? 'bg-gray-800/50' : 'bg-white'}>
-      {Array.from({ length: columns }).map((_, i) => (
-        <td key={i} className="px-4 py-4">
-          <Skeleton darkMode={darkMode} className={`h-4 ${i === 0 ? 'w-32' : 'w-20'}`} />
-        </td>
-      ))}
-    </tr>
-  )
 }
 
 // ===========================================
@@ -391,6 +322,8 @@ interface HeaderProps {
   searchTerm: string
   setSearchTerm: (term: string) => void
   activeView: DashboardView
+  onRefresh: () => void
+  isRefreshing: boolean
 }
 
 function Header({ 
@@ -401,7 +334,9 @@ function Header({
   onMarkAllRead,
   searchTerm,
   setSearchTerm,
-  activeView
+  activeView,
+  onRefresh,
+  isRefreshing
 }: HeaderProps) {
   const [showNotifications, setShowNotifications] = useState(false)
   const unreadCount = notifications.filter(n => !n.read).length
@@ -552,6 +487,19 @@ function Header({
               )}
             </AnimatePresence>
           </div>
+
+          {/* Refresh button */}
+          <motion.button
+            whileTap={{ scale: 0.95 }}
+            onClick={onRefresh}
+            disabled={isRefreshing}
+            className={`p-2 rounded-lg ${
+              darkMode ? 'hover:bg-gray-800 text-gray-400' : 'hover:bg-gray-100 text-gray-500'
+            } ${isRefreshing ? 'opacity-50' : ''}`}
+            title="Vernieuwen"
+          >
+            <RefreshCw className={`w-5 h-5 ${isRefreshing ? 'animate-spin' : ''}`} />
+          </motion.button>
 
           {/* Dark mode toggle */}
           <motion.button
@@ -1379,10 +1327,6 @@ function ProjectsView({ darkMode, projects, onUpdateProject, onSelectProject }: 
 
   const getProjectsByPhase = (phase: ProjectPhase) => 
     filteredProjects.filter(p => p.phase === phase)
-
-  const _handlePhaseChange = (project: Project, newPhase: ProjectPhase) => {
-    onUpdateProject({ ...project, phase: newPhase, updatedAt: new Date().toISOString() })
-  }
 
   const openProjectDetail = (project: Project) => {
     setSelectedProject(project)
@@ -4695,6 +4639,17 @@ export default function DeveloperDashboardNew() {
     }
   }, [isAuthenticated])
 
+  // Auto-refresh data every 30 seconds for real-time updates
+  useEffect(() => {
+    if (!isAuthenticated) return
+    
+    const refreshInterval = setInterval(() => {
+      loadData()
+    }, 30000) // 30 seconds
+    
+    return () => clearInterval(refreshInterval)
+  }, [isAuthenticated])
+
   // Keyboard shortcuts
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -4931,6 +4886,29 @@ export default function DeveloperDashboardNew() {
     }
   }
 
+  // Update service request via API
+  const handleUpdateService = async (updatedRequest: ServiceRequest) => {
+    // Optimistically update local state
+    setServiceRequests(prev => prev.map(r => 
+      r.id === updatedRequest.id ? updatedRequest : r
+    ))
+
+    // Update in API/database
+    try {
+      const token = sessionStorage.getItem(TOKEN_KEY)
+      await fetch('/api/services', {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify(updatedRequest)
+      })
+    } catch (error) {
+      console.error('Error updating service:', error)
+    }
+  }
+
   const markAllNotificationsRead = () => {
     setNotifications(prev => prev.map(n => ({ ...n, read: true })))
   }
@@ -4972,6 +4950,8 @@ export default function DeveloperDashboardNew() {
           searchTerm={searchTerm}
           setSearchTerm={setSearchTerm}
           activeView={activeView}
+          onRefresh={loadData}
+          isRefreshing={loading}
         />
 
         {/* Main content */}
@@ -5037,11 +5017,7 @@ export default function DeveloperDashboardNew() {
                   <ServicesView 
                     darkMode={darkMode}
                     serviceRequests={serviceRequests}
-                    onUpdateRequest={(updatedRequest) => {
-                      setServiceRequests(prev => prev.map(r => 
-                        r.id === updatedRequest.id ? updatedRequest : r
-                      ))
-                    }}
+                    onUpdateRequest={handleUpdateService}
                   />
                 )}
                 {activeView === 'settings' && (
