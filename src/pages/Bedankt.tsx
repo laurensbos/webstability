@@ -1,148 +1,101 @@
-import { useState } from 'react'
-import { motion } from 'framer-motion'
-import { CheckCircle, Clock, Mail, MessageCircle, ArrowRight, Copy, Check, ExternalLink, Shield, Sparkles, Globe, ShoppingBag, Camera, Palette, Lock } from 'lucide-react'
+import { useState, useEffect } from 'react'
+import { motion, AnimatePresence } from 'framer-motion'
+import { 
+  CheckCircle2, 
+  Mail, 
+  Clock, 
+  Palette, 
+  Copy, 
+  Check, 
+  ArrowRight, 
+  ChevronLeft,
+  ChevronRight,
+  Globe, 
+  ShoppingBag, 
+  Camera, 
+  PenTool,
+  MessageCircle,
+  Sparkles,
+  Shield
+} from 'lucide-react'
 import { Link, useSearchParams } from 'react-router-dom'
 import Header from '../components/Header'
-import Footer from '../components/Footer'
 
 type ServiceType = 'website' | 'webshop' | 'drone' | 'logo'
 
-// Color schemes per service
-const serviceColors = {
+const serviceConfig = {
   website: {
     gradient: 'from-primary-500 to-blue-500',
-    gradientBg: 'from-slate-50 via-primary-50/30 to-white',
-    blob1: 'from-primary-200/60 via-blue-100/40 to-cyan-100/30',
-    blob2: 'from-blue-100/50 via-primary-100/40 to-transparent',
-    particle: 'from-primary-400 to-blue-500',
-    text: 'text-primary-600',
-    textDark: 'text-primary-700',
-    bg: 'bg-primary-50',
-    bgLight: 'bg-primary-100',
-    border: 'border-primary-200',
+    bgGradient: 'from-primary-500/10 via-blue-500/5 to-transparent',
     icon: Globe,
     label: 'Website',
   },
   webshop: {
     gradient: 'from-emerald-500 to-green-500',
-    gradientBg: 'from-slate-50 via-emerald-50/30 to-white',
-    blob1: 'from-emerald-200/60 via-green-100/40 to-teal-100/30',
-    blob2: 'from-green-100/50 via-emerald-100/40 to-transparent',
-    particle: 'from-emerald-400 to-green-500',
-    text: 'text-emerald-600',
-    textDark: 'text-emerald-700',
-    bg: 'bg-emerald-50',
-    bgLight: 'bg-emerald-100',
-    border: 'border-emerald-200',
+    bgGradient: 'from-emerald-500/10 via-green-500/5 to-transparent',
     icon: ShoppingBag,
     label: 'Webshop',
   },
   drone: {
     gradient: 'from-orange-500 to-amber-500',
-    gradientBg: 'from-slate-50 via-orange-50/30 to-white',
-    blob1: 'from-orange-200/60 via-amber-100/40 to-yellow-100/30',
-    blob2: 'from-amber-100/50 via-orange-100/40 to-transparent',
-    particle: 'from-orange-400 to-amber-500',
-    text: 'text-orange-600',
-    textDark: 'text-orange-700',
-    bg: 'bg-orange-50',
-    bgLight: 'bg-orange-100',
-    border: 'border-orange-200',
+    bgGradient: 'from-orange-500/10 via-amber-500/5 to-transparent',
     icon: Camera,
     label: 'Drone opnames',
   },
   logo: {
     gradient: 'from-purple-500 to-violet-500',
-    gradientBg: 'from-slate-50 via-purple-50/30 to-white',
-    blob1: 'from-purple-200/60 via-violet-100/40 to-fuchsia-100/30',
-    blob2: 'from-violet-100/50 via-purple-100/40 to-transparent',
-    particle: 'from-purple-400 to-violet-500',
-    text: 'text-purple-600',
-    textDark: 'text-purple-700',
-    bg: 'bg-purple-50',
-    bgLight: 'bg-purple-100',
-    border: 'border-purple-200',
-    icon: Palette,
+    bgGradient: 'from-purple-500/10 via-violet-500/5 to-transparent',
+    icon: PenTool,
     label: 'Logo ontwerp',
   },
 }
 
-function FloatingParticles({ colors }: { colors: typeof serviceColors.website }) {
-  const particles = [
-    { size: 4, x: '10%', y: '20%', delay: 0, duration: 4 },
-    { size: 6, x: '20%', y: '60%', delay: 1, duration: 5 },
-    { size: 3, x: '80%', y: '30%', delay: 0.5, duration: 4.5 },
-    { size: 5, x: '70%', y: '70%', delay: 1.5, duration: 5.5 },
-    { size: 4, x: '90%', y: '50%', delay: 2, duration: 4 },
-    { size: 7, x: '15%', y: '80%', delay: 0.8, duration: 6 },
-  ]
-
-  return (
-    <>
-      {particles.map((p, i) => (
-        <motion.div
-          key={i}
-          className={`absolute rounded-full bg-gradient-to-br ${colors.particle}`}
-          style={{ 
-            width: p.size, 
-            height: p.size, 
-            left: p.x, 
-            top: p.y,
-            opacity: 0.4 + (p.size / 20)
-          }}
-          animate={{
-            y: [0, -20, 0],
-            opacity: [0.3, 0.6, 0.3],
-            scale: [1, 1.2, 1],
-          }}
-          transition={{
-            duration: p.duration,
-            delay: p.delay,
-            repeat: Infinity,
-            ease: "easeInOut"
-          }}
-        />
-      ))}
-    </>
-  )
-}
-
 export default function Bedankt() {
   const [searchParams] = useSearchParams()
-  const projectId = searchParams.get('project')
+  const projectId = searchParams.get('project') || 'WS-XXXXXX'
   const dienst = (searchParams.get('dienst') as ServiceType) || 'website'
   const email = searchParams.get('email') || ''
   const [copied, setCopied] = useState(false)
+  const [activeStep, setActiveStep] = useState(0)
 
-  const colors = serviceColors[dienst] || serviceColors.website
-  const ServiceIcon = colors.icon
+  const config = serviceConfig[dienst] || serviceConfig.website
+  const ServiceIcon = config.icon
 
   const copyProjectId = () => {
-    if (projectId) {
-      navigator.clipboard.writeText(projectId)
-      setCopied(true)
-      setTimeout(() => setCopied(false), 2000)
-    }
+    navigator.clipboard.writeText(projectId)
+    setCopied(true)
+    setTimeout(() => setCopied(false), 2000)
   }
+
+  // Auto-advance steps on mobile
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setActiveStep((prev) => (prev + 1) % 3)
+    }, 4000)
+    return () => clearInterval(timer)
+  }, [])
 
   const steps = [
     {
       icon: Mail,
       title: 'Bevestigingsmail',
-      description: 'Je ontvangt direct een bevestiging op het opgegeven e-mailadres.',
-      time: 'Nu'
+      description: 'Je ontvangt nu een bevestiging op je e-mailadres.',
+      time: 'Nu',
+      color: 'bg-blue-500',
     },
     {
       icon: Clock,
-      title: 'Persoonlijk contact',
-      description: 'We nemen binnen 24 uur contact met je op om je wensen te bespreken.',
-      time: 'Binnen 24 uur'
+      title: 'Binnen 24 uur',
+      description: 'We nemen contact met je op om je wensen te bespreken.',
+      time: '24 uur',
+      color: 'bg-amber-500',
     },
     {
-      icon: CheckCircle,
-      title: 'Eerste ontwerp',
-      description: 'Na akkoord ontvang je binnen 5 werkdagen het eerste ontwerp.',
-      time: 'Binnen 5 dagen'
+      icon: Palette,
+      title: 'Binnen 5 dagen',
+      description: 'Na akkoord ontvang je het eerste ontwerp.',
+      time: '5 dagen',
+      color: 'bg-green-500',
     },
   ]
 
@@ -150,256 +103,285 @@ export default function Bedankt() {
     <div className="min-h-screen bg-white dark:bg-gray-900">
       <Header />
       
-      {/* Hero Section */}
-      <section className={`relative min-h-[60vh] flex items-center overflow-hidden bg-gradient-to-br ${colors.gradientBg} pt-20`}>
-        {/* Background decorations */}
-        <div className="absolute inset-0 overflow-hidden pointer-events-none">
+      <main className="pt-20 pb-12">
+        <div className="max-w-lg mx-auto px-4 sm:px-6">
+          
+          {/* Success Hero - Clean & Centered */}
           <motion.div 
-            className={`absolute top-0 right-0 w-[800px] h-[800px] bg-gradient-to-br ${colors.blob1} rounded-full blur-3xl -translate-y-1/3 translate-x-1/4`}
-            animate={{ scale: [1, 1.05, 1], rotate: [0, 5, 0] }}
-            transition={{ duration: 8, repeat: Infinity, ease: "easeInOut" }}
-          />
-          <motion.div 
-            className={`absolute bottom-0 left-0 w-[600px] h-[600px] bg-gradient-to-tr ${colors.blob2} rounded-full blur-3xl translate-y-1/3 -translate-x-1/4`}
-            animate={{ scale: [1, 1.08, 1], rotate: [0, -5, 0] }}
-            transition={{ duration: 10, repeat: Infinity, ease: "easeInOut" }}
-          />
-          <FloatingParticles colors={colors} />
-          <div className="absolute inset-0 bg-[linear-gradient(to_right,#e0e7ff22_1px,transparent_1px),linear-gradient(to_bottom,#e0e7ff22_1px,transparent_1px)] bg-[size:4rem_4rem] [mask-image:radial-gradient(ellipse_80%_50%_at_50%_0%,#000_70%,transparent_110%)]" />
-        </div>
-
-        <div className="relative z-10 max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-16 text-center">
-          {/* Success animation */}
-          <motion.div
-            initial={{ scale: 0 }}
-            animate={{ scale: 1 }}
-            transition={{ type: 'spring', stiffness: 200, delay: 0.1 }}
-            className="relative inline-block mb-8"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="text-center pt-8 pb-6"
           >
-            {/* Outer ring animation */}
+            {/* Success Icon */}
             <motion.div
-              className={`absolute inset-0 rounded-full bg-gradient-to-r ${colors.gradient} opacity-20`}
-              animate={{ scale: [1, 1.4, 1], opacity: [0.2, 0, 0.2] }}
-              transition={{ duration: 2, repeat: Infinity }}
-            />
-            <div className={`relative w-24 h-24 bg-gradient-to-br ${colors.gradient} rounded-full flex items-center justify-center shadow-xl`}>
+              initial={{ scale: 0 }}
+              animate={{ scale: 1 }}
+              transition={{ type: 'spring', stiffness: 200, delay: 0.1 }}
+              className="relative inline-block mb-6"
+            >
+              <motion.div
+                className={`absolute inset-0 rounded-full bg-gradient-to-r ${config.gradient} opacity-20 blur-xl`}
+                animate={{ scale: [1, 1.3, 1] }}
+                transition={{ duration: 2, repeat: Infinity }}
+              />
+              <div className={`relative w-20 h-20 sm:w-24 sm:h-24 bg-gradient-to-br ${config.gradient} rounded-full flex items-center justify-center shadow-2xl`}>
+                <CheckCircle2 className="w-10 h-10 sm:w-12 sm:h-12 text-white" strokeWidth={2.5} />
+              </div>
               <motion.div
                 initial={{ scale: 0 }}
                 animate={{ scale: 1 }}
-                transition={{ delay: 0.3, type: 'spring' }}
+                transition={{ delay: 0.4 }}
+                className="absolute -top-1 -right-1"
               >
-                <Check className="w-12 h-12 text-white" strokeWidth={3} />
+                <Sparkles className="w-6 h-6 text-yellow-400" />
               </motion.div>
-            </div>
-            {/* Sparkles */}
-            <motion.div
-              className="absolute -top-2 -right-2"
-              initial={{ scale: 0, rotate: -20 }}
-              animate={{ scale: 1, rotate: 0 }}
-              transition={{ delay: 0.5 }}
-            >
-              <Sparkles className={`w-6 h-6 ${colors.text}`} />
             </motion.div>
-          </motion.div>
 
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.2 }}
-          >
-            <div className={`inline-flex items-center gap-2 ${colors.bg} ${colors.border} border rounded-full px-4 py-2 mb-6`}>
-              <ServiceIcon className={`w-4 h-4 ${colors.text}`} />
-              <span className={`text-sm font-medium ${colors.textDark}`}>{colors.label}</span>
-            </div>
+            {/* Service Badge */}
+            <motion.div 
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ delay: 0.2 }}
+              className={`inline-flex items-center gap-2 px-4 py-2 rounded-full bg-gradient-to-r ${config.gradient} text-white text-sm font-medium mb-4`}
+            >
+              <ServiceIcon className="w-4 h-4" />
+              {config.label}
+            </motion.div>
 
-            <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-gray-900 dark:text-white mb-4">
-              Bedankt voor je aanvraag!
-            </h1>
-            
-            <p className="text-gray-600 dark:text-gray-400 text-lg max-w-xl mx-auto">
-              We hebben je projectaanvraag ontvangen en gaan er direct mee aan de slag. 
-              Je ontvangt binnen 24 uur een reactie van ons.
-            </p>
-          </motion.div>
-        </div>
-      </section>
-
-      <main className="pb-20">
-        <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 -mt-8">
-          {/* Project ID Card */}
-          {projectId && (
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
+            {/* Title */}
+            <motion.h1 
+              initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.3 }}
-              className={`bg-gradient-to-r ${colors.gradient} rounded-2xl p-6 mb-8 shadow-xl`}
+              className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white mb-3"
             >
-              <p className="text-white/90 text-sm mb-3 flex items-center gap-2">
-                <Shield className="w-4 h-4" />
-                Bewaar dit goed - je hebt dit nodig om je project te volgen:
-              </p>
-              <div className="flex items-center justify-center gap-3 bg-white/10 backdrop-blur rounded-xl p-4 mb-4">
-                <code className="text-2xl font-mono font-bold text-white tracking-wider">
-                  {projectId}
-                </code>
-                <button
-                  onClick={copyProjectId}
-                  className="p-2 hover:bg-white/20 rounded-lg transition-colors"
-                  title="Kopieer project ID"
-                >
-                  {copied ? (
-                    <Check className="w-5 h-5 text-white" />
-                  ) : (
-                    <Copy className="w-5 h-5 text-white/80" />
-                  )}
-                </button>
-              </div>
-              <div className="flex flex-col sm:flex-row gap-3 justify-center flex-wrap">
-                <Link
-                  to={`/onboarding/${projectId}`}
-                  className="inline-flex items-center justify-center gap-2 px-5 py-2.5 bg-white dark:bg-gray-900 text-gray-900 dark:text-white rounded-xl font-semibold hover:bg-white/90 dark:hover:bg-gray-800 transition shadow-lg"
-                >
-                  Start onboarding
-                  <ArrowRight className="w-4 h-4" />
-                </Link>
-                <Link
-                  to={`/project/${projectId}`}
-                  className="inline-flex items-center justify-center gap-2 px-5 py-2.5 bg-white/10 text-white rounded-xl font-medium hover:bg-white/20 transition border border-white/20"
-                >
-                  Bekijk project status
-                  <ExternalLink className="w-4 h-4" />
-                </Link>
-                <Link
-                  to={`/status/${projectId}`}
-                  className="inline-flex items-center justify-center gap-2 px-5 py-2.5 bg-white/10 text-white rounded-xl font-medium hover:bg-white/20 transition border border-white/20"
-                >
-                  <Lock className="w-4 h-4" />
-                  Login dashboard
-                </Link>
-              </div>
-            </motion.div>
-          )}
-
-          {/* Spam warning */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.4 }}
-            className={`${colors.bg} rounded-2xl p-6 mb-8 border ${colors.border}`}
-          >
-            <div className="flex items-start gap-4">
-              <div className={`w-12 h-12 rounded-xl bg-gradient-to-br ${colors.gradient} flex items-center justify-center flex-shrink-0 shadow-lg`}>
-                <Mail className="w-6 h-6 text-white" />
-              </div>
-              <div>
-                <h3 className="font-bold text-gray-900 mb-1">📧 Check je inbox!</h3>
-                {email ? (
-                  <p className="text-gray-700 text-sm mb-3">
-                    We sturen een bevestigingsmail naar <span className="font-semibold text-gray-900 dark:text-white">{email}</span>
-                  </p>
-                ) : (
-                  <p className="text-gray-700 text-sm mb-3">
-                    We sturen je een bevestigingsmail met alle details.
-                  </p>
-                )}
-                <div className="text-sm text-gray-600 dark:text-gray-400 space-y-1">
-                  <p>In deze mail vind je:</p>
-                  <ul className="list-disc list-inside text-gray-600 dark:text-gray-400 ml-2 space-y-0.5">
-                    <li>Je project ID</li>
-                    <li>Link naar de onboarding</li>
-                    <li>Wat je van ons kunt verwachten</li>
-                    <li>Contactgegevens voor vragen</li>
-                  </ul>
-                </div>
-                <div className="mt-3 p-3 bg-amber-50 border border-amber-200 rounded-lg">
-                  <p className="text-amber-800 text-xs">
-                    <strong>💡 Tip:</strong> Niet ontvangen? Check je spam/ongewenste mail en voeg{' '}
-                    <span className="font-medium">info@webstability.nl</span> toe aan je contacten.
-                  </p>
-                </div>
-              </div>
-            </div>
+              Bedankt voor je aanvraag!
+            </motion.h1>
+            
+            <motion.p 
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ delay: 0.4 }}
+              className="text-gray-600 dark:text-gray-400 text-sm sm:text-base"
+            >
+              We gaan direct voor je aan de slag.
+            </motion.p>
           </motion.div>
 
-          {/* Timeline */}
+          {/* Project ID Card */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.5 }}
-            className="bg-white dark:bg-gray-900 rounded-2xl border border-gray-200 p-8 mb-8 shadow-sm"
+            className={`bg-gradient-to-br ${config.gradient} rounded-2xl p-5 sm:p-6 mb-6 shadow-xl`}
           >
-            <h2 className="font-bold text-gray-900 text-xl mb-6">Wat kun je verwachten?</h2>
+            <div className="flex items-center gap-2 text-white/80 text-sm mb-3">
+              <Shield className="w-4 h-4" />
+              <span>Je project ID</span>
+            </div>
             
-            <div className="relative">
-              {/* Connecting line */}
-              <div className="absolute left-[22px] top-10 bottom-10 w-0.5 bg-gradient-to-b from-gray-200 via-gray-200 to-transparent" />
-              
-              <div className="space-y-6">
-                {steps.map((step, index) => (
+            <button
+              onClick={copyProjectId}
+              className="w-full flex items-center justify-between bg-white/15 backdrop-blur-sm rounded-xl px-4 py-3 mb-4 hover:bg-white/20 transition-colors group"
+            >
+              <code className="text-lg sm:text-xl font-mono font-bold text-white tracking-wider">
+                {projectId}
+              </code>
+              <div className="flex items-center gap-2 text-white/70 group-hover:text-white transition-colors">
+                {copied ? (
+                  <>
+                    <Check className="w-5 h-5" />
+                    <span className="text-sm">Gekopieerd!</span>
+                  </>
+                ) : (
+                  <>
+                    <Copy className="w-5 h-5" />
+                    <span className="text-sm hidden sm:inline">Kopieer</span>
+                  </>
+                )}
+              </div>
+            </button>
+
+            {/* Action Buttons */}
+            <div className="space-y-2">
+              <Link
+                to={`/onboarding/${projectId}`}
+                className="flex items-center justify-center gap-2 w-full px-4 py-3 bg-white text-gray-900 rounded-xl font-semibold hover:bg-gray-50 transition-colors shadow-lg"
+              >
+                Start onboarding
+                <ArrowRight className="w-4 h-4" />
+              </Link>
+              <Link
+                to={`/status/${projectId}`}
+                className="flex items-center justify-center gap-2 w-full px-4 py-3 bg-white/15 text-white rounded-xl font-medium hover:bg-white/25 transition-colors"
+              >
+                Bekijk project status
+              </Link>
+            </div>
+          </motion.div>
+
+          {/* Timeline Steps - Swipeable on Mobile */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.6 }}
+            className="bg-gray-50 dark:bg-gray-800 rounded-2xl p-5 sm:p-6 mb-6"
+          >
+            <h2 className="font-semibold text-gray-900 dark:text-white mb-4 text-sm sm:text-base">
+              Wat gebeurt er nu?
+            </h2>
+
+            {/* Mobile: Swipe Cards */}
+            <div className="sm:hidden">
+              <div className="relative overflow-hidden">
+                <AnimatePresence mode="wait">
                   <motion.div
-                    key={index}
-                    initial={{ opacity: 0, x: -20 }}
+                    key={activeStep}
+                    initial={{ opacity: 0, x: 50 }}
                     animate={{ opacity: 1, x: 0 }}
-                    transition={{ delay: 0.6 + index * 0.1 }}
-                    className="relative flex items-start gap-4"
+                    exit={{ opacity: 0, x: -50 }}
+                    transition={{ duration: 0.3 }}
+                    className="bg-white dark:bg-gray-700 rounded-xl p-4"
                   >
-                    <div className={`relative z-10 w-11 h-11 rounded-xl bg-gradient-to-br ${colors.gradient} flex items-center justify-center shadow-lg flex-shrink-0`}>
-                      <step.icon className="w-5 h-5 text-white" />
+                    <div className="flex items-start gap-3">
+                      <div className={`w-10 h-10 rounded-full ${steps[activeStep].color} flex items-center justify-center flex-shrink-0`}>
+                        {(() => {
+                          const StepIcon = steps[activeStep].icon
+                          return <StepIcon className="w-5 h-5 text-white" />
+                        })()}
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-center gap-2 mb-1">
+                          <span className="text-xs font-medium text-gray-500 dark:text-gray-400 bg-gray-100 dark:bg-gray-600 px-2 py-0.5 rounded-full">
+                            {steps[activeStep].time}
+                          </span>
+                        </div>
+                        <h3 className="font-semibold text-gray-900 dark:text-white text-sm">
+                          {steps[activeStep].title}
+                        </h3>
+                        <p className="text-gray-600 dark:text-gray-300 text-sm mt-1">
+                          {steps[activeStep].description}
+                        </p>
+                      </div>
                     </div>
-                    <div className="flex-1 bg-gray-50 rounded-xl p-4 border border-gray-100 dark:border-gray-700">
-                      <div className="flex items-center justify-between mb-1">
-                        <h3 className="font-semibold text-gray-900 dark:text-white">{step.title}</h3>
-                        <span className={`text-xs font-medium ${colors.text} ${colors.bg} px-2 py-1 rounded-full`}>
+                  </motion.div>
+                </AnimatePresence>
+              </div>
+
+              {/* Dots & Navigation */}
+              <div className="flex items-center justify-between mt-4">
+                <button 
+                  onClick={() => setActiveStep((prev) => (prev - 1 + 3) % 3)}
+                  className="p-2 text-gray-400 hover:text-gray-600 dark:hover:text-gray-200"
+                >
+                  <ChevronLeft className="w-5 h-5" />
+                </button>
+                <div className="flex gap-2">
+                  {steps.map((_, idx) => (
+                    <button
+                      key={idx}
+                      onClick={() => setActiveStep(idx)}
+                      className={`w-2 h-2 rounded-full transition-colors ${
+                        idx === activeStep 
+                          ? 'bg-gray-900 dark:bg-white' 
+                          : 'bg-gray-300 dark:bg-gray-600'
+                      }`}
+                    />
+                  ))}
+                </div>
+                <button 
+                  onClick={() => setActiveStep((prev) => (prev + 1) % 3)}
+                  className="p-2 text-gray-400 hover:text-gray-600 dark:hover:text-gray-200"
+                >
+                  <ChevronRight className="w-5 h-5" />
+                </button>
+              </div>
+            </div>
+
+            {/* Desktop: Vertical Timeline */}
+            <div className="hidden sm:block space-y-4">
+              {steps.map((step, idx) => {
+                const StepIcon = step.icon
+                return (
+                  <div key={idx} className="flex items-start gap-4">
+                    <div className="relative flex flex-col items-center">
+                      <div className={`w-10 h-10 rounded-full ${step.color} flex items-center justify-center z-10`}>
+                        <StepIcon className="w-5 h-5 text-white" />
+                      </div>
+                      {idx < steps.length - 1 && (
+                        <div className="w-0.5 h-12 bg-gray-200 dark:bg-gray-600 mt-2" />
+                      )}
+                    </div>
+                    <div className="flex-1 pb-4">
+                      <div className="flex items-center gap-2 mb-1">
+                        <span className="text-xs font-medium text-gray-500 dark:text-gray-400 bg-gray-100 dark:bg-gray-600 px-2 py-0.5 rounded-full">
                           {step.time}
                         </span>
                       </div>
-                      <p className="text-gray-600 dark:text-gray-400 text-sm">{step.description}</p>
+                      <h3 className="font-semibold text-gray-900 dark:text-white">
+                        {step.title}
+                      </h3>
+                      <p className="text-gray-600 dark:text-gray-400 text-sm mt-1">
+                        {step.description}
+                      </p>
                     </div>
-                  </motion.div>
-                ))}
+                  </div>
+                )
+              })}
+            </div>
+          </motion.div>
+
+          {/* Email Notice */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.7 }}
+            className="bg-blue-50 dark:bg-blue-900/20 rounded-2xl p-5 mb-6 border border-blue-100 dark:border-blue-800"
+          >
+            <div className="flex items-start gap-3">
+              <div className="w-10 h-10 rounded-full bg-blue-500 flex items-center justify-center flex-shrink-0">
+                <Mail className="w-5 h-5 text-white" />
+              </div>
+              <div>
+                <h3 className="font-semibold text-gray-900 dark:text-white text-sm">
+                  Check je inbox
+                </h3>
+                <p className="text-gray-600 dark:text-gray-400 text-sm mt-1">
+                  We sturen een bevestigingsmail naar{' '}
+                  {email && <span className="font-medium text-gray-900 dark:text-white">{email}</span>}
+                </p>
+                <p className="text-blue-600 dark:text-blue-400 text-xs mt-2">
+                  💡 Niet ontvangen? Check je spam folder
+                </p>
               </div>
             </div>
           </motion.div>
 
-          {/* Quick contact */}
+          {/* WhatsApp CTA */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.8 }}
-            className={`${colors.bg} rounded-2xl p-6 mb-8 text-center border ${colors.border}`}
+            className="bg-green-50 dark:bg-green-900/20 rounded-2xl p-5 border border-green-100 dark:border-green-800"
           >
-            <p className="text-gray-900 dark:text-white font-medium mb-4">
-              Kan je niet wachten? Neem direct contact op:
-            </p>
-            <a
-              href="https://wa.me/31644712573?text=Hoi!%20Ik%20heb%20zojuist%20een%20aanvraag%20gedaan%20en%20wil%20graag%20meer%20info."
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-flex items-center gap-2 px-6 py-3 bg-green-500 hover:bg-green-600 text-white font-semibold rounded-xl transition-all shadow-lg shadow-green-500/25 hover:shadow-green-500/40 hover:-translate-y-0.5"
-            >
-              <MessageCircle className="w-5 h-5" />
-              WhatsApp ons direct
-            </a>
+            <div className="text-center">
+              <p className="text-gray-600 dark:text-gray-400 text-sm mb-3">
+                Vragen? Neem direct contact op!
+              </p>
+              <a
+                href="https://wa.me/31612345678"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center justify-center gap-2 px-6 py-3 bg-green-500 hover:bg-green-600 text-white rounded-xl font-semibold transition-colors"
+              >
+                <MessageCircle className="w-5 h-5" />
+                WhatsApp ons direct
+              </a>
+            </div>
           </motion.div>
 
-          {/* Back to home */}
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ delay: 0.9 }}
-            className="text-center"
-          >
-            <Link
-              to="/"
-              className="inline-flex items-center gap-2 text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white transition-colors font-medium"
-            >
-              ← Terug naar de homepage
-            </Link>
-          </motion.div>
         </div>
       </main>
-
-      <Footer />
     </div>
   )
 }

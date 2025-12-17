@@ -10,6 +10,7 @@
 
 import type { VercelRequest, VercelResponse } from '@vercel/node'
 import { Redis } from '@upstash/redis'
+import { sendWelcomeEmail, sendProjectCreatedEmail, isSmtpConfigured } from './lib/smtp'
 
 // Check if Redis is configured
 const REDIS_URL = process.env.UPSTASH_REDIS_REST_URL
@@ -192,6 +193,37 @@ async function createProject(req: VercelRequest, res: VercelResponse) {
   await kv!.sadd('projects', project.id)
   
   console.log(`Project created: ${project.id} - ${project.type}`)
+  
+  // Send confirmation emails
+  if (isSmtpConfigured()) {
+    try {
+      // Send welcome email to customer
+      const welcomeResult = await sendWelcomeEmail({
+        email: project.customer.email,
+        name: project.customer.companyName || project.customer.name || 'daar',
+        projectId: project.id,
+        package: project.packageType,
+        type: project.type,
+      })
+      console.log(`Welcome email sent: ${welcomeResult.success ? 'OK' : welcomeResult.error}`)
+      
+      // Send notification to developer
+      const notifyResult = await sendProjectCreatedEmail({
+        id: project.id,
+        businessName: project.customer.companyName || project.customer.name || 'Onbekend',
+        email: project.customer.email,
+        phone: project.customer.phone,
+        package: project.packageType,
+        type: project.type,
+      })
+      console.log(`Developer notification sent: ${notifyResult.success ? 'OK' : notifyResult.error}`)
+    } catch (emailError) {
+      console.error('Email sending failed:', emailError)
+      // Don't fail the request if email fails
+    }
+  } else {
+    console.warn('SMTP not configured, skipping confirmation emails')
+  }
   
   return res.status(201).json({ success: true, project })
 }
