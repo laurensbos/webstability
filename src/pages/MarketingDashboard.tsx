@@ -1,4 +1,4 @@
-import { useState, useEffect, createContext } from 'react'
+import React, { useState, useEffect, createContext } from 'react'
 import { createPortal } from 'react-dom'
 import { motion, AnimatePresence } from 'framer-motion'
 import Logo from '../components/Logo'
@@ -829,15 +829,6 @@ export default function MarketingDashboard() {
         </header>
 
         <main className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-8 pb-24 lg:pb-8">
-        
-        {/* Mobile: Simple header */}
-        <div className="sm:hidden mb-4">
-          <h2 className={`text-lg font-semibold ${darkMode ? 'text-white' : 'text-gray-900'}`}>
-            {mainTab === 'zoeken' && '🔍 Bedrijven zoeken'}
-            {mainTab === 'leads' && `📋 Leads (${stats.total})`}
-            {mainTab === 'postvak' && `📬 Postvak (${stats.emailsSent})`}
-          </h2>
-        </div>
 
         {/* Desktop: Simple tab navigation */}
         <div className="hidden sm:flex items-center gap-2 mb-6">
@@ -1599,11 +1590,25 @@ function LeadRow({
   const [showTemplates, setShowTemplates] = useState(false)
   const [showDetails, setShowDetails] = useState(false)
   const [newNote, setNewNote] = useState('')
+  const menuButtonRef = React.useRef<HTMLButtonElement>(null)
+  const [menuPosition, setMenuPosition] = useState({ top: 0, right: 0 })
   const status = statusColors[lead.status]
 
   const today = new Date().toISOString().split('T')[0]
   const isFollowUpOverdue = lead.followUpDate && lead.followUpDate < today
   const isFollowUpToday = lead.followUpDate === today
+
+  const handleMenuToggle = () => {
+    if (!showMenu && menuButtonRef.current) {
+      const rect = menuButtonRef.current.getBoundingClientRect()
+      setMenuPosition({
+        top: rect.bottom + 8,
+        right: window.innerWidth - rect.right
+      })
+    }
+    setShowMenu(!showMenu)
+    setShowTemplates(false)
+  }
 
   return (
     <div className={`p-3 sm:p-4 transition-colors ${
@@ -1863,10 +1868,10 @@ function LeadRow({
             {/* More menu */}
             <div className="relative">
               <button
+                ref={menuButtonRef}
                 onClick={(e) => {
                   e.stopPropagation()
-                  setShowMenu(!showMenu)
-                  setShowTemplates(false)
+                  handleMenuToggle()
                 }}
                 className={`p-2 rounded-lg transition-colors ${
                   darkMode ? 'text-gray-400 hover:text-gray-200 hover:bg-gray-700' : 'text-gray-400 hover:text-gray-600 hover:bg-gray-100'
@@ -1874,62 +1879,75 @@ function LeadRow({
               >
                 <MoreVertical className="w-5 h-5" />
               </button>
+            </div>
 
+            {/* More menu portal */}
+            {createPortal(
               <AnimatePresence>
                 {showMenu && (
                   <>
                     {/* Backdrop to close on click outside */}
-                    <div 
-                      className="fixed inset-0 z-10" 
+                    <motion.div 
+                      initial={{ opacity: 0 }}
+                      animate={{ opacity: 1 }}
+                      exit={{ opacity: 0 }}
+                      className="fixed inset-0 z-[9998] bg-black/20" 
                       onClick={() => setShowMenu(false)}
                     />
                     <motion.div
-                      initial={{ opacity: 0, y: -10 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      exit={{ opacity: 0, y: -10 }}
-                      className={`absolute right-0 mt-2 w-48 rounded-xl shadow-xl border z-20 ${
+                      initial={{ opacity: 0, scale: 0.95 }}
+                      animate={{ opacity: 1, scale: 1 }}
+                      exit={{ opacity: 0, scale: 0.95 }}
+                      style={{
+                        position: 'fixed',
+                        top: menuPosition.top,
+                        right: menuPosition.right,
+                        zIndex: 9999
+                      }}
+                      className={`w-48 rounded-xl shadow-xl border ${
                         darkMode ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-100'
                       }`}
                     >
-                    <div className="p-2">
-                      <p className={`px-3 py-1 text-xs font-medium uppercase ${darkMode ? 'text-gray-500' : 'text-gray-400'}`}>Status wijzigen</p>
-                      {Object.entries(statusColors).map(([key, value]) => (
+                      <div className="p-2">
+                        <p className={`px-3 py-1 text-xs font-medium uppercase ${darkMode ? 'text-gray-500' : 'text-gray-400'}`}>Status wijzigen</p>
+                        {Object.entries(statusColors).map(([key, value]) => (
+                          <button
+                            key={key}
+                            onClick={() => {
+                              onStatusChange(key as Lead['status'])
+                              setShowMenu(false)
+                            }}
+                            className={`w-full flex items-center gap-2 p-2 text-left rounded-lg transition-colors ${
+                              lead.status === key 
+                                ? darkMode ? 'bg-gray-700' : 'bg-gray-50'
+                                : darkMode ? 'hover:bg-gray-700' : 'hover:bg-gray-50'
+                            }`}
+                          >
+                            <span className={`w-2 h-2 rounded-full ${value.bg.replace('100', '500')}`} />
+                            <span className={`text-sm ${darkMode ? 'text-gray-200' : 'text-gray-700'}`}>{value.label}</span>
+                            {lead.status === key && <CheckCircle className="w-4 h-4 text-emerald-500 ml-auto" />}
+                          </button>
+                        ))}
+                        <hr className={`my-2 ${darkMode ? 'border-gray-700' : 'border-gray-200'}`} />
                         <button
-                          key={key}
                           onClick={() => {
-                            onStatusChange(key as Lead['status'])
+                            onDelete()
                             setShowMenu(false)
                           }}
-                          className={`w-full flex items-center gap-2 p-2 text-left rounded-lg transition-colors ${
-                            lead.status === key 
-                              ? darkMode ? 'bg-gray-700' : 'bg-gray-50'
-                              : darkMode ? 'hover:bg-gray-700' : 'hover:bg-gray-50'
+                          className={`w-full flex items-center gap-2 p-2 text-left rounded-lg ${
+                            darkMode ? 'text-red-400 hover:bg-red-500/20' : 'text-red-600 hover:bg-red-50'
                           }`}
                         >
-                          <span className={`w-2 h-2 rounded-full ${value.bg.replace('100', '500')}`} />
-                          <span className={`text-sm ${darkMode ? 'text-gray-200' : 'text-gray-700'}`}>{value.label}</span>
-                          {lead.status === key && <CheckCircle className="w-4 h-4 text-emerald-500 ml-auto" />}
+                          <XCircle className="w-4 h-4" />
+                          <span className="text-sm">Verwijderen</span>
                         </button>
-                      ))}
-                      <hr className={`my-2 ${darkMode ? 'border-gray-700' : 'border-gray-200'}`} />
-                      <button
-                        onClick={() => {
-                          onDelete()
-                          setShowMenu(false)
-                        }}
-                        className={`w-full flex items-center gap-2 p-2 text-left rounded-lg ${
-                          darkMode ? 'text-red-400 hover:bg-red-500/20' : 'text-red-600 hover:bg-red-50'
-                        }`}
-                      >
-                        <XCircle className="w-4 h-4" />
-                        <span className="text-sm">Verwijderen</span>
-                      </button>
-                    </div>
-                  </motion.div>
+                      </div>
+                    </motion.div>
                   </>
                 )}
-              </AnimatePresence>
-            </div>
+              </AnimatePresence>,
+              document.body
+            )}
           </div>
 
           {/* Expandable Details Panel */}
