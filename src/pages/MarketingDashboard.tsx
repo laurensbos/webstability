@@ -254,10 +254,11 @@ export default function MarketingDashboard() {
   const [emailBody, setEmailBody] = useState('')
   const [sending, setSending] = useState(false)
   
-  // Dark mode state
+  // Dark mode state - default to true for modern look
   const [darkMode, setDarkMode] = useState(() => {
     const saved = localStorage.getItem('webstability_darkmode')
-    return saved === 'true'
+    // Default to dark mode if no preference saved
+    return saved === null ? true : saved === 'true'
   })
   
   // Help/Onboarding state
