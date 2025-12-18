@@ -1100,7 +1100,7 @@ interface ProjectsViewProps {
   onNavigateToPayments?: () => void
 }
 
-function ProjectsView({ darkMode, projects, onUpdateProject, onDeleteProject, onSelectProject, onNavigateToPayments }: ProjectsViewProps) {
+function ProjectsView({ darkMode, projects, onUpdateProject, onDeleteProject: _onDeleteProject, onSelectProject, onNavigateToPayments: _onNavigateToPayments }: ProjectsViewProps) {
   const [viewMode, setViewMode] = useState<'kanban' | 'list'>('kanban')
   const [filterPhase, setFilterPhase] = useState<ProjectPhase | 'all'>('all')
   const [filterPayment, setFilterPayment] = useState<PaymentStatus | 'all'>('all')
@@ -1741,8 +1741,6 @@ function ProjectsView({ darkMode, projects, onUpdateProject, onDeleteProject, on
               setSelectedProject(null)
             }}
             onUpdate={onUpdateProject}
-            onDelete={onDeleteProject}
-            onPaymentClick={onNavigateToPayments}
             phases={phases}
           />
         )}
@@ -1765,8 +1763,8 @@ interface ProjectDetailModalProps {
   phases: { key: ProjectPhase; label: string; color: string }[]
 }
 
-function ProjectDetailModal({ project, darkMode, onClose, onUpdate, onDelete, onPaymentClick, phases }: ProjectDetailModalProps) {
-  const [activeTab, setActiveTab] = useState<'overview' | 'messages' | 'urls' | 'payment' | 'onboarding' | 'settings'>('overview')
+function ProjectDetailModal({ project, darkMode, onClose, onUpdate, phases }: Omit<ProjectDetailModalProps, 'onDelete' | 'onPaymentClick'>) {
+  const [activeTab, setActiveTab] = useState<'overview' | 'messages' | 'payment' | 'onboarding'>('overview')
   const [paymentLoading, setPaymentLoading] = useState(false)
   const [generatedPaymentUrl, setGeneratedPaymentUrl] = useState('')
   const [paymentDescription, setPaymentDescription] = useState('')
@@ -1774,11 +1772,10 @@ function ProjectDetailModal({ project, darkMode, onClose, onUpdate, onDelete, on
   const [editPhase, setEditPhase] = useState(project.phase)
   const [editPaymentStatus, setEditPaymentStatus] = useState(project.paymentStatus)
   const [internalNotes, setInternalNotes] = useState(project.internalNotes || '')
-  const [stagingUrl, setStagingUrl] = useState(project.stagingUrl || '')
-  const [liveUrl, setLiveUrl] = useState(project.liveUrl || '')
+  const [stagingUrl] = useState(project.stagingUrl || '')
+  const [liveUrl] = useState(project.liveUrl || '')
   const [newMessage, setNewMessage] = useState('')
   const [isSaving, setIsSaving] = useState(false)
-  const [showCopied, setShowCopied] = useState(false)
   const [checklist, setChecklist] = useState<Record<string, boolean>>(project.phaseChecklist || {})
   const [isSendingPhaseEmail, setIsSendingPhaseEmail] = useState(false)
 
@@ -1898,13 +1895,6 @@ function ProjectDetailModal({ project, darkMode, onClose, onUpdate, onDelete, on
     setNewMessage('')
   }
 
-  const handleCopyPortalLink = () => {
-    const link = `https://webstability.nl/project/${project.projectId}`
-    navigator.clipboard.writeText(link)
-    setShowCopied(true)
-    setTimeout(() => setShowCopied(false), 2000)
-  }
-
   const getPackagePrice = (pkg: Project['package']) => {
     const prices = { starter: 96, professional: 180, business: 301, webshop: 422 }
     return prices[pkg]
@@ -1950,9 +1940,9 @@ function ProjectDetailModal({ project, darkMode, onClose, onUpdate, onDelete, on
             </button>
           </div>
 
-          {/* Tabs */}
+          {/* Tabs - Vereenvoudigd naar 4 */}
           <div className="flex gap-2 mt-4 overflow-x-auto pb-1">
-            {(['overview', 'messages', 'urls', 'payment', 'onboarding', 'settings'] as const).map(tab => (
+            {(['overview', 'messages', 'payment', 'onboarding'] as const).map(tab => (
               <button
                 key={tab}
                 onClick={() => setActiveTab(tab)}
@@ -1975,7 +1965,6 @@ function ProjectDetailModal({ project, darkMode, onClose, onUpdate, onDelete, on
                     )}
                   </>
                 )}
-                {tab === 'urls' && 'URLs & Links'}
                 {tab === 'payment' && (
                   <>
                     <CreditCard className="w-4 h-4" />
@@ -1991,7 +1980,6 @@ function ProjectDetailModal({ project, darkMode, onClose, onUpdate, onDelete, on
                     )}
                   </>
                 )}
-                {tab === 'settings' && 'Instellingen'}
               </button>
             ))}
           </div>
@@ -2297,155 +2285,6 @@ function ProjectDetailModal({ project, darkMode, onClose, onUpdate, onDelete, on
             </div>
           )}
 
-          {activeTab === 'urls' && (
-            <div className="space-y-6">
-              {/* Klantportaal link */}
-              <div className={`p-4 rounded-xl ${darkMode ? 'bg-gray-700/50' : 'bg-gray-50'}`}>
-                <h3 className={`font-semibold mb-3 ${darkMode ? 'text-white' : 'text-gray-900'}`}>
-                  📋 Klantportaal Link
-                </h3>
-                <div className="flex gap-2">
-                  <input
-                    type="text"
-                    readOnly
-                    value={`https://webstability.nl/project/${project.projectId}`}
-                    className={`flex-1 px-4 py-3 rounded-xl border ${
-                      darkMode 
-                        ? 'bg-gray-800 border-gray-600 text-gray-300' 
-                        : 'bg-white border-gray-200 text-gray-700'
-                    }`}
-                  />
-                  <button
-                    onClick={handleCopyPortalLink}
-                    className={`px-4 py-3 rounded-xl font-medium transition-colors ${
-                      showCopied 
-                        ? 'bg-green-500 text-white'
-                        : 'bg-emerald-500 hover:bg-emerald-600 text-white'
-                    }`}
-                  >
-                    {showCopied ? '✓ Gekopieerd!' : 'Kopieer'}
-                  </button>
-                </div>
-                <p className={`text-sm mt-2 ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>
-                  Stuur deze link naar de klant om hun project te bekijken
-                </p>
-              </div>
-
-              {/* Design/Staging URL */}
-              <div className={`p-4 rounded-xl ${darkMode ? 'bg-gray-700/50' : 'bg-gray-50'}`}>
-                <h3 className={`font-semibold mb-3 ${darkMode ? 'text-white' : 'text-gray-900'}`}>
-                  🎨 Design Preview URL
-                </h3>
-                <div className="flex gap-2">
-                  <input
-                    type="url"
-                    value={stagingUrl}
-                    onChange={(e) => setStagingUrl(e.target.value)}
-                    placeholder="https://preview.webstability.nl/project-naam"
-                    className={`flex-1 px-4 py-3 rounded-xl border ${
-                      darkMode 
-                        ? 'bg-gray-800 border-gray-600 text-white placeholder-gray-500' 
-                        : 'bg-white border-gray-200 text-gray-900 placeholder-gray-400'
-                    } focus:outline-none focus:ring-2 focus:ring-emerald-500/50`}
-                  />
-                  {stagingUrl && (
-                    <a
-                      href={stagingUrl}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="px-4 py-3 bg-purple-500 hover:bg-purple-600 text-white rounded-xl transition-colors"
-                    >
-                      <ExternalLink className="w-5 h-5" />
-                    </a>
-                  )}
-                </div>
-                <p className={`text-sm mt-2 ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>
-                  De klant ziet deze link in hun portaal tijdens design/review fase
-                </p>
-              </div>
-
-              {/* Live URL */}
-              <div className={`p-4 rounded-xl ${darkMode ? 'bg-gray-700/50' : 'bg-gray-50'}`}>
-                <h3 className={`font-semibold mb-3 ${darkMode ? 'text-white' : 'text-gray-900'}`}>
-                  🌐 Live Website URL
-                </h3>
-                <div className="flex gap-2">
-                  <input
-                    type="url"
-                    value={liveUrl}
-                    onChange={(e) => setLiveUrl(e.target.value)}
-                    placeholder="https://www.klantnaam.nl"
-                    className={`flex-1 px-4 py-3 rounded-xl border ${
-                      darkMode 
-                        ? 'bg-gray-800 border-gray-600 text-white placeholder-gray-500' 
-                        : 'bg-white border-gray-200 text-gray-900 placeholder-gray-400'
-                    } focus:outline-none focus:ring-2 focus:ring-emerald-500/50`}
-                  />
-                  {liveUrl && (
-                    <a
-                      href={liveUrl}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="px-4 py-3 bg-green-500 hover:bg-green-600 text-white rounded-xl transition-colors"
-                    >
-                      <ExternalLink className="w-5 h-5" />
-                    </a>
-                  )}
-                </div>
-              </div>
-
-              {/* Quick Phase Action */}
-              <div className={`p-4 rounded-xl border-2 border-dashed ${
-                darkMode ? 'border-gray-700' : 'border-gray-200'
-              }`}>
-                <h3 className={`font-semibold mb-3 ${darkMode ? 'text-white' : 'text-gray-900'}`}>
-                  🚀 Snelle actie
-                </h3>
-                <div className="flex flex-wrap gap-3">
-                  {editPhase !== 'live' && (
-                    <button
-                      onClick={handleMoveToNextPhaseWithEmail}
-                      disabled={!allCompleted}
-                      className={`flex items-center gap-2 px-4 py-2 font-medium rounded-xl transition-colors ${
-                        allCompleted 
-                          ? 'bg-emerald-500 hover:bg-emerald-600 text-white' 
-                          : 'bg-gray-300 text-gray-500 cursor-not-allowed'
-                      }`}
-                    >
-                      <ChevronRight className="w-4 h-4" />
-                      Verplaats naar {
-                        editPhase === 'onboarding' ? 'Design' :
-                        editPhase === 'design' ? 'Development' :
-                        editPhase === 'development' ? 'Review' :
-                        'Live'
-                      }
-                    </button>
-                  )}
-                  {editPhase === 'review' && editPaymentStatus === 'paid' && (
-                    <button
-                      onClick={() => {
-                        setEditPhase('live')
-                      }}
-                      className="flex items-center gap-2 px-4 py-2 bg-green-500 hover:bg-green-600 text-white font-medium rounded-xl transition-colors"
-                    >
-                      <Rocket className="w-4 h-4" />
-                      Zet Live!
-                    </button>
-                  )}
-                </div>
-              </div>
-
-              {/* Save Button */}
-              <button
-                onClick={handleSave}
-                disabled={isSaving}
-                className="w-full py-3 bg-emerald-500 hover:bg-emerald-600 text-white font-semibold rounded-xl transition-colors disabled:opacity-50"
-              >
-                {isSaving ? 'Opslaan...' : 'URLs opslaan'}
-              </button>
-            </div>
-          )}
-
           {activeTab === 'payment' && (
             <div className="space-y-6">
               {/* Current Payment Status */}
@@ -2744,80 +2583,6 @@ function ProjectDetailModal({ project, darkMode, onClose, onUpdate, onDelete, on
                   </p>
                 </div>
               )}
-            </div>
-          )}
-
-          {activeTab === 'settings' && (
-            <div className="space-y-6">
-              <div className={`p-4 rounded-xl ${darkMode ? 'bg-yellow-900/20 border border-yellow-500/50' : 'bg-yellow-50 border border-yellow-200'}`}>
-                <div className="flex items-start gap-3">
-                  <AlertCircle className="w-5 h-5 text-yellow-500 flex-shrink-0 mt-0.5" />
-                  <div>
-                    <h4 className={`font-semibold ${darkMode ? 'text-yellow-400' : 'text-yellow-800'}`}>
-                      Projectinstellingen
-                    </h4>
-                    <p className={`text-sm ${darkMode ? 'text-yellow-500' : 'text-yellow-700'}`}>
-                      Hier komen geavanceerde instellingen zoals project verwijderen, archiveren, etc.
-                    </p>
-                  </div>
-                </div>
-              </div>
-
-              {/* Quick Actions */}
-              <div className="grid grid-cols-2 gap-4">
-                <a 
-                  href={`mailto:${project.contactEmail}?subject=Webstability - ${project.businessName}`}
-                  className={`p-4 rounded-xl border text-left transition-colors ${
-                    darkMode 
-                      ? 'bg-gray-700/50 border-gray-600 hover:border-emerald-500' 
-                      : 'bg-gray-50 border-gray-200 hover:border-emerald-300'
-                  }`}
-                >
-                  <Mail className={`w-5 h-5 mb-2 ${darkMode ? 'text-emerald-400' : 'text-emerald-500'}`} />
-                  <h4 className={`font-semibold ${darkMode ? 'text-white' : 'text-gray-900'}`}>
-                    E-mail versturen
-                  </h4>
-                  <p className={`text-sm ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>
-                    Stuur een e-mail naar de klant
-                  </p>
-                </a>
-                <button 
-                  onClick={onPaymentClick}
-                  className={`p-4 rounded-xl border text-left transition-colors ${
-                    darkMode 
-                      ? 'bg-gray-700/50 border-gray-600 hover:border-green-500' 
-                      : 'bg-gray-50 border-gray-200 hover:border-green-300'
-                  }`}
-                >
-                  <CreditCard className={`w-5 h-5 mb-2 ${darkMode ? 'text-green-400' : 'text-green-500'}`} />
-                  <h4 className={`font-semibold ${darkMode ? 'text-white' : 'text-gray-900'}`}>
-                    Betaallink maken
-                  </h4>
-                  <p className={`text-sm ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>
-                    Genereer een Mollie betaallink
-                  </p>
-                </button>
-              </div>
-
-              {/* Danger Zone */}
-              <div className={`mt-6 p-4 rounded-xl border ${darkMode ? 'border-red-500/30 bg-red-900/10' : 'border-red-200 bg-red-50'}`}>
-                <h4 className={`font-semibold mb-3 ${darkMode ? 'text-red-400' : 'text-red-700'}`}>
-                  ⚠️ Gevarenzone
-                </h4>
-                <div className="flex flex-wrap gap-3">
-                  <button
-                    onClick={() => {
-                      if (window.confirm(`Weet je zeker dat je het project "${project.businessName}" wilt verwijderen? Dit kan niet ongedaan worden gemaakt.`)) {
-                        onDelete?.(project.id)
-                        onClose()
-                      }
-                    }}
-                    className="px-4 py-2 bg-red-500 hover:bg-red-600 text-white text-sm font-medium rounded-lg transition-colors"
-                  >
-                    Project verwijderen
-                  </button>
-                </div>
-              </div>
             </div>
           )}
         </div>
