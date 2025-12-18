@@ -430,10 +430,13 @@ export default function MarketingDashboard() {
     setSearchResults([])
 
     try {
+      // Converteer km naar meters voor de API
+      const radiusInMeters = (parseInt(searchRadius) * 1000).toString()
+      
       const params = new URLSearchParams({
         city: searchCity.trim(),
         type: searchType,
-        radius: searchRadius
+        radius: radiusInMeters
       })
 
       // Voeg bedrijfsnaam query toe als die is ingevuld
@@ -441,7 +444,7 @@ export default function MarketingDashboard() {
         params.set('query', businessNameQuery.trim())
       }
 
-      console.log(`[Search] Zoeken naar ${businessNameQuery || searchType} in ${searchCity}...`)
+      console.log(`[Search] Zoeken naar ${businessNameQuery || searchType} in ${searchCity}, radius ${searchRadius}km...`)
       
       const response = await fetch(`/api/marketing/search-businesses?${params}`)
       const data = await response.json()
