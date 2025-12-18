@@ -254,6 +254,26 @@ export default function MarketingDashboard() {
   const [emailBody, setEmailBody] = useState('')
   const [sending, setSending] = useState(false)
   
+  // Main view tab - zoeken or leads
+  const [mainTab, setMainTab] = useState<'zoeken' | 'leads'>('zoeken')
+  
+  // Business search state
+  const [searchCity, setSearchCity] = useState('')
+  const [searchType, setSearchType] = useState('overig')
+  const [searchRadius, setSearchRadius] = useState('5')
+  const [isSearching, setIsSearching] = useState(false)
+  const [searchError, setSearchError] = useState('')
+  const [searchResults, setSearchResults] = useState<Array<{
+    id: string
+    name: string
+    address: string
+    city: string
+    phone?: string
+    website?: string
+    email?: string
+    type: string
+  }>>([])
+  
   // Dark mode state - default to true for modern look
   const [darkMode, setDarkMode] = useState(() => {
     const saved = localStorage.getItem('webstability_darkmode')
@@ -407,6 +427,84 @@ export default function MarketingDashboard() {
     
     loadLeads()
   }, [])
+
+  // Business types for search
+  const businessTypes = [
+    { value: 'restaurant', label: 'Restaurant / Horeca' },
+    { value: 'kapper', label: 'Kapper / Schoonheid' },
+    { value: 'winkel', label: 'Winkel / Retail' },
+    { value: 'garage', label: 'Garage / Auto' },
+    { value: 'bouw', label: 'Bouw / Aannemer' },
+    { value: 'installateur', label: 'Installateur' },
+    { value: 'schilder', label: 'Schilder' },
+    { value: 'fitness', label: 'Fitness / Sport' },
+    { value: 'tandarts', label: 'Tandarts / Zorg' },
+    { value: 'overig', label: 'Overig' },
+  ]
+
+  // Search businesses via API
+  const handleBusinessSearch = async () => {
+    if (!searchCity.trim()) {
+      setSearchError('Vul een stad of postcode in')
+      return
+    }
+
+    setIsSearching(true)
+    setSearchError('')
+    setSearchResults([])
+
+    try {
+      const params = new URLSearchParams({
+        city: searchCity,
+        type: searchType,
+        radius: searchRadius
+      })
+
+      const response = await fetch(`/api/marketing/search-businesses?${params}`)
+      const data = await response.json()
+
+      if (data.success) {
+        setSearchResults(data.businesses)
+        if (data.businesses.length === 0) {
+          setSearchError('Geen bedrijven gevonden in dit gebied')
+        }
+      } else {
+        setSearchError(data.error || 'Zoeken mislukt')
+      }
+    } catch {
+      setSearchError('Netwerkfout - probeer opnieuw')
+    } finally {
+      setIsSearching(false)
+    }
+  }
+
+  // Add business from search results to leads
+  const addBusinessToLeads = (business: typeof searchResults[0]) => {
+    // Check if already exists
+    if (leads.some(l => l.id === business.id)) {
+      return
+    }
+
+    const newLead: Lead = {
+      id: business.id,
+      companyName: business.name,
+      contactPerson: '',
+      email: business.email || '',
+      phone: business.phone || '',
+      website: business.website || '',
+      address: business.address,
+      city: business.city,
+      notes: `Type: ${business.type}`,
+      status: 'nieuw',
+      priority: false,
+      createdAt: new Date().toISOString(),
+      emailsSent: 0,
+      emailHistory: [],
+      notesTimeline: []
+    }
+
+    setLeads(prev => [newLead, ...prev])
+  }
 
   // Save leads to localStorage AND sync to API
   useEffect(() => {
@@ -1068,15 +1166,32 @@ export default function MarketingDashboard() {
             <motion.button
               whileHover={{ scale: 1.02 }}
               whileTap={{ scale: 0.98 }}
-              onClick={() => window.open('/marketing/zoeken', '_blank')}
+              onClick={() => setMainTab('zoeken')}
               className={`flex items-center gap-2 px-4 py-2.5 rounded-xl font-medium transition-all ${
-                darkMode 
-                  ? 'bg-gray-800 text-gray-300 hover:bg-gray-700' 
-                  : 'bg-white text-gray-700 hover:bg-gray-50 border border-gray-200'
+                mainTab === 'zoeken'
+                  ? 'bg-emerald-500 text-white shadow-lg shadow-emerald-500/20'
+                  : darkMode 
+                    ? 'bg-gray-800 text-gray-300 hover:bg-gray-700' 
+                    : 'bg-white text-gray-700 hover:bg-gray-50 border border-gray-200'
               }`}
             >
               <Search className="w-4 h-4" />
               Bedrijven zoeken
+            </motion.button>
+            <motion.button
+              whileHover={{ scale: 1.02 }}
+              whileTap={{ scale: 0.98 }}
+              onClick={() => setMainTab('leads')}
+              className={`flex items-center gap-2 px-4 py-2.5 rounded-xl font-medium transition-all ${
+                mainTab === 'leads'
+                  ? 'bg-blue-500 text-white shadow-lg shadow-blue-500/20'
+                  : darkMode 
+                    ? 'bg-gray-800 text-gray-300 hover:bg-gray-700' 
+                    : 'bg-white text-gray-700 hover:bg-gray-50 border border-gray-200'
+              }`}
+            >
+              <Building2 className="w-4 h-4" />
+              Mijn leads ({leads.length})
             </motion.button>
             <motion.button
               whileHover={{ scale: 1.02 }}
@@ -1172,7 +1287,184 @@ export default function MarketingDashboard() {
         </motion.div>
 
         {/* Status Filter Chips */}
-        <div className="flex flex-wrap gap-2 mb-6">
+        {mainTab === 'zoeken' ? (
+          /* Business Search Panel */
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            className={`rounded-2xl p-6 border backdrop-blur-xl mb-6 ${
+              darkMode ? 'bg-gray-800/60 border-gray-700/50' : 'bg-white/80 border-gray-200/50'
+            }`}
+          >
+            <h3 className={`text-lg font-semibold mb-4 flex items-center gap-2 ${darkMode ? 'text-white' : 'text-gray-900'}`}>
+              <MapPin className="w-5 h-5 text-emerald-500" />
+              Zoek bedrijven in de buurt
+            </h3>
+            
+            <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-4">
+              <div className="md:col-span-1">
+                <label className={`block text-sm font-medium mb-1 ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>
+                  Stad of postcode
+                </label>
+                <input
+                  type="text"
+                  value={searchCity}
+                  onChange={(e) => setSearchCity(e.target.value)}
+                  onKeyDown={(e) => e.key === 'Enter' && handleBusinessSearch()}
+                  placeholder="bijv. Leiden of 2312"
+                  className={`w-full px-4 py-2.5 rounded-xl border ${
+                    darkMode 
+                      ? 'bg-gray-700 border-gray-600 text-white placeholder-gray-500' 
+                      : 'bg-white border-gray-200 text-gray-900 placeholder-gray-400'
+                  } focus:outline-none focus:ring-2 focus:ring-emerald-500/20`}
+                />
+              </div>
+              
+              <div>
+                <label className={`block text-sm font-medium mb-1 ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>
+                  Type bedrijf
+                </label>
+                <select
+                  value={searchType}
+                  onChange={(e) => setSearchType(e.target.value)}
+                  className={`w-full px-4 py-2.5 rounded-xl border ${
+                    darkMode 
+                      ? 'bg-gray-700 border-gray-600 text-white' 
+                      : 'bg-white border-gray-200 text-gray-900'
+                  } focus:outline-none focus:ring-2 focus:ring-emerald-500/20`}
+                >
+                  {businessTypes.map(type => (
+                    <option key={type.value} value={type.value}>{type.label}</option>
+                  ))}
+                </select>
+              </div>
+              
+              <div>
+                <label className={`block text-sm font-medium mb-1 ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>
+                  Straal
+                </label>
+                <select
+                  value={searchRadius}
+                  onChange={(e) => setSearchRadius(e.target.value)}
+                  className={`w-full px-4 py-2.5 rounded-xl border ${
+                    darkMode 
+                      ? 'bg-gray-700 border-gray-600 text-white' 
+                      : 'bg-white border-gray-200 text-gray-900'
+                  } focus:outline-none focus:ring-2 focus:ring-emerald-500/20`}
+                >
+                  <option value="2">2 km</option>
+                  <option value="5">5 km</option>
+                  <option value="10">10 km</option>
+                  <option value="25">25 km</option>
+                </select>
+              </div>
+              
+              <div className="flex items-end">
+                <motion.button
+                  whileHover={{ scale: 1.02 }}
+                  whileTap={{ scale: 0.98 }}
+                  onClick={handleBusinessSearch}
+                  disabled={isSearching || !searchCity.trim()}
+                  className="w-full px-6 py-2.5 bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-600 hover:to-emerald-700 disabled:from-gray-400 disabled:to-gray-500 text-white font-medium rounded-xl transition-all flex items-center justify-center gap-2"
+                >
+                  {isSearching ? (
+                    <RefreshCw className="w-4 h-4 animate-spin" />
+                  ) : (
+                    <Search className="w-4 h-4" />
+                  )}
+                  Zoeken
+                </motion.button>
+              </div>
+            </div>
+
+            {searchError && (
+              <p className={`text-sm mb-4 ${darkMode ? 'text-red-400' : 'text-red-600'}`}>{searchError}</p>
+            )}
+
+            {/* Search Results */}
+            {searchResults.length > 0 && (
+              <div className={`rounded-xl border ${darkMode ? 'border-gray-700' : 'border-gray-200'}`}>
+                <div className={`p-4 border-b ${darkMode ? 'border-gray-700 bg-gray-700/50' : 'border-gray-200 bg-gray-50'}`}>
+                  <h4 className={`font-semibold ${darkMode ? 'text-white' : 'text-gray-900'}`}>
+                    {searchResults.length} bedrijven gevonden
+                  </h4>
+                </div>
+                
+                <div className={`divide-y ${darkMode ? 'divide-gray-700' : 'divide-gray-100'} max-h-96 overflow-y-auto`}>
+                  {searchResults.map((business) => {
+                    const isAdded = leads.some(l => l.id === business.id)
+                    
+                    return (
+                      <div key={business.id} className={`p-4 transition-colors ${darkMode ? 'hover:bg-gray-700/50' : 'hover:bg-gray-50'}`}>
+                        <div className="flex items-start justify-between gap-4">
+                          <div className="flex-1 min-w-0">
+                            <h5 className={`font-medium truncate ${darkMode ? 'text-white' : 'text-gray-900'}`}>
+                              {business.name}
+                            </h5>
+                            <p className={`text-sm ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>
+                              {business.address}, {business.city}
+                            </p>
+                            <div className={`flex flex-wrap gap-3 mt-2 text-xs ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>
+                              {business.phone && (
+                                <span className="flex items-center gap-1">
+                                  <Phone className="w-3 h-3" />
+                                  {business.phone}
+                                </span>
+                              )}
+                              {business.website && (
+                                <a 
+                                  href={business.website.startsWith('http') ? business.website : `https://${business.website}`}
+                                  target="_blank"
+                                  rel="noopener noreferrer"
+                                  className="flex items-center gap-1 text-emerald-500 hover:underline"
+                                >
+                                  <Globe className="w-3 h-3" />
+                                  Website
+                                </a>
+                              )}
+                              <span className={`px-2 py-0.5 rounded-full ${darkMode ? 'bg-gray-700' : 'bg-gray-100'}`}>
+                                {business.type}
+                              </span>
+                            </div>
+                          </div>
+                          
+                          <motion.button
+                            whileHover={{ scale: 1.05 }}
+                            whileTap={{ scale: 0.95 }}
+                            onClick={() => addBusinessToLeads(business)}
+                            disabled={isAdded}
+                            className={`flex-shrink-0 px-3 py-1.5 rounded-lg text-sm font-medium transition-colors ${
+                              isAdded
+                                ? darkMode 
+                                  ? 'bg-emerald-500/20 text-emerald-400 cursor-default'
+                                  : 'bg-emerald-100 text-emerald-700 cursor-default'
+                                : 'bg-emerald-500 hover:bg-emerald-600 text-white'
+                            }`}
+                          >
+                            {isAdded ? (
+                              <>
+                                <CheckCircle className="w-4 h-4 inline mr-1" />
+                                Toegevoegd
+                              </>
+                            ) : (
+                              <>
+                                <Plus className="w-4 h-4 inline mr-1" />
+                                Toevoegen
+                              </>
+                            )}
+                          </motion.button>
+                        </div>
+                      </div>
+                    )
+                  })}
+                </div>
+              </div>
+            )}
+          </motion.div>
+        ) : (
+          /* Original Leads Filter */
+          <>
+          <div className="flex flex-wrap gap-2 mb-6">
           {['alle', 'nieuw', 'gecontacteerd', 'geinteresseerd', 'offerte', 'klant', 'afgewezen'].map((status) => {
             const count = status === 'alle' ? leads.length : leads.filter(l => l.status === status).length
             return (
@@ -1200,7 +1492,7 @@ export default function MarketingDashboard() {
               </motion.button>
             )
           })}
-        </div>
+          </div>
 
         {/* Leads List */}
         <motion.div 
@@ -1250,6 +1542,8 @@ export default function MarketingDashboard() {
             </div>
           )}
         </motion.div>
+        </>
+        )}
       </main>
 
       {/* Add Lead Modal */}

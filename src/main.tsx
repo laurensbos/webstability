@@ -39,7 +39,7 @@ const ResetPassword = lazy(() => import('./pages/ResetPassword'))
 const WachtwoordResetten = lazy(() => import('./pages/WachtwoordResetten'))
 const DeveloperDashboard = lazy(() => import('./pages/DeveloperDashboard'))
 const Login = lazy(() => import('./pages/Login'))
-const MarketingDashboard = lazy(() => import('./pages/MarketingDashboardNew'))
+const MarketingDashboard = lazy(() => import('./pages/MarketingDashboard'))
 const Unauthorized = lazy(() => import('./pages/Unauthorized'))
 const ClientOnboarding = lazy(() => import('./pages/ClientOnboarding'))
 
