@@ -163,6 +163,157 @@ const PHASE_CONFIG: Record<ProjectPhase, { label: string; color: string; bg: str
 // NAVIGATION CONFIG
 // ===========================================
 
+// ===========================================
+// WELCOME TOUR COMPONENT
+// ===========================================
+
+const TOUR_COMPLETED_KEY = 'webstability_tour_completed'
+
+interface WelcomeTourProps {
+  darkMode: boolean
+  onComplete: () => void
+}
+
+function WelcomeTour({ darkMode, onComplete }: WelcomeTourProps) {
+  const [step, setStep] = useState(0)
+
+  const steps = [
+    {
+      icon: '👋',
+      title: 'Welkom bij je Developer Dashboard!',
+      content: 'Dit is je centrale plek om al je website-projecten te beheren. Laat me je in 5 stappen uitleggen hoe het werkt.',
+      highlight: null,
+    },
+    {
+      icon: '📁',
+      title: 'Stap 1: Projecten beheren',
+      content: 'Alle klantprojecten staan hier. Je ziet ze in een Kanban-bord met 5 fases: Onboarding → Design → Development → Review → Live. Sleep projecten naar de volgende fase wanneer ze klaar zijn.',
+      highlight: 'projects',
+    },
+    {
+      icon: '💬',
+      title: 'Stap 2: Communiceren met klanten',
+      content: 'Berichten werken per project. Klanten kunnen via hun portaal berichten sturen - jij ziet ze hier. Een rode badge toont ongelezen berichten.',
+      highlight: 'messages',
+    },
+    {
+      icon: '💳',
+      title: 'Stap 3: Betalingen regelen',
+      content: 'Genereer betaallinks via Mollie. Stuur de link naar de klant en volg de status. Pas als er betaald is, kan het project live!',
+      highlight: 'payments',
+    },
+    {
+      icon: '🚀',
+      title: 'De werkflow in het kort',
+      content: `
+        1. Klant meldt zich aan → Project verschijnt in "Onboarding"
+        2. Jij maakt design → Klant keurt goed via berichten
+        3. Jij bouwt website → Stuur betaallink
+        4. Klant betaalt → Jij zet project live
+        5. Klaar! Klant betaalt maandelijks via abonnement
+      `,
+      highlight: null,
+    },
+    {
+      icon: '✅',
+      title: 'Je bent klaar om te beginnen!',
+      content: 'Klik op "Hulp & Proces" in de zijbalk als je dit overzicht nog eens wilt zien. Succes met je eerste project!',
+      highlight: null,
+    },
+  ]
+
+  const currentStep = steps[step]
+  const isLastStep = step === steps.length - 1
+
+  return (
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm"
+    >
+      <motion.div
+        initial={{ scale: 0.9, opacity: 0 }}
+        animate={{ scale: 1, opacity: 1 }}
+        className={`w-full max-w-lg rounded-3xl p-8 shadow-2xl ${
+          darkMode ? 'bg-gray-800' : 'bg-white'
+        }`}
+      >
+        {/* Progress dots */}
+        <div className="flex justify-center gap-2 mb-6">
+          {steps.map((_, i) => (
+            <div
+              key={i}
+              className={`w-2 h-2 rounded-full transition-colors ${
+                i === step
+                  ? 'bg-emerald-500 w-6'
+                  : i < step
+                  ? 'bg-emerald-300'
+                  : darkMode ? 'bg-gray-600' : 'bg-gray-300'
+              }`}
+            />
+          ))}
+        </div>
+
+        {/* Icon */}
+        <div className="text-6xl text-center mb-4">{currentStep.icon}</div>
+
+        {/* Title */}
+        <h2 className={`text-2xl font-bold text-center mb-4 ${darkMode ? 'text-white' : 'text-gray-900'}`}>
+          {currentStep.title}
+        </h2>
+
+        {/* Content */}
+        <p className={`text-center mb-8 leading-relaxed whitespace-pre-line ${darkMode ? 'text-gray-300' : 'text-gray-600'}`}>
+          {currentStep.content}
+        </p>
+
+        {/* Navigation */}
+        <div className="flex gap-3">
+          {step > 0 && (
+            <button
+              onClick={() => setStep(step - 1)}
+              className={`flex-1 py-3 rounded-xl font-medium transition-colors ${
+                darkMode
+                  ? 'bg-gray-700 text-gray-300 hover:bg-gray-600'
+                  : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+              }`}
+            >
+              Vorige
+            </button>
+          )}
+          <button
+            onClick={() => {
+              if (isLastStep) {
+                localStorage.setItem(TOUR_COMPLETED_KEY, 'true')
+                onComplete()
+              } else {
+                setStep(step + 1)
+              }
+            }}
+            className="flex-1 py-3 bg-gradient-to-r from-emerald-500 to-emerald-600 text-white font-medium rounded-xl hover:from-emerald-600 hover:to-emerald-700 transition-colors shadow-lg shadow-emerald-500/20"
+          >
+            {isLastStep ? 'Start!' : 'Volgende'}
+          </button>
+        </div>
+
+        {/* Skip button */}
+        {!isLastStep && (
+          <button
+            onClick={() => {
+              localStorage.setItem(TOUR_COMPLETED_KEY, 'true')
+              onComplete()
+            }}
+            className={`w-full mt-3 py-2 text-sm ${darkMode ? 'text-gray-500 hover:text-gray-400' : 'text-gray-400 hover:text-gray-500'}`}
+          >
+            Overslaan
+          </button>
+        )}
+      </motion.div>
+    </motion.div>
+  )
+}
+
 const NAV_ITEMS: { id: DashboardView; label: string; icon: typeof LayoutDashboard; badge?: number }[] = [
   { id: 'overview', label: 'Dashboard', icon: LayoutDashboard },
   { id: 'projects', label: 'Projecten', icon: FolderKanban },
@@ -6032,6 +6183,9 @@ export default function DeveloperDashboardNew() {
   // Auth state
   const [isAuthenticated, setIsAuthenticated] = useState(false)
   
+  // Tour state - show on first login
+  const [showTour, setShowTour] = useState(false)
+  
   // UI state
   const [activeView, setActiveView] = useState<DashboardView>('overview')
   const [sidebarOpen, setSidebarOpen] = useState(false)
@@ -6268,6 +6422,11 @@ export default function DeveloperDashboardNew() {
       sessionStorage.setItem(TOKEN_KEY, 'dev-token')
       sessionStorage.setItem(AUTH_KEY, 'true')
       setIsAuthenticated(true)
+      
+      // Show tour if not completed yet
+      if (!localStorage.getItem(TOUR_COMPLETED_KEY)) {
+        setShowTour(true)
+      }
       return true
     }
     
@@ -6285,6 +6444,11 @@ export default function DeveloperDashboardNew() {
         sessionStorage.setItem(TOKEN_KEY, data.token)
         sessionStorage.setItem(AUTH_KEY, 'true')
         setIsAuthenticated(true)
+        
+        // Show tour if not completed yet
+        if (!localStorage.getItem(TOUR_COMPLETED_KEY)) {
+          setShowTour(true)
+        }
         return true
       }
     } catch (error) {
@@ -6385,6 +6549,16 @@ export default function DeveloperDashboardNew() {
 
   return (
     <div className={`min-h-screen flex ${darkMode ? 'dark bg-gray-900' : 'bg-gray-50'}`}>
+      {/* Welcome Tour for first-time users */}
+      <AnimatePresence>
+        {showTour && (
+          <WelcomeTour 
+            darkMode={darkMode} 
+            onComplete={() => setShowTour(false)} 
+          />
+        )}
+      </AnimatePresence>
+
       {/* Sidebar */}
       <Sidebar
         activeView={activeView}
