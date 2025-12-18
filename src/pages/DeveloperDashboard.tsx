@@ -32,7 +32,6 @@ import {
   Loader2,
   Lock,
   Wallet,
-  TrendingDown,
   Palette,
   Code,
   Eye,
@@ -747,66 +746,6 @@ function MobileBottomNav({ activeView, setActiveView, darkMode, unreadMessages }
 }
 
 // ===========================================
-// STAT CARD COMPONENT
-// ===========================================
-
-interface StatCardProps {
-  icon: typeof TrendingUp
-  label: string
-  value: string | number
-  subValue?: string
-  trend?: { value: number; positive: boolean }
-  color: 'blue' | 'green' | 'amber' | 'purple' | 'red' | 'cyan'
-  darkMode: boolean
-  delay?: number
-}
-
-function StatCard({ icon: Icon, label, value, subValue, trend, color, darkMode, delay = 0 }: StatCardProps) {
-  const colorClasses = {
-    blue: 'from-emerald-500 to-emerald-600',
-    green: 'from-green-500 to-emerald-600',
-    amber: 'from-amber-500 to-orange-600',
-    purple: 'from-purple-500 to-violet-600',
-    red: 'from-red-500 to-rose-600',
-    cyan: 'from-cyan-500 to-emerald-600',
-  }
-
-  return (
-    <motion.div
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ delay }}
-      className={`p-5 rounded-2xl border transition-all hover:shadow-lg ${
-        darkMode 
-          ? 'bg-gray-800 border-gray-700 hover:border-gray-600' 
-          : 'bg-white border-gray-200 hover:border-gray-300'
-      }`}
-    >
-      <div className="flex items-start justify-between mb-4">
-        <div className={`p-3 rounded-xl bg-gradient-to-br ${colorClasses[color]} text-white shadow-lg`}>
-          <Icon className="w-5 h-5" />
-        </div>
-        {trend && (
-          <div className={`flex items-center gap-1 text-sm font-medium ${
-            trend.positive ? 'text-green-500' : 'text-red-500'
-          }`}>
-            {trend.positive ? <TrendingUp className="w-4 h-4" /> : <TrendingDown className="w-4 h-4" />}
-            {trend.value}%
-          </div>
-        )}
-      </div>
-      <div className={`text-2xl font-bold mb-1 ${darkMode ? 'text-white' : 'text-gray-900'}`}>
-        {value}
-      </div>
-      <div className={`text-sm ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>{label}</div>
-      {subValue && (
-        <div className={`text-xs mt-1 ${darkMode ? 'text-gray-500' : 'text-gray-400'}`}>{subValue}</div>
-      )}
-    </motion.div>
-  )
-}
-
-// ===========================================
 // LOGIN SCREEN
 // ===========================================
 
@@ -973,7 +912,6 @@ function OverviewView({ darkMode, projects, setActiveView, onSelectProject, onUp
     acc + p.messages.filter(m => !m.read && m.from === 'client').length, 0
   )
   const pendingPayments = projects.filter(p => p.paymentStatus === 'awaiting_payment').length
-  const readyToGoLive = projects.filter(p => p.paymentStatus === 'paid' && p.phase === 'review')
   
   // Projecten die actie nodig hebben
   const needsAction = projects.filter(p => {
@@ -1195,17 +1133,6 @@ function ProjectsView({ darkMode, projects, onUpdateProject, onDeleteProject, on
     setSelectedProject(project)
     setShowProjectModal(true)
     onSelectProject(project)
-  }
-
-  const _getPaymentBadge = (status: PaymentStatus) => {
-    const badges = {
-      pending: { label: 'In afwachting', color: 'bg-gray-500' },
-      awaiting_payment: { label: 'Wacht op betaling', color: 'bg-yellow-500' },
-      paid: { label: 'Betaald', color: 'bg-green-500' },
-      failed: { label: 'Mislukt', color: 'bg-red-500' },
-      refunded: { label: 'Terugbetaald', color: 'bg-purple-500' },
-    }
-    return badges[status]
   }
 
   const getPackageBadge = (pkg: Project['package']) => {
