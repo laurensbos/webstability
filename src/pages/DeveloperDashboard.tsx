@@ -45,6 +45,7 @@ import {
   Globe,
   Send,
   RefreshCw,
+  Copy,
 } from 'lucide-react'
 import Logo from '../components/Logo'
 
@@ -465,10 +466,13 @@ function Header({
   setSearchTerm,
   activeView,
   onRefresh,
-  isRefreshing
-}: HeaderProps) {
+  isRefreshing,
+  onNavigateToOverview
+}: HeaderProps & { onNavigateToOverview?: () => void }) {
   const [showNotifications, setShowNotifications] = useState(false)
   const unreadCount = notifications.filter(n => !n.read).length
+  
+  const currentNav = NAV_ITEMS.find(item => item.id === activeView)
 
   return (
     <header className={`sticky top-0 z-30 ${
@@ -489,13 +493,52 @@ function Header({
             <Menu className="w-6 h-6" />
           </button>
 
-          {/* Page title - Mobile */}
-          <h1 className={`lg:hidden text-lg font-bold ${darkMode ? 'text-white' : 'text-gray-900'}`}>
-            {NAV_ITEMS.find(item => item.id === activeView)?.label}
-          </h1>
+          {/* Breadcrumb navigation */}
+          <div className="flex items-center gap-2">
+            {activeView !== 'overview' && onNavigateToOverview && (
+              <>
+                <button
+                  onClick={onNavigateToOverview}
+                  className={`hidden sm:flex items-center gap-1 text-sm font-medium ${
+                    darkMode ? 'text-gray-400 hover:text-white' : 'text-gray-500 hover:text-gray-900'
+                  } transition-colors`}
+                >
+                  <LayoutDashboard className="w-4 h-4" />
+                  <span>Overzicht</span>
+                </button>
+                <ChevronRight className={`hidden sm:block w-4 h-4 ${darkMode ? 'text-gray-600' : 'text-gray-300'}`} />
+              </>
+            )}
+            <div className="flex items-center gap-2">
+              {currentNav && (
+                <div className={`p-1.5 rounded-lg ${darkMode ? 'bg-gray-800' : 'bg-gray-100'}`}>
+                  <currentNav.icon className={`w-4 h-4 ${darkMode ? 'text-blue-400' : 'text-blue-600'}`} />
+                </div>
+              )}
+              <h1 className={`text-lg font-bold ${darkMode ? 'text-white' : 'text-gray-900'}`}>
+                {currentNav?.label || 'Dashboard'}
+              </h1>
+            </div>
+          </div>
+        </div>
+
+        {/* Right side */}
+        <div className="flex items-center gap-2">
+          {/* Refresh button */}
+          <motion.button
+            whileTap={{ scale: 0.95 }}
+            onClick={onRefresh}
+            disabled={isRefreshing}
+            className={`p-2 rounded-lg ${
+              darkMode ? 'hover:bg-gray-800 text-gray-400' : 'hover:bg-gray-100 text-gray-500'
+            } ${isRefreshing ? 'animate-spin' : ''}`}
+            title="Vernieuwen"
+          >
+            <RefreshCw className="w-5 h-5" />
+          </motion.button>
 
           {/* Search - Desktop */}
-          <div className="hidden lg:block relative">
+          <div className="hidden md:block relative">
             <Search className={`absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 ${
               darkMode ? 'text-gray-500' : 'text-gray-400'
             }`} />
@@ -504,23 +547,13 @@ function Header({
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
               placeholder="Zoeken..."
-              className={`w-64 pl-10 pr-4 py-2 rounded-xl border-0 focus:ring-2 focus:ring-blue-500 ${
+              className={`w-48 lg:w-64 pl-10 pr-4 py-2 rounded-xl border-0 focus:ring-2 focus:ring-blue-500 ${
                 darkMode 
                   ? 'bg-gray-800 text-white placeholder-gray-500' 
                   : 'bg-gray-100 text-gray-900 placeholder-gray-400'
               }`}
             />
           </div>
-        </div>
-
-        {/* Right side */}
-        <div className="flex items-center gap-2">
-          {/* Search button - Mobile */}
-          <button className={`lg:hidden p-2 rounded-lg ${
-            darkMode ? 'hover:bg-gray-800 text-gray-400' : 'hover:bg-gray-100 text-gray-500'
-          }`}>
-            <Search className="w-5 h-5" />
-          </button>
 
           {/* Notifications */}
           <div className="relative">
@@ -936,9 +969,23 @@ interface OverviewViewProps {
   serviceRequests: ServiceRequest[]
   setActiveView: (view: DashboardView) => void
   onSelectProject: (project: Project) => void
+  onUpdateProject: (project: Project) => Promise<void>
 }
 
-function OverviewView({ darkMode, projects, clients, serviceRequests, setActiveView, onSelectProject }: OverviewViewProps) {
+function OverviewView({ darkMode, projects, clients, serviceRequests, setActiveView, onSelectProject, onUpdateProject }: OverviewViewProps) {
+  const [goingLive, setGoingLive] = useState<string | null>(null)
+  
+  const handleGoLive = async (project: Project) => {
+    setGoingLive(project.id)
+    try {
+      await onUpdateProject({ ...project, phase: 'live' })
+    } catch (error) {
+      console.error('Error setting project live:', error)
+    } finally {
+      setGoingLive(null)
+    }
+  }
+
   const stats = {
     totalProjects: projects.length,
     activeProjects: projects.filter(p => p.phase !== 'live').length,
@@ -1100,11 +1147,16 @@ function OverviewView({ darkMode, projects, clients, serviceRequests, setActiveV
                     </div>
                   </div>
                   <button 
-                    onClick={(e) => { e.stopPropagation(); }}
-                    className="px-4 py-2 bg-green-500 hover:bg-green-600 text-white font-medium rounded-xl transition-colors flex items-center gap-2"
+                    onClick={(e) => { e.stopPropagation(); handleGoLive(p); }}
+                    disabled={goingLive === p.id}
+                    className="px-4 py-2 bg-green-500 hover:bg-green-600 text-white font-medium rounded-xl transition-colors flex items-center gap-2 disabled:opacity-50"
                   >
-                    <Rocket className="w-4 h-4" />
-                    <span className="hidden sm:inline">Zet live</span>
+                    {goingLive === p.id ? (
+                      <Loader2 className="w-4 h-4 animate-spin" />
+                    ) : (
+                      <Rocket className="w-4 h-4" />
+                    )}
+                    <span className="hidden sm:inline">{goingLive === p.id ? 'Bezig...' : 'Zet live'}</span>
                   </button>
                 </div>
               ))}
@@ -2012,12 +2064,19 @@ interface ProjectDetailModalProps {
 }
 
 function ProjectDetailModal({ project, darkMode, onClose, onUpdate, onDelete, onPaymentClick, phases }: ProjectDetailModalProps) {
-  const [activeTab, setActiveTab] = useState<'overview' | 'messages' | 'settings'>('overview')
+  const [activeTab, setActiveTab] = useState<'overview' | 'messages' | 'urls' | 'payment' | 'settings'>('overview')
+  const [paymentLoading, setPaymentLoading] = useState(false)
+  const [generatedPaymentUrl, setGeneratedPaymentUrl] = useState('')
+  const [paymentDescription, setPaymentDescription] = useState('')
+  const [paymentAmount, setPaymentAmount] = useState('')
   const [editPhase, setEditPhase] = useState(project.phase)
   const [editPaymentStatus, setEditPaymentStatus] = useState(project.paymentStatus)
   const [internalNotes, setInternalNotes] = useState(project.internalNotes || '')
+  const [stagingUrl, setStagingUrl] = useState(project.stagingUrl || '')
+  const [liveUrl, setLiveUrl] = useState(project.liveUrl || '')
   const [newMessage, setNewMessage] = useState('')
   const [isSaving, setIsSaving] = useState(false)
+  const [showCopied, setShowCopied] = useState(false)
 
   const handleSave = async () => {
     setIsSaving(true)
@@ -2025,10 +2084,12 @@ function ProjectDetailModal({ project, darkMode, onClose, onUpdate, onDelete, on
       ...project,
       phase: editPhase,
       paymentStatus: editPaymentStatus,
+      stagingUrl,
+      liveUrl,
       internalNotes,
       updatedAt: new Date().toISOString(),
     })
-    setIsSaving(false)
+    setTimeout(() => setIsSaving(false), 500)
   }
 
   const handleSendMessage = () => {
@@ -2050,10 +2111,28 @@ function ProjectDetailModal({ project, darkMode, onClose, onUpdate, onDelete, on
     setNewMessage('')
   }
 
+  const handleCopyPortalLink = () => {
+    const link = `https://webstability.nl/project/${project.projectId}`
+    navigator.clipboard.writeText(link)
+    setShowCopied(true)
+    setTimeout(() => setShowCopied(false), 2000)
+  }
+
+  const handleMoveToNextPhase = () => {
+    const phaseOrder: ProjectPhase[] = ['onboarding', 'design', 'development', 'review', 'live']
+    const currentIndex = phaseOrder.indexOf(editPhase)
+    if (currentIndex < phaseOrder.length - 1) {
+      const nextPhase = phaseOrder[currentIndex + 1]
+      setEditPhase(nextPhase)
+    }
+  }
+
   const getPackagePrice = (pkg: Project['package']) => {
     const prices = { starter: 96, professional: 180, business: 301, webshop: 422 }
     return prices[pkg]
   }
+
+  const unreadCount = project.messages.filter(m => !m.read && m.from === 'client').length
 
   return (
     <motion.div
@@ -2094,19 +2173,37 @@ function ProjectDetailModal({ project, darkMode, onClose, onUpdate, onDelete, on
           </div>
 
           {/* Tabs */}
-          <div className="flex gap-2 mt-4">
-            {(['overview', 'messages', 'settings'] as const).map(tab => (
+          <div className="flex gap-2 mt-4 overflow-x-auto pb-1">
+            {(['overview', 'messages', 'urls', 'payment', 'settings'] as const).map(tab => (
               <button
                 key={tab}
                 onClick={() => setActiveTab(tab)}
-                className={`px-4 py-2 rounded-xl text-sm font-medium transition-colors ${
+                className={`px-4 py-2 rounded-xl text-sm font-medium transition-colors whitespace-nowrap flex items-center gap-2 ${
                   activeTab === tab
                     ? 'bg-blue-500 text-white'
                     : darkMode ? 'text-gray-400 hover:bg-gray-700' : 'text-gray-600 hover:bg-gray-100'
                 }`}
               >
                 {tab === 'overview' && 'Overzicht'}
-                {tab === 'messages' && `Berichten (${project.messages.length})`}
+                {tab === 'messages' && (
+                  <>
+                    Berichten
+                    {unreadCount > 0 && (
+                      <span className={`px-1.5 py-0.5 text-xs font-bold rounded-full ${
+                        activeTab === tab ? 'bg-white/20' : 'bg-red-500 text-white'
+                      }`}>
+                        {unreadCount}
+                      </span>
+                    )}
+                  </>
+                )}
+                {tab === 'urls' && 'URLs & Links'}
+                {tab === 'payment' && (
+                  <>
+                    <CreditCard className="w-4 h-4" />
+                    Betaling
+                  </>
+                )}
                 {tab === 'settings' && 'Instellingen'}
               </button>
             ))}
@@ -2316,6 +2413,364 @@ function ProjectDetailModal({ project, darkMode, onClose, onUpdate, onDelete, on
                 >
                   <Send className="w-5 h-5" />
                 </button>
+              </div>
+            </div>
+          )}
+
+          {activeTab === 'urls' && (
+            <div className="space-y-6">
+              {/* Klantportaal link */}
+              <div className={`p-4 rounded-xl ${darkMode ? 'bg-gray-700/50' : 'bg-gray-50'}`}>
+                <h3 className={`font-semibold mb-3 ${darkMode ? 'text-white' : 'text-gray-900'}`}>
+                  📋 Klantportaal Link
+                </h3>
+                <div className="flex gap-2">
+                  <input
+                    type="text"
+                    readOnly
+                    value={`https://webstability.nl/project/${project.projectId}`}
+                    className={`flex-1 px-4 py-3 rounded-xl border ${
+                      darkMode 
+                        ? 'bg-gray-800 border-gray-600 text-gray-300' 
+                        : 'bg-white border-gray-200 text-gray-700'
+                    }`}
+                  />
+                  <button
+                    onClick={handleCopyPortalLink}
+                    className={`px-4 py-3 rounded-xl font-medium transition-colors ${
+                      showCopied 
+                        ? 'bg-green-500 text-white'
+                        : 'bg-blue-500 hover:bg-blue-600 text-white'
+                    }`}
+                  >
+                    {showCopied ? '✓ Gekopieerd!' : 'Kopieer'}
+                  </button>
+                </div>
+                <p className={`text-sm mt-2 ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>
+                  Stuur deze link naar de klant om hun project te bekijken
+                </p>
+              </div>
+
+              {/* Design/Staging URL */}
+              <div className={`p-4 rounded-xl ${darkMode ? 'bg-gray-700/50' : 'bg-gray-50'}`}>
+                <h3 className={`font-semibold mb-3 ${darkMode ? 'text-white' : 'text-gray-900'}`}>
+                  🎨 Design Preview URL
+                </h3>
+                <div className="flex gap-2">
+                  <input
+                    type="url"
+                    value={stagingUrl}
+                    onChange={(e) => setStagingUrl(e.target.value)}
+                    placeholder="https://preview.webstability.nl/project-naam"
+                    className={`flex-1 px-4 py-3 rounded-xl border ${
+                      darkMode 
+                        ? 'bg-gray-800 border-gray-600 text-white placeholder-gray-500' 
+                        : 'bg-white border-gray-200 text-gray-900 placeholder-gray-400'
+                    } focus:outline-none focus:ring-2 focus:ring-blue-500/50`}
+                  />
+                  {stagingUrl && (
+                    <a
+                      href={stagingUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="px-4 py-3 bg-purple-500 hover:bg-purple-600 text-white rounded-xl transition-colors"
+                    >
+                      <ExternalLink className="w-5 h-5" />
+                    </a>
+                  )}
+                </div>
+                <p className={`text-sm mt-2 ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>
+                  De klant ziet deze link in hun portaal tijdens design/review fase
+                </p>
+              </div>
+
+              {/* Live URL */}
+              <div className={`p-4 rounded-xl ${darkMode ? 'bg-gray-700/50' : 'bg-gray-50'}`}>
+                <h3 className={`font-semibold mb-3 ${darkMode ? 'text-white' : 'text-gray-900'}`}>
+                  🌐 Live Website URL
+                </h3>
+                <div className="flex gap-2">
+                  <input
+                    type="url"
+                    value={liveUrl}
+                    onChange={(e) => setLiveUrl(e.target.value)}
+                    placeholder="https://www.klantnaam.nl"
+                    className={`flex-1 px-4 py-3 rounded-xl border ${
+                      darkMode 
+                        ? 'bg-gray-800 border-gray-600 text-white placeholder-gray-500' 
+                        : 'bg-white border-gray-200 text-gray-900 placeholder-gray-400'
+                    } focus:outline-none focus:ring-2 focus:ring-blue-500/50`}
+                  />
+                  {liveUrl && (
+                    <a
+                      href={liveUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="px-4 py-3 bg-green-500 hover:bg-green-600 text-white rounded-xl transition-colors"
+                    >
+                      <ExternalLink className="w-5 h-5" />
+                    </a>
+                  )}
+                </div>
+              </div>
+
+              {/* Quick Phase Action */}
+              <div className={`p-4 rounded-xl border-2 border-dashed ${
+                darkMode ? 'border-gray-700' : 'border-gray-200'
+              }`}>
+                <h3 className={`font-semibold mb-3 ${darkMode ? 'text-white' : 'text-gray-900'}`}>
+                  🚀 Snelle actie
+                </h3>
+                <div className="flex flex-wrap gap-3">
+                  {editPhase !== 'live' && (
+                    <button
+                      onClick={handleMoveToNextPhase}
+                      className="flex items-center gap-2 px-4 py-2 bg-blue-500 hover:bg-blue-600 text-white font-medium rounded-xl transition-colors"
+                    >
+                      <ChevronRight className="w-4 h-4" />
+                      Verplaats naar {
+                        editPhase === 'onboarding' ? 'Design' :
+                        editPhase === 'design' ? 'Development' :
+                        editPhase === 'development' ? 'Review' :
+                        'Live'
+                      }
+                    </button>
+                  )}
+                  {editPhase === 'review' && editPaymentStatus === 'paid' && (
+                    <button
+                      onClick={() => {
+                        setEditPhase('live')
+                      }}
+                      className="flex items-center gap-2 px-4 py-2 bg-green-500 hover:bg-green-600 text-white font-medium rounded-xl transition-colors"
+                    >
+                      <Rocket className="w-4 h-4" />
+                      Zet Live!
+                    </button>
+                  )}
+                </div>
+              </div>
+
+              {/* Save Button */}
+              <button
+                onClick={handleSave}
+                disabled={isSaving}
+                className="w-full py-3 bg-blue-500 hover:bg-blue-600 text-white font-semibold rounded-xl transition-colors disabled:opacity-50"
+              >
+                {isSaving ? 'Opslaan...' : 'URLs opslaan'}
+              </button>
+            </div>
+          )}
+
+          {activeTab === 'payment' && (
+            <div className="space-y-6">
+              {/* Current Payment Status */}
+              <div className={`p-5 rounded-xl ${darkMode ? 'bg-gray-700/50' : 'bg-gray-50'}`}>
+                <h3 className={`font-semibold mb-4 ${darkMode ? 'text-white' : 'text-gray-900'}`}>
+                  💳 Betalingsstatus
+                </h3>
+                <div className="flex items-center gap-3 mb-4">
+                  <span className={`px-3 py-1.5 rounded-full text-sm font-medium ${
+                    editPaymentStatus === 'paid' 
+                      ? 'bg-green-500/20 text-green-400' 
+                      : editPaymentStatus === 'pending'
+                      ? 'bg-yellow-500/20 text-yellow-400'
+                      : 'bg-gray-500/20 text-gray-400'
+                  }`}>
+                    {editPaymentStatus === 'paid' ? '✓ Betaald' : 
+                     editPaymentStatus === 'pending' ? '⏳ In afwachting' : '○ Niet betaald'}
+                  </span>
+                  <span className={`text-lg font-bold ${darkMode ? 'text-white' : 'text-gray-900'}`}>
+                    €{getPackagePrice(project.package)}/maand
+                  </span>
+                </div>
+
+                <div className="flex gap-3">
+                  <select
+                    value={editPaymentStatus}
+                    onChange={(e) => setEditPaymentStatus(e.target.value as PaymentStatus)}
+                    className={`flex-1 px-4 py-2 rounded-xl border ${
+                      darkMode 
+                        ? 'bg-gray-600 border-gray-500 text-white' 
+                        : 'bg-white border-gray-200 text-gray-900'
+                    } focus:outline-none focus:ring-2 focus:ring-blue-500/50`}
+                  >
+                    <option value="unpaid">Niet betaald</option>
+                    <option value="pending">In afwachting</option>
+                    <option value="paid">Betaald</option>
+                  </select>
+                  <button
+                    onClick={handleSave}
+                    disabled={isSaving}
+                    className="px-4 py-2 bg-blue-500 hover:bg-blue-600 text-white font-medium rounded-xl transition-colors disabled:opacity-50"
+                  >
+                    {isSaving ? '...' : 'Opslaan'}
+                  </button>
+                </div>
+              </div>
+
+              {/* Generate Payment Link */}
+              <div className={`p-5 rounded-xl ${darkMode ? 'bg-gray-700/50' : 'bg-gray-50'}`}>
+                <h3 className={`font-semibold mb-4 ${darkMode ? 'text-white' : 'text-gray-900'}`}>
+                  🔗 Betaallink genereren (Mollie)
+                </h3>
+                
+                <div className="space-y-4">
+                  <div>
+                    <label className={`block text-sm font-medium mb-2 ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>
+                      Bedrag (€)
+                    </label>
+                    <input
+                      type="number"
+                      value={paymentAmount}
+                      onChange={(e) => setPaymentAmount(e.target.value)}
+                      placeholder={`${getPackagePrice(project.package)}`}
+                      className={`w-full px-4 py-3 rounded-xl border ${
+                        darkMode 
+                          ? 'bg-gray-600 border-gray-500 text-white placeholder-gray-400' 
+                          : 'bg-white border-gray-200 text-gray-900 placeholder-gray-400'
+                      } focus:outline-none focus:ring-2 focus:ring-blue-500/50`}
+                    />
+                  </div>
+
+                  <div>
+                    <label className={`block text-sm font-medium mb-2 ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>
+                      Omschrijving
+                    </label>
+                    <input
+                      type="text"
+                      value={paymentDescription}
+                      onChange={(e) => setPaymentDescription(e.target.value)}
+                      placeholder={`Website ${project.businessName} - ${project.package} pakket`}
+                      className={`w-full px-4 py-3 rounded-xl border ${
+                        darkMode 
+                          ? 'bg-gray-600 border-gray-500 text-white placeholder-gray-400' 
+                          : 'bg-white border-gray-200 text-gray-900 placeholder-gray-400'
+                      } focus:outline-none focus:ring-2 focus:ring-blue-500/50`}
+                    />
+                  </div>
+
+                  <button
+                    onClick={async () => {
+                      setPaymentLoading(true)
+                      try {
+                        const amount = paymentAmount || String(getPackagePrice(project.package))
+                        const description = paymentDescription || `Website ${project.businessName} - ${project.package} pakket`
+                        
+                        const response = await fetch('/api/create-payment', {
+                          method: 'POST',
+                          headers: { 'Content-Type': 'application/json' },
+                          body: JSON.stringify({
+                            projectId: project.id,
+                            amount,
+                            description,
+                            customerEmail: project.contactEmail,
+                            customerName: project.contactName
+                          })
+                        })
+                        
+                        const data = await response.json()
+                        if (data.paymentUrl) {
+                          setGeneratedPaymentUrl(data.paymentUrl)
+                        } else {
+                          throw new Error(data.error || 'Kon betaallink niet maken')
+                        }
+                      } catch (error) {
+                        console.error('Error creating payment:', error)
+                        alert('Er ging iets mis bij het maken van de betaallink')
+                      } finally {
+                        setPaymentLoading(false)
+                      }
+                    }}
+                    disabled={paymentLoading}
+                    className="w-full py-3 bg-green-500 hover:bg-green-600 text-white font-semibold rounded-xl transition-colors disabled:opacity-50 flex items-center justify-center gap-2"
+                  >
+                    {paymentLoading ? (
+                      <>
+                        <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                        Bezig...
+                      </>
+                    ) : (
+                      <>
+                        <CreditCard className="w-5 h-5" />
+                        Betaallink genereren
+                      </>
+                    )}
+                  </button>
+
+                  {generatedPaymentUrl && (
+                    <div className={`p-4 rounded-xl ${darkMode ? 'bg-green-900/20 border border-green-500/50' : 'bg-green-50 border border-green-200'}`}>
+                      <p className={`text-sm font-medium mb-2 ${darkMode ? 'text-green-400' : 'text-green-700'}`}>
+                        ✓ Betaallink gegenereerd!
+                      </p>
+                      <div className="flex gap-2">
+                        <input
+                          type="text"
+                          readOnly
+                          value={generatedPaymentUrl}
+                          className={`flex-1 px-3 py-2 rounded-lg border text-sm ${
+                            darkMode 
+                              ? 'bg-gray-800 border-gray-600 text-white' 
+                              : 'bg-white border-gray-200 text-gray-900'
+                          }`}
+                        />
+                        <button
+                          onClick={() => {
+                            navigator.clipboard.writeText(generatedPaymentUrl)
+                            alert('Betaallink gekopieerd!')
+                          }}
+                          className="px-4 py-2 bg-green-500 hover:bg-green-600 text-white font-medium rounded-lg transition-colors"
+                        >
+                          <Copy className="w-4 h-4" />
+                        </button>
+                        <button
+                          onClick={() => window.open(generatedPaymentUrl, '_blank')}
+                          className="px-4 py-2 bg-blue-500 hover:bg-blue-600 text-white font-medium rounded-lg transition-colors"
+                        >
+                          <ExternalLink className="w-4 h-4" />
+                        </button>
+                      </div>
+                    </div>
+                  )}
+                </div>
+              </div>
+
+              {/* Quick Payment Links */}
+              <div className={`p-5 rounded-xl ${darkMode ? 'bg-gray-700/50' : 'bg-gray-50'}`}>
+                <h3 className={`font-semibold mb-4 ${darkMode ? 'text-white' : 'text-gray-900'}`}>
+                  ⚡ Snelle betaallink
+                </h3>
+                <div className="grid grid-cols-2 gap-3">
+                  {[
+                    { label: 'Eerste betaling', amount: getPackagePrice(project.package) },
+                    { label: 'Extra werk', amount: 50 },
+                    { label: 'Aanpassing', amount: 25 },
+                    { label: 'Custom', amount: 0 },
+                  ].map((preset) => (
+                    <button
+                      key={preset.label}
+                      onClick={() => {
+                        if (preset.amount === 0) {
+                          setPaymentAmount('')
+                        } else {
+                          setPaymentAmount(String(preset.amount))
+                        }
+                        setPaymentDescription(`${preset.label} - ${project.businessName}`)
+                      }}
+                      className={`p-3 rounded-xl border text-left transition-colors ${
+                        darkMode 
+                          ? 'bg-gray-600/50 border-gray-500 hover:border-blue-500' 
+                          : 'bg-white border-gray-200 hover:border-blue-300'
+                      }`}
+                    >
+                      <p className={`font-medium ${darkMode ? 'text-white' : 'text-gray-900'}`}>
+                        {preset.label}
+                      </p>
+                      <p className={`text-sm ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>
+                        {preset.amount === 0 ? 'Vul zelf in' : `€${preset.amount}`}
+                      </p>
+                    </button>
+                  ))}
+                </div>
               </div>
             </div>
           )}
@@ -5310,6 +5765,7 @@ export default function DeveloperDashboardNew() {
           activeView={activeView}
           onRefresh={loadData}
           isRefreshing={loading}
+          onNavigateToOverview={() => setActiveView('overview')}
         />
 
         {/* Main content */}
@@ -5339,6 +5795,7 @@ export default function DeveloperDashboardNew() {
                       setSelectedProject(project)
                       setActiveView('projects')
                     }}
+                    onUpdateProject={handleUpdateProject}
                   />
                 )}
                 {activeView === 'projects' && (
