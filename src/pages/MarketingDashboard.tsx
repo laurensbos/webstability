@@ -500,10 +500,12 @@ export default function MarketingDashboard() {
   const today = new Date().toISOString().split('T')[0]
 
   const filteredLeads = leads.filter(lead => {
+    const searchLower = searchQuery.toLowerCase()
     const matchesSearch = 
-      lead.companyName.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      lead.contactPerson.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      lead.city.toLowerCase().includes(searchQuery.toLowerCase())
+      (lead.companyName || '').toLowerCase().includes(searchLower) ||
+      (lead.contactPerson || '').toLowerCase().includes(searchLower) ||
+      (lead.city || '').toLowerCase().includes(searchLower) ||
+      (lead.email || '').toLowerCase().includes(searchLower)
     
     let matchesStatus = false
     if (statusFilter === 'alle') {
@@ -564,14 +566,14 @@ export default function MarketingDashboard() {
     
     if (template) {
       const subject = template.subject
-        .replace('{{bedrijf}}', lead.companyName)
-        .replace('{{naam}}', lead.contactPerson)
-        .replace('{{stad}}', lead.city)
+        .replace('{{bedrijf}}', lead.companyName || '')
+        .replace('{{naam}}', lead.contactPerson || 'heer/mevrouw')
+        .replace('{{stad}}', lead.city || '')
       
       const body = template.body
-        .replace(/{{bedrijf}}/g, lead.companyName)
-        .replace(/{{naam}}/g, lead.contactPerson)
-        .replace(/{{stad}}/g, lead.city)
+        .replace(/{{bedrijf}}/g, lead.companyName || '')
+        .replace(/{{naam}}/g, lead.contactPerson || 'heer/mevrouw')
+        .replace(/{{stad}}/g, lead.city || '')
         .replace(/{{afzender}}/g, 'Laurens')
       
       setEmailSubject(subject)
@@ -678,25 +680,37 @@ export default function MarketingDashboard() {
 
   const exportToCSV = () => {
     const headers = ['Bedrijf', 'Contact', 'Email', 'Telefoon', 'Stad', 'Status', 'Notities', 'Follow-up', 'Emails verstuurd']
+    
+    // Helper to escape CSV values (handle commas, quotes, newlines)
+    const escapeCSV = (value: string | undefined | null): string => {
+      if (!value) return ''
+      const str = String(value)
+      if (str.includes(',') || str.includes('"') || str.includes('\n')) {
+        return `"${str.replace(/"/g, '""')}"`
+      }
+      return str
+    }
+    
     const rows = leads.map(l => [
-      l.companyName,
-      l.contactPerson,
-      l.email,
-      l.phone,
-      l.city,
-      statusColors[l.status].label,
-      l.notes,
-      l.followUpDate || '',
-      l.emailsSent.toString()
+      escapeCSV(l.companyName),
+      escapeCSV(l.contactPerson),
+      escapeCSV(l.email),
+      escapeCSV(l.phone),
+      escapeCSV(l.city),
+      escapeCSV(statusColors[l.status]?.label || l.status),
+      escapeCSV(l.notes),
+      escapeCSV(l.followUpDate),
+      String(l.emailsSent || 0)
     ])
     
     const csv = [headers, ...rows].map(row => row.join(',')).join('\n')
-    const blob = new Blob([csv], { type: 'text/csv' })
+    const blob = new Blob(['\ufeff' + csv], { type: 'text/csv;charset=utf-8' }) // BOM for Excel
     const url = URL.createObjectURL(blob)
     const a = document.createElement('a')
     a.href = url
     a.download = `leads-${new Date().toISOString().split('T')[0]}.csv`
     a.click()
+    URL.revokeObjectURL(url) // Clean up
   }
 
   return (
@@ -1545,32 +1559,32 @@ export default function MarketingDashboard() {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50"
+            className="fixed inset-0 bg-black/50 flex items-end sm:items-center justify-center p-0 sm:p-4 z-50"
             onClick={() => setShowEmailModal(false)}
           >
             <motion.div
-              initial={{ scale: 0.95, opacity: 0 }}
-              animate={{ scale: 1, opacity: 1 }}
-              exit={{ scale: 0.95, opacity: 0 }}
-              className={`rounded-2xl w-full max-w-2xl max-h-[90vh] overflow-hidden ${darkMode ? 'bg-gray-800' : 'bg-white'}`}
+              initial={{ scale: 0.95, opacity: 0, y: 100 }}
+              animate={{ scale: 1, opacity: 1, y: 0 }}
+              exit={{ scale: 0.95, opacity: 0, y: 100 }}
+              className={`rounded-t-2xl sm:rounded-2xl w-full sm:max-w-2xl max-h-[95vh] sm:max-h-[90vh] overflow-hidden ${darkMode ? 'bg-gray-800' : 'bg-white'}`}
               onClick={(e) => e.stopPropagation()}
             >
-              <div className={`p-6 border-b ${darkMode ? 'border-gray-700' : 'border-gray-100'}`}>
+              <div className={`p-4 sm:p-6 border-b ${darkMode ? 'border-gray-700' : 'border-gray-100'}`}>
                 <div className="flex items-center justify-between">
-                  <div>
-                    <h2 className={`text-xl font-bold ${darkMode ? 'text-white' : 'text-gray-900'}`}>Email versturen</h2>
-                    <p className={`text-sm ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>Naar: {selectedLead.email}</p>
+                  <div className="min-w-0">
+                    <h2 className={`text-lg sm:text-xl font-bold truncate ${darkMode ? 'text-white' : 'text-gray-900'}`}>Email versturen</h2>
+                    <p className={`text-xs sm:text-sm truncate ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>Naar: {selectedLead.email}</p>
                   </div>
                   <button
                     onClick={() => setShowEmailModal(false)}
-                    className={`p-2 rounded-lg ${darkMode ? 'hover:bg-gray-700 text-gray-400' : 'hover:bg-gray-100'}`}
+                    className={`p-2 rounded-lg flex-shrink-0 ${darkMode ? 'hover:bg-gray-700 text-gray-400' : 'hover:bg-gray-100'}`}
                   >
                     <X className="w-5 h-5" />
                   </button>
                 </div>
               </div>
 
-              <div className="p-6 overflow-y-auto max-h-[60vh]">
+              <div className="p-4 sm:p-6 overflow-y-auto max-h-[55vh] sm:max-h-[60vh]">
                 {/* Template selector */}
                 <div className="mb-4">
                   <label className={`block text-sm font-medium mb-2 ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>
@@ -1622,8 +1636,8 @@ export default function MarketingDashboard() {
                   <textarea
                     value={emailBody}
                     onChange={(e) => setEmailBody(e.target.value)}
-                    rows={12}
-                    className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-emerald-500 font-mono text-sm ${
+                    rows={8}
+                    className={`w-full px-3 sm:px-4 py-2 border rounded-lg focus:ring-2 focus:ring-emerald-500 font-mono text-sm ${
                       darkMode 
                         ? 'bg-gray-700 border-gray-600 text-white placeholder-gray-400' 
                         : 'bg-white border-gray-200 text-gray-900'
@@ -1633,17 +1647,17 @@ export default function MarketingDashboard() {
                 </div>
               </div>
 
-              <div className={`p-6 border-t flex justify-end gap-3 ${darkMode ? 'border-gray-700' : 'border-gray-100'}`}>
+              <div className={`p-4 sm:p-6 border-t flex flex-col-reverse sm:flex-row sm:justify-end gap-2 sm:gap-3 ${darkMode ? 'border-gray-700' : 'border-gray-100'}`}>
                 <button
                   onClick={() => setShowEmailModal(false)}
-                  className={`px-4 py-2 ${darkMode ? 'text-gray-400 hover:text-white' : 'text-gray-600 hover:text-gray-900'}`}
+                  className={`w-full sm:w-auto px-4 py-2.5 rounded-lg ${darkMode ? 'text-gray-400 hover:text-white hover:bg-gray-700' : 'text-gray-600 hover:text-gray-900 hover:bg-gray-100'}`}
                 >
                   Annuleren
                 </button>
                 <button
                   onClick={sendEmail}
                   disabled={sending || !emailSubject || !emailBody}
-                  className="flex items-center gap-2 px-6 py-2 bg-emerald-600 text-white rounded-lg hover:bg-emerald-700 disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="w-full sm:w-auto flex items-center justify-center gap-2 px-6 py-2.5 bg-emerald-600 text-white rounded-lg hover:bg-emerald-700 disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   {sending ? (
                     <>
@@ -1664,17 +1678,21 @@ export default function MarketingDashboard() {
       </AnimatePresence>
 
       {/* Mobile Bottom Navigation */}
-      <nav className={`lg:hidden fixed bottom-0 left-0 right-0 z-50 border-t backdrop-blur-xl ${
+      <nav className={`lg:hidden fixed bottom-0 left-0 right-0 z-50 border-t backdrop-blur-xl pb-safe ${
         darkMode 
           ? 'bg-gray-900/90 border-gray-800' 
           : 'bg-white/90 border-gray-200'
       }`}>
-        <div className="flex items-center justify-around h-16 px-2 safe-area-pb">
+        <div className="flex items-center justify-around h-14 sm:h-16 px-2">
           <motion.button
             whileTap={{ scale: 0.9 }}
-            onClick={() => window.location.href = '/'}
-            className={`flex flex-col items-center gap-1 px-4 py-2 ${
-              darkMode ? 'text-gray-400' : 'text-gray-500'
+            onClick={() => {
+              setMainTab('leads')
+              setStatusFilter('alle')
+              window.scrollTo({ top: 0, behavior: 'smooth' })
+            }}
+            className={`flex flex-col items-center gap-0.5 px-3 py-1.5 ${
+              mainTab === 'leads' ? (darkMode ? 'text-emerald-400' : 'text-emerald-600') : (darkMode ? 'text-gray-400' : 'text-gray-500')
             }`}
           >
             <Home className="w-5 h-5" />
@@ -1682,8 +1700,19 @@ export default function MarketingDashboard() {
           </motion.button>
           <motion.button
             whileTap={{ scale: 0.9 }}
-            className={`flex flex-col items-center gap-1 px-4 py-2 ${
-              darkMode ? 'text-emerald-400' : 'text-emerald-600'
+            onClick={() => setMainTab('zoeken')}
+            className={`flex flex-col items-center gap-0.5 px-3 py-1.5 ${
+              mainTab === 'zoeken' ? (darkMode ? 'text-emerald-400' : 'text-emerald-600') : (darkMode ? 'text-gray-400' : 'text-gray-500')
+            }`}
+          >
+            <Search className="w-5 h-5" />
+            <span className="text-[10px] font-medium">Zoeken</span>
+          </motion.button>
+          <motion.button
+            whileTap={{ scale: 0.9 }}
+            onClick={() => setMainTab('leads')}
+            className={`flex flex-col items-center gap-0.5 px-3 py-1.5 ${
+              mainTab === 'leads' ? (darkMode ? 'text-emerald-400' : 'text-emerald-600') : (darkMode ? 'text-gray-400' : 'text-gray-500')
             }`}
           >
             <LayoutDashboard className="w-5 h-5" />
@@ -1692,16 +1721,16 @@ export default function MarketingDashboard() {
           <motion.button
             whileTap={{ scale: 0.9 }}
             onClick={() => setShowAddModal(true)}
-            className="flex flex-col items-center gap-1 px-4 py-2"
+            className="flex flex-col items-center gap-0.5 px-3 py-1.5"
           >
-            <div className="p-2 bg-emerald-500 rounded-xl shadow-lg shadow-emerald-500/30">
+            <div className="p-1.5 sm:p-2 bg-emerald-500 rounded-xl shadow-lg shadow-emerald-500/30">
               <Plus className="w-5 h-5 text-white" />
             </div>
           </motion.button>
           <motion.button
             whileTap={{ scale: 0.9 }}
             onClick={() => setShowHelp(true)}
-            className={`flex flex-col items-center gap-1 px-4 py-2 ${
+            className={`flex flex-col items-center gap-0.5 px-3 py-1.5 ${
               darkMode ? 'text-gray-400' : 'text-gray-500'
             }`}
           >
@@ -1711,7 +1740,7 @@ export default function MarketingDashboard() {
           <motion.button
             whileTap={{ scale: 0.9 }}
             onClick={toggleDarkMode}
-            className={`flex flex-col items-center gap-1 px-4 py-2 ${
+            className={`flex flex-col items-center gap-0.5 px-3 py-1.5 ${
               darkMode ? 'text-yellow-400' : 'text-gray-500'
             }`}
           >
@@ -1776,10 +1805,33 @@ function LeadRow({
 
         {/* Main content */}
         <div className="flex-1 min-w-0">
-          <div className="flex items-start justify-between gap-2 sm:gap-4 flex-wrap sm:flex-nowrap">
-            <div className="min-w-0">
+          <div className="flex items-start justify-between gap-2 sm:gap-4">
+            <div className="min-w-0 flex-1">
               <div className="flex items-center gap-2 flex-wrap">
-                <h3 className={`font-semibold truncate ${darkMode ? 'text-white' : 'text-gray-900'}`}>{lead.companyName}</h3>
+                <h3 className={`font-semibold truncate text-sm sm:text-base ${darkMode ? 'text-white' : 'text-gray-900'}`}>{lead.companyName}</h3>
+                {/* Status badge - visible on larger screens */}
+                <span className={`hidden sm:inline-flex px-2 sm:px-3 py-0.5 sm:py-1 rounded-full text-[10px] sm:text-xs font-medium ${status.bg} ${status.text}`}>
+                  {status.label}
+                </span>
+              </div>
+              {/* Status badge - mobile only, under company name */}
+              <div className="flex items-center gap-2 mt-1 sm:hidden">
+                <span className={`px-2 py-0.5 rounded-full text-[10px] font-medium ${status.bg} ${status.text}`}>
+                  {status.label}
+                </span>
+                {isFollowUpOverdue && (
+                  <span className={`px-1.5 py-0.5 text-[10px] rounded-full font-medium ${darkMode ? 'bg-red-500/20 text-red-400' : 'bg-red-100 text-red-700'}`}>
+                    Te laat!
+                  </span>
+                )}
+                {isFollowUpToday && (
+                  <span className={`px-1.5 py-0.5 text-[10px] rounded-full font-medium ${darkMode ? 'bg-orange-500/20 text-orange-400' : 'bg-orange-100 text-orange-700'}`}>
+                    Vandaag
+                  </span>
+                )}
+              </div>
+              {/* Follow-up badges - desktop only */}
+              <div className="hidden sm:flex items-center gap-2 mt-1">
                 {isFollowUpOverdue && (
                   <span className={`px-2 py-0.5 text-xs rounded-full font-medium whitespace-nowrap ${darkMode ? 'bg-red-500/20 text-red-400' : 'bg-red-100 text-red-700'}`}>
                     Follow-up te laat!
@@ -1791,14 +1843,16 @@ function LeadRow({
                   </span>
                 )}
               </div>
-              <div className={`flex flex-wrap items-center gap-x-3 sm:gap-x-4 gap-y-1 mt-1 text-sm ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>
+              <div className={`flex flex-wrap items-center gap-x-2 sm:gap-x-4 gap-y-1 mt-1.5 sm:mt-1 text-xs sm:text-sm ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>
+                {lead.contactPerson && (
+                  <span className="flex items-center gap-1">
+                    <User className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
+                    <span className="hidden sm:inline">{lead.contactPerson}</span>
+                    <span className="sm:hidden">{lead.contactPerson.split(' ')[0]}</span>
+                  </span>
+                )}
                 <span className="flex items-center gap-1">
-                  <User className="w-4 h-4" />
-                  <span className="hidden sm:inline">{lead.contactPerson}</span>
-                  <span className="sm:hidden">{lead.contactPerson.split(' ')[0]}</span>
-                </span>
-                <span className="flex items-center gap-1">
-                  <MapPin className="w-4 h-4" />
+                  <MapPin className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
                   {lead.city}
                 </span>
                 {lead.website && (
@@ -1808,43 +1862,39 @@ function LeadRow({
                     rel="noopener noreferrer"
                     className="flex items-center gap-1 text-emerald-600 hover:underline"
                   >
-                    <Globe className="w-4 h-4" />
-                    Website
+                    <Globe className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
+                    <span className="hidden sm:inline">Website</span>
+                    <span className="sm:hidden">Web</span>
                   </a>
                 )}
               </div>
               {lead.notes && (
-                <p className="text-sm text-gray-600 mt-2 line-clamp-1">{lead.notes}</p>
+                <p className={`text-xs sm:text-sm mt-2 line-clamp-1 ${darkMode ? 'text-gray-500' : 'text-gray-600'}`}>{lead.notes}</p>
               )}
             </div>
-
-            {/* Status badge */}
-            <span className={`px-3 py-1 rounded-full text-xs font-medium ${status.bg} ${status.text}`}>
-              {status.label}
-            </span>
           </div>
 
           {/* Actions row */}
-          <div className="flex items-center gap-2 mt-3 flex-wrap">
+          <div className="flex items-center gap-1.5 sm:gap-2 mt-3 flex-wrap">
             <a
               href={`mailto:${lead.email}`}
-              className={`flex items-center gap-1.5 px-3 py-1.5 text-sm rounded-lg transition-colors ${
+              className={`flex items-center gap-1 sm:gap-1.5 px-2 sm:px-3 py-1 sm:py-1.5 text-xs sm:text-sm rounded-lg transition-colors ${
                 darkMode ? 'text-gray-400 hover:text-emerald-400 hover:bg-emerald-500/10' : 'text-gray-600 hover:text-emerald-600 hover:bg-emerald-50'
               }`}
             >
-              <Mail className="w-4 h-4" />
+              <Mail className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
+              <span className="hidden xs:inline sm:hidden">Mail</span>
               <span className="hidden sm:inline">{lead.email}</span>
-              <span className="sm:hidden">Email</span>
             </a>
             <a
               href={`tel:${lead.phone}`}
-              className={`flex items-center gap-1.5 px-3 py-1.5 text-sm rounded-lg transition-colors ${
+              className={`flex items-center gap-1 sm:gap-1.5 px-2 sm:px-3 py-1 sm:py-1.5 text-xs sm:text-sm rounded-lg transition-colors ${
                 darkMode ? 'text-gray-400 hover:text-emerald-400 hover:bg-emerald-500/10' : 'text-gray-600 hover:text-emerald-600 hover:bg-emerald-50'
               }`}
             >
-              <Phone className="w-4 h-4" />
-              <span className="hidden sm:inline">{lead.phone}</span>
+              <Phone className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
               <span className="sm:hidden">Bel</span>
+              <span className="hidden sm:inline">{lead.phone}</span>
             </a>
             
             {/* Details toggle button */}
@@ -1901,10 +1951,11 @@ function LeadRow({
                 setShowTemplates(true)
                 setShowMenu(false)
               }}
-              className="flex items-center gap-2 px-3 sm:px-4 py-2 bg-emerald-600 text-white text-sm font-medium rounded-lg hover:bg-emerald-700 transition-colors shrink-0"
+              className="flex items-center gap-1.5 sm:gap-2 px-2.5 sm:px-4 py-1.5 sm:py-2 bg-emerald-600 text-white text-xs sm:text-sm font-medium rounded-lg hover:bg-emerald-700 transition-colors shrink-0"
             >
-              <Mail className="w-4 h-4" />
+              <Mail className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
               <span className="hidden sm:inline">Email sturen</span>
+              <span className="sm:hidden">Email</span>
             </button>
 
             {/* Template selection modal */}
@@ -1914,15 +1965,15 @@ function LeadRow({
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
                   exit={{ opacity: 0 }}
-                  className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm"
+                  className="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-0 sm:p-4 bg-black/50 backdrop-blur-sm"
                   onClick={() => setShowTemplates(false)}
                 >
                   <motion.div
-                    initial={{ scale: 0.95, opacity: 0 }}
-                    animate={{ scale: 1, opacity: 1 }}
-                    exit={{ scale: 0.95, opacity: 0 }}
+                    initial={{ scale: 0.95, opacity: 0, y: 100 }}
+                    animate={{ scale: 1, opacity: 1, y: 0 }}
+                    exit={{ scale: 0.95, opacity: 0, y: 100 }}
                     onClick={(e) => e.stopPropagation()}
-                    className={`w-full max-w-md rounded-2xl p-6 ${
+                    className={`w-full sm:max-w-md rounded-t-2xl sm:rounded-2xl p-4 sm:p-6 max-h-[80vh] overflow-y-auto ${
                       darkMode ? 'bg-gray-800' : 'bg-white'
                     } shadow-2xl`}
                   >
@@ -2068,23 +2119,23 @@ function LeadRow({
                 exit={{ opacity: 0, height: 0 }}
                 className={`mt-4 pt-4 border-t ${darkMode ? 'border-gray-700' : 'border-gray-100'}`}
               >
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3 sm:gap-4">
                   {/* Email History */}
-                  <div className={`rounded-lg p-4 ${darkMode ? 'bg-gray-700/50' : 'bg-gray-50'}`}>
-                    <h4 className={`text-sm font-semibold mb-3 flex items-center gap-2 ${darkMode ? 'text-gray-200' : 'text-gray-700'}`}>
-                      <Mail className="w-4 h-4" />
-                      Email History ({lead.emailHistory?.length || 0})
+                  <div className={`rounded-lg p-3 sm:p-4 ${darkMode ? 'bg-gray-700/50' : 'bg-gray-50'}`}>
+                    <h4 className={`text-xs sm:text-sm font-semibold mb-2 sm:mb-3 flex items-center gap-2 ${darkMode ? 'text-gray-200' : 'text-gray-700'}`}>
+                      <Mail className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
+                      Emails ({lead.emailHistory?.length || 0})
                     </h4>
                     {lead.emailHistory && lead.emailHistory.length > 0 ? (
-                      <div className="space-y-2 max-h-40 overflow-y-auto">
+                      <div className="space-y-2 max-h-32 sm:max-h-40 overflow-y-auto">
                         {lead.emailHistory.slice().reverse().map((email) => (
                           <div key={email.id} className={`rounded p-2 text-xs ${darkMode ? 'bg-gray-600' : 'bg-white'}`}>
                             <p className={`font-medium truncate ${darkMode ? 'text-white' : 'text-gray-900'}`}>{email.subject}</p>
                             {email.templateName && (
-                              <p className={darkMode ? 'text-gray-400' : 'text-gray-500'}>Template: {email.templateName}</p>
+                              <p className={`truncate ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>Template: {email.templateName}</p>
                             )}
                             <p className={darkMode ? 'text-gray-500' : 'text-gray-400'}>
-                              {new Date(email.sentAt).toLocaleDateString('nl-NL')} om {new Date(email.sentAt).toLocaleTimeString('nl-NL', { hour: '2-digit', minute: '2-digit' })}
+                              {new Date(email.sentAt).toLocaleDateString('nl-NL')}
                             </p>
                           </div>
                         ))}
@@ -2095,13 +2146,13 @@ function LeadRow({
                   </div>
 
                   {/* Notes Timeline */}
-                  <div className={`rounded-lg p-4 ${darkMode ? 'bg-gray-700/50' : 'bg-gray-50'}`}>
-                    <h4 className={`text-sm font-semibold mb-3 flex items-center gap-2 ${darkMode ? 'text-gray-200' : 'text-gray-700'}`}>
-                      <MessageSquare className="w-4 h-4" />
+                  <div className={`rounded-lg p-3 sm:p-4 ${darkMode ? 'bg-gray-700/50' : 'bg-gray-50'}`}>
+                    <h4 className={`text-xs sm:text-sm font-semibold mb-2 sm:mb-3 flex items-center gap-2 ${darkMode ? 'text-gray-200' : 'text-gray-700'}`}>
+                      <MessageSquare className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
                       Notities ({lead.notesTimeline?.length || 0})
                     </h4>
                     {lead.notesTimeline && lead.notesTimeline.length > 0 ? (
-                      <div className="space-y-2 max-h-28 overflow-y-auto mb-3">
+                      <div className="space-y-2 max-h-24 sm:max-h-28 overflow-y-auto mb-2 sm:mb-3">
                         {lead.notesTimeline.slice().reverse().map((note) => (
                           <div key={note.id} className={`rounded p-2 text-xs ${darkMode ? 'bg-gray-600' : 'bg-white'}`}>
                             <p className={darkMode ? 'text-white' : 'text-gray-900'}>{note.text}</p>
@@ -2112,12 +2163,12 @@ function LeadRow({
                         ))}
                       </div>
                     ) : (
-                      <p className={`text-xs mb-3 ${darkMode ? 'text-gray-500' : 'text-gray-400'}`}>Nog geen notities</p>
+                      <p className={`text-xs mb-2 sm:mb-3 ${darkMode ? 'text-gray-500' : 'text-gray-400'}`}>Nog geen notities</p>
                     )}
                     <div className="flex gap-2">
                       <input
                         type="text"
-                        placeholder="Nieuwe notitie..."
+                        placeholder="Notitie..."
                         value={newNote}
                         onChange={(e) => setNewNote(e.target.value)}
                         onKeyDown={(e) => {
@@ -2126,7 +2177,7 @@ function LeadRow({
                             setNewNote('')
                           }
                         }}
-                        className={`flex-1 px-2 py-1 text-xs border rounded focus:ring-1 focus:ring-emerald-500 ${
+                        className={`flex-1 min-w-0 px-2 py-1.5 text-xs border rounded focus:ring-1 focus:ring-emerald-500 ${
                           darkMode ? 'bg-gray-600 border-gray-500 text-white placeholder-gray-400' : 'bg-white border-gray-200'
                         }`}
                       />
@@ -2145,18 +2196,18 @@ function LeadRow({
                   </div>
 
                   {/* Follow-up Planner */}
-                  <div className={`rounded-lg p-4 ${darkMode ? 'bg-gray-700/50' : 'bg-gray-50'}`}>
-                    <h4 className={`text-sm font-semibold mb-3 flex items-center gap-2 ${darkMode ? 'text-gray-200' : 'text-gray-700'}`}>
-                      <Clock className="w-4 h-4" />
+                  <div className={`rounded-lg p-3 sm:p-4 ${darkMode ? 'bg-gray-700/50' : 'bg-gray-50'}`}>
+                    <h4 className={`text-xs sm:text-sm font-semibold mb-2 sm:mb-3 flex items-center gap-2 ${darkMode ? 'text-gray-200' : 'text-gray-700'}`}>
+                      <Clock className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
                       Follow-up
                     </h4>
-                    <div className="space-y-3">
+                    <div className="space-y-2 sm:space-y-3">
                       <input
                         type="date"
                         value={lead.followUpDate || ''}
                         min={new Date().toISOString().split('T')[0]}
                         onChange={(e) => onSetFollowUp(e.target.value || undefined)}
-                        className={`w-full px-2 py-1 text-sm border rounded focus:ring-1 focus:ring-emerald-500 ${
+                        className={`w-full px-2 py-1.5 text-sm border rounded focus:ring-1 focus:ring-emerald-500 ${
                           darkMode ? 'bg-gray-600 border-gray-500 text-white' : 'bg-white border-gray-200'
                         }`}
                       />
@@ -2167,10 +2218,10 @@ function LeadRow({
                             darkMode ? 'text-red-400 hover:bg-red-500/20' : 'text-red-600 hover:bg-red-50'
                           }`}
                         >
-                          Follow-up verwijderen
+                          Verwijderen
                         </button>
                       )}
-                      <div className="flex gap-1 flex-wrap">
+                      <div className="grid grid-cols-3 gap-1">
                         <button
                           onClick={() => {
                             const tomorrow = new Date()
@@ -2276,39 +2327,39 @@ function AddLeadModal({
 
   if (!isOpen) return null
 
-  const inputClasses = `w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-emerald-500 ${
+  const inputClasses = `w-full px-3 sm:px-4 py-2 sm:py-2.5 border rounded-lg text-sm focus:ring-2 focus:ring-emerald-500 ${
     darkMode 
       ? 'bg-gray-700 border-gray-600 text-white placeholder-gray-400' 
       : 'bg-white border-gray-200 text-gray-900'
   }`
 
-  const labelClasses = `block text-sm font-medium mb-1 ${darkMode ? 'text-gray-300' : 'text-gray-700'}`
+  const labelClasses = `block text-xs sm:text-sm font-medium mb-1 ${darkMode ? 'text-gray-300' : 'text-gray-700'}`
 
   return (
     <motion.div
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
-      className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50"
+      className="fixed inset-0 bg-black/50 flex items-end sm:items-center justify-center p-0 sm:p-4 z-50"
       onClick={onClose}
     >
       <motion.div
-        initial={{ scale: 0.95, opacity: 0 }}
-        animate={{ scale: 1, opacity: 1 }}
-        exit={{ scale: 0.95, opacity: 0 }}
-        className={`rounded-2xl w-full max-w-lg max-h-[90vh] overflow-y-auto ${darkMode ? 'bg-gray-800' : 'bg-white'}`}
+        initial={{ scale: 0.95, opacity: 0, y: 100 }}
+        animate={{ scale: 1, opacity: 1, y: 0 }}
+        exit={{ scale: 0.95, opacity: 0, y: 100 }}
+        className={`rounded-t-2xl sm:rounded-2xl w-full sm:max-w-lg max-h-[90vh] overflow-y-auto ${darkMode ? 'bg-gray-800' : 'bg-white'}`}
         onClick={(e) => e.stopPropagation()}
       >
-        <div className={`p-6 border-b ${darkMode ? 'border-gray-700' : 'border-gray-100'}`}>
+        <div className={`p-4 sm:p-6 border-b ${darkMode ? 'border-gray-700' : 'border-gray-100'}`}>
           <div className="flex items-center justify-between">
-            <h2 className={`text-xl font-bold ${darkMode ? 'text-white' : 'text-gray-900'}`}>Nieuw bedrijf toevoegen</h2>
+            <h2 className={`text-lg sm:text-xl font-bold ${darkMode ? 'text-white' : 'text-gray-900'}`}>Nieuw bedrijf</h2>
             <button onClick={onClose} className={`p-2 rounded-lg ${darkMode ? 'hover:bg-gray-700 text-gray-400' : 'hover:bg-gray-100'}`}>
               <X className="w-5 h-5" />
             </button>
           </div>
         </div>
 
-        <form onSubmit={handleSubmit} className="p-6 space-y-4">
+        <form onSubmit={handleSubmit} className="p-4 sm:p-6 space-y-3 sm:space-y-4">
           <div>
             <label className={labelClasses}>
               Bedrijfsnaam *
@@ -2420,17 +2471,17 @@ function AddLeadModal({
             />
           </div>
 
-          <div className="flex justify-end gap-3 pt-4">
+          <div className="flex flex-col-reverse sm:flex-row sm:justify-end gap-2 sm:gap-3 pt-4">
             <button
               type="button"
               onClick={onClose}
-              className={`px-4 py-2 ${darkMode ? 'text-gray-400 hover:text-white' : 'text-gray-600 hover:text-gray-900'}`}
+              className={`w-full sm:w-auto px-4 py-2.5 rounded-lg ${darkMode ? 'text-gray-400 hover:text-white hover:bg-gray-700' : 'text-gray-600 hover:text-gray-900 hover:bg-gray-100'}`}
             >
               Annuleren
             </button>
             <button
               type="submit"
-              className="flex items-center gap-2 px-6 py-2 bg-emerald-600 text-white rounded-lg hover:bg-emerald-700"
+              className="w-full sm:w-auto flex items-center justify-center gap-2 px-6 py-2.5 bg-emerald-600 text-white rounded-lg hover:bg-emerald-700"
             >
               <Plus className="w-4 h-4" />
               Toevoegen
@@ -2522,13 +2573,13 @@ function OnboardingModal({
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
-      className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4 z-[100]"
+      className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-end sm:items-center justify-center p-0 sm:p-4 z-[100]"
     >
       <motion.div
-        initial={{ scale: 0.9, opacity: 0 }}
-        animate={{ scale: 1, opacity: 1 }}
-        exit={{ scale: 0.9, opacity: 0 }}
-        className={`w-full max-w-md rounded-2xl overflow-hidden shadow-2xl ${
+        initial={{ scale: 0.9, opacity: 0, y: 100 }}
+        animate={{ scale: 1, opacity: 1, y: 0 }}
+        exit={{ scale: 0.9, opacity: 0, y: 100 }}
+        className={`w-full sm:max-w-md rounded-t-2xl sm:rounded-2xl overflow-hidden shadow-2xl ${
           darkMode ? 'bg-gray-800' : 'bg-white'
         }`}
       >
@@ -2541,13 +2592,13 @@ function OnboardingModal({
           />
         </div>
 
-        <div className="p-6 sm:p-8">
+        <div className="p-5 sm:p-8">
           {/* Icon */}
           <motion.div
             key={step}
             initial={{ scale: 0.5, opacity: 0 }}
             animate={{ scale: 1, opacity: 1 }}
-            className={`w-16 h-16 mx-auto mb-6 rounded-2xl flex items-center justify-center ${
+            className={`w-14 h-14 sm:w-16 sm:h-16 mx-auto mb-4 sm:mb-6 rounded-2xl flex items-center justify-center ${
               darkMode ? 'bg-emerald-500/20 text-emerald-400' : 'bg-emerald-100 text-emerald-600'
             }`}
           >
@@ -2561,13 +2612,13 @@ function OnboardingModal({
             animate={{ y: 0, opacity: 1 }}
             className="text-center"
           >
-            <h2 className={`text-xl font-bold mb-3 ${darkMode ? 'text-white' : 'text-gray-900'}`}>
+            <h2 className={`text-lg sm:text-xl font-bold mb-2 sm:mb-3 ${darkMode ? 'text-white' : 'text-gray-900'}`}>
               {currentStep.title}
             </h2>
-            <p className={`mb-4 ${darkMode ? 'text-gray-300' : 'text-gray-600'}`}>
+            <p className={`text-sm sm:text-base mb-3 sm:mb-4 ${darkMode ? 'text-gray-300' : 'text-gray-600'}`}>
               {currentStep.description}
             </p>
-            <p className={`text-sm px-4 py-2 rounded-lg inline-block ${
+            <p className={`text-xs sm:text-sm px-3 sm:px-4 py-1.5 sm:py-2 rounded-lg inline-block ${
               darkMode ? 'bg-gray-700 text-emerald-400' : 'bg-emerald-50 text-emerald-700'
             }`}>
               💡 {currentStep.tip}
@@ -2575,19 +2626,19 @@ function OnboardingModal({
           </motion.div>
 
           {/* Navigation */}
-          <div className="flex items-center justify-between mt-8">
+          <div className="flex items-center justify-between mt-6 sm:mt-8">
             <button
               onClick={onSkip}
-              className={`text-sm ${darkMode ? 'text-gray-400 hover:text-white' : 'text-gray-500 hover:text-gray-900'}`}
+              className={`text-xs sm:text-sm ${darkMode ? 'text-gray-400 hover:text-white' : 'text-gray-500 hover:text-gray-900'}`}
             >
               Overslaan
             </button>
             
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-1.5 sm:gap-2">
               {steps.map((_, i) => (
                 <div
                   key={i}
-                  className={`w-2 h-2 rounded-full transition-colors ${
+                  className={`w-1.5 h-1.5 sm:w-2 sm:h-2 rounded-full transition-colors ${
                     i === step 
                       ? 'bg-emerald-500' 
                       : i < step 
@@ -2602,10 +2653,10 @@ function OnboardingModal({
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
               onClick={onNext}
-              className="flex items-center gap-2 px-4 py-2 bg-emerald-600 text-white rounded-lg hover:bg-emerald-700"
+              className="flex items-center gap-1.5 sm:gap-2 px-3 sm:px-4 py-1.5 sm:py-2 bg-emerald-600 text-white text-sm rounded-lg hover:bg-emerald-700"
             >
               {step < steps.length - 1 ? (
-                <>Volgende <ArrowRight className="w-4 h-4" /></>
+                <>Volgende <ArrowRight className="w-3.5 h-3.5 sm:w-4 sm:h-4" /></>
               ) : (
                 <>Start! 🎉</>
               )}
@@ -2626,8 +2677,8 @@ function HelpModal({ onClose, darkMode }: { onClose: () => void; darkMode: boole
       title: '🏢 Leads toevoegen',
       steps: [
         'Klik op "Nieuw bedrijf" rechtsboven',
-        'Vul de bedrijfsgegevens in (naam, contact, email)',
-        'Voeg notities toe over waarom dit interessant is',
+        'Vul de bedrijfsgegevens in',
+        'Voeg notities toe',
         'Klik op "Toevoegen"'
       ]
     },
@@ -2636,7 +2687,7 @@ function HelpModal({ onClose, darkMode }: { onClose: () => void; darkMode: boole
       steps: [
         'Klik op "Email sturen" bij een lead',
         'Kies een email template',
-        'Pas het bericht aan indien nodig',
+        'Pas het bericht aan',
         'Klik op "Verstuur email"'
       ]
     },
@@ -2644,17 +2695,17 @@ function HelpModal({ onClose, darkMode }: { onClose: () => void; darkMode: boole
       title: '📅 Follow-ups plannen',
       steps: [
         'Klik op "Details" bij een lead',
-        'Ga naar het Follow-up tabblad',
-        'Kies een datum of gebruik snelkeuzes',
-        'Je krijgt een melding als actie nodig is'
+        'Ga naar Follow-up sectie',
+        'Kies een datum',
+        'Je krijgt een melding'
       ]
     },
     {
       title: '📊 Status bijwerken',
       steps: [
-        'Klik op het menu (drie puntjes) bij een lead',
+        'Klik op het menu (⋮) bij een lead',
         'Kies de nieuwe status',
-        'De conversie funnel wordt automatisch bijgewerkt'
+        'Funnel wordt bijgewerkt'
       ]
     }
   ]
@@ -2683,32 +2734,32 @@ function HelpModal({ onClose, darkMode }: { onClose: () => void; darkMode: boole
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
-      className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4 z-[100]"
+      className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-end sm:items-center justify-center p-0 sm:p-4 z-[100]"
       onClick={onClose}
     >
       <motion.div
-        initial={{ scale: 0.9, opacity: 0, y: 20 }}
+        initial={{ scale: 0.9, opacity: 0, y: 100 }}
         animate={{ scale: 1, opacity: 1, y: 0 }}
-        exit={{ scale: 0.9, opacity: 0, y: 20 }}
-        className={`w-full max-w-2xl max-h-[85vh] rounded-2xl overflow-hidden shadow-2xl ${
+        exit={{ scale: 0.9, opacity: 0, y: 100 }}
+        className={`w-full sm:max-w-2xl max-h-[90vh] sm:max-h-[85vh] rounded-t-2xl sm:rounded-2xl overflow-hidden shadow-2xl ${
           darkMode ? 'bg-gray-800' : 'bg-white'
         }`}
         onClick={(e) => e.stopPropagation()}
       >
         {/* Header */}
-        <div className={`p-6 border-b ${darkMode ? 'border-gray-700' : 'border-gray-200'}`}>
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-3">
-              <div className={`w-10 h-10 rounded-xl flex items-center justify-center ${
+        <div className={`p-4 sm:p-6 border-b ${darkMode ? 'border-gray-700' : 'border-gray-200'}`}>
+          <div className="flex items-center justify-between mb-3 sm:mb-0">
+            <div className="flex items-center gap-2 sm:gap-3">
+              <div className={`w-8 h-8 sm:w-10 sm:h-10 rounded-xl flex items-center justify-center ${
                 darkMode ? 'bg-emerald-500/20 text-emerald-400' : 'bg-emerald-100 text-emerald-600'
               }`}>
-                <BookOpen className="w-5 h-5" />
+                <BookOpen className="w-4 h-4 sm:w-5 sm:h-5" />
               </div>
               <div>
-                <h2 className={`text-xl font-bold ${darkMode ? 'text-white' : 'text-gray-900'}`}>
-                  Hulp & Handleiding
+                <h2 className={`text-lg sm:text-xl font-bold ${darkMode ? 'text-white' : 'text-gray-900'}`}>
+                  Hulp
                 </h2>
-                <p className={`text-sm ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>
+                <p className={`text-xs sm:text-sm hidden sm:block ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>
                   Leer hoe je het CRM optimaal gebruikt
                 </p>
               </div>
@@ -2722,16 +2773,16 @@ function HelpModal({ onClose, darkMode }: { onClose: () => void; darkMode: boole
           </div>
 
           {/* Tabs */}
-          <div className="flex gap-2 mt-4">
+          <div className="flex gap-1 sm:gap-2 mt-3 sm:mt-4 overflow-x-auto">
             {[
-              { id: 'guide' as const, label: 'Handleiding', icon: <BookOpen className="w-4 h-4" /> },
-              { id: 'tips' as const, label: 'Tips', icon: <Lightbulb className="w-4 h-4" /> },
-              { id: 'shortcuts' as const, label: 'Sneltoetsen', icon: <MousePointer className="w-4 h-4" /> }
+              { id: 'guide' as const, label: 'Handleiding', icon: <BookOpen className="w-3.5 h-3.5 sm:w-4 sm:h-4" /> },
+              { id: 'tips' as const, label: 'Tips', icon: <Lightbulb className="w-3.5 h-3.5 sm:w-4 sm:h-4" /> },
+              { id: 'shortcuts' as const, label: 'Sneltoetsen', icon: <MousePointer className="w-3.5 h-3.5 sm:w-4 sm:h-4" /> }
             ].map((tab) => (
               <button
                 key={tab.id}
                 onClick={() => setActiveTab(tab.id)}
-                className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
+                className={`flex items-center gap-1.5 sm:gap-2 px-3 sm:px-4 py-1.5 sm:py-2 rounded-lg text-xs sm:text-sm font-medium transition-colors whitespace-nowrap ${
                   activeTab === tab.id
                     ? 'bg-emerald-600 text-white'
                     : darkMode 
@@ -2747,7 +2798,7 @@ function HelpModal({ onClose, darkMode }: { onClose: () => void; darkMode: boole
         </div>
 
         {/* Content */}
-        <div className="p-6 overflow-y-auto max-h-[50vh]">
+        <div className="p-4 sm:p-6 overflow-y-auto max-h-[45vh] sm:max-h-[50vh]">
           <AnimatePresence mode="wait">
             {activeTab === 'guide' && (
               <motion.div
@@ -2755,17 +2806,17 @@ function HelpModal({ onClose, darkMode }: { onClose: () => void; darkMode: boole
                 initial={{ opacity: 0, x: -20 }}
                 animate={{ opacity: 1, x: 0 }}
                 exit={{ opacity: 0, x: 20 }}
-                className="space-y-6"
+                className="space-y-4 sm:space-y-6"
               >
                 {guides.map((guide, i) => (
-                  <div key={i} className={`p-4 rounded-xl ${darkMode ? 'bg-gray-700/50' : 'bg-gray-50'}`}>
-                    <h3 className={`font-semibold mb-3 ${darkMode ? 'text-white' : 'text-gray-900'}`}>
+                  <div key={i} className={`p-3 sm:p-4 rounded-xl ${darkMode ? 'bg-gray-700/50' : 'bg-gray-50'}`}>
+                    <h3 className={`font-semibold mb-2 sm:mb-3 text-sm sm:text-base ${darkMode ? 'text-white' : 'text-gray-900'}`}>
                       {guide.title}
                     </h3>
-                    <ol className="space-y-2">
+                    <ol className="space-y-1.5 sm:space-y-2">
                       {guide.steps.map((step, j) => (
-                        <li key={j} className={`flex items-start gap-3 ${darkMode ? 'text-gray-300' : 'text-gray-600'}`}>
-                          <span className={`flex-shrink-0 w-6 h-6 rounded-full flex items-center justify-center text-xs font-medium ${
+                        <li key={j} className={`flex items-start gap-2 sm:gap-3 text-xs sm:text-sm ${darkMode ? 'text-gray-300' : 'text-gray-600'}`}>
+                          <span className={`flex-shrink-0 w-5 h-5 sm:w-6 sm:h-6 rounded-full flex items-center justify-center text-[10px] sm:text-xs font-medium ${
                             darkMode ? 'bg-emerald-500/20 text-emerald-400' : 'bg-emerald-100 text-emerald-700'
                           }`}>
                             {j + 1}
@@ -2785,7 +2836,7 @@ function HelpModal({ onClose, darkMode }: { onClose: () => void; darkMode: boole
                 initial={{ opacity: 0, x: -20 }}
                 animate={{ opacity: 1, x: 0 }}
                 exit={{ opacity: 0, x: 20 }}
-                className="grid gap-3"
+                className="grid gap-2 sm:gap-3"
               >
                 {tips.map((tip, i) => (
                   <motion.div
@@ -2793,10 +2844,10 @@ function HelpModal({ onClose, darkMode }: { onClose: () => void; darkMode: boole
                     initial={{ opacity: 0, y: 10 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: i * 0.05 }}
-                    className={`flex items-center gap-3 p-3 rounded-xl ${darkMode ? 'bg-gray-700/50' : 'bg-gray-50'}`}
+                    className={`flex items-center gap-2 sm:gap-3 p-2.5 sm:p-3 rounded-xl ${darkMode ? 'bg-gray-700/50' : 'bg-gray-50'}`}
                   >
-                    <span className="text-2xl">{tip.icon}</span>
-                    <span className={darkMode ? 'text-gray-300' : 'text-gray-700'}>{tip.text}</span>
+                    <span className="text-lg sm:text-2xl">{tip.icon}</span>
+                    <span className={`text-xs sm:text-sm ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>{tip.text}</span>
                   </motion.div>
                 ))}
               </motion.div>
@@ -2808,18 +2859,18 @@ function HelpModal({ onClose, darkMode }: { onClose: () => void; darkMode: boole
                 initial={{ opacity: 0, x: -20 }}
                 animate={{ opacity: 1, x: 0 }}
                 exit={{ opacity: 0, x: 20 }}
-                className="space-y-3"
+                className="space-y-2 sm:space-y-3"
               >
-                <p className={`text-sm mb-4 ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>
-                  Gebruik deze sneltoetsen om sneller te werken (binnenkort beschikbaar)
+                <p className={`text-xs sm:text-sm mb-3 sm:mb-4 ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>
+                  Sneltoetsen (binnenkort)
                 </p>
                 {shortcuts.map((shortcut, i) => (
                   <div
                     key={i}
-                    className={`flex items-center justify-between p-3 rounded-xl ${darkMode ? 'bg-gray-700/50' : 'bg-gray-50'}`}
+                    className={`flex items-center justify-between p-2.5 sm:p-3 rounded-xl ${darkMode ? 'bg-gray-700/50' : 'bg-gray-50'}`}
                   >
-                    <span className={darkMode ? 'text-gray-300' : 'text-gray-700'}>{shortcut.description}</span>
-                    <kbd className={`px-3 py-1 rounded text-sm font-mono ${
+                    <span className={`text-xs sm:text-sm ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>{shortcut.description}</span>
+                    <kbd className={`px-2 sm:px-3 py-0.5 sm:py-1 rounded text-xs sm:text-sm font-mono ${
                       darkMode ? 'bg-gray-600 text-gray-300' : 'bg-white border border-gray-300 text-gray-700'
                     }`}>
                       {shortcut.key}
@@ -2832,14 +2883,15 @@ function HelpModal({ onClose, darkMode }: { onClose: () => void; darkMode: boole
         </div>
 
         {/* Footer */}
-        <div className={`p-4 border-t ${darkMode ? 'border-gray-700 bg-gray-800/50' : 'border-gray-200 bg-gray-50'}`}>
-          <div className="flex items-center justify-between">
-            <p className={`text-sm ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>
-              Hulp nodig? Mail naar <a href="mailto:support@webstability.nl" className="text-emerald-600 hover:underline">support@webstability.nl</a>
+        <div className={`p-3 sm:p-4 border-t ${darkMode ? 'border-gray-700 bg-gray-800/50' : 'border-gray-200 bg-gray-50'}`}>
+          <div className="flex items-center justify-between gap-2">
+            <p className={`text-xs ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>
+              <span className="hidden sm:inline">Hulp nodig? </span>
+              <a href="mailto:support@webstability.nl" className="text-emerald-600 hover:underline">support@webstability.nl</a>
             </p>
             <button
               onClick={onClose}
-              className="px-4 py-2 bg-emerald-600 text-white rounded-lg hover:bg-emerald-700 text-sm"
+              className="px-3 sm:px-4 py-1.5 sm:py-2 bg-emerald-600 text-white rounded-lg hover:bg-emerald-700 text-xs sm:text-sm"
             >
               Sluiten
             </button>

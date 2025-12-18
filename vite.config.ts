@@ -638,6 +638,53 @@ function apiMock() {
           return
         }
 
+        // /api/marketing/search-businesses - Mock business search for marketing CRM
+        if (req.url?.startsWith('/api/marketing/search-businesses') && req.method === 'GET') {
+          const urlObj = new URL(req.url, 'http://localhost')
+          const city = urlObj.searchParams.get('city') || 'Amsterdam'
+          const type = urlObj.searchParams.get('type') || 'overig'
+          const radius = urlObj.searchParams.get('radius') || '5000'
+          
+          console.log(`[MOCK] Business search: ${type} in ${city}, radius ${radius}m`)
+          
+          // Generate mock businesses
+          const mockBusinesses = [
+            { id: 'mock-1', name: `${type.charAt(0).toUpperCase() + type.slice(1)} De Gouden Leeuw`, type, address: 'Hoofdstraat 15', city, phone: '020-1234567', website: '', email: '', lat: 52.37, lon: 4.89 },
+            { id: 'mock-2', name: `${type.charAt(0).toUpperCase() + type.slice(1)} Het Centrum`, type, address: 'Marktplein 8', city, phone: '020-7654321', website: 'www.hetcentrum.nl', email: 'info@hetcentrum.nl', lat: 52.36, lon: 4.88 },
+            { id: 'mock-3', name: `Van der Berg ${type}`, type, address: 'Dorpsweg 42', city, phone: '', website: '', email: '', lat: 52.38, lon: 4.90 },
+            { id: 'mock-4', name: `${city} ${type.charAt(0).toUpperCase() + type.slice(1)} Service`, type, address: 'Stationsplein 3', city, phone: '06-12345678', website: '', email: 'contact@example.nl', lat: 52.37, lon: 4.91 },
+            { id: 'mock-5', name: `Jansen & Zn ${type}`, type, address: 'Industrieweg 99', city, phone: '', website: 'www.jansenzn.nl', email: '', lat: 52.35, lon: 4.87 },
+          ]
+          
+          res.setHeader('content-type', 'application/json')
+          res.end(JSON.stringify({ 
+            success: true,
+            location: { query: city, lat: 52.37, lon: 4.89, radius: parseInt(radius) },
+            count: mockBusinesses.length,
+            businesses: mockBusinesses
+          }))
+          return
+        }
+
+        // /api/leads - Mock leads API for marketing CRM
+        if (req.url === '/api/leads' && req.method === 'GET') {
+          console.log('[MOCK] Get leads - returning empty (use localStorage)')
+          res.setHeader('content-type', 'application/json')
+          res.end(JSON.stringify({ leads: [], source: 'mock' }))
+          return
+        }
+        
+        if (req.url === '/api/leads' && (req.method === 'POST' || req.method === 'PUT')) {
+          let body = ''
+          req.on('data', (chunk: any) => { body += chunk })
+          req.on('end', () => {
+            console.log('[MOCK] Save lead - stored in localStorage only')
+            res.setHeader('content-type', 'application/json')
+            res.end(JSON.stringify({ success: true, message: 'Saved (mock)' }))
+          })
+          return
+        }
+
         // /api/marketing/send-email - Mock email sending for marketing CRM
         if (req.url === '/api/marketing/send-email' && req.method === 'POST') {
           let body = ''
