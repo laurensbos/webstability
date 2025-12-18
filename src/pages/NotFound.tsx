@@ -1,7 +1,7 @@
 import { motion } from 'framer-motion'
 import { Home, ArrowLeft, Search, MessageCircle } from 'lucide-react'
 import { Link } from 'react-router-dom'
-import Logo from '../components/Logo'
+import Header from '../components/Header'
 
 export default function NotFound() {
   return (
@@ -59,16 +59,7 @@ export default function NotFound() {
       </div>
 
       {/* Header */}
-      <header className="relative z-10 border-b border-white/10">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex justify-between items-center">
-          <Link to="/" className="hover:opacity-80 transition">
-            <Logo variant="white" />
-          </Link>
-          <span className="px-3 py-1.5 bg-white/10 backdrop-blur-sm rounded-full text-white/70 text-xs sm:text-sm border border-white/20">
-            404
-          </span>
-        </div>
-      </header>
+      <Header />
       
       <main className="relative z-10 pt-12 sm:pt-20 pb-20 px-4">
         <div className="max-w-4xl mx-auto text-center">
