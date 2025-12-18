@@ -330,43 +330,12 @@ export default function MarketingDashboard() {
   const [lastSyncTime, setLastSyncTime] = useState<string | null>(null)
 
   // Sync leads to API (background) - silently fail if API not available
-  const syncToAPI = async (leadsToSync: Lead[]) => {
-    // Only sync in production or if API is available
-    if (window.location.hostname === 'localhost') {
-      // Skip sync in development - just use localStorage
-      setSyncStatus('synced')
-      setLastSyncTime(new Date().toLocaleTimeString('nl-NL'))
-      return
-    }
-    
-    try {
-      setSyncStatus('syncing')
-      
-      // Sync each lead to the API
-      for (const lead of leadsToSync) {
-        await fetch('/api/leads', {
-          method: 'PUT',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(lead)
-        }).catch(() => {
-          // If PUT fails (lead doesn't exist), try POST
-          return fetch('/api/leads', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(lead)
-          })
-        })
-      }
-      
-      setSyncStatus('synced')
-      setLastSyncTime(new Date().toLocaleTimeString('nl-NL'))
-      localStorage.setItem('webstability_last_sync', new Date().toISOString())
-    } catch (error) {
-      // Silently fail - localStorage is the primary storage anyway
-      console.warn('Sync to API failed, using localStorage only:', error)
-      setSyncStatus('synced') // Still show as synced since localStorage works
-      setLastSyncTime(new Date().toLocaleTimeString('nl-NL'))
-    }
+  const syncToAPI = async (_leadsToSync: Lead[]) => {
+    // Skip API sync entirely - localStorage is the only storage
+    // The /api/leads endpoint is not deployed
+    setSyncStatus('synced')
+    setLastSyncTime(new Date().toLocaleTimeString('nl-NL'))
+    localStorage.setItem('webstability_last_sync', new Date().toISOString())
   }
 
   // Load leads - first from localStorage, then try API
@@ -406,32 +375,10 @@ export default function MarketingDashboard() {
         }
       }
       
-      // Then try to fetch from API (background)
-      try {
-        const response = await fetch('/api/leads')
-        if (response.ok) {
-          const data = await response.json()
-          if (data.leads && data.leads.length > 0) {
-            // Merge API data with local data (local wins on conflicts)
-            const localLeads = saved ? JSON.parse(saved) : []
-            const localIds = new Set(localLeads.map((l: Lead) => l.id))
-            
-            // Add any leads from API that aren't in local storage
-            const newLeads = data.leads.filter((l: Lead) => !localIds.has(l.id))
-            if (newLeads.length > 0) {
-              const merged = [...localLeads, ...newLeads]
-              setLeads(merged)
-              localStorage.setItem('webstability_leads', JSON.stringify(merged))
-            }
-            
-            setSyncStatus('synced')
-            setLastSyncTime(new Date().toLocaleTimeString('nl-NL'))
-          }
-        }
-      } catch (error) {
-        // API not available, continue with local data
-        console.log('API not available, using local data')
-      }
+      // Skip API fetch - only use localStorage
+      // The /api/leads endpoint is not deployed
+      setSyncStatus('synced')
+      setLastSyncTime(new Date().toLocaleTimeString('nl-NL'))
     }
     
     loadLeads()
@@ -1113,7 +1060,7 @@ export default function MarketingDashboard() {
             </div>
             
             {/* Last search repeat button */}
-            {lastSearch && !isSearching && searchResults.length === 0 && (
+            {lastSearch && !isSearching && (
               <motion.button
                 initial={{ opacity: 0, y: -10 }}
                 animate={{ opacity: 1, y: 0 }}
