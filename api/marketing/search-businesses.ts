@@ -122,7 +122,10 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     return res.status(405).json({ error: 'Method not allowed' })
   }
 
-  const { type = 'overig', city, radius = '5000' } = req.query
+  const { type = 'overig', city, radius = '5000', query } = req.query
+
+  // Als er een specifieke bedrijfsnaam/query is, zoek daarop
+  const searchQuery = query ? String(query) : null
 
   if (!city) {
     return res.status(400).json({ 
@@ -168,20 +171,23 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
     console.log(`[BusinessSearch] Locatie gevonden: ${lat}, ${lng}`)
 
-    // Stap 2: Zoek bedrijven in de buurt met keyword + type
+    // Stap 2: Zoek bedrijven in de buurt
     const typeKey = String(type).toLowerCase()
     const searchConfig = TYPE_MAPPING[typeKey] || { keyword: 'bedrijf' }
     const searchRadius = Math.min(parseInt(String(radius), 10) || 5000, 50000)
 
+    // Bepaal de zoekterm: specifieke query of keyword van type
+    const keywordToSearch = searchQuery || searchConfig.keyword
+
     // Bouw de URL met keyword (en optioneel type)
-    let placesUrl = `https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=${lat},${lng}&radius=${searchRadius}&keyword=${encodeURIComponent(searchConfig.keyword)}&language=nl&key=${GOOGLE_API_KEY}`
+    let placesUrl = `https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=${lat},${lng}&radius=${searchRadius}&keyword=${encodeURIComponent(keywordToSearch)}&language=nl&key=${GOOGLE_API_KEY}`
     
-    // Voeg type toe als die bestaat (verbetert resultaten voor sommige categorieën)
-    if (searchConfig.type) {
+    // Voeg type toe als die bestaat EN we niet op bedrijfsnaam zoeken
+    if (searchConfig.type && !searchQuery) {
       placesUrl += `&type=${searchConfig.type}`
     }
 
-    console.log(`[BusinessSearch] Zoeken naar "${searchConfig.keyword}" binnen ${searchRadius}m...`)
+    console.log(`[BusinessSearch] Zoeken naar "${keywordToSearch}" binnen ${searchRadius}m...`)
 
     const placesResponse = await fetch(placesUrl)
     const placesData = await placesResponse.json()

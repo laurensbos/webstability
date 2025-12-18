@@ -259,6 +259,7 @@ export default function MarketingDashboard() {
   
   // Business search state
   const [searchCity, setSearchCity] = useState('')
+  const [businessNameQuery, setBusinessNameQuery] = useState('')
   const [searchType, setSearchType] = useState('overig')
   const [searchRadius, setSearchRadius] = useState('5')
   const [isSearching, setIsSearching] = useState(false)
@@ -434,7 +435,12 @@ export default function MarketingDashboard() {
         radius: searchRadius
       })
 
-      console.log(`[Search] Zoeken naar ${searchType} in ${searchCity}...`)
+      // Voeg bedrijfsnaam query toe als die is ingevuld
+      if (businessNameQuery.trim()) {
+        params.set('query', businessNameQuery.trim())
+      }
+
+      console.log(`[Search] Zoeken naar ${businessNameQuery || searchType} in ${searchCity}...`)
       
       const response = await fetch(`/api/marketing/search-businesses?${params}`)
       const data = await response.json()
@@ -444,7 +450,7 @@ export default function MarketingDashboard() {
       if (data.success) {
         setSearchResults(data.businesses || [])
         if (!data.businesses || data.businesses.length === 0) {
-          setSearchError(data.error || `Geen ${searchType} bedrijven gevonden binnen ${searchRadius}m van ${searchCity}. Probeer een groter zoekgebied.`)
+          setSearchError(data.error || `Geen ${businessNameQuery || searchType} bedrijven gevonden binnen ${searchRadius}km van ${searchCity}. Probeer een groter zoekgebied.`)
         }
       } else {
         setSearchError(data.error || 'Zoeken mislukt - probeer opnieuw')
@@ -1296,8 +1302,8 @@ export default function MarketingDashboard() {
               Zoek bedrijven
             </h3>
             
-            <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-4 gap-2 sm:gap-4 mb-3 sm:mb-4">
-              <div className="col-span-2 sm:col-span-1 md:col-span-1">
+            <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-5 gap-2 sm:gap-4 mb-3 sm:mb-4">
+              <div className="col-span-2 sm:col-span-1">
                 <label className={`block text-xs sm:text-sm font-medium mb-1 ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>
                   Stad/postcode
                 </label>
@@ -1307,6 +1313,24 @@ export default function MarketingDashboard() {
                   onChange={(e) => setSearchCity(e.target.value)}
                   onKeyDown={(e) => e.key === 'Enter' && handleBusinessSearch()}
                   placeholder="bijv. Leiden"
+                  className={`w-full px-3 sm:px-4 py-2 sm:py-2.5 rounded-xl border text-sm ${
+                    darkMode 
+                      ? 'bg-gray-700 border-gray-600 text-white placeholder-gray-500' 
+                      : 'bg-white border-gray-200 text-gray-900 placeholder-gray-400'
+                  } focus:outline-none focus:ring-2 focus:ring-emerald-500/20`}
+                />
+              </div>
+
+              <div className="col-span-2 sm:col-span-1">
+                <label className={`block text-xs sm:text-sm font-medium mb-1 ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>
+                  Bedrijfsnaam <span className="text-gray-500">(optioneel)</span>
+                </label>
+                <input
+                  type="text"
+                  value={businessNameQuery}
+                  onChange={(e) => setBusinessNameQuery(e.target.value)}
+                  onKeyDown={(e) => e.key === 'Enter' && handleBusinessSearch()}
+                  placeholder="bijv. Bakkerij De Boer"
                   className={`w-full px-3 sm:px-4 py-2 sm:py-2.5 rounded-xl border text-sm ${
                     darkMode 
                       ? 'bg-gray-700 border-gray-600 text-white placeholder-gray-500' 
