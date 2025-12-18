@@ -8,7 +8,6 @@ import {
   MessageSquare,
   FolderKanban,
   CreditCard,
-  Settings,
   LogOut,
   Menu,
   X,
@@ -58,15 +57,12 @@ import Logo from '../components/Logo'
 // TYPES
 // ===========================================
 
+// Vereenvoudigd naar 4 hoofdsecties
 type DashboardView = 
   | 'overview' 
   | 'projects' 
-  | 'clients' 
   | 'messages' 
-  | 'onboarding'
-  | 'payments' 
-  | 'services' 
-  | 'settings'
+  | 'payments'
 
 type ProjectPhase = 'onboarding' | 'design' | 'development' | 'review' | 'live'
 type PaymentStatus = 'pending' | 'awaiting_payment' | 'paid' | 'failed' | 'refunded'
@@ -170,12 +166,8 @@ const PHASE_CONFIG: Record<ProjectPhase, { label: string; color: string; bg: str
 const NAV_ITEMS: { id: DashboardView; label: string; icon: typeof LayoutDashboard; badge?: number }[] = [
   { id: 'overview', label: 'Dashboard', icon: LayoutDashboard },
   { id: 'projects', label: 'Projecten', icon: FolderKanban },
-  { id: 'clients', label: 'Klanten', icon: Users },
   { id: 'messages', label: 'Berichten', icon: MessageSquare },
-  { id: 'onboarding', label: 'Onboarding', icon: FileText },
   { id: 'payments', label: 'Betalingen', icon: CreditCard },
-  { id: 'services', label: 'Services', icon: Briefcase },
-  { id: 'settings', label: 'Instellingen', icon: Settings },
 ]
 
 // ===========================================
@@ -189,7 +181,6 @@ interface SidebarProps {
   isOpen: boolean
   setIsOpen: (open: boolean) => void
   unreadMessages: number
-  pendingOnboarding: number
   onLogout: () => void
 }
 
@@ -200,16 +191,13 @@ function Sidebar({
   isOpen, 
   setIsOpen,
   unreadMessages,
-  pendingOnboarding,
   onLogout
 }: SidebarProps) {
   const [showHelp, setShowHelp] = useState(false)
   
   const navItemsWithBadges = NAV_ITEMS.map(item => ({
     ...item,
-    badge: item.id === 'messages' ? unreadMessages : 
-           item.id === 'onboarding' ? pendingOnboarding : 
-           undefined
+    badge: item.id === 'messages' ? unreadMessages : undefined
   }))
 
   return (
@@ -700,7 +688,7 @@ function MobileBottomNav({ activeView, setActiveView, darkMode, unreadMessages }
     { id: 'overview', icon: LayoutDashboard, label: 'Home' },
     { id: 'projects', icon: FolderKanban, label: 'Projecten' },
     { id: 'messages', icon: MessageSquare, label: 'Chat' },
-    { id: 'settings', icon: Settings, label: 'Meer' },
+    { id: 'payments', icon: CreditCard, label: 'Betalen' },
   ]
 
   return (
@@ -1032,19 +1020,6 @@ function OverviewView({ darkMode, projects, setActiveView, onSelectProject, onUp
           <CreditCard className={`w-5 h-5 mb-2 ${pendingPayments > 0 ? 'text-amber-500' : darkMode ? 'text-green-400' : 'text-green-600'}`} />
           <p className={`font-semibold ${darkMode ? 'text-white' : 'text-gray-900'}`}>Betalingen</p>
           <p className={`text-xs ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>{pendingPayments} wachtend</p>
-        </button>
-        
-        <button
-          onClick={() => setActiveView('onboarding')}
-          className={`p-4 rounded-xl text-left transition-colors ${
-            darkMode ? 'bg-gray-800 hover:bg-gray-750' : 'bg-white hover:bg-gray-50 border border-gray-200'
-          }`}
-        >
-          <FileText className={`w-5 h-5 mb-2 ${darkMode ? 'text-yellow-400' : 'text-yellow-600'}`} />
-          <p className={`font-semibold ${darkMode ? 'text-white' : 'text-gray-900'}`}>Onboarding</p>
-          <p className={`text-xs ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>
-            {projects.filter(p => p.phase === 'onboarding').length} in fase
-          </p>
         </button>
       </div>
 
@@ -2604,7 +2579,7 @@ interface ClientsViewProps {
   onDeleteClient: (clientId: string, projectIds: string[]) => Promise<void>
 }
 
-function ClientsView({ darkMode, clients, projects, onSelectClient, onAddClient, onDeleteClient }: ClientsViewProps) {
+function _ClientsView({ darkMode, clients, projects, onSelectClient, onAddClient, onDeleteClient }: ClientsViewProps) {
   const [searchQuery, setSearchQuery] = useState('')
   const [sortBy, setSortBy] = useState<'name' | 'projects' | 'spent' | 'date'>('date')
   const [_selectedClient, setSelectedClient] = useState<Client | null>(null)
@@ -3763,7 +3738,7 @@ function MessagesView({ darkMode, projects, onUpdateProject }: MessagesViewProps
   )
 }
 
-function OnboardingView({ 
+function _OnboardingView({ 
   darkMode, 
   projects, 
   onUpdateProject,
@@ -5283,7 +5258,7 @@ const SERVICE_DETAILS: Record<ServiceType, {
   },
 }
 
-function ServicesView({ darkMode, serviceRequests, onUpdateRequest }: ServicesViewProps) {
+function _ServicesView({ darkMode, serviceRequests, onUpdateRequest }: ServicesViewProps) {
   const [filterStatus, setFilterStatus] = useState<ServiceRequest['status'] | 'all'>('all')
   const [filterType, setFilterType] = useState<ServiceType | 'all'>('all')
   const [selectedRequest, setSelectedRequest] = useState<ServiceRequest | null>(null)
@@ -5652,7 +5627,7 @@ interface SettingsViewProps {
   setDarkMode: (value: boolean) => void
 }
 
-function SettingsView({ darkMode, setDarkMode }: SettingsViewProps) {
+function _SettingsView({ darkMode, setDarkMode }: SettingsViewProps) {
   const [activeSection, setActiveSection] = useState<'profile' | 'notifications' | 'api' | 'danger'>('profile')
   
   // Profile settings
@@ -6394,29 +6369,6 @@ export default function DeveloperDashboardNew() {
     }
   }
 
-  // Update service request via API
-  const handleUpdateService = async (updatedRequest: ServiceRequest) => {
-    // Optimistically update local state
-    setServiceRequests(prev => prev.map(r => 
-      r.id === updatedRequest.id ? updatedRequest : r
-    ))
-
-    // Update in API/database
-    try {
-      const token = sessionStorage.getItem(TOKEN_KEY)
-      await fetch('/api/services', {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`
-        },
-        body: JSON.stringify(updatedRequest)
-      })
-    } catch (error) {
-      console.error('Error updating service:', error)
-    }
-  }
-
   const markAllNotificationsRead = () => {
     setNotifications(prev => prev.map(n => ({ ...n, read: true })))
   }
@@ -6425,7 +6377,6 @@ export default function DeveloperDashboardNew() {
   const unreadMessages = projects.reduce((acc, p) => 
     acc + p.messages.filter(m => !m.read && m.from === 'client').length, 0
   )
-  const pendingOnboarding = projects.filter(p => p.phase === 'onboarding').length
 
   // Show login if not authenticated
   if (!isAuthenticated) {
@@ -6442,7 +6393,6 @@ export default function DeveloperDashboardNew() {
         isOpen={sidebarOpen}
         setIsOpen={setSidebarOpen}
         unreadMessages={unreadMessages}
-        pendingOnboarding={pendingOnboarding}
         onLogout={handleLogout}
       />
 
@@ -6503,27 +6453,6 @@ export default function DeveloperDashboardNew() {
                     onNavigateToPayments={() => setActiveView('payments')}
                   />
                 )}
-                {activeView === 'clients' && (
-                  <ClientsView 
-                    darkMode={darkMode}
-                    clients={clients}
-                    projects={projects}
-                    onSelectClient={() => {}}
-                    onAddClient={(client) => setClients(prev => [client, ...prev])}
-                    onDeleteClient={async (clientId, projectIds) => {
-                      // Delete all associated projects from the API
-                      for (const projectId of projectIds) {
-                        await fetch(`/api/projects?id=${projectId}`, {
-                          method: 'DELETE'
-                        })
-                      }
-                      // Remove client from state
-                      setClients(prev => prev.filter(c => c.id !== clientId))
-                      // Remove projects from state
-                      setProjects(prev => prev.filter(p => !projectIds.includes(p.id)))
-                    }}
-                  />
-                )}
                 {activeView === 'messages' && (
                   <MessagesView 
                     darkMode={darkMode}
@@ -6531,32 +6460,11 @@ export default function DeveloperDashboardNew() {
                     onUpdateProject={handleUpdateProject}
                   />
                 )}
-                {activeView === 'onboarding' && (
-                  <OnboardingView 
-                    darkMode={darkMode}
-                    projects={projects}
-                    onUpdateProject={handleUpdateProject}
-                    onSelectProject={setSelectedProject}
-                  />
-                )}
                 {activeView === 'payments' && (
                   <PaymentsView 
                     darkMode={darkMode}
                     projects={projects}
                     onUpdateProject={handleUpdateProject}
-                  />
-                )}
-                {activeView === 'services' && (
-                  <ServicesView 
-                    darkMode={darkMode}
-                    serviceRequests={serviceRequests}
-                    onUpdateRequest={handleUpdateService}
-                  />
-                )}
-                {activeView === 'settings' && (
-                  <SettingsView 
-                    darkMode={darkMode}
-                    setDarkMode={setDarkMode}
                   />
                 )}
               </motion.div>
