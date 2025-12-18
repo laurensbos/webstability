@@ -39,48 +39,48 @@ interface GooglePlaceResult {
 }
 
 // Type mapping naar Google Places types
-const TYPE_MAPPING: Record<string, string> = {
-  restaurant: 'restaurant',
-  cafe: 'cafe',
-  bakker: 'bakery',
-  bakery: 'bakery',
-  kapper: 'hair_care',
-  hair_care: 'hair_care',
-  garage: 'car_repair',
-  car_repair: 'car_repair',
-  winkel: 'store',
-  store: 'store',
-  fitness: 'gym',
-  gym: 'gym',
-  tandarts: 'dentist',
-  dentist: 'dentist',
-  fysiotherapeut: 'physiotherapist',
-  physiotherapist: 'physiotherapist',
-  hotel: 'lodging',
-  lodging: 'lodging',
-  schoonheidssalon: 'beauty_salon',
-  beauty_salon: 'beauty_salon',
-  apotheek: 'pharmacy',
-  pharmacy: 'pharmacy',
-  dierenarts: 'veterinary_care',
-  veterinary_care: 'veterinary_care',
-  accountant: 'accounting',
-  accounting: 'accounting',
-  advocaat: 'lawyer',
-  lawyer: 'lawyer',
-  makelaar: 'real_estate_agency',
-  real_estate_agency: 'real_estate_agency',
-  installateur: 'plumber',
-  loodgieter: 'plumber',
-  plumber: 'plumber',
-  elektricien: 'electrician',
-  electrician: 'electrician',
-  schilder: 'painter',
-  painter: 'painter',
-  timmerman: 'general_contractor',
-  aannemer: 'general_contractor',
-  bouw: 'general_contractor',
-  overig: 'establishment',
+const TYPE_MAPPING: Record<string, { type?: string; keyword: string }> = {
+  restaurant: { type: 'restaurant', keyword: 'restaurant' },
+  cafe: { type: 'cafe', keyword: 'cafe koffie' },
+  bakker: { type: 'bakery', keyword: 'bakker bakkerij' },
+  bakery: { type: 'bakery', keyword: 'bakker bakkerij' },
+  kapper: { type: 'hair_care', keyword: 'kapper kapsalon barbershop' },
+  hair_care: { type: 'hair_care', keyword: 'kapper kapsalon' },
+  garage: { type: 'car_repair', keyword: 'garage autobedrijf autogarage APK' },
+  car_repair: { type: 'car_repair', keyword: 'garage autobedrijf' },
+  winkel: { type: 'store', keyword: 'winkel shop' },
+  store: { type: 'store', keyword: 'winkel shop' },
+  fitness: { type: 'gym', keyword: 'fitness sportschool gym' },
+  gym: { type: 'gym', keyword: 'fitness sportschool' },
+  tandarts: { type: 'dentist', keyword: 'tandarts tandartsenpraktijk' },
+  dentist: { type: 'dentist', keyword: 'tandarts' },
+  fysiotherapeut: { keyword: 'fysiotherapie fysiotherapeut fysio' },
+  physiotherapist: { keyword: 'fysiotherapie fysiotherapeut' },
+  hotel: { type: 'lodging', keyword: 'hotel pension B&B' },
+  lodging: { type: 'lodging', keyword: 'hotel' },
+  schoonheidssalon: { type: 'beauty_salon', keyword: 'schoonheidssalon beautysalon nagelsalon' },
+  beauty_salon: { type: 'beauty_salon', keyword: 'schoonheidssalon' },
+  apotheek: { type: 'pharmacy', keyword: 'apotheek' },
+  pharmacy: { type: 'pharmacy', keyword: 'apotheek' },
+  dierenarts: { type: 'veterinary_care', keyword: 'dierenarts dierenkliniek' },
+  veterinary_care: { type: 'veterinary_care', keyword: 'dierenarts' },
+  accountant: { type: 'accounting', keyword: 'accountant boekhouder administratiekantoor' },
+  accounting: { type: 'accounting', keyword: 'accountant boekhouder' },
+  advocaat: { type: 'lawyer', keyword: 'advocaat advocatenkantoor juridisch' },
+  lawyer: { type: 'lawyer', keyword: 'advocaat' },
+  makelaar: { type: 'real_estate_agency', keyword: 'makelaar makelaardij vastgoed' },
+  real_estate_agency: { type: 'real_estate_agency', keyword: 'makelaar' },
+  installateur: { keyword: 'installateur loodgieter elektricien cv installatie' },
+  loodgieter: { type: 'plumber', keyword: 'loodgieter sanitair' },
+  plumber: { type: 'plumber', keyword: 'loodgieter' },
+  elektricien: { type: 'electrician', keyword: 'elektricien elektra' },
+  electrician: { type: 'electrician', keyword: 'elektricien' },
+  schilder: { keyword: 'schilder schildersbedrijf' },
+  painter: { keyword: 'schilder schildersbedrijf' },
+  timmerman: { keyword: 'timmerman timmerwerk houtbewerking' },
+  aannemer: { keyword: 'aannemer bouwbedrijf aannemersbedrijf bouw verbouw renovatie' },
+  bouw: { keyword: 'aannemer bouwbedrijf aannemersbedrijf bouw verbouw renovatie klusbedrijf' },
+  overig: { keyword: 'bedrijf' },
 }
 
 // Nederlandse type labels
@@ -168,14 +168,20 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
     console.log(`[BusinessSearch] Locatie gevonden: ${lat}, ${lng}`)
 
-    // Stap 2: Zoek bedrijven in de buurt
+    // Stap 2: Zoek bedrijven in de buurt met keyword + type
     const typeKey = String(type).toLowerCase()
-    const googleType = TYPE_MAPPING[typeKey] || 'establishment'
+    const searchConfig = TYPE_MAPPING[typeKey] || { keyword: 'bedrijf' }
     const searchRadius = Math.min(parseInt(String(radius), 10) || 5000, 50000)
 
-    const placesUrl = `https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=${lat},${lng}&radius=${searchRadius}&type=${googleType}&language=nl&key=${GOOGLE_API_KEY}`
+    // Bouw de URL met keyword (en optioneel type)
+    let placesUrl = `https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=${lat},${lng}&radius=${searchRadius}&keyword=${encodeURIComponent(searchConfig.keyword)}&language=nl&key=${GOOGLE_API_KEY}`
+    
+    // Voeg type toe als die bestaat (verbetert resultaten voor sommige categorieën)
+    if (searchConfig.type) {
+      placesUrl += `&type=${searchConfig.type}`
+    }
 
-    console.log(`[BusinessSearch] Zoeken naar ${googleType} binnen ${searchRadius}m...`)
+    console.log(`[BusinessSearch] Zoeken naar "${searchConfig.keyword}" binnen ${searchRadius}m...`)
 
     const placesResponse = await fetch(placesUrl)
     const placesData = await placesResponse.json()
@@ -222,9 +228,11 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
           }
         }
 
-        // Type label
-        const placeType = place.types?.find(t => TYPE_LABELS[t]) || googleType
-        const typeLabel = TYPE_LABELS[placeType] || TYPE_LABELS[googleType] || String(type)
+        // Type label - gebruik het type van de plaats of de gezochte categorie
+        const placeType = place.types?.find(t => TYPE_LABELS[t])
+        const typeLabel = (placeType && TYPE_LABELS[placeType]) || 
+                          (searchConfig.type && TYPE_LABELS[searchConfig.type]) || 
+                          String(type)
 
         // Extract stad uit adres
         const addressParts = (place.formatted_address || place.vicinity || '').split(',')
@@ -252,7 +260,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         businesses.push({
           id: place.place_id,
           name: place.name,
-          type: TYPE_LABELS[googleType] || String(type),
+          type: (searchConfig.type && TYPE_LABELS[searchConfig.type]) || String(type),
           address: place.vicinity || '',
           city: String(city),
           phone: '',
