@@ -14,7 +14,6 @@ import {
   XCircle,
   Star,
   MoreVertical,
-  Download,
   User,
   Globe,
   ChevronDown,
@@ -247,8 +246,8 @@ export default function MarketingDashboard() {
   const [emailBody, setEmailBody] = useState('')
   const [sending, setSending] = useState(false)
   
-  // Main view tab - zoeken or leads
-  const [mainTab, setMainTab] = useState<'zoeken' | 'leads'>('zoeken')
+  // Main view tab - zoeken, leads or postvak
+  const [mainTab, setMainTab] = useState<'zoeken' | 'leads' | 'postvak'>('zoeken')
   
   // Business search state
   const [searchCity, setSearchCity] = useState('')
@@ -610,22 +609,6 @@ export default function MarketingDashboard() {
     followUpsOverdue: leads.filter(l => l.followUpDate && l.followUpDate < new Date().toISOString().split('T')[0]).length
   }
 
-  // Conversie percentages
-  const conversionRates = {
-    contactToInterest: stats.gecontacteerd > 0 
-      ? Math.round((stats.geinteresseerd / stats.gecontacteerd) * 100) 
-      : 0,
-    interestToQuote: stats.geinteresseerd > 0 
-      ? Math.round((stats.offerte / stats.geinteresseerd) * 100) 
-      : 0,
-    quoteToCustomer: stats.offerte > 0 
-      ? Math.round((stats.klanten / stats.offerte) * 100) 
-      : 0,
-    overallConversion: stats.total > 0 
-      ? Math.round((stats.klanten / stats.total) * 100) 
-      : 0
-  }
-
   const openEmailModal = (lead: Lead, template?: EmailTemplate) => {
     setSelectedLead(lead)
     setSelectedTemplate(template || null)
@@ -742,41 +725,6 @@ export default function MarketingDashboard() {
     if (confirm('Weet je zeker dat je deze lead wilt verwijderen?')) {
       setLeads(prev => prev.filter(l => l.id !== leadId))
     }
-  }
-
-  const exportToCSV = () => {
-    const headers = ['Bedrijf', 'Contact', 'Email', 'Telefoon', 'Stad', 'Status', 'Notities', 'Follow-up', 'Emails verstuurd']
-    
-    // Helper to escape CSV values (handle commas, quotes, newlines)
-    const escapeCSV = (value: string | undefined | null): string => {
-      if (!value) return ''
-      const str = String(value)
-      if (str.includes(',') || str.includes('"') || str.includes('\n')) {
-        return `"${str.replace(/"/g, '""')}"`
-      }
-      return str
-    }
-    
-    const rows = leads.map(l => [
-      escapeCSV(l.companyName),
-      escapeCSV(l.contactPerson),
-      escapeCSV(l.email),
-      escapeCSV(l.phone),
-      escapeCSV(l.city),
-      escapeCSV(statusColors[l.status]?.label || l.status),
-      escapeCSV(l.notes),
-      escapeCSV(l.followUpDate),
-      String(l.emailsSent || 0)
-    ])
-    
-    const csv = [headers, ...rows].map(row => row.join(',')).join('\n')
-    const blob = new Blob(['\ufeff' + csv], { type: 'text/csv;charset=utf-8' }) // BOM for Excel
-    const url = URL.createObjectURL(blob)
-    const a = document.createElement('a')
-    a.href = url
-    a.download = `leads-${new Date().toISOString().split('T')[0]}.csv`
-    a.click()
-    URL.revokeObjectURL(url) // Clean up
   }
 
   return (
@@ -947,47 +895,9 @@ export default function MarketingDashboard() {
                   </div>
                 </div>
               </div>
-
-              {/* Search Bar - Desktop only */}
-              <div className="hidden lg:flex flex-1 max-w-xl mx-8">
-                <div className="relative w-full">
-                  <Search className={`absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 ${
-                    darkMode ? 'text-gray-500' : 'text-gray-400'
-                  }`} />
-                  <input
-                    type="text"
-                    placeholder="Zoek op bedrijf, email, stad..."
-                    value={searchQuery}
-                    onChange={(e) => setSearchQuery(e.target.value)}
-                    className={`w-full pl-12 pr-4 py-3 rounded-2xl border transition-all ${
-                      darkMode 
-                        ? 'bg-gray-800 border-gray-700 text-white placeholder-gray-500 focus:border-emerald-500' 
-                        : 'bg-gray-50 border-gray-200 text-gray-900 placeholder-gray-400 focus:border-emerald-500 focus:bg-white'
-                    } focus:outline-none focus:ring-2 focus:ring-emerald-500/20`}
-                  />
-                </div>
-              </div>
               
-              {/* Actions - Desktop only */}
-              <div className="hidden sm:flex items-center gap-3">
-                {/* Export Button */}
-                <Tooltip text="Exporteer naar CSV" darkMode={darkMode}>
-                  <motion.button
-                    whileHover={{ scale: 1.05 }}
-                    whileTap={{ scale: 0.95 }}
-                    onClick={exportToCSV}
-                    className={`flex items-center gap-2 px-4 py-2.5 rounded-xl transition-colors ${
-                      darkMode 
-                        ? 'text-gray-400 hover:text-white hover:bg-gray-800' 
-                        : 'text-gray-600 hover:text-gray-900 hover:bg-gray-100'
-                    }`}
-                  >
-                    <Download className="w-4 h-4" />
-                    <span className="hidden lg:inline">Export</span>
-                  </motion.button>
-                </Tooltip>
-
-                {/* Add Button */}
+              {/* Add Button - Desktop only */}
+              <div className="hidden sm:block">
                 <motion.button
                   whileHover={{ scale: 1.05 }}
                   whileTap={{ scale: 0.95 }}
@@ -995,7 +905,7 @@ export default function MarketingDashboard() {
                   className="flex items-center gap-2 px-4 py-2.5 bg-gradient-to-r from-emerald-500 to-emerald-600 text-white rounded-xl hover:from-emerald-600 hover:to-emerald-700 transition-all shadow-lg shadow-emerald-500/25"
                 >
                   <Plus className="w-5 h-5" />
-                  <span className="hidden lg:inline font-medium">Nieuw bedrijf</span>
+                  <span className="font-medium">Nieuw</span>
                 </motion.button>
               </div>
             </div>
@@ -1004,110 +914,70 @@ export default function MarketingDashboard() {
 
         <main className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-8 pb-24 lg:pb-8">
         
-        {/* Mobile: Simple header with stats */}
+        {/* Mobile: Simple header */}
         <div className="sm:hidden mb-4">
-          <h2 className={`text-lg font-semibold mb-3 ${darkMode ? 'text-white' : 'text-gray-900'}`}>
-            {mainTab === 'zoeken' ? '🔍 Bedrijven zoeken' : `📋 Mijn leads (${stats.total})`}
+          <h2 className={`text-lg font-semibold ${darkMode ? 'text-white' : 'text-gray-900'}`}>
+            {mainTab === 'zoeken' && '🔍 Bedrijven zoeken'}
+            {mainTab === 'leads' && `📋 Leads (${stats.total})`}
+            {mainTab === 'postvak' && `📬 Postvak (${stats.emailsSent})`}
           </h2>
         </div>
 
-        {/* Desktop: Clean header with tab navigation */}
-        <div className="hidden sm:block mb-6">
-          <div className="flex items-center justify-between mb-4">
-            <div>
-              <h2 className={`text-2xl font-bold ${darkMode ? 'text-white' : 'text-gray-900'}`}>
-                {mainTab === 'zoeken' ? '🔍 Bedrijven zoeken' : '📋 Mijn leads'}
-              </h2>
-              <p className={`text-sm ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>
-                {mainTab === 'zoeken' 
-                  ? 'Zoek lokale bedrijven en voeg ze toe als lead'
-                  : `${stats.total} leads · ${stats.klanten} klanten · ${conversionRates.overallConversion}% conversie`
-                }
-              </p>
-            </div>
-            
-            {/* Compact stats for desktop */}
-            <div className={`flex items-center gap-6 px-4 py-2 rounded-xl ${
-              darkMode ? 'bg-gray-800/60' : 'bg-gray-50'
-            }`}>
-              <div className="text-center">
-                <p className={`text-xl font-bold ${darkMode ? 'text-white' : 'text-gray-900'}`}>{stats.total}</p>
-                <p className={`text-xs ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>Leads</p>
-              </div>
-              <div className="text-center">
-                <p className={`text-xl font-bold text-emerald-500`}>{stats.klanten}</p>
-                <p className={`text-xs ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>Klanten</p>
-              </div>
-              <div className="text-center">
-                <p className={`text-xl font-bold ${darkMode ? 'text-amber-400' : 'text-amber-600'}`}>{stats.teMailen}</p>
-                <p className={`text-xs ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>Te mailen</p>
-              </div>
-              {stats.followUpsToday + stats.followUpsOverdue > 0 && (
-                <div className="text-center">
-                  <p className={`text-xl font-bold ${stats.followUpsOverdue > 0 ? 'text-red-500' : 'text-orange-500'}`}>
-                    {stats.followUpsToday + stats.followUpsOverdue}
-                  </p>
-                  <p className={`text-xs ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>Follow-up</p>
-                </div>
-              )}
-            </div>
-          </div>
-
-          {/* Tab navigation */}
-          <div className="flex gap-2">
-            <button
-              onClick={() => setMainTab('zoeken')}
-              className={`flex items-center gap-2 px-4 py-2 rounded-lg font-medium transition-all text-sm ${
-                mainTab === 'zoeken'
-                  ? 'bg-emerald-500 text-white'
-                  : darkMode 
-                    ? 'text-gray-400 hover:text-white hover:bg-gray-800' 
-                    : 'text-gray-600 hover:text-gray-900 hover:bg-gray-100'
-              }`}
-            >
-              <Search className="w-4 h-4" />
-              Zoeken
-            </button>
-            <button
-              onClick={() => setMainTab('leads')}
-              className={`flex items-center gap-2 px-4 py-2 rounded-lg font-medium transition-all text-sm ${
-                mainTab === 'leads'
-                  ? 'bg-emerald-500 text-white'
-                  : darkMode 
-                    ? 'text-gray-400 hover:text-white hover:bg-gray-800' 
-                    : 'text-gray-600 hover:text-gray-900 hover:bg-gray-100'
-              }`}
-            >
-              <Building2 className="w-4 h-4" />
-              Leads
-              {stats.total > 0 && (
-                <span className={`px-1.5 py-0.5 rounded text-xs ${
-                  mainTab === 'leads' ? 'bg-white/20' : darkMode ? 'bg-gray-700' : 'bg-gray-200'
-                }`}>
-                  {stats.total}
-                </span>
-              )}
-            </button>
-            <button
-              onClick={() => {
-                setMainTab('leads')
-                setStatusFilter('temailen')
-              }}
-              className={`flex items-center gap-2 px-4 py-2 rounded-lg font-medium transition-all text-sm ${
-                darkMode 
+        {/* Desktop: Simple tab navigation */}
+        <div className="hidden sm:flex items-center gap-2 mb-6">
+          <button
+            onClick={() => setMainTab('zoeken')}
+            className={`flex items-center gap-2 px-4 py-2.5 rounded-xl font-medium transition-all ${
+              mainTab === 'zoeken'
+                ? 'bg-emerald-500 text-white shadow-lg shadow-emerald-500/25'
+                : darkMode 
                   ? 'text-gray-400 hover:text-white hover:bg-gray-800' 
                   : 'text-gray-600 hover:text-gray-900 hover:bg-gray-100'
-              }`}
-            >
-              <Mail className="w-4 h-4" />
-              Te mailen
-              {stats.teMailen > 0 && (
-                <span className="px-1.5 py-0.5 rounded text-xs bg-amber-500 text-white">
-                  {stats.teMailen}
-                </span>
-              )}
-            </button>
-          </div>
+            }`}
+          >
+            <Search className="w-4 h-4" />
+            Zoeken
+          </button>
+          <button
+            onClick={() => setMainTab('leads')}
+            className={`flex items-center gap-2 px-4 py-2.5 rounded-xl font-medium transition-all ${
+              mainTab === 'leads'
+                ? 'bg-emerald-500 text-white shadow-lg shadow-emerald-500/25'
+                : darkMode 
+                  ? 'text-gray-400 hover:text-white hover:bg-gray-800' 
+                  : 'text-gray-600 hover:text-gray-900 hover:bg-gray-100'
+            }`}
+          >
+            <Building2 className="w-4 h-4" />
+            Leads
+            {stats.total > 0 && (
+              <span className={`px-1.5 py-0.5 rounded text-xs ${
+                mainTab === 'leads' ? 'bg-white/20' : 'bg-emerald-500 text-white'
+              }`}>
+                {stats.total}
+              </span>
+            )}
+          </button>
+          <button
+            onClick={() => setMainTab('postvak')}
+            className={`flex items-center gap-2 px-4 py-2.5 rounded-xl font-medium transition-all ${
+              mainTab === 'postvak'
+                ? 'bg-emerald-500 text-white shadow-lg shadow-emerald-500/25'
+                : darkMode 
+                  ? 'text-gray-400 hover:text-white hover:bg-gray-800' 
+                  : 'text-gray-600 hover:text-gray-900 hover:bg-gray-100'
+            }`}
+          >
+            <Mail className="w-4 h-4" />
+            Postvak
+            {stats.emailsSent > 0 && (
+              <span className={`px-1.5 py-0.5 rounded text-xs ${
+                mainTab === 'postvak' ? 'bg-white/20' : 'bg-blue-500 text-white'
+              }`}>
+                {stats.emailsSent}
+              </span>
+            )}
+          </button>
         </div>
 
         {/* Main Content */}
@@ -1379,8 +1249,8 @@ export default function MarketingDashboard() {
               </div>
             )}
           </motion.div>
-        ) : (
-          /* Original Leads Filter */
+        ) : mainTab === 'leads' ? (
+          /* Leads View */
           <>
           <div className="flex gap-2 mb-4 sm:mb-6 overflow-x-auto pb-2 sm:pb-0 -mx-4 px-4 sm:mx-0 sm:px-0 sm:flex-wrap scrollbar-hide">
           {['alle', 'nieuw', 'gecontacteerd', 'geinteresseerd', 'offerte', 'klant', 'afgewezen'].map((status) => {
@@ -1461,6 +1331,99 @@ export default function MarketingDashboard() {
           )}
         </motion.div>
         </>
+        ) : (
+          /* Postvak View - Email History */
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            className={`rounded-xl sm:rounded-2xl border backdrop-blur-xl ${
+              darkMode ? 'bg-gray-800/60 border-gray-700/50' : 'bg-white/80 border-gray-200/50'
+            }`}
+          >
+            <div className={`p-4 sm:p-6 border-b ${darkMode ? 'border-gray-700' : 'border-gray-200'}`}>
+              <h3 className={`text-lg font-semibold flex items-center gap-2 ${darkMode ? 'text-white' : 'text-gray-900'}`}>
+                <Mail className="w-5 h-5 text-blue-500" />
+                Verzonden emails
+              </h3>
+              <p className={`text-sm mt-1 ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>
+                Complete mailgeschiedenis met alle leads
+              </p>
+            </div>
+            
+            {/* All emails from all leads, sorted by date */}
+            {(() => {
+              const allEmails = leads
+                .flatMap(lead => 
+                  lead.emailHistory.map(email => ({
+                    ...email,
+                    leadId: lead.id,
+                    companyName: lead.companyName,
+                    contactPerson: lead.contactPerson,
+                    leadEmail: lead.email
+                  }))
+                )
+                .sort((a, b) => new Date(b.sentAt).getTime() - new Date(a.sentAt).getTime())
+              
+              if (allEmails.length === 0) {
+                return (
+                  <div className={`p-8 text-center ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>
+                    <Mail className="w-12 h-12 mx-auto mb-3 opacity-30" />
+                    <p className="font-medium">Nog geen emails verzonden</p>
+                    <p className="text-sm mt-1">Verstuur je eerste email naar een lead</p>
+                  </div>
+                )
+              }
+              
+              return (
+                <div className={`divide-y ${darkMode ? 'divide-gray-700' : 'divide-gray-100'} max-h-[60vh] overflow-y-auto`}>
+                  {allEmails.map((email) => (
+                    <div 
+                      key={email.id}
+                      className={`p-4 transition-colors ${darkMode ? 'hover:bg-gray-700/50' : 'hover:bg-gray-50'}`}
+                    >
+                      <div className="flex items-start justify-between gap-3">
+                        <div className="flex-1 min-w-0">
+                          <div className="flex items-center gap-2 mb-1">
+                            <span className={`font-medium truncate ${darkMode ? 'text-white' : 'text-gray-900'}`}>
+                              {email.companyName}
+                            </span>
+                            {email.templateName && (
+                              <span className={`px-2 py-0.5 rounded text-xs ${
+                                darkMode ? 'bg-blue-500/20 text-blue-400' : 'bg-blue-100 text-blue-700'
+                              }`}>
+                                {email.templateName}
+                              </span>
+                            )}
+                          </div>
+                          <p className={`text-sm truncate ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>
+                            {email.subject}
+                          </p>
+                          <div className={`flex items-center gap-3 mt-2 text-xs ${darkMode ? 'text-gray-500' : 'text-gray-400'}`}>
+                            <span className="flex items-center gap-1">
+                              <User className="w-3 h-3" />
+                              {email.contactPerson || 'Geen contact'}
+                            </span>
+                            <span className="flex items-center gap-1">
+                              <Mail className="w-3 h-3" />
+                              {email.leadEmail}
+                            </span>
+                          </div>
+                        </div>
+                        <div className={`text-xs whitespace-nowrap ${darkMode ? 'text-gray-500' : 'text-gray-400'}`}>
+                          {new Date(email.sentAt).toLocaleDateString('nl-NL', {
+                            day: 'numeric',
+                            month: 'short',
+                            hour: '2-digit',
+                            minute: '2-digit'
+                          })}
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )
+            })()}
+          </motion.div>
         )}
       </main>
 
@@ -1606,11 +1569,11 @@ export default function MarketingDashboard() {
           ? 'bg-gray-900/95 border-gray-800' 
           : 'bg-white/95 border-gray-200'
       }`}>
-        <div className="flex items-center justify-around h-16 px-4">
+        <div className="flex items-center justify-around h-16 px-6">
           <motion.button
             whileTap={{ scale: 0.9 }}
             onClick={() => setMainTab('zoeken')}
-            className={`flex flex-col items-center gap-1 py-2 px-4 rounded-xl transition-colors ${
+            className={`flex flex-col items-center gap-1 py-2 px-3 rounded-xl transition-colors ${
               mainTab === 'zoeken' 
                 ? (darkMode ? 'text-emerald-400 bg-emerald-500/10' : 'text-emerald-600 bg-emerald-50') 
                 : (darkMode ? 'text-gray-400' : 'text-gray-500')
@@ -1623,7 +1586,7 @@ export default function MarketingDashboard() {
           <motion.button
             whileTap={{ scale: 0.9 }}
             onClick={() => setMainTab('leads')}
-            className={`flex flex-col items-center gap-1 py-2 px-4 rounded-xl transition-colors ${
+            className={`flex flex-col items-center gap-1 py-2 px-3 rounded-xl transition-colors relative ${
               mainTab === 'leads' 
                 ? (darkMode ? 'text-emerald-400 bg-emerald-500/10' : 'text-emerald-600 bg-emerald-50') 
                 : (darkMode ? 'text-gray-400' : 'text-gray-500')
@@ -1632,7 +1595,7 @@ export default function MarketingDashboard() {
             <Building2 className="w-5 h-5" />
             <span className="text-[10px] font-medium">Leads</span>
             {stats.total > 0 && (
-              <span className={`absolute -top-1 -right-1 w-4 h-4 text-[9px] flex items-center justify-center rounded-full bg-emerald-500 text-white font-bold`}>
+              <span className="absolute -top-1 right-0 w-4 h-4 text-[9px] flex items-center justify-center rounded-full bg-emerald-500 text-white font-bold">
                 {stats.total > 99 ? '99+' : stats.total}
               </span>
             )}
@@ -1641,42 +1604,29 @@ export default function MarketingDashboard() {
           <motion.button
             whileTap={{ scale: 0.9 }}
             onClick={() => setShowAddModal(true)}
-            className="flex items-center justify-center"
+            className="flex items-center justify-center -mt-4"
           >
-            <div className="p-3 bg-emerald-500 rounded-2xl shadow-lg shadow-emerald-500/30">
+            <div className="p-3.5 bg-emerald-500 rounded-2xl shadow-lg shadow-emerald-500/30">
               <Plus className="w-6 h-6 text-white" />
             </div>
           </motion.button>
           
           <motion.button
             whileTap={{ scale: 0.9 }}
-            onClick={() => {
-              // Filter leads die nog geen email hebben gehad
-              setMainTab('leads')
-              setStatusFilter('temailen')
-            }}
-            className={`flex flex-col items-center gap-1 py-2 px-4 rounded-xl transition-colors relative ${
-              darkMode ? 'text-gray-400' : 'text-gray-500'
+            onClick={() => setMainTab('postvak')}
+            className={`flex flex-col items-center gap-1 py-2 px-3 rounded-xl transition-colors relative ${
+              mainTab === 'postvak' 
+                ? (darkMode ? 'text-emerald-400 bg-emerald-500/10' : 'text-emerald-600 bg-emerald-50') 
+                : (darkMode ? 'text-gray-400' : 'text-gray-500')
             }`}
           >
             <Mail className="w-5 h-5" />
-            <span className="text-[10px] font-medium">Te mailen</span>
-            {stats.teMailen > 0 && (
-              <span className="absolute -top-1 right-2 w-4 h-4 text-[9px] flex items-center justify-center rounded-full bg-amber-500 text-white font-bold">
-                {stats.teMailen}
+            <span className="text-[10px] font-medium">Postvak</span>
+            {stats.emailsSent > 0 && (
+              <span className="absolute -top-1 right-0 w-4 h-4 text-[9px] flex items-center justify-center rounded-full bg-blue-500 text-white font-bold">
+                {stats.emailsSent > 99 ? '99+' : stats.emailsSent}
               </span>
             )}
-          </motion.button>
-          
-          <motion.button
-            whileTap={{ scale: 0.9 }}
-            onClick={() => setShowHelp(true)}
-            className={`flex flex-col items-center gap-1 py-2 px-4 rounded-xl transition-colors ${
-              darkMode ? 'text-gray-400' : 'text-gray-500'
-            }`}
-          >
-            <MoreVertical className="w-5 h-5" />
-            <span className="text-[10px] font-medium">Meer</span>
           </motion.button>
         </div>
       </nav>
@@ -2421,34 +2371,6 @@ function AddLeadModal({
         </form>
       </motion.div>
     </motion.div>
-  )
-}
-
-// Tooltip Component
-function Tooltip({ children, text, darkMode }: { children: React.ReactNode; text: string; darkMode: boolean }) {
-  const [show, setShow] = useState(false)
-  
-  return (
-    <div className="relative" onMouseEnter={() => setShow(true)} onMouseLeave={() => setShow(false)}>
-      {children}
-      <AnimatePresence>
-        {show && (
-          <motion.div
-            initial={{ opacity: 0, y: 5 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: 5 }}
-            className={`absolute top-full left-1/2 -translate-x-1/2 mt-2 px-2 py-1 text-xs rounded whitespace-nowrap z-50 ${
-              darkMode ? 'bg-gray-700 text-white' : 'bg-gray-900 text-white'
-            }`}
-          >
-            {text}
-            <div className={`absolute bottom-full left-1/2 -translate-x-1/2 border-4 border-transparent ${
-              darkMode ? 'border-b-gray-700' : 'border-b-gray-900'
-            }`} />
-          </motion.div>
-        )}
-      </AnimatePresence>
-    </div>
   )
 }
 
