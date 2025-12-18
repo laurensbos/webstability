@@ -40,6 +40,7 @@ interface GooglePlaceResult {
 
 // Type mapping naar Google Places types
 const TYPE_MAPPING: Record<string, { type?: string; keyword: string }> = {
+  alles: { keyword: '' }, // Geen specifieke keyword - gebruikt alleen de query
   restaurant: { type: 'restaurant', keyword: 'restaurant' },
   cafe: { type: 'cafe', keyword: 'cafe koffie' },
   bakker: { type: 'bakery', keyword: 'bakker bakkerij' },
@@ -173,8 +174,19 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
     // Stap 2: Zoek bedrijven in de buurt
     const typeKey = String(type).toLowerCase()
+    const isSearchAll = typeKey === 'alles'
     const searchConfig = TYPE_MAPPING[typeKey] || { keyword: 'bedrijf' }
     const searchRadius = Math.min(parseInt(String(radius), 10) || 5000, 50000)
+
+    // Bij "alles" moet er een query zijn ingevuld
+    if (isSearchAll && !searchQuery) {
+      return res.status(200).json({ 
+        success: true,
+        businesses: [],
+        count: 0,
+        error: 'Vul een bedrijfsnaam in om te zoeken met "Alles"'
+      })
+    }
 
     // Bepaal de zoekterm: specifieke query of keyword van type
     const keywordToSearch = searchQuery || searchConfig.keyword
@@ -182,8 +194,8 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     // Bouw de URL met keyword (en optioneel type)
     let placesUrl = `https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=${lat},${lng}&radius=${searchRadius}&keyword=${encodeURIComponent(keywordToSearch)}&language=nl&key=${GOOGLE_API_KEY}`
     
-    // Voeg type toe als die bestaat EN we niet op bedrijfsnaam zoeken
-    if (searchConfig.type && !searchQuery) {
+    // Voeg type toe als die bestaat EN we niet op bedrijfsnaam zoeken EN niet "alles"
+    if (searchConfig.type && !searchQuery && !isSearchAll) {
       placesUrl += `&type=${searchConfig.type}`
     }
 

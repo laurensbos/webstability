@@ -260,7 +260,7 @@ export default function MarketingDashboard() {
   // Business search state
   const [searchCity, setSearchCity] = useState('')
   const [businessNameQuery, setBusinessNameQuery] = useState('')
-  const [searchType, setSearchType] = useState('overig')
+  const [searchType, setSearchType] = useState('alles')
   const [searchRadius, setSearchRadius] = useState('5')
   const [isSearching, setIsSearching] = useState(false)
   const [searchError, setSearchError] = useState('')
@@ -405,6 +405,7 @@ export default function MarketingDashboard() {
 
   // Business types for search
   const businessTypes = [
+    { value: 'alles', label: 'Alles' },
     { value: 'restaurant', label: 'Restaurant / Horeca' },
     { value: 'kapper', label: 'Kapper / Schoonheid' },
     { value: 'winkel', label: 'Winkel / Retail' },
@@ -1323,14 +1324,15 @@ export default function MarketingDashboard() {
 
               <div className="col-span-2 sm:col-span-1">
                 <label className={`block text-xs sm:text-sm font-medium mb-1 ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>
-                  Bedrijfsnaam <span className="text-gray-500">(optioneel)</span>
+                  Bedrijfsnaam {searchType !== 'alles' && <span className="text-gray-500">(optioneel)</span>}
+                  {searchType === 'alles' && <span className="text-emerald-500">*</span>}
                 </label>
                 <input
                   type="text"
                   value={businessNameQuery}
                   onChange={(e) => setBusinessNameQuery(e.target.value)}
                   onKeyDown={(e) => e.key === 'Enter' && handleBusinessSearch()}
-                  placeholder="bijv. Bakkerij De Boer"
+                  placeholder={searchType === 'alles' ? 'bijv. hoveniersbedrijf' : 'bijv. Bakkerij De Boer'}
                   className={`w-full px-3 sm:px-4 py-2 sm:py-2.5 rounded-xl border text-sm ${
                     darkMode 
                       ? 'bg-gray-700 border-gray-600 text-white placeholder-gray-500' 
