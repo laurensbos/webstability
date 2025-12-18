@@ -519,11 +519,19 @@ export default function MarketingDashboard() {
     setAnalyzingWebsites(prev => ({ ...prev, [businessId]: true }))
     
     try {
-      const response = await fetch(`/api/marketing/analyze-website?url=${encodeURIComponent(website)}`)
+      const response = await fetch('/api/marketing/analyze-website', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ url: website })
+      })
       const data = await response.json()
+      
+      console.log('[Analyze] Response:', data)
       
       if (data.success && data.analysis) {
         setWebsiteAnalyses(prev => ({ ...prev, [businessId]: data.analysis }))
+      } else if (data.error) {
+        console.error('[Analyze] API Error:', data.error)
       }
     } catch (error) {
       console.error('[Analyze] Error:', error)
