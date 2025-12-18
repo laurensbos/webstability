@@ -1006,37 +1006,37 @@ export default function MarketingDashboard() {
           </div>
         </div>
 
-        <main className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8 pb-24 lg:pb-8">
-        {/* Welcome Section */}
+        <main className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-8 pb-24 lg:pb-8">
+        {/* Welcome Section - Compact on Mobile */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          className="mb-8"
+          className="mb-4 sm:mb-8"
         >
-          <div className="flex items-center gap-3 mb-2">
+          <div className="flex items-center gap-2 sm:gap-3">
             <motion.div
               initial={{ scale: 0 }}
               animate={{ scale: 1 }}
               transition={{ delay: 0.2, type: "spring" }}
-              className={`w-12 h-12 rounded-2xl flex items-center justify-center ${
+              className={`w-10 h-10 sm:w-12 sm:h-12 rounded-xl sm:rounded-2xl flex items-center justify-center ${
                 darkMode ? 'bg-gradient-to-br from-emerald-500/20 to-teal-500/20' : 'bg-gradient-to-br from-emerald-100 to-teal-100'
               }`}
             >
-              <Sparkles className={`w-6 h-6 ${darkMode ? 'text-emerald-400' : 'text-emerald-600'}`} />
+              <Sparkles className={`w-5 h-5 sm:w-6 sm:h-6 ${darkMode ? 'text-emerald-400' : 'text-emerald-600'}`} />
             </motion.div>
-            <div>
-              <h2 className={`text-2xl sm:text-3xl font-bold ${darkMode ? 'text-white' : 'text-gray-900'}`}>
+            <div className="flex-1">
+              <h2 className={`text-xl sm:text-3xl font-bold ${darkMode ? 'text-white' : 'text-gray-900'}`}>
                 Welkom terug! 👋
               </h2>
-              <p className={`${darkMode ? 'text-gray-400' : 'text-gray-600'}`}>
+              <p className={`text-sm sm:text-base ${darkMode ? 'text-gray-400' : 'text-gray-600'}`}>
                 {new Date().toLocaleDateString('nl-NL', { weekday: 'long', day: 'numeric', month: 'long' })}
               </p>
             </div>
           </div>
         </motion.div>
 
-        {/* Stats Grid - Modern Cards with Glassmorphism */}
-        <div className="grid grid-cols-3 sm:grid-cols-3 lg:grid-cols-5 gap-2 sm:gap-4 mb-6 sm:mb-8">
+        {/* Stats Grid - Hidden on mobile, show summary instead */}
+        <div className="hidden sm:grid grid-cols-3 lg:grid-cols-5 gap-4 mb-8">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -1182,33 +1182,63 @@ export default function MarketingDashboard() {
           </motion.div>
         </div>
 
-        {/* Quick Actions */}
+        {/* Mobile Stats Summary - Compact horizontal bar */}
+        <motion.div
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          className={`sm:hidden flex items-center justify-between gap-2 p-3 rounded-xl mb-4 ${
+            darkMode ? 'bg-gray-800/60 border border-gray-700/50' : 'bg-white/80 border border-gray-200/50'
+          }`}
+        >
+          <div className="flex items-center gap-4">
+            <div className="text-center">
+              <p className={`text-lg font-bold ${darkMode ? 'text-white' : 'text-gray-900'}`}>{stats.total}</p>
+              <p className={`text-[10px] ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>Leads</p>
+            </div>
+            <div className="text-center">
+              <p className={`text-lg font-bold ${darkMode ? 'text-emerald-400' : 'text-emerald-600'}`}>{stats.klanten}</p>
+              <p className={`text-[10px] ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>Klanten</p>
+            </div>
+            {stats.followUpsToday + stats.followUpsOverdue > 0 && (
+              <div className="text-center">
+                <p className={`text-lg font-bold ${stats.followUpsOverdue > 0 ? 'text-red-500' : 'text-orange-500'}`}>
+                  {stats.followUpsToday + stats.followUpsOverdue}
+                </p>
+                <p className={`text-[10px] ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>Follow-up</p>
+              </div>
+            )}
+          </div>
+          <div className={`text-right text-xs ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>
+            <span className="text-emerald-500 font-medium">{conversionRates.overallConversion}%</span> conversie
+          </div>
+        </motion.div>
+
+        {/* Quick Actions - Desktop only, mobile uses bottom nav */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.25 }}
-          className="mb-6 sm:mb-8 -mx-4 sm:mx-0"
+          className="hidden sm:block mb-8"
         >
-          <div className="flex gap-2 sm:gap-3 overflow-x-auto px-4 sm:px-0 pb-2 sm:pb-0 scrollbar-hide sm:flex-wrap sm:overflow-visible">
+          <div className="flex gap-3 flex-wrap">
             <motion.button
               whileHover={{ scale: 1.02 }}
               whileTap={{ scale: 0.98 }}
               onClick={() => setShowAddModal(true)}
-              className={`flex items-center gap-1.5 sm:gap-2 px-3 sm:px-4 py-2 sm:py-2.5 rounded-xl font-medium transition-all whitespace-nowrap text-sm ${
+              className={`flex items-center gap-2 px-4 py-2.5 rounded-xl font-medium transition-all whitespace-nowrap text-sm ${
                 darkMode 
                   ? 'bg-emerald-600 text-white hover:bg-emerald-500' 
                   : 'bg-emerald-500 text-white hover:bg-emerald-600 shadow-lg shadow-emerald-500/20'
               }`}
             >
               <Plus className="w-4 h-4" />
-              <span className="hidden sm:inline">Nieuw bedrijf</span>
-              <span className="sm:hidden">Nieuw</span>
+              Nieuw bedrijf
             </motion.button>
             <motion.button
               whileHover={{ scale: 1.02 }}
               whileTap={{ scale: 0.98 }}
               onClick={() => setMainTab('zoeken')}
-              className={`flex items-center gap-1.5 sm:gap-2 px-3 sm:px-4 py-2 sm:py-2.5 rounded-xl font-medium transition-all whitespace-nowrap text-sm ${
+              className={`flex items-center gap-2 px-4 py-2.5 rounded-xl font-medium transition-all whitespace-nowrap text-sm ${
                 mainTab === 'zoeken'
                   ? 'bg-emerald-500 text-white shadow-lg shadow-emerald-500/20'
                   : darkMode 
@@ -1223,7 +1253,7 @@ export default function MarketingDashboard() {
               whileHover={{ scale: 1.02 }}
               whileTap={{ scale: 0.98 }}
               onClick={() => setMainTab('leads')}
-              className={`flex items-center gap-1.5 sm:gap-2 px-3 sm:px-4 py-2 sm:py-2.5 rounded-xl font-medium transition-all whitespace-nowrap text-sm ${
+              className={`flex items-center gap-2 px-4 py-2.5 rounded-xl font-medium transition-all whitespace-nowrap text-sm ${
                 mainTab === 'leads'
                   ? 'bg-blue-500 text-white shadow-lg shadow-blue-500/20'
                   : darkMode 
@@ -1238,15 +1268,14 @@ export default function MarketingDashboard() {
               whileHover={{ scale: 1.02 }}
               whileTap={{ scale: 0.98 }}
               onClick={exportToCSV}
-              className={`flex items-center gap-1.5 sm:gap-2 px-3 sm:px-4 py-2 sm:py-2.5 rounded-xl font-medium transition-all whitespace-nowrap text-sm ${
+              className={`flex items-center gap-2 px-4 py-2.5 rounded-xl font-medium transition-all whitespace-nowrap text-sm ${
                 darkMode 
                   ? 'bg-gray-800 text-gray-300 hover:bg-gray-700' 
                   : 'bg-white text-gray-700 hover:bg-gray-50 border border-gray-200'
               }`}
             >
               <Download className="w-4 h-4" />
-              <span className="hidden sm:inline">Exporteer</span>
-              <span className="sm:hidden">CSV</span>
+              Exporteer
             </motion.button>
             <motion.button
               whileHover={{ scale: 1.02 }}
@@ -1256,7 +1285,7 @@ export default function MarketingDashboard() {
                 setOnboardingStep(0)
                 setShowOnboarding(true)
               }}
-              className={`flex items-center gap-1.5 sm:gap-2 px-3 sm:px-4 py-2 sm:py-2.5 rounded-xl font-medium transition-all whitespace-nowrap text-sm ${
+              className={`flex items-center gap-2 px-4 py-2.5 rounded-xl font-medium transition-all whitespace-nowrap text-sm ${
                 darkMode 
                   ? 'bg-gray-800 text-gray-300 hover:bg-gray-700' 
                   : 'bg-white text-gray-700 hover:bg-gray-50 border border-gray-200'
@@ -1268,49 +1297,49 @@ export default function MarketingDashboard() {
           </div>
         </motion.div>
 
-        {/* Filters */}
+        {/* Conversie Funnel - Desktop only */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.3 }}
-          className={`rounded-2xl p-3 sm:p-5 border backdrop-blur-xl mb-4 sm:mb-6 ${
+          className={`hidden sm:block rounded-2xl p-5 border backdrop-blur-xl mb-6 ${
             darkMode ? 'bg-gray-800/60 border-gray-700/50' : 'bg-white/80 border-gray-200/50'
           }`}
         >
           {/* Conversie Funnel */}
-          <h3 className={`text-xs sm:text-sm font-semibold mb-3 sm:mb-4 ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>
+          <h3 className={`text-sm font-semibold mb-4 ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>
             Conversie Funnel
           </h3>
-          <div className="flex items-center justify-between gap-1 sm:gap-2 text-center overflow-x-auto mb-4">
+          <div className="flex items-center justify-between gap-2 text-center mb-4">
             <div className="flex-1 min-w-[50px]">
-              <div className={`text-lg sm:text-xl font-bold ${darkMode ? 'text-blue-400' : 'text-blue-600'}`}>{stats.nieuw}</div>
-              <div className={`text-[10px] sm:text-xs ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>Nieuw</div>
+              <div className={`text-xl font-bold ${darkMode ? 'text-blue-400' : 'text-blue-600'}`}>{stats.nieuw}</div>
+              <div className={`text-xs ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>Nieuw</div>
             </div>
-            <ChevronRight className={`w-4 h-4 ${darkMode ? 'text-gray-600' : 'text-gray-300'} hidden sm:block flex-shrink-0`} />
+            <ChevronRight className={`w-4 h-4 ${darkMode ? 'text-gray-600' : 'text-gray-300'} flex-shrink-0`} />
             <div className="flex-1 min-w-[50px]">
-              <div className={`text-lg sm:text-xl font-bold ${darkMode ? 'text-amber-400' : 'text-amber-600'}`}>{stats.gecontacteerd}</div>
-              <div className={`text-[10px] sm:text-xs ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>Contact</div>
+              <div className={`text-xl font-bold ${darkMode ? 'text-amber-400' : 'text-amber-600'}`}>{stats.gecontacteerd}</div>
+              <div className={`text-xs ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>Contact</div>
             </div>
-            <ChevronRight className={`w-4 h-4 ${darkMode ? 'text-gray-600' : 'text-gray-300'} hidden sm:block flex-shrink-0`} />
+            <ChevronRight className={`w-4 h-4 ${darkMode ? 'text-gray-600' : 'text-gray-300'} flex-shrink-0`} />
             <div className="flex-1 min-w-[50px]">
-              <div className={`text-lg sm:text-xl font-bold ${darkMode ? 'text-purple-400' : 'text-purple-600'}`}>{stats.geinteresseerd}</div>
-              <div className={`text-[10px] sm:text-xs ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>Interesse</div>
+              <div className={`text-xl font-bold ${darkMode ? 'text-purple-400' : 'text-purple-600'}`}>{stats.geinteresseerd}</div>
+              <div className={`text-xs ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>Interesse</div>
               {conversionRates.contactToInterest > 0 && (
                 <div className={`text-[10px] font-medium ${darkMode ? 'text-emerald-400' : 'text-emerald-600'}`}>{conversionRates.contactToInterest}%</div>
               )}
             </div>
-            <ChevronRight className={`w-4 h-4 ${darkMode ? 'text-gray-600' : 'text-gray-300'} hidden sm:block flex-shrink-0`} />
+            <ChevronRight className={`w-4 h-4 ${darkMode ? 'text-gray-600' : 'text-gray-300'} flex-shrink-0`} />
             <div className="flex-1 min-w-[50px]">
-              <div className={`text-lg sm:text-xl font-bold ${darkMode ? 'text-orange-400' : 'text-orange-600'}`}>{stats.offerte}</div>
-              <div className={`text-[10px] sm:text-xs ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>Offerte</div>
+              <div className={`text-xl font-bold ${darkMode ? 'text-orange-400' : 'text-orange-600'}`}>{stats.offerte}</div>
+              <div className={`text-xs ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>Offerte</div>
               {conversionRates.interestToQuote > 0 && (
                 <div className={`text-[10px] font-medium ${darkMode ? 'text-emerald-400' : 'text-emerald-600'}`}>{conversionRates.interestToQuote}%</div>
               )}
             </div>
-            <ChevronRight className={`w-4 h-4 ${darkMode ? 'text-gray-600' : 'text-gray-300'} hidden sm:block flex-shrink-0`} />
+            <ChevronRight className={`w-4 h-4 ${darkMode ? 'text-gray-600' : 'text-gray-300'} flex-shrink-0`} />
             <div className="flex-1 min-w-[50px]">
-              <div className={`text-lg sm:text-xl font-bold ${darkMode ? 'text-emerald-400' : 'text-emerald-600'}`}>{stats.klanten}</div>
-              <div className={`text-[10px] sm:text-xs ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>Klant</div>
+              <div className={`text-xl font-bold ${darkMode ? 'text-emerald-400' : 'text-emerald-600'}`}>{stats.klanten}</div>
+              <div className={`text-xs ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>Klant</div>
               {conversionRates.quoteToCustomer > 0 && (
                 <div className={`text-[10px] font-medium ${darkMode ? 'text-emerald-400' : 'text-emerald-600'}`}>{conversionRates.quoteToCustomer}%</div>
               )}
@@ -1334,7 +1363,7 @@ export default function MarketingDashboard() {
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            className={`rounded-2xl p-4 sm:p-6 border backdrop-blur-xl mb-4 sm:mb-6 ${
+            className={`rounded-xl sm:rounded-2xl p-4 sm:p-6 border backdrop-blur-xl mb-4 ${
               darkMode ? 'bg-gray-800/60 border-gray-700/50' : 'bg-white/80 border-gray-200/50'
             }`}
           >
@@ -1343,8 +1372,8 @@ export default function MarketingDashboard() {
               Zoek bedrijven
             </h3>
             
-            <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-5 gap-2 sm:gap-4 mb-3 sm:mb-4">
-              <div className="col-span-2 sm:col-span-1">
+            <div className="grid grid-cols-2 md:grid-cols-5 gap-2 sm:gap-4 mb-3 sm:mb-4">
+              <div className="col-span-1">
                 <label className={`block text-xs sm:text-sm font-medium mb-1 ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>
                   Stad/postcode
                 </label>
