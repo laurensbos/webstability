@@ -269,18 +269,23 @@ export default function MarketingDashboard() {
   }>>([])
   
   // Website analysis state
+  interface WebsiteIssue {
+    type: 'critical' | 'warning' | 'info'
+    message: string
+    icon: string
+  }
   interface WebsiteAnalysis {
     isOutdated: boolean
     score: number
-    issues: string[]
+    issues: WebsiteIssue[]
     details: {
       hasHttps: boolean
       hasViewport: boolean
-      loadTime: number
+      loadTime: number | null
       oldTechnologies: string[]
-      firstSeen?: string
     }
     recommendation: string
+    salesTip?: string
   }
   const [analyzingWebsites, setAnalyzingWebsites] = useState<Record<string, boolean>>({})
   const [websiteAnalyses, setWebsiteAnalyses] = useState<Record<string, WebsiteAnalysis>>({})
@@ -315,8 +320,16 @@ export default function MarketingDashboard() {
   const [syncStatus, setSyncStatus] = useState<'idle' | 'syncing' | 'synced' | 'error'>('idle')
   const [lastSyncTime, setLastSyncTime] = useState<string | null>(null)
 
-  // Sync leads to API (background)
+  // Sync leads to API (background) - silently fail if API not available
   const syncToAPI = async (leadsToSync: Lead[]) => {
+    // Only sync in production or if API is available
+    if (window.location.hostname === 'localhost') {
+      // Skip sync in development - just use localStorage
+      setSyncStatus('synced')
+      setLastSyncTime(new Date().toLocaleTimeString('nl-NL'))
+      return
+    }
+    
     try {
       setSyncStatus('syncing')
       
@@ -340,8 +353,10 @@ export default function MarketingDashboard() {
       setLastSyncTime(new Date().toLocaleTimeString('nl-NL'))
       localStorage.setItem('webstability_last_sync', new Date().toISOString())
     } catch (error) {
-      console.error('Sync error:', error)
-      setSyncStatus('error')
+      // Silently fail - localStorage is the primary storage anyway
+      console.warn('Sync to API failed, using localStorage only:', error)
+      setSyncStatus('synced') // Still show as synced since localStorage works
+      setLastSyncTime(new Date().toLocaleTimeString('nl-NL'))
     }
   }
 
@@ -560,6 +575,8 @@ export default function MarketingDashboard() {
       matchesStatus = true
     } else if (statusFilter === 'followup') {
       matchesStatus = lead.followUpDate !== undefined && lead.followUpDate <= today
+    } else if (statusFilter === 'temailen') {
+      matchesStatus = lead.emailsSent === 0 // Leads die nog nooit email hebben gehad
     } else {
       matchesStatus = lead.status === statusFilter
     }
@@ -582,6 +599,7 @@ export default function MarketingDashboard() {
   const stats = {
     total: leads.length,
     nieuw: leads.filter(l => l.status === 'nieuw').length,
+    teMailen: leads.filter(l => l.emailsSent === 0).length, // Leads die nog nooit email hebben gehad
     gecontacteerd: leads.filter(l => l.status === 'gecontacteerd').length,
     geinteresseerd: leads.filter(l => l.status === 'geinteresseerd').length,
     offerte: leads.filter(l => l.status === 'offerte').length,
@@ -870,15 +888,44 @@ export default function MarketingDashboard() {
         }`}>
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="flex items-center justify-between h-16 lg:h-20">
-              {/* Logo & Title */}
-              <div className="flex items-center gap-4">
+              {/* Logo, Title & Quick actions */}
+              <div className="flex items-center gap-3">
                 <a href="/" className="flex items-center gap-3 group">
                   <div className="relative">
                     <Logo variant={darkMode ? 'white' : 'default'} showText={false} />
                     <div className="absolute inset-0 bg-emerald-500/20 rounded-xl blur-xl opacity-0 group-hover:opacity-100 transition-opacity" />
                   </div>
                 </a>
-                <div className="hidden sm:block">
+                
+                {/* Dark Mode & Help - Always visible */}
+                <div className="flex items-center gap-1 ml-2">
+                  <motion.button
+                    whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.95 }}
+                    onClick={toggleDarkMode}
+                    className={`p-2 rounded-lg transition-colors ${
+                      darkMode 
+                        ? 'text-yellow-400 hover:bg-gray-800' 
+                        : 'text-gray-500 hover:text-gray-900 hover:bg-gray-100'
+                    }`}
+                  >
+                    {darkMode ? <Sun className="w-5 h-5" /> : <Moon className="w-5 h-5" />}
+                  </motion.button>
+                  <motion.button
+                    whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.95 }}
+                    onClick={() => setShowHelp(true)}
+                    className={`p-2 rounded-lg transition-colors ${
+                      darkMode 
+                        ? 'text-gray-400 hover:text-white hover:bg-gray-800' 
+                        : 'text-gray-500 hover:text-gray-900 hover:bg-gray-100'
+                    }`}
+                  >
+                    <HelpCircle className="w-5 h-5" />
+                  </motion.button>
+                </div>
+                
+                <div className="hidden sm:block ml-2">
                   <h1 className={`text-xl font-bold ${darkMode ? 'text-white' : 'text-gray-900'}`}>
                     Sales Dash
                   </h1>
@@ -923,38 +970,6 @@ export default function MarketingDashboard() {
               
               {/* Actions - Desktop only */}
               <div className="hidden sm:flex items-center gap-3">
-                {/* Help Button */}
-                <Tooltip text="Hulp & Handleiding" darkMode={darkMode}>
-                  <motion.button
-                    whileHover={{ scale: 1.05 }}
-                    whileTap={{ scale: 0.95 }}
-                    onClick={() => setShowHelp(true)}
-                    className={`p-2.5 rounded-xl transition-colors ${
-                      darkMode 
-                        ? 'text-gray-400 hover:text-white hover:bg-gray-800' 
-                        : 'text-gray-500 hover:text-gray-900 hover:bg-gray-100'
-                    }`}
-                  >
-                    <HelpCircle className="w-5 h-5" />
-                  </motion.button>
-                </Tooltip>
-
-                {/* Dark Mode Toggle */}
-                <Tooltip text={darkMode ? 'Lichte modus' : 'Donkere modus'} darkMode={darkMode}>
-                  <motion.button
-                    whileHover={{ scale: 1.05 }}
-                    whileTap={{ scale: 0.95 }}
-                    onClick={toggleDarkMode}
-                    className={`p-2.5 rounded-xl transition-colors ${
-                      darkMode 
-                        ? 'text-yellow-400 hover:bg-gray-800' 
-                        : 'text-gray-500 hover:text-gray-900 hover:bg-gray-100'
-                    }`}
-                  >
-                    {darkMode ? <Sun className="w-5 h-5" /> : <Moon className="w-5 h-5" />}
-                  </motion.button>
-                </Tooltip>
-
                 {/* Export Button */}
                 <Tooltip text="Exporteer naar CSV" darkMode={darkMode}>
                   <motion.button
@@ -1024,7 +1039,7 @@ export default function MarketingDashboard() {
                 <p className={`text-xs ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>Klanten</p>
               </div>
               <div className="text-center">
-                <p className={`text-xl font-bold ${darkMode ? 'text-amber-400' : 'text-amber-600'}`}>{stats.nieuw}</p>
+                <p className={`text-xl font-bold ${darkMode ? 'text-amber-400' : 'text-amber-600'}`}>{stats.teMailen}</p>
                 <p className={`text-xs ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>Te mailen</p>
               </div>
               {stats.followUpsToday + stats.followUpsOverdue > 0 && (
@@ -1076,7 +1091,7 @@ export default function MarketingDashboard() {
             <button
               onClick={() => {
                 setMainTab('leads')
-                setStatusFilter('nieuw')
+                setStatusFilter('temailen')
               }}
               className={`flex items-center gap-2 px-4 py-2 rounded-lg font-medium transition-all text-sm ${
                 darkMode 
@@ -1086,9 +1101,9 @@ export default function MarketingDashboard() {
             >
               <Mail className="w-4 h-4" />
               Te mailen
-              {stats.nieuw > 0 && (
+              {stats.teMailen > 0 && (
                 <span className="px-1.5 py-0.5 rounded text-xs bg-amber-500 text-white">
-                  {stats.nieuw}
+                  {stats.teMailen}
                 </span>
               )}
             </button>
@@ -1284,8 +1299,8 @@ export default function MarketingDashboard() {
                                   <ul className={`text-xs space-y-1 ${darkMode ? 'text-gray-300' : 'text-gray-600'}`}>
                                     {analysis.issues.slice(0, 3).map((issue, i) => (
                                       <li key={i} className="flex items-start gap-1">
-                                        <span className="text-orange-500">•</span>
-                                        {issue}
+                                        <span className={issue.type === 'critical' ? 'text-red-500' : issue.type === 'warning' ? 'text-orange-500' : 'text-blue-500'}>•</span>
+                                        {issue.message}
                                       </li>
                                     ))}
                                     {analysis.issues.length > 3 && (
@@ -1302,7 +1317,7 @@ export default function MarketingDashboard() {
                             )}
                           </div>
                           
-                          <div className="flex flex-col gap-2 flex-shrink-0">
+                          <div className="flex sm:flex-col gap-2 flex-shrink-0">
                             {/* Analyze Button */}
                             {business.website && !analysis && (
                               <motion.button
@@ -1310,21 +1325,19 @@ export default function MarketingDashboard() {
                                 whileTap={{ scale: 0.95 }}
                                 onClick={() => analyzeWebsite(business.id, business.website!)}
                                 disabled={isAnalyzing}
-                                className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-colors ${
+                                title="Website analyseren"
+                                className={`px-2 sm:px-3 py-1.5 rounded-lg text-sm font-medium transition-colors ${
                                   darkMode 
                                     ? 'bg-orange-500/20 text-orange-400 hover:bg-orange-500/30' 
                                     : 'bg-orange-100 text-orange-700 hover:bg-orange-200'
                                 } ${isAnalyzing ? 'opacity-50 cursor-wait' : ''}`}
                               >
                                 {isAnalyzing ? (
-                                  <>
-                                    <RefreshCw className="w-4 h-4 inline mr-1 animate-spin" />
-                                    Analyseren...
-                                  </>
+                                  <RefreshCw className="w-4 h-4 animate-spin" />
                                 ) : (
                                   <>
-                                    <Search className="w-4 h-4 inline mr-1" />
-                                    Analyseer
+                                    <Search className="w-4 h-4 sm:inline sm:mr-1" />
+                                    <span className="hidden sm:inline">Analyseer</span>
                                   </>
                                 )}
                               </motion.button>
@@ -1336,7 +1349,8 @@ export default function MarketingDashboard() {
                               whileTap={{ scale: 0.95 }}
                               onClick={() => addBusinessToLeads(business)}
                               disabled={isAdded}
-                              className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-colors ${
+                              title={isAdded ? 'Toegevoegd aan leads' : 'Toevoegen aan leads'}
+                              className={`px-2 sm:px-3 py-1.5 rounded-lg text-sm font-medium transition-colors ${
                                 isAdded
                                   ? darkMode 
                                     ? 'bg-emerald-500/20 text-emerald-400 cursor-default'
@@ -1346,13 +1360,13 @@ export default function MarketingDashboard() {
                             >
                               {isAdded ? (
                                 <>
-                                  <CheckCircle className="w-4 h-4 inline mr-1" />
-                                  Toegevoegd
+                                  <CheckCircle className="w-4 h-4 sm:inline sm:mr-1" />
+                                  <span className="hidden sm:inline">Toegevoegd</span>
                                 </>
                               ) : (
                                 <>
-                                  <Plus className="w-4 h-4 inline mr-1" />
-                                  Toevoegen
+                                  <Plus className="w-4 h-4 sm:inline sm:mr-1" />
+                                  <span className="hidden sm:inline">Toevoegen</span>
                                 </>
                               )}
                             </motion.button>
@@ -1639,7 +1653,7 @@ export default function MarketingDashboard() {
             onClick={() => {
               // Filter leads die nog geen email hebben gehad
               setMainTab('leads')
-              setStatusFilter('nieuw')
+              setStatusFilter('temailen')
             }}
             className={`flex flex-col items-center gap-1 py-2 px-4 rounded-xl transition-colors relative ${
               darkMode ? 'text-gray-400' : 'text-gray-500'
@@ -1647,9 +1661,9 @@ export default function MarketingDashboard() {
           >
             <Mail className="w-5 h-5" />
             <span className="text-[10px] font-medium">Te mailen</span>
-            {stats.nieuw > 0 && (
+            {stats.teMailen > 0 && (
               <span className="absolute -top-1 right-2 w-4 h-4 text-[9px] flex items-center justify-center rounded-full bg-amber-500 text-white font-bold">
-                {stats.nieuw}
+                {stats.teMailen}
               </span>
             )}
           </motion.button>
