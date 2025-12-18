@@ -1352,30 +1352,115 @@ function OverviewView({ darkMode, projects, clients, serviceRequests, setActiveV
         <h3 className={`font-semibold mb-4 ${darkMode ? 'text-white' : 'text-gray-900'}`}>
           Snelle acties
         </h3>
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-          {[
-            { icon: Plus, label: 'Nieuw project', color: 'bg-blue-500', view: 'projects' as DashboardView },
-            { icon: Users, label: 'Klanten beheren', color: 'bg-green-500', view: 'clients' as DashboardView },
-            { icon: Link2, label: 'Betaallink maken', color: 'bg-amber-500', view: 'payments' as DashboardView },
-            { icon: Briefcase, label: 'Services', color: 'bg-purple-500', view: 'services' as DashboardView },
-          ].map((action) => (
-            <motion.button
-              key={action.label}
-              whileHover={{ scale: 1.02, y: -2 }}
-              whileTap={{ scale: 0.98 }}
-              onClick={() => setActiveView(action.view)}
-              className={`flex flex-col items-center gap-3 p-4 rounded-xl transition-colors ${
-                darkMode ? 'bg-gray-700 hover:bg-gray-600' : 'bg-gray-50 hover:bg-gray-100'
-              }`}
-            >
-              <div className={`p-3 rounded-xl ${action.color}`}>
-                <action.icon className="w-5 h-5 text-white" />
-              </div>
-              <span className={`font-medium text-sm text-center ${darkMode ? 'text-white' : 'text-gray-900'}`}>
-                {action.label}
+        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
+          <motion.button
+            whileHover={{ scale: 1.02, y: -2 }}
+            whileTap={{ scale: 0.98 }}
+            onClick={() => setActiveView('projects')}
+            className={`flex flex-col items-center gap-3 p-4 rounded-xl transition-colors ${
+              darkMode ? 'bg-gray-700 hover:bg-gray-600' : 'bg-gray-50 hover:bg-gray-100'
+            }`}
+          >
+            <div className="p-3 rounded-xl bg-blue-500">
+              <Plus className="w-5 h-5 text-white" />
+            </div>
+            <span className={`font-medium text-sm text-center ${darkMode ? 'text-white' : 'text-gray-900'}`}>
+              Nieuw project
+            </span>
+          </motion.button>
+          
+          <motion.button
+            whileHover={{ scale: 1.02, y: -2 }}
+            whileTap={{ scale: 0.98 }}
+            onClick={() => {
+              const onboardingProjects = projects.filter(p => p.phase === 'onboarding')
+              if (onboardingProjects.length > 0) {
+                onSelectProject(onboardingProjects[0])
+                setActiveView('projects')
+              } else {
+                setActiveView('onboarding')
+              }
+            }}
+            className={`flex flex-col items-center gap-3 p-4 rounded-xl transition-colors ${
+              darkMode ? 'bg-gray-700 hover:bg-gray-600' : 'bg-gray-50 hover:bg-gray-100'
+            }`}
+          >
+            <div className="p-3 rounded-xl bg-yellow-500">
+              <FileText className="w-5 h-5 text-white" />
+            </div>
+            <span className={`font-medium text-sm text-center ${darkMode ? 'text-white' : 'text-gray-900'}`}>
+              Onboarding
+            </span>
+          </motion.button>
+          
+          <motion.button
+            whileHover={{ scale: 1.02, y: -2 }}
+            whileTap={{ scale: 0.98 }}
+            onClick={() => setActiveView('messages')}
+            className={`flex flex-col items-center gap-3 p-4 rounded-xl transition-colors relative ${
+              darkMode ? 'bg-gray-700 hover:bg-gray-600' : 'bg-gray-50 hover:bg-gray-100'
+            }`}
+          >
+            {stats.unreadMessages > 0 && (
+              <span className="absolute top-2 right-2 px-2 py-0.5 bg-red-500 text-white text-xs font-bold rounded-full">
+                {stats.unreadMessages}
               </span>
-            </motion.button>
-          ))}
+            )}
+            <div className="p-3 rounded-xl bg-purple-500">
+              <MessageSquare className="w-5 h-5 text-white" />
+            </div>
+            <span className={`font-medium text-sm text-center ${darkMode ? 'text-white' : 'text-gray-900'}`}>
+              Berichten
+            </span>
+          </motion.button>
+          
+          <motion.button
+            whileHover={{ scale: 1.02, y: -2 }}
+            whileTap={{ scale: 0.98 }}
+            onClick={() => setActiveView('payments')}
+            className={`flex flex-col items-center gap-3 p-4 rounded-xl transition-colors ${
+              darkMode ? 'bg-gray-700 hover:bg-gray-600' : 'bg-gray-50 hover:bg-gray-100'
+            }`}
+          >
+            <div className="p-3 rounded-xl bg-amber-500">
+              <Link2 className="w-5 h-5 text-white" />
+            </div>
+            <span className={`font-medium text-sm text-center ${darkMode ? 'text-white' : 'text-gray-900'}`}>
+              Betaallinks
+            </span>
+          </motion.button>
+          
+          <motion.button
+            whileHover={{ scale: 1.02, y: -2 }}
+            whileTap={{ scale: 0.98 }}
+            onClick={() => setActiveView('clients')}
+            className={`flex flex-col items-center gap-3 p-4 rounded-xl transition-colors ${
+              darkMode ? 'bg-gray-700 hover:bg-gray-600' : 'bg-gray-50 hover:bg-gray-100'
+            }`}
+          >
+            <div className="p-3 rounded-xl bg-green-500">
+              <Users className="w-5 h-5 text-white" />
+            </div>
+            <span className={`font-medium text-sm text-center ${darkMode ? 'text-white' : 'text-gray-900'}`}>
+              Klanten
+            </span>
+          </motion.button>
+          
+          <motion.button
+            whileHover={{ scale: 1.02, y: -2 }}
+            whileTap={{ scale: 0.98 }}
+            onClick={() => setActiveView('services')}
+            className={`flex flex-col items-center gap-3 p-4 rounded-xl transition-colors ${
+              darkMode ? 'bg-gray-700 hover:bg-gray-600' : 'bg-gray-50 hover:bg-gray-100'
+            }`}
+          >
+            <div className="p-3 rounded-xl bg-indigo-500">
+              <Briefcase className="w-5 h-5 text-white" />
+            </div>
+            <span className={`font-medium text-sm text-center ${darkMode ? 'text-white' : 'text-gray-900'}`}>
+              Services
+            </span>
+          </motion.button>
         </div>
       </motion.div>
 
@@ -1486,11 +1571,46 @@ function ProjectsView({ darkMode, projects, onUpdateProject, onDeleteProject, on
     return badges[pkg]
   }
 
-  // Project Card Component
+  // Project Card Component with Quick Actions
   const ProjectCard = ({ project }: { project: Project }) => {
     const payment = getPaymentBadge(project.paymentStatus)
     const pkg = getPackageBadge(project.package)
     const unreadCount = project.messages.filter(m => !m.read && m.from === 'client').length
+
+    // Quick action handlers
+    const handleMoveToNextPhase = (e: React.MouseEvent) => {
+      e.stopPropagation()
+      const phaseOrder: ProjectPhase[] = ['onboarding', 'design', 'development', 'review', 'live']
+      const currentIndex = phaseOrder.indexOf(project.phase)
+      if (currentIndex < phaseOrder.length - 1) {
+        const nextPhase = phaseOrder[currentIndex + 1]
+        onUpdateProject({ ...project, phase: nextPhase, updatedAt: new Date().toISOString() })
+      }
+    }
+
+    const handleSendMessage = (e: React.MouseEvent) => {
+      e.stopPropagation()
+      onSelectProject(project)
+      // Scroll to messages section in project detail
+    }
+
+    const handleCopyPortalLink = (e: React.MouseEvent) => {
+      e.stopPropagation()
+      const link = `https://webstability.nl/project/${project.projectId}`
+      navigator.clipboard.writeText(link)
+      alert('Link gekopieerd!')
+    }
+
+    const getNextPhaseLabel = () => {
+      const phaseLabels: Record<ProjectPhase, string> = {
+        onboarding: '→ Design',
+        design: '→ Development',
+        development: '→ Review',
+        review: '→ Live',
+        live: ''
+      }
+      return phaseLabels[project.phase]
+    }
 
     return (
       <motion.div
@@ -1500,7 +1620,7 @@ function ProjectsView({ darkMode, projects, onUpdateProject, onDeleteProject, on
         exit={{ opacity: 0, scale: 0.95 }}
         whileHover={{ y: -2 }}
         onClick={() => openProjectDetail(project)}
-        className={`p-4 rounded-xl border cursor-pointer transition-all ${
+        className={`p-4 rounded-xl border cursor-pointer transition-all group ${
           darkMode 
             ? 'bg-gray-800/50 border-gray-700 hover:border-blue-500/50' 
             : 'bg-white border-gray-200 hover:border-blue-300 shadow-sm hover:shadow-md'
@@ -1516,7 +1636,7 @@ function ProjectsView({ darkMode, projects, onUpdateProject, onDeleteProject, on
             </p>
           </div>
           {unreadCount > 0 && (
-            <span className="px-2 py-0.5 bg-red-500 text-white text-xs font-bold rounded-full">
+            <span className="px-2 py-0.5 bg-red-500 text-white text-xs font-bold rounded-full animate-pulse">
               {unreadCount}
             </span>
           )}
@@ -1531,21 +1651,59 @@ function ProjectsView({ darkMode, projects, onUpdateProject, onDeleteProject, on
           </span>
         </div>
 
-        <div className={`flex items-center justify-between text-xs ${darkMode ? 'text-gray-500' : 'text-gray-400'}`}>
-          <span className="flex items-center gap-1">
-            <Calendar className="w-3 h-3" />
-            {new Date(project.createdAt).toLocaleDateString('nl-NL', { day: 'numeric', month: 'short' })}
-          </span>
+        {/* Quick Actions - visible on hover */}
+        <div className={`flex items-center gap-1 pt-2 border-t ${darkMode ? 'border-gray-700' : 'border-gray-100'}`}>
+          {project.phase !== 'live' && (
+            <button
+              onClick={handleMoveToNextPhase}
+              className={`flex-1 px-2 py-1.5 text-xs font-medium rounded-lg transition-colors ${
+                darkMode 
+                  ? 'bg-blue-600/20 text-blue-400 hover:bg-blue-600/30' 
+                  : 'bg-blue-50 text-blue-600 hover:bg-blue-100'
+              }`}
+              title="Naar volgende fase"
+            >
+              {getNextPhaseLabel()}
+            </button>
+          )}
+          <button
+            onClick={handleCopyPortalLink}
+            className={`p-1.5 rounded-lg transition-colors ${
+              darkMode 
+                ? 'hover:bg-gray-700 text-gray-400 hover:text-gray-300' 
+                : 'hover:bg-gray-100 text-gray-500 hover:text-gray-700'
+            }`}
+            title="Kopieer klantportaal link"
+          >
+            <Link2 className="w-3.5 h-3.5" />
+          </button>
+          {unreadCount > 0 && (
+            <button
+              onClick={handleSendMessage}
+              className={`p-1.5 rounded-lg transition-colors ${
+                darkMode 
+                  ? 'bg-red-600/20 text-red-400 hover:bg-red-600/30' 
+                  : 'bg-red-50 text-red-600 hover:bg-red-100'
+              }`}
+              title="Beantwoord bericht"
+            >
+              <MessageSquare className="w-3.5 h-3.5" />
+            </button>
+          )}
           {project.stagingUrl && (
             <a 
               href={project.stagingUrl} 
               target="_blank" 
               rel="noopener noreferrer"
               onClick={(e) => e.stopPropagation()}
-              className="flex items-center gap-1 text-blue-500 hover:text-blue-400"
+              className={`p-1.5 rounded-lg transition-colors ${
+                darkMode 
+                  ? 'hover:bg-gray-700 text-gray-400 hover:text-gray-300' 
+                  : 'hover:bg-gray-100 text-gray-500 hover:text-gray-700'
+              }`}
+              title="Preview bekijken"
             >
-              <ExternalLink className="w-3 h-3" />
-              Preview
+              <ExternalLink className="w-3.5 h-3.5" />
             </a>
           )}
         </div>
@@ -1558,7 +1716,7 @@ function ProjectsView({ darkMode, projects, onUpdateProject, onDeleteProject, on
     const phaseProjects = getProjectsByPhase(phase.key)
     
     return (
-      <div className={`flex-1 min-w-[280px] max-w-[320px] rounded-2xl ${phase.bgColor} p-4`}>
+      <div className={`flex-1 min-w-0 rounded-2xl ${phase.bgColor} p-4`}>
         <div className="flex items-center justify-between mb-4">
           <div className="flex items-center gap-2">
             <div className={`w-3 h-3 rounded-full ${phase.color}`} />
@@ -1683,7 +1841,7 @@ function ProjectsView({ darkMode, projects, onUpdateProject, onDeleteProject, on
 
       {/* Kanban View */}
       {viewMode === 'kanban' && (
-        <div className="flex gap-4 overflow-x-auto pb-4 -mx-4 px-4 lg:mx-0 lg:px-0">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-4">
           {phases.map(phase => (
             <KanbanColumn key={phase.key} phase={phase} />
           ))}
@@ -4853,9 +5011,14 @@ export default function DeveloperDashboardNew() {
             paymentStatus: mapPaymentStatus(p.paymentStatus),
             createdAt: p.createdAt,
             updatedAt: p.updatedAt,
+            stagingUrl: p.stagingUrl || p.previewUrl || '',
+            liveUrl: p.liveUrl || '',
+            designApproved: p.designApproved || !!p.designApprovedAt,
+            designApprovedAt: p.designApprovedAt || '',
             messages: p.messages || [],
             onboardingData: p.onboardingData || {},
             type: p.type,
+            internalNotes: p.internalNotes || '',
           }))
           setProjects(mappedProjects)
           
@@ -5034,13 +5197,21 @@ export default function DeveloperDashboardNew() {
         body: JSON.stringify({
           id: updatedProject.id,
           status: updatedProject.phase,
+          phase: updatedProject.phase,
           paymentStatus: updatedProject.paymentStatus,
+          stagingUrl: updatedProject.stagingUrl,
+          liveUrl: updatedProject.liveUrl,
+          designApproved: updatedProject.designApproved,
+          designApprovedAt: updatedProject.designApprovedAt,
           messages: updatedProject.messages,
+          internalNotes: updatedProject.internalNotes,
         })
       })
       
       if (!response.ok) {
         console.error('Failed to update project')
+        // Revert on failure
+        // loadData()
       }
     } catch (error) {
       console.error('Error updating project:', error)
@@ -5126,7 +5297,7 @@ export default function DeveloperDashboardNew() {
       />
 
       {/* Main content area */}
-      <div className="flex-1 flex flex-col min-w-0 w-full lg:w-[calc(100%-18rem)]">
+      <div className="flex-1 flex flex-col min-w-0 w-full">
         {/* Header */}
         <Header
           darkMode={darkMode}
