@@ -112,17 +112,26 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
             html: `
               <!DOCTYPE html>
               <html>
-              <body style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: #0f172a; color: #e2e8f0; margin: 0; padding: 20px;">
-                <div style="max-width: 600px; margin: 0 auto; background: #1e293b; border-radius: 16px; padding: 24px;">
-                  <h2 style="margin: 0 0 16px 0;">💬 Nieuw Bericht</h2>
-                  <p><strong>Project:</strong> ${project.businessName || projectId}</p>
-                  <p><strong>Van:</strong> ${project.contactName || project.contactEmail || 'Klant'}</p>
-                  <div style="background: #0f172a; border-radius: 8px; padding: 16px; margin: 16px 0;">
-                    <p style="margin: 0; color: #94a3b8; white-space: pre-wrap;">${message}</p>
+              <body style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: #f8fafc; color: #334155; margin: 0; padding: 20px;">
+                <div style="max-width: 600px; margin: 0 auto; background: white; border-radius: 16px; overflow: hidden; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);">
+                  <div style="background: linear-gradient(135deg, #10b981 0%, #059669 100%); padding: 32px; text-align: center;">
+                    <h1 style="color: white; margin: 0; font-size: 24px;">💬 Nieuw Bericht</h1>
                   </div>
-                  <a href="${BASE_URL}/developer" style="display: inline-block; background: #6366f1; color: white; padding: 12px 24px; border-radius: 8px; text-decoration: none;">
-                    Beantwoorden →
-                  </a>
+                  <div style="padding: 24px;">
+                    <p><strong>Project:</strong> ${project.businessName || projectId}</p>
+                    <p><strong>Van:</strong> ${project.contactName || project.contactEmail || 'Klant'}</p>
+                    <div style="background: #f0fdf4; border-left: 4px solid #10b981; border-radius: 8px; padding: 16px; margin: 16px 0;">
+                      <p style="margin: 0; color: #334155; white-space: pre-wrap;">${message}</p>
+                    </div>
+                    <p style="text-align: center; margin: 24px 0 0 0;">
+                      <a href="${BASE_URL}/developer" style="display: inline-block; background: linear-gradient(135deg, #10b981 0%, #059669 100%); color: white; padding: 14px 28px; border-radius: 12px; text-decoration: none; font-weight: 600;">
+                        Beantwoorden →
+                      </a>
+                    </p>
+                  </div>
+                  <div style="background: #f8fafc; padding: 16px; text-align: center; border-top: 1px solid #e2e8f0;">
+                    <p style="margin: 0; color: #94a3b8; font-size: 12px;">Dit bericht is verstuurd door Webstability</p>
+                  </div>
                 </div>
               </body>
               </html>
@@ -138,28 +147,25 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
             html: `
               <!DOCTYPE html>
               <html>
-              <body style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: #0f172a; color: #e2e8f0; margin: 0; padding: 20px;">
-                <div style="max-width: 600px; margin: 0 auto; background: #1e293b; border-radius: 16px; overflow: hidden;">
-                  <div style="background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%); padding: 24px; text-align: center;">
-                    <h1 style="color: white; margin: 0; font-size: 20px;">💬 Nieuw Bericht</h1>
+              <body style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: #f8fafc; color: #334155; margin: 0; padding: 20px;">
+                <div style="max-width: 600px; margin: 0 auto; background: white; border-radius: 16px; overflow: hidden; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);">
+                  <div style="background: linear-gradient(135deg, #10b981 0%, #059669 100%); padding: 32px; text-align: center;">
+                    <h1 style="color: white; margin: 0; font-size: 24px;">💬 Nieuw Bericht</h1>
                   </div>
                   <div style="padding: 24px;">
-                    <p style="margin: 0 0 16px 0;">Hey${project.contactName ? ` ${project.contactName}` : ''},</p>
+                    <p style="margin: 0 0 16px 0;">Hoi${project.contactName ? ` ${project.contactName}` : ''},</p>
                     <p style="margin: 0 0 16px 0;">Je hebt een nieuw bericht ontvangen over <strong>${project.businessName || 'je project'}</strong>:</p>
-                    <div style="background: #0f172a; border-radius: 8px; padding: 16px; margin: 16px 0; border-left: 3px solid #6366f1;">
-                      <p style="margin: 0; color: #e2e8f0; white-space: pre-wrap;">${message}</p>
+                    <div style="background: #f0fdf4; border-left: 4px solid #10b981; border-radius: 8px; padding: 16px; margin: 16px 0;">
+                      <p style="margin: 0; color: #334155; white-space: pre-wrap;">${message}</p>
                     </div>
                     <p style="text-align: center; margin: 24px 0 0 0;">
-                      <a href="${BASE_URL}/status/${projectId}" style="display: inline-block; background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%); color: white; padding: 14px 28px; border-radius: 8px; text-decoration: none; font-weight: 600;">
+                      <a href="${BASE_URL}/status/${projectId}" style="display: inline-block; background: linear-gradient(135deg, #10b981 0%, #059669 100%); color: white; padding: 14px 28px; border-radius: 12px; text-decoration: none; font-weight: 600;">
                         Bekijk & Beantwoord →
                       </a>
                     </p>
                   </div>
-                  <div style="background: #0f172a; padding: 16px; text-align: center; border-top: 1px solid #334155;">
-                    <p style="margin: 0; color: #64748b; font-size: 12px;">
-                      © ${new Date().getFullYear()} Webstability • 
-                      <a href="${BASE_URL}" style="color: #6366f1;">webstability.nl</a>
-                    </p>
+                  <div style="background: #f8fafc; padding: 16px; text-align: center; border-top: 1px solid #e2e8f0;">
+                    <p style="margin: 0; color: #94a3b8; font-size: 12px;">Dit bericht is verstuurd door Webstability</p>
                   </div>
                 </div>
               </body>

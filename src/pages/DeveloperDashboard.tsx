@@ -155,7 +155,7 @@ const PACKAGE_CONFIG = {
 }
 
 const PHASE_CONFIG: Record<ProjectPhase, { label: string; color: string; bg: string; icon: typeof FileText }> = {
-  onboarding: { label: 'Onboarding', color: 'text-blue-600', bg: 'bg-blue-100', icon: FileText },
+  onboarding: { label: 'Onboarding', color: 'text-emerald-600', bg: 'bg-emerald-100', icon: FileText },
   design: { label: 'Design', color: 'text-amber-600', bg: 'bg-amber-100', icon: Palette },
   development: { label: 'Development', color: 'text-purple-600', bg: 'bg-purple-100', icon: Code },
   review: { label: 'Review', color: 'text-cyan-600', bg: 'bg-cyan-100', icon: Eye },
@@ -274,8 +274,8 @@ function Sidebar({
                 className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl text-left transition-all ${
                   isActive
                     ? darkMode
-                      ? 'bg-blue-600 text-white shadow-lg shadow-blue-600/20'
-                      : 'bg-gradient-to-r from-blue-500 to-blue-600 text-white shadow-lg shadow-blue-500/20'
+                      ? 'bg-emerald-600 text-white shadow-lg shadow-emerald-600/20'
+                      : 'bg-gradient-to-r from-emerald-500 to-emerald-600 text-white shadow-lg shadow-emerald-500/20'
                     : darkMode
                       ? 'text-gray-400 hover:text-white hover:bg-gray-800'
                       : 'text-gray-600 hover:text-gray-900 hover:bg-gray-100'
@@ -305,8 +305,8 @@ function Sidebar({
             onClick={() => setShowHelp(true)}
             className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-colors ${
               darkMode 
-                ? 'text-gray-400 hover:text-blue-400 hover:bg-blue-900/20' 
-                : 'text-gray-600 hover:text-blue-600 hover:bg-blue-50'
+                ? 'text-gray-400 hover:text-emerald-400 hover:bg-emerald-900/20' 
+                : 'text-gray-600 hover:text-emerald-600 hover:bg-emerald-50'
             }`}
           >
             <HelpCircle className="w-5 h-5" />
@@ -373,8 +373,8 @@ function Sidebar({
                 </div>
 
                 <div className={`p-4 rounded-xl ${darkMode ? 'bg-gray-700/50' : 'bg-gray-50'}`}>
-                  <h3 className={`font-semibold mb-2 flex items-center gap-2 ${darkMode ? 'text-blue-400' : 'text-blue-600'}`}>
-                    <span className="w-6 h-6 rounded-full bg-blue-500 text-white text-xs flex items-center justify-center">2</span>
+                  <h3 className={`font-semibold mb-2 flex items-center gap-2 ${darkMode ? 'text-emerald-400' : 'text-emerald-600'}`}>
+                    <span className="w-6 h-6 rounded-full bg-emerald-500 text-white text-xs flex items-center justify-center">2</span>
                     Design
                   </h3>
                   <p className={`text-sm ${darkMode ? 'text-gray-300' : 'text-gray-600'}`}>
@@ -416,11 +416,11 @@ function Sidebar({
               </div>
 
               {/* Quick Tips */}
-              <div className={`mt-6 p-4 rounded-xl border ${darkMode ? 'border-blue-500/30 bg-blue-900/20' : 'border-blue-200 bg-blue-50'}`}>
-                <h3 className={`font-semibold mb-2 ${darkMode ? 'text-blue-400' : 'text-blue-700'}`}>
+              <div className={`mt-6 p-4 rounded-xl border ${darkMode ? 'border-emerald-500/30 bg-emerald-900/20' : 'border-emerald-200 bg-emerald-50'}`}>
+                <h3 className={`font-semibold mb-2 ${darkMode ? 'text-emerald-400' : 'text-emerald-700'}`}>
                   💡 Snelle tips
                 </h3>
-                <ul className={`text-sm space-y-1 ${darkMode ? 'text-blue-300' : 'text-blue-600'}`}>
+                <ul className={`text-sm space-y-1 ${darkMode ? 'text-emerald-300' : 'text-emerald-600'}`}>
                   <li>• <strong>Berichten:</strong> Direct chatten met klanten per project</li>
                   <li>• <strong>Betalingen:</strong> Genereer Mollie betaallinks, beheer kortingscodes</li>
                   <li>• <strong>Drag & drop:</strong> Sleep projecten tussen fases in Kanban view</li>
@@ -431,7 +431,7 @@ function Sidebar({
 
               <button
                 onClick={() => setShowHelp(false)}
-                className="w-full mt-6 py-3 bg-blue-500 hover:bg-blue-600 text-white font-semibold rounded-xl transition-colors"
+                className="w-full mt-6 py-3 bg-emerald-500 hover:bg-emerald-600 text-white font-semibold rounded-xl transition-colors"
               >
                 Begrepen!
               </button>
@@ -516,7 +516,7 @@ function Header({
             <div className="flex items-center gap-2">
               {currentNav && (
                 <div className={`p-1.5 rounded-lg ${darkMode ? 'bg-gray-800' : 'bg-gray-100'}`}>
-                  <currentNav.icon className={`w-4 h-4 ${darkMode ? 'text-blue-400' : 'text-blue-600'}`} />
+                  <currentNav.icon className={`w-4 h-4 ${darkMode ? 'text-emerald-400' : 'text-emerald-600'}`} />
                 </div>
               )}
               <h1 className={`text-lg font-bold ${darkMode ? 'text-white' : 'text-gray-900'}`}>
@@ -551,7 +551,7 @@ function Header({
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
               placeholder="Zoeken..."
-              className={`w-48 lg:w-64 pl-10 pr-4 py-2 rounded-xl border-0 focus:ring-2 focus:ring-blue-500 ${
+              className={`w-48 lg:w-64 pl-10 pr-4 py-2 rounded-xl border-0 focus:ring-2 focus:ring-emerald-500 ${
                 darkMode 
                   ? 'bg-gray-800 text-white placeholder-gray-500' 
                   : 'bg-gray-100 text-gray-900 placeholder-gray-400'
@@ -596,7 +596,7 @@ function Header({
                     {unreadCount > 0 && (
                       <button
                         onClick={onMarkAllRead}
-                        className="text-sm text-blue-500 hover:text-blue-600"
+                        className="text-sm text-emerald-500 hover:text-emerald-600"
                       >
                         Alles gelezen
                       </button>
@@ -615,12 +615,12 @@ function Header({
                           className={`p-4 border-b last:border-0 cursor-pointer transition-colors ${
                             darkMode 
                               ? `border-gray-700 ${n.read ? '' : 'bg-gray-750'} hover:bg-gray-700`
-                              : `border-gray-100 ${n.read ? '' : 'bg-blue-50/50'} hover:bg-gray-50`
+                              : `border-gray-100 ${n.read ? '' : 'bg-emerald-50/50'} hover:bg-gray-50`
                           }`}
                         >
                           <div className="flex items-start gap-3">
                             <div className={`p-2 rounded-lg flex-shrink-0 ${
-                              n.type === 'message' ? 'bg-blue-100 text-blue-600' :
+                              n.type === 'message' ? 'bg-emerald-100 text-emerald-600' :
                               n.type === 'payment' ? 'bg-green-100 text-green-600' :
                               n.type === 'onboarding' ? 'bg-purple-100 text-purple-600' :
                               'bg-amber-100 text-amber-600'
@@ -642,7 +642,7 @@ function Header({
                               </p>
                             </div>
                             {!n.read && (
-                              <div className="w-2 h-2 bg-blue-500 rounded-full flex-shrink-0 mt-2" />
+                              <div className="w-2 h-2 bg-emerald-500 rounded-full flex-shrink-0 mt-2" />
                             )}
                           </div>
                         </div>
@@ -712,17 +712,16 @@ function MobileBottomNav({ activeView, setActiveView, darkMode, unreadMessages }
     { id: 'overview', icon: LayoutDashboard, label: 'Home' },
     { id: 'projects', icon: FolderKanban, label: 'Projecten' },
     { id: 'messages', icon: MessageSquare, label: 'Chat' },
-    { id: 'payments', icon: CreditCard, label: 'Betalen' },
     { id: 'settings', icon: Settings, label: 'Meer' },
   ]
 
   return (
-    <nav className={`lg:hidden fixed bottom-0 left-0 right-0 z-40 border-t safe-area-pb ${
+    <nav className={`lg:hidden fixed bottom-0 left-0 right-0 z-40 border-t pb-safe ${
       darkMode 
         ? 'bg-gray-900/95 border-gray-800 backdrop-blur-xl' 
         : 'bg-white/95 border-gray-200 backdrop-blur-xl'
     }`}>
-      <div className="flex items-center justify-around h-16 px-2">
+      <div className="flex items-center justify-around h-16 px-4">
         {mobileNavItems.map(item => {
           const isActive = activeView === item.id
           const Icon = item.icon
@@ -733,33 +732,27 @@ function MobileBottomNav({ activeView, setActiveView, darkMode, unreadMessages }
               key={item.id}
               whileTap={{ scale: 0.9 }}
               onClick={() => setActiveView(item.id)}
-              className={`relative flex flex-col items-center justify-center gap-0.5 px-3 py-1.5 rounded-xl min-w-[60px] transition-colors ${
+              className={`relative flex flex-col items-center gap-1 py-2 px-4 rounded-xl transition-colors ${
                 isActive
                   ? darkMode
-                    ? 'text-blue-400'
-                    : 'text-blue-600'
+                    ? 'text-emerald-400 bg-emerald-500/10'
+                    : 'text-emerald-600 bg-emerald-50'
                   : darkMode
-                    ? 'text-gray-500'
-                    : 'text-gray-400'
+                    ? 'text-gray-400'
+                    : 'text-gray-500'
               }`}
             >
               <div className="relative">
-                <Icon className={`w-6 h-6 ${isActive ? 'scale-110' : ''} transition-transform`} />
+                <Icon className="w-5 h-5" />
                 {showBadge && (
-                  <span className="absolute -top-1 -right-1 w-4 h-4 bg-red-500 text-white text-[10px] font-bold rounded-full flex items-center justify-center">
+                  <span className="absolute -top-1 -right-1 w-4 h-4 bg-red-500 text-white text-[9px] font-bold rounded-full flex items-center justify-center">
                     {unreadMessages > 9 ? '9+' : unreadMessages}
                   </span>
                 )}
               </div>
-              <span className={`text-[10px] font-medium ${isActive ? 'opacity-100' : 'opacity-70'}`}>
+              <span className="text-[10px] font-medium">
                 {item.label}
               </span>
-              {isActive && (
-                <motion.div
-                  layoutId="mobileNavIndicator"
-                  className="absolute -top-1 left-1/2 -translate-x-1/2 w-1 h-1 bg-blue-500 rounded-full"
-                />
-              )}
             </motion.button>
           )
         })}
@@ -785,12 +778,12 @@ interface StatCardProps {
 
 function StatCard({ icon: Icon, label, value, subValue, trend, color, darkMode, delay = 0 }: StatCardProps) {
   const colorClasses = {
-    blue: 'from-blue-500 to-blue-600',
+    blue: 'from-emerald-500 to-emerald-600',
     green: 'from-green-500 to-emerald-600',
     amber: 'from-amber-500 to-orange-600',
     purple: 'from-purple-500 to-violet-600',
     red: 'from-red-500 to-rose-600',
-    cyan: 'from-cyan-500 to-blue-600',
+    cyan: 'from-cyan-500 to-emerald-600',
   }
 
   return (
@@ -854,7 +847,7 @@ function LoginScreen({ onLogin }: LoginScreenProps) {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-900 via-blue-900 to-indigo-900 flex items-center justify-center p-4 relative overflow-hidden">
+    <div className="min-h-screen bg-gradient-to-br from-gray-900 via-emerald-900 to-teal-900 flex items-center justify-center p-4 relative overflow-hidden">
       {/* Background decorations */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
         <motion.div
@@ -864,7 +857,7 @@ function LoginScreen({ onLogin }: LoginScreenProps) {
             scale: [1, 1.2, 1]
           }}
           transition={{ repeat: Infinity, duration: 20, ease: 'easeInOut' }}
-          className="absolute -top-40 -left-40 w-96 h-96 bg-blue-500/20 rounded-full blur-3xl"
+          className="absolute -top-40 -left-40 w-96 h-96 bg-emerald-500/20 rounded-full blur-3xl"
         />
         <motion.div
           animate={{ 
@@ -894,7 +887,7 @@ function LoginScreen({ onLogin }: LoginScreenProps) {
             <Logo variant="white" size="lg" />
           </div>
           <h1 className="text-2xl font-bold text-white">Developer Dashboard</h1>
-          <p className="text-blue-200 mt-1">Log in om door te gaan</p>
+          <p className="text-emerald-200 mt-1">Log in om door te gaan</p>
         </motion.div>
 
         {/* Login form */}
@@ -906,16 +899,16 @@ function LoginScreen({ onLogin }: LoginScreenProps) {
           className="bg-white/10 backdrop-blur-xl rounded-2xl p-8 border border-white/20 shadow-2xl"
         >
           <div className="mb-6">
-            <label className="block text-sm font-medium text-blue-100 mb-2">
+            <label className="block text-sm font-medium text-emerald-100 mb-2">
               Wachtwoord
             </label>
             <div className="relative">
-              <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-blue-300" />
+              <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-emerald-300" />
               <input
                 type="password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                className="w-full pl-12 pr-4 py-3 bg-white/10 border border-white/20 rounded-xl text-white placeholder-blue-300 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                className="w-full pl-12 pr-4 py-3 bg-white/10 border border-white/20 rounded-xl text-white placeholder-emerald-300 focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition-all"
                 placeholder="••••••••••••"
                 autoFocus
               />
@@ -941,7 +934,7 @@ function LoginScreen({ onLogin }: LoginScreenProps) {
             whileTap={{ scale: 0.98 }}
             type="submit"
             disabled={loading}
-            className="w-full py-3 bg-gradient-to-r from-blue-500 to-indigo-500 text-white font-semibold rounded-xl hover:from-blue-600 hover:to-indigo-600 transition-all shadow-lg disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+            className="w-full py-3 bg-gradient-to-r from-emerald-500 to-teal-500 text-white font-semibold rounded-xl hover:from-emerald-600 hover:to-emerald-700 transition-all shadow-lg disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
           >
             {loading ? (
               <>
@@ -954,7 +947,7 @@ function LoginScreen({ onLogin }: LoginScreenProps) {
           </motion.button>
         </motion.form>
 
-        <p className="text-center text-blue-300/60 text-sm mt-6">
+        <p className="text-center text-emerald-300/60 text-sm mt-6">
           © {new Date().getFullYear()} Webstability
         </p>
       </motion.div>
@@ -1048,7 +1041,7 @@ function OverviewView({ darkMode, projects, clients, serviceRequests, setActiveV
             whileHover={{ scale: 1.02 }}
             whileTap={{ scale: 0.98 }}
             onClick={() => setActiveView('projects')}
-            className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-blue-500 to-blue-600 text-white font-medium rounded-xl shadow-lg shadow-blue-500/20"
+            className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-emerald-500 to-emerald-600 text-white font-medium rounded-xl shadow-lg shadow-emerald-500/20"
           >
             <Plus className="w-4 h-4" />
             <span className="hidden sm:inline">Nieuw project</span>
@@ -1259,7 +1252,7 @@ function OverviewView({ darkMode, projects, clients, serviceRequests, setActiveV
             </h3>
             <button
               onClick={() => setActiveView('projects')}
-              className="text-sm text-blue-500 hover:text-blue-600 font-medium"
+              className="text-sm text-emerald-500 hover:text-emerald-600 font-medium"
             >
               Bekijk alle
             </button>
@@ -1348,7 +1341,7 @@ function OverviewView({ darkMode, projects, clients, serviceRequests, setActiveV
             </h3>
             <button
               onClick={() => setActiveView('messages')}
-              className="text-sm text-blue-500 hover:text-blue-600 font-medium"
+              className="text-sm text-emerald-500 hover:text-emerald-600 font-medium"
             >
               Bekijk alle
             </button>
@@ -1360,12 +1353,12 @@ function OverviewView({ darkMode, projects, clients, serviceRequests, setActiveV
                   key={msg.id}
                   onClick={() => onSelectProject(msg.project)}
                   className={`p-3 rounded-xl cursor-pointer transition-colors ${
-                    !msg.read ? (darkMode ? 'bg-blue-900/20' : 'bg-blue-50') : ''
+                    !msg.read ? (darkMode ? 'bg-emerald-900/20' : 'bg-emerald-50') : ''
                   } ${darkMode ? 'hover:bg-gray-700' : 'hover:bg-gray-50'}`}
                 >
                   <div className="flex items-start gap-3">
                     <div className={`p-2 rounded-full flex-shrink-0 ${
-                      !msg.read ? 'bg-blue-500' : darkMode ? 'bg-gray-700' : 'bg-gray-200'
+                      !msg.read ? 'bg-emerald-500' : darkMode ? 'bg-gray-700' : 'bg-gray-200'
                     }`}>
                       <MessageSquare className={`w-3 h-3 ${!msg.read ? 'text-white' : darkMode ? 'text-gray-400' : 'text-gray-500'}`} />
                     </div>
@@ -1381,7 +1374,7 @@ function OverviewView({ darkMode, projects, clients, serviceRequests, setActiveV
                       </p>
                     </div>
                     {!msg.read && (
-                      <div className="w-2 h-2 bg-blue-500 rounded-full flex-shrink-0 mt-2" />
+                      <div className="w-2 h-2 bg-emerald-500 rounded-full flex-shrink-0 mt-2" />
                     )}
                   </div>
                 </div>
@@ -1417,7 +1410,7 @@ function OverviewView({ darkMode, projects, clients, serviceRequests, setActiveV
               darkMode ? 'bg-gray-700 hover:bg-gray-600' : 'bg-gray-50 hover:bg-gray-100'
             }`}
           >
-            <div className="p-3 rounded-xl bg-blue-500">
+            <div className="p-3 rounded-xl bg-emerald-500">
               <Plus className="w-5 h-5 text-white" />
             </div>
             <span className={`font-medium text-sm text-center ${darkMode ? 'text-white' : 'text-gray-900'}`}>
@@ -1581,7 +1574,7 @@ function ProjectsView({ darkMode, projects, onUpdateProject, onDeleteProject, on
 
   const phases: { key: ProjectPhase; label: string; color: string; bgColor: string }[] = [
     { key: 'onboarding', label: 'Onboarding', color: 'bg-yellow-500', bgColor: darkMode ? 'bg-yellow-900/20' : 'bg-yellow-50' },
-    { key: 'design', label: 'Design', color: 'bg-blue-500', bgColor: darkMode ? 'bg-blue-900/20' : 'bg-blue-50' },
+    { key: 'design', label: 'Design', color: 'bg-emerald-500', bgColor: darkMode ? 'bg-emerald-900/20' : 'bg-emerald-50' },
     { key: 'development', label: 'Development', color: 'bg-purple-500', bgColor: darkMode ? 'bg-purple-900/20' : 'bg-purple-50' },
     { key: 'review', label: 'Review', color: 'bg-orange-500', bgColor: darkMode ? 'bg-orange-900/20' : 'bg-orange-50' },
     { key: 'live', label: 'Live', color: 'bg-green-500', bgColor: darkMode ? 'bg-green-900/20' : 'bg-green-50' },
@@ -1620,7 +1613,7 @@ function ProjectsView({ darkMode, projects, onUpdateProject, onDeleteProject, on
   const getPackageBadge = (pkg: Project['package']) => {
     const badges = {
       starter: { label: 'Starter', color: 'bg-gray-500', price: '€96/m' },
-      professional: { label: 'Professional', color: 'bg-blue-500', price: '€180/m' },
+      professional: { label: 'Professional', color: 'bg-emerald-500', price: '€180/m' },
       business: { label: 'Business', color: 'bg-purple-500', price: '€301/m' },
       webshop: { label: 'Webshop', color: 'bg-orange-500', price: '€422/m' },
     }
@@ -1702,8 +1695,8 @@ function ProjectsView({ darkMode, projects, onUpdateProject, onDeleteProject, on
         onClick={() => openProjectDetail(project)}
         className={`p-4 rounded-xl border cursor-pointer transition-all group ${
           darkMode 
-            ? 'bg-gray-800/50 border-gray-700 hover:border-blue-500/50' 
-            : 'bg-white border-gray-200 hover:border-blue-300 shadow-sm hover:shadow-md'
+            ? 'bg-gray-800/50 border-gray-700 hover:border-emerald-500/50' 
+            : 'bg-white border-gray-200 hover:border-emerald-300 shadow-sm hover:shadow-md'
         }`}
       >
         <div className="flex items-start justify-between mb-3">
@@ -1738,8 +1731,8 @@ function ProjectsView({ darkMode, projects, onUpdateProject, onDeleteProject, on
               onClick={handleMoveToNextPhase}
               className={`flex-1 px-2 py-1.5 text-xs font-medium rounded-lg transition-colors ${
                 darkMode 
-                  ? 'bg-blue-600/20 text-blue-400 hover:bg-blue-600/30' 
-                  : 'bg-blue-50 text-blue-600 hover:bg-blue-100'
+                  ? 'bg-emerald-600/20 text-emerald-400 hover:bg-emerald-600/30' 
+                  : 'bg-emerald-50 text-emerald-600 hover:bg-emerald-100'
               }`}
               title="Naar volgende fase"
             >
@@ -1856,7 +1849,7 @@ function ProjectsView({ darkMode, projects, onUpdateProject, onDeleteProject, on
                 darkMode 
                   ? 'bg-gray-800 border-gray-700 text-white placeholder-gray-500' 
                   : 'bg-white border-gray-200 text-gray-900 placeholder-gray-400'
-              } focus:outline-none focus:ring-2 focus:ring-blue-500/50`}
+              } focus:outline-none focus:ring-2 focus:ring-emerald-500/50`}
             />
           </div>
 
@@ -1868,7 +1861,7 @@ function ProjectsView({ darkMode, projects, onUpdateProject, onDeleteProject, on
               darkMode 
                 ? 'bg-gray-800 border-gray-700 text-white' 
                 : 'bg-white border-gray-200 text-gray-900'
-            } focus:outline-none focus:ring-2 focus:ring-blue-500/50`}
+            } focus:outline-none focus:ring-2 focus:ring-emerald-500/50`}
           >
             <option value="all">Alle fases</option>
             {phases.map(p => (
@@ -1884,7 +1877,7 @@ function ProjectsView({ darkMode, projects, onUpdateProject, onDeleteProject, on
               darkMode 
                 ? 'bg-gray-800 border-gray-700 text-white' 
                 : 'bg-white border-gray-200 text-gray-900'
-            } focus:outline-none focus:ring-2 focus:ring-blue-500/50`}
+            } focus:outline-none focus:ring-2 focus:ring-emerald-500/50`}
           >
             <option value="all">Alle betalingen</option>
             <option value="pending">In afwachting</option>
@@ -1899,7 +1892,7 @@ function ProjectsView({ darkMode, projects, onUpdateProject, onDeleteProject, on
               onClick={() => setViewMode('kanban')}
               className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-colors ${
                 viewMode === 'kanban'
-                  ? 'bg-blue-500 text-white'
+                  ? 'bg-emerald-500 text-white'
                   : darkMode ? 'text-gray-400 hover:text-white' : 'text-gray-600 hover:text-gray-900'
               }`}
             >
@@ -1909,7 +1902,7 @@ function ProjectsView({ darkMode, projects, onUpdateProject, onDeleteProject, on
               onClick={() => setViewMode('list')}
               className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-colors ${
                 viewMode === 'list'
-                  ? 'bg-blue-500 text-white'
+                  ? 'bg-emerald-500 text-white'
                   : darkMode ? 'text-gray-400 hover:text-white' : 'text-gray-600 hover:text-gray-900'
               }`}
             >
@@ -2020,7 +2013,7 @@ function ProjectsView({ darkMode, projects, onUpdateProject, onDeleteProject, on
                               target="_blank"
                               rel="noopener noreferrer"
                               onClick={(e) => e.stopPropagation()}
-                              className="p-2 rounded-lg hover:bg-blue-500/10 text-blue-500 transition-colors"
+                              className="p-2 rounded-lg hover:bg-emerald-500/10 text-emerald-500 transition-colors"
                               title="Preview bekijken"
                             >
                               <ExternalLink className="w-4 h-4" />
@@ -2284,7 +2277,7 @@ function ProjectDetailModal({ project, darkMode, onClose, onUpdate, onDelete, on
                 onClick={() => setActiveTab(tab)}
                 className={`px-4 py-2 rounded-xl text-sm font-medium transition-colors whitespace-nowrap flex items-center gap-2 ${
                   activeTab === tab
-                    ? 'bg-blue-500 text-white'
+                    ? 'bg-emerald-500 text-white'
                     : darkMode ? 'text-gray-400 hover:bg-gray-700' : 'text-gray-600 hover:bg-gray-100'
                 }`}
               >
@@ -2325,7 +2318,7 @@ function ProjectDetailModal({ project, darkMode, onClose, onUpdate, onDelete, on
                   <p className={`font-semibold capitalize ${darkMode ? 'text-white' : 'text-gray-900'}`}>
                     {project.package}
                   </p>
-                  <p className="text-sm text-blue-500">€{getPackagePrice(project.package)}/maand</p>
+                  <p className="text-sm text-emerald-500">€{getPackagePrice(project.package)}/maand</p>
                 </div>
                 <div className={`p-4 rounded-xl ${darkMode ? 'bg-gray-700/50' : 'bg-gray-50'}`}>
                   <p className={`text-sm ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>Fase</p>
@@ -2396,7 +2389,7 @@ function ProjectDetailModal({ project, darkMode, onClose, onUpdate, onDelete, on
                 {/* Progress bar */}
                 <div className={`h-2 rounded-full mb-4 overflow-hidden ${darkMode ? 'bg-gray-600' : 'bg-gray-200'}`}>
                   <div 
-                    className="h-full bg-gradient-to-r from-blue-500 to-green-500 transition-all duration-300"
+                    className="h-full bg-gradient-to-r from-emerald-500 to-green-500 transition-all duration-300"
                     style={{ width: `${(completedCount / Math.max(totalCount, 1)) * 100}%` }}
                   />
                 </div>
@@ -2437,7 +2430,7 @@ function ProjectDetailModal({ project, darkMode, onClose, onUpdate, onDelete, on
                       disabled={!allCompleted || isSendingPhaseEmail}
                       className={`w-full py-3 rounded-xl font-semibold flex items-center justify-center gap-2 transition-all ${
                         allCompleted && !isSendingPhaseEmail
-                          ? 'bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white cursor-pointer'
+                          ? 'bg-gradient-to-r from-emerald-500 to-purple-600 hover:from-emerald-600 hover:to-teal-700 text-white cursor-pointer'
                           : darkMode ? 'bg-gray-600 text-gray-400 cursor-not-allowed' : 'bg-gray-200 text-gray-400 cursor-not-allowed'
                       }`}
                     >
@@ -2474,14 +2467,14 @@ function ProjectDetailModal({ project, darkMode, onClose, onUpdate, onDelete, on
                   </div>
                   <div className="flex items-center gap-2">
                     <Mail className={`w-4 h-4 ${darkMode ? 'text-gray-400' : 'text-gray-500'}`} />
-                    <a href={`mailto:${project.contactEmail}`} className="text-blue-500 hover:underline">
+                    <a href={`mailto:${project.contactEmail}`} className="text-emerald-500 hover:underline">
                       {project.contactEmail}
                     </a>
                   </div>
                   {project.contactPhone && (
                     <div className="flex items-center gap-2">
                       <Phone className={`w-4 h-4 ${darkMode ? 'text-gray-400' : 'text-gray-500'}`} />
-                      <a href={`tel:${project.contactPhone}`} className="text-blue-500 hover:underline">
+                      <a href={`tel:${project.contactPhone}`} className="text-emerald-500 hover:underline">
                         {project.contactPhone}
                       </a>
                     </div>
@@ -2501,7 +2494,7 @@ function ProjectDetailModal({ project, darkMode, onClose, onUpdate, onDelete, on
                         href={project.stagingUrl}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="flex items-center gap-2 px-4 py-2 bg-blue-500 text-white rounded-xl hover:bg-blue-600 transition-colors"
+                        className="flex items-center gap-2 px-4 py-2 bg-emerald-500 text-white rounded-xl hover:bg-emerald-600 transition-colors"
                       >
                         <ExternalLink className="w-4 h-4" />
                         Staging Preview
@@ -2536,7 +2529,7 @@ function ProjectDetailModal({ project, darkMode, onClose, onUpdate, onDelete, on
                     darkMode 
                       ? 'bg-gray-700 border-gray-600 text-white placeholder-gray-500' 
                       : 'bg-gray-50 border-gray-200 text-gray-900 placeholder-gray-400'
-                  } focus:outline-none focus:ring-2 focus:ring-blue-500/50`}
+                  } focus:outline-none focus:ring-2 focus:ring-emerald-500/50`}
                 />
               </div>
 
@@ -2544,7 +2537,7 @@ function ProjectDetailModal({ project, darkMode, onClose, onUpdate, onDelete, on
               <button
                 onClick={handleSave}
                 disabled={isSaving}
-                className="w-full py-3 bg-blue-500 hover:bg-blue-600 text-white font-semibold rounded-xl transition-colors disabled:opacity-50"
+                className="w-full py-3 bg-emerald-500 hover:bg-emerald-600 text-white font-semibold rounded-xl transition-colors disabled:opacity-50"
               >
                 {isSaving ? 'Opslaan...' : 'Wijzigingen opslaan'}
               </button>
@@ -2573,12 +2566,12 @@ function ProjectDetailModal({ project, darkMode, onClose, onUpdate, onDelete, on
                       >
                         <div className={`max-w-[70%] p-3 rounded-2xl ${
                           msg.from === 'developer'
-                            ? 'bg-blue-500 text-white'
+                            ? 'bg-emerald-500 text-white'
                             : darkMode ? 'bg-gray-600 text-white' : 'bg-white text-gray-900 shadow-sm'
                         }`}>
                           <p className="text-sm">{msg.message}</p>
                           <p className={`text-xs mt-1 ${
-                            msg.from === 'developer' ? 'text-blue-200' : darkMode ? 'text-gray-400' : 'text-gray-500'
+                            msg.from === 'developer' ? 'text-emerald-200' : darkMode ? 'text-gray-400' : 'text-gray-500'
                           }`}>
                             {new Date(msg.date).toLocaleString('nl-NL')}
                           </p>
@@ -2601,12 +2594,12 @@ function ProjectDetailModal({ project, darkMode, onClose, onUpdate, onDelete, on
                     darkMode 
                       ? 'bg-gray-700 border-gray-600 text-white placeholder-gray-500' 
                       : 'bg-gray-50 border-gray-200 text-gray-900 placeholder-gray-400'
-                  } focus:outline-none focus:ring-2 focus:ring-blue-500/50`}
+                  } focus:outline-none focus:ring-2 focus:ring-emerald-500/50`}
                 />
                 <button
                   onClick={handleSendMessage}
                   disabled={!newMessage.trim()}
-                  className="px-6 py-3 bg-blue-500 hover:bg-blue-600 text-white font-semibold rounded-xl transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="px-6 py-3 bg-emerald-500 hover:bg-emerald-600 text-white font-semibold rounded-xl transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   <Send className="w-5 h-5" />
                 </button>
@@ -2637,7 +2630,7 @@ function ProjectDetailModal({ project, darkMode, onClose, onUpdate, onDelete, on
                     className={`px-4 py-3 rounded-xl font-medium transition-colors ${
                       showCopied 
                         ? 'bg-green-500 text-white'
-                        : 'bg-blue-500 hover:bg-blue-600 text-white'
+                        : 'bg-emerald-500 hover:bg-emerald-600 text-white'
                     }`}
                   >
                     {showCopied ? '✓ Gekopieerd!' : 'Kopieer'}
@@ -2663,7 +2656,7 @@ function ProjectDetailModal({ project, darkMode, onClose, onUpdate, onDelete, on
                       darkMode 
                         ? 'bg-gray-800 border-gray-600 text-white placeholder-gray-500' 
                         : 'bg-white border-gray-200 text-gray-900 placeholder-gray-400'
-                    } focus:outline-none focus:ring-2 focus:ring-blue-500/50`}
+                    } focus:outline-none focus:ring-2 focus:ring-emerald-500/50`}
                   />
                   {stagingUrl && (
                     <a
@@ -2696,7 +2689,7 @@ function ProjectDetailModal({ project, darkMode, onClose, onUpdate, onDelete, on
                       darkMode 
                         ? 'bg-gray-800 border-gray-600 text-white placeholder-gray-500' 
                         : 'bg-white border-gray-200 text-gray-900 placeholder-gray-400'
-                    } focus:outline-none focus:ring-2 focus:ring-blue-500/50`}
+                    } focus:outline-none focus:ring-2 focus:ring-emerald-500/50`}
                   />
                   {liveUrl && (
                     <a
@@ -2725,7 +2718,7 @@ function ProjectDetailModal({ project, darkMode, onClose, onUpdate, onDelete, on
                       disabled={!allCompleted}
                       className={`flex items-center gap-2 px-4 py-2 font-medium rounded-xl transition-colors ${
                         allCompleted 
-                          ? 'bg-blue-500 hover:bg-blue-600 text-white' 
+                          ? 'bg-emerald-500 hover:bg-emerald-600 text-white' 
                           : 'bg-gray-300 text-gray-500 cursor-not-allowed'
                       }`}
                     >
@@ -2756,7 +2749,7 @@ function ProjectDetailModal({ project, darkMode, onClose, onUpdate, onDelete, on
               <button
                 onClick={handleSave}
                 disabled={isSaving}
-                className="w-full py-3 bg-blue-500 hover:bg-blue-600 text-white font-semibold rounded-xl transition-colors disabled:opacity-50"
+                className="w-full py-3 bg-emerald-500 hover:bg-emerald-600 text-white font-semibold rounded-xl transition-colors disabled:opacity-50"
               >
                 {isSaving ? 'Opslaan...' : 'URLs opslaan'}
               </button>
@@ -2794,7 +2787,7 @@ function ProjectDetailModal({ project, darkMode, onClose, onUpdate, onDelete, on
                       darkMode 
                         ? 'bg-gray-600 border-gray-500 text-white' 
                         : 'bg-white border-gray-200 text-gray-900'
-                    } focus:outline-none focus:ring-2 focus:ring-blue-500/50`}
+                    } focus:outline-none focus:ring-2 focus:ring-emerald-500/50`}
                   >
                     <option value="unpaid">Niet betaald</option>
                     <option value="pending">In afwachting</option>
@@ -2803,7 +2796,7 @@ function ProjectDetailModal({ project, darkMode, onClose, onUpdate, onDelete, on
                   <button
                     onClick={handleSave}
                     disabled={isSaving}
-                    className="px-4 py-2 bg-blue-500 hover:bg-blue-600 text-white font-medium rounded-xl transition-colors disabled:opacity-50"
+                    className="px-4 py-2 bg-emerald-500 hover:bg-emerald-600 text-white font-medium rounded-xl transition-colors disabled:opacity-50"
                   >
                     {isSaving ? '...' : 'Opslaan'}
                   </button>
@@ -2830,7 +2823,7 @@ function ProjectDetailModal({ project, darkMode, onClose, onUpdate, onDelete, on
                         darkMode 
                           ? 'bg-gray-600 border-gray-500 text-white placeholder-gray-400' 
                           : 'bg-white border-gray-200 text-gray-900 placeholder-gray-400'
-                      } focus:outline-none focus:ring-2 focus:ring-blue-500/50`}
+                      } focus:outline-none focus:ring-2 focus:ring-emerald-500/50`}
                     />
                   </div>
 
@@ -2847,7 +2840,7 @@ function ProjectDetailModal({ project, darkMode, onClose, onUpdate, onDelete, on
                         darkMode 
                           ? 'bg-gray-600 border-gray-500 text-white placeholder-gray-400' 
                           : 'bg-white border-gray-200 text-gray-900 placeholder-gray-400'
-                      } focus:outline-none focus:ring-2 focus:ring-blue-500/50`}
+                      } focus:outline-none focus:ring-2 focus:ring-emerald-500/50`}
                     />
                   </div>
 
@@ -2926,7 +2919,7 @@ function ProjectDetailModal({ project, darkMode, onClose, onUpdate, onDelete, on
                         </button>
                         <button
                           onClick={() => window.open(generatedPaymentUrl, '_blank')}
-                          className="px-4 py-2 bg-blue-500 hover:bg-blue-600 text-white font-medium rounded-lg transition-colors"
+                          className="px-4 py-2 bg-emerald-500 hover:bg-emerald-600 text-white font-medium rounded-lg transition-colors"
                         >
                           <ExternalLink className="w-4 h-4" />
                         </button>
@@ -2960,8 +2953,8 @@ function ProjectDetailModal({ project, darkMode, onClose, onUpdate, onDelete, on
                       }}
                       className={`p-3 rounded-xl border text-left transition-colors ${
                         darkMode 
-                          ? 'bg-gray-600/50 border-gray-500 hover:border-blue-500' 
-                          : 'bg-white border-gray-200 hover:border-blue-300'
+                          ? 'bg-gray-600/50 border-gray-500 hover:border-emerald-500' 
+                          : 'bg-white border-gray-200 hover:border-emerald-300'
                       }`}
                     >
                       <p className={`font-medium ${darkMode ? 'text-white' : 'text-gray-900'}`}>
@@ -2999,11 +2992,11 @@ function ProjectDetailModal({ project, darkMode, onClose, onUpdate, onDelete, on
                   href={`mailto:${project.contactEmail}?subject=Webstability - ${project.businessName}`}
                   className={`p-4 rounded-xl border text-left transition-colors ${
                     darkMode 
-                      ? 'bg-gray-700/50 border-gray-600 hover:border-blue-500' 
-                      : 'bg-gray-50 border-gray-200 hover:border-blue-300'
+                      ? 'bg-gray-700/50 border-gray-600 hover:border-emerald-500' 
+                      : 'bg-gray-50 border-gray-200 hover:border-emerald-300'
                   }`}
                 >
-                  <Mail className={`w-5 h-5 mb-2 ${darkMode ? 'text-blue-400' : 'text-blue-500'}`} />
+                  <Mail className={`w-5 h-5 mb-2 ${darkMode ? 'text-emerald-400' : 'text-emerald-500'}`} />
                   <h4 className={`font-semibold ${darkMode ? 'text-white' : 'text-gray-900'}`}>
                     E-mail versturen
                   </h4>
@@ -3179,7 +3172,7 @@ function ClientsView({ darkMode, clients, projects, onSelectClient, onAddClient 
                 darkMode 
                   ? 'bg-gray-800 border-gray-700 text-white placeholder-gray-500' 
                   : 'bg-white border-gray-200 text-gray-900 placeholder-gray-400'
-              } focus:outline-none focus:ring-2 focus:ring-blue-500/50`}
+              } focus:outline-none focus:ring-2 focus:ring-emerald-500/50`}
             />
           </div>
 
@@ -3191,7 +3184,7 @@ function ClientsView({ darkMode, clients, projects, onSelectClient, onAddClient 
               darkMode 
                 ? 'bg-gray-800 border-gray-700 text-white' 
                 : 'bg-white border-gray-200 text-gray-900'
-            } focus:outline-none focus:ring-2 focus:ring-blue-500/50`}
+            } focus:outline-none focus:ring-2 focus:ring-emerald-500/50`}
           >
             <option value="date">Nieuwste eerst</option>
             <option value="name">Naam A-Z</option>
@@ -3204,7 +3197,7 @@ function ClientsView({ darkMode, clients, projects, onSelectClient, onAddClient 
             whileHover={{ scale: 1.02 }}
             whileTap={{ scale: 0.98 }}
             onClick={() => setShowAddModal(true)}
-            className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white font-medium rounded-xl shadow-lg shadow-blue-500/25 transition-all"
+            className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-600 hover:to-emerald-700 text-white font-medium rounded-xl shadow-lg shadow-emerald-500/25 transition-all"
           >
             <UserPlus className="w-4 h-4" />
             <span className="hidden sm:inline">Nieuwe klant</span>
@@ -3233,8 +3226,8 @@ function ClientsView({ darkMode, clients, projects, onSelectClient, onAddClient 
             >
               <div className="flex items-center justify-between mb-6">
                 <div className="flex items-center gap-3">
-                  <div className={`p-3 rounded-xl ${darkMode ? 'bg-blue-500/20' : 'bg-blue-100'}`}>
-                    <UserPlus className={`w-6 h-6 ${darkMode ? 'text-blue-400' : 'text-blue-600'}`} />
+                  <div className={`p-3 rounded-xl ${darkMode ? 'bg-emerald-500/20' : 'bg-emerald-100'}`}>
+                    <UserPlus className={`w-6 h-6 ${darkMode ? 'text-emerald-400' : 'text-emerald-600'}`} />
                   </div>
                   <div>
                     <h2 className={`text-xl font-bold ${darkMode ? 'text-white' : 'text-gray-900'}`}>
@@ -3268,9 +3261,9 @@ function ClientsView({ darkMode, clients, projects, onSelectClient, onAddClient 
                     placeholder="Jan de Vries"
                     className={`w-full px-4 py-3 rounded-xl border transition-all ${
                       darkMode 
-                        ? 'bg-gray-700 border-gray-600 text-white placeholder-gray-500 focus:border-blue-500' 
-                        : 'bg-white border-gray-200 text-gray-900 placeholder-gray-400 focus:border-blue-500'
-                    } focus:outline-none focus:ring-2 focus:ring-blue-500/20`}
+                        ? 'bg-gray-700 border-gray-600 text-white placeholder-gray-500 focus:border-emerald-500' 
+                        : 'bg-white border-gray-200 text-gray-900 placeholder-gray-400 focus:border-emerald-500'
+                    } focus:outline-none focus:ring-2 focus:ring-emerald-500/20`}
                   />
                 </div>
 
@@ -3286,9 +3279,9 @@ function ClientsView({ darkMode, clients, projects, onSelectClient, onAddClient 
                     placeholder="jan@bedrijf.nl"
                     className={`w-full px-4 py-3 rounded-xl border transition-all ${
                       darkMode 
-                        ? 'bg-gray-700 border-gray-600 text-white placeholder-gray-500 focus:border-blue-500' 
-                        : 'bg-white border-gray-200 text-gray-900 placeholder-gray-400 focus:border-blue-500'
-                    } focus:outline-none focus:ring-2 focus:ring-blue-500/20`}
+                        ? 'bg-gray-700 border-gray-600 text-white placeholder-gray-500 focus:border-emerald-500' 
+                        : 'bg-white border-gray-200 text-gray-900 placeholder-gray-400 focus:border-emerald-500'
+                    } focus:outline-none focus:ring-2 focus:ring-emerald-500/20`}
                   />
                 </div>
 
@@ -3303,9 +3296,9 @@ function ClientsView({ darkMode, clients, projects, onSelectClient, onAddClient 
                     placeholder="06-12345678"
                     className={`w-full px-4 py-3 rounded-xl border transition-all ${
                       darkMode 
-                        ? 'bg-gray-700 border-gray-600 text-white placeholder-gray-500 focus:border-blue-500' 
-                        : 'bg-white border-gray-200 text-gray-900 placeholder-gray-400 focus:border-blue-500'
-                    } focus:outline-none focus:ring-2 focus:ring-blue-500/20`}
+                        ? 'bg-gray-700 border-gray-600 text-white placeholder-gray-500 focus:border-emerald-500' 
+                        : 'bg-white border-gray-200 text-gray-900 placeholder-gray-400 focus:border-emerald-500'
+                    } focus:outline-none focus:ring-2 focus:ring-emerald-500/20`}
                   />
                 </div>
 
@@ -3320,21 +3313,21 @@ function ClientsView({ darkMode, clients, projects, onSelectClient, onAddClient 
                     placeholder="Bedrijf B.V."
                     className={`w-full px-4 py-3 rounded-xl border transition-all ${
                       darkMode 
-                        ? 'bg-gray-700 border-gray-600 text-white placeholder-gray-500 focus:border-blue-500' 
-                        : 'bg-white border-gray-200 text-gray-900 placeholder-gray-400 focus:border-blue-500'
-                    } focus:outline-none focus:ring-2 focus:ring-blue-500/20`}
+                        ? 'bg-gray-700 border-gray-600 text-white placeholder-gray-500 focus:border-emerald-500' 
+                        : 'bg-white border-gray-200 text-gray-900 placeholder-gray-400 focus:border-emerald-500'
+                    } focus:outline-none focus:ring-2 focus:ring-emerald-500/20`}
                   />
                 </div>
 
                 {/* Info box */}
-                <div className={`p-4 rounded-xl ${darkMode ? 'bg-blue-500/10 border border-blue-500/20' : 'bg-blue-50 border border-blue-100'}`}>
+                <div className={`p-4 rounded-xl ${darkMode ? 'bg-emerald-500/10 border border-emerald-500/20' : 'bg-emerald-50 border border-emerald-100'}`}>
                   <div className="flex items-start gap-3">
-                    <Mail className={`w-5 h-5 mt-0.5 ${darkMode ? 'text-blue-400' : 'text-blue-600'}`} />
+                    <Mail className={`w-5 h-5 mt-0.5 ${darkMode ? 'text-emerald-400' : 'text-emerald-600'}`} />
                     <div>
-                      <p className={`text-sm font-medium ${darkMode ? 'text-blue-300' : 'text-blue-800'}`}>
+                      <p className={`text-sm font-medium ${darkMode ? 'text-emerald-300' : 'text-emerald-800'}`}>
                         Automatische welkomst email
                       </p>
-                      <p className={`text-xs mt-1 ${darkMode ? 'text-blue-400/70' : 'text-blue-600'}`}>
+                      <p className={`text-xs mt-1 ${darkMode ? 'text-emerald-400/70' : 'text-emerald-600'}`}>
                         De klant ontvangt automatisch een welkomst email met informatie over hoe ze een project kunnen starten.
                       </p>
                     </div>
@@ -3378,7 +3371,7 @@ function ClientsView({ darkMode, clients, projects, onSelectClient, onAddClient 
                   <button
                     type="submit"
                     disabled={isSubmitting || !newClient.name || !newClient.email}
-                    className="flex-1 py-3 bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white font-medium rounded-xl shadow-lg shadow-blue-500/25 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+                    className="flex-1 py-3 bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-600 hover:to-emerald-700 text-white font-medium rounded-xl shadow-lg shadow-emerald-500/25 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
                   >
                     {isSubmitting ? (
                       <>
@@ -3414,12 +3407,12 @@ function ClientsView({ darkMode, clients, projects, onSelectClient, onAddClient 
               }}
               className={`p-5 rounded-2xl border cursor-pointer transition-all ${
                 darkMode 
-                  ? 'bg-gray-800/50 border-gray-700 hover:border-blue-500/50' 
-                  : 'bg-white border-gray-200 hover:border-blue-300 shadow-sm hover:shadow-lg'
+                  ? 'bg-gray-800/50 border-gray-700 hover:border-emerald-500/50' 
+                  : 'bg-white border-gray-200 hover:border-emerald-300 shadow-sm hover:shadow-lg'
               }`}
             >
               <div className="flex items-start gap-4">
-                <div className="w-12 h-12 rounded-full bg-gradient-to-br from-blue-500 to-purple-500 flex items-center justify-center text-white font-bold text-lg flex-shrink-0">
+                <div className="w-12 h-12 rounded-full bg-gradient-to-br from-emerald-500 to-purple-500 flex items-center justify-center text-white font-bold text-lg flex-shrink-0">
                   {client.name.charAt(0)}
                 </div>
                 <div className="flex-1 min-w-0">
@@ -3438,7 +3431,7 @@ function ClientsView({ darkMode, clients, projects, onSelectClient, onAddClient 
                   <a 
                     href={`mailto:${client.email}`}
                     onClick={(e) => e.stopPropagation()}
-                    className="text-sm text-blue-500 hover:underline truncate"
+                    className="text-sm text-emerald-500 hover:underline truncate"
                   >
                     {client.email}
                   </a>
@@ -3449,7 +3442,7 @@ function ClientsView({ darkMode, clients, projects, onSelectClient, onAddClient 
                     <a 
                       href={`tel:${client.phone}`}
                       onClick={(e) => e.stopPropagation()}
-                      className="text-sm text-blue-500 hover:underline"
+                      className="text-sm text-emerald-500 hover:underline"
                     >
                       {client.phone}
                     </a>
@@ -3689,14 +3682,14 @@ function MessagesView({ darkMode, projects, onUpdateProject }: MessagesViewProps
                 darkMode 
                   ? 'bg-gray-700 border-gray-600 text-white placeholder-gray-500' 
                   : 'bg-white border-gray-200 text-gray-900 placeholder-gray-400'
-              } focus:outline-none focus:ring-2 focus:ring-blue-500/50`}
+              } focus:outline-none focus:ring-2 focus:ring-emerald-500/50`}
             />
           </div>
           <button
             onClick={() => setFilterUnread(!filterUnread)}
             className={`w-full px-3 py-2 rounded-xl text-sm font-medium transition-colors flex items-center justify-center gap-2 ${
               filterUnread
-                ? 'bg-blue-500 text-white'
+                ? 'bg-emerald-500 text-white'
                 : darkMode ? 'bg-gray-700 text-gray-300 hover:bg-gray-600' : 'bg-white text-gray-600 hover:bg-gray-100 border border-gray-200'
             }`}
           >
@@ -3723,7 +3716,7 @@ function MessagesView({ darkMode, projects, onUpdateProject }: MessagesViewProps
                     whileTap={{ scale: 0.99 }}
                     className={`w-full p-3 rounded-xl text-left transition-all mb-1 ${
                       isSelected
-                        ? 'bg-blue-500 text-white'
+                        ? 'bg-emerald-500 text-white'
                         : darkMode 
                           ? 'hover:bg-gray-700' 
                           : 'hover:bg-white hover:shadow-sm'
@@ -3731,7 +3724,7 @@ function MessagesView({ darkMode, projects, onUpdateProject }: MessagesViewProps
                   >
                     <div className="flex items-start gap-3">
                       <div className={`w-10 h-10 rounded-full flex items-center justify-center font-bold text-sm flex-shrink-0 ${
-                        isSelected ? 'bg-white/20 text-white' : 'bg-gradient-to-br from-blue-500 to-purple-500 text-white'
+                        isSelected ? 'bg-white/20 text-white' : 'bg-gradient-to-br from-emerald-500 to-purple-500 text-white'
                       }`}>
                         {project.businessName.charAt(0)}
                       </div>
@@ -3771,7 +3764,7 @@ function MessagesView({ darkMode, projects, onUpdateProject }: MessagesViewProps
                         )}
                       </div>
                       {unread > 0 && !isSelected && (
-                        <span className="px-2 py-0.5 bg-blue-500 text-white text-xs font-bold rounded-full flex-shrink-0">
+                        <span className="px-2 py-0.5 bg-emerald-500 text-white text-xs font-bold rounded-full flex-shrink-0">
                           {unread}
                         </span>
                       )}
@@ -3844,7 +3837,7 @@ function MessagesView({ darkMode, projects, onUpdateProject }: MessagesViewProps
                 <ChevronRight className="w-5 h-5 rotate-180" />
               </button>
               
-              <div className="w-10 h-10 rounded-full bg-gradient-to-br from-blue-500 to-purple-500 flex items-center justify-center text-white font-bold">
+              <div className="w-10 h-10 rounded-full bg-gradient-to-br from-emerald-500 to-purple-500 flex items-center justify-center text-white font-bold">
                 {selectedProject.businessName.charAt(0)}
               </div>
               
@@ -3924,7 +3917,7 @@ function MessagesView({ darkMode, projects, onUpdateProject }: MessagesViewProps
                             animate={{ opacity: 1, y: 0, scale: 1 }}
                             className={`max-w-[75%] ${
                               msg.from === 'developer'
-                                ? 'bg-blue-500 text-white rounded-2xl rounded-br-md'
+                                ? 'bg-emerald-500 text-white rounded-2xl rounded-br-md'
                                 : darkMode 
                                   ? 'bg-gray-800 text-white rounded-2xl rounded-bl-md' 
                                   : 'bg-white text-gray-900 rounded-2xl rounded-bl-md shadow-sm'
@@ -3933,7 +3926,7 @@ function MessagesView({ darkMode, projects, onUpdateProject }: MessagesViewProps
                             <p className="text-sm whitespace-pre-wrap">{msg.message}</p>
                             <p className={`text-xs mt-1 ${
                               msg.from === 'developer' 
-                                ? 'text-blue-200' 
+                                ? 'text-emerald-200' 
                                 : darkMode ? 'text-gray-500' : 'text-gray-400'
                             }`}>
                               {new Date(msg.date).toLocaleTimeString('nl-NL', {
@@ -3994,7 +3987,7 @@ function MessagesView({ darkMode, projects, onUpdateProject }: MessagesViewProps
                       darkMode 
                         ? 'bg-gray-700 border-gray-600 text-white placeholder-gray-500' 
                         : 'bg-gray-50 border-gray-200 text-gray-900 placeholder-gray-400'
-                    } focus:outline-none focus:ring-2 focus:ring-blue-500/50`}
+                    } focus:outline-none focus:ring-2 focus:ring-emerald-500/50`}
                     style={{ minHeight: '48px', maxHeight: '120px' }}
                   />
                 </div>
@@ -4003,7 +3996,7 @@ function MessagesView({ darkMode, projects, onUpdateProject }: MessagesViewProps
                   disabled={!newMessage.trim()}
                   className={`px-5 rounded-2xl font-semibold transition-all flex items-center gap-2 ${
                     newMessage.trim()
-                      ? 'bg-blue-500 hover:bg-blue-600 text-white'
+                      ? 'bg-emerald-500 hover:bg-emerald-600 text-white'
                       : darkMode 
                         ? 'bg-gray-700 text-gray-500 cursor-not-allowed' 
                         : 'bg-gray-100 text-gray-400 cursor-not-allowed'
@@ -4302,7 +4295,7 @@ function OnboardingView({
                     </div>
                     <div>
                       <p className={`text-xs ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>Email</p>
-                      <a href={`mailto:${selectedOnboarding.contactEmail}`} className="font-medium text-blue-500 hover:underline">
+                      <a href={`mailto:${selectedOnboarding.contactEmail}`} className="font-medium text-emerald-500 hover:underline">
                         {selectedOnboarding.contactEmail}
                       </a>
                     </div>
@@ -4406,7 +4399,7 @@ function OnboardingView({
                             ).map((page: string, i: number) => (
                               <span 
                                 key={i}
-                                className={`px-3 py-1 rounded-full text-xs ${darkMode ? 'bg-blue-500/20 text-blue-400' : 'bg-blue-100 text-blue-700'}`}
+                                className={`px-3 py-1 rounded-full text-xs ${darkMode ? 'bg-emerald-500/20 text-emerald-400' : 'bg-emerald-100 text-emerald-700'}`}
                               >
                                 {page}
                               </span>
@@ -4858,7 +4851,7 @@ function PaymentsView({ darkMode, projects, onUpdateProject }: PaymentsViewProps
               onClick={() => setActiveTab(tab)}
               className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
                 activeTab === tab
-                  ? 'bg-blue-500 text-white'
+                  ? 'bg-emerald-500 text-white'
                   : darkMode ? 'text-gray-400 hover:text-white' : 'text-gray-600 hover:text-gray-900'
               }`}
             >
@@ -4905,12 +4898,12 @@ function PaymentsView({ darkMode, projects, onUpdateProject }: PaymentsViewProps
               <p className={`text-2xl font-bold ${darkMode ? 'text-white' : 'text-gray-900'}`}>{stats.failed}</p>
             </div>
 
-            <div className={`p-5 rounded-2xl ${darkMode ? 'bg-blue-900/20 border border-blue-500/30' : 'bg-blue-50 border border-blue-200'}`}>
+            <div className={`p-5 rounded-2xl ${darkMode ? 'bg-emerald-900/20 border border-emerald-500/30' : 'bg-emerald-50 border border-emerald-200'}`}>
               <div className="flex items-center gap-3 mb-2">
-                <div className="p-2 bg-blue-500 rounded-xl">
+                <div className="p-2 bg-emerald-500 rounded-xl">
                   <Wallet className="w-5 h-5 text-white" />
                 </div>
-                <span className={`text-sm ${darkMode ? 'text-blue-400' : 'text-blue-700'}`}>Maandomzet</span>
+                <span className={`text-sm ${darkMode ? 'text-emerald-400' : 'text-emerald-700'}`}>Maandomzet</span>
               </div>
               <p className={`text-2xl font-bold ${darkMode ? 'text-white' : 'text-gray-900'}`}>€{stats.monthlyRevenue.toFixed(0)}</p>
             </div>
@@ -4976,7 +4969,7 @@ function PaymentsView({ darkMode, projects, onUpdateProject }: PaymentsViewProps
                             {project.paymentUrl && (
                               <button
                                 onClick={() => copyToClipboard(project.paymentUrl!)}
-                                className="p-2 text-blue-500 hover:bg-blue-500/10 rounded-lg transition-colors"
+                                className="p-2 text-emerald-500 hover:bg-emerald-500/10 rounded-lg transition-colors"
                                 title="Kopieer betaallink"
                               >
                                 <Link2 className="w-4 h-4" />
@@ -5032,7 +5025,7 @@ function PaymentsView({ darkMode, projects, onUpdateProject }: PaymentsViewProps
                     darkMode 
                       ? 'bg-gray-700 border-gray-600 text-white' 
                       : 'bg-gray-50 border-gray-200 text-gray-900'
-                  } focus:outline-none focus:ring-2 focus:ring-blue-500/50 disabled:opacity-50`}
+                  } focus:outline-none focus:ring-2 focus:ring-emerald-500/50 disabled:opacity-50`}
                 >
                   <option value="">Selecteer project...</option>
                   {projects.map(p => (
@@ -5059,7 +5052,7 @@ function PaymentsView({ darkMode, projects, onUpdateProject }: PaymentsViewProps
                       setUseCustomAmount(e.target.checked)
                       if (e.target.checked) setSelectedProjectId('')
                     }}
-                    className="w-4 h-4 rounded border-gray-300 text-blue-500 focus:ring-blue-500"
+                    className="w-4 h-4 rounded border-gray-300 text-emerald-500 focus:ring-emerald-500"
                   />
                   <span className={`text-sm font-medium ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>
                     Eigen bedrag invoeren
@@ -5078,7 +5071,7 @@ function PaymentsView({ darkMode, projects, onUpdateProject }: PaymentsViewProps
                         darkMode 
                           ? 'bg-gray-700 border-gray-600 text-white placeholder-gray-500' 
                           : 'bg-gray-50 border-gray-200 text-gray-900 placeholder-gray-400'
-                      } focus:outline-none focus:ring-2 focus:ring-blue-500/50`}
+                      } focus:outline-none focus:ring-2 focus:ring-emerald-500/50`}
                     />
                   </div>
                 )}
@@ -5098,7 +5091,7 @@ function PaymentsView({ darkMode, projects, onUpdateProject }: PaymentsViewProps
                     darkMode 
                       ? 'bg-gray-700 border-gray-600 text-white placeholder-gray-500' 
                       : 'bg-gray-50 border-gray-200 text-gray-900 placeholder-gray-400'
-                  } focus:outline-none focus:ring-2 focus:ring-blue-500/50`}
+                  } focus:outline-none focus:ring-2 focus:ring-emerald-500/50`}
                 />
               </div>
 
@@ -5117,7 +5110,7 @@ function PaymentsView({ darkMode, projects, onUpdateProject }: PaymentsViewProps
                     darkMode 
                       ? 'bg-gray-700 border-gray-600 text-white' 
                       : 'bg-gray-50 border-gray-200 text-gray-900'
-                  } focus:outline-none focus:ring-2 focus:ring-blue-500/50`}
+                  } focus:outline-none focus:ring-2 focus:ring-emerald-500/50`}
                 >
                   <option value="">Geen kortingscode</option>
                   {discountCodes.filter(d => d.active).map(d => (
@@ -5142,7 +5135,7 @@ function PaymentsView({ darkMode, projects, onUpdateProject }: PaymentsViewProps
                         darkMode 
                           ? 'bg-gray-700 border-gray-600 text-white' 
                           : 'bg-gray-50 border-gray-200 text-gray-900'
-                      } focus:outline-none focus:ring-2 focus:ring-blue-500/50`}
+                      } focus:outline-none focus:ring-2 focus:ring-emerald-500/50`}
                     >
                       <option value="percentage">%</option>
                       <option value="fixed">€</option>
@@ -5156,7 +5149,7 @@ function PaymentsView({ darkMode, projects, onUpdateProject }: PaymentsViewProps
                         darkMode 
                           ? 'bg-gray-700 border-gray-600 text-white placeholder-gray-500' 
                           : 'bg-gray-50 border-gray-200 text-gray-900 placeholder-gray-400'
-                      } focus:outline-none focus:ring-2 focus:ring-blue-500/50`}
+                      } focus:outline-none focus:ring-2 focus:ring-emerald-500/50`}
                     />
                   </div>
                 </div>
@@ -5166,7 +5159,7 @@ function PaymentsView({ darkMode, projects, onUpdateProject }: PaymentsViewProps
               <button
                 onClick={generatePaymentLink}
                 disabled={isGenerating || (!selectedProjectId && !useCustomAmount) || (useCustomAmount && !customAmount)}
-                className="w-full py-3 bg-blue-500 hover:bg-blue-600 text-white font-semibold rounded-xl transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+                className="w-full py-3 bg-emerald-500 hover:bg-emerald-600 text-white font-semibold rounded-xl transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
               >
                 {isGenerating ? (
                   <>
@@ -5249,7 +5242,7 @@ function PaymentsView({ darkMode, projects, onUpdateProject }: PaymentsViewProps
                       className={`flex-1 py-2 rounded-xl font-medium transition-colors flex items-center justify-center gap-2 ${
                         copySuccess
                           ? 'bg-green-500 text-white'
-                          : 'bg-blue-500 hover:bg-blue-600 text-white'
+                          : 'bg-emerald-500 hover:bg-emerald-600 text-white'
                       }`}
                     >
                       {copySuccess ? (
@@ -5287,7 +5280,7 @@ function PaymentsView({ darkMode, projects, onUpdateProject }: PaymentsViewProps
           <div className="flex justify-end">
             <button
               onClick={() => setShowNewDiscountModal(true)}
-              className="px-4 py-2 bg-blue-500 hover:bg-blue-600 text-white font-medium rounded-xl transition-colors flex items-center gap-2"
+              className="px-4 py-2 bg-emerald-500 hover:bg-emerald-600 text-white font-medium rounded-xl transition-colors flex items-center gap-2"
             >
               <Plus className="w-4 h-4" />
               Nieuwe kortingscode
@@ -5314,7 +5307,7 @@ function PaymentsView({ darkMode, projects, onUpdateProject }: PaymentsViewProps
                 <div className="flex items-start justify-between mb-3">
                   <div className={`px-3 py-1 rounded-lg font-mono font-bold text-sm ${
                     code.active
-                      ? 'bg-blue-500 text-white'
+                      ? 'bg-emerald-500 text-white'
                       : darkMode ? 'bg-gray-700 text-gray-400' : 'bg-gray-200 text-gray-500'
                   }`}>
                     {code.code}
@@ -5395,7 +5388,7 @@ function PaymentsView({ darkMode, projects, onUpdateProject }: PaymentsViewProps
                       darkMode 
                         ? 'bg-gray-700 border-gray-600 text-white placeholder-gray-500' 
                         : 'bg-gray-50 border-gray-200 text-gray-900 placeholder-gray-400'
-                    } focus:outline-none focus:ring-2 focus:ring-blue-500/50`}
+                    } focus:outline-none focus:ring-2 focus:ring-emerald-500/50`}
                   />
                 </div>
 
@@ -5411,7 +5404,7 @@ function PaymentsView({ darkMode, projects, onUpdateProject }: PaymentsViewProps
                         darkMode 
                           ? 'bg-gray-700 border-gray-600 text-white' 
                           : 'bg-gray-50 border-gray-200 text-gray-900'
-                      } focus:outline-none focus:ring-2 focus:ring-blue-500/50`}
+                      } focus:outline-none focus:ring-2 focus:ring-emerald-500/50`}
                     >
                       <option value="percentage">Percentage (%)</option>
                       <option value="fixed">Vast bedrag (€)</option>
@@ -5430,7 +5423,7 @@ function PaymentsView({ darkMode, projects, onUpdateProject }: PaymentsViewProps
                         darkMode 
                           ? 'bg-gray-700 border-gray-600 text-white placeholder-gray-500' 
                           : 'bg-gray-50 border-gray-200 text-gray-900 placeholder-gray-400'
-                      } focus:outline-none focus:ring-2 focus:ring-blue-500/50`}
+                      } focus:outline-none focus:ring-2 focus:ring-emerald-500/50`}
                     />
                   </div>
                 </div>
@@ -5448,7 +5441,7 @@ function PaymentsView({ darkMode, projects, onUpdateProject }: PaymentsViewProps
                       darkMode 
                         ? 'bg-gray-700 border-gray-600 text-white placeholder-gray-500' 
                         : 'bg-gray-50 border-gray-200 text-gray-900 placeholder-gray-400'
-                    } focus:outline-none focus:ring-2 focus:ring-blue-500/50`}
+                    } focus:outline-none focus:ring-2 focus:ring-emerald-500/50`}
                   />
                 </div>
 
@@ -5464,14 +5457,14 @@ function PaymentsView({ darkMode, projects, onUpdateProject }: PaymentsViewProps
                       darkMode 
                         ? 'bg-gray-700 border-gray-600 text-white' 
                         : 'bg-gray-50 border-gray-200 text-gray-900'
-                    } focus:outline-none focus:ring-2 focus:ring-blue-500/50`}
+                    } focus:outline-none focus:ring-2 focus:ring-emerald-500/50`}
                   />
                 </div>
 
                 <button
                   onClick={handleAddDiscount}
                   disabled={!newDiscount.code || !newDiscount.value}
-                  className="w-full py-3 bg-blue-500 hover:bg-blue-600 text-white font-semibold rounded-xl transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="w-full py-3 bg-emerald-500 hover:bg-emerald-600 text-white font-semibold rounded-xl transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   Kortingscode toevoegen
                 </button>
@@ -5529,8 +5522,8 @@ const SERVICE_DETAILS: Record<ServiceType, {
   tekst: { 
     name: 'Tekstschrijven', 
     icon: FileText, 
-    color: 'text-blue-500',
-    bgColor: 'bg-blue-500',
+    color: 'text-emerald-500',
+    bgColor: 'bg-emerald-500',
     description: 'SEO-geoptimaliseerde webteksten',
     basePrice: 199
   },
@@ -5589,7 +5582,7 @@ function ServicesView({ darkMode, serviceRequests, onUpdateRequest }: ServicesVi
   const getStatusBadge = (status: ServiceRequest['status']) => {
     const badges = {
       pending: { label: 'In afwachting', color: 'bg-yellow-500' },
-      in_progress: { label: 'In uitvoering', color: 'bg-blue-500' },
+      in_progress: { label: 'In uitvoering', color: 'bg-emerald-500' },
       completed: { label: 'Afgerond', color: 'bg-green-500' },
       cancelled: { label: 'Geannuleerd', color: 'bg-gray-500' },
     }
@@ -5617,7 +5610,7 @@ function ServicesView({ darkMode, serviceRequests, onUpdateRequest }: ServicesVi
               darkMode 
                 ? 'bg-gray-800 border-gray-700 text-white' 
                 : 'bg-white border-gray-200 text-gray-900'
-            } focus:outline-none focus:ring-2 focus:ring-blue-500/50`}
+            } focus:outline-none focus:ring-2 focus:ring-emerald-500/50`}
           >
             <option value="all">Alle types</option>
             {Object.entries(SERVICE_DETAILS).map(([key, s]) => (
@@ -5632,7 +5625,7 @@ function ServicesView({ darkMode, serviceRequests, onUpdateRequest }: ServicesVi
               darkMode 
                 ? 'bg-gray-800 border-gray-700 text-white' 
                 : 'bg-white border-gray-200 text-gray-900'
-            } focus:outline-none focus:ring-2 focus:ring-blue-500/50`}
+            } focus:outline-none focus:ring-2 focus:ring-emerald-500/50`}
           >
             <option value="all">Alle statussen</option>
             <option value="pending">In afwachting</option>
@@ -5655,12 +5648,12 @@ function ServicesView({ darkMode, serviceRequests, onUpdateRequest }: ServicesVi
           <p className={`text-2xl font-bold ${darkMode ? 'text-white' : 'text-gray-900'}`}>{stats.pending}</p>
         </div>
 
-        <div className={`p-5 rounded-2xl ${darkMode ? 'bg-blue-900/20 border border-blue-500/30' : 'bg-blue-50 border border-blue-200'}`}>
+        <div className={`p-5 rounded-2xl ${darkMode ? 'bg-emerald-900/20 border border-emerald-500/30' : 'bg-emerald-50 border border-emerald-200'}`}>
           <div className="flex items-center gap-3 mb-2">
-            <div className="p-2 bg-blue-500 rounded-xl">
+            <div className="p-2 bg-emerald-500 rounded-xl">
               <Loader2 className="w-5 h-5 text-white" />
             </div>
-            <span className={`text-sm ${darkMode ? 'text-blue-400' : 'text-blue-700'}`}>In uitvoering</span>
+            <span className={`text-sm ${darkMode ? 'text-emerald-400' : 'text-emerald-700'}`}>In uitvoering</span>
           </div>
           <p className={`text-2xl font-bold ${darkMode ? 'text-white' : 'text-gray-900'}`}>{stats.inProgress}</p>
         </div>
@@ -5744,13 +5737,13 @@ function ServicesView({ darkMode, serviceRequests, onUpdateRequest }: ServicesVi
 
               {/* Contact */}
               <div className={`flex gap-2 mb-4 text-xs ${darkMode ? 'text-gray-500' : 'text-gray-400'}`}>
-                <a href={`mailto:${request.clientEmail}`} className="hover:text-blue-500 truncate">
+                <a href={`mailto:${request.clientEmail}`} className="hover:text-emerald-500 truncate">
                   {request.clientEmail}
                 </a>
                 {request.clientPhone && (
                   <>
                     <span>•</span>
-                    <a href={`tel:${request.clientPhone}`} className="hover:text-blue-500">
+                    <a href={`tel:${request.clientPhone}`} className="hover:text-emerald-500">
                       {request.clientPhone}
                     </a>
                   </>
@@ -5763,7 +5756,7 @@ function ServicesView({ darkMode, serviceRequests, onUpdateRequest }: ServicesVi
                   <>
                     <button
                       onClick={() => handleStatusChange(request, 'in_progress')}
-                      className="flex-1 py-2 bg-blue-500 hover:bg-blue-600 text-white text-sm font-medium rounded-xl transition-colors"
+                      className="flex-1 py-2 bg-emerald-500 hover:bg-emerald-600 text-white text-sm font-medium rounded-xl transition-colors"
                     >
                       Starten
                     </button>
@@ -5863,7 +5856,7 @@ function ServicesView({ darkMode, serviceRequests, onUpdateRequest }: ServicesVi
                         darkMode 
                           ? 'bg-gray-700 border-gray-600 text-white' 
                           : 'bg-gray-50 border-gray-200 text-gray-900'
-                      } focus:outline-none focus:ring-2 focus:ring-blue-500/50`}
+                      } focus:outline-none focus:ring-2 focus:ring-emerald-500/50`}
                     />
                   </div>
                   <p className={`text-xs mt-1 ${darkMode ? 'text-gray-500' : 'text-gray-400'}`}>
@@ -5884,14 +5877,14 @@ function ServicesView({ darkMode, serviceRequests, onUpdateRequest }: ServicesVi
                       darkMode 
                         ? 'bg-gray-700 border-gray-600 text-white placeholder-gray-500' 
                         : 'bg-gray-50 border-gray-200 text-gray-900 placeholder-gray-400'
-                    } focus:outline-none focus:ring-2 focus:ring-blue-500/50`}
+                    } focus:outline-none focus:ring-2 focus:ring-emerald-500/50`}
                   />
                 </div>
 
                 <button
                   onClick={handleSendQuote}
                   disabled={!quotePrice}
-                  className="w-full py-3 bg-blue-500 hover:bg-blue-600 text-white font-semibold rounded-xl transition-colors disabled:opacity-50"
+                  className="w-full py-3 bg-emerald-500 hover:bg-emerald-600 text-white font-semibold rounded-xl transition-colors disabled:opacity-50"
                 >
                   Offerte versturen
                 </button>
@@ -5979,7 +5972,7 @@ function SettingsView({ darkMode, setDarkMode }: SettingsViewProps) {
                 onClick={() => setActiveSection(section.id as typeof activeSection)}
                 className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-left transition-colors ${
                   isActive
-                    ? 'bg-blue-500 text-white'
+                    ? 'bg-emerald-500 text-white'
                     : darkMode 
                       ? 'text-gray-400 hover:bg-gray-700 hover:text-white' 
                       : 'text-gray-600 hover:bg-gray-100 hover:text-gray-900'
@@ -6031,11 +6024,11 @@ function SettingsView({ darkMode, setDarkMode }: SettingsViewProps) {
 
             {/* Avatar */}
             <div className="flex items-center gap-4">
-              <div className="w-20 h-20 rounded-full bg-gradient-to-br from-blue-500 to-purple-500 flex items-center justify-center text-white text-2xl font-bold">
+              <div className="w-20 h-20 rounded-full bg-gradient-to-br from-emerald-500 to-purple-500 flex items-center justify-center text-white text-2xl font-bold">
                 {profileData.name.charAt(0)}
               </div>
               <div>
-                <button className="px-4 py-2 bg-blue-500 hover:bg-blue-600 text-white text-sm font-medium rounded-xl transition-colors">
+                <button className="px-4 py-2 bg-emerald-500 hover:bg-emerald-600 text-white text-sm font-medium rounded-xl transition-colors">
                   Foto wijzigen
                 </button>
                 <p className={`text-xs mt-1 ${darkMode ? 'text-gray-500' : 'text-gray-400'}`}>
@@ -6058,7 +6051,7 @@ function SettingsView({ darkMode, setDarkMode }: SettingsViewProps) {
                     darkMode 
                       ? 'bg-gray-700 border-gray-600 text-white' 
                       : 'bg-gray-50 border-gray-200 text-gray-900'
-                  } focus:outline-none focus:ring-2 focus:ring-blue-500/50`}
+                  } focus:outline-none focus:ring-2 focus:ring-emerald-500/50`}
                 />
               </div>
               <div>
@@ -6073,7 +6066,7 @@ function SettingsView({ darkMode, setDarkMode }: SettingsViewProps) {
                     darkMode 
                       ? 'bg-gray-700 border-gray-600 text-white' 
                       : 'bg-gray-50 border-gray-200 text-gray-900'
-                  } focus:outline-none focus:ring-2 focus:ring-blue-500/50`}
+                  } focus:outline-none focus:ring-2 focus:ring-emerald-500/50`}
                 />
               </div>
               <div>
@@ -6088,7 +6081,7 @@ function SettingsView({ darkMode, setDarkMode }: SettingsViewProps) {
                     darkMode 
                       ? 'bg-gray-700 border-gray-600 text-white' 
                       : 'bg-gray-50 border-gray-200 text-gray-900'
-                  } focus:outline-none focus:ring-2 focus:ring-blue-500/50`}
+                  } focus:outline-none focus:ring-2 focus:ring-emerald-500/50`}
                 />
               </div>
             </div>
@@ -6098,7 +6091,7 @@ function SettingsView({ darkMode, setDarkMode }: SettingsViewProps) {
               <button
                 onClick={handleSave}
                 disabled={isSaving}
-                className="px-6 py-3 bg-blue-500 hover:bg-blue-600 text-white font-semibold rounded-xl transition-colors disabled:opacity-50 flex items-center gap-2"
+                className="px-6 py-3 bg-emerald-500 hover:bg-emerald-600 text-white font-semibold rounded-xl transition-colors disabled:opacity-50 flex items-center gap-2"
               >
                 {isSaving ? (
                   <>
@@ -6148,7 +6141,7 @@ function SettingsView({ darkMode, setDarkMode }: SettingsViewProps) {
                     <div 
                       onClick={() => setNotifications(prev => ({ ...prev, [item.key]: !prev[item.key as keyof typeof prev] }))}
                       className={`w-12 h-6 rounded-full transition-colors relative ${
-                        notifications[item.key as keyof typeof notifications] ? 'bg-blue-500' : darkMode ? 'bg-gray-600' : 'bg-gray-300'
+                        notifications[item.key as keyof typeof notifications] ? 'bg-emerald-500' : darkMode ? 'bg-gray-600' : 'bg-gray-300'
                       }`}
                     >
                       <div className={`absolute w-5 h-5 bg-white rounded-full top-0.5 transition-transform ${
@@ -6177,7 +6170,7 @@ function SettingsView({ darkMode, setDarkMode }: SettingsViewProps) {
                     <div 
                       onClick={() => setNotifications(prev => ({ ...prev, [item.key]: !prev[item.key as keyof typeof prev] }))}
                       className={`w-12 h-6 rounded-full transition-colors relative ${
-                        notifications[item.key as keyof typeof notifications] ? 'bg-blue-500' : darkMode ? 'bg-gray-600' : 'bg-gray-300'
+                        notifications[item.key as keyof typeof notifications] ? 'bg-emerald-500' : darkMode ? 'bg-gray-600' : 'bg-gray-300'
                       }`}
                     >
                       <div className={`absolute w-5 h-5 bg-white rounded-full top-0.5 transition-transform ${
@@ -6729,7 +6722,7 @@ export default function DeveloperDashboardNew() {
           <div className="max-w-7xl mx-auto">
             {loading ? (
               <div className="flex items-center justify-center h-64">
-                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500"></div>
+                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-emerald-500"></div>
               </div>
             ) : (
             <AnimatePresence mode="wait">
