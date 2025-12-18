@@ -185,14 +185,17 @@ export const sendWelcomeEmail = async (customer: {
           </div>
           
           <p style="margin-top: 30px; color: #64748b; font-size: 14px;">
-            Vragen? Reply direct op deze email of stuur een WhatsApp naar +31 6 12345678.
+            Vragen? Reply direct op deze email of bel naar 06-44712573.
           </p>
         </div>
         <div class="footer">
           <p>Met vriendelijke groet,<br><strong>Team Webstability</strong></p>
-          <p style="margin-top: 20px;">
-            <a href="https://webstability.nl" style="color: #2563eb;">webstability.nl</a>
+          <p style="margin-top: 12px; font-size: 12px;">
+            <a href="https://webstability.nl" style="color: #2563eb;">webstability.nl</a> • 
+            <a href="mailto:info@webstability.nl" style="color: #2563eb;">info@webstability.nl</a> • 
+            <a href="tel:+31644712573" style="color: #2563eb;">06-44712573</a>
           </p>
+          <p style="margin-top: 12px; font-size: 11px; color: #94a3b8;">KvK: 94081468 • BTW: NL004892818B28</p>
         </div>
       </div>
     </body>
@@ -255,6 +258,12 @@ export const sendDesignReadyEmail = async (customer: {
         </div>
         <div class="footer">
           <p>Met vriendelijke groet,<br><strong>Team Webstability</strong></p>
+          <p style="margin-top: 12px; font-size: 12px;">
+            <a href="https://webstability.nl" style="color: #2563eb;">webstability.nl</a> • 
+            <a href="mailto:info@webstability.nl" style="color: #2563eb;">info@webstability.nl</a> • 
+            <a href="tel:+31644712573" style="color: #2563eb;">06-44712573</a>
+          </p>
+          <p style="margin-top: 12px; font-size: 11px; color: #94a3b8;">KvK: 94081468 • BTW: NL004892818B28</p>
         </div>
       </div>
     </body>
@@ -325,6 +334,12 @@ export const sendPaymentConfirmationEmail = async (customer: {
         </div>
         <div class="footer">
           <p>Met vriendelijke groet,<br><strong>Team Webstability</strong></p>
+          <p style="margin-top: 12px; font-size: 12px;">
+            <a href="https://webstability.nl" style="color: #2563eb;">webstability.nl</a> • 
+            <a href="mailto:info@webstability.nl" style="color: #2563eb;">info@webstability.nl</a> • 
+            <a href="tel:+31644712573" style="color: #2563eb;">06-44712573</a>
+          </p>
+          <p style="margin-top: 12px; font-size: 11px; color: #94a3b8;">KvK: 94081468 • BTW: NL004892818B28</p>
         </div>
       </div>
     </body>
@@ -396,6 +411,12 @@ export const sendWebsiteLiveEmail = async (customer: {
         <div class="footer">
           <p>Gefeliciteerd met je nieuwe website! 🚀</p>
           <p><strong>Team Webstability</strong></p>
+          <p style="margin-top: 12px; font-size: 12px;">
+            <a href="https://webstability.nl" style="color: #2563eb;">webstability.nl</a> • 
+            <a href="mailto:info@webstability.nl" style="color: #2563eb;">info@webstability.nl</a> • 
+            <a href="tel:+31644712573" style="color: #2563eb;">06-44712573</a>
+          </p>
+          <p style="margin-top: 12px; font-size: 11px; color: #94a3b8;">KvK: 94081468 • BTW: NL004892818B28</p>
         </div>
       </div>
     </body>

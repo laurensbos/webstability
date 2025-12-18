@@ -28,7 +28,8 @@ import {
   Lightbulb,
   MousePointer,
   ArrowRight,
-  RefreshCw
+  RefreshCw,
+  Sparkles
 } from 'lucide-react'
 
 // Dark Mode Context
@@ -281,6 +282,14 @@ export default function MarketingDashboard() {
     return !localStorage.getItem('webstability_onboarding_complete')
   })
   const [onboardingStep, setOnboardingStep] = useState(0)
+  
+  // Prospect email modal state (for website analysis emails)
+  const [showProspectEmailModal, setShowProspectEmailModal] = useState(false)
+  const [prospectEmail, setProspectEmail] = useState('')
+  const [prospectSubject, setProspectSubject] = useState('')
+  const [prospectBody, setProspectBody] = useState('')
+  const [prospectBusinessName, setProspectBusinessName] = useState('')
+  const [sendingProspect, setSendingProspect] = useState(false)
 
   // Dark mode effect
   useEffect(() => {
@@ -1083,24 +1092,29 @@ export default function MarketingDashboard() {
                                       .map(issue => `• ${issue.message}`)
                                       .join('\n')
                                     
-                                    const subject = encodeURIComponent(`Vraagje over ${business.name || 'jullie website'}`)
-                                    const body = encodeURIComponent(
-`Hoi,
+                                    // Open prospect email modal
+                                    setProspectEmail(business.email)
+                                    setProspectBusinessName(business.name || 'jullie bedrijf')
+                                    setProspectSubject(`Tip voor ${business.name || 'jullie website'}`)
+                                    setProspectBody(
+`Beste ondernemer,
 
-Ik kwam jullie website tegen en viel me een paar dingen op die misschien interessant zijn:
+Ik kwam jullie website tegen en zag een paar dingen die mij opvielen:
 
 ${issuesList}
 
-Ik help ondernemers met dit soort zaken - vaak simpeler dan je denkt. Als je er eens vrijblijvend over wilt praten, let me know!
+Dit zijn vaak kleinere aanpassingen die een groot verschil kunnen maken voor jullie online zichtbaarheid en klantervaring.
 
-Je kunt me ook bellen: 06-44712573
+Ik help ondernemers met precies dit soort verbeteringen - vaak simpeler en betaalbaarder dan je zou verwachten. Als je hier eens vrijblijvend over wilt sparren, neem dan gerust contact op.
 
-Groet,
+Je kunt me bereiken via dit emailadres of bellen: 06-44712573
 
-Laurens
+Met vriendelijke groet,
+
+Laurens Bos
 Webstability`
                                     )
-                                    window.open(`mailto:${business.email}?subject=${subject}&body=${body}`, '_blank')
+                                    setShowProspectEmailModal(true)
                                   }
                                 }}
                                 className={`mt-3 p-3 rounded-lg border transition-all ${
@@ -1513,6 +1527,141 @@ Webstability`
                   className="w-full sm:w-auto flex items-center justify-center gap-2 px-6 py-2.5 bg-emerald-600 text-white rounded-lg hover:bg-emerald-700 disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   {sending ? (
+                    <>
+                      <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                      Versturen...
+                    </>
+                  ) : (
+                    <>
+                      <Send className="w-4 h-4" />
+                      Verstuur email
+                    </>
+                  )}
+                </button>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+        
+        {/* Prospect Email Modal (for website analysis) */}
+        {showProspectEmailModal && prospectEmail && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 bg-black/50 flex items-end sm:items-center justify-center p-0 sm:p-4 z-50"
+            onClick={() => setShowProspectEmailModal(false)}
+          >
+            <motion.div
+              initial={{ scale: 0.95, opacity: 0, y: 100 }}
+              animate={{ scale: 1, opacity: 1, y: 0 }}
+              exit={{ scale: 0.95, opacity: 0, y: 100 }}
+              className={`rounded-t-2xl sm:rounded-2xl w-full sm:max-w-2xl max-h-[95vh] sm:max-h-[90vh] overflow-hidden ${darkMode ? 'bg-gray-800' : 'bg-white'}`}
+              onClick={(e) => e.stopPropagation()}
+            >
+              <div className={`p-4 sm:p-6 border-b ${darkMode ? 'border-gray-700' : 'border-gray-100'}`}>
+                <div className="flex items-center justify-between">
+                  <div className="min-w-0">
+                    <h2 className={`text-lg sm:text-xl font-bold truncate ${darkMode ? 'text-white' : 'text-gray-900'}`}>
+                      <Sparkles className="w-5 h-5 inline mr-2 text-emerald-500" />
+                      Prospect benaderen
+                    </h2>
+                    <p className={`text-xs sm:text-sm truncate ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>
+                      {prospectBusinessName} • {prospectEmail}
+                    </p>
+                  </div>
+                  <button
+                    onClick={() => setShowProspectEmailModal(false)}
+                    className={`p-2 rounded-lg flex-shrink-0 ${darkMode ? 'hover:bg-gray-700 text-gray-400' : 'hover:bg-gray-100'}`}
+                  >
+                    <X className="w-5 h-5" />
+                  </button>
+                </div>
+              </div>
+
+              <div className="p-4 sm:p-6 overflow-y-auto max-h-[55vh] sm:max-h-[60vh]">
+                {/* Subject */}
+                <div className="mb-4">
+                  <label className={`block text-sm font-medium mb-1 ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>
+                    Onderwerp
+                  </label>
+                  <input
+                    type="text"
+                    value={prospectSubject}
+                    onChange={(e) => setProspectSubject(e.target.value)}
+                    className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-emerald-500 ${
+                      darkMode 
+                        ? 'bg-gray-700 border-gray-600 text-white placeholder-gray-400' 
+                        : 'bg-white border-gray-200 text-gray-900'
+                    }`}
+                    placeholder="Email onderwerp..."
+                  />
+                </div>
+
+                {/* Body */}
+                <div className="mb-4">
+                  <label className={`block text-sm font-medium mb-1 ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>
+                    Bericht
+                  </label>
+                  <textarea
+                    value={prospectBody}
+                    onChange={(e) => setProspectBody(e.target.value)}
+                    rows={12}
+                    className={`w-full px-3 sm:px-4 py-2 border rounded-lg focus:ring-2 focus:ring-emerald-500 font-mono text-sm ${
+                      darkMode 
+                        ? 'bg-gray-700 border-gray-600 text-white placeholder-gray-400' 
+                        : 'bg-white border-gray-200 text-gray-900'
+                    }`}
+                    placeholder="Typ je bericht..."
+                  />
+                </div>
+                
+                {/* Preview hint */}
+                <div className={`text-xs ${darkMode ? 'text-gray-500' : 'text-gray-400'}`}>
+                  <Sparkles className="w-3 h-3 inline mr-1" />
+                  De email wordt professioneel opgemaakt met Webstability branding.
+                </div>
+              </div>
+
+              <div className={`p-4 sm:p-6 border-t flex flex-col-reverse sm:flex-row sm:justify-end gap-2 sm:gap-3 ${darkMode ? 'border-gray-700' : 'border-gray-100'}`}>
+                <button
+                  onClick={() => setShowProspectEmailModal(false)}
+                  className={`w-full sm:w-auto px-4 py-2.5 rounded-lg ${darkMode ? 'text-gray-400 hover:text-white hover:bg-gray-700' : 'text-gray-600 hover:text-gray-900 hover:bg-gray-100'}`}
+                >
+                  Annuleren
+                </button>
+                <button
+                  onClick={async () => {
+                    if (!prospectEmail || !prospectSubject || !prospectBody) return
+                    setSendingProspect(true)
+                    try {
+                      const response = await fetch('/api/marketing/send-email', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                          to: prospectEmail,
+                          subject: prospectSubject,
+                          body: prospectBody,
+                          businessName: prospectBusinessName
+                        })
+                      })
+                      if (response.ok) {
+                        setShowProspectEmailModal(false)
+                        alert('Email verstuurd naar ' + prospectBusinessName + '!')
+                      } else {
+                        alert('Fout bij versturen email')
+                      }
+                    } catch (error) {
+                      console.error('Email error:', error)
+                      alert('Fout bij versturen email')
+                    } finally {
+                      setSendingProspect(false)
+                    }
+                  }}
+                  disabled={sendingProspect || !prospectSubject || !prospectBody}
+                  className="w-full sm:w-auto flex items-center justify-center gap-2 px-6 py-2.5 bg-emerald-600 text-white rounded-lg hover:bg-emerald-700 disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  {sendingProspect ? (
                     <>
                       <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
                       Versturen...

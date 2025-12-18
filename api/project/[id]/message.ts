@@ -129,8 +129,18 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
                       </a>
                     </p>
                   </div>
-                  <div style="background: #f8fafc; padding: 16px; text-align: center; border-top: 1px solid #e2e8f0;">
-                    <p style="margin: 0; color: #94a3b8; font-size: 12px;">Dit bericht is verstuurd door Webstability</p>
+                  <div style="background: #f8fafc; padding: 20px; text-align: center; border-top: 1px solid #e2e8f0;">
+                    <p style="margin: 0 0 8px 0; color: #64748b; font-size: 13px;">
+                      Met vriendelijke groet,<br><strong style="color: #334155;">Team Webstability</strong>
+                    </p>
+                    <p style="margin: 0 0 8px 0; color: #94a3b8; font-size: 12px;">
+                      <a href="https://webstability.nl" style="color: #10b981; text-decoration: none;">webstability.nl</a>
+                      &nbsp;•&nbsp;
+                      <a href="mailto:info@webstability.nl" style="color: #10b981; text-decoration: none;">info@webstability.nl</a>
+                      &nbsp;•&nbsp;
+                      <a href="tel:+31644712573" style="color: #10b981; text-decoration: none;">06-44712573</a>
+                    </p>
+                    <p style="margin: 0; color: #cbd5e1; font-size: 11px;">KvK: 94081468 • BTW: NL004892818B28</p>
                   </div>
                 </div>
               </body>
@@ -164,8 +174,18 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
                       </a>
                     </p>
                   </div>
-                  <div style="background: #f8fafc; padding: 16px; text-align: center; border-top: 1px solid #e2e8f0;">
-                    <p style="margin: 0; color: #94a3b8; font-size: 12px;">Dit bericht is verstuurd door Webstability</p>
+                  <div style="background: #f8fafc; padding: 20px; text-align: center; border-top: 1px solid #e2e8f0;">
+                    <p style="margin: 0 0 8px 0; color: #64748b; font-size: 13px;">
+                      Met vriendelijke groet,<br><strong style="color: #334155;">Team Webstability</strong>
+                    </p>
+                    <p style="margin: 0 0 8px 0; color: #94a3b8; font-size: 12px;">
+                      <a href="https://webstability.nl" style="color: #10b981; text-decoration: none;">webstability.nl</a>
+                      &nbsp;•&nbsp;
+                      <a href="mailto:info@webstability.nl" style="color: #10b981; text-decoration: none;">info@webstability.nl</a>
+                      &nbsp;•&nbsp;
+                      <a href="tel:+31644712573" style="color: #10b981; text-decoration: none;">06-44712573</a>
+                    </p>
+                    <p style="margin: 0; color: #cbd5e1; font-size: 11px;">KvK: 94081468 • BTW: NL004892818B28</p>
                   </div>
                 </div>
               </body>

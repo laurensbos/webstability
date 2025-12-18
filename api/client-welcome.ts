@@ -105,11 +105,21 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
             
             <!-- Footer -->
             <div style="text-align: center; margin-top: 32px; color: #94a3b8; font-size: 14px;">
-              <p style="margin: 0 0 8px 0;">
-                Vragen? Reply gewoon op deze email!
+              <p style="margin: 0 0 8px 0; color: #64748b; font-size: 13px;">
+                Met vriendelijke groet,<br><strong style="color: #334155;">Team Webstability</strong>
               </p>
-              <p style="margin: 0;">
-                © ${new Date().getFullYear()} Webstability • Leiden, Nederland
+              <p style="margin: 12px 0 8px 0; font-size: 12px;">
+                <a href="https://webstability.nl" style="color: #3b82f6; text-decoration: none;">webstability.nl</a>
+                &nbsp;•&nbsp;
+                <a href="mailto:info@webstability.nl" style="color: #3b82f6; text-decoration: none;">info@webstability.nl</a>
+                &nbsp;•&nbsp;
+                <a href="tel:+31644712573" style="color: #3b82f6; text-decoration: none;">06-44712573</a>
+              </p>
+              <p style="margin: 8px 0 0 0; font-size: 11px; color: #cbd5e1;">
+                KvK: 94081468 • BTW: NL004892818B28
+              </p>
+              <p style="margin: 8px 0 0 0; font-size: 11px;">
+                © ${new Date().getFullYear()} Webstability. Alle rechten voorbehouden.
               </p>
             </div>
           </div>

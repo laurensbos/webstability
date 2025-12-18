@@ -110,8 +110,22 @@ const sendMessageNotification = async (
           <!-- Footer -->
           <tr>
             <td style="padding: 24px 40px; background-color: #f8fafc; border-top: 1px solid #e2e8f0; text-align: center;">
-              <p style="margin: 0; font-size: 14px; color: #94a3b8;">
-                Dit bericht is verstuurd door Webstability
+              <p style="margin: 0 0 8px; font-size: 14px; color: #64748b;">
+                Met vriendelijke groet,<br>
+                <strong style="color: #334155;">Team Webstability</strong>
+              </p>
+              <p style="margin: 12px 0 0; font-size: 12px; color: #94a3b8;">
+                <a href="https://webstability.nl" style="color: #10b981; text-decoration: none;">webstability.nl</a>
+                &nbsp;•&nbsp;
+                <a href="mailto:info@webstability.nl" style="color: #10b981; text-decoration: none;">info@webstability.nl</a>
+                &nbsp;•&nbsp;
+                <a href="tel:+31644712573" style="color: #10b981; text-decoration: none;">06-44712573</a>
+              </p>
+              <p style="margin: 12px 0 0; font-size: 11px; color: #cbd5e1;">
+                KvK: 94081468 • BTW: NL004892818B28
+              </p>
+              <p style="margin: 12px 0 0; font-size: 11px; color: #cbd5e1;">
+                © ${new Date().getFullYear()} Webstability. Alle rechten voorbehouden.
               </p>
             </td>
           </tr>

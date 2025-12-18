@@ -323,10 +323,20 @@ async function sendApprovalEmail(projectData: ProjectData, paymentUrl?: string):
           </p>
         </div>
         
-        <div style="background: #0f172a; padding: 20px; text-align: center; border-top: 1px solid #334155;">
-          <p style="margin: 0; color: #64748b; font-size: 12px;">
-            © ${new Date().getFullYear()} Webstability • 
-            <a href="${BASE_URL}" style="color: #6366f1;">webstability.nl</a>
+        <div style="background: #0f172a; padding: 24px; text-align: center; border-top: 1px solid #334155;">
+          <p style="margin: 0 0 12px 0; color: #94a3b8; font-size: 13px;">
+            Met vriendelijke groet,<br><strong style="color: #e2e8f0;">Team Webstability</strong>
+          </p>
+          <p style="margin: 0 0 12px 0; font-size: 12px; color: #64748b;">
+            <a href="https://webstability.nl" style="color: #6366f1; text-decoration: none;">webstability.nl</a>
+            &nbsp;•&nbsp;
+            <a href="mailto:info@webstability.nl" style="color: #6366f1; text-decoration: none;">info@webstability.nl</a>
+            &nbsp;•&nbsp;
+            <a href="tel:+31644712573" style="color: #6366f1; text-decoration: none;">06-44712573</a>
+          </p>
+          <p style="margin: 0; color: #475569; font-size: 11px;">
+            KvK: 94081468 • BTW: NL004892818B28<br>
+            © ${new Date().getFullYear()} Webstability. Alle rechten voorbehouden.
           </p>
         </div>
       </div>

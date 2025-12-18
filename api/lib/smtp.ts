@@ -130,7 +130,10 @@ const baseTemplate = (content: string, accentColor: string = '#2563eb') => `
                       &nbsp;•&nbsp;
                       <a href="mailto:info@webstability.nl" style="color: ${accentColor}; text-decoration: none;">info@webstability.nl</a>
                       &nbsp;•&nbsp;
-                      <a href="https://wa.me/31644712573" style="color: ${accentColor}; text-decoration: none;">WhatsApp</a>
+                      <a href="tel:+31644712573" style="color: ${accentColor}; text-decoration: none;">06-44712573</a>
+                    </p>
+                    <p style="margin: 16px 0 0; font-size: 11px; color: #cbd5e1;">
+                      KvK: 94081468 • BTW: NL004892818B28
                     </p>
                   </td>
                 </tr>
