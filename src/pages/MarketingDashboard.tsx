@@ -294,9 +294,9 @@ export default function MarketingDashboard() {
 
   const toggleDarkMode = () => setDarkMode(!darkMode)
 
-  // Sync status
-  const [syncStatus, setSyncStatus] = useState<'idle' | 'syncing' | 'synced' | 'error'>('idle')
-  const [lastSyncTime, setLastSyncTime] = useState<string | null>(null)
+  // Sync status (kept for future use)
+  const [_syncStatus, setSyncStatus] = useState<'idle' | 'syncing' | 'synced' | 'error'>('idle')
+  const [_lastSyncTime, setLastSyncTime] = useState<string | null>(null)
 
   // Sync leads to API (background) - silently fail if API not available
   const syncToAPI = async (_leadsToSync: Lead[]) => {
