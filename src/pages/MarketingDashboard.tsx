@@ -233,13 +233,13 @@ Webstability`
   }
 ]
 
-const statusColors: Record<Lead['status'], { bg: string; text: string; label: string }> = {
-  nieuw: { bg: 'bg-blue-100', text: 'text-blue-700', label: 'Nieuw' },
-  gecontacteerd: { bg: 'bg-yellow-100', text: 'text-yellow-700', label: 'Gecontacteerd' },
-  geinteresseerd: { bg: 'bg-purple-100', text: 'text-purple-700', label: 'Geïnteresseerd' },
-  offerte: { bg: 'bg-orange-100', text: 'text-orange-700', label: 'Offerte verstuurd' },
-  klant: { bg: 'bg-green-100', text: 'text-green-700', label: 'Klant!' },
-  afgewezen: { bg: 'bg-gray-100', text: 'text-gray-500', label: 'Afgewezen' }
+const statusColors: Record<Lead['status'], { bg: string; darkBg: string; text: string; darkText: string; label: string }> = {
+  nieuw: { bg: 'bg-blue-100', darkBg: 'bg-blue-500/20', text: 'text-blue-700', darkText: 'text-blue-400', label: 'Nieuw' },
+  gecontacteerd: { bg: 'bg-yellow-100', darkBg: 'bg-yellow-500/20', text: 'text-yellow-700', darkText: 'text-yellow-400', label: 'Gecontacteerd' },
+  geinteresseerd: { bg: 'bg-purple-100', darkBg: 'bg-purple-500/20', text: 'text-purple-700', darkText: 'text-purple-400', label: 'Geïnteresseerd' },
+  offerte: { bg: 'bg-orange-100', darkBg: 'bg-orange-500/20', text: 'text-orange-700', darkText: 'text-orange-400', label: 'Offerte verstuurd' },
+  klant: { bg: 'bg-green-100', darkBg: 'bg-green-500/20', text: 'text-green-700', darkText: 'text-green-400', label: 'Klant!' },
+  afgewezen: { bg: 'bg-gray-100', darkBg: 'bg-gray-700/50', text: 'text-gray-500', darkText: 'text-gray-400', label: 'Afgewezen' }
 }
 
 export default function MarketingDashboard() {
@@ -623,7 +623,76 @@ export default function MarketingDashboard() {
 
   return (
     <DarkModeContext.Provider value={{ darkMode, toggleDarkMode }}>
-      <div className={`min-h-screen transition-colors duration-300 ${darkMode ? 'bg-gray-900' : 'bg-gradient-to-br from-gray-50 via-white to-emerald-50/30'}`}>
+      <div className={`min-h-screen transition-colors duration-300 ${darkMode ? 'bg-gray-900' : 'bg-gray-50'}`}>
+        {/* Animated Background - Like diensten pages */}
+        <div className="fixed inset-0 overflow-hidden pointer-events-none z-0">
+          {/* Gradient overlay */}
+          <div className={`absolute inset-0 ${darkMode ? 'bg-gradient-to-br from-emerald-600/10 via-gray-900 to-teal-600/10' : 'bg-gradient-to-br from-emerald-50 via-white to-teal-50/50'}`} />
+          
+          {/* Animated gradient blobs */}
+          <motion.div 
+            className={`absolute top-0 right-0 w-[600px] h-[600px] sm:w-[900px] sm:h-[900px] rounded-full blur-3xl -translate-y-1/3 translate-x-1/4 ${
+              darkMode ? 'bg-gradient-to-br from-emerald-500/20 via-teal-500/10 to-transparent' : 'bg-gradient-to-br from-emerald-200/40 via-teal-100/30 to-transparent'
+            }`}
+            animate={{ 
+              scale: [1, 1.05, 1],
+              rotate: [0, 5, 0]
+            }}
+            transition={{ duration: 8, repeat: Infinity, ease: "easeInOut" }}
+          />
+          <motion.div 
+            className={`absolute bottom-0 left-0 w-[500px] h-[500px] sm:w-[700px] sm:h-[700px] rounded-full blur-3xl translate-y-1/3 -translate-x-1/4 ${
+              darkMode ? 'bg-gradient-to-tr from-teal-500/15 via-emerald-500/10 to-transparent' : 'bg-gradient-to-tr from-teal-100/40 via-emerald-50/30 to-transparent'
+            }`}
+            animate={{ 
+              scale: [1, 1.08, 1],
+              rotate: [0, -5, 0]
+            }}
+            transition={{ duration: 10, repeat: Infinity, ease: "easeInOut" }}
+          />
+          
+          {/* Decorative rings - hidden on mobile */}
+          <div className={`hidden sm:block absolute top-20 right-20 w-32 h-32 border rounded-full ${darkMode ? 'border-emerald-400/20' : 'border-emerald-300/30'}`} />
+          <div className={`hidden sm:block absolute top-24 right-24 w-24 h-24 border rounded-full ${darkMode ? 'border-teal-500/10' : 'border-teal-200/30'}`} />
+          <div className={`hidden sm:block absolute bottom-32 left-20 w-20 h-20 border rounded-full ${darkMode ? 'border-emerald-400/20' : 'border-emerald-200/30'}`} />
+          
+          {/* Floating particles */}
+          {darkMode && (
+            <>
+              {[
+                { size: 4, x: '10%', y: '20%', delay: 0, duration: 4 },
+                { size: 6, x: '20%', y: '60%', delay: 1, duration: 5 },
+                { size: 3, x: '80%', y: '30%', delay: 0.5, duration: 4.5 },
+                { size: 5, x: '70%', y: '70%', delay: 1.5, duration: 5.5 },
+                { size: 4, x: '90%', y: '50%', delay: 2, duration: 4 },
+              ].map((p, i) => (
+                <motion.div
+                  key={i}
+                  className="absolute rounded-full bg-gradient-to-br from-emerald-400 to-teal-500"
+                  style={{ 
+                    width: p.size, 
+                    height: p.size, 
+                    left: p.x, 
+                    top: p.y,
+                    opacity: 0.4
+                  }}
+                  animate={{
+                    y: [0, -20, 0],
+                    opacity: [0.3, 0.6, 0.3],
+                    scale: [1, 1.2, 1],
+                  }}
+                  transition={{
+                    duration: p.duration,
+                    delay: p.delay,
+                    repeat: Infinity,
+                    ease: "easeInOut"
+                  }}
+                />
+              ))}
+            </>
+          )}
+        </div>
+
         {/* Onboarding Modal */}
         <AnimatePresence>
           {showOnboarding && (
@@ -653,11 +722,11 @@ export default function MarketingDashboard() {
           )}
         </AnimatePresence>
 
-        {/* Modern Header */}
+        {/* Modern Header with glass effect */}
         <header className={`sticky top-0 z-50 border-b backdrop-blur-xl transition-colors duration-300 ${
           darkMode 
-            ? 'bg-gray-900/80 border-gray-800' 
-            : 'bg-white/80 border-gray-200'
+            ? 'bg-gray-900/70 border-gray-800/50' 
+            : 'bg-white/70 border-gray-200/50'
         }`}>
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="flex items-center justify-between h-16 lg:h-20">
@@ -798,31 +867,45 @@ export default function MarketingDashboard() {
           </div>
         </div>
 
-        <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8 pb-24 lg:pb-8">
+        <main className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8 pb-24 lg:pb-8">
         {/* Welcome Section */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           className="mb-8"
         >
-          <h2 className={`text-2xl sm:text-3xl font-bold ${darkMode ? 'text-white' : 'text-gray-900'}`}>
-            Welkom terug! 👋
-          </h2>
-          <p className={`mt-1 ${darkMode ? 'text-gray-400' : 'text-gray-600'}`}>
-            {new Date().toLocaleDateString('nl-NL', { weekday: 'long', day: 'numeric', month: 'long' })}
-          </p>
+          <div className="flex items-center gap-3 mb-2">
+            <motion.div
+              initial={{ scale: 0 }}
+              animate={{ scale: 1 }}
+              transition={{ delay: 0.2, type: "spring" }}
+              className={`w-12 h-12 rounded-2xl flex items-center justify-center ${
+                darkMode ? 'bg-gradient-to-br from-emerald-500/20 to-teal-500/20' : 'bg-gradient-to-br from-emerald-100 to-teal-100'
+              }`}
+            >
+              <Sparkles className={`w-6 h-6 ${darkMode ? 'text-emerald-400' : 'text-emerald-600'}`} />
+            </motion.div>
+            <div>
+              <h2 className={`text-2xl sm:text-3xl font-bold ${darkMode ? 'text-white' : 'text-gray-900'}`}>
+                Welkom terug! 👋
+              </h2>
+              <p className={`${darkMode ? 'text-gray-400' : 'text-gray-600'}`}>
+                {new Date().toLocaleDateString('nl-NL', { weekday: 'long', day: 'numeric', month: 'long' })}
+              </p>
+            </div>
+          </div>
         </motion.div>
 
-        {/* Stats Grid - Modern Cards */}
+        {/* Stats Grid - Modern Cards with Glassmorphism */}
         <div className="grid grid-cols-2 lg:grid-cols-5 gap-3 sm:gap-4 mb-8">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             whileHover={{ scale: 1.02, y: -4 }}
-            className={`rounded-2xl p-5 shadow-sm border transition-all cursor-pointer ${
+            className={`rounded-2xl p-5 shadow-sm border backdrop-blur-xl transition-all cursor-pointer ${
               darkMode 
-                ? 'bg-gray-800/50 border-gray-700/50 hover:border-blue-500/50' 
-                : 'bg-white border-gray-100 hover:border-blue-200 hover:shadow-lg hover:shadow-blue-500/5'
+                ? 'bg-gray-800/60 border-gray-700/50 hover:border-blue-500/50' 
+                : 'bg-white/80 border-gray-200/50 hover:border-blue-300 hover:shadow-lg hover:shadow-blue-500/10'
             }`}
           >
             <div className="flex items-start justify-between mb-3">
@@ -1032,8 +1115,8 @@ export default function MarketingDashboard() {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.3 }}
-          className={`rounded-2xl p-5 border mb-6 ${
-            darkMode ? 'bg-gray-800/50 border-gray-700/50' : 'bg-white border-gray-100'
+          className={`rounded-2xl p-5 border backdrop-blur-xl mb-6 ${
+            darkMode ? 'bg-gray-800/60 border-gray-700/50' : 'bg-white/80 border-gray-200/50'
           }`}
         >
           {/* Conversie Funnel */}
@@ -1123,7 +1206,9 @@ export default function MarketingDashboard() {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.35 }}
-          className={`rounded-2xl shadow-sm border overflow-hidden transition-colors ${darkMode ? 'bg-gray-800/50 border-gray-700/50' : 'bg-white border-gray-100'}`}
+          className={`rounded-2xl shadow-sm border backdrop-blur-xl overflow-hidden transition-colors ${
+            darkMode ? 'bg-gray-800/60 border-gray-700/50' : 'bg-white/80 border-gray-200/50'
+          }`}
         >
           {filteredLeads.length === 0 ? (
             <div className="p-8 sm:p-12 text-center">
