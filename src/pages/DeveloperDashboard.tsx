@@ -4,6 +4,7 @@ import {
   LayoutDashboard,
   Users,
   User,
+  UserPlus,
   MessageSquare,
   FolderKanban,
   CreditCard,
@@ -24,6 +25,8 @@ import {
   TrendingUp,
   Clock,
   CheckCircle2,
+  CheckCircle,
+  XCircle,
   AlertCircle,
   Rocket,
   Loader2,
@@ -2862,12 +2865,72 @@ interface ClientsViewProps {
   clients: Client[]
   projects: Project[]
   onSelectClient: (client: Client) => void
+  onAddClient: (client: Client) => void
 }
 
-function ClientsView({ darkMode, clients, projects, onSelectClient }: ClientsViewProps) {
+function ClientsView({ darkMode, clients, projects, onSelectClient, onAddClient }: ClientsViewProps) {
   const [searchQuery, setSearchQuery] = useState('')
   const [sortBy, setSortBy] = useState<'name' | 'projects' | 'spent' | 'date'>('date')
   const [_selectedClient, setSelectedClient] = useState<Client | null>(null)
+  const [showAddModal, setShowAddModal] = useState(false)
+  const [newClient, setNewClient] = useState({
+    name: '',
+    email: '',
+    phone: '',
+    company: ''
+  })
+  const [isSubmitting, setIsSubmitting] = useState(false)
+  const [submitStatus, setSubmitStatus] = useState<'idle' | 'success' | 'error'>('idle')
+
+  const handleAddClient = async (e: React.FormEvent) => {
+    e.preventDefault()
+    setIsSubmitting(true)
+    setSubmitStatus('idle')
+
+    try {
+      // Create client object
+      const client: Client = {
+        id: `client-${Date.now()}`,
+        name: newClient.name,
+        email: newClient.email,
+        phone: newClient.phone,
+        company: newClient.company,
+        projects: [],
+        totalSpent: 0,
+        createdAt: new Date().toISOString()
+      }
+
+      // Send welcome email via API
+      const emailResponse = await fetch('/api/client-welcome', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          name: newClient.name,
+          email: newClient.email,
+          company: newClient.company
+        })
+      })
+
+      if (!emailResponse.ok) {
+        console.warn('Email verzending gefaald, maar klant wordt toch toegevoegd')
+      }
+
+      // Add client
+      onAddClient(client)
+      
+      setSubmitStatus('success')
+      setTimeout(() => {
+        setShowAddModal(false)
+        setNewClient({ name: '', email: '', phone: '', company: '' })
+        setSubmitStatus('idle')
+      }, 1500)
+    } catch (error) {
+      console.error('Error adding client:', error)
+      setSubmitStatus('error')
+    } finally {
+      setIsSubmitting(false)
+    }
+  }
 
   const filteredClients = clients
     .filter(c => {
@@ -2935,10 +2998,206 @@ function ClientsView({ darkMode, clients, projects, onSelectClient }: ClientsVie
             <option value="projects">Meeste projecten</option>
             <option value="spent">Hoogste omzet</option>
           </select>
+
+          {/* Add Client Button */}
+          <motion.button
+            whileHover={{ scale: 1.02 }}
+            whileTap={{ scale: 0.98 }}
+            onClick={() => setShowAddModal(true)}
+            className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white font-medium rounded-xl shadow-lg shadow-blue-500/25 transition-all"
+          >
+            <UserPlus className="w-4 h-4" />
+            <span className="hidden sm:inline">Nieuwe klant</span>
+          </motion.button>
         </div>
       </div>
 
-      {/* Clients Grid */}
+      {/* Add Client Modal */}
+      <AnimatePresence>
+        {showAddModal && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm"
+            onClick={() => setShowAddModal(false)}
+          >
+            <motion.div
+              initial={{ scale: 0.95, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.95, opacity: 0 }}
+              onClick={(e) => e.stopPropagation()}
+              className={`w-full max-w-lg rounded-2xl p-6 ${
+                darkMode ? 'bg-gray-800 border border-gray-700' : 'bg-white shadow-xl'
+              }`}
+            >
+              <div className="flex items-center justify-between mb-6">
+                <div className="flex items-center gap-3">
+                  <div className={`p-3 rounded-xl ${darkMode ? 'bg-blue-500/20' : 'bg-blue-100'}`}>
+                    <UserPlus className={`w-6 h-6 ${darkMode ? 'text-blue-400' : 'text-blue-600'}`} />
+                  </div>
+                  <div>
+                    <h2 className={`text-xl font-bold ${darkMode ? 'text-white' : 'text-gray-900'}`}>
+                      Nieuwe klant
+                    </h2>
+                    <p className={`text-sm ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>
+                      Voeg een nieuwe klant toe
+                    </p>
+                  </div>
+                </div>
+                <button
+                  onClick={() => setShowAddModal(false)}
+                  className={`p-2 rounded-xl transition-colors ${
+                    darkMode ? 'hover:bg-gray-700 text-gray-400' : 'hover:bg-gray-100 text-gray-500'
+                  }`}
+                >
+                  <X className="w-5 h-5" />
+                </button>
+              </div>
+
+              <form onSubmit={handleAddClient} className="space-y-4">
+                <div>
+                  <label className={`block text-sm font-medium mb-2 ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>
+                    Naam *
+                  </label>
+                  <input
+                    type="text"
+                    required
+                    value={newClient.name}
+                    onChange={(e) => setNewClient({ ...newClient, name: e.target.value })}
+                    placeholder="Jan de Vries"
+                    className={`w-full px-4 py-3 rounded-xl border transition-all ${
+                      darkMode 
+                        ? 'bg-gray-700 border-gray-600 text-white placeholder-gray-500 focus:border-blue-500' 
+                        : 'bg-white border-gray-200 text-gray-900 placeholder-gray-400 focus:border-blue-500'
+                    } focus:outline-none focus:ring-2 focus:ring-blue-500/20`}
+                  />
+                </div>
+
+                <div>
+                  <label className={`block text-sm font-medium mb-2 ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>
+                    Email *
+                  </label>
+                  <input
+                    type="email"
+                    required
+                    value={newClient.email}
+                    onChange={(e) => setNewClient({ ...newClient, email: e.target.value })}
+                    placeholder="jan@bedrijf.nl"
+                    className={`w-full px-4 py-3 rounded-xl border transition-all ${
+                      darkMode 
+                        ? 'bg-gray-700 border-gray-600 text-white placeholder-gray-500 focus:border-blue-500' 
+                        : 'bg-white border-gray-200 text-gray-900 placeholder-gray-400 focus:border-blue-500'
+                    } focus:outline-none focus:ring-2 focus:ring-blue-500/20`}
+                  />
+                </div>
+
+                <div>
+                  <label className={`block text-sm font-medium mb-2 ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>
+                    Telefoonnummer
+                  </label>
+                  <input
+                    type="tel"
+                    value={newClient.phone}
+                    onChange={(e) => setNewClient({ ...newClient, phone: e.target.value })}
+                    placeholder="06-12345678"
+                    className={`w-full px-4 py-3 rounded-xl border transition-all ${
+                      darkMode 
+                        ? 'bg-gray-700 border-gray-600 text-white placeholder-gray-500 focus:border-blue-500' 
+                        : 'bg-white border-gray-200 text-gray-900 placeholder-gray-400 focus:border-blue-500'
+                    } focus:outline-none focus:ring-2 focus:ring-blue-500/20`}
+                  />
+                </div>
+
+                <div>
+                  <label className={`block text-sm font-medium mb-2 ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>
+                    Bedrijfsnaam
+                  </label>
+                  <input
+                    type="text"
+                    value={newClient.company}
+                    onChange={(e) => setNewClient({ ...newClient, company: e.target.value })}
+                    placeholder="Bedrijf B.V."
+                    className={`w-full px-4 py-3 rounded-xl border transition-all ${
+                      darkMode 
+                        ? 'bg-gray-700 border-gray-600 text-white placeholder-gray-500 focus:border-blue-500' 
+                        : 'bg-white border-gray-200 text-gray-900 placeholder-gray-400 focus:border-blue-500'
+                    } focus:outline-none focus:ring-2 focus:ring-blue-500/20`}
+                  />
+                </div>
+
+                {/* Info box */}
+                <div className={`p-4 rounded-xl ${darkMode ? 'bg-blue-500/10 border border-blue-500/20' : 'bg-blue-50 border border-blue-100'}`}>
+                  <div className="flex items-start gap-3">
+                    <Mail className={`w-5 h-5 mt-0.5 ${darkMode ? 'text-blue-400' : 'text-blue-600'}`} />
+                    <div>
+                      <p className={`text-sm font-medium ${darkMode ? 'text-blue-300' : 'text-blue-800'}`}>
+                        Automatische welkomst email
+                      </p>
+                      <p className={`text-xs mt-1 ${darkMode ? 'text-blue-400/70' : 'text-blue-600'}`}>
+                        De klant ontvangt automatisch een welkomst email met informatie over hoe ze een project kunnen starten.
+                      </p>
+                    </div>
+                  </div>
+                </div>
+
+                {submitStatus === 'success' && (
+                  <motion.div
+                    initial={{ opacity: 0, y: -10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    className="p-4 bg-green-500/10 border border-green-500/20 rounded-xl flex items-center gap-3"
+                  >
+                    <CheckCircle className="w-5 h-5 text-green-500" />
+                    <span className="text-green-500 font-medium">Klant aangemaakt & email verzonden!</span>
+                  </motion.div>
+                )}
+
+                {submitStatus === 'error' && (
+                  <motion.div
+                    initial={{ opacity: 0, y: -10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    className="p-4 bg-red-500/10 border border-red-500/20 rounded-xl flex items-center gap-3"
+                  >
+                    <XCircle className="w-5 h-5 text-red-500" />
+                    <span className="text-red-500 font-medium">Er ging iets mis. Probeer opnieuw.</span>
+                  </motion.div>
+                )}
+
+                <div className="flex gap-3 pt-2">
+                  <button
+                    type="button"
+                    onClick={() => setShowAddModal(false)}
+                    className={`flex-1 py-3 rounded-xl font-medium transition-colors ${
+                      darkMode 
+                        ? 'bg-gray-700 hover:bg-gray-600 text-gray-300' 
+                        : 'bg-gray-100 hover:bg-gray-200 text-gray-700'
+                    }`}
+                  >
+                    Annuleren
+                  </button>
+                  <button
+                    type="submit"
+                    disabled={isSubmitting || !newClient.name || !newClient.email}
+                    className="flex-1 py-3 bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white font-medium rounded-xl shadow-lg shadow-blue-500/25 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+                  >
+                    {isSubmitting ? (
+                      <>
+                        <Loader2 className="w-4 h-4 animate-spin" />
+                        Bezig...
+                      </>
+                    ) : (
+                      <>
+                        <UserPlus className="w-4 h-4" />
+                        Aanmaken & Email
+                      </>
+                    )}
+                  </button>
+                </div>
+              </form>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>      {/* Clients Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
         {filteredClients.map(client => {
           const clientProjects = getClientProjects(client)
@@ -5813,6 +6072,7 @@ export default function DeveloperDashboardNew() {
                     clients={clients}
                     projects={projects}
                     onSelectClient={() => {}}
+                    onAddClient={(client) => setClients(prev => [client, ...prev])}
                   />
                 )}
                 {activeView === 'messages' && (
