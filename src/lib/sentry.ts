@@ -10,7 +10,10 @@ export const isSentryConfigured = (): boolean => {
 // Initialize Sentry
 export const initSentry = () => {
   if (!SENTRY_DSN) {
-    console.warn('Sentry DSN not configured. Error tracking disabled.')
+    // Alleen loggen in development
+    if (import.meta.env.DEV) {
+      console.info('[Dev] Sentry niet geconfigureerd - error tracking uitgeschakeld')
+    }
     return
   }
 

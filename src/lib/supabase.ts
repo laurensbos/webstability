@@ -4,11 +4,13 @@ import type { Database } from '@/types/database'
 const supabaseUrl = import.meta.env.VITE_SUPABASE_URL
 const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY
 
+// Alleen waarschuwen in development, niet in productie
 if (!supabaseUrl || !supabaseAnonKey) {
-  console.warn(
-    'Supabase credentials niet gevonden. ' +
-    'Zet VITE_SUPABASE_URL en VITE_SUPABASE_ANON_KEY in je .env.local bestand.'
-  )
+  if (import.meta.env.DEV) {
+    console.info(
+      '[Dev] Supabase niet geconfigureerd - fallback login actief'
+    )
+  }
 }
 
 // Supabase client voor frontend gebruik
