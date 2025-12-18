@@ -1,5 +1,5 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node'
-import { getProject, setProject } from './lib/database'
+import { getProject, setProject } from './lib/database.js'
 
 /**
  * API Endpoint: /api/client-onboarding

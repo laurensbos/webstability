@@ -12,7 +12,7 @@
  */
 
 import type { VercelRequest, VercelResponse } from '@vercel/node'
-import { sendPhaseChangeEmail } from './lib/smtp'
+import { sendPhaseChangeEmail } from './lib/smtp.js'
 
 // Phase descriptions and next steps
 const phaseInfo: Record<string, { description: string; nextSteps: string[] }> = {

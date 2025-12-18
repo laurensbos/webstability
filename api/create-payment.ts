@@ -43,7 +43,7 @@
 
 import type { VercelRequest, VercelResponse } from '@vercel/node'
 import { Redis } from '@upstash/redis'
-import { sendPaymentLinkEmail } from './lib/smtp'
+import { sendPaymentLinkEmail } from './lib/smtp.js'
 
 const MOLLIE_API_URL = 'https://api.mollie.com/v2'
 const MOLLIE_API_KEY = process.env.MOLLIE_API_KEY || ''
