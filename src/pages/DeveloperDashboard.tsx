@@ -1584,7 +1584,7 @@ function ProjectsView({ darkMode, projects, onUpdateProject, onDeleteProject, on
     onSelectProject(project)
   }
 
-  const getPaymentBadge = (status: PaymentStatus) => {
+  const _getPaymentBadge = (status: PaymentStatus) => {
     const badges = {
       pending: { label: 'In afwachting', color: 'bg-gray-500' },
       awaiting_payment: { label: 'Wacht op betaling', color: 'bg-yellow-500' },
@@ -1607,7 +1607,6 @@ function ProjectsView({ darkMode, projects, onUpdateProject, onDeleteProject, on
 
   // Project Card Component with Quick Actions
   const ProjectCard = ({ project }: { project: Project }) => {
-    const payment = getPaymentBadge(project.paymentStatus)
     const pkg = getPackageBadge(project.package)
     const unreadCount = project.messages.filter(m => !m.read && m.from === 'client').length
 
@@ -1704,9 +1703,45 @@ function ProjectsView({ darkMode, projects, onUpdateProject, onDeleteProject, on
           <span className={`px-2 py-0.5 text-xs font-medium text-white rounded-full ${pkg.color}`}>
             {pkg.label}
           </span>
-          <span className={`px-2 py-0.5 text-xs font-medium text-white rounded-full ${payment.color}`}>
-            {payment.label}
-          </span>
+          {/* Action indicator */}
+          {(() => {
+            const needsOnboarding = project.phase === 'onboarding' && (!project.onboardingData || Object.keys(project.onboardingData).length === 0)
+            const needsPayment = project.paymentStatus === 'pending' || project.paymentStatus === 'failed'
+            
+            if (unreadCount > 0) {
+              return (
+                <span className="px-2 py-0.5 text-xs font-medium bg-red-500 text-white rounded-full">
+                  Jij: Beantwoord
+                </span>
+              )
+            }
+            if (needsOnboarding) {
+              return (
+                <span className="px-2 py-0.5 text-xs font-medium bg-yellow-500 text-white rounded-full">
+                  Klant: Onboarding
+                </span>
+              )
+            }
+            if (needsPayment) {
+              return (
+                <span className="px-2 py-0.5 text-xs font-medium bg-orange-500 text-white rounded-full">
+                  Klant: Betaling
+                </span>
+              )
+            }
+            if (project.phase === 'review') {
+              return (
+                <span className="px-2 py-0.5 text-xs font-medium bg-purple-500 text-white rounded-full">
+                  Klant: Review
+                </span>
+              )
+            }
+            return (
+              <span className="px-2 py-0.5 text-xs font-medium bg-emerald-500 text-white rounded-full">
+                Jij: Werk
+              </span>
+            )
+          })()}
         </div>
 
         {/* Quick Actions - visible on hover */}
@@ -2004,7 +2039,7 @@ function ProjectsView({ darkMode, projects, onUpdateProject, onDeleteProject, on
                     Fase
                   </th>
                   <th className={`px-4 py-3 text-left text-xs font-semibold uppercase tracking-wider ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>
-                    Betaling
+                    Actie nodig
                   </th>
                   <th className={`px-4 py-3 text-left text-xs font-semibold uppercase tracking-wider ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>
                     Aangemaakt
@@ -2016,7 +2051,6 @@ function ProjectsView({ darkMode, projects, onUpdateProject, onDeleteProject, on
               </thead>
               <tbody className="divide-y divide-gray-200 dark:divide-gray-700">
                 {filteredProjects.map(project => {
-                  const payment = getPaymentBadge(project.paymentStatus)
                   const pkg = getPackageBadge(project.package)
                   const phase = phases.find(p => p.key === project.phase)
                   const unreadCount = project.messages.filter(m => !m.read && m.from === 'client').length
@@ -2062,9 +2096,52 @@ function ProjectsView({ darkMode, projects, onUpdateProject, onDeleteProject, on
                         </span>
                       </td>
                       <td className="px-4 py-4">
-                        <span className={`px-2 py-1 text-xs font-medium text-white rounded-full ${payment.color}`}>
-                          {payment.label}
-                        </span>
+                        {/* Action needed indicator */}
+                        {(() => {
+                          const hasUnreadMessages = unreadCount > 0
+                          const needsOnboarding = project.phase === 'onboarding' && (!project.onboardingData || Object.keys(project.onboardingData).length === 0)
+                          const needsPayment = project.paymentStatus === 'pending' || project.paymentStatus === 'failed'
+                          const awaitingApproval = project.phase === 'review'
+                          
+                          if (hasUnreadMessages) {
+                            return (
+                              <span className="px-2 py-1 text-xs font-medium bg-red-500 text-white rounded-full flex items-center gap-1 w-fit">
+                                <MessageSquare className="w-3 h-3" />
+                                Jij: Beantwoord
+                              </span>
+                            )
+                          }
+                          if (needsOnboarding) {
+                            return (
+                              <span className="px-2 py-1 text-xs font-medium bg-yellow-500 text-white rounded-full flex items-center gap-1 w-fit">
+                                <User className="w-3 h-3" />
+                                Klant: Onboarding
+                              </span>
+                            )
+                          }
+                          if (needsPayment) {
+                            return (
+                              <span className="px-2 py-1 text-xs font-medium bg-orange-500 text-white rounded-full flex items-center gap-1 w-fit">
+                                <CreditCard className="w-3 h-3" />
+                                Klant: Betaling
+                              </span>
+                            )
+                          }
+                          if (awaitingApproval) {
+                            return (
+                              <span className="px-2 py-1 text-xs font-medium bg-purple-500 text-white rounded-full flex items-center gap-1 w-fit">
+                                <User className="w-3 h-3" />
+                                Klant: Review
+                              </span>
+                            )
+                          }
+                          return (
+                            <span className="px-2 py-1 text-xs font-medium bg-emerald-500 text-white rounded-full flex items-center gap-1 w-fit">
+                              <Code className="w-3 h-3" />
+                              Jij: Ontwikkelen
+                            </span>
+                          )
+                        })()}
                       </td>
                       <td className={`px-4 py-4 text-sm ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>
                         {new Date(project.createdAt).toLocaleDateString('nl-NL')}
@@ -3943,7 +4020,7 @@ function MessagesView({ darkMode, projects, onUpdateProject }: MessagesViewProps
           'Authorization': `Bearer ${token}`
         },
         body: JSON.stringify({
-          projectId: selectedProject.id,
+          projectId: selectedProject.projectId || selectedProject.id,
           message: message.message
         })
       })
@@ -3998,8 +4075,8 @@ function MessagesView({ darkMode, projects, onUpdateProject }: MessagesViewProps
         backgroundColor: darkMode ? 'rgb(31, 41, 55)' : 'white'
       }}
     >
-      {/* Conversations List */}
-      <div className={`w-full md:w-80 lg:w-96 flex-shrink-0 border-r flex flex-col ${
+      {/* Conversations List - Always visible on desktop, hidden on mobile when chat selected */}
+      <div className={`w-80 lg:w-96 flex-shrink-0 border-r flex-col ${
         darkMode ? 'border-gray-700 bg-gray-800/50' : 'border-gray-200 bg-gray-50'
       } ${selectedProjectId ? 'hidden md:flex' : 'flex'}`}>
         {/* Search & Filter Header */}
@@ -4085,22 +4162,32 @@ function MessagesView({ darkMode, projects, onUpdateProject }: MessagesViewProps
                           {project.contactName}
                         </p>
                         {lastMsg && (
-                          <p className={`text-sm truncate mt-1 ${
-                            isSelected 
-                              ? 'text-white/80' 
-                              : unread > 0 
-                                ? darkMode ? 'text-white font-medium' : 'text-gray-900 font-medium'
-                                : darkMode ? 'text-gray-400' : 'text-gray-500'
+                          <div className="flex items-center gap-2 mt-1">
+                            <p className={`text-sm truncate flex-1 ${
+                              isSelected 
+                                ? 'text-white/80' 
+                                : unread > 0 
+                                  ? darkMode ? 'text-white font-medium' : 'text-gray-900 font-medium'
+                                  : darkMode ? 'text-gray-400' : 'text-gray-500'
+                            }`}>
+                              {lastMsg.from === 'developer' && (
+                                <span className="opacity-70">Jij: </span>
+                              )}
+                              {lastMsg.text}
+                            </p>
+                          </div>
+                        )}
+                        {/* Action indicator in conversation list */}
+                        {unread > 0 && !isSelected && (
+                          <span className={`text-xs font-medium mt-1 px-2 py-0.5 rounded-full ${
+                            darkMode ? 'bg-red-500/20 text-red-400' : 'bg-red-100 text-red-600'
                           }`}>
-                            {lastMsg.from === 'developer' && (
-                              <span className="opacity-70">Jij: </span>
-                            )}
-                            {lastMsg.text}
-                          </p>
+                            ⚡ Jij moet reageren
+                          </span>
                         )}
                       </div>
                       {unread > 0 && !isSelected && (
-                        <span className="px-2 py-0.5 bg-emerald-500 text-white text-xs font-bold rounded-full flex-shrink-0">
+                        <span className="px-2 py-0.5 bg-red-500 text-white text-xs font-bold rounded-full flex-shrink-0 animate-pulse">
                           {unread}
                         </span>
                       )}
