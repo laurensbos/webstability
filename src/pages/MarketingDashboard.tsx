@@ -28,12 +28,7 @@ import {
   Lightbulb,
   MousePointer,
   ArrowRight,
-  Sparkles,
-  Target,
-  Calendar,
-  RefreshCw,
-  ChevronRight,
-  Zap
+  RefreshCw
 } from 'lucide-react'
 
 // Dark Mode Context
@@ -1001,326 +996,106 @@ export default function MarketingDashboard() {
           </h2>
         </div>
 
-        {/* Desktop: Welcome Section */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="hidden sm:block mb-8"
-        >
-          <div className="flex items-center gap-3">
-            <motion.div
-              initial={{ scale: 0 }}
-              animate={{ scale: 1 }}
-              transition={{ delay: 0.2, type: "spring" }}
-              className={`w-12 h-12 rounded-2xl flex items-center justify-center ${
-                darkMode ? 'bg-gradient-to-br from-emerald-500/20 to-teal-500/20' : 'bg-gradient-to-br from-emerald-100 to-teal-100'
-              }`}
-            >
-              <Sparkles className={`w-6 h-6 ${darkMode ? 'text-emerald-400' : 'text-emerald-600'}`} />
-            </motion.div>
-            <div className="flex-1">
-              <h2 className={`text-3xl font-bold ${darkMode ? 'text-white' : 'text-gray-900'}`}>
-                Welkom terug! 👋
+        {/* Desktop: Clean header with tab navigation */}
+        <div className="hidden sm:block mb-6">
+          <div className="flex items-center justify-between mb-4">
+            <div>
+              <h2 className={`text-2xl font-bold ${darkMode ? 'text-white' : 'text-gray-900'}`}>
+                {mainTab === 'zoeken' ? '🔍 Bedrijven zoeken' : '📋 Mijn leads'}
               </h2>
-              <p className={`${darkMode ? 'text-gray-400' : 'text-gray-600'}`}>
-                {new Date().toLocaleDateString('nl-NL', { weekday: 'long', day: 'numeric', month: 'long' })}
+              <p className={`text-sm ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>
+                {mainTab === 'zoeken' 
+                  ? 'Zoek lokale bedrijven en voeg ze toe als lead'
+                  : `${stats.total} leads · ${stats.klanten} klanten · ${conversionRates.overallConversion}% conversie`
+                }
               </p>
             </div>
-          </div>
-        </motion.div>
-
-        {/* Stats Grid - Desktop only */}
-        <div className="hidden sm:grid grid-cols-3 lg:grid-cols-5 gap-4 mb-8">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            whileHover={{ scale: 1.02, y: -4 }}
-            className={`rounded-xl sm:rounded-2xl p-3 sm:p-5 shadow-sm border backdrop-blur-xl transition-all cursor-pointer ${
-              darkMode 
-                ? 'bg-gray-800/60 border-gray-700/50 hover:border-blue-500/50' 
-                : 'bg-white/80 border-gray-200/50 hover:border-blue-300 hover:shadow-lg hover:shadow-blue-500/10'
-            }`}
-          >
-            <div className="flex items-start justify-between mb-2 sm:mb-3">
-              <div className={`p-2 sm:p-3 rounded-lg sm:rounded-xl ${darkMode ? 'bg-blue-500/20' : 'bg-gradient-to-br from-blue-50 to-blue-100'}`}>
-                <Building2 className={`w-4 h-4 sm:w-5 sm:h-5 ${darkMode ? 'text-blue-400' : 'text-blue-600'}`} />
+            
+            {/* Compact stats for desktop */}
+            <div className={`flex items-center gap-6 px-4 py-2 rounded-xl ${
+              darkMode ? 'bg-gray-800/60' : 'bg-gray-50'
+            }`}>
+              <div className="text-center">
+                <p className={`text-xl font-bold ${darkMode ? 'text-white' : 'text-gray-900'}`}>{stats.total}</p>
+                <p className={`text-xs ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>Leads</p>
               </div>
-              <span className={`hidden sm:inline text-xs font-medium px-2 py-1 rounded-full ${
-                darkMode ? 'bg-blue-500/20 text-blue-400' : 'bg-blue-50 text-blue-600'
-              }`}>
-                Totaal
-              </span>
-            </div>
-            <p className={`text-2xl sm:text-3xl font-bold ${darkMode ? 'text-white' : 'text-gray-900'}`}>{stats.total}</p>
-            <p className={`text-xs sm:text-sm mt-1 ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>Leads</p>
-          </motion.div>
-
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.05 }}
-            whileHover={{ scale: 1.02, y: -4 }}
-            className={`rounded-xl sm:rounded-2xl p-3 sm:p-5 shadow-sm border transition-all cursor-pointer ${
-              darkMode 
-                ? 'bg-gray-800/50 border-gray-700/50 hover:border-amber-500/50' 
-                : 'bg-white border-gray-100 hover:border-amber-200 hover:shadow-lg hover:shadow-amber-500/5'
-            }`}
-          >
-            <div className="flex items-start justify-between mb-2 sm:mb-3">
-              <div className={`p-2 sm:p-3 rounded-lg sm:rounded-xl ${darkMode ? 'bg-amber-500/20' : 'bg-gradient-to-br from-amber-50 to-amber-100'}`}>
-                <Mail className={`w-4 h-4 sm:w-5 sm:h-5 ${darkMode ? 'text-amber-400' : 'text-amber-600'}`} />
+              <div className="text-center">
+                <p className={`text-xl font-bold text-emerald-500`}>{stats.klanten}</p>
+                <p className={`text-xs ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>Klanten</p>
               </div>
-              <Sparkles className={`hidden sm:block w-4 h-4 ${darkMode ? 'text-amber-400' : 'text-amber-500'}`} />
-            </div>
-            <p className={`text-2xl sm:text-3xl font-bold ${darkMode ? 'text-white' : 'text-gray-900'}`}>{stats.emailsSent}</p>
-            <p className={`text-xs sm:text-sm mt-1 ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>Emails</p>
-          </motion.div>
-
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.1 }}
-            whileHover={{ scale: 1.02, y: -4 }}
-            className={`rounded-xl sm:rounded-2xl p-3 sm:p-5 shadow-sm border transition-all cursor-pointer ${
-              darkMode 
-                ? 'bg-gray-800/50 border-gray-700/50 hover:border-purple-500/50' 
-                : 'bg-white border-gray-100 hover:border-purple-200 hover:shadow-lg hover:shadow-purple-500/5'
-            }`}
-          >
-            <div className="flex items-start justify-between mb-2 sm:mb-3">
-              <div className={`p-2 sm:p-3 rounded-lg sm:rounded-xl ${darkMode ? 'bg-purple-500/20' : 'bg-gradient-to-br from-purple-50 to-purple-100'}`}>
-                <Target className={`w-4 h-4 sm:w-5 sm:h-5 ${darkMode ? 'text-purple-400' : 'text-purple-600'}`} />
+              <div className="text-center">
+                <p className={`text-xl font-bold ${darkMode ? 'text-amber-400' : 'text-amber-600'}`}>{stats.nieuw}</p>
+                <p className={`text-xs ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>Te mailen</p>
               </div>
-            </div>
-            <p className={`text-2xl sm:text-3xl font-bold ${darkMode ? 'text-white' : 'text-gray-900'}`}>{stats.gecontacteerd + stats.geinteresseerd}</p>
-            <p className={`text-xs sm:text-sm mt-1 ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>In gesprek</p>
-          </motion.div>
-
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.15 }}
-            whileHover={{ scale: 1.02, y: -4 }}
-            className={`rounded-xl sm:rounded-2xl p-3 sm:p-5 shadow-sm border transition-all cursor-pointer col-span-1 sm:col-span-1 ${
-              darkMode 
-                ? 'bg-gradient-to-br from-emerald-900/50 to-emerald-800/30 border-emerald-700/50' 
-                : 'bg-gradient-to-br from-emerald-50 to-emerald-100/50 border-emerald-100 hover:shadow-lg hover:shadow-emerald-500/10'
-            }`}
-          >
-            <div className="flex items-start justify-between mb-2 sm:mb-3">
-              <div className={`p-2 sm:p-3 rounded-lg sm:rounded-xl ${darkMode ? 'bg-emerald-500/20' : 'bg-white shadow-sm'}`}>
-                <TrendingUp className={`w-4 h-4 sm:w-5 sm:h-5 ${darkMode ? 'text-emerald-400' : 'text-emerald-600'}`} />
-              </div>
-              <span className={`hidden sm:inline text-xs font-medium px-2 py-1 rounded-full ${
-                darkMode ? 'bg-emerald-500/20 text-emerald-400' : 'bg-emerald-100 text-emerald-700'
-              }`}>
-                🎉
-              </span>
-            </div>
-            <p className={`text-2xl sm:text-3xl font-bold ${darkMode ? 'text-white' : 'text-gray-900'}`}>{stats.klanten}</p>
-            <p className={`text-xs sm:text-sm mt-1 ${darkMode ? 'text-emerald-400' : 'text-emerald-600'}`}>Klanten</p>
-          </motion.div>
-
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.2 }}
-            whileHover={{ scale: 1.02, y: -4 }}
-            className={`rounded-xl sm:rounded-2xl p-3 sm:p-5 shadow-sm border transition-all cursor-pointer col-span-2 sm:col-span-1 ${
-              stats.followUpsOverdue > 0 
-                ? darkMode 
-                  ? 'bg-gradient-to-br from-red-900/50 to-red-800/30 border-red-500/50' 
-                  : 'bg-gradient-to-br from-red-50 to-red-100/50 border-red-200'
-                : stats.followUpsToday > 0 
-                  ? darkMode 
-                    ? 'bg-gradient-to-br from-orange-900/50 to-orange-800/30 border-orange-500/50' 
-                    : 'bg-gradient-to-br from-orange-50 to-orange-100/50 border-orange-200'
-                  : darkMode 
-                    ? 'bg-gray-800/50 border-gray-700/50' 
-                    : 'bg-white border-gray-100'
-            }`}
-          >
-            <div className="flex items-start justify-between mb-2 sm:mb-3">
-              <div className={`p-2 sm:p-3 rounded-xl ${
-                stats.followUpsOverdue > 0 
-                  ? darkMode ? 'bg-red-500/20' : 'bg-white shadow-sm'
-                  : stats.followUpsToday > 0 
-                    ? darkMode ? 'bg-orange-500/20' : 'bg-white shadow-sm'
-                    : darkMode ? 'bg-gray-700' : 'bg-gray-100'
-              }`}>
-                <Calendar className={`w-4 h-4 sm:w-5 sm:h-5 ${
-                  stats.followUpsOverdue > 0 
-                    ? darkMode ? 'text-red-400' : 'text-red-600'
-                    : stats.followUpsToday > 0 
-                      ? darkMode ? 'text-orange-400' : 'text-orange-600'
-                      : darkMode ? 'text-gray-400' : 'text-gray-500'
-                }`} />
-              </div>
-              {stats.followUpsOverdue > 0 && (
-                <span className="relative flex h-2 w-2 sm:h-3 sm:w-3">
-                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
-                  <span className="relative inline-flex rounded-full h-2 w-2 sm:h-3 sm:w-3 bg-red-500"></span>
-                </span>
+              {stats.followUpsToday + stats.followUpsOverdue > 0 && (
+                <div className="text-center">
+                  <p className={`text-xl font-bold ${stats.followUpsOverdue > 0 ? 'text-red-500' : 'text-orange-500'}`}>
+                    {stats.followUpsToday + stats.followUpsOverdue}
+                  </p>
+                  <p className={`text-xs ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>Follow-up</p>
+                </div>
               )}
             </div>
-            <p className={`text-xl sm:text-3xl font-bold ${darkMode ? 'text-white' : 'text-gray-900'}`}>
-              {stats.followUpsToday + stats.followUpsOverdue}
-            </p>
-            <p className={`text-[10px] sm:text-sm mt-0.5 sm:mt-1 ${
-              stats.followUpsOverdue > 0 
-                ? darkMode ? 'text-red-400' : 'text-red-600'
-                : darkMode ? 'text-gray-400' : 'text-gray-500'
-            }`}>
-              {stats.followUpsOverdue > 0 ? `${stats.followUpsOverdue} te laat!` : 'Follow-ups'}
-            </p>
-          </motion.div>
-        </div>
+          </div>
 
-        {/* Quick Actions - Desktop only */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.25 }}
-          className="hidden sm:block mb-8"
-        >
-          <div className="flex gap-3 flex-wrap">
-            <motion.button
-              whileHover={{ scale: 1.02 }}
-              whileTap={{ scale: 0.98 }}
-              onClick={() => setShowAddModal(true)}
-              className={`flex items-center gap-2 px-4 py-2.5 rounded-xl font-medium transition-all whitespace-nowrap text-sm ${
-                darkMode 
-                  ? 'bg-emerald-600 text-white hover:bg-emerald-500' 
-                  : 'bg-emerald-500 text-white hover:bg-emerald-600 shadow-lg shadow-emerald-500/20'
-              }`}
-            >
-              <Plus className="w-4 h-4" />
-              Nieuw bedrijf
-            </motion.button>
-            <motion.button
-              whileHover={{ scale: 1.02 }}
-              whileTap={{ scale: 0.98 }}
+          {/* Tab navigation */}
+          <div className="flex gap-2">
+            <button
               onClick={() => setMainTab('zoeken')}
-              className={`flex items-center gap-2 px-4 py-2.5 rounded-xl font-medium transition-all whitespace-nowrap text-sm ${
+              className={`flex items-center gap-2 px-4 py-2 rounded-lg font-medium transition-all text-sm ${
                 mainTab === 'zoeken'
-                  ? 'bg-emerald-500 text-white shadow-lg shadow-emerald-500/20'
+                  ? 'bg-emerald-500 text-white'
                   : darkMode 
-                    ? 'bg-gray-800 text-gray-300 hover:bg-gray-700' 
-                    : 'bg-white text-gray-700 hover:bg-gray-50 border border-gray-200'
+                    ? 'text-gray-400 hover:text-white hover:bg-gray-800' 
+                    : 'text-gray-600 hover:text-gray-900 hover:bg-gray-100'
               }`}
             >
               <Search className="w-4 h-4" />
               Zoeken
-            </motion.button>
-            <motion.button
-              whileHover={{ scale: 1.02 }}
-              whileTap={{ scale: 0.98 }}
+            </button>
+            <button
               onClick={() => setMainTab('leads')}
-              className={`flex items-center gap-2 px-4 py-2.5 rounded-xl font-medium transition-all whitespace-nowrap text-sm ${
+              className={`flex items-center gap-2 px-4 py-2 rounded-lg font-medium transition-all text-sm ${
                 mainTab === 'leads'
-                  ? 'bg-blue-500 text-white shadow-lg shadow-blue-500/20'
+                  ? 'bg-emerald-500 text-white'
                   : darkMode 
-                    ? 'bg-gray-800 text-gray-300 hover:bg-gray-700' 
-                    : 'bg-white text-gray-700 hover:bg-gray-50 border border-gray-200'
+                    ? 'text-gray-400 hover:text-white hover:bg-gray-800' 
+                    : 'text-gray-600 hover:text-gray-900 hover:bg-gray-100'
               }`}
             >
               <Building2 className="w-4 h-4" />
-              Leads ({leads.length})
-            </motion.button>
-            <motion.button
-              whileHover={{ scale: 1.02 }}
-              whileTap={{ scale: 0.98 }}
-              onClick={exportToCSV}
-              className={`flex items-center gap-2 px-4 py-2.5 rounded-xl font-medium transition-all whitespace-nowrap text-sm ${
-                darkMode 
-                  ? 'bg-gray-800 text-gray-300 hover:bg-gray-700' 
-                  : 'bg-white text-gray-700 hover:bg-gray-50 border border-gray-200'
-              }`}
-            >
-              <Download className="w-4 h-4" />
-              Exporteer
-            </motion.button>
-            <motion.button
-              whileHover={{ scale: 1.02 }}
-              whileTap={{ scale: 0.98 }}
+              Leads
+              {stats.total > 0 && (
+                <span className={`px-1.5 py-0.5 rounded text-xs ${
+                  mainTab === 'leads' ? 'bg-white/20' : darkMode ? 'bg-gray-700' : 'bg-gray-200'
+                }`}>
+                  {stats.total}
+                </span>
+              )}
+            </button>
+            <button
               onClick={() => {
-                localStorage.removeItem('webstability_onboarding_complete')
-                setOnboardingStep(0)
-                setShowOnboarding(true)
+                setMainTab('leads')
+                setStatusFilter('nieuw')
               }}
-              className={`flex items-center gap-2 px-4 py-2.5 rounded-xl font-medium transition-all whitespace-nowrap text-sm ${
+              className={`flex items-center gap-2 px-4 py-2 rounded-lg font-medium transition-all text-sm ${
                 darkMode 
-                  ? 'bg-gray-800 text-gray-300 hover:bg-gray-700' 
-                  : 'bg-white text-gray-700 hover:bg-gray-50 border border-gray-200'
+                  ? 'text-gray-400 hover:text-white hover:bg-gray-800' 
+                  : 'text-gray-600 hover:text-gray-900 hover:bg-gray-100'
               }`}
             >
-              <Zap className="w-4 h-4" />
-              Tutorial
-            </motion.button>
+              <Mail className="w-4 h-4" />
+              Te mailen
+              {stats.nieuw > 0 && (
+                <span className="px-1.5 py-0.5 rounded text-xs bg-amber-500 text-white">
+                  {stats.nieuw}
+                </span>
+              )}
+            </button>
           </div>
-        </motion.div>
+        </div>
 
-        {/* Conversie Funnel - Desktop only */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.3 }}
-          className={`hidden sm:block rounded-2xl p-5 border backdrop-blur-xl mb-6 ${
-            darkMode ? 'bg-gray-800/60 border-gray-700/50' : 'bg-white/80 border-gray-200/50'
-          }`}
-        >
-          {/* Conversie Funnel */}
-          <h3 className={`text-sm font-semibold mb-4 ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>
-            Conversie Funnel
-          </h3>
-          <div className="flex items-center justify-between gap-2 text-center mb-4">
-            <div className="flex-1 min-w-[50px]">
-              <div className={`text-xl font-bold ${darkMode ? 'text-blue-400' : 'text-blue-600'}`}>{stats.nieuw}</div>
-              <div className={`text-xs ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>Nieuw</div>
-            </div>
-            <ChevronRight className={`w-4 h-4 ${darkMode ? 'text-gray-600' : 'text-gray-300'} flex-shrink-0`} />
-            <div className="flex-1 min-w-[50px]">
-              <div className={`text-xl font-bold ${darkMode ? 'text-amber-400' : 'text-amber-600'}`}>{stats.gecontacteerd}</div>
-              <div className={`text-xs ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>Contact</div>
-            </div>
-            <ChevronRight className={`w-4 h-4 ${darkMode ? 'text-gray-600' : 'text-gray-300'} flex-shrink-0`} />
-            <div className="flex-1 min-w-[50px]">
-              <div className={`text-xl font-bold ${darkMode ? 'text-purple-400' : 'text-purple-600'}`}>{stats.geinteresseerd}</div>
-              <div className={`text-xs ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>Interesse</div>
-              {conversionRates.contactToInterest > 0 && (
-                <div className={`text-[10px] font-medium ${darkMode ? 'text-emerald-400' : 'text-emerald-600'}`}>{conversionRates.contactToInterest}%</div>
-              )}
-            </div>
-            <ChevronRight className={`w-4 h-4 ${darkMode ? 'text-gray-600' : 'text-gray-300'} flex-shrink-0`} />
-            <div className="flex-1 min-w-[50px]">
-              <div className={`text-xl font-bold ${darkMode ? 'text-orange-400' : 'text-orange-600'}`}>{stats.offerte}</div>
-              <div className={`text-xs ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>Offerte</div>
-              {conversionRates.interestToQuote > 0 && (
-                <div className={`text-[10px] font-medium ${darkMode ? 'text-emerald-400' : 'text-emerald-600'}`}>{conversionRates.interestToQuote}%</div>
-              )}
-            </div>
-            <ChevronRight className={`w-4 h-4 ${darkMode ? 'text-gray-600' : 'text-gray-300'} flex-shrink-0`} />
-            <div className="flex-1 min-w-[50px]">
-              <div className={`text-xl font-bold ${darkMode ? 'text-emerald-400' : 'text-emerald-600'}`}>{stats.klanten}</div>
-              <div className={`text-xs ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>Klant</div>
-              {conversionRates.quoteToCustomer > 0 && (
-                <div className={`text-[10px] font-medium ${darkMode ? 'text-emerald-400' : 'text-emerald-600'}`}>{conversionRates.quoteToCustomer}%</div>
-              )}
-            </div>
-          </div>
-          {stats.total > 0 && (
-            <div className={`pt-3 border-t text-center ${darkMode ? 'border-gray-700' : 'border-gray-100'}`}>
-              <span className={`text-sm ${darkMode ? 'text-gray-300' : 'text-gray-600'}`}>
-                Totale conversie: <span className="font-bold text-emerald-500">{conversionRates.overallConversion}%</span>
-                {stats.afgewezen > 0 && (
-                  <span className={`ml-2 ${darkMode ? 'text-gray-500' : 'text-gray-400'}`}>• {stats.afgewezen} afgewezen</span>
-                )}
-              </span>
-            </div>
-          )}
-        </motion.div>
-
-        {/* Status Filter Chips */}
+        {/* Main Content */}
         {mainTab === 'zoeken' ? (
           /* Business Search Panel */
           <motion.div
