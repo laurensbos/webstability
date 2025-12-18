@@ -1498,64 +1498,65 @@ export default function MarketingDashboard() {
           ? 'bg-gray-900/95 border-gray-800' 
           : 'bg-white/95 border-gray-200'
       }`}>
-        <div className="flex items-center justify-around h-16 px-6">
+        <div className="flex items-stretch h-16">
           <motion.button
-            whileTap={{ scale: 0.9 }}
+            whileTap={{ scale: 0.95 }}
             onClick={() => setMainTab('zoeken')}
-            className={`flex flex-col items-center gap-1 py-2 px-3 rounded-xl transition-colors ${
+            className={`flex-1 flex flex-col items-center justify-center gap-0.5 transition-colors ${
               mainTab === 'zoeken' 
-                ? (darkMode ? 'text-emerald-400 bg-emerald-500/10' : 'text-emerald-600 bg-emerald-50') 
-                : (darkMode ? 'text-gray-400' : 'text-gray-500')
+                ? (darkMode ? 'text-emerald-400' : 'text-emerald-600') 
+                : (darkMode ? 'text-gray-500' : 'text-gray-400')
             }`}
           >
-            <Search className="w-5 h-5" />
-            <span className="text-[10px] font-medium">Zoeken</span>
+            <Search className={`w-5 h-5 ${mainTab === 'zoeken' ? '' : 'opacity-70'}`} />
+            <span className={`text-[10px] font-medium ${mainTab === 'zoeken' ? '' : 'opacity-70'}`}>Zoeken</span>
           </motion.button>
           
           <motion.button
-            whileTap={{ scale: 0.9 }}
+            whileTap={{ scale: 0.95 }}
             onClick={() => setMainTab('leads')}
-            className={`flex flex-col items-center gap-1 py-2 px-3 rounded-xl transition-colors relative ${
+            className={`flex-1 flex flex-col items-center justify-center gap-0.5 transition-colors relative ${
               mainTab === 'leads' 
-                ? (darkMode ? 'text-emerald-400 bg-emerald-500/10' : 'text-emerald-600 bg-emerald-50') 
-                : (darkMode ? 'text-gray-400' : 'text-gray-500')
+                ? (darkMode ? 'text-emerald-400' : 'text-emerald-600') 
+                : (darkMode ? 'text-gray-500' : 'text-gray-400')
             }`}
           >
-            <Building2 className="w-5 h-5" />
-            <span className="text-[10px] font-medium">Leads</span>
+            <Building2 className={`w-5 h-5 ${mainTab === 'leads' ? '' : 'opacity-70'}`} />
+            <span className={`text-[10px] font-medium ${mainTab === 'leads' ? '' : 'opacity-70'}`}>Leads</span>
             {stats.total > 0 && (
-              <span className="absolute -top-1 right-0 w-4 h-4 text-[9px] flex items-center justify-center rounded-full bg-emerald-500 text-white font-bold">
-                {stats.total > 99 ? '99+' : stats.total}
+              <span className="absolute top-2 right-1/4 w-4 h-4 text-[9px] flex items-center justify-center rounded-full bg-emerald-500 text-white font-bold">
+                {stats.total > 99 ? '99' : stats.total}
               </span>
             )}
           </motion.button>
           
           <motion.button
-            whileTap={{ scale: 0.9 }}
-            onClick={() => setShowAddModal(true)}
-            className="flex items-center justify-center"
-          >
-            <div className="p-3 bg-emerald-500 rounded-xl shadow-lg shadow-emerald-500/30">
-              <Plus className="w-5 h-5 text-white" />
-            </div>
-          </motion.button>
-          
-          <motion.button
-            whileTap={{ scale: 0.9 }}
+            whileTap={{ scale: 0.95 }}
             onClick={() => setMainTab('postvak')}
-            className={`flex flex-col items-center gap-1 py-2 px-3 rounded-xl transition-colors relative ${
+            className={`flex-1 flex flex-col items-center justify-center gap-0.5 transition-colors relative ${
               mainTab === 'postvak' 
-                ? (darkMode ? 'text-emerald-400 bg-emerald-500/10' : 'text-emerald-600 bg-emerald-50') 
-                : (darkMode ? 'text-gray-400' : 'text-gray-500')
+                ? (darkMode ? 'text-emerald-400' : 'text-emerald-600') 
+                : (darkMode ? 'text-gray-500' : 'text-gray-400')
             }`}
           >
-            <Mail className="w-5 h-5" />
-            <span className="text-[10px] font-medium">Postvak</span>
+            <Mail className={`w-5 h-5 ${mainTab === 'postvak' ? '' : 'opacity-70'}`} />
+            <span className={`text-[10px] font-medium ${mainTab === 'postvak' ? '' : 'opacity-70'}`}>Postvak</span>
             {stats.emailsSent > 0 && (
-              <span className="absolute -top-1 right-0 w-4 h-4 text-[9px] flex items-center justify-center rounded-full bg-blue-500 text-white font-bold">
-                {stats.emailsSent > 99 ? '99+' : stats.emailsSent}
+              <span className="absolute top-2 right-1/4 w-4 h-4 text-[9px] flex items-center justify-center rounded-full bg-purple-500 text-white font-bold">
+                {stats.emailsSent > 99 ? '99' : stats.emailsSent}
               </span>
             )}
+          </motion.button>
+          
+          <motion.button
+            whileTap={{ scale: 0.95 }}
+            onClick={() => setShowAddModal(true)}
+            className={`flex-1 flex flex-col items-center justify-center gap-0.5 transition-colors ${
+              darkMode ? 'text-gray-500' : 'text-gray-400'
+            }`}
+          >
+            <Plus className="w-5 h-5 opacity-70" />
+            <span className="text-[10px] font-medium opacity-70">Nieuw</span>
           </motion.button>
         </div>
       </nav>
