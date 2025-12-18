@@ -236,7 +236,6 @@ const statusColors: Record<Lead['status'], { bg: string; darkBg: string; text: s
 
 export default function MarketingDashboard() {
   const [leads, setLeads] = useState<Lead[]>([])
-  const [searchQuery, setSearchQuery] = useState('')
   const [statusFilter, setStatusFilter] = useState<string>('alle')
   const [showAddModal, setShowAddModal] = useState(false)
   const [showEmailModal, setShowEmailModal] = useState(false)
@@ -592,13 +591,6 @@ export default function MarketingDashboard() {
   const today = new Date().toISOString().split('T')[0]
 
   const filteredLeads = leads.filter(lead => {
-    const searchLower = searchQuery.toLowerCase()
-    const matchesSearch = 
-      (lead.companyName || '').toLowerCase().includes(searchLower) ||
-      (lead.contactPerson || '').toLowerCase().includes(searchLower) ||
-      (lead.city || '').toLowerCase().includes(searchLower) ||
-      (lead.email || '').toLowerCase().includes(searchLower)
-    
     let matchesStatus = false
     if (statusFilter === 'alle') {
       matchesStatus = true
@@ -610,7 +602,7 @@ export default function MarketingDashboard() {
       matchesStatus = lead.status === statusFilter
     }
 
-    return matchesSearch && matchesStatus
+    return matchesStatus
   }).sort((a, b) => {
     // Eerst follow-ups sorteren (te laat eerst, dan vandaag)
     const aFollowUp = a.followUpDate && a.followUpDate <= today
