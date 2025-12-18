@@ -186,6 +186,10 @@ export default function ProjectStatus() {
   const [showPassword, setShowPassword] = useState(false)
   const [verifyLoading, setVerifyLoading] = useState(false)
   const [verifyError, setVerifyError] = useState('')
+  const [requiresEmailVerification, setRequiresEmailVerification] = useState(false)
+  const [emailVerificationSent, setEmailVerificationSent] = useState(false)
+  const [maskedEmail, setMaskedEmail] = useState('')
+  const [sendingVerificationEmail, setSendingVerificationEmail] = useState(false)
   
   const [messages, setMessages] = useState<ProjectMessage[]>([])
   const [newMessage, setNewMessage] = useState('')
@@ -264,6 +268,7 @@ export default function ProjectStatus() {
   const verifyPassword = async (id: string, password: string) => {
     setVerifyLoading(true)
     setVerifyError('')
+    setRequiresEmailVerification(false)
     
     try {
       const response = await fetch('/api/verify-project', {
@@ -283,6 +288,11 @@ export default function ProjectStatus() {
         fetchOnboardingStatus(id)
         // Remove password from URL for security
         navigate(`/project/${id}`, { replace: true })
+      } else if (data.requiresEmailVerification) {
+        // Email not verified yet
+        setRequiresEmailVerification(true)
+        setMaskedEmail(data.email || '')
+        setVerifyError(data.message || 'Je e-mailadres is nog niet geverifieerd.')
       } else {
         setVerifyError(data.message || 'Onjuist wachtwoord.')
         setIsVerified(false)
@@ -292,6 +302,34 @@ export default function ProjectStatus() {
       setVerifyError('Er ging iets mis. Probeer het opnieuw.')
     } finally {
       setVerifyLoading(false)
+    }
+  }
+
+  // Send verification email
+  const sendVerificationEmail = async () => {
+    if (!projectId) return
+    setSendingVerificationEmail(true)
+    
+    try {
+      const response = await fetch('/api/verify-email', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ projectId })
+      })
+      
+      const data = await response.json()
+      
+      if (data.success) {
+        setEmailVerificationSent(true)
+        if (data.email) setMaskedEmail(data.email)
+      } else {
+        setVerifyError(data.message || 'Kon verificatie-email niet versturen.')
+      }
+    } catch (err) {
+      console.error('Send verification email error:', err)
+      setVerifyError('Er ging iets mis bij het versturen van de verificatie-email.')
+    } finally {
+      setSendingVerificationEmail(false)
     }
   }
 
@@ -807,7 +845,7 @@ export default function ProjectStatus() {
                 </div>
 
                 {/* Error Message */}
-                {verifyError && (
+                {verifyError && !requiresEmailVerification && (
                   <motion.div
                     initial={{ opacity: 0, y: -10 }}
                     animate={{ opacity: 1, y: 0 }}
@@ -818,6 +856,57 @@ export default function ProjectStatus() {
                       <p className="text-red-400 font-medium text-sm">Verificatie mislukt</p>
                       <p className="text-red-400/80 text-xs sm:text-sm">{verifyError}</p>
                     </div>
+                  </motion.div>
+                )}
+
+                {/* Email Verification Required */}
+                {requiresEmailVerification && (
+                  <motion.div
+                    initial={{ opacity: 0, y: -10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    className="p-4 bg-amber-500/10 border border-amber-500/30 rounded-xl space-y-3"
+                  >
+                    <div className="flex items-start gap-3">
+                      <Mail className="w-5 h-5 text-amber-400 flex-shrink-0 mt-0.5" />
+                      <div>
+                        <p className="text-amber-400 font-medium text-sm">E-mail verificatie vereist</p>
+                        <p className="text-amber-400/80 text-xs sm:text-sm mt-1">
+                          {emailVerificationSent ? (
+                            <>Verificatie-email verstuurd naar <strong>{maskedEmail}</strong>. Check je inbox (en spam folder).</>
+                          ) : (
+                            <>Je moet eerst je e-mailadres verifiëren voordat je kunt inloggen.</>
+                          )}
+                        </p>
+                      </div>
+                    </div>
+                    
+                    {!emailVerificationSent && (
+                      <button
+                        type="button"
+                        onClick={sendVerificationEmail}
+                        disabled={sendingVerificationEmail}
+                        className="w-full py-2.5 bg-amber-500/20 hover:bg-amber-500/30 text-amber-400 font-medium rounded-lg transition flex items-center justify-center gap-2 text-sm disabled:opacity-50"
+                      >
+                        {sendingVerificationEmail ? (
+                          <>
+                            <Loader2 className="w-4 h-4 animate-spin" />
+                            <span>Versturen...</span>
+                          </>
+                        ) : (
+                          <>
+                            <Send className="w-4 h-4" />
+                            <span>Stuur verificatie-email</span>
+                          </>
+                        )}
+                      </button>
+                    )}
+                    
+                    {emailVerificationSent && (
+                      <div className="bg-green-500/10 border border-green-500/30 rounded-lg p-3 flex items-center gap-2">
+                        <CheckCircle2 className="w-4 h-4 text-green-400" />
+                        <span className="text-green-400 text-xs sm:text-sm">Verificatie-email verstuurd!</span>
+                      </div>
+                    )}
                   </motion.div>
                 )}
 

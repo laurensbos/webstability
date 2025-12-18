@@ -210,7 +210,7 @@ async function createProject(req: VercelRequest, res: VercelResponse) {
   
   console.log(`Project created: ${project.id} - ${project.type}`)
   
-  // Send confirmation emails
+  // Send confirmation emails and email verification
   if (isSmtpConfigured()) {
     try {
       // Send welcome email to customer (include password if provided)
@@ -223,6 +223,20 @@ async function createProject(req: VercelRequest, res: VercelResponse) {
         password: body.password, // Include plain password in welcome email
       })
       console.log(`Welcome email sent: ${welcomeResult.success ? 'OK' : welcomeResult.error}`)
+      
+      // Send email verification request
+      try {
+        const verifyResponse = await fetch(`${process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : 'https://webstability.nl'}/api/verify-email`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ projectId: project.id })
+        })
+        if (verifyResponse.ok) {
+          console.log(`Email verification request sent for project: ${project.id}`)
+        }
+      } catch (verifyError) {
+        console.error('Email verification request failed:', verifyError)
+      }
       
       // Send notification to developer
       const notifyResult = await sendProjectCreatedEmail({

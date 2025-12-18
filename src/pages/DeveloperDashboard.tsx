@@ -654,19 +654,6 @@ function Header({
             </AnimatePresence>
           </div>
 
-          {/* Refresh button */}
-          <motion.button
-            whileTap={{ scale: 0.95 }}
-            onClick={onRefresh}
-            disabled={isRefreshing}
-            className={`p-2 rounded-lg ${
-              darkMode ? 'hover:bg-gray-800 text-gray-400' : 'hover:bg-gray-100 text-gray-500'
-            } ${isRefreshing ? 'opacity-50' : ''}`}
-            title="Vernieuwen"
-          >
-            <RefreshCw className={`w-5 h-5 ${isRefreshing ? 'animate-spin' : ''}`} />
-          </motion.button>
-
           {/* Dark mode toggle */}
           <motion.button
             whileTap={{ scale: 0.95 }}

@@ -6,6 +6,8 @@ import { createHash } from 'crypto'
  * API endpoint to verify project credentials
  * POST /api/verify-project
  * Body: { projectId: string, password: string }
+ * 
+ * Requires email verification before allowing access
  */
 
 // Check if Redis is configured
@@ -20,6 +22,18 @@ const kv = REDIS_URL && REDIS_TOKEN
 // Simple password hashing (must match the one in projects.ts)
 function hashPassword(password: string): string {
   return createHash('sha256').update(password).digest('hex')
+}
+
+interface Project {
+  id: string
+  emailVerified?: boolean
+  emailVerifiedAt?: string
+  customer?: {
+    email?: string
+    name?: string
+    [key: string]: unknown
+  }
+  [key: string]: unknown
 }
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
@@ -60,17 +74,29 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     const normalizedId = projectId.trim().toUpperCase()
 
     // Check if project exists
-    const project = await kv.get(`project:${normalizedId}`)
+    let project = await kv.get<Project>(`project:${normalizedId}`)
     
     if (!project) {
       // Also try without uppercase normalization
-      const projectAlt = await kv.get(`project:${projectId.trim()}`)
-      if (!projectAlt) {
+      project = await kv.get<Project>(`project:${projectId.trim()}`)
+      if (!project) {
         return res.status(401).json({ 
           success: false, 
           message: 'Project niet gevonden'
         })
       }
+    }
+
+    // Check if email is verified
+    if (!project.emailVerified) {
+      return res.status(403).json({
+        success: false,
+        message: 'Je e-mailadres is nog niet geverifieerd. Check je inbox voor de verificatie-email.',
+        requiresEmailVerification: true,
+        email: project.customer?.email ? 
+          project.customer.email.replace(/(.{2})(.*)(@.*)/, '$1***$3') : 
+          undefined
+      })
     }
 
     // Get stored password hash
