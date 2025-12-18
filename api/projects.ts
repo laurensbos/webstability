@@ -259,9 +259,25 @@ async function updateProject(req: VercelRequest, res: VercelResponse) {
     return res.status(404).json({ error: 'Project niet gevonden' })
   }
   
+  // Map phase to status if phase is provided (from developer dashboard)
+  let status = existing.status
+  if (body.phase) {
+    const phaseToStatusMap: Record<string, Project['status']> = {
+      'onboarding': 'onboarding',
+      'design': 'design',
+      'development': 'development',
+      'review': 'review',
+      'live': 'live',
+    }
+    status = phaseToStatusMap[body.phase] || existing.status
+  } else if (body.status) {
+    status = body.status
+  }
+  
   const updated: Project = {
     ...existing,
     ...body,
+    status, // Use mapped status
     id: existing.id, // ID mag niet veranderen
     createdAt: existing.createdAt, // createdAt mag niet veranderen
     updatedAt: new Date().toISOString()
@@ -269,7 +285,7 @@ async function updateProject(req: VercelRequest, res: VercelResponse) {
   
   await kv!.set(`project:${updated.id}`, updated)
   
-  console.log(`Project updated: ${updated.id}`)
+  console.log(`Project updated: ${updated.id}, status: ${updated.status}`)
   
   return res.status(200).json({ success: true, project: updated })
 }

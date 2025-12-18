@@ -48,6 +48,7 @@ import {
   Globe,
   Send,
   RefreshCw,
+  ArrowRight,
   Copy,
 } from 'lucide-react'
 import Logo from '../components/Logo'
@@ -3842,14 +3843,505 @@ function MessagesView({ darkMode, projects, onUpdateProject }: MessagesViewProps
   )
 }
 
-function OnboardingView({ darkMode }: { darkMode: boolean }) {
+function OnboardingView({ 
+  darkMode, 
+  projects, 
+  onUpdateProject,
+  onSelectProject 
+}: { 
+  darkMode: boolean
+  projects: Project[]
+  onUpdateProject: (project: Project) => Promise<void>
+  onSelectProject: (project: Project) => void
+}) {
+  const [selectedOnboarding, setSelectedOnboarding] = useState<Project | null>(null)
+  const [filter, setFilter] = useState<'all' | 'pending' | 'complete'>('all')
+
+  // Filter projects in onboarding phase
+  const onboardingProjects = projects.filter(p => p.phase === 'onboarding')
+  
+  // Further filter based on onboarding completion status
+  const filteredProjects = onboardingProjects.filter(p => {
+    if (filter === 'all') return true
+    const hasOnboardingData = p.onboardingData && Object.keys(p.onboardingData).length > 0
+    const isComplete = hasOnboardingData && p.onboardingData?.isComplete === true
+    if (filter === 'complete') return isComplete
+    if (filter === 'pending') return !isComplete
+    return true
+  })
+
+  // Move project to design phase
+  const moveToDesign = async (project: Project) => {
+    const updated = { ...project, phase: 'design' as ProjectPhase }
+    await onUpdateProject(updated)
+    setSelectedOnboarding(null)
+  }
+
+  // Count statistics
+  const pendingCount = onboardingProjects.filter(p => !p.onboardingData?.isComplete).length
+  const completeCount = onboardingProjects.filter(p => p.onboardingData?.isComplete).length
+
   return (
-    <div className={`p-8 text-center ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>
-      <FileText className="w-12 h-12 mx-auto mb-4 opacity-50" />
-      <h2 className={`text-xl font-semibold mb-2 ${darkMode ? 'text-white' : 'text-gray-900'}`}>
-        Onboarding Aanvragen
-      </h2>
-      <p>Wordt uitgebreid in stap 6...</p>
+    <div className="space-y-6">
+      {/* Header */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <div>
+          <h1 className={`text-2xl font-bold ${darkMode ? 'text-white' : 'text-gray-900'}`}>
+            Onboarding Aanvragen
+          </h1>
+          <p className={`text-sm mt-1 ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>
+            Bekijk en beheer klant onboarding formulieren
+          </p>
+        </div>
+        
+        {/* Stats */}
+        <div className="flex gap-3">
+          <div className={`px-4 py-2 rounded-xl ${darkMode ? 'bg-amber-500/20 text-amber-400' : 'bg-amber-100 text-amber-700'}`}>
+            <span className="text-lg font-bold">{pendingCount}</span>
+            <span className="text-sm ml-1">Wachtend</span>
+          </div>
+          <div className={`px-4 py-2 rounded-xl ${darkMode ? 'bg-green-500/20 text-green-400' : 'bg-green-100 text-green-700'}`}>
+            <span className="text-lg font-bold">{completeCount}</span>
+            <span className="text-sm ml-1">Compleet</span>
+          </div>
+        </div>
+      </div>
+
+      {/* Filter tabs */}
+      <div className={`flex gap-2 p-1 rounded-xl ${darkMode ? 'bg-gray-800' : 'bg-gray-100'}`}>
+        {[
+          { id: 'all', label: 'Alle', count: onboardingProjects.length },
+          { id: 'pending', label: 'Wachtend op klant', count: pendingCount },
+          { id: 'complete', label: 'Klaar voor design', count: completeCount },
+        ].map(tab => (
+          <button
+            key={tab.id}
+            onClick={() => setFilter(tab.id as typeof filter)}
+            className={`flex-1 px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
+              filter === tab.id
+                ? darkMode 
+                  ? 'bg-gray-700 text-white' 
+                  : 'bg-white text-gray-900 shadow-sm'
+                : darkMode
+                  ? 'text-gray-400 hover:text-white'
+                  : 'text-gray-600 hover:text-gray-900'
+            }`}
+          >
+            {tab.label} ({tab.count})
+          </button>
+        ))}
+      </div>
+
+      {/* Projects list */}
+      {filteredProjects.length === 0 ? (
+        <div className={`p-12 text-center rounded-2xl border ${
+          darkMode ? 'bg-gray-800/50 border-gray-700' : 'bg-white border-gray-200'
+        }`}>
+          <FileText className={`w-12 h-12 mx-auto mb-4 ${darkMode ? 'text-gray-600' : 'text-gray-300'}`} />
+          <h3 className={`font-medium mb-2 ${darkMode ? 'text-white' : 'text-gray-900'}`}>
+            {filter === 'pending' ? 'Geen wachtende onboardings' : 
+             filter === 'complete' ? 'Geen voltooide onboardings' :
+             'Geen onboarding projecten'}
+          </h3>
+          <p className={`text-sm ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>
+            Wanneer klanten zich aanmelden, verschijnen ze hier
+          </p>
+        </div>
+      ) : (
+        <div className="grid gap-4">
+          {filteredProjects.map(project => {
+            const isComplete = project.onboardingData?.isComplete === true
+            const hasData = project.onboardingData && Object.keys(project.onboardingData).length > 0
+            const submittedAt = project.onboardingData?.submittedAt
+            
+            return (
+              <motion.div
+                key={project.id}
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                className={`p-5 rounded-2xl border cursor-pointer transition-all ${
+                  darkMode 
+                    ? 'bg-gray-800/60 border-gray-700 hover:border-gray-600' 
+                    : 'bg-white border-gray-200 hover:border-gray-300 hover:shadow-md'
+                }`}
+                onClick={() => setSelectedOnboarding(project)}
+              >
+                <div className="flex items-start justify-between gap-4">
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-center gap-3 mb-2">
+                      <h3 className={`font-semibold truncate ${darkMode ? 'text-white' : 'text-gray-900'}`}>
+                        {project.businessName || 'Nieuw project'}
+                      </h3>
+                      <span className={`px-2 py-0.5 rounded-full text-xs font-medium ${
+                        isComplete 
+                          ? darkMode ? 'bg-green-500/20 text-green-400' : 'bg-green-100 text-green-700'
+                          : darkMode ? 'bg-amber-500/20 text-amber-400' : 'bg-amber-100 text-amber-700'
+                      }`}>
+                        {isComplete ? 'Compleet' : 'Wachtend'}
+                      </span>
+                      <span className={`px-2 py-0.5 rounded-full text-xs font-medium ${
+                        darkMode ? 'bg-gray-700 text-gray-300' : 'bg-gray-100 text-gray-600'
+                      }`}>
+                        {PACKAGE_CONFIG[project.package]?.name || project.package}
+                      </span>
+                    </div>
+                    
+                    <div className={`flex flex-wrap gap-4 text-sm ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>
+                      <span className="flex items-center gap-1">
+                        <User className="w-4 h-4" />
+                        {project.contactName || 'Geen naam'}
+                      </span>
+                      <span className="flex items-center gap-1">
+                        <Mail className="w-4 h-4" />
+                        {project.contactEmail}
+                      </span>
+                      <span className="flex items-center gap-1">
+                        <Clock className="w-4 h-4" />
+                        {submittedAt 
+                          ? new Date(submittedAt).toLocaleDateString('nl-NL', { day: 'numeric', month: 'short', year: 'numeric' })
+                          : new Date(project.createdAt).toLocaleDateString('nl-NL', { day: 'numeric', month: 'short', year: 'numeric' })
+                        }
+                      </span>
+                    </div>
+
+                    {/* Quick preview of onboarding data */}
+                    {hasData && (
+                      <div className={`mt-3 p-3 rounded-lg ${darkMode ? 'bg-gray-700/50' : 'bg-gray-50'}`}>
+                        <p className={`text-sm truncate ${darkMode ? 'text-gray-300' : 'text-gray-600'}`}>
+                          {project.onboardingData?.aboutBusiness || 
+                           project.onboardingData?.aboutText || 
+                           project.onboardingData?.uniqueFeatures ||
+                           'Gegevens beschikbaar'}
+                        </p>
+                      </div>
+                    )}
+                  </div>
+                  
+                  <div className="flex items-center gap-2 flex-shrink-0">
+                    {isComplete && (
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation()
+                          moveToDesign(project)
+                        }}
+                        className="px-4 py-2 bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-600 hover:to-emerald-700 text-white text-sm font-medium rounded-xl transition-colors flex items-center gap-2"
+                      >
+                        <ArrowRight className="w-4 h-4" />
+                        Naar Design
+                      </button>
+                    )}
+                    <ChevronRight className={`w-5 h-5 ${darkMode ? 'text-gray-500' : 'text-gray-400'}`} />
+                  </div>
+                </div>
+              </motion.div>
+            )
+          })}
+        </div>
+      )}
+
+      {/* Detail Modal */}
+      <AnimatePresence>
+        {selectedOnboarding && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-50 flex items-start justify-center p-4 pt-20 bg-black/50 backdrop-blur-sm overflow-y-auto"
+            onClick={() => setSelectedOnboarding(null)}
+          >
+            <motion.div
+              initial={{ scale: 0.95, opacity: 0, y: 20 }}
+              animate={{ scale: 1, opacity: 1, y: 0 }}
+              exit={{ scale: 0.95, opacity: 0, y: 20 }}
+              onClick={(e) => e.stopPropagation()}
+              className={`w-full max-w-3xl rounded-2xl shadow-2xl ${
+                darkMode ? 'bg-gray-800' : 'bg-white'
+              }`}
+            >
+              {/* Modal Header */}
+              <div className={`p-6 border-b ${darkMode ? 'border-gray-700' : 'border-gray-200'}`}>
+                <div className="flex items-start justify-between">
+                  <div>
+                    <h2 className={`text-xl font-bold ${darkMode ? 'text-white' : 'text-gray-900'}`}>
+                      {selectedOnboarding.businessName || 'Onboarding Details'}
+                    </h2>
+                    <p className={`text-sm mt-1 ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>
+                      Project ID: {selectedOnboarding.id}
+                    </p>
+                  </div>
+                  <button
+                    onClick={() => setSelectedOnboarding(null)}
+                    className={`p-2 rounded-lg transition-colors ${
+                      darkMode ? 'hover:bg-gray-700 text-gray-400' : 'hover:bg-gray-100 text-gray-500'
+                    }`}
+                  >
+                    <X className="w-5 h-5" />
+                  </button>
+                </div>
+              </div>
+
+              {/* Modal Content */}
+              <div className="p-6 space-y-6 max-h-[60vh] overflow-y-auto">
+                {/* Contact Info */}
+                <div>
+                  <h3 className={`font-semibold mb-3 flex items-center gap-2 ${darkMode ? 'text-white' : 'text-gray-900'}`}>
+                    <User className="w-4 h-4" />
+                    Contactgegevens
+                  </h3>
+                  <div className={`grid grid-cols-2 gap-4 p-4 rounded-xl ${darkMode ? 'bg-gray-700/50' : 'bg-gray-50'}`}>
+                    <div>
+                      <p className={`text-xs ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>Naam</p>
+                      <p className={`font-medium ${darkMode ? 'text-white' : 'text-gray-900'}`}>
+                        {selectedOnboarding.contactName || '-'}
+                      </p>
+                    </div>
+                    <div>
+                      <p className={`text-xs ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>Bedrijf</p>
+                      <p className={`font-medium ${darkMode ? 'text-white' : 'text-gray-900'}`}>
+                        {selectedOnboarding.businessName || '-'}
+                      </p>
+                    </div>
+                    <div>
+                      <p className={`text-xs ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>Email</p>
+                      <a href={`mailto:${selectedOnboarding.contactEmail}`} className="font-medium text-blue-500 hover:underline">
+                        {selectedOnboarding.contactEmail}
+                      </a>
+                    </div>
+                    <div>
+                      <p className={`text-xs ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>Telefoon</p>
+                      <a href={`tel:${selectedOnboarding.contactPhone}`} className={`font-medium ${darkMode ? 'text-white' : 'text-gray-900'}`}>
+                        {selectedOnboarding.contactPhone || '-'}
+                      </a>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Onboarding Data */}
+                {selectedOnboarding.onboardingData && Object.keys(selectedOnboarding.onboardingData).length > 0 ? (
+                  <div>
+                    <h3 className={`font-semibold mb-3 flex items-center gap-2 ${darkMode ? 'text-white' : 'text-gray-900'}`}>
+                      <FileText className="w-4 h-4" />
+                      Ingevulde Gegevens
+                    </h3>
+                    <div className={`space-y-4 p-4 rounded-xl ${darkMode ? 'bg-gray-700/50' : 'bg-gray-50'}`}>
+                      {/* About Business */}
+                      {(selectedOnboarding.onboardingData.aboutBusiness || selectedOnboarding.onboardingData.aboutText) && (
+                        <div>
+                          <p className={`text-xs font-medium mb-1 ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>
+                            Over het bedrijf
+                          </p>
+                          <p className={`text-sm ${darkMode ? 'text-gray-200' : 'text-gray-700'}`}>
+                            {selectedOnboarding.onboardingData.aboutBusiness || selectedOnboarding.onboardingData.aboutText}
+                          </p>
+                        </div>
+                      )}
+                      
+                      {/* Services */}
+                      {selectedOnboarding.onboardingData.services && (
+                        <div>
+                          <p className={`text-xs font-medium mb-1 ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>
+                            Diensten/Producten
+                          </p>
+                          <p className={`text-sm ${darkMode ? 'text-gray-200' : 'text-gray-700'}`}>
+                            {selectedOnboarding.onboardingData.services}
+                          </p>
+                        </div>
+                      )}
+
+                      {/* Target Audience */}
+                      {selectedOnboarding.onboardingData.targetAudience && (
+                        <div>
+                          <p className={`text-xs font-medium mb-1 ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>
+                            Doelgroep
+                          </p>
+                          <p className={`text-sm ${darkMode ? 'text-gray-200' : 'text-gray-700'}`}>
+                            {selectedOnboarding.onboardingData.targetAudience}
+                          </p>
+                        </div>
+                      )}
+
+                      {/* Design Style */}
+                      {selectedOnboarding.onboardingData.designStyle && (
+                        <div>
+                          <p className={`text-xs font-medium mb-1 ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>
+                            Gewenste stijl
+                          </p>
+                          <p className={`text-sm ${darkMode ? 'text-gray-200' : 'text-gray-700'}`}>
+                            {selectedOnboarding.onboardingData.designStyle}
+                          </p>
+                        </div>
+                      )}
+
+                      {/* Brand Colors */}
+                      {selectedOnboarding.onboardingData.brandColors && (
+                        <div>
+                          <p className={`text-xs font-medium mb-1 ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>
+                            Kleuren
+                          </p>
+                          <div className="flex gap-2 flex-wrap">
+                            {(Array.isArray(selectedOnboarding.onboardingData.brandColors) 
+                              ? selectedOnboarding.onboardingData.brandColors 
+                              : [selectedOnboarding.onboardingData.brandColors]
+                            ).map((color: string, i: number) => (
+                              <span 
+                                key={i}
+                                className={`px-3 py-1 rounded-full text-xs ${darkMode ? 'bg-gray-600 text-gray-200' : 'bg-gray-200 text-gray-700'}`}
+                              >
+                                {color}
+                              </span>
+                            ))}
+                          </div>
+                        </div>
+                      )}
+
+                      {/* Pages */}
+                      {selectedOnboarding.onboardingData.selectedPages && (
+                        <div>
+                          <p className={`text-xs font-medium mb-1 ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>
+                            Gewenste pagina's
+                          </p>
+                          <div className="flex gap-2 flex-wrap">
+                            {(Array.isArray(selectedOnboarding.onboardingData.selectedPages) 
+                              ? selectedOnboarding.onboardingData.selectedPages 
+                              : []
+                            ).map((page: string, i: number) => (
+                              <span 
+                                key={i}
+                                className={`px-3 py-1 rounded-full text-xs ${darkMode ? 'bg-blue-500/20 text-blue-400' : 'bg-blue-100 text-blue-700'}`}
+                              >
+                                {page}
+                              </span>
+                            ))}
+                          </div>
+                        </div>
+                      )}
+
+                      {/* Unique Features */}
+                      {selectedOnboarding.onboardingData.uniqueFeatures && (
+                        <div>
+                          <p className={`text-xs font-medium mb-1 ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>
+                            Unieke kenmerken
+                          </p>
+                          <p className={`text-sm ${darkMode ? 'text-gray-200' : 'text-gray-700'}`}>
+                            {selectedOnboarding.onboardingData.uniqueFeatures}
+                          </p>
+                        </div>
+                      )}
+
+                      {/* Extra Wishes */}
+                      {selectedOnboarding.onboardingData.extraWishes && (
+                        <div>
+                          <p className={`text-xs font-medium mb-1 ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>
+                            Extra wensen
+                          </p>
+                          <p className={`text-sm ${darkMode ? 'text-gray-200' : 'text-gray-700'}`}>
+                            {selectedOnboarding.onboardingData.extraWishes}
+                          </p>
+                        </div>
+                      )}
+
+                      {/* Competitors */}
+                      {selectedOnboarding.onboardingData.competitors && (
+                        <div>
+                          <p className={`text-xs font-medium mb-1 ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>
+                            Inspiratie / Concurrenten
+                          </p>
+                          <p className={`text-sm ${darkMode ? 'text-gray-200' : 'text-gray-700'}`}>
+                            {selectedOnboarding.onboardingData.competitors}
+                          </p>
+                        </div>
+                      )}
+
+                      {/* Logo */}
+                      {selectedOnboarding.onboardingData.hasLogo && (
+                        <div>
+                          <p className={`text-xs font-medium mb-1 ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>
+                            Logo status
+                          </p>
+                          <p className={`text-sm ${darkMode ? 'text-gray-200' : 'text-gray-700'}`}>
+                            {selectedOnboarding.onboardingData.hasLogo === 'yes' || selectedOnboarding.onboardingData.hasLogo === true
+                              ? 'Heeft een logo' 
+                              : 'Heeft nog geen logo'}
+                          </p>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                ) : (
+                  <div className={`p-6 text-center rounded-xl ${darkMode ? 'bg-gray-700/50' : 'bg-gray-50'}`}>
+                    <AlertCircle className={`w-8 h-8 mx-auto mb-2 ${darkMode ? 'text-amber-400' : 'text-amber-500'}`} />
+                    <p className={`font-medium ${darkMode ? 'text-white' : 'text-gray-900'}`}>
+                      Klant heeft nog geen gegevens ingevuld
+                    </p>
+                    <p className={`text-sm mt-1 ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>
+                      Stuur een herinnering of neem contact op
+                    </p>
+                  </div>
+                )}
+
+                {/* Payment & Package Info */}
+                <div>
+                  <h3 className={`font-semibold mb-3 flex items-center gap-2 ${darkMode ? 'text-white' : 'text-gray-900'}`}>
+                    <CreditCard className="w-4 h-4" />
+                    Pakket & Betaling
+                  </h3>
+                  <div className={`grid grid-cols-3 gap-4 p-4 rounded-xl ${darkMode ? 'bg-gray-700/50' : 'bg-gray-50'}`}>
+                    <div>
+                      <p className={`text-xs ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>Pakket</p>
+                      <p className={`font-medium ${darkMode ? 'text-white' : 'text-gray-900'}`}>
+                        {PACKAGE_CONFIG[selectedOnboarding.package]?.name || selectedOnboarding.package}
+                      </p>
+                    </div>
+                    <div>
+                      <p className={`text-xs ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>Maandelijks</p>
+                      <p className={`font-medium ${darkMode ? 'text-white' : 'text-gray-900'}`}>
+                        €{PACKAGE_CONFIG[selectedOnboarding.package]?.price || 0}/mnd
+                      </p>
+                    </div>
+                    <div>
+                      <p className={`text-xs ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>Betaalstatus</p>
+                      <span className={`inline-flex px-2 py-0.5 rounded-full text-xs font-medium ${
+                        selectedOnboarding.paymentStatus === 'paid'
+                          ? darkMode ? 'bg-green-500/20 text-green-400' : 'bg-green-100 text-green-700'
+                          : darkMode ? 'bg-amber-500/20 text-amber-400' : 'bg-amber-100 text-amber-700'
+                      }`}>
+                        {selectedOnboarding.paymentStatus === 'paid' ? 'Betaald' : 'Wachtend'}
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Modal Footer */}
+              <div className={`p-6 border-t ${darkMode ? 'border-gray-700' : 'border-gray-200'} flex justify-between`}>
+                <button
+                  onClick={() => {
+                    onSelectProject(selectedOnboarding)
+                    setSelectedOnboarding(null)
+                  }}
+                  className={`px-4 py-2 rounded-xl font-medium transition-colors ${
+                    darkMode 
+                      ? 'bg-gray-700 hover:bg-gray-600 text-white' 
+                      : 'bg-gray-100 hover:bg-gray-200 text-gray-700'
+                  }`}
+                >
+                  Bekijk volledig project
+                </button>
+                
+                {selectedOnboarding.onboardingData?.isComplete && (
+                  <button
+                    onClick={() => moveToDesign(selectedOnboarding)}
+                    className="px-6 py-2 bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-600 hover:to-emerald-700 text-white font-medium rounded-xl transition-colors flex items-center gap-2"
+                  >
+                    <Rocket className="w-4 h-4" />
+                    Starten met Design
+                  </button>
+                )}
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   )
 }
@@ -6082,7 +6574,14 @@ export default function DeveloperDashboardNew() {
                     onUpdateProject={handleUpdateProject}
                   />
                 )}
-                {activeView === 'onboarding' && <OnboardingView darkMode={darkMode} />}
+                {activeView === 'onboarding' && (
+                  <OnboardingView 
+                    darkMode={darkMode}
+                    projects={projects}
+                    onUpdateProject={handleUpdateProject}
+                    onSelectProject={setSelectedProject}
+                  />
+                )}
                 {activeView === 'payments' && (
                   <PaymentsView 
                     darkMode={darkMode}

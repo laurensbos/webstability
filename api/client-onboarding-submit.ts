@@ -44,10 +44,11 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       })
     }
 
-    // Update project with final data and change status to design
+    // Update project with final data - status stays onboarding until developer reviews
+    // The developer will move it to design phase after reviewing
     const updatedProject = {
       ...project,
-      status: 'design' as const,
+      status: 'onboarding' as const, // Keep as onboarding until developer reviews
       type: serviceType || project.type,
       customer: {
         name: formData?.contactName || project.customer.name,
@@ -72,8 +73,8 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     return res.status(200).json({
       success: true,
       projectId: projectId,
-      message: 'Onboarding succesvol ingediend! We gaan aan de slag.',
-      nextPhase: 'design',
+      message: 'Onboarding succesvol ingediend! We reviewen je gegevens en nemen contact op.',
+      nextPhase: 'onboarding', // Developer will move to design after review
       canEdit: false
     })
   } catch (error) {
