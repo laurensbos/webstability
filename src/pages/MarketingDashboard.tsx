@@ -1688,7 +1688,7 @@ Webstability`
         <div className="flex items-stretch h-16">
           <motion.button
             whileTap={{ scale: 0.95 }}
-            onClick={() => setMainTab('zoeken')}
+            onClick={() => { setMainTab('zoeken'); setShowAddModal(false); setShowEmailModal(false); setShowProspectEmailModal(false); }}
             className={`flex-1 flex flex-col items-center justify-center gap-0.5 transition-colors ${
               mainTab === 'zoeken' 
                 ? (darkMode ? 'text-emerald-400' : 'text-emerald-600') 
@@ -1701,7 +1701,7 @@ Webstability`
           
           <motion.button
             whileTap={{ scale: 0.95 }}
-            onClick={() => setMainTab('leads')}
+            onClick={() => { setMainTab('leads'); setShowAddModal(false); setShowEmailModal(false); setShowProspectEmailModal(false); }}
             className={`flex-1 flex flex-col items-center justify-center gap-0.5 transition-colors relative ${
               mainTab === 'leads' 
                 ? (darkMode ? 'text-emerald-400' : 'text-emerald-600') 
@@ -1719,7 +1719,7 @@ Webstability`
           
           <motion.button
             whileTap={{ scale: 0.95 }}
-            onClick={() => setMainTab('postvak')}
+            onClick={() => { setMainTab('postvak'); setShowAddModal(false); setShowEmailModal(false); setShowProspectEmailModal(false); }}
             className={`flex-1 flex flex-col items-center justify-center gap-0.5 transition-colors relative ${
               mainTab === 'postvak' 
                 ? (darkMode ? 'text-emerald-400' : 'text-emerald-600') 
