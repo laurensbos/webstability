@@ -740,7 +740,7 @@ export default function MarketingDashboard() {
                 </a>
                 <div className="hidden sm:block">
                   <h1 className={`text-xl font-bold ${darkMode ? 'text-white' : 'text-gray-900'}`}>
-                    Marketing Hub
+                    Sales Dash
                   </h1>
                   <div className="flex items-center gap-2">
                     <span className={`text-xs ${darkMode ? 'text-gray-500' : 'text-gray-400'}`}>

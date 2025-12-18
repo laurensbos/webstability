@@ -222,11 +222,10 @@ function Sidebar({
       </AnimatePresence>
 
       {/* Sidebar */}
-      <motion.aside
-        initial={false}
-        animate={{ x: isOpen ? 0 : '-100%' }}
-        transition={{ type: 'spring', damping: 25, stiffness: 200 }}
-        className={`fixed left-0 top-0 bottom-0 w-72 z-50 lg:relative lg:translate-x-0 lg:z-auto flex-shrink-0 flex flex-col ${
+      <aside
+        className={`fixed left-0 top-0 bottom-0 w-72 z-50 transform transition-transform duration-300 ease-in-out lg:relative lg:translate-x-0 lg:z-auto flex-shrink-0 flex flex-col ${
+          isOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'
+        } ${
           darkMode 
             ? 'bg-gray-900 border-r border-gray-800' 
             : 'bg-white border-r border-gray-200'
@@ -322,7 +321,7 @@ function Sidebar({
             <span className="font-medium">Uitloggen</span>
           </motion.button>
         </div>
-      </motion.aside>
+      </aside>
 
       {/* Help Modal */}
       <AnimatePresence>
@@ -5752,7 +5751,7 @@ export default function DeveloperDashboardNew() {
       />
 
       {/* Main content area */}
-      <div className="flex-1 flex flex-col min-w-0 w-full">
+      <div className="flex-1 flex flex-col min-w-0 w-full lg:ml-0">
         {/* Header */}
         <Header
           darkMode={darkMode}

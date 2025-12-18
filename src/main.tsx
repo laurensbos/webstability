@@ -135,7 +135,7 @@ createRoot(document.getElementById('root')!).render(
             
             {/* Marketing CRM - protected for sales team */}
             <Route 
-              path="/marketing" 
+              path="/webstabilitysales" 
               element={
                 <ProtectedRoute requireRole="marketing">
                   <MarketingDashboard />
