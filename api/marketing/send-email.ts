@@ -51,10 +51,9 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
           
           <hr style="border: none; border-top: 1px solid #eee; margin: 30px 0;">
           
-          <div style="font-size: 12px; color: #666;">
+          <div style="font-size: 12px; color: #888;">
             <p style="margin: 0;">
-              <strong>Webstability</strong><br>
-              Professionele websites voor ondernemers<br>
+              Dit bericht is verstuurd door Webstability<br>
               <a href="https://webstability.nl" style="color: #10b981;">webstability.nl</a>
             </p>
           </div>

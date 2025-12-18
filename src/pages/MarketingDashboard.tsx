@@ -810,28 +810,6 @@ export default function MarketingDashboard() {
                     <HelpCircle className="w-5 h-5" />
                   </motion.button>
                 </div>
-                
-                <div className="hidden sm:block ml-2">
-                  <h1 className={`text-xl font-bold ${darkMode ? 'text-white' : 'text-gray-900'}`}>
-                    Sales Dash
-                  </h1>
-                  <div className="flex items-center gap-2">
-                    <span className={`text-xs ${darkMode ? 'text-gray-500' : 'text-gray-400'}`}>
-                      Lokale klanten werven
-                    </span>
-                    {syncStatus === 'syncing' && (
-                      <span className="flex items-center gap-1 text-xs text-emerald-500">
-                        <RefreshCw className="w-3 h-3 animate-spin" />
-                        Syncing
-                      </span>
-                    )}
-                    {syncStatus === 'synced' && lastSyncTime && (
-                      <span className={`text-xs ${darkMode ? 'text-gray-600' : 'text-gray-400'}`}>
-                        ✓ {lastSyncTime}
-                      </span>
-                    )}
-                  </div>
-                </div>
               </div>
               
               {/* Add Button - Desktop only */}
