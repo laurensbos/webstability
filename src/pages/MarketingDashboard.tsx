@@ -1076,9 +1076,40 @@ export default function MarketingDashboard() {
                               <motion.div
                                 initial={{ opacity: 0, height: 0 }}
                                 animate={{ opacity: 1, height: 'auto' }}
-                                className={`mt-3 p-3 rounded-lg border ${
+                                onClick={() => {
+                                  if (analysis.issues.length > 0 && business.email) {
+                                    // Genereer verbeterpunten tekst
+                                    const issuesList = analysis.issues
+                                      .map(issue => `• ${issue.message}`)
+                                      .join('\n')
+                                    
+                                    const subject = encodeURIComponent(`Vraagje over ${business.name || 'jullie website'}`)
+                                    const body = encodeURIComponent(
+`Hoi,
+
+Ik kwam jullie website tegen en viel me een paar dingen op die misschien interessant zijn:
+
+${issuesList}
+
+Ik help ondernemers met dit soort zaken - vaak simpeler dan je denkt. Als je er eens vrijblijvend over wilt praten, let me know!
+
+Je kunt me ook bellen: 06-44712573
+
+Groet,
+
+Laurens
+Webstability`
+                                    )
+                                    window.open(`mailto:${business.email}?subject=${subject}&body=${body}`, '_blank')
+                                  }
+                                }}
+                                className={`mt-3 p-3 rounded-lg border transition-all ${
+                                  analysis.issues.length > 0 && business.email
+                                    ? 'cursor-pointer hover:shadow-md'
+                                    : ''
+                                } ${
                                   analysis.isOutdated
-                                    ? darkMode ? 'bg-orange-500/10 border-orange-500/30' : 'bg-orange-50 border-orange-200'
+                                    ? darkMode ? 'bg-orange-500/10 border-orange-500/30 hover:bg-orange-500/20' : 'bg-orange-50 border-orange-200 hover:bg-orange-100'
                                     : darkMode ? 'bg-emerald-500/10 border-emerald-500/30' : 'bg-emerald-50 border-emerald-200'
                                 }`}
                               >
@@ -1109,9 +1140,16 @@ export default function MarketingDashboard() {
                                     )}
                                   </ul>
                                 )}
-                                <p className={`mt-2 text-xs italic ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>
-                                  💡 {analysis.recommendation}
-                                </p>
+                                {analysis.issues.length > 0 && business.email ? (
+                                  <p className={`mt-2 text-xs italic flex items-center gap-1 ${darkMode ? 'text-yellow-400' : 'text-yellow-600'}`}>
+                                    💡 Deze website heeft enkele verbeterpunten.
+                                    <Mail className="w-3 h-3 inline" />
+                                  </p>
+                                ) : (
+                                  <p className={`mt-2 text-xs italic ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>
+                                    💡 {analysis.recommendation}
+                                  </p>
+                                )}
                               </motion.div>
                             )}
                           </div>
