@@ -20,17 +20,30 @@
  *   discountCode?: string  // Optional discount code
  * }
  * 
+ * OR (simple payment link from developer dashboard):
+ * Body: {
+ *   projectId: string,
+ *   amount: string,
+ *   description: string,
+ *   customerEmail: string,
+ *   customerName: string,
+ *   sendEmail: boolean,
+ *   packageName: string
+ * }
+ * 
  * Response: {
  *   success: boolean,
  *   checkoutUrl?: string,
  *   paymentId?: string,
  *   discount?: { code, type, value, savings },
+ *   emailSent?: boolean,
  *   error?: string
  * }
  */
 
 import type { VercelRequest, VercelResponse } from '@vercel/node'
 import { Redis } from '@upstash/redis'
+import { sendPaymentLinkEmail } from './lib/smtp'
 
 const MOLLIE_API_URL = 'https://api.mollie.com/v2'
 const MOLLIE_API_KEY = process.env.MOLLIE_API_KEY || ''
@@ -92,7 +105,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   // CORS headers
   res.setHeader('Access-Control-Allow-Origin', '*')
   res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS')
-  res.setHeader('Access-Control-Allow-Headers', 'Content-Type')
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization')
   
   if (req.method === 'OPTIONS') {
     return res.status(200).end()
@@ -103,7 +116,15 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   }
   
   try {
-    const body = req.body as CreatePaymentRequest
+    const body = req.body
+    
+    // Simple flow from developer dashboard (direct amount)
+    if (body.amount && body.customerEmail) {
+      return handleSimplePayment(req, res, body)
+    }
+    
+    // Full Mollie flow with packageType
+    const fullBody = body as CreatePaymentRequest
     
     // Validatie
     if (!body.projectId || !body.packageType || !body.customer?.email) {
@@ -185,6 +206,139 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     return res.status(500).json({
       success: false,
       error: error instanceof Error ? error.message : 'Er ging iets mis bij het aanmaken van de betaling'
+    })
+  }
+}
+
+// ===========================================
+// SIMPLE PAYMENT (Developer Dashboard)
+// ===========================================
+
+async function handleSimplePayment(
+  req: VercelRequest,
+  res: VercelResponse,
+  body: {
+    projectId?: string
+    amount: string
+    description: string
+    customerEmail: string
+    customerName: string
+    sendEmail?: boolean
+    packageName?: string
+    discountCode?: string
+  }
+) {
+  try {
+    const amount = parseFloat(body.amount)
+    
+    if (isNaN(amount) || amount <= 0) {
+      return res.status(400).json({
+        success: false,
+        error: 'Ongeldig bedrag'
+      })
+    }
+    
+    console.log(`[Payment] Simpele betaling: €${amount}`)
+    console.log(`[Payment] Klant: ${body.customerEmail}`)
+    
+    // Check if Mollie is configured
+    if (!MOLLIE_API_KEY) {
+      // Return fallback URL without Mollie
+      const paymentUrl = `${BASE_URL}/betalen?amount=${amount}&project=${body.projectId || 'custom'}&desc=${encodeURIComponent(body.description)}`
+      
+      // Send email if requested
+      let emailSent = false
+      if (body.sendEmail && body.customerEmail && body.customerName) {
+        try {
+          await sendPaymentLinkEmail({
+            email: body.customerEmail,
+            name: body.customerName,
+            projectId: body.projectId || 'custom',
+            projectName: body.description || 'Website Project',
+            amount: amount,
+            paymentUrl: paymentUrl,
+            packageName: body.packageName || 'Webstability Website'
+          })
+          emailSent = true
+          console.log(`[Payment] ✅ Email verstuurd naar ${body.customerEmail}`)
+        } catch (emailError) {
+          console.error('[Payment] Email fout:', emailError)
+        }
+      }
+      
+      return res.status(200).json({
+        success: true,
+        paymentUrl: paymentUrl,
+        emailSent
+      })
+    }
+    
+    // Create Mollie payment
+    const response = await fetch(`${MOLLIE_API_URL}/payments`, {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${MOLLIE_API_KEY}`,
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        amount: {
+          value: amount.toFixed(2),
+          currency: 'EUR'
+        },
+        description: body.description || 'Webstability Betaling',
+        redirectUrl: `${BASE_URL}/betaald?project=${body.projectId || 'custom'}`,
+        webhookUrl: `${BASE_URL}/api/mollie-webhook`,
+        metadata: {
+          projectId: body.projectId,
+          type: 'simple_payment',
+          customerEmail: body.customerEmail,
+          customerName: body.customerName
+        }
+      })
+    })
+    
+    if (!response.ok) {
+      const error = await response.json()
+      throw new Error(`Mollie error: ${error.detail || 'Onbekende fout'}`)
+    }
+    
+    const payment = await response.json()
+    const paymentUrl = payment._links.checkout.href
+    
+    console.log(`[Payment] ✅ Mollie betaling aangemaakt: ${payment.id}`)
+    
+    // Send email if requested
+    let emailSent = false
+    if (body.sendEmail && body.customerEmail && body.customerName) {
+      try {
+        await sendPaymentLinkEmail({
+          email: body.customerEmail,
+          name: body.customerName,
+          projectId: body.projectId || 'custom',
+          projectName: body.description || 'Website Project',
+          amount: amount,
+          paymentUrl: paymentUrl,
+          packageName: body.packageName || 'Webstability Website'
+        })
+        emailSent = true
+        console.log(`[Payment] ✅ Email verstuurd naar ${body.customerEmail}`)
+      } catch (emailError) {
+        console.error('[Payment] Email fout:', emailError)
+      }
+    }
+    
+    return res.status(200).json({
+      success: true,
+      paymentId: payment.id,
+      paymentUrl: paymentUrl,
+      emailSent
+    })
+    
+  } catch (error) {
+    console.error('[Payment] Simple payment error:', error)
+    return res.status(500).json({
+      success: false,
+      error: error instanceof Error ? error.message : 'Er ging iets mis'
     })
   }
 }

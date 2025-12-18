@@ -94,6 +94,7 @@ interface Project {
   onboardingData?: Record<string, any>
   discountCode?: string
   internalNotes?: string
+  phaseChecklist?: Record<string, boolean>
 }
 
 interface ChatMessage {
@@ -1633,13 +1634,37 @@ function ProjectsView({ darkMode, projects, onUpdateProject, onDeleteProject, on
     const unreadCount = project.messages.filter(m => !m.read && m.from === 'client').length
 
     // Quick action handlers
-    const handleMoveToNextPhase = (e: React.MouseEvent) => {
+    const handleMoveToNextPhase = async (e: React.MouseEvent) => {
       e.stopPropagation()
       const phaseOrder: ProjectPhase[] = ['onboarding', 'design', 'development', 'review', 'live']
       const currentIndex = phaseOrder.indexOf(project.phase)
       if (currentIndex < phaseOrder.length - 1) {
         const nextPhase = phaseOrder[currentIndex + 1]
+        
+        // Update project phase
         onUpdateProject({ ...project, phase: nextPhase, updatedAt: new Date().toISOString() })
+        
+        // Send phase change email to client
+        try {
+          const token = sessionStorage.getItem('webstability_dev_token')
+          await fetch('/api/send-phase-email', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              'Authorization': `Bearer ${token}`
+            },
+            body: JSON.stringify({
+              projectId: project.projectId,
+              projectName: project.businessName,
+              customerEmail: project.contactEmail,
+              customerName: project.contactName || project.businessName,
+              newPhase: nextPhase
+            })
+          })
+          console.log(`✅ Fase-wijziging email verstuurd naar ${project.contactEmail}`)
+        } catch (error) {
+          console.error('Kon fase-email niet versturen:', error)
+        }
       }
     }
 
@@ -2080,6 +2105,90 @@ function ProjectDetailModal({ project, darkMode, onClose, onUpdate, onDelete, on
   const [newMessage, setNewMessage] = useState('')
   const [isSaving, setIsSaving] = useState(false)
   const [showCopied, setShowCopied] = useState(false)
+  const [checklist, setChecklist] = useState<Record<string, boolean>>(project.phaseChecklist || {})
+  const [isSendingPhaseEmail, setIsSendingPhaseEmail] = useState(false)
+
+  // Phase-specific checklists
+  const phaseChecklists: Record<ProjectPhase, { id: string; label: string }[]> = {
+    onboarding: [
+      { id: 'onb_form', label: 'Onboarding formulier ingevuld' },
+      { id: 'onb_logo', label: 'Logo ontvangen' },
+      { id: 'onb_content', label: 'Teksten/content ontvangen' },
+      { id: 'onb_colors', label: 'Huisstijl/kleuren bepaald' },
+      { id: 'onb_examples', label: 'Voorbeeldwebsites besproken' },
+    ],
+    design: [
+      { id: 'des_mockup', label: 'Design mockup gemaakt' },
+      { id: 'des_preview', label: 'Design preview URL ingesteld' },
+      { id: 'des_sent', label: 'Design naar klant gestuurd' },
+      { id: 'des_feedback', label: 'Feedback van klant ontvangen' },
+      { id: 'des_approved', label: 'Design goedgekeurd door klant' },
+    ],
+    development: [
+      { id: 'dev_setup', label: 'Project setup voltooid' },
+      { id: 'dev_pages', label: 'Alle pagina\'s gebouwd' },
+      { id: 'dev_forms', label: 'Formulieren werkend' },
+      { id: 'dev_responsive', label: 'Responsive getest' },
+      { id: 'dev_seo', label: 'SEO ingesteld' },
+    ],
+    review: [
+      { id: 'rev_test', label: 'Uitgebreid getest' },
+      { id: 'rev_speed', label: 'Performance geoptimaliseerd' },
+      { id: 'rev_client_test', label: 'Klant heeft getest' },
+      { id: 'rev_feedback', label: 'Laatste feedback verwerkt' },
+      { id: 'rev_approval', label: 'Klant akkoord voor live' },
+    ],
+    live: [
+      { id: 'live_domain', label: 'Domein gekoppeld' },
+      { id: 'live_ssl', label: 'SSL certificaat actief' },
+      { id: 'live_email', label: 'Go-live email verstuurd' },
+      { id: 'live_analytics', label: 'Analytics ingesteld' },
+      { id: 'live_backup', label: 'Backup ingesteld' },
+    ],
+  }
+
+  const currentChecklist = phaseChecklists[editPhase] || []
+  const completedCount = currentChecklist.filter(item => checklist[item.id]).length
+  const totalCount = currentChecklist.length
+  const allCompleted = completedCount === totalCount && totalCount > 0
+
+  const toggleChecklistItem = (itemId: string) => {
+    setChecklist(prev => ({ ...prev, [itemId]: !prev[itemId] }))
+  }
+
+  const handleMoveToNextPhaseWithEmail = async () => {
+    const phaseOrder: ProjectPhase[] = ['onboarding', 'design', 'development', 'review', 'live']
+    const currentIndex = phaseOrder.indexOf(editPhase)
+    if (currentIndex < phaseOrder.length - 1) {
+      const nextPhase = phaseOrder[currentIndex + 1]
+      setEditPhase(nextPhase)
+      
+      // Send phase change email
+      setIsSendingPhaseEmail(true)
+      try {
+        const token = sessionStorage.getItem('webstability_dev_token')
+        await fetch('/api/send-phase-email', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`
+          },
+          body: JSON.stringify({
+            projectId: project.projectId,
+            projectName: project.businessName,
+            customerEmail: project.contactEmail,
+            customerName: project.contactName || project.businessName,
+            newPhase: nextPhase
+          })
+        })
+        console.log(`✅ Fase-wijziging email verstuurd naar ${project.contactEmail}`)
+      } catch (error) {
+        console.error('Kon fase-email niet versturen:', error)
+      } finally {
+        setIsSendingPhaseEmail(false)
+      }
+    }
+  }
 
   const handleSave = async () => {
     setIsSaving(true)
@@ -2090,6 +2199,7 @@ function ProjectDetailModal({ project, darkMode, onClose, onUpdate, onDelete, on
       stagingUrl,
       liveUrl,
       internalNotes,
+      phaseChecklist: checklist,
       updatedAt: new Date().toISOString(),
     })
     setTimeout(() => setIsSaving(false), 500)
@@ -2119,15 +2229,6 @@ function ProjectDetailModal({ project, darkMode, onClose, onUpdate, onDelete, on
     navigator.clipboard.writeText(link)
     setShowCopied(true)
     setTimeout(() => setShowCopied(false), 2000)
-  }
-
-  const handleMoveToNextPhase = () => {
-    const phaseOrder: ProjectPhase[] = ['onboarding', 'design', 'development', 'review', 'live']
-    const currentIndex = phaseOrder.indexOf(editPhase)
-    if (currentIndex < phaseOrder.length - 1) {
-      const nextPhase = phaseOrder[currentIndex + 1]
-      setEditPhase(nextPhase)
-    }
   }
 
   const getPackagePrice = (pkg: Project['package']) => {
@@ -2266,6 +2367,99 @@ function ProjectDetailModal({ project, darkMode, onClose, onUpdate, onDelete, on
                     {new Date(project.createdAt).toLocaleDateString('nl-NL')}
                   </p>
                 </div>
+              </div>
+
+              {/* Phase Checklist */}
+              <div className={`p-4 rounded-xl border-2 ${
+                allCompleted 
+                  ? darkMode ? 'bg-green-500/10 border-green-500/50' : 'bg-green-50 border-green-200'
+                  : darkMode ? 'bg-gray-700/50 border-gray-600' : 'bg-gray-50 border-gray-200'
+              }`}>
+                <div className="flex items-center justify-between mb-4">
+                  <div>
+                    <h3 className={`font-semibold flex items-center gap-2 ${darkMode ? 'text-white' : 'text-gray-900'}`}>
+                      📋 Fase Checklist: {phases.find(p => p.key === editPhase)?.label}
+                    </h3>
+                    <p className={`text-sm ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>
+                      {completedCount}/{totalCount} taken voltooid
+                    </p>
+                  </div>
+                  <div className={`px-3 py-1 rounded-full text-sm font-medium ${
+                    allCompleted 
+                      ? 'bg-green-500 text-white' 
+                      : darkMode ? 'bg-gray-600 text-gray-300' : 'bg-gray-200 text-gray-600'
+                  }`}>
+                    {Math.round((completedCount / Math.max(totalCount, 1)) * 100)}%
+                  </div>
+                </div>
+                
+                {/* Progress bar */}
+                <div className={`h-2 rounded-full mb-4 overflow-hidden ${darkMode ? 'bg-gray-600' : 'bg-gray-200'}`}>
+                  <div 
+                    className="h-full bg-gradient-to-r from-blue-500 to-green-500 transition-all duration-300"
+                    style={{ width: `${(completedCount / Math.max(totalCount, 1)) * 100}%` }}
+                  />
+                </div>
+                
+                {/* Checklist items */}
+                <div className="space-y-2">
+                  {currentChecklist.map(item => (
+                    <label 
+                      key={item.id}
+                      className={`flex items-center gap-3 p-3 rounded-lg cursor-pointer transition-colors ${
+                        checklist[item.id]
+                          ? darkMode ? 'bg-green-500/20' : 'bg-green-100'
+                          : darkMode ? 'hover:bg-gray-600' : 'hover:bg-gray-100'
+                      }`}
+                    >
+                      <input
+                        type="checkbox"
+                        checked={checklist[item.id] || false}
+                        onChange={() => toggleChecklistItem(item.id)}
+                        className="w-5 h-5 rounded text-green-500 focus:ring-green-500"
+                      />
+                      <span className={`${
+                        checklist[item.id] 
+                          ? darkMode ? 'text-green-300 line-through' : 'text-green-700 line-through'
+                          : darkMode ? 'text-gray-200' : 'text-gray-700'
+                      }`}>
+                        {item.label}
+                      </span>
+                    </label>
+                  ))}
+                </div>
+
+                {/* Move to next phase button */}
+                {editPhase !== 'live' && (
+                  <div className="mt-4 pt-4 border-t border-dashed border-gray-300 dark:border-gray-600">
+                    <button
+                      onClick={handleMoveToNextPhaseWithEmail}
+                      disabled={!allCompleted || isSendingPhaseEmail}
+                      className={`w-full py-3 rounded-xl font-semibold flex items-center justify-center gap-2 transition-all ${
+                        allCompleted && !isSendingPhaseEmail
+                          ? 'bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white cursor-pointer'
+                          : darkMode ? 'bg-gray-600 text-gray-400 cursor-not-allowed' : 'bg-gray-200 text-gray-400 cursor-not-allowed'
+                      }`}
+                    >
+                      {isSendingPhaseEmail ? (
+                        <>
+                          <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                          Email versturen...
+                        </>
+                      ) : (
+                        <>
+                          <ArrowRight className="w-5 h-5" />
+                          Naar volgende fase + klant emailen
+                        </>
+                      )}
+                    </button>
+                    {!allCompleted && (
+                      <p className={`text-sm text-center mt-2 ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>
+                        Voltooi alle taken om naar de volgende fase te gaan
+                      </p>
+                    )}
+                  </div>
+                )}
               </div>
 
               {/* Contact Info */}
@@ -2527,8 +2721,13 @@ function ProjectDetailModal({ project, darkMode, onClose, onUpdate, onDelete, on
                 <div className="flex flex-wrap gap-3">
                   {editPhase !== 'live' && (
                     <button
-                      onClick={handleMoveToNextPhase}
-                      className="flex items-center gap-2 px-4 py-2 bg-blue-500 hover:bg-blue-600 text-white font-medium rounded-xl transition-colors"
+                      onClick={handleMoveToNextPhaseWithEmail}
+                      disabled={!allCompleted}
+                      className={`flex items-center gap-2 px-4 py-2 font-medium rounded-xl transition-colors ${
+                        allCompleted 
+                          ? 'bg-blue-500 hover:bg-blue-600 text-white' 
+                          : 'bg-gray-300 text-gray-500 cursor-not-allowed'
+                      }`}
                     >
                       <ChevronRight className="w-4 h-4" />
                       Verplaats naar {
@@ -4496,6 +4695,8 @@ function PaymentsView({ darkMode, projects, onUpdateProject }: PaymentsViewProps
           discountCode: selectedDiscount || undefined,
           customerEmail: selectedProject?.contactEmail || undefined,
           customerName: selectedProject?.contactName || selectedProject?.businessName || undefined,
+          sendEmail: true, // Flag to send payment link email
+          packageName: selectedProject?.package || 'Webstability Website',
         })
       })
       
@@ -4513,6 +4714,11 @@ function PaymentsView({ darkMode, projects, onUpdateProject }: PaymentsViewProps
               paymentStatus: 'awaiting_payment',
               updatedAt: new Date().toISOString(),
             })
+          }
+          
+          // Show success message if email was sent
+          if (data.emailSent) {
+            console.log('✅ Payment link email sent to:', selectedProject?.contactEmail)
           }
         } else {
           // Fallback to a local link if Mollie not configured

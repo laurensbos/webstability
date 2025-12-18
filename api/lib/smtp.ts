@@ -714,6 +714,171 @@ export const sendProjectUpdateEmail = async (customer: {
   })
 }
 
+// Payment link email
+export const sendPaymentLinkEmail = async (customer: {
+  email: string
+  name: string
+  projectId: string
+  projectName: string
+  amount: number
+  paymentUrl: string
+  packageName: string
+}) => {
+  const formattedAmount = new Intl.NumberFormat('nl-NL', {
+    style: 'currency',
+    currency: 'EUR'
+  }).format(customer.amount)
+
+  const content = `
+    <div style="text-align: center; margin-bottom: 32px;">
+      <div style="width: 80px; height: 80px; background: linear-gradient(135deg, #22c55e 0%, #16a34a 100%); border-radius: 50%; margin: 0 auto 20px; display: flex; align-items: center; justify-content: center;">
+        <span style="font-size: 36px;">💳</span>
+      </div>
+      <h1 style="margin: 0 0 8px; font-size: 28px; font-weight: 700; color: #0f172a;">Je betaallink is klaar!</h1>
+      <p style="margin: 0; color: #64748b; font-size: 16px;">Voltooi je betaling om verder te gaan</p>
+    </div>
+    
+    <p style="color: #334155; font-size: 16px; line-height: 1.6; margin-bottom: 24px;">
+      Hoi ${customer.name},<br><br>
+      Je website is bijna klaar! Om verder te gaan met je project hebben we je eerste betaling nodig.
+    </p>
+    
+    <div style="background: #f0fdf4; border-radius: 16px; padding: 24px; margin-bottom: 24px;">
+      <h3 style="margin: 0 0 16px; color: #166534; font-size: 18px; font-weight: 600;">📋 Betalingsoverzicht</h3>
+      <table style="width: 100%; border-collapse: collapse;">
+        <tr>
+          <td style="padding: 8px 0; color: #64748b;">Project</td>
+          <td style="padding: 8px 0; text-align: right; color: #0f172a; font-weight: 500;">${customer.projectName}</td>
+        </tr>
+        <tr>
+          <td style="padding: 8px 0; color: #64748b;">Pakket</td>
+          <td style="padding: 8px 0; text-align: right; color: #0f172a; font-weight: 500;">${customer.packageName}</td>
+        </tr>
+        <tr style="border-top: 2px solid #dcfce7;">
+          <td style="padding: 16px 0 8px; color: #166534; font-weight: 600; font-size: 18px;">Totaal</td>
+          <td style="padding: 16px 0 8px; text-align: right; color: #166534; font-weight: 700; font-size: 20px;">${formattedAmount}</td>
+        </tr>
+      </table>
+    </div>
+    
+    <div style="text-align: center; margin-bottom: 24px;">
+      <a href="${customer.paymentUrl}" style="display: inline-block; background: linear-gradient(135deg, #22c55e 0%, #16a34a 100%); color: white; padding: 18px 48px; border-radius: 12px; text-decoration: none; font-weight: 600; font-size: 18px; box-shadow: 0 4px 14px rgba(34, 197, 94, 0.4);">
+        💳 Betaal nu ${formattedAmount} →
+      </a>
+    </div>
+    
+    <p style="color: #64748b; font-size: 14px; text-align: center; margin-bottom: 24px;">
+      De betaallink is 15 minuten geldig. Na betaling gaan we direct verder met je website!
+    </p>
+    
+    <div style="background: #fefce8; border-radius: 12px; padding: 16px; border: 1px solid #fef08a;">
+      <p style="margin: 0; color: #854d0e; font-size: 14px;">
+        <strong>💡 Tip:</strong> Na je betaling ontvang je automatisch een bevestiging en gaan we direct verder met de volgende stap van je project.
+      </p>
+    </div>
+  `
+
+  return sendEmail({
+    to: customer.email,
+    subject: `💳 Betaallink voor ${customer.projectName} - ${formattedAmount}`,
+    html: baseTemplate(content, '#22c55e'),
+    replyTo: SMTP_USER || 'info@webstability.nl',
+  })
+}
+
+// Phase change notification
+export const sendPhaseChangeEmail = async (customer: {
+  email: string
+  name: string
+  projectId: string
+  projectName: string
+  newPhase: string
+  phaseDescription: string
+  nextSteps: string[]
+}) => {
+  const phaseEmojis: Record<string, string> = {
+    'onboarding': '📝',
+    'design': '🎨',
+    'development': '💻',
+    'review': '🔍',
+    'live': '🚀',
+    'completed': '✅'
+  }
+  
+  const phaseColors: Record<string, string> = {
+    'onboarding': '#f97316',
+    'design': '#8b5cf6',
+    'development': '#3b82f6',
+    'review': '#eab308',
+    'live': '#22c55e',
+    'completed': '#10b981'
+  }
+  
+  const phaseNames: Record<string, string> = {
+    'onboarding': 'Onboarding',
+    'design': 'Design Fase',
+    'development': 'Ontwikkeling',
+    'review': 'Review & Feedback',
+    'live': 'Website Live!',
+    'completed': 'Afgerond'
+  }
+
+  const emoji = phaseEmojis[customer.newPhase] || '📌'
+  const color = phaseColors[customer.newPhase] || '#2563eb'
+  const phaseName = phaseNames[customer.newPhase] || customer.newPhase
+
+  const nextStepsList = customer.nextSteps.map(step => 
+    `<li style="padding: 8px 0; color: #334155;">${step}</li>`
+  ).join('')
+
+  const content = `
+    <div style="text-align: center; margin-bottom: 32px;">
+      <div style="width: 80px; height: 80px; background: linear-gradient(135deg, ${color} 0%, ${color}dd 100%); border-radius: 50%; margin: 0 auto 20px; display: flex; align-items: center; justify-content: center;">
+        <span style="font-size: 36px;">${emoji}</span>
+      </div>
+      <h1 style="margin: 0 0 8px; font-size: 28px; font-weight: 700; color: #0f172a;">Nieuwe fase: ${phaseName}</h1>
+      <p style="margin: 0; color: #64748b; font-size: 16px;">Je project gaat vooruit!</p>
+    </div>
+    
+    <p style="color: #334155; font-size: 16px; line-height: 1.6; margin-bottom: 24px;">
+      Hoi ${customer.name},<br><br>
+      Goed nieuws! Je project <strong>${customer.projectName}</strong> is naar een nieuwe fase gegaan.
+    </p>
+    
+    <div style="background: ${color}10; border-left: 4px solid ${color}; border-radius: 0 12px 12px 0; padding: 20px 24px; margin-bottom: 24px;">
+      <h3 style="margin: 0 0 8px; color: ${color}; font-size: 18px; font-weight: 600;">${emoji} ${phaseName}</h3>
+      <p style="margin: 0; color: #334155; font-size: 15px; line-height: 1.6;">${customer.phaseDescription}</p>
+    </div>
+    
+    ${customer.nextSteps.length > 0 ? `
+    <div style="background: #f8fafc; border-radius: 12px; padding: 20px 24px; margin-bottom: 24px;">
+      <h3 style="margin: 0 0 12px; color: #0f172a; font-size: 16px; font-weight: 600;">📋 Volgende stappen:</h3>
+      <ul style="margin: 0; padding-left: 20px; list-style-type: none;">
+        ${customer.nextSteps.map(step => `
+          <li style="padding: 6px 0; color: #334155; position: relative; padding-left: 24px;">
+            <span style="position: absolute; left: 0; color: ${color};">✓</span>
+            ${step}
+          </li>
+        `).join('')}
+      </ul>
+    </div>
+    ` : ''}
+    
+    <div style="text-align: center;">
+      <a href="https://webstability.nl/status/${customer.projectId}" style="display: inline-block; background: linear-gradient(135deg, ${color} 0%, ${color}dd 100%); color: white; padding: 16px 40px; border-radius: 10px; text-decoration: none; font-weight: 600; font-size: 16px;">
+        Bekijk Project Status →
+      </a>
+    </div>
+  `
+
+  return sendEmail({
+    to: customer.email,
+    subject: `${emoji} ${customer.projectName} - Nieuwe fase: ${phaseName}`,
+    html: baseTemplate(content, color),
+    replyTo: SMTP_USER || 'info@webstability.nl',
+  })
+}
+
 export default {
   sendEmail,
   isSmtpConfigured,
@@ -724,4 +889,6 @@ export default {
   sendWebsiteLiveEmail,
   sendPasswordResetEmail,
   sendProjectUpdateEmail,
+  sendPaymentLinkEmail,
+  sendPhaseChangeEmail,
 }
