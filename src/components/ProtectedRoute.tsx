@@ -110,6 +110,7 @@ const FallbackLogin: React.FC<{ children: React.ReactNode; requireRole?: 'develo
       { email: 'info@webstability.nl', password: 'N45eqtu2!jz8j0v', role: 'developer' },
       { email: 'developer@webstability.nl', password: 'test1234', role: 'developer' },
       { email: 'admin@webstability.nl', password: 'test1234', role: 'admin' },
+      { email: 'admin', password: 'N45eqtu2!jz8j0v', role: 'admin' },
       { email: 'marketing@webstability.nl', password: 'marketing123', role: 'marketing' },
       { email: 'sales', password: 'sales123', role: 'marketing' },
       { email: 'wesley', password: 'getrichordietrying', role: 'marketing' },
