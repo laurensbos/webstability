@@ -1445,7 +1445,7 @@ export default function MarketingDashboard() {
         ) : (
           /* Original Leads Filter */
           <>
-          <div className="flex flex-wrap gap-2 mb-6">
+          <div className="flex gap-2 mb-4 sm:mb-6 overflow-x-auto pb-2 sm:pb-0 -mx-4 px-4 sm:mx-0 sm:px-0 sm:flex-wrap scrollbar-hide">
           {['alle', 'nieuw', 'gecontacteerd', 'geinteresseerd', 'offerte', 'klant', 'afgewezen'].map((status) => {
             const count = status === 'alle' ? leads.length : leads.filter(l => l.status === status).length
             return (
@@ -1454,7 +1454,7 @@ export default function MarketingDashboard() {
                 whileHover={{ scale: 1.02 }}
                 whileTap={{ scale: 0.98 }}
                 onClick={() => setStatusFilter(status)}
-                className={`px-4 py-2 rounded-xl text-sm font-medium transition-all ${
+                className={`px-3 sm:px-4 py-1.5 sm:py-2 rounded-xl text-xs sm:text-sm font-medium transition-all whitespace-nowrap flex-shrink-0 ${
                   statusFilter === status
                     ? 'bg-emerald-500 text-white shadow-lg shadow-emerald-500/25'
                     : darkMode
@@ -1463,7 +1463,7 @@ export default function MarketingDashboard() {
                 }`}
               >
                 {status === 'alle' ? 'Alle' : statusColors[status as Lead['status']]?.label || status}
-                <span className={`ml-2 px-1.5 py-0.5 rounded-md text-xs ${
+                <span className={`ml-1.5 sm:ml-2 px-1 sm:px-1.5 py-0.5 rounded-md text-[10px] sm:text-xs ${
                   statusFilter === status
                     ? 'bg-white/20'
                     : darkMode ? 'bg-gray-700' : 'bg-gray-100'
@@ -2323,7 +2323,7 @@ function AddLeadModal({
             />
           </div>
 
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
             <div>
               <label className={labelClasses}>
                 Contactpersoon *
@@ -2352,7 +2352,7 @@ function AddLeadModal({
             </div>
           </div>
 
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
             <div>
               <label className={labelClasses}>
                 Email *
@@ -2380,7 +2380,7 @@ function AddLeadModal({
             </div>
           </div>
 
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
             <div>
               <label className={labelClasses}>
                 Website
