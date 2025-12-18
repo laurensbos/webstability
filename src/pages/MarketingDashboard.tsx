@@ -275,6 +275,23 @@ export default function MarketingDashboard() {
     type: string
   }>>([])
   
+  // Website analysis state
+  interface WebsiteAnalysis {
+    isOutdated: boolean
+    score: number
+    issues: string[]
+    details: {
+      hasHttps: boolean
+      hasViewport: boolean
+      loadTime: number
+      oldTechnologies: string[]
+      firstSeen?: string
+    }
+    recommendation: string
+  }
+  const [analyzingWebsites, setAnalyzingWebsites] = useState<Record<string, boolean>>({})
+  const [websiteAnalyses, setWebsiteAnalyses] = useState<Record<string, WebsiteAnalysis>>({})
+  
   // Dark mode state - default to true for modern look
   const [darkMode, setDarkMode] = useState(() => {
     const saved = localStorage.getItem('webstability_darkmode')
@@ -493,6 +510,26 @@ export default function MarketingDashboard() {
     }
 
     setLeads(prev => [newLead, ...prev])
+  }
+
+  // Analyze website for outdated indicators
+  const analyzeWebsite = async (businessId: string, website: string) => {
+    if (!website) return
+    
+    setAnalyzingWebsites(prev => ({ ...prev, [businessId]: true }))
+    
+    try {
+      const response = await fetch(`/api/marketing/analyze-website?url=${encodeURIComponent(website)}`)
+      const data = await response.json()
+      
+      if (data.success && data.analysis) {
+        setWebsiteAnalyses(prev => ({ ...prev, [businessId]: data.analysis }))
+      }
+    } catch (error) {
+      console.error('[Analyze] Error:', error)
+    } finally {
+      setAnalyzingWebsites(prev => ({ ...prev, [businessId]: false }))
+    }
   }
 
   // Save leads to localStorage AND sync to API
@@ -1417,6 +1454,8 @@ export default function MarketingDashboard() {
                 <div className={`divide-y ${darkMode ? 'divide-gray-700' : 'divide-gray-100'} max-h-96 overflow-y-auto`}>
                   {searchResults.map((business) => {
                     const isAdded = leads.some(l => l.id === business.id)
+                    const analysis = websiteAnalyses[business.id]
+                    const isAnalyzing = analyzingWebsites[business.id]
                     
                     return (
                       <div key={business.id} className={`p-4 transition-colors ${darkMode ? 'hover:bg-gray-700/50' : 'hover:bg-gray-50'}`}>
@@ -1450,33 +1489,107 @@ export default function MarketingDashboard() {
                                 {business.type}
                               </span>
                             </div>
+                            
+                            {/* Website Analysis Result */}
+                            {analysis && (
+                              <motion.div
+                                initial={{ opacity: 0, height: 0 }}
+                                animate={{ opacity: 1, height: 'auto' }}
+                                className={`mt-3 p-3 rounded-lg border ${
+                                  analysis.isOutdated
+                                    ? darkMode ? 'bg-orange-500/10 border-orange-500/30' : 'bg-orange-50 border-orange-200'
+                                    : darkMode ? 'bg-emerald-500/10 border-emerald-500/30' : 'bg-emerald-50 border-emerald-200'
+                                }`}
+                              >
+                                <div className="flex items-center gap-2 mb-2">
+                                  <div className={`px-2 py-0.5 rounded-full text-xs font-medium ${
+                                    analysis.isOutdated
+                                      ? 'bg-orange-500 text-white'
+                                      : 'bg-emerald-500 text-white'
+                                  }`}>
+                                    Score: {analysis.score}/100
+                                  </div>
+                                  <span className={`text-xs ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>
+                                    {analysis.isOutdated ? '⚠️ Verouderd' : '✓ Modern'}
+                                  </span>
+                                </div>
+                                {analysis.issues.length > 0 && (
+                                  <ul className={`text-xs space-y-1 ${darkMode ? 'text-gray-300' : 'text-gray-600'}`}>
+                                    {analysis.issues.slice(0, 3).map((issue, i) => (
+                                      <li key={i} className="flex items-start gap-1">
+                                        <span className="text-orange-500">•</span>
+                                        {issue}
+                                      </li>
+                                    ))}
+                                    {analysis.issues.length > 3 && (
+                                      <li className={`${darkMode ? 'text-gray-500' : 'text-gray-400'}`}>
+                                        +{analysis.issues.length - 3} meer problemen
+                                      </li>
+                                    )}
+                                  </ul>
+                                )}
+                                <p className={`mt-2 text-xs italic ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>
+                                  💡 {analysis.recommendation}
+                                </p>
+                              </motion.div>
+                            )}
                           </div>
                           
-                          <motion.button
-                            whileHover={{ scale: 1.05 }}
-                            whileTap={{ scale: 0.95 }}
-                            onClick={() => addBusinessToLeads(business)}
-                            disabled={isAdded}
-                            className={`flex-shrink-0 px-3 py-1.5 rounded-lg text-sm font-medium transition-colors ${
-                              isAdded
-                                ? darkMode 
-                                  ? 'bg-emerald-500/20 text-emerald-400 cursor-default'
-                                  : 'bg-emerald-100 text-emerald-700 cursor-default'
-                                : 'bg-emerald-500 hover:bg-emerald-600 text-white'
-                            }`}
-                          >
-                            {isAdded ? (
-                              <>
-                                <CheckCircle className="w-4 h-4 inline mr-1" />
-                                Toegevoegd
-                              </>
-                            ) : (
-                              <>
-                                <Plus className="w-4 h-4 inline mr-1" />
-                                Toevoegen
-                              </>
+                          <div className="flex flex-col gap-2 flex-shrink-0">
+                            {/* Analyze Button */}
+                            {business.website && !analysis && (
+                              <motion.button
+                                whileHover={{ scale: 1.05 }}
+                                whileTap={{ scale: 0.95 }}
+                                onClick={() => analyzeWebsite(business.id, business.website!)}
+                                disabled={isAnalyzing}
+                                className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-colors ${
+                                  darkMode 
+                                    ? 'bg-orange-500/20 text-orange-400 hover:bg-orange-500/30' 
+                                    : 'bg-orange-100 text-orange-700 hover:bg-orange-200'
+                                } ${isAnalyzing ? 'opacity-50 cursor-wait' : ''}`}
+                              >
+                                {isAnalyzing ? (
+                                  <>
+                                    <RefreshCw className="w-4 h-4 inline mr-1 animate-spin" />
+                                    Analyseren...
+                                  </>
+                                ) : (
+                                  <>
+                                    <Search className="w-4 h-4 inline mr-1" />
+                                    Analyseer
+                                  </>
+                                )}
+                              </motion.button>
                             )}
-                          </motion.button>
+                            
+                            {/* Add to Leads Button */}
+                            <motion.button
+                              whileHover={{ scale: 1.05 }}
+                              whileTap={{ scale: 0.95 }}
+                              onClick={() => addBusinessToLeads(business)}
+                              disabled={isAdded}
+                              className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-colors ${
+                                isAdded
+                                  ? darkMode 
+                                    ? 'bg-emerald-500/20 text-emerald-400 cursor-default'
+                                    : 'bg-emerald-100 text-emerald-700 cursor-default'
+                                  : 'bg-emerald-500 hover:bg-emerald-600 text-white'
+                              }`}
+                            >
+                              {isAdded ? (
+                                <>
+                                  <CheckCircle className="w-4 h-4 inline mr-1" />
+                                  Toegevoegd
+                                </>
+                              ) : (
+                                <>
+                                  <Plus className="w-4 h-4 inline mr-1" />
+                                  Toevoegen
+                                </>
+                              )}
+                            </motion.button>
+                          </div>
                         </div>
                       </div>
                     )
@@ -2712,7 +2825,25 @@ function HelpModal({ onClose, darkMode }: { onClose: () => void; darkMode: boole
       ]
     },
     {
-      title: '📧 Emails versturen',
+      title: '� Bedrijven zoeken',
+      steps: [
+        'Ga naar "Bedrijven Zoeken" tab',
+        'Vul een stad of postcode in',
+        'Optioneel: filter op type of bedrijfsnaam',
+        'Klik op "Zoeken" en voeg leads toe'
+      ]
+    },
+    {
+      title: '🌐 Website analyseren',
+      steps: [
+        'Zoek bedrijven met een website',
+        'Klik op "Analyseer" bij een bedrijf',
+        'Bekijk de score (0-100, lager = verouderd)',
+        'Verouderde sites zijn perfecte leads!'
+      ]
+    },
+    {
+      title: '�📧 Emails versturen',
       steps: [
         'Klik op "Email sturen" bij een lead',
         'Kies een email template',
@@ -2742,6 +2873,8 @@ function HelpModal({ onClose, darkMode }: { onClose: () => void; darkMode: boole
   const tips = [
     { icon: '⭐', text: 'Markeer prioriteit leads met de ster voor snelle focus' },
     { icon: '🔍', text: 'Gebruik de zoekbalk om snel leads te vinden' },
+    { icon: '🌐', text: 'Analyseer websites - verouderde sites = warme leads!' },
+    { icon: '📊', text: 'Score onder 50 = website heeft update nodig' },
     { icon: '📤', text: 'Exporteer je leads regelmatig als backup' },
     { icon: '🌙', text: 'Schakel dark mode in voor minder vermoeide ogen' },
     { icon: '📝', text: 'Voeg altijd een notitie toe na elk gesprek' },
