@@ -28,14 +28,12 @@ import {
   Lightbulb,
   MousePointer,
   ArrowRight,
-  LayoutDashboard,
   Sparkles,
   Target,
   Calendar,
   RefreshCw,
   ChevronRight,
-  Zap,
-  Home
+  Zap
 } from 'lucide-react'
 
 // Dark Mode Context
@@ -908,8 +906,8 @@ export default function MarketingDashboard() {
                 </div>
               </div>
 
-              {/* Search Bar - Desktop */}
-              <div className="hidden md:flex flex-1 max-w-xl mx-8">
+              {/* Search Bar - Desktop only */}
+              <div className="hidden lg:flex flex-1 max-w-xl mx-8">
                 <div className="relative w-full">
                   <Search className={`absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 ${
                     darkMode ? 'text-gray-500' : 'text-gray-400'
@@ -928,8 +926,8 @@ export default function MarketingDashboard() {
                 </div>
               </div>
               
-              {/* Actions */}
-              <div className="flex items-center gap-2 sm:gap-3">
+              {/* Actions - Desktop only */}
+              <div className="hidden sm:flex items-center gap-3">
                 {/* Help Button */}
                 <Tooltip text="Hulp & Handleiding" darkMode={darkMode}>
                   <motion.button
@@ -962,13 +960,13 @@ export default function MarketingDashboard() {
                   </motion.button>
                 </Tooltip>
 
-                {/* Export Button - Desktop */}
+                {/* Export Button */}
                 <Tooltip text="Exporteer naar CSV" darkMode={darkMode}>
                   <motion.button
                     whileHover={{ scale: 1.05 }}
                     whileTap={{ scale: 0.95 }}
                     onClick={exportToCSV}
-                    className={`hidden sm:flex items-center gap-2 px-4 py-2.5 rounded-xl transition-colors ${
+                    className={`flex items-center gap-2 px-4 py-2.5 rounded-xl transition-colors ${
                       darkMode 
                         ? 'text-gray-400 hover:text-white hover:bg-gray-800' 
                         : 'text-gray-600 hover:text-gray-900 hover:bg-gray-100'
@@ -987,63 +985,51 @@ export default function MarketingDashboard() {
                   className="flex items-center gap-2 px-4 py-2.5 bg-gradient-to-r from-emerald-500 to-emerald-600 text-white rounded-xl hover:from-emerald-600 hover:to-emerald-700 transition-all shadow-lg shadow-emerald-500/25"
                 >
                   <Plus className="w-5 h-5" />
-                  <span className="hidden sm:inline font-medium">Nieuw bedrijf</span>
+                  <span className="hidden lg:inline font-medium">Nieuw bedrijf</span>
                 </motion.button>
               </div>
             </div>
           </div>
         </header>
 
-        {/* Mobile Search */}
-        <div className="md:hidden px-4 py-3 sticky top-16 z-40">
-          <div className={`relative ${darkMode ? 'bg-gray-800/80' : 'bg-white/80'} backdrop-blur-xl rounded-2xl`}>
-            <Search className={`absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 ${
-              darkMode ? 'text-gray-500' : 'text-gray-400'
-            }`} />
-            <input
-              type="text"
-              placeholder="Zoek bedrijven..."
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              className={`w-full pl-12 pr-4 py-3 rounded-2xl border ${
-                darkMode 
-                  ? 'bg-transparent border-gray-700 text-white placeholder-gray-500' 
-                  : 'bg-transparent border-gray-200 text-gray-900 placeholder-gray-400'
-              } focus:outline-none focus:ring-2 focus:ring-emerald-500/20`}
-            />
-          </div>
+        <main className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-8 pb-24 lg:pb-8">
+        
+        {/* Mobile: Simple header with stats */}
+        <div className="sm:hidden mb-4">
+          <h2 className={`text-lg font-semibold mb-3 ${darkMode ? 'text-white' : 'text-gray-900'}`}>
+            {mainTab === 'zoeken' ? '🔍 Bedrijven zoeken' : `📋 Mijn leads (${stats.total})`}
+          </h2>
         </div>
 
-        <main className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-8 pb-24 lg:pb-8">
-        {/* Welcome Section - Compact on Mobile */}
+        {/* Desktop: Welcome Section */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          className="mb-4 sm:mb-8"
+          className="hidden sm:block mb-8"
         >
-          <div className="flex items-center gap-2 sm:gap-3">
+          <div className="flex items-center gap-3">
             <motion.div
               initial={{ scale: 0 }}
               animate={{ scale: 1 }}
               transition={{ delay: 0.2, type: "spring" }}
-              className={`w-10 h-10 sm:w-12 sm:h-12 rounded-xl sm:rounded-2xl flex items-center justify-center ${
+              className={`w-12 h-12 rounded-2xl flex items-center justify-center ${
                 darkMode ? 'bg-gradient-to-br from-emerald-500/20 to-teal-500/20' : 'bg-gradient-to-br from-emerald-100 to-teal-100'
               }`}
             >
-              <Sparkles className={`w-5 h-5 sm:w-6 sm:h-6 ${darkMode ? 'text-emerald-400' : 'text-emerald-600'}`} />
+              <Sparkles className={`w-6 h-6 ${darkMode ? 'text-emerald-400' : 'text-emerald-600'}`} />
             </motion.div>
             <div className="flex-1">
-              <h2 className={`text-xl sm:text-3xl font-bold ${darkMode ? 'text-white' : 'text-gray-900'}`}>
+              <h2 className={`text-3xl font-bold ${darkMode ? 'text-white' : 'text-gray-900'}`}>
                 Welkom terug! 👋
               </h2>
-              <p className={`text-sm sm:text-base ${darkMode ? 'text-gray-400' : 'text-gray-600'}`}>
+              <p className={`${darkMode ? 'text-gray-400' : 'text-gray-600'}`}>
                 {new Date().toLocaleDateString('nl-NL', { weekday: 'long', day: 'numeric', month: 'long' })}
               </p>
             </div>
           </div>
         </motion.div>
 
-        {/* Stats Grid - Hidden on mobile, show summary instead */}
+        {/* Stats Grid - Desktop only */}
         <div className="hidden sm:grid grid-cols-3 lg:grid-cols-5 gap-4 mb-8">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -1190,38 +1176,7 @@ export default function MarketingDashboard() {
           </motion.div>
         </div>
 
-        {/* Mobile Stats Summary - Compact horizontal bar */}
-        <motion.div
-          initial={{ opacity: 0, y: 10 }}
-          animate={{ opacity: 1, y: 0 }}
-          className={`sm:hidden flex items-center justify-between gap-2 p-3 rounded-xl mb-4 ${
-            darkMode ? 'bg-gray-800/60 border border-gray-700/50' : 'bg-white/80 border border-gray-200/50'
-          }`}
-        >
-          <div className="flex items-center gap-4">
-            <div className="text-center">
-              <p className={`text-lg font-bold ${darkMode ? 'text-white' : 'text-gray-900'}`}>{stats.total}</p>
-              <p className={`text-[10px] ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>Leads</p>
-            </div>
-            <div className="text-center">
-              <p className={`text-lg font-bold ${darkMode ? 'text-emerald-400' : 'text-emerald-600'}`}>{stats.klanten}</p>
-              <p className={`text-[10px] ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>Klanten</p>
-            </div>
-            {stats.followUpsToday + stats.followUpsOverdue > 0 && (
-              <div className="text-center">
-                <p className={`text-lg font-bold ${stats.followUpsOverdue > 0 ? 'text-red-500' : 'text-orange-500'}`}>
-                  {stats.followUpsToday + stats.followUpsOverdue}
-                </p>
-                <p className={`text-[10px] ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>Follow-up</p>
-              </div>
-            )}
-          </div>
-          <div className={`text-right text-xs ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>
-            <span className="text-emerald-500 font-medium">{conversionRates.overallConversion}%</span> conversie
-          </div>
-        </motion.div>
-
-        {/* Quick Actions - Desktop only, mobile uses bottom nav */}
+        {/* Quick Actions - Desktop only */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -1856,75 +1811,83 @@ export default function MarketingDashboard() {
         )}
       </AnimatePresence>
 
-      {/* Mobile Bottom Navigation */}
+      {/* Mobile Bottom Navigation - Clean 4 items */}
       <nav className={`lg:hidden fixed bottom-0 left-0 right-0 z-50 border-t backdrop-blur-xl pb-safe ${
         darkMode 
-          ? 'bg-gray-900/90 border-gray-800' 
-          : 'bg-white/90 border-gray-200'
+          ? 'bg-gray-900/95 border-gray-800' 
+          : 'bg-white/95 border-gray-200'
       }`}>
-        <div className="flex items-center justify-around h-14 sm:h-16 px-2">
-          <motion.button
-            whileTap={{ scale: 0.9 }}
-            onClick={() => {
-              setMainTab('leads')
-              setStatusFilter('alle')
-              window.scrollTo({ top: 0, behavior: 'smooth' })
-            }}
-            className={`flex flex-col items-center gap-0.5 px-3 py-1.5 ${
-              mainTab === 'leads' ? (darkMode ? 'text-emerald-400' : 'text-emerald-600') : (darkMode ? 'text-gray-400' : 'text-gray-500')
-            }`}
-          >
-            <Home className="w-5 h-5" />
-            <span className="text-[10px] font-medium">Home</span>
-          </motion.button>
+        <div className="flex items-center justify-around h-16 px-4">
           <motion.button
             whileTap={{ scale: 0.9 }}
             onClick={() => setMainTab('zoeken')}
-            className={`flex flex-col items-center gap-0.5 px-3 py-1.5 ${
-              mainTab === 'zoeken' ? (darkMode ? 'text-emerald-400' : 'text-emerald-600') : (darkMode ? 'text-gray-400' : 'text-gray-500')
+            className={`flex flex-col items-center gap-1 py-2 px-4 rounded-xl transition-colors ${
+              mainTab === 'zoeken' 
+                ? (darkMode ? 'text-emerald-400 bg-emerald-500/10' : 'text-emerald-600 bg-emerald-50') 
+                : (darkMode ? 'text-gray-400' : 'text-gray-500')
             }`}
           >
             <Search className="w-5 h-5" />
             <span className="text-[10px] font-medium">Zoeken</span>
           </motion.button>
+          
           <motion.button
             whileTap={{ scale: 0.9 }}
             onClick={() => setMainTab('leads')}
-            className={`flex flex-col items-center gap-0.5 px-3 py-1.5 ${
-              mainTab === 'leads' ? (darkMode ? 'text-emerald-400' : 'text-emerald-600') : (darkMode ? 'text-gray-400' : 'text-gray-500')
+            className={`flex flex-col items-center gap-1 py-2 px-4 rounded-xl transition-colors ${
+              mainTab === 'leads' 
+                ? (darkMode ? 'text-emerald-400 bg-emerald-500/10' : 'text-emerald-600 bg-emerald-50') 
+                : (darkMode ? 'text-gray-400' : 'text-gray-500')
             }`}
           >
-            <LayoutDashboard className="w-5 h-5" />
-            <span className="text-[10px] font-medium">Dashboard</span>
+            <Building2 className="w-5 h-5" />
+            <span className="text-[10px] font-medium">Leads</span>
+            {stats.total > 0 && (
+              <span className={`absolute -top-1 -right-1 w-4 h-4 text-[9px] flex items-center justify-center rounded-full bg-emerald-500 text-white font-bold`}>
+                {stats.total > 99 ? '99+' : stats.total}
+              </span>
+            )}
           </motion.button>
+          
           <motion.button
             whileTap={{ scale: 0.9 }}
             onClick={() => setShowAddModal(true)}
-            className="flex flex-col items-center gap-0.5 px-3 py-1.5"
+            className="flex items-center justify-center"
           >
-            <div className="p-1.5 sm:p-2 bg-emerald-500 rounded-xl shadow-lg shadow-emerald-500/30">
-              <Plus className="w-5 h-5 text-white" />
+            <div className="p-3 bg-emerald-500 rounded-2xl shadow-lg shadow-emerald-500/30">
+              <Plus className="w-6 h-6 text-white" />
             </div>
           </motion.button>
+          
           <motion.button
             whileTap={{ scale: 0.9 }}
-            onClick={() => setShowHelp(true)}
-            className={`flex flex-col items-center gap-0.5 px-3 py-1.5 ${
+            onClick={() => {
+              // Filter leads die nog geen email hebben gehad
+              setMainTab('leads')
+              setStatusFilter('nieuw')
+            }}
+            className={`flex flex-col items-center gap-1 py-2 px-4 rounded-xl transition-colors relative ${
               darkMode ? 'text-gray-400' : 'text-gray-500'
             }`}
           >
-            <HelpCircle className="w-5 h-5" />
-            <span className="text-[10px] font-medium">Help</span>
+            <Mail className="w-5 h-5" />
+            <span className="text-[10px] font-medium">Te mailen</span>
+            {stats.nieuw > 0 && (
+              <span className="absolute -top-1 right-2 w-4 h-4 text-[9px] flex items-center justify-center rounded-full bg-amber-500 text-white font-bold">
+                {stats.nieuw}
+              </span>
+            )}
           </motion.button>
+          
           <motion.button
             whileTap={{ scale: 0.9 }}
-            onClick={toggleDarkMode}
-            className={`flex flex-col items-center gap-0.5 px-3 py-1.5 ${
-              darkMode ? 'text-yellow-400' : 'text-gray-500'
+            onClick={() => setShowHelp(true)}
+            className={`flex flex-col items-center gap-1 py-2 px-4 rounded-xl transition-colors ${
+              darkMode ? 'text-gray-400' : 'text-gray-500'
             }`}
           >
-            {darkMode ? <Sun className="w-5 h-5" /> : <Moon className="w-5 h-5" />}
-            <span className="text-[10px] font-medium">Thema</span>
+            <MoreVertical className="w-5 h-5" />
+            <span className="text-[10px] font-medium">Meer</span>
           </motion.button>
         </div>
       </nav>
