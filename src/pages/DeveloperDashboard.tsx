@@ -199,18 +199,19 @@ function WelcomeTour({ darkMode, onComplete }: WelcomeTourProps) {
     {
       icon: '💳',
       title: 'Stap 3: Betalingen regelen',
-      content: 'Genereer betaallinks via Mollie. Stuur de link naar de klant en volg de status. Pas als er betaald is, kan het project live!',
+      content: 'Nadat de klant het design goedkeurt, stuur je een betaallink via Mollie. Pas als er betaald is, bouw je de website en zet je het project live.',
       highlight: 'payments',
     },
     {
       icon: '🚀',
       title: 'De werkflow in het kort',
       content: `
-        1. Klant meldt zich aan → Project verschijnt in "Onboarding"
-        2. Jij maakt design → Klant keurt goed via berichten
-        3. Jij bouwt website → Stuur betaallink
-        4. Klant betaalt → Jij zet project live
-        5. Klaar! Klant betaalt maandelijks via abonnement
+        1. Klant meldt zich aan → Project in "Onboarding"
+        2. Jij maakt design → Stuur naar klant via berichten
+        3. Klant keurt design goed → Jij stuurt betaallink
+        4. Klant betaalt → Jij bouwt website
+        5. Website klaar → Project live zetten
+        6. Klaar! Klant betaalt maandelijks via abonnement
       `,
       highlight: null,
     },
