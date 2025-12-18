@@ -85,46 +85,35 @@ const emailTemplates: EmailTemplate[] = [
   {
     id: 'intro',
     name: 'Eerste kennismaking',
-    subject: 'Professionele website voor {{bedrijf}}?',
-    description: 'Eerste contact met bedrijf zonder website',
-    body: `Beste {{naam}},
+    subject: 'Even voorstellen - vraagje over {{bedrijf}}',
+    description: 'Eerste contact, persoonlijk en laagdrempelig',
+    body: `Hoi {{naam}},
 
-Ik zag dat {{bedrijf}} nog geen website heeft en dat is zonde! In 2024 zoekt 87% van de consumenten online voordat ze een aankoop doen.
+Ik kwam {{bedrijf}} tegen en zag dat jullie nog geen website hebben. Dat viel me op, want ik zie vaak dat bedrijven zoals die van jullie daar best wat aan zouden kunnen hebben.
 
-Bij Webstability helpen we ondernemers zoals u aan een professionele website, zonder gedoe:
+Ik ben Laurens van Webstability - wij maken websites voor ondernemers. Geen ingewikkeld gedoe, gewoon een nette site die werkt.
 
-✓ Volledig verzorgd - wij regelen alles
-✓ Vanaf €99 per maand - geen grote investering vooraf  
-✓ Binnen 7 dagen online
-✓ Inclusief hosting, SSL en updates
+Geen idee of dit iets voor jullie is, maar als je er eens over wilt sparren: ik denk graag mee. Vrijblijvend uiteraard.
 
-Zou u interesse hebben in een vrijblijvend gesprek? Ik kom graag langs voor een kop koffie.
-
-Met vriendelijke groet,
+Groet,
 
 {{afzender}}
-Webstability
-info@webstability.nl`
+Webstability`
   },
   {
     id: 'geen-website',
     name: 'Geen website',
-    subject: 'Een website voor {{bedrijf}} - makkelijker dan u denkt',
+    subject: 'Vraagje voor {{bedrijf}}',
     description: 'Voor bedrijven zonder online aanwezigheid',
-    body: `Beste {{naam}},
+    body: `Hoi {{naam}},
 
-Ik reed laatst langs {{bedrijf}} in {{stad}} en vroeg me af: heeft u weleens overwogen om een website te laten maken?
+Ik zag dat {{bedrijf}} geen website heeft. Eerlijk: niet elk bedrijf heeft dat nodig. Maar ik was benieuwd of jullie daar weleens over nagedacht hebben?
 
-Veel ondernemers denken dat een website duur en ingewikkeld is. Bij ons niet:
+Wij helpen ondernemers met hun website - van ontwerp tot onderhoud. Niks moeilijks, gewoon iets dat er goed uitziet en doet wat het moet doen.
 
-• Geen technische kennis nodig
-• Wij schrijven de teksten
-• Hosting en onderhoud inbegrepen
-• Al vanaf €99 per maand
+Als je vragen hebt of gewoon eens wilt horen wat de mogelijkheden zijn, laat gerust weten.
 
-Meer dan 150 ondernemers gingen u voor. Zullen we eens vrijblijvend kennismaken?
-
-Hartelijke groet,
+Groet,
 
 {{afzender}}
 Webstability`
@@ -132,25 +121,17 @@ Webstability`
   {
     id: 'verouderd',
     name: 'Verouderde website',
-    subject: 'Tijd voor een nieuwe website, {{bedrijf}}?',
+    subject: 'Opvallinkje over jullie website',
     description: 'Voor bedrijven met oude/slechte website',
-    body: `Beste {{naam}},
+    body: `Hoi {{naam}},
 
-Ik bekeek de website van {{bedrijf}} en zag mogelijkheden voor verbetering. Een moderne, snelle website kan echt het verschil maken voor uw bedrijf.
+Ik bekeek de website van {{bedrijf}} en dacht: die zou best een opfrisbeurt kunnen gebruiken. Niet om flauw te doen hoor, maar een moderne site kan echt verschil maken.
 
-Wat wij bieden:
+Wij helpen ondernemers met websites die er strak uitzien en goed werken op telefoon. Geen grote investering vooraf - wij werken met een abonnement.
 
-✓ Modern, fris design
-✓ Mobiel vriendelijk (85% zoekt op telefoon!)
-✓ Sneller dan uw huidige site
-✓ Beter vindbaar in Google
-✓ Maandelijks aan te passen
+Benieuwd wat er mogelijk is? Ik kijk graag even mee, geheel vrijblijvend.
 
-Geen grote investering vooraf - wij werken met een abonnement vanaf €99/maand.
-
-Interesse in een vrijblijvende website-scan? Ik laat zien wat er beter kan.
-
-Met vriendelijke groet,
+Groet,
 
 {{afzender}}
 Webstability`
@@ -158,17 +139,15 @@ Webstability`
   {
     id: 'followup',
     name: 'Follow-up',
-    subject: 'Even opvolgen - website voor {{bedrijf}}',
+    subject: 'Nog even terugkomen op mijn mailtje',
     description: 'Na eerste contact geen reactie',
-    body: `Beste {{naam}},
+    body: `Hoi {{naam}},
 
-Vorige week stuurde ik u een bericht over een website voor {{bedrijf}}. Ik begrijp dat u het druk heeft, maar wilde toch even opvolgen.
+Even een vriendelijke reminder - ik stuurde vorige week een berichtje over een website voor {{bedrijf}}.
 
-Heeft u wellicht vragen? Of past een telefoontje beter?
+Snap helemaal als je er geen tijd voor hebt gehad of als het gewoon niets voor jullie is. Maar mocht je nog vragen hebben, laat gerust weten.
 
-U kunt mij bereiken op 06-12345678 of gewoon op deze mail reageren.
-
-Vriendelijke groet,
+Groet,
 
 {{afzender}}
 Webstability`
@@ -176,23 +155,17 @@ Webstability`
   {
     id: 'lokaal',
     name: 'Lokale benadering',
-    subject: 'Collega-ondernemer uit {{stad}}',
+    subject: 'Mede-ondernemer uit de buurt',
     description: 'Nadruk op lokale samenwerking',
-    body: `Beste {{naam}},
+    body: `Hoi {{naam}},
 
-Als mede-ondernemer uit de regio {{stad}} wil ik graag even kennismaken.
+Als ondernemer uit de regio wilde ik me even voorstellen. Ik ben {{afzender}} van Webstability - wij maken websites voor ondernemers.
 
-Ik ben {{afzender}} van Webstability. Wij helpen lokale ondernemers aan professionele websites - zonder technisch gedoe en tegen een eerlijke prijs.
+Ik werk graag lokaal. Lekker persoonlijk, even langskomen als dat nodig is, en je weet wie je belt als er iets is.
 
-Waarom lokaal werken fijn is:
-• Persoonlijk contact, geen callcenter
-• We spreken dezelfde taal
-• Snel even langskomen kan altijd
-• We kennen de lokale markt
+Zin om eens kennis te maken? Koffie is van mij.
 
-Zullen we eens afspreken? Koffie is van mij!
-
-Hartelijke groet,
+Groet,
 
 {{afzender}}
 Webstability
@@ -201,25 +174,20 @@ Julianalaan 41, Kaag`
   {
     id: 'actie',
     name: 'Actie/Aanbieding',
-    subject: '🎄 Eindejaarsactie: gratis website-ontwerp voor {{bedrijf}}',
+    subject: 'Iets leuks voor {{bedrijf}} (eindejaarsactie)',
     description: 'Seizoensgebonden aanbieding',
-    body: `Beste {{naam}},
+    body: `Hoi {{naam}},
 
-Speciaal voor de feestdagen hebben wij een mooie actie:
+Even een berichtje over onze eindejaarsactie: wij maken gratis een website-ontwerp op maat voor {{bedrijf}}.
 
-🎁 GRATIS website-ontwerp (t.w.v. €199)
+Hoe het werkt:
+- Wij maken een ontwerp, geen verplichtingen
+- Vind je het wat? Dan gaan we verder
+- Niet tevreden? Niks aan de hand
 
-Dit betekent:
-✓ Wij maken een ontwerp op maat
-✓ Geen verplichtingen
-✓ Bevalt het? Dan starten we
-✓ Bevalt het niet? Geen kosten
+Geldt nog tot eind december. Interesse? Stuur even een berichtje terug.
 
-Deze actie geldt nog tot en met 31 december.
-
-Interesse? Reageer op deze mail of bel naar 06-12345678.
-
-Fijne feestdagen alvast!
+Fijne feestdagen!
 
 {{afzender}}
 Webstability`
