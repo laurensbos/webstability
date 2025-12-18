@@ -11,10 +11,18 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node'
 import { Redis } from '@upstash/redis'
 
-const kv = new Redis({
-  url: process.env.UPSTASH_REDIS_REST_URL || '',
-  token: process.env.UPSTASH_REDIS_REST_TOKEN || ''
-})
+// Initialize Redis with error handling
+let kv: Redis | null = null
+try {
+  const url = process.env.UPSTASH_REDIS_REST_URL
+  const token = process.env.UPSTASH_REDIS_REST_TOKEN
+  
+  if (url && token) {
+    kv = new Redis({ url, token })
+  }
+} catch (e) {
+  console.error('Failed to initialize Redis:', e)
+}
 
 interface Lead {
   id: string
@@ -55,6 +63,16 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     return res.status(200).end()
   }
 
+  // Check if Redis is available
+  if (!kv) {
+    console.log('[Leads API] Redis not configured, returning empty leads')
+    // Return empty array if Redis not available - allows frontend to work with localStorage
+    if (req.method === 'GET') {
+      return res.status(200).json({ leads: [], source: 'fallback' })
+    }
+    return res.status(200).json({ success: true, message: 'Running in offline mode' })
+  }
+
   try {
     switch (req.method) {
       case 'GET':
@@ -83,6 +101,10 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
 // GET - Alle leads ophalen
 async function getLeads(res: VercelResponse) {
+  if (!kv) {
+    return res.status(200).json({ leads: [] })
+  }
+  
   const ids = await kv.smembers('leads') as string[]
   
   if (!ids || ids.length === 0) {
@@ -90,7 +112,7 @@ async function getLeads(res: VercelResponse) {
   }
   
   const leads = await Promise.all(
-    ids.map(id => kv.get<Lead>(`lead:${id}`))
+    ids.map(id => kv!.get<Lead>(`lead:${id}`))
   )
   
   const validLeads = leads.filter((l): l is Lead => l !== null)
@@ -105,6 +127,10 @@ async function getLeads(res: VercelResponse) {
 
 // POST - Nieuwe lead toevoegen
 async function createLead(req: VercelRequest, res: VercelResponse) {
+  if (!kv) {
+    return res.status(200).json({ success: true, message: 'Offline mode' })
+  }
+  
   const body = req.body
   
   if (!body.companyName || !body.email || !body.city) {
@@ -143,6 +169,10 @@ async function createLead(req: VercelRequest, res: VercelResponse) {
 
 // PUT - Lead updaten
 async function updateLead(req: VercelRequest, res: VercelResponse) {
+  if (!kv) {
+    return res.status(200).json({ success: true, message: 'Offline mode' })
+  }
+  
   const body = req.body
   
   if (!body.id) {
@@ -171,6 +201,10 @@ async function updateLead(req: VercelRequest, res: VercelResponse) {
 
 // DELETE - Lead verwijderen
 async function deleteLead(req: VercelRequest, res: VercelResponse) {
+  if (!kv) {
+    return res.status(200).json({ success: true, message: 'Offline mode' })
+  }
+  
   const id = req.query.id as string
   
   if (!id) {

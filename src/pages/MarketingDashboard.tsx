@@ -337,10 +337,38 @@ export default function MarketingDashboard() {
   // Load leads - first from localStorage, then try API
   useEffect(() => {
     const loadLeads = async () => {
+      // Version check - clear old mockdata
+      const CURRENT_VERSION = '2.0.0' // Increment this when mockdata changes
+      const savedVersion = localStorage.getItem('webstability_leads_version')
+      
+      if (savedVersion !== CURRENT_VERSION) {
+        // Clear old data including mockdata
+        console.log('[MarketingDashboard] Clearing old data, upgrading to version', CURRENT_VERSION)
+        localStorage.removeItem('webstability_leads')
+        localStorage.setItem('webstability_leads_version', CURRENT_VERSION)
+      }
+      
       // Always load from localStorage first (instant)
       const saved = localStorage.getItem('webstability_leads')
       if (saved) {
-        setLeads(JSON.parse(saved))
+        try {
+          const parsed = JSON.parse(saved)
+          // Filter out any remaining mockdata by known IDs
+          const filtered = parsed.filter((l: Lead) => 
+            l.id !== '1' && l.id !== '2' && 
+            !l.companyName?.includes('Schildersbedrijf Jansen') &&
+            !l.companyName?.includes('Bakkerij De Gouden Korrel')
+          )
+          setLeads(filtered)
+          
+          // Update localStorage if we filtered anything
+          if (filtered.length !== parsed.length) {
+            localStorage.setItem('webstability_leads', JSON.stringify(filtered))
+          }
+        } catch {
+          console.log('Invalid leads data, starting fresh')
+          setLeads([])
+        }
       }
       
       // Then try to fetch from API (background)
@@ -947,29 +975,29 @@ export default function MarketingDashboard() {
         </motion.div>
 
         {/* Stats Grid - Modern Cards with Glassmorphism */}
-        <div className="grid grid-cols-2 lg:grid-cols-5 gap-3 sm:gap-4 mb-8">
+        <div className="grid grid-cols-3 sm:grid-cols-3 lg:grid-cols-5 gap-2 sm:gap-4 mb-6 sm:mb-8">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             whileHover={{ scale: 1.02, y: -4 }}
-            className={`rounded-2xl p-5 shadow-sm border backdrop-blur-xl transition-all cursor-pointer ${
+            className={`rounded-xl sm:rounded-2xl p-3 sm:p-5 shadow-sm border backdrop-blur-xl transition-all cursor-pointer ${
               darkMode 
                 ? 'bg-gray-800/60 border-gray-700/50 hover:border-blue-500/50' 
                 : 'bg-white/80 border-gray-200/50 hover:border-blue-300 hover:shadow-lg hover:shadow-blue-500/10'
             }`}
           >
-            <div className="flex items-start justify-between mb-3">
-              <div className={`p-3 rounded-xl ${darkMode ? 'bg-blue-500/20' : 'bg-gradient-to-br from-blue-50 to-blue-100'}`}>
-                <Building2 className={`w-5 h-5 ${darkMode ? 'text-blue-400' : 'text-blue-600'}`} />
+            <div className="flex items-start justify-between mb-2 sm:mb-3">
+              <div className={`p-2 sm:p-3 rounded-lg sm:rounded-xl ${darkMode ? 'bg-blue-500/20' : 'bg-gradient-to-br from-blue-50 to-blue-100'}`}>
+                <Building2 className={`w-4 h-4 sm:w-5 sm:h-5 ${darkMode ? 'text-blue-400' : 'text-blue-600'}`} />
               </div>
-              <span className={`text-xs font-medium px-2 py-1 rounded-full ${
+              <span className={`hidden sm:inline text-xs font-medium px-2 py-1 rounded-full ${
                 darkMode ? 'bg-blue-500/20 text-blue-400' : 'bg-blue-50 text-blue-600'
               }`}>
                 Totaal
               </span>
             </div>
-            <p className={`text-3xl font-bold ${darkMode ? 'text-white' : 'text-gray-900'}`}>{stats.total}</p>
-            <p className={`text-sm mt-1 ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>Leads</p>
+            <p className={`text-2xl sm:text-3xl font-bold ${darkMode ? 'text-white' : 'text-gray-900'}`}>{stats.total}</p>
+            <p className={`text-xs sm:text-sm mt-1 ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>Leads</p>
           </motion.div>
 
           <motion.div
@@ -977,20 +1005,20 @@ export default function MarketingDashboard() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.05 }}
             whileHover={{ scale: 1.02, y: -4 }}
-            className={`rounded-2xl p-5 shadow-sm border transition-all cursor-pointer ${
+            className={`rounded-xl sm:rounded-2xl p-3 sm:p-5 shadow-sm border transition-all cursor-pointer ${
               darkMode 
                 ? 'bg-gray-800/50 border-gray-700/50 hover:border-amber-500/50' 
                 : 'bg-white border-gray-100 hover:border-amber-200 hover:shadow-lg hover:shadow-amber-500/5'
             }`}
           >
-            <div className="flex items-start justify-between mb-3">
-              <div className={`p-3 rounded-xl ${darkMode ? 'bg-amber-500/20' : 'bg-gradient-to-br from-amber-50 to-amber-100'}`}>
-                <Mail className={`w-5 h-5 ${darkMode ? 'text-amber-400' : 'text-amber-600'}`} />
+            <div className="flex items-start justify-between mb-2 sm:mb-3">
+              <div className={`p-2 sm:p-3 rounded-lg sm:rounded-xl ${darkMode ? 'bg-amber-500/20' : 'bg-gradient-to-br from-amber-50 to-amber-100'}`}>
+                <Mail className={`w-4 h-4 sm:w-5 sm:h-5 ${darkMode ? 'text-amber-400' : 'text-amber-600'}`} />
               </div>
-              <Sparkles className={`w-4 h-4 ${darkMode ? 'text-amber-400' : 'text-amber-500'}`} />
+              <Sparkles className={`hidden sm:block w-4 h-4 ${darkMode ? 'text-amber-400' : 'text-amber-500'}`} />
             </div>
-            <p className={`text-3xl font-bold ${darkMode ? 'text-white' : 'text-gray-900'}`}>{stats.emailsSent}</p>
-            <p className={`text-sm mt-1 ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>Emails verstuurd</p>
+            <p className={`text-2xl sm:text-3xl font-bold ${darkMode ? 'text-white' : 'text-gray-900'}`}>{stats.emailsSent}</p>
+            <p className={`text-xs sm:text-sm mt-1 ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>Emails</p>
           </motion.div>
 
           <motion.div
@@ -998,19 +1026,19 @@ export default function MarketingDashboard() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.1 }}
             whileHover={{ scale: 1.02, y: -4 }}
-            className={`rounded-2xl p-5 shadow-sm border transition-all cursor-pointer ${
+            className={`rounded-xl sm:rounded-2xl p-3 sm:p-5 shadow-sm border transition-all cursor-pointer ${
               darkMode 
                 ? 'bg-gray-800/50 border-gray-700/50 hover:border-purple-500/50' 
                 : 'bg-white border-gray-100 hover:border-purple-200 hover:shadow-lg hover:shadow-purple-500/5'
             }`}
           >
-            <div className="flex items-start justify-between mb-3">
-              <div className={`p-3 rounded-xl ${darkMode ? 'bg-purple-500/20' : 'bg-gradient-to-br from-purple-50 to-purple-100'}`}>
-                <Target className={`w-5 h-5 ${darkMode ? 'text-purple-400' : 'text-purple-600'}`} />
+            <div className="flex items-start justify-between mb-2 sm:mb-3">
+              <div className={`p-2 sm:p-3 rounded-lg sm:rounded-xl ${darkMode ? 'bg-purple-500/20' : 'bg-gradient-to-br from-purple-50 to-purple-100'}`}>
+                <Target className={`w-4 h-4 sm:w-5 sm:h-5 ${darkMode ? 'text-purple-400' : 'text-purple-600'}`} />
               </div>
             </div>
-            <p className={`text-3xl font-bold ${darkMode ? 'text-white' : 'text-gray-900'}`}>{stats.gecontacteerd + stats.geinteresseerd}</p>
-            <p className={`text-sm mt-1 ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>In gesprek</p>
+            <p className={`text-2xl sm:text-3xl font-bold ${darkMode ? 'text-white' : 'text-gray-900'}`}>{stats.gecontacteerd + stats.geinteresseerd}</p>
+            <p className={`text-xs sm:text-sm mt-1 ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>In gesprek</p>
           </motion.div>
 
           <motion.div
@@ -1018,24 +1046,24 @@ export default function MarketingDashboard() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.15 }}
             whileHover={{ scale: 1.02, y: -4 }}
-            className={`rounded-2xl p-5 shadow-sm border transition-all cursor-pointer ${
+            className={`rounded-xl sm:rounded-2xl p-3 sm:p-5 shadow-sm border transition-all cursor-pointer col-span-1 sm:col-span-1 ${
               darkMode 
                 ? 'bg-gradient-to-br from-emerald-900/50 to-emerald-800/30 border-emerald-700/50' 
                 : 'bg-gradient-to-br from-emerald-50 to-emerald-100/50 border-emerald-100 hover:shadow-lg hover:shadow-emerald-500/10'
             }`}
           >
-            <div className="flex items-start justify-between mb-3">
-              <div className={`p-3 rounded-xl ${darkMode ? 'bg-emerald-500/20' : 'bg-white shadow-sm'}`}>
-                <TrendingUp className={`w-5 h-5 ${darkMode ? 'text-emerald-400' : 'text-emerald-600'}`} />
+            <div className="flex items-start justify-between mb-2 sm:mb-3">
+              <div className={`p-2 sm:p-3 rounded-lg sm:rounded-xl ${darkMode ? 'bg-emerald-500/20' : 'bg-white shadow-sm'}`}>
+                <TrendingUp className={`w-4 h-4 sm:w-5 sm:h-5 ${darkMode ? 'text-emerald-400' : 'text-emerald-600'}`} />
               </div>
-              <span className={`text-xs font-medium px-2 py-1 rounded-full ${
+              <span className={`hidden sm:inline text-xs font-medium px-2 py-1 rounded-full ${
                 darkMode ? 'bg-emerald-500/20 text-emerald-400' : 'bg-emerald-100 text-emerald-700'
               }`}>
                 🎉
               </span>
             </div>
-            <p className={`text-3xl font-bold ${darkMode ? 'text-white' : 'text-gray-900'}`}>{stats.klanten}</p>
-            <p className={`text-sm mt-1 ${darkMode ? 'text-emerald-400' : 'text-emerald-600'}`}>Klanten gewonnen</p>
+            <p className={`text-2xl sm:text-3xl font-bold ${darkMode ? 'text-white' : 'text-gray-900'}`}>{stats.klanten}</p>
+            <p className={`text-xs sm:text-sm mt-1 ${darkMode ? 'text-emerald-400' : 'text-emerald-600'}`}>Klanten</p>
           </motion.div>
 
           <motion.div
@@ -1043,7 +1071,7 @@ export default function MarketingDashboard() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.2 }}
             whileHover={{ scale: 1.02, y: -4 }}
-            className={`rounded-2xl p-5 shadow-sm border transition-all cursor-pointer ${
+            className={`rounded-xl sm:rounded-2xl p-3 sm:p-5 shadow-sm border transition-all cursor-pointer col-span-2 sm:col-span-1 ${
               stats.followUpsOverdue > 0 
                 ? darkMode 
                   ? 'bg-gradient-to-br from-red-900/50 to-red-800/30 border-red-500/50' 
@@ -1057,15 +1085,15 @@ export default function MarketingDashboard() {
                     : 'bg-white border-gray-100'
             }`}
           >
-            <div className="flex items-start justify-between mb-3">
-              <div className={`p-3 rounded-xl ${
+            <div className="flex items-start justify-between mb-2 sm:mb-3">
+              <div className={`p-2 sm:p-3 rounded-xl ${
                 stats.followUpsOverdue > 0 
                   ? darkMode ? 'bg-red-500/20' : 'bg-white shadow-sm'
                   : stats.followUpsToday > 0 
                     ? darkMode ? 'bg-orange-500/20' : 'bg-white shadow-sm'
                     : darkMode ? 'bg-gray-700' : 'bg-gray-100'
               }`}>
-                <Calendar className={`w-5 h-5 ${
+                <Calendar className={`w-4 h-4 sm:w-5 sm:h-5 ${
                   stats.followUpsOverdue > 0 
                     ? darkMode ? 'text-red-400' : 'text-red-600'
                     : stats.followUpsToday > 0 
@@ -1074,16 +1102,16 @@ export default function MarketingDashboard() {
                 }`} />
               </div>
               {stats.followUpsOverdue > 0 && (
-                <span className="relative flex h-3 w-3">
+                <span className="relative flex h-2 w-2 sm:h-3 sm:w-3">
                   <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
-                  <span className="relative inline-flex rounded-full h-3 w-3 bg-red-500"></span>
+                  <span className="relative inline-flex rounded-full h-2 w-2 sm:h-3 sm:w-3 bg-red-500"></span>
                 </span>
               )}
             </div>
-            <p className={`text-3xl font-bold ${darkMode ? 'text-white' : 'text-gray-900'}`}>
+            <p className={`text-xl sm:text-3xl font-bold ${darkMode ? 'text-white' : 'text-gray-900'}`}>
               {stats.followUpsToday + stats.followUpsOverdue}
             </p>
-            <p className={`text-sm mt-1 ${
+            <p className={`text-[10px] sm:text-sm mt-0.5 sm:mt-1 ${
               stats.followUpsOverdue > 0 
                 ? darkMode ? 'text-red-400' : 'text-red-600'
                 : darkMode ? 'text-gray-400' : 'text-gray-500'
@@ -1098,27 +1126,28 @@ export default function MarketingDashboard() {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.25 }}
-          className="mb-8"
+          className="mb-6 sm:mb-8 -mx-4 sm:mx-0"
         >
-          <div className="flex flex-wrap gap-3">
+          <div className="flex gap-2 sm:gap-3 overflow-x-auto px-4 sm:px-0 pb-2 sm:pb-0 scrollbar-hide sm:flex-wrap sm:overflow-visible">
             <motion.button
               whileHover={{ scale: 1.02 }}
               whileTap={{ scale: 0.98 }}
               onClick={() => setShowAddModal(true)}
-              className={`flex items-center gap-2 px-4 py-2.5 rounded-xl font-medium transition-all ${
+              className={`flex items-center gap-1.5 sm:gap-2 px-3 sm:px-4 py-2 sm:py-2.5 rounded-xl font-medium transition-all whitespace-nowrap text-sm ${
                 darkMode 
                   ? 'bg-emerald-600 text-white hover:bg-emerald-500' 
                   : 'bg-emerald-500 text-white hover:bg-emerald-600 shadow-lg shadow-emerald-500/20'
               }`}
             >
               <Plus className="w-4 h-4" />
-              Nieuw bedrijf
+              <span className="hidden sm:inline">Nieuw bedrijf</span>
+              <span className="sm:hidden">Nieuw</span>
             </motion.button>
             <motion.button
               whileHover={{ scale: 1.02 }}
               whileTap={{ scale: 0.98 }}
               onClick={() => setMainTab('zoeken')}
-              className={`flex items-center gap-2 px-4 py-2.5 rounded-xl font-medium transition-all ${
+              className={`flex items-center gap-1.5 sm:gap-2 px-3 sm:px-4 py-2 sm:py-2.5 rounded-xl font-medium transition-all whitespace-nowrap text-sm ${
                 mainTab === 'zoeken'
                   ? 'bg-emerald-500 text-white shadow-lg shadow-emerald-500/20'
                   : darkMode 
@@ -1127,13 +1156,13 @@ export default function MarketingDashboard() {
               }`}
             >
               <Search className="w-4 h-4" />
-              Bedrijven zoeken
+              Zoeken
             </motion.button>
             <motion.button
               whileHover={{ scale: 1.02 }}
               whileTap={{ scale: 0.98 }}
               onClick={() => setMainTab('leads')}
-              className={`flex items-center gap-2 px-4 py-2.5 rounded-xl font-medium transition-all ${
+              className={`flex items-center gap-1.5 sm:gap-2 px-3 sm:px-4 py-2 sm:py-2.5 rounded-xl font-medium transition-all whitespace-nowrap text-sm ${
                 mainTab === 'leads'
                   ? 'bg-blue-500 text-white shadow-lg shadow-blue-500/20'
                   : darkMode 
@@ -1142,20 +1171,21 @@ export default function MarketingDashboard() {
               }`}
             >
               <Building2 className="w-4 h-4" />
-              Mijn leads ({leads.length})
+              Leads ({leads.length})
             </motion.button>
             <motion.button
               whileHover={{ scale: 1.02 }}
               whileTap={{ scale: 0.98 }}
               onClick={exportToCSV}
-              className={`flex items-center gap-2 px-4 py-2.5 rounded-xl font-medium transition-all ${
+              className={`flex items-center gap-1.5 sm:gap-2 px-3 sm:px-4 py-2 sm:py-2.5 rounded-xl font-medium transition-all whitespace-nowrap text-sm ${
                 darkMode 
                   ? 'bg-gray-800 text-gray-300 hover:bg-gray-700' 
                   : 'bg-white text-gray-700 hover:bg-gray-50 border border-gray-200'
               }`}
             >
               <Download className="w-4 h-4" />
-              Exporteer CSV
+              <span className="hidden sm:inline">Exporteer</span>
+              <span className="sm:hidden">CSV</span>
             </motion.button>
             <motion.button
               whileHover={{ scale: 1.02 }}
@@ -1165,7 +1195,7 @@ export default function MarketingDashboard() {
                 setOnboardingStep(0)
                 setShowOnboarding(true)
               }}
-              className={`flex items-center gap-2 px-4 py-2.5 rounded-xl font-medium transition-all ${
+              className={`flex items-center gap-1.5 sm:gap-2 px-3 sm:px-4 py-2 sm:py-2.5 rounded-xl font-medium transition-all whitespace-nowrap text-sm ${
                 darkMode 
                   ? 'bg-gray-800 text-gray-300 hover:bg-gray-700' 
                   : 'bg-white text-gray-700 hover:bg-gray-50 border border-gray-200'
@@ -1182,12 +1212,12 @@ export default function MarketingDashboard() {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.3 }}
-          className={`rounded-2xl p-5 border backdrop-blur-xl mb-6 ${
+          className={`rounded-2xl p-3 sm:p-5 border backdrop-blur-xl mb-4 sm:mb-6 ${
             darkMode ? 'bg-gray-800/60 border-gray-700/50' : 'bg-white/80 border-gray-200/50'
           }`}
         >
           {/* Conversie Funnel */}
-          <h3 className={`text-sm font-semibold mb-4 ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>
+          <h3 className={`text-xs sm:text-sm font-semibold mb-3 sm:mb-4 ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>
             Conversie Funnel
           </h3>
           <div className="flex items-center justify-between gap-1 sm:gap-2 text-center overflow-x-auto mb-4">
@@ -1243,27 +1273,27 @@ export default function MarketingDashboard() {
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            className={`rounded-2xl p-6 border backdrop-blur-xl mb-6 ${
+            className={`rounded-2xl p-4 sm:p-6 border backdrop-blur-xl mb-4 sm:mb-6 ${
               darkMode ? 'bg-gray-800/60 border-gray-700/50' : 'bg-white/80 border-gray-200/50'
             }`}
           >
-            <h3 className={`text-lg font-semibold mb-4 flex items-center gap-2 ${darkMode ? 'text-white' : 'text-gray-900'}`}>
-              <MapPin className="w-5 h-5 text-emerald-500" />
-              Zoek bedrijven in de buurt
+            <h3 className={`text-base sm:text-lg font-semibold mb-3 sm:mb-4 flex items-center gap-2 ${darkMode ? 'text-white' : 'text-gray-900'}`}>
+              <MapPin className="w-4 h-4 sm:w-5 sm:h-5 text-emerald-500" />
+              Zoek bedrijven
             </h3>
             
-            <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-4">
-              <div className="md:col-span-1">
-                <label className={`block text-sm font-medium mb-1 ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>
-                  Stad of postcode
+            <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-4 gap-2 sm:gap-4 mb-3 sm:mb-4">
+              <div className="col-span-2 sm:col-span-1 md:col-span-1">
+                <label className={`block text-xs sm:text-sm font-medium mb-1 ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>
+                  Stad/postcode
                 </label>
                 <input
                   type="text"
                   value={searchCity}
                   onChange={(e) => setSearchCity(e.target.value)}
                   onKeyDown={(e) => e.key === 'Enter' && handleBusinessSearch()}
-                  placeholder="bijv. Leiden of 2312"
-                  className={`w-full px-4 py-2.5 rounded-xl border ${
+                  placeholder="bijv. Leiden"
+                  className={`w-full px-3 sm:px-4 py-2 sm:py-2.5 rounded-xl border text-sm ${
                     darkMode 
                       ? 'bg-gray-700 border-gray-600 text-white placeholder-gray-500' 
                       : 'bg-white border-gray-200 text-gray-900 placeholder-gray-400'
@@ -1272,13 +1302,13 @@ export default function MarketingDashboard() {
               </div>
               
               <div>
-                <label className={`block text-sm font-medium mb-1 ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>
-                  Type bedrijf
+                <label className={`block text-xs sm:text-sm font-medium mb-1 ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>
+                  Type
                 </label>
                 <select
                   value={searchType}
                   onChange={(e) => setSearchType(e.target.value)}
-                  className={`w-full px-4 py-2.5 rounded-xl border ${
+                  className={`w-full px-2 sm:px-4 py-2 sm:py-2.5 rounded-xl border text-sm ${
                     darkMode 
                       ? 'bg-gray-700 border-gray-600 text-white' 
                       : 'bg-white border-gray-200 text-gray-900'
@@ -1291,13 +1321,13 @@ export default function MarketingDashboard() {
               </div>
               
               <div>
-                <label className={`block text-sm font-medium mb-1 ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>
+                <label className={`block text-xs sm:text-sm font-medium mb-1 ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>
                   Straal
                 </label>
                 <select
                   value={searchRadius}
                   onChange={(e) => setSearchRadius(e.target.value)}
-                  className={`w-full px-4 py-2.5 rounded-xl border ${
+                  className={`w-full px-2 sm:px-4 py-2 sm:py-2.5 rounded-xl border text-sm ${
                     darkMode 
                       ? 'bg-gray-700 border-gray-600 text-white' 
                       : 'bg-white border-gray-200 text-gray-900'
@@ -1316,7 +1346,7 @@ export default function MarketingDashboard() {
                   whileTap={{ scale: 0.98 }}
                   onClick={handleBusinessSearch}
                   disabled={isSearching || !searchCity.trim()}
-                  className="w-full px-6 py-2.5 bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-600 hover:to-emerald-700 disabled:from-gray-400 disabled:to-gray-500 text-white font-medium rounded-xl transition-all flex items-center justify-center gap-2"
+                  className="w-full px-4 sm:px-6 py-2 sm:py-2.5 bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-600 hover:to-emerald-700 disabled:from-gray-400 disabled:to-gray-500 text-white font-medium rounded-xl transition-all flex items-center justify-center gap-2 text-sm"
                 >
                   {isSearching ? (
                     <RefreshCw className="w-4 h-4 animate-spin" />
