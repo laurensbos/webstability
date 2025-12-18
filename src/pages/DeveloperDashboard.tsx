@@ -50,6 +50,8 @@ import {
   RefreshCw,
   ArrowRight,
   Copy,
+  Trash2,
+  AlertTriangle,
 } from 'lucide-react'
 import Logo from '../components/Logo'
 
@@ -1767,12 +1769,74 @@ function ProjectsView({ darkMode, projects, onUpdateProject, onDeleteProject, on
     )
   }
 
-  // Kanban Column Component
+  // Drag state for kanban
+  const [draggedProject, setDraggedProject] = useState<Project | null>(null)
+  const [dragOverPhase, setDragOverPhase] = useState<ProjectPhase | null>(null)
+
+  // Handle drop on a phase column
+  const handleDropOnPhase = async (targetPhase: ProjectPhase) => {
+    if (!draggedProject || draggedProject.phase === targetPhase) {
+      setDraggedProject(null)
+      setDragOverPhase(null)
+      return
+    }
+
+    // Update project phase
+    const updatedProject = { 
+      ...draggedProject, 
+      phase: targetPhase, 
+      updatedAt: new Date().toISOString() 
+    }
+    onUpdateProject(updatedProject)
+
+    // Send phase change email to client
+    try {
+      const token = sessionStorage.getItem('webstability_dev_token')
+      await fetch('/api/send-phase-email', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify({
+          projectId: draggedProject.projectId,
+          projectName: draggedProject.businessName,
+          customerEmail: draggedProject.contactEmail,
+          customerName: draggedProject.contactName || draggedProject.businessName,
+          newPhase: targetPhase
+        })
+      })
+      console.log(`✅ Fase-wijziging email verstuurd naar ${draggedProject.contactEmail}`)
+    } catch (error) {
+      console.error('Kon fase-email niet versturen:', error)
+    }
+
+    setDraggedProject(null)
+    setDragOverPhase(null)
+  }
+
+  // Kanban Column Component with Drag & Drop
   const KanbanColumn = ({ phase }: { phase: typeof phases[0] }) => {
     const phaseProjects = getProjectsByPhase(phase.key)
+    const isDragOver = dragOverPhase === phase.key
     
     return (
-      <div className={`flex-1 min-w-0 rounded-2xl ${phase.bgColor} p-4`}>
+      <div 
+        className={`flex-1 min-w-0 rounded-2xl ${phase.bgColor} p-4 transition-all ${
+          isDragOver ? 'ring-2 ring-emerald-500 ring-offset-2 scale-[1.02]' : ''
+        } ${draggedProject ? 'cursor-pointer' : ''}`}
+        onDragOver={(e) => {
+          e.preventDefault()
+          if (draggedProject && draggedProject.phase !== phase.key) {
+            setDragOverPhase(phase.key)
+          }
+        }}
+        onDragLeave={() => setDragOverPhase(null)}
+        onDrop={(e) => {
+          e.preventDefault()
+          handleDropOnPhase(phase.key)
+        }}
+      >
         <div className="flex items-center justify-between mb-4">
           <div className="flex items-center gap-2">
             <div className={`w-3 h-3 rounded-full ${phase.color}`} />
@@ -1790,15 +1854,28 @@ function ProjectsView({ darkMode, projects, onUpdateProject, onDeleteProject, on
         <div className="space-y-3 min-h-[200px]">
           <AnimatePresence>
             {phaseProjects.map(project => (
-              <ProjectCard key={project.id} project={project} />
+              <div
+                key={project.id}
+                draggable
+                onDragStart={() => setDraggedProject(project)}
+                onDragEnd={() => {
+                  setDraggedProject(null)
+                  setDragOverPhase(null)
+                }}
+                className={`${draggedProject?.id === project.id ? 'opacity-50' : ''}`}
+              >
+                <ProjectCard project={project} />
+              </div>
             ))}
           </AnimatePresence>
           
           {phaseProjects.length === 0 && (
-            <div className={`p-4 text-center text-sm rounded-xl border-2 border-dashed ${
-              darkMode ? 'border-gray-700 text-gray-500' : 'border-gray-200 text-gray-400'
+            <div className={`p-4 text-center text-sm rounded-xl border-2 border-dashed transition-all ${
+              isDragOver 
+                ? 'border-emerald-500 text-emerald-500 bg-emerald-500/10' 
+                : darkMode ? 'border-gray-700 text-gray-500' : 'border-gray-200 text-gray-400'
             }`}>
-              Geen projecten
+              {isDragOver ? 'Loslaten om hier te plaatsen' : 'Geen projecten'}
             </div>
           )}
         </div>
@@ -1897,10 +1974,14 @@ function ProjectsView({ darkMode, projects, onUpdateProject, onDeleteProject, on
 
       {/* Kanban View */}
       {viewMode === 'kanban' && (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-4">
-          {phases.map(phase => (
-            <KanbanColumn key={phase.key} phase={phase} />
-          ))}
+        <div className="overflow-x-auto pb-4 -mx-4 px-4 md:mx-0 md:px-0">
+          <div className="flex md:grid md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-4 min-w-max md:min-w-0">
+            {phases.map(phase => (
+              <div key={phase.key} className="w-72 md:w-auto flex-shrink-0 md:flex-shrink">
+                <KanbanColumn phase={phase} />
+              </div>
+            ))}
+          </div>
         </div>
       )}
 
@@ -2068,7 +2149,7 @@ interface ProjectDetailModalProps {
 }
 
 function ProjectDetailModal({ project, darkMode, onClose, onUpdate, onDelete, onPaymentClick, phases }: ProjectDetailModalProps) {
-  const [activeTab, setActiveTab] = useState<'overview' | 'messages' | 'urls' | 'payment' | 'settings'>('overview')
+  const [activeTab, setActiveTab] = useState<'overview' | 'messages' | 'urls' | 'payment' | 'onboarding' | 'settings'>('overview')
   const [paymentLoading, setPaymentLoading] = useState(false)
   const [generatedPaymentUrl, setGeneratedPaymentUrl] = useState('')
   const [paymentDescription, setPaymentDescription] = useState('')
@@ -2254,7 +2335,7 @@ function ProjectDetailModal({ project, darkMode, onClose, onUpdate, onDelete, on
 
           {/* Tabs */}
           <div className="flex gap-2 mt-4 overflow-x-auto pb-1">
-            {(['overview', 'messages', 'urls', 'payment', 'settings'] as const).map(tab => (
+            {(['overview', 'messages', 'urls', 'payment', 'onboarding', 'settings'] as const).map(tab => (
               <button
                 key={tab}
                 onClick={() => setActiveTab(tab)}
@@ -2282,6 +2363,15 @@ function ProjectDetailModal({ project, darkMode, onClose, onUpdate, onDelete, on
                   <>
                     <CreditCard className="w-4 h-4" />
                     Betaling
+                  </>
+                )}
+                {tab === 'onboarding' && (
+                  <>
+                    <FileText className="w-4 h-4" />
+                    Onboarding
+                    {project.onboardingData && Object.keys(project.onboardingData).length > 0 && (
+                      <span className={`w-2 h-2 rounded-full bg-emerald-500`} />
+                    )}
                   </>
                 )}
                 {tab === 'settings' && 'Instellingen'}
@@ -2953,6 +3043,93 @@ function ProjectDetailModal({ project, darkMode, onClose, onUpdate, onDelete, on
             </div>
           )}
 
+          {/* Onboarding Tab */}
+          {activeTab === 'onboarding' && (
+            <div className="space-y-6">
+              {project.onboardingData && Object.keys(project.onboardingData).length > 0 ? (
+                <>
+                  <div className={`p-4 rounded-xl ${darkMode ? 'bg-emerald-900/20 border border-emerald-500/30' : 'bg-emerald-50 border border-emerald-200'}`}>
+                    <div className="flex items-center gap-3">
+                      <CheckCircle className="w-5 h-5 text-emerald-500" />
+                      <div>
+                        <h4 className={`font-semibold ${darkMode ? 'text-emerald-400' : 'text-emerald-800'}`}>
+                          Onboarding ingevuld
+                        </h4>
+                        <p className={`text-sm ${darkMode ? 'text-emerald-500' : 'text-emerald-700'}`}>
+                          De klant heeft de onboarding gegevens ingevuld
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="space-y-4">
+                    {Object.entries(project.onboardingData).map(([key, value]) => {
+                      // Skip internal fields
+                      if (key === 'lastUpdated' || key === 'projectId') return null
+                      
+                      // Format the key for display
+                      const formatKey = (k: string) => {
+                        const labels: Record<string, string> = {
+                          businessName: 'Bedrijfsnaam',
+                          businessDescription: 'Bedrijfsomschrijving',
+                          targetAudience: 'Doelgroep',
+                          websiteGoals: 'Website doelen',
+                          preferredColors: 'Voorkeurskleuren',
+                          exampleWebsites: 'Voorbeeldwebsites',
+                          logo: 'Logo',
+                          content: 'Content/Teksten',
+                          pages: 'Gewenste pagina\'s',
+                          contactInfo: 'Contactgegevens',
+                          socialMedia: 'Social media links',
+                          specialRequirements: 'Speciale wensen',
+                          deadline: 'Deadline',
+                          additionalNotes: 'Extra opmerkingen'
+                        }
+                        return labels[k] || k.replace(/([A-Z])/g, ' $1').replace(/^./, str => str.toUpperCase())
+                      }
+
+                      // Format the value for display
+                      const formatValue = (v: unknown): string => {
+                        if (v === null || v === undefined || v === '') return '-'
+                        if (typeof v === 'boolean') return v ? 'Ja' : 'Nee'
+                        if (Array.isArray(v)) return v.join(', ') || '-'
+                        if (typeof v === 'object') return JSON.stringify(v, null, 2)
+                        return String(v)
+                      }
+
+                      const displayValue = formatValue(value)
+                      if (displayValue === '-') return null
+
+                      return (
+                        <div key={key} className={`p-4 rounded-xl border ${darkMode ? 'bg-gray-800/50 border-gray-700' : 'bg-gray-50 border-gray-200'}`}>
+                          <p className={`text-sm font-medium mb-1 ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>
+                            {formatKey(key)}
+                          </p>
+                          <p className={`${darkMode ? 'text-white' : 'text-gray-900'} whitespace-pre-wrap break-words`}>
+                            {displayValue}
+                          </p>
+                        </div>
+                      )
+                    })}
+                  </div>
+                </>
+              ) : (
+                <div className={`p-8 rounded-xl text-center ${darkMode ? 'bg-gray-800/50 border border-gray-700' : 'bg-gray-50 border border-gray-200'}`}>
+                  <FileText className={`w-12 h-12 mx-auto mb-4 ${darkMode ? 'text-gray-600' : 'text-gray-300'}`} />
+                  <h4 className={`font-semibold mb-2 ${darkMode ? 'text-white' : 'text-gray-900'}`}>
+                    Nog geen onboarding gegevens
+                  </h4>
+                  <p className={`text-sm ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>
+                    De klant heeft nog geen onboarding formulier ingevuld.
+                  </p>
+                  <p className={`text-xs mt-2 ${darkMode ? 'text-gray-500' : 'text-gray-400'}`}>
+                    Klantportaal: {window.location.origin}/project/{project.projectId}
+                  </p>
+                </div>
+              )}
+            </div>
+          )}
+
           {activeTab === 'settings' && (
             <div className="space-y-6">
               <div className={`p-4 rounded-xl ${darkMode ? 'bg-yellow-900/20 border border-yellow-500/50' : 'bg-yellow-50 border border-yellow-200'}`}>
@@ -3042,13 +3219,19 @@ interface ClientsViewProps {
   projects: Project[]
   onSelectClient: (client: Client) => void
   onAddClient: (client: Client) => void
+  onDeleteClient: (clientId: string, projectIds: string[]) => Promise<void>
 }
 
-function ClientsView({ darkMode, clients, projects, onSelectClient, onAddClient }: ClientsViewProps) {
+function ClientsView({ darkMode, clients, projects, onSelectClient, onAddClient, onDeleteClient }: ClientsViewProps) {
   const [searchQuery, setSearchQuery] = useState('')
   const [sortBy, setSortBy] = useState<'name' | 'projects' | 'spent' | 'date'>('date')
   const [_selectedClient, setSelectedClient] = useState<Client | null>(null)
   const [showAddModal, setShowAddModal] = useState(false)
+  const [showDeleteModal, setShowDeleteModal] = useState(false)
+  const [clientToDelete, setClientToDelete] = useState<Client | null>(null)
+  const [deletePassword, setDeletePassword] = useState('')
+  const [deleteError, setDeleteError] = useState('')
+  const [isDeleting, setIsDeleting] = useState(false)
   const [newClient, setNewClient] = useState({
     name: '',
     email: '',
@@ -3105,6 +3288,39 @@ function ClientsView({ darkMode, clients, projects, onSelectClient, onAddClient 
       setSubmitStatus('error')
     } finally {
       setIsSubmitting(false)
+    }
+  }
+
+  const handleDeleteClick = (e: React.MouseEvent, client: Client) => {
+    e.stopPropagation()
+    setClientToDelete(client)
+    setDeletePassword('')
+    setDeleteError('')
+    setShowDeleteModal(true)
+  }
+
+  const handleConfirmDelete = async () => {
+    if (deletePassword !== DEV_PASSWORD) {
+      setDeleteError('Onjuist wachtwoord')
+      return
+    }
+
+    if (!clientToDelete) return
+
+    setIsDeleting(true)
+    setDeleteError('')
+
+    try {
+      const clientProjects = projects.filter(p => clientToDelete.projects.includes(p.id))
+      await onDeleteClient(clientToDelete.id, clientProjects.map(p => p.id))
+      setShowDeleteModal(false)
+      setClientToDelete(null)
+      setDeletePassword('')
+    } catch (error) {
+      console.error('Error deleting client:', error)
+      setDeleteError('Er ging iets mis bij het verwijderen')
+    } finally {
+      setIsDeleting(false)
     }
   }
 
@@ -3373,7 +3589,135 @@ function ClientsView({ darkMode, clients, projects, onSelectClient, onAddClient 
             </motion.div>
           </motion.div>
         )}
-      </AnimatePresence>      {/* Clients Grid */}
+      </AnimatePresence>
+
+      {/* Delete Confirmation Modal */}
+      <AnimatePresence>
+        {showDeleteModal && clientToDelete && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm"
+            onClick={() => setShowDeleteModal(false)}
+          >
+            <motion.div
+              initial={{ scale: 0.95, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.95, opacity: 0 }}
+              onClick={(e) => e.stopPropagation()}
+              className={`w-full max-w-md rounded-2xl p-6 ${
+                darkMode ? 'bg-gray-800 border border-gray-700' : 'bg-white shadow-xl'
+              }`}
+            >
+              <div className="flex items-center justify-between mb-6">
+                <div className="flex items-center gap-3">
+                  <div className="p-3 rounded-xl bg-red-500/20">
+                    <Trash2 className="w-6 h-6 text-red-500" />
+                  </div>
+                  <div>
+                    <h2 className={`text-xl font-bold ${darkMode ? 'text-white' : 'text-gray-900'}`}>
+                      Klant verwijderen
+                    </h2>
+                    <p className={`text-sm ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>
+                      {clientToDelete.name}
+                    </p>
+                  </div>
+                </div>
+                <button
+                  onClick={() => setShowDeleteModal(false)}
+                  className={`p-2 rounded-xl transition-colors ${
+                    darkMode ? 'hover:bg-gray-700 text-gray-400' : 'hover:bg-gray-100 text-gray-500'
+                  }`}
+                >
+                  <X className="w-5 h-5" />
+                </button>
+              </div>
+
+              <div className={`p-4 rounded-xl mb-4 ${darkMode ? 'bg-red-500/10 border border-red-500/20' : 'bg-red-50 border border-red-100'}`}>
+                <div className="flex items-start gap-3">
+                  <AlertTriangle className="w-5 h-5 mt-0.5 text-red-500" />
+                  <div>
+                    <p className={`text-sm font-medium ${darkMode ? 'text-red-300' : 'text-red-800'}`}>
+                      Let op: Deze actie kan niet ongedaan worden gemaakt!
+                    </p>
+                    <p className={`text-xs mt-1 ${darkMode ? 'text-red-400/70' : 'text-red-600'}`}>
+                      De klant en alle {clientToDelete.projects.length} bijbehorende project{clientToDelete.projects.length !== 1 ? 'en' : ''} worden permanent verwijderd.
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+              <div className="space-y-4">
+                <div>
+                  <label className={`block text-sm font-medium mb-2 ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>
+                    Voer het wachtwoord in om te bevestigen
+                  </label>
+                  <input
+                    type="password"
+                    value={deletePassword}
+                    onChange={(e) => {
+                      setDeletePassword(e.target.value)
+                      setDeleteError('')
+                    }}
+                    placeholder="Wachtwoord"
+                    className={`w-full px-4 py-3 rounded-xl border transition-all ${
+                      darkMode 
+                        ? 'bg-gray-700 border-gray-600 text-white placeholder-gray-500 focus:border-red-500' 
+                        : 'bg-white border-gray-200 text-gray-900 placeholder-gray-400 focus:border-red-500'
+                    } focus:outline-none focus:ring-2 focus:ring-red-500/20`}
+                  />
+                </div>
+
+                {deleteError && (
+                  <motion.div
+                    initial={{ opacity: 0, y: -10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    className="p-3 bg-red-500/10 border border-red-500/20 rounded-xl flex items-center gap-2"
+                  >
+                    <XCircle className="w-4 h-4 text-red-500" />
+                    <span className="text-red-500 text-sm">{deleteError}</span>
+                  </motion.div>
+                )}
+
+                <div className="flex gap-3 pt-2">
+                  <button
+                    type="button"
+                    onClick={() => setShowDeleteModal(false)}
+                    className={`flex-1 py-3 rounded-xl font-medium transition-colors ${
+                      darkMode 
+                        ? 'bg-gray-700 hover:bg-gray-600 text-gray-300' 
+                        : 'bg-gray-100 hover:bg-gray-200 text-gray-700'
+                    }`}
+                  >
+                    Annuleren
+                  </button>
+                  <button
+                    type="button"
+                    onClick={handleConfirmDelete}
+                    disabled={isDeleting || !deletePassword}
+                    className="flex-1 py-3 bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 text-white font-medium rounded-xl shadow-lg shadow-red-500/25 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+                  >
+                    {isDeleting ? (
+                      <>
+                        <Loader2 className="w-4 h-4 animate-spin" />
+                        Verwijderen...
+                      </>
+                    ) : (
+                      <>
+                        <Trash2 className="w-4 h-4" />
+                        Verwijderen
+                      </>
+                    )}
+                  </button>
+                </div>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* Clients Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
         {filteredClients.map(client => {
           const clientProjects = getClientProjects(client)
@@ -3388,7 +3732,7 @@ function ClientsView({ darkMode, clients, projects, onSelectClient, onAddClient 
                 setSelectedClient(client)
                 onSelectClient(client)
               }}
-              className={`p-5 rounded-2xl border cursor-pointer transition-all ${
+              className={`group p-5 rounded-2xl border cursor-pointer transition-all ${
                 darkMode 
                   ? 'bg-gray-800/50 border-gray-700 hover:border-emerald-500/50' 
                   : 'bg-white border-gray-200 hover:border-emerald-300 shadow-sm hover:shadow-lg'
@@ -3406,6 +3750,15 @@ function ClientsView({ darkMode, clients, projects, onSelectClient, onAddClient 
                     {client.company}
                   </p>
                 </div>
+                <button
+                  onClick={(e) => handleDeleteClick(e, client)}
+                  className={`p-2 rounded-lg transition-all opacity-0 group-hover:opacity-100 hover:bg-red-500/10 ${
+                    darkMode ? 'text-gray-500 hover:text-red-400' : 'text-gray-400 hover:text-red-500'
+                  }`}
+                  title="Verwijder klant"
+                >
+                  <Trash2 className="w-4 h-4" />
+                </button>
               </div>
 
               <div className="mt-4 space-y-2">
@@ -4970,6 +5323,24 @@ function PaymentsView({ darkMode, projects, onUpdateProject }: PaymentsViewProps
                             >
                               <Plus className="w-4 h-4" />
                             </button>
+                            {(project.paymentStatus !== 'pending' || project.paymentUrl) && (
+                              <button
+                                onClick={() => {
+                                  if (confirm('Weet je zeker dat je de betalingstatus wilt resetten naar "In afwachting"?')) {
+                                    onUpdateProject({
+                                      ...project,
+                                      paymentStatus: 'pending',
+                                      paymentUrl: undefined,
+                                      updatedAt: new Date().toISOString()
+                                    })
+                                  }
+                                }}
+                                className="p-2 text-red-500 hover:bg-red-500/10 rounded-lg transition-colors"
+                                title="Reset betaling"
+                              >
+                                <Trash2 className="w-4 h-4" />
+                              </button>
+                            )}
                           </div>
                         </td>
                       </tr>
@@ -6747,6 +7118,18 @@ export default function DeveloperDashboardNew() {
                     projects={projects}
                     onSelectClient={() => {}}
                     onAddClient={(client) => setClients(prev => [client, ...prev])}
+                    onDeleteClient={async (clientId, projectIds) => {
+                      // Delete all associated projects from the API
+                      for (const projectId of projectIds) {
+                        await fetch(`/api/projects?id=${projectId}`, {
+                          method: 'DELETE'
+                        })
+                      }
+                      // Remove client from state
+                      setClients(prev => prev.filter(c => c.id !== clientId))
+                      // Remove projects from state
+                      setProjects(prev => prev.filter(p => !projectIds.includes(p.id)))
+                    }}
                   />
                 )}
                 {activeView === 'messages' && (
