@@ -1890,7 +1890,7 @@ function LeadRow({
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
                   exit={{ opacity: 0 }}
-                  className="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-0 sm:p-4 bg-black/50 backdrop-blur-sm"
+                  className="fixed inset-0 z-50 flex items-end sm:items-center justify-center bg-black/50 backdrop-blur-sm"
                   onClick={() => setShowTemplates(false)}
                 >
                   <motion.div
@@ -1898,23 +1898,25 @@ function LeadRow({
                     animate={{ scale: 1, opacity: 1, y: 0 }}
                     exit={{ scale: 0.95, opacity: 0, y: 100 }}
                     onClick={(e) => e.stopPropagation()}
-                    className={`w-full sm:max-w-md rounded-t-2xl sm:rounded-2xl p-4 sm:p-6 max-h-[80vh] overflow-y-auto ${
+                    className={`w-full sm:max-w-md rounded-t-2xl sm:rounded-2xl max-h-[85vh] overflow-hidden ${
                       darkMode ? 'bg-gray-800' : 'bg-white'
                     } shadow-2xl`}
                   >
-                    <div className="flex items-center justify-between mb-4">
-                      <h3 className={`text-lg font-semibold ${darkMode ? 'text-white' : 'text-gray-900'}`}>
+                    <div className={`sticky top-0 z-10 flex items-center justify-between p-3 sm:p-4 border-b ${
+                      darkMode ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-200'
+                    }`}>
+                      <h3 className={`text-base sm:text-lg font-semibold ${darkMode ? 'text-white' : 'text-gray-900'}`}>
                         Kies email template
                       </h3>
                       <button
                         onClick={() => setShowTemplates(false)}
-                        className={`p-2 rounded-lg ${darkMode ? 'hover:bg-gray-700 text-gray-400' : 'hover:bg-gray-100 text-gray-500'}`}
+                        className={`p-1.5 sm:p-2 rounded-lg ${darkMode ? 'hover:bg-gray-700 text-gray-400' : 'hover:bg-gray-100 text-gray-500'}`}
                       >
                         <X className="w-5 h-5" />
                       </button>
                     </div>
                     
-                    <div className="space-y-2">
+                    <div className="p-3 sm:p-4 space-y-2 overflow-y-auto max-h-[calc(85vh-56px)]">
                       {templates.map((template) => (
                         <button
                           key={template.id}
@@ -1922,16 +1924,16 @@ function LeadRow({
                             onEmail(template)
                             setShowTemplates(false)
                           }}
-                          className={`w-full p-4 text-left rounded-xl border transition-all ${
+                          className={`w-full p-3 sm:p-4 text-left rounded-xl border transition-all ${
                             darkMode 
                               ? 'border-gray-700 hover:border-emerald-500 hover:bg-emerald-500/10' 
                               : 'border-gray-200 hover:border-emerald-500 hover:bg-emerald-50'
                           }`}
                         >
-                          <p className={`font-medium ${darkMode ? 'text-white' : 'text-gray-900'}`}>
+                          <p className={`font-medium text-sm sm:text-base ${darkMode ? 'text-white' : 'text-gray-900'}`}>
                             {template.name}
                           </p>
-                          <p className={`text-sm mt-1 ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>
+                          <p className={`text-xs sm:text-sm mt-0.5 sm:mt-1 line-clamp-2 ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>
                             {template.description}
                           </p>
                         </button>
@@ -1944,16 +1946,16 @@ function LeadRow({
                           onEmail()
                           setShowTemplates(false)
                         }}
-                        className={`w-full p-4 text-left rounded-xl border transition-all ${
+                        className={`w-full p-3 sm:p-4 text-left rounded-xl border transition-all ${
                           darkMode 
                             ? 'border-gray-700 hover:border-gray-500 hover:bg-gray-700' 
                             : 'border-gray-200 hover:border-gray-400 hover:bg-gray-50'
                         }`}
                       >
-                        <p className={`font-medium ${darkMode ? 'text-white' : 'text-gray-900'}`}>
+                        <p className={`font-medium text-sm sm:text-base ${darkMode ? 'text-white' : 'text-gray-900'}`}>
                           ✏️ Leeg bericht
                         </p>
-                        <p className={`text-sm mt-1 ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>
+                        <p className={`text-xs sm:text-sm mt-0.5 sm:mt-1 ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>
                           Schrijf zelf een email
                         </p>
                       </button>
