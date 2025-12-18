@@ -1961,15 +1961,24 @@ function LeadRow({
               >
                 <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3 sm:gap-4">
                   {/* Email History */}
-                  <div className={`rounded-lg p-3 sm:p-4 ${darkMode ? 'bg-gray-700/50' : 'bg-gray-50'}`}>
-                    <h4 className={`text-xs sm:text-sm font-semibold mb-2 sm:mb-3 flex items-center gap-2 ${darkMode ? 'text-gray-200' : 'text-gray-700'}`}>
-                      <Mail className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
-                      Emails ({lead.emailHistory?.length || 0})
+                  <div className={`rounded-xl p-3 sm:p-4 border ${darkMode ? 'bg-emerald-500/5 border-emerald-500/20' : 'bg-emerald-50/50 border-emerald-100'}`}>
+                    <h4 className={`text-xs sm:text-sm font-semibold mb-2 sm:mb-3 flex items-center gap-2`}>
+                      <div className={`p-1.5 rounded-lg ${darkMode ? 'bg-emerald-500/20' : 'bg-emerald-100'}`}>
+                        <Mail className={`w-3.5 h-3.5 ${darkMode ? 'text-emerald-400' : 'text-emerald-600'}`} />
+                      </div>
+                      <span className={darkMode ? 'text-gray-200' : 'text-gray-700'}>
+                        Emails
+                        {(lead.emailHistory?.length || 0) > 0 && (
+                          <span className={`ml-1.5 px-1.5 py-0.5 text-[10px] rounded-full ${darkMode ? 'bg-emerald-500/20 text-emerald-400' : 'bg-emerald-100 text-emerald-700'}`}>
+                            {lead.emailHistory?.length}
+                          </span>
+                        )}
+                      </span>
                     </h4>
                     {lead.emailHistory && lead.emailHistory.length > 0 ? (
                       <div className="space-y-2 max-h-32 sm:max-h-40 overflow-y-auto">
                         {lead.emailHistory.slice().reverse().map((email) => (
-                          <div key={email.id} className={`rounded p-2 text-xs ${darkMode ? 'bg-gray-600' : 'bg-white'}`}>
+                          <div key={email.id} className={`rounded-lg p-2.5 text-xs ${darkMode ? 'bg-gray-800/50' : 'bg-white shadow-sm'}`}>
                             <p className={`font-medium truncate ${darkMode ? 'text-white' : 'text-gray-900'}`}>{email.subject}</p>
                             {email.templateName && (
                               <p className={`truncate ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>Template: {email.templateName}</p>
@@ -1981,20 +1990,32 @@ function LeadRow({
                         ))}
                       </div>
                     ) : (
-                      <p className={`text-xs ${darkMode ? 'text-gray-500' : 'text-gray-400'}`}>Nog geen emails verstuurd</p>
+                      <div className={`flex items-center gap-2 py-2 ${darkMode ? 'text-gray-500' : 'text-gray-400'}`}>
+                        <Mail className="w-4 h-4 opacity-30" />
+                        <p className="text-xs">Nog geen emails verstuurd</p>
+                      </div>
                     )}
                   </div>
 
                   {/* Notes Timeline */}
-                  <div className={`rounded-lg p-3 sm:p-4 ${darkMode ? 'bg-gray-700/50' : 'bg-gray-50'}`}>
-                    <h4 className={`text-xs sm:text-sm font-semibold mb-2 sm:mb-3 flex items-center gap-2 ${darkMode ? 'text-gray-200' : 'text-gray-700'}`}>
-                      <MessageSquare className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
-                      Notities ({lead.notesTimeline?.length || 0})
+                  <div className={`rounded-xl p-3 sm:p-4 border ${darkMode ? 'bg-purple-500/5 border-purple-500/20' : 'bg-purple-50/50 border-purple-100'}`}>
+                    <h4 className={`text-xs sm:text-sm font-semibold mb-2 sm:mb-3 flex items-center gap-2`}>
+                      <div className={`p-1.5 rounded-lg ${darkMode ? 'bg-purple-500/20' : 'bg-purple-100'}`}>
+                        <MessageSquare className={`w-3.5 h-3.5 ${darkMode ? 'text-purple-400' : 'text-purple-600'}`} />
+                      </div>
+                      <span className={darkMode ? 'text-gray-200' : 'text-gray-700'}>
+                        Notities
+                        {(lead.notesTimeline?.length || 0) > 0 && (
+                          <span className={`ml-1.5 px-1.5 py-0.5 text-[10px] rounded-full ${darkMode ? 'bg-purple-500/20 text-purple-400' : 'bg-purple-100 text-purple-700'}`}>
+                            {lead.notesTimeline?.length}
+                          </span>
+                        )}
+                      </span>
                     </h4>
                     {lead.notesTimeline && lead.notesTimeline.length > 0 ? (
                       <div className="space-y-2 max-h-24 sm:max-h-28 overflow-y-auto mb-2 sm:mb-3">
                         {lead.notesTimeline.slice().reverse().map((note) => (
-                          <div key={note.id} className={`rounded p-2 text-xs ${darkMode ? 'bg-gray-600' : 'bg-white'}`}>
+                          <div key={note.id} className={`rounded-lg p-2.5 text-xs ${darkMode ? 'bg-gray-800/50' : 'bg-white shadow-sm'}`}>
                             <p className={darkMode ? 'text-white' : 'text-gray-900'}>{note.text}</p>
                             <p className={`mt-1 ${darkMode ? 'text-gray-500' : 'text-gray-400'}`}>
                               {new Date(note.createdAt).toLocaleDateString('nl-NL')}
@@ -2003,12 +2024,15 @@ function LeadRow({
                         ))}
                       </div>
                     ) : (
-                      <p className={`text-xs mb-2 sm:mb-3 ${darkMode ? 'text-gray-500' : 'text-gray-400'}`}>Nog geen notities</p>
+                      <div className={`flex items-center gap-2 py-2 mb-2 ${darkMode ? 'text-gray-500' : 'text-gray-400'}`}>
+                        <MessageSquare className="w-4 h-4 opacity-30" />
+                        <p className="text-xs">Nog geen notities</p>
+                      </div>
                     )}
                     <div className="flex gap-2">
                       <input
                         type="text"
-                        placeholder="Notitie..."
+                        placeholder="Notitie toevoegen..."
                         value={newNote}
                         onChange={(e) => setNewNote(e.target.value)}
                         onKeyDown={(e) => {
@@ -2017,8 +2041,8 @@ function LeadRow({
                             setNewNote('')
                           }
                         }}
-                        className={`flex-1 min-w-0 px-2 py-1.5 text-xs border rounded focus:ring-1 focus:ring-emerald-500 ${
-                          darkMode ? 'bg-gray-600 border-gray-500 text-white placeholder-gray-400' : 'bg-white border-gray-200'
+                        className={`flex-1 min-w-0 px-3 py-2 text-xs border rounded-lg focus:ring-2 focus:ring-purple-500/50 focus:border-purple-500 transition-all ${
+                          darkMode ? 'bg-gray-800/50 border-gray-600 text-white placeholder-gray-500' : 'bg-white border-gray-200 placeholder-gray-400'
                         }`}
                       />
                       <button
@@ -2028,7 +2052,7 @@ function LeadRow({
                             setNewNote('')
                           }
                         }}
-                        className="px-2 py-1 bg-emerald-600 text-white text-xs rounded hover:bg-emerald-700"
+                        className="px-3 py-2 bg-purple-600 text-white text-xs rounded-lg hover:bg-purple-700 transition-colors font-medium"
                       >
                         +
                       </button>
@@ -2036,10 +2060,40 @@ function LeadRow({
                   </div>
 
                   {/* Follow-up Planner */}
-                  <div className={`rounded-lg p-3 sm:p-4 ${darkMode ? 'bg-gray-700/50' : 'bg-gray-50'}`}>
-                    <h4 className={`text-xs sm:text-sm font-semibold mb-2 sm:mb-3 flex items-center gap-2 ${darkMode ? 'text-gray-200' : 'text-gray-700'}`}>
-                      <Clock className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
-                      Follow-up
+                  <div className={`rounded-xl p-3 sm:p-4 border ${
+                    lead.followUpDate 
+                      ? darkMode ? 'bg-orange-500/5 border-orange-500/30' : 'bg-orange-50/50 border-orange-200'
+                      : darkMode ? 'bg-gray-700/30 border-gray-700' : 'bg-gray-50/50 border-gray-200'
+                  }`}>
+                    <h4 className={`text-xs sm:text-sm font-semibold mb-2 sm:mb-3 flex items-center gap-2`}>
+                      <div className={`p-1.5 rounded-lg ${
+                        lead.followUpDate 
+                          ? darkMode ? 'bg-orange-500/20' : 'bg-orange-100'
+                          : darkMode ? 'bg-gray-600' : 'bg-gray-100'
+                      }`}>
+                        <Clock className={`w-3.5 h-3.5 ${
+                          lead.followUpDate 
+                            ? darkMode ? 'text-orange-400' : 'text-orange-600'
+                            : darkMode ? 'text-gray-400' : 'text-gray-500'
+                        }`} />
+                      </div>
+                      <span className={darkMode ? 'text-gray-200' : 'text-gray-700'}>Follow-up</span>
+                      {lead.followUpDate && (
+                        <span className={`ml-auto px-2 py-0.5 text-[10px] font-bold rounded-full ${
+                          new Date(lead.followUpDate) < new Date(new Date().toDateString())
+                            ? 'bg-red-500 text-white'
+                            : lead.followUpDate === new Date().toISOString().split('T')[0]
+                              ? 'bg-orange-500 text-white'
+                              : darkMode ? 'bg-orange-500/20 text-orange-400' : 'bg-orange-100 text-orange-700'
+                        }`}>
+                          {new Date(lead.followUpDate) < new Date(new Date().toDateString())
+                            ? '⚠️ Te laat'
+                            : lead.followUpDate === new Date().toISOString().split('T')[0]
+                              ? '📅 Vandaag'
+                              : new Date(lead.followUpDate).toLocaleDateString('nl-NL', { day: 'numeric', month: 'short' })
+                          }
+                        </span>
+                      )}
                     </h4>
                     <div className="space-y-2 sm:space-y-3">
                       <input
@@ -2047,58 +2101,52 @@ function LeadRow({
                         value={lead.followUpDate || ''}
                         min={new Date().toISOString().split('T')[0]}
                         onChange={(e) => onSetFollowUp(e.target.value || undefined)}
-                        className={`w-full px-2 py-1.5 text-sm border rounded focus:ring-1 focus:ring-emerald-500 ${
-                          darkMode ? 'bg-gray-600 border-gray-500 text-white' : 'bg-white border-gray-200'
+                        className={`w-full px-3 py-2 text-sm border rounded-lg focus:ring-2 focus:ring-orange-500/50 focus:border-orange-500 transition-all ${
+                          darkMode ? 'bg-gray-800/50 border-gray-600 text-white' : 'bg-white border-gray-200'
                         }`}
                       />
+                      <div className="grid grid-cols-3 gap-1.5">
+                        {[
+                          { label: 'Morgen', days: 1 },
+                          { label: '+1 week', days: 7 },
+                          { label: '+1 maand', days: 30 }
+                        ].map(({ label, days }) => {
+                          const targetDate = new Date()
+                          if (days === 30) {
+                            targetDate.setMonth(targetDate.getMonth() + 1)
+                          } else {
+                            targetDate.setDate(targetDate.getDate() + days)
+                          }
+                          const isActive = lead.followUpDate === targetDate.toISOString().split('T')[0]
+                          
+                          return (
+                            <button
+                              key={label}
+                              onClick={() => onSetFollowUp(targetDate.toISOString().split('T')[0])}
+                              className={`px-2 py-1.5 text-xs font-medium rounded-lg border transition-all ${
+                                isActive
+                                  ? 'bg-orange-500 border-orange-500 text-white'
+                                  : darkMode 
+                                    ? 'bg-gray-800/50 border-gray-600 text-gray-300 hover:bg-gray-700 hover:border-gray-500' 
+                                    : 'bg-white border-gray-200 text-gray-600 hover:bg-orange-50 hover:border-orange-200 hover:text-orange-600'
+                              }`}
+                            >
+                              {label}
+                            </button>
+                          )
+                        })}
+                      </div>
                       {lead.followUpDate && (
                         <button
                           onClick={() => onSetFollowUp(undefined)}
-                          className={`w-full px-2 py-1 text-xs rounded transition-colors ${
-                            darkMode ? 'text-red-400 hover:bg-red-500/20' : 'text-red-600 hover:bg-red-50'
+                          className={`w-full px-2 py-1.5 text-xs rounded-lg transition-colors flex items-center justify-center gap-1 ${
+                            darkMode ? 'text-red-400 hover:bg-red-500/20' : 'text-red-500 hover:bg-red-50'
                           }`}
                         >
-                          Verwijderen
+                          <XCircle className="w-3 h-3" />
+                          Follow-up verwijderen
                         </button>
                       )}
-                      <div className="grid grid-cols-3 gap-1">
-                        <button
-                          onClick={() => {
-                            const tomorrow = new Date()
-                            tomorrow.setDate(tomorrow.getDate() + 1)
-                            onSetFollowUp(tomorrow.toISOString().split('T')[0])
-                          }}
-                          className={`px-2 py-1 text-xs border rounded ${
-                            darkMode ? 'bg-gray-600 border-gray-500 text-white hover:bg-gray-500' : 'bg-white border-gray-200 hover:bg-gray-50'
-                          }`}
-                        >
-                          Morgen
-                        </button>
-                        <button
-                          onClick={() => {
-                            const nextWeek = new Date()
-                            nextWeek.setDate(nextWeek.getDate() + 7)
-                            onSetFollowUp(nextWeek.toISOString().split('T')[0])
-                          }}
-                          className={`px-2 py-1 text-xs border rounded ${
-                            darkMode ? 'bg-gray-600 border-gray-500 text-white hover:bg-gray-500' : 'bg-white border-gray-200 hover:bg-gray-50'
-                          }`}
-                        >
-                          +1 week
-                        </button>
-                        <button
-                          onClick={() => {
-                            const nextMonth = new Date()
-                            nextMonth.setMonth(nextMonth.getMonth() + 1)
-                            onSetFollowUp(nextMonth.toISOString().split('T')[0])
-                          }}
-                          className={`px-2 py-1 text-xs border rounded ${
-                            darkMode ? 'bg-gray-600 border-gray-500 text-white hover:bg-gray-500' : 'bg-white border-gray-200 hover:bg-gray-50'
-                          }`}
-                        >
-                          +1 maand
-                        </button>
-                      </div>
                     </div>
                   </div>
                 </div>
