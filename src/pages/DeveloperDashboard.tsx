@@ -503,23 +503,23 @@ function Header({
               <>
                 <button
                   onClick={onNavigateToOverview}
-                  className={`hidden sm:flex items-center gap-1 text-sm font-medium ${
+                  className={`hidden lg:flex items-center gap-1 text-sm font-medium ${
                     darkMode ? 'text-gray-400 hover:text-white' : 'text-gray-500 hover:text-gray-900'
                   } transition-colors`}
                 >
                   <LayoutDashboard className="w-4 h-4" />
                   <span>Overzicht</span>
                 </button>
-                <ChevronRight className={`hidden sm:block w-4 h-4 ${darkMode ? 'text-gray-600' : 'text-gray-300'}`} />
+                <ChevronRight className={`hidden lg:block w-4 h-4 ${darkMode ? 'text-gray-600' : 'text-gray-300'}`} />
               </>
             )}
             <div className="flex items-center gap-2">
               {currentNav && (
-                <div className={`p-1.5 rounded-lg ${darkMode ? 'bg-gray-800' : 'bg-gray-100'}`}>
+                <div className={`p-1.5 rounded-lg ${darkMode ? 'bg-emerald-500/10' : 'bg-emerald-50'}`}>
                   <currentNav.icon className={`w-4 h-4 ${darkMode ? 'text-emerald-400' : 'text-emerald-600'}`} />
                 </div>
               )}
-              <h1 className={`text-lg font-bold ${darkMode ? 'text-white' : 'text-gray-900'}`}>
+              <h1 className={`text-lg font-semibold ${darkMode ? 'text-white' : 'text-gray-900'}`}>
                 {currentNav?.label || 'Dashboard'}
               </h1>
             </div>
@@ -716,12 +716,12 @@ function MobileBottomNav({ activeView, setActiveView, darkMode, unreadMessages }
   ]
 
   return (
-    <nav className={`lg:hidden fixed bottom-0 left-0 right-0 z-40 border-t pb-safe ${
+    <nav className={`lg:hidden fixed bottom-0 left-0 right-0 z-40 border-t pb-safe backdrop-blur-xl ${
       darkMode 
-        ? 'bg-gray-900/95 border-gray-800 backdrop-blur-xl' 
-        : 'bg-white/95 border-gray-200 backdrop-blur-xl'
+        ? 'bg-gray-900/95 border-gray-800' 
+        : 'bg-white/95 border-gray-200'
     }`}>
-      <div className="flex items-center justify-around h-16 px-4">
+      <div className="flex items-stretch h-16">
         {mobileNavItems.map(item => {
           const isActive = activeView === item.id
           const Icon = item.icon
@@ -730,27 +730,23 @@ function MobileBottomNav({ activeView, setActiveView, darkMode, unreadMessages }
           return (
             <motion.button
               key={item.id}
-              whileTap={{ scale: 0.9 }}
+              whileTap={{ scale: 0.95 }}
               onClick={() => setActiveView(item.id)}
-              className={`relative flex flex-col items-center gap-1 py-2 px-4 rounded-xl transition-colors ${
+              className={`flex-1 flex flex-col items-center justify-center gap-0.5 transition-colors ${
                 isActive
-                  ? darkMode
-                    ? 'text-emerald-400 bg-emerald-500/10'
-                    : 'text-emerald-600 bg-emerald-50'
-                  : darkMode
-                    ? 'text-gray-400'
-                    : 'text-gray-500'
+                  ? darkMode ? 'text-emerald-400' : 'text-emerald-600'
+                  : darkMode ? 'text-gray-500' : 'text-gray-400'
               }`}
             >
               <div className="relative">
-                <Icon className="w-5 h-5" />
+                <Icon className={`w-5 h-5 ${isActive ? '' : 'opacity-70'}`} />
                 {showBadge && (
-                  <span className="absolute -top-1 -right-1 w-4 h-4 bg-red-500 text-white text-[9px] font-bold rounded-full flex items-center justify-center">
+                  <span className="absolute -top-1 -right-2 w-4 h-4 bg-red-500 text-white text-[9px] font-bold rounded-full flex items-center justify-center">
                     {unreadMessages > 9 ? '9+' : unreadMessages}
                   </span>
                 )}
               </div>
-              <span className="text-[10px] font-medium">
+              <span className={`text-[10px] font-medium ${isActive ? '' : 'opacity-70'}`}>
                 {item.label}
               </span>
             </motion.button>
