@@ -42,6 +42,8 @@ import PreviewLink from '../components/PreviewLink'
 import FeedbackModule from '../components/FeedbackModule'
 import TaskList, { type Task } from '../components/TaskList'
 import PaymentSection from '../components/PaymentSection'
+import DesignApprovalCard from '../components/DesignApprovalCard'
+import DeadlineTracker from '../components/DeadlineTracker'
 import type { Project, ProjectPhase, ProjectMessage, Invoice } from '../types/project'
 import { getProgressPercentage, groupUpdatesByDate, PHASE_FAQS, PRIORITY_CONFIG } from '../types/project'
 
@@ -681,157 +683,206 @@ export default function ProjectStatus() {
   // Password verification required
   if (!isVerified && projectId) {
     return (
-      <div className="min-h-screen bg-gradient-to-b from-gray-900 via-gray-900 to-gray-950">
-        {/* Hero Section */}
-        <div className="relative overflow-hidden">
-          {/* Animated Background */}
-          <div className="absolute inset-0">
-            <div className="absolute inset-0 bg-gradient-to-br from-blue-600/20 via-indigo-600/10 to-purple-600/20" />
-            <div className="absolute top-0 left-1/4 w-96 h-96 bg-blue-500/20 rounded-full blur-[120px] animate-pulse" />
-            <div className="absolute bottom-0 right-1/4 w-80 h-80 bg-indigo-500/20 rounded-full blur-[100px] animate-pulse" style={{ animationDelay: '1s' }} />
-          </div>
+      <div className="min-h-screen bg-gray-900">
+        {/* Background with gradient and blobs */}
+        <div className="fixed inset-0 overflow-hidden pointer-events-none">
+          {/* Main gradient overlay */}
+          <div className="absolute inset-0 bg-gradient-to-br from-blue-600/20 via-indigo-600/10 to-purple-600/20" />
           
+          {/* Animated gradient blobs */}
+          <motion.div 
+            className="absolute top-0 right-0 w-[600px] h-[600px] sm:w-[900px] sm:h-[900px] bg-gradient-to-br from-blue-500/25 via-indigo-500/15 to-transparent rounded-full blur-3xl -translate-y-1/3 translate-x-1/4"
+            animate={{ 
+              scale: [1, 1.05, 1],
+              rotate: [0, 5, 0]
+            }}
+            transition={{ duration: 8, repeat: Infinity, ease: "easeInOut" }}
+          />
+          <motion.div 
+            className="absolute bottom-0 left-0 w-[500px] h-[500px] sm:w-[700px] sm:h-[700px] bg-gradient-to-tr from-purple-500/20 via-indigo-500/10 to-transparent rounded-full blur-3xl translate-y-1/3 -translate-x-1/4"
+            animate={{ 
+              scale: [1, 1.08, 1],
+              rotate: [0, -5, 0]
+            }}
+            transition={{ duration: 10, repeat: Infinity, ease: "easeInOut" }}
+          />
+          
+          {/* Decorative rings - hidden on mobile */}
+          <div className="hidden sm:block absolute top-20 right-20 w-32 h-32 border border-blue-400/20 rounded-full" />
+          <div className="hidden sm:block absolute top-24 right-24 w-24 h-24 border border-indigo-500/10 rounded-full" />
+          <div className="hidden sm:block absolute bottom-32 left-20 w-20 h-20 border border-purple-400/20 rounded-full" />
+          
+          {/* Floating particles */}
           <FloatingParticles />
-          
-          <header className="relative z-10 border-b border-white/10">
-            <div className="max-w-7xl mx-auto px-4 py-4 flex justify-between items-center">
-              <Link to="/" className="hover:opacity-80 transition">
-                <Logo variant="white" />
-              </Link>
-              <span className="px-3 py-1.5 sm:px-4 sm:py-2 bg-white/10 backdrop-blur-sm rounded-full text-white/90 text-xs sm:text-sm border border-white/20 font-medium">
-                Project: {projectId}
+        </div>
+
+        {/* Header */}
+        <header className="relative z-10 border-b border-white/10 bg-gray-900/50 backdrop-blur-xl">
+          <div className="max-w-7xl mx-auto px-4 py-3 sm:py-4 flex justify-between items-center">
+            <Link to="/" className="hover:opacity-80 transition">
+              <Logo variant="white" />
+            </Link>
+            <div className="flex items-center gap-2 sm:gap-3">
+              <span className="px-2.5 py-1 sm:px-4 sm:py-2 bg-blue-500/10 backdrop-blur-sm rounded-full text-blue-400 text-xs sm:text-sm border border-blue-500/20 font-medium flex items-center gap-1.5">
+                <Lock className="w-3 h-3 sm:w-4 sm:h-4" />
+                <span className="hidden xs:inline">Beveiligd</span>
               </span>
             </div>
-          </header>
+          </div>
+        </header>
 
-          <div className="relative z-10 max-w-4xl mx-auto px-4 pt-12 pb-20 sm:pt-16 sm:pb-24 text-center">
+        {/* Main Content */}
+        <main className="relative z-10 flex flex-col items-center justify-center min-h-[calc(100vh-60px)] px-4 py-8 sm:py-12">
+          <div className="w-full max-w-md">
+            {/* Hero Text */}
             <motion.div
-              initial={{ opacity: 0, scale: 0.9 }}
-              animate={{ opacity: 1, scale: 1 }}
-              className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/10 backdrop-blur-sm border border-white/20 text-white/90 text-sm mb-6"
-            >
-              <Lock className="w-4 h-4" />
-              Beveiligd Project
-            </motion.div>
-            
-            <motion.h1
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.1 }}
-              className="text-3xl sm:text-4xl lg:text-5xl font-bold text-white mb-4"
+              className="text-center mb-8"
             >
-              Project: <span className="bg-gradient-to-r from-blue-400 to-indigo-400 bg-clip-text text-transparent">{projectId}</span>
-            </motion.h1>
-            
-            <motion.p
+              <motion.div
+                initial={{ opacity: 0, scale: 0.9 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{ delay: 0.1 }}
+                className="inline-flex items-center gap-2 bg-gradient-to-r from-blue-500/20 to-indigo-500/20 border border-blue-400/30 backdrop-blur-sm rounded-full px-4 py-2 mb-6"
+              >
+                <Shield className="w-4 h-4 text-blue-400" />
+                <span className="text-sm font-medium text-blue-300">Beveiligd Project</span>
+              </motion.div>
+
+              <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-white mb-3 leading-tight">
+                Bekijk je{' '}
+                <span className="bg-gradient-to-r from-blue-400 to-indigo-400 bg-clip-text text-transparent">projectvoortgang</span>
+              </h1>
+              
+              <p className="text-sm sm:text-base text-gray-400 max-w-sm mx-auto">
+                Voer je wachtwoord in om de status van je project te bekijken.
+              </p>
+            </motion.div>
+
+            {/* Login Card */}
+            <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.2 }}
-              className="text-base sm:text-lg text-gray-400 max-w-2xl mx-auto"
+              className="bg-gray-800/60 backdrop-blur-xl rounded-2xl sm:rounded-3xl border border-gray-700/50 p-5 sm:p-8 shadow-2xl"
             >
-              Voer je wachtwoord in om de voortgang te bekijken.
-            </motion.p>
-          </div>
-        </div>
-
-        <main className="max-w-md mx-auto px-4 -mt-12 pb-12 sm:pb-16 relative z-20">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.3 }}
-            className="bg-gray-800/80 backdrop-blur-xl rounded-2xl sm:rounded-3xl shadow-2xl border border-gray-700/50 p-6 sm:p-8"
-          >
-            <form onSubmit={handlePasswordSubmit}>
-              <div className="mb-6">
-                <label className="block text-sm font-medium text-gray-300 mb-3">
-                  Wachtwoord
-                </label>
-                <div className="relative">
-                  <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-500" />
-                  <input
-                    type={showPassword ? 'text' : 'password'}
-                    value={passwordInput}
-                    onChange={(e) => setPasswordInput(e.target.value)}
-                    placeholder="Je project wachtwoord"
-                    className="w-full pl-12 pr-12 py-4 bg-gray-900/50 border-2 border-gray-700 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition text-white placeholder-gray-500"
-                    required
-                    autoFocus
-                  />
-                  <button
-                    type="button"
-                    onClick={() => setShowPassword(!showPassword)}
-                    className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-300 transition"
-                  >
-                    {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
-                  </button>
+              {/* Project ID Badge */}
+              <div className="flex items-center justify-center mb-6">
+                <div className="inline-flex items-center gap-2 px-4 py-2 bg-gray-900/60 rounded-xl border border-gray-700/50">
+                  <FolderOpen className="w-4 h-4 text-indigo-400" />
+                  <span className="text-sm text-gray-300">Project: </span>
+                  <span className="text-sm font-semibold text-white">{projectId}</span>
                 </div>
-                <p className="text-sm text-gray-500 mt-3">
-                  Je wachtwoord heb je ingesteld bij het starten van je project.
-                </p>
               </div>
 
-              {verifyError && (
-                <motion.div
-                  initial={{ opacity: 0, y: -10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  className="mb-6 p-4 bg-red-500/10 border border-red-500/30 rounded-xl flex items-start gap-3"
-                >
-                  <AlertCircle className="w-5 h-5 text-red-400 flex-shrink-0 mt-0.5" />
-                  <div>
-                    <p className="text-red-400 font-medium">Verificatie mislukt</p>
-                    <p className="text-red-400/80 text-sm">{verifyError}</p>
+              <form onSubmit={handlePasswordSubmit} className="space-y-5">
+                {/* Password Input */}
+                <div>
+                  <label className="block text-sm font-medium text-gray-300 mb-2">
+                    Wachtwoord
+                  </label>
+                  <div className="relative">
+                    <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-500" />
+                    <input
+                      type={showPassword ? 'text' : 'password'}
+                      value={passwordInput}
+                      onChange={(e) => setPasswordInput(e.target.value)}
+                      placeholder="Je project wachtwoord"
+                      className="w-full pl-12 pr-12 py-3.5 sm:py-4 bg-gray-900/60 border-2 border-gray-700/50 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500/50 transition text-white placeholder-gray-500 text-sm sm:text-base"
+                      required
+                      autoFocus
+                    />
+                    <button
+                      type="button"
+                      onClick={() => setShowPassword(!showPassword)}
+                      className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-300 transition p-1"
+                    >
+                      {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
+                    </button>
                   </div>
-                </motion.div>
-              )}
+                  <p className="text-xs sm:text-sm text-gray-500 mt-2">
+                    Dit wachtwoord heb je ontvangen bij het starten van je project.
+                  </p>
+                </div>
 
-              <motion.button
-                type="submit"
-                disabled={verifyLoading || !passwordInput.trim()}
-                whileHover={{ scale: 1.02 }}
-                whileTap={{ scale: 0.98 }}
-                className="w-full py-4 bg-gradient-to-r from-blue-600 to-indigo-600 text-white font-bold rounded-xl hover:from-blue-500 hover:to-indigo-500 transition shadow-lg shadow-blue-600/25 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
-              >
-                {verifyLoading ? (
-                  <>
-                    <Loader2 className="w-5 h-5 animate-spin" />
-                    Verifiëren...
-                  </>
-                ) : (
-                  <>
-                    <Shield className="w-5 h-5" />
-                    Bekijk project
-                  </>
+                {/* Error Message */}
+                {verifyError && (
+                  <motion.div
+                    initial={{ opacity: 0, y: -10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    className="p-4 bg-red-500/10 border border-red-500/30 rounded-xl flex items-start gap-3"
+                  >
+                    <AlertCircle className="w-5 h-5 text-red-400 flex-shrink-0 mt-0.5" />
+                    <div>
+                      <p className="text-red-400 font-medium text-sm">Verificatie mislukt</p>
+                      <p className="text-red-400/80 text-xs sm:text-sm">{verifyError}</p>
+                    </div>
+                  </motion.div>
                 )}
-              </motion.button>
-            </form>
 
-            <div className="mt-6 pt-6 border-t border-gray-700/50 text-center">
-              <p className="text-sm text-gray-500 mb-2">Wachtwoord vergeten?</p>
-              <Link 
-                to="/wachtwoord-vergeten"
-                className="text-sm text-blue-400 hover:text-blue-300 font-medium transition"
-              >
-                Neem contact op met ons team
-              </Link>
-            </div>
-          </motion.div>
+                {/* Submit Button */}
+                <motion.button
+                  type="submit"
+                  disabled={verifyLoading || !passwordInput.trim()}
+                  whileHover={{ scale: 1.02 }}
+                  whileTap={{ scale: 0.98 }}
+                  className="w-full py-3.5 sm:py-4 bg-gradient-to-r from-blue-600 to-indigo-600 text-white font-semibold rounded-xl hover:from-blue-500 hover:to-indigo-500 transition shadow-lg shadow-blue-600/25 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 text-sm sm:text-base"
+                >
+                  {verifyLoading ? (
+                    <>
+                      <Loader2 className="w-5 h-5 animate-spin" />
+                      <span>Verifiëren...</span>
+                    </>
+                  ) : (
+                    <>
+                      <ChevronRight className="w-5 h-5" />
+                      <span>Bekijk project</span>
+                    </>
+                  )}
+                </motion.button>
+              </form>
 
-          {/* Security badges */}
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ delay: 0.5 }}
-            className="mt-8 flex flex-wrap justify-center gap-4 sm:gap-6 text-sm text-gray-500"
-          >
-            <div className="flex items-center gap-2">
-              <Shield className="w-4 h-4 text-green-500" />
-              <span>SSL beveiligd</span>
-            </div>
-            <div className="flex items-center gap-2">
-              <Lock className="w-4 h-4 text-blue-500" />
-              <span>Privé toegang</span>
-            </div>
-          </motion.div>
+              {/* Forgot Password */}
+              <div className="mt-6 pt-5 border-t border-gray-700/50 text-center">
+                <p className="text-xs sm:text-sm text-gray-500 mb-2">Wachtwoord vergeten?</p>
+                <Link 
+                  to="/wachtwoord-vergeten"
+                  className="text-xs sm:text-sm text-blue-400 hover:text-blue-300 font-medium transition inline-flex items-center gap-1"
+                >
+                  <Mail className="w-4 h-4" />
+                  Vraag een nieuw wachtwoord aan
+                </Link>
+              </div>
+            </motion.div>
+
+            {/* Trust Badges */}
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ delay: 0.4 }}
+              className="mt-8 flex flex-wrap justify-center gap-4 sm:gap-6"
+            >
+              <div className="flex items-center gap-2 text-xs sm:text-sm text-gray-500">
+                <div className="w-8 h-8 rounded-lg bg-green-500/10 flex items-center justify-center">
+                  <Shield className="w-4 h-4 text-green-400" />
+                </div>
+                <span>SSL beveiligd</span>
+              </div>
+              <div className="flex items-center gap-2 text-xs sm:text-sm text-gray-500">
+                <div className="w-8 h-8 rounded-lg bg-blue-500/10 flex items-center justify-center">
+                  <Clock className="w-4 h-4 text-blue-400" />
+                </div>
+                <span>24/7 toegang</span>
+              </div>
+              <div className="flex items-center gap-2 text-xs sm:text-sm text-gray-500">
+                <div className="w-8 h-8 rounded-lg bg-amber-500/10 flex items-center justify-center">
+                  <Star className="w-4 h-4 text-amber-400" />
+                </div>
+                <span>Real-time updates</span>
+              </div>
+            </motion.div>
+          </div>
         </main>
       </div>
     )
@@ -981,6 +1032,21 @@ export default function ProjectStatus() {
       </div>
 
       <main className="max-w-3xl mx-auto px-4 py-6 sm:py-10">
+        {/* Deadline Tracker - Timeline met countdown */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="mb-6"
+        >
+          <DeadlineTracker
+            createdAt={project.createdAt}
+            status={project.status}
+            estimatedCompletion={project.estimatedCompletion}
+            phaseDeadlines={project.phaseDeadlines}
+            packageType={project.package}
+          />
+        </motion.div>
+
         {/* Status Message */}
         {project.statusMessage && (
           <motion.div
@@ -1384,6 +1450,72 @@ export default function ProjectStatus() {
             </div>
           </div>
         </motion.div>
+
+        {/* Design Approval Card - Prominent approval section */}
+        {project.designPreviewUrl && (project.status === 'design' || project.status === 'review') && !project.designApprovedAt && (
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.38 }}
+            className="mb-6"
+          >
+            <DesignApprovalCard
+              projectId={projectId || ''}
+              previewUrl={project.designPreviewUrl}
+              designApprovedAt={project.designApprovedAt}
+              paymentStatus={project.paymentStatus}
+              onApprove={async () => {
+                await sendFeedback(true)
+              }}
+              onRequestChanges={async (feedbackText) => {
+                setFeedbackText(feedbackText)
+                await sendFeedback(false)
+              }}
+            />
+          </motion.div>
+        )}
+
+        {/* Design Approved Banner - Shows when design is approved */}
+        {project.designApprovedAt && (project.status === 'design' || project.status === 'review') && (
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.38 }}
+            className="mb-6"
+          >
+            <div className="bg-gradient-to-r from-green-500/20 to-emerald-500/20 border border-green-500/30 rounded-xl sm:rounded-2xl p-4 sm:p-6">
+              <div className="flex items-start gap-4">
+                <div className="w-12 h-12 bg-green-500/20 rounded-full flex items-center justify-center flex-shrink-0">
+                  <CheckCircle2 className="w-6 h-6 text-green-400" />
+                </div>
+                <div className="flex-1 min-w-0">
+                  <h3 className="text-lg font-bold text-white mb-1">Design Goedgekeurd!</h3>
+                  <p className="text-sm text-gray-300 mb-2">
+                    Je hebt het design goedgekeurd op {new Date(project.designApprovedAt).toLocaleDateString('nl-NL', { 
+                      day: 'numeric', 
+                      month: 'long',
+                      year: 'numeric',
+                      hour: '2-digit',
+                      minute: '2-digit'
+                    })}.
+                  </p>
+                  {project.paymentStatus === 'awaiting_payment' && (
+                    <p className="text-sm text-green-400 flex items-center gap-2">
+                      <CreditCard className="w-4 h-4" />
+                      Volgende stap: betaling afronden om live te gaan
+                    </p>
+                  )}
+                  {project.paymentStatus === 'paid' && (
+                    <p className="text-sm text-green-400 flex items-center gap-2">
+                      <Rocket className="w-4 h-4" />
+                      Betaling ontvangen - we gaan aan de slag!
+                    </p>
+                  )}
+                </div>
+              </div>
+            </div>
+          </motion.div>
+        )}
 
         {/* Design Preview Section */}
         {project.designPreviewUrl && (project.status === 'design' || project.status === 'review') && (
