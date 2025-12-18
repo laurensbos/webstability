@@ -76,12 +76,12 @@ const businessTypes = [
 ]
 
 const statusConfig: Record<Lead['status'], { color: string; bg: string; label: string }> = {
-  nieuw: { color: 'text-blue-600', bg: 'bg-blue-100', label: 'Nieuw' },
-  gecontacteerd: { color: 'text-yellow-600', bg: 'bg-yellow-100', label: 'Gecontacteerd' },
-  geinteresseerd: { color: 'text-purple-600', bg: 'bg-purple-100', label: 'Geïnteresseerd' },
-  offerte: { color: 'text-orange-600', bg: 'bg-orange-100', label: 'Offerte' },
-  klant: { color: 'text-green-600', bg: 'bg-green-100', label: 'Klant!' },
-  afgewezen: { color: 'text-gray-500', bg: 'bg-gray-100', label: 'Afgewezen' },
+  nieuw: { color: 'text-blue-400', bg: 'bg-blue-500/20', label: 'Nieuw' },
+  gecontacteerd: { color: 'text-yellow-400', bg: 'bg-yellow-500/20', label: 'Gecontacteerd' },
+  geinteresseerd: { color: 'text-purple-400', bg: 'bg-purple-500/20', label: 'Geïnteresseerd' },
+  offerte: { color: 'text-orange-400', bg: 'bg-orange-500/20', label: 'Offerte' },
+  klant: { color: 'text-emerald-400', bg: 'bg-emerald-500/20', label: 'Klant!' },
+  afgewezen: { color: 'text-gray-400', bg: 'bg-gray-500/20', label: 'Afgewezen' },
 }
 
 const emailTemplates: EmailTemplate[] = [
@@ -356,24 +356,31 @@ export default function MarketingDashboard() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gradient-to-b from-gray-900 via-gray-900 to-gray-950">
+      {/* Animated Background */}
+      <div className="fixed inset-0 overflow-hidden pointer-events-none">
+        <div className="absolute inset-0 bg-gradient-to-br from-emerald-600/10 via-gray-900 to-teal-600/10" />
+        <div className="absolute top-0 right-0 w-[600px] h-[600px] rounded-full blur-3xl -translate-y-1/3 translate-x-1/4 bg-gradient-to-br from-emerald-500/20 via-teal-500/10 to-transparent" />
+        <div className="absolute bottom-0 left-0 w-[500px] h-[500px] rounded-full blur-3xl translate-y-1/3 -translate-x-1/4 bg-gradient-to-tr from-teal-500/15 via-emerald-500/10 to-transparent" />
+      </div>
+
       {/* Header */}
-      <header className="bg-white border-b border-gray-200 sticky top-0 z-40">
+      <header className="relative z-10 bg-gray-900/70 backdrop-blur-xl border-b border-gray-800/50 sticky top-0">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-16">
             <div className="flex items-center gap-4">
               <a href="/" className="hover:opacity-80 transition-opacity">
-                <Logo />
+                <Logo variant="white" />
               </a>
               <div className="hidden sm:block">
-                <span className="text-sm text-gray-500">Sales Dashboard</span>
+                <span className="text-sm text-gray-400">Sales Dash</span>
               </div>
             </div>
             
             <div className="flex items-center gap-2">
               <a 
                 href="/"
-                className="p-2 text-gray-500 hover:text-gray-700 hover:bg-gray-100 rounded-lg transition-colors"
+                className="p-2 text-gray-400 hover:text-white hover:bg-gray-800 rounded-lg transition-colors"
                 title="Naar homepage"
               >
                 <Home className="w-5 h-5" />
@@ -384,39 +391,39 @@ export default function MarketingDashboard() {
       </header>
 
       {/* Stats Bar */}
-      <div className="bg-white border-b border-gray-200">
+      <div className="relative z-10 bg-gray-800/50 backdrop-blur-xl border-b border-gray-700/50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
             <div className="text-center">
-              <div className="text-2xl font-bold text-gray-900">{stats.total}</div>
-              <div className="text-xs text-gray-500">Totaal leads</div>
+              <div className="text-2xl font-bold text-white">{stats.total}</div>
+              <div className="text-xs text-gray-400">Totaal leads</div>
             </div>
             <div className="text-center">
-              <div className="text-2xl font-bold text-blue-600">{stats.nieuw}</div>
-              <div className="text-xs text-gray-500">Nieuw</div>
+              <div className="text-2xl font-bold text-blue-400">{stats.nieuw}</div>
+              <div className="text-xs text-gray-400">Nieuw</div>
             </div>
             <div className="text-center">
-              <div className="text-2xl font-bold text-yellow-600">{stats.gecontacteerd}</div>
-              <div className="text-xs text-gray-500">Gecontacteerd</div>
+              <div className="text-2xl font-bold text-yellow-400">{stats.gecontacteerd}</div>
+              <div className="text-xs text-gray-400">Gecontacteerd</div>
             </div>
             <div className="text-center">
-              <div className="text-2xl font-bold text-green-600">{stats.klanten}</div>
-              <div className="text-xs text-gray-500">Klanten</div>
+              <div className="text-2xl font-bold text-green-400">{stats.klanten}</div>
+              <div className="text-xs text-gray-400">Klanten</div>
             </div>
           </div>
         </div>
       </div>
 
       {/* Tabs */}
-      <div className="bg-white border-b border-gray-200">
+      <div className="relative z-10 bg-gray-800/30 backdrop-blur-xl border-b border-gray-700/50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex gap-1">
             <button
               onClick={() => setActiveTab('zoeken')}
               className={`px-4 py-3 text-sm font-medium border-b-2 transition-colors ${
                 activeTab === 'zoeken'
-                  ? 'border-primary-500 text-primary-600'
-                  : 'border-transparent text-gray-500 hover:text-gray-700'
+                  ? 'border-emerald-500 text-emerald-400'
+                  : 'border-transparent text-gray-400 hover:text-white'
               }`}
             >
               <Search className="w-4 h-4 inline mr-2" />
@@ -426,8 +433,8 @@ export default function MarketingDashboard() {
               onClick={() => setActiveTab('leads')}
               className={`px-4 py-3 text-sm font-medium border-b-2 transition-colors ${
                 activeTab === 'leads'
-                  ? 'border-primary-500 text-primary-600'
-                  : 'border-transparent text-gray-500 hover:text-gray-700'
+                  ? 'border-emerald-500 text-emerald-400'
+                  : 'border-transparent text-gray-400 hover:text-white'
               }`}
             >
               <Users className="w-4 h-4 inline mr-2" />
@@ -438,41 +445,41 @@ export default function MarketingDashboard() {
       </div>
 
       {/* Main Content */}
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+      <main className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
         {activeTab === 'zoeken' && (
           <div className="space-y-6">
             {/* Search Form */}
-            <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-4 sm:p-6">
-              <h2 className="text-lg font-semibold text-gray-900 mb-4">
+            <div className="bg-gray-800/60 backdrop-blur-xl rounded-2xl border border-gray-700/50 p-4 sm:p-6">
+              <h2 className="text-lg font-semibold text-white mb-4">
                 🔍 Zoek bedrijven in de buurt
               </h2>
               
               <div className="grid grid-cols-1 sm:grid-cols-4 gap-4">
                 <div className="sm:col-span-2">
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                  <label className="block text-sm font-medium text-gray-300 mb-1">
                     Stad of postcode
                   </label>
                   <div className="relative">
-                    <MapPin className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+                    <MapPin className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-500" />
                     <input
                       type="text"
                       value={searchCity}
                       onChange={(e) => setSearchCity(e.target.value)}
                       placeholder="bijv. Leiden of 2312"
-                      className="w-full pl-10 pr-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
+                      className="w-full pl-10 pr-4 py-2.5 bg-gray-700 border border-gray-600 text-white placeholder-gray-400 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500"
                       onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
                     />
                   </div>
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                  <label className="block text-sm font-medium text-gray-300 mb-1">
                     Type bedrijf
                   </label>
                   <select
                     value={searchType}
                     onChange={(e) => setSearchType(e.target.value)}
-                    className="w-full px-3 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
+                    className="w-full px-3 py-2.5 bg-gray-700 border border-gray-600 text-white rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500"
                   >
                     {businessTypes.map(t => (
                       <option key={t.value} value={t.value}>{t.label}</option>
@@ -481,13 +488,13 @@ export default function MarketingDashboard() {
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                  <label className="block text-sm font-medium text-gray-300 mb-1">
                     Straal
                   </label>
                   <select
                     value={searchRadius}
                     onChange={(e) => setSearchRadius(e.target.value)}
-                    className="w-full px-3 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
+                    className="w-full px-3 py-2.5 bg-gray-700 border border-gray-600 text-white rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500"
                   >
                     <option value="1000">1 km</option>
                     <option value="3000">3 km</option>
@@ -500,7 +507,7 @@ export default function MarketingDashboard() {
               <button
                 onClick={handleSearch}
                 disabled={isSearching}
-                className="mt-4 w-full sm:w-auto px-6 py-2.5 bg-primary-500 hover:bg-primary-600 disabled:bg-gray-300 text-white font-medium rounded-lg transition-colors flex items-center justify-center gap-2"
+                className="mt-4 w-full sm:w-auto px-6 py-2.5 bg-emerald-500 hover:bg-emerald-600 disabled:bg-gray-600 text-white font-medium rounded-lg transition-colors flex items-center justify-center gap-2"
               >
                 {isSearching ? (
                   <>
@@ -516,34 +523,34 @@ export default function MarketingDashboard() {
               </button>
 
               {searchError && (
-                <p className="mt-3 text-sm text-red-600">{searchError}</p>
+                <p className="mt-3 text-sm text-red-400">{searchError}</p>
               )}
             </div>
 
             {/* Search Results */}
             {searchResults.length > 0 && (
-              <div className="bg-white rounded-xl shadow-sm border border-gray-200">
-                <div className="p-4 border-b border-gray-200">
-                  <h3 className="font-semibold text-gray-900">
+              <div className="bg-gray-800/60 backdrop-blur-xl rounded-2xl border border-gray-700/50">
+                <div className="p-4 border-b border-gray-700/50">
+                  <h3 className="font-semibold text-white">
                     {searchResults.length} bedrijven gevonden
                   </h3>
                 </div>
                 
-                <div className="divide-y divide-gray-100">
+                <div className="divide-y divide-gray-700/50">
                   {searchResults.map((business) => {
                     const isAdded = leads.some(l => l.id === business.id)
                     
                     return (
-                      <div key={business.id} className="p-4 hover:bg-gray-50 transition-colors">
+                      <div key={business.id} className="p-4 hover:bg-gray-700/50 transition-colors">
                         <div className="flex items-start justify-between gap-4">
                           <div className="flex-1 min-w-0">
-                            <h4 className="font-medium text-gray-900 truncate">
+                            <h4 className="font-medium text-white truncate">
                               {business.name}
                             </h4>
-                            <p className="text-sm text-gray-500 mt-0.5">
+                            <p className="text-sm text-gray-400 mt-0.5">
                               {business.address}, {business.city}
                             </p>
-                            <div className="flex flex-wrap gap-3 mt-2 text-xs text-gray-500">
+                            <div className="flex flex-wrap gap-3 mt-2 text-xs text-gray-400">
                               {business.phone && (
                                 <span className="flex items-center gap-1">
                                   <Phone className="w-3 h-3" />
@@ -555,13 +562,13 @@ export default function MarketingDashboard() {
                                   href={business.website.startsWith('http') ? business.website : `https://${business.website}`}
                                   target="_blank"
                                   rel="noopener noreferrer"
-                                  className="flex items-center gap-1 text-primary-600 hover:underline"
+                                  className="flex items-center gap-1 text-emerald-400 hover:underline"
                                 >
                                   <Globe className="w-3 h-3" />
                                   Website
                                 </a>
                               )}
-                              <span className="px-2 py-0.5 bg-gray-100 rounded-full">
+                              <span className="px-2 py-0.5 bg-gray-700 text-gray-300 rounded-full">
                                 {business.type}
                               </span>
                             </div>
@@ -572,8 +579,8 @@ export default function MarketingDashboard() {
                             disabled={isAdded}
                             className={`flex-shrink-0 px-3 py-1.5 rounded-lg text-sm font-medium transition-colors ${
                               isAdded
-                                ? 'bg-green-100 text-green-700 cursor-default'
-                                : 'bg-primary-500 hover:bg-primary-600 text-white'
+                                ? 'bg-emerald-500/20 text-emerald-400 cursor-default'
+                                : 'bg-emerald-500 hover:bg-emerald-600 text-white'
                             }`}
                           >
                             {isAdded ? (
@@ -602,15 +609,15 @@ export default function MarketingDashboard() {
           <div className="space-y-6">
             {/* Filter */}
             <div className="flex items-center gap-2 overflow-x-auto pb-2">
-              <span className="text-sm text-gray-500 flex-shrink-0">Filter:</span>
+              <span className="text-sm text-gray-400 flex-shrink-0">Filter:</span>
               {['alle', 'nieuw', 'gecontacteerd', 'geinteresseerd', 'offerte', 'klant', 'afgewezen'].map((status) => (
                 <button
                   key={status}
                   onClick={() => setStatusFilter(status)}
                   className={`px-3 py-1.5 rounded-full text-sm font-medium whitespace-nowrap transition-colors ${
                     statusFilter === status
-                      ? 'bg-primary-500 text-white'
-                      : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                      ? 'bg-emerald-500 text-white'
+                      : 'bg-gray-800 text-gray-300 hover:bg-gray-700'
                   }`}
                 >
                   {status === 'alle' ? 'Alle' : statusConfig[status as Lead['status']]?.label || status}
@@ -620,39 +627,39 @@ export default function MarketingDashboard() {
 
             {/* Leads List */}
             {filteredLeads.length === 0 ? (
-              <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-8 text-center">
-                <Users className="w-12 h-12 text-gray-300 mx-auto mb-3" />
-                <h3 className="font-medium text-gray-900 mb-1">Nog geen leads</h3>
-                <p className="text-sm text-gray-500">
+              <div className="bg-gray-800/60 backdrop-blur-xl rounded-2xl border border-gray-700/50 p-8 text-center">
+                <Users className="w-12 h-12 text-gray-500 mx-auto mb-3" />
+                <h3 className="font-medium text-white mb-1">Nog geen leads</h3>
+                <p className="text-sm text-gray-400">
                   Zoek bedrijven en voeg ze toe aan je lijst
                 </p>
                 <button
                   onClick={() => setActiveTab('zoeken')}
-                  className="mt-4 px-4 py-2 bg-primary-500 hover:bg-primary-600 text-white text-sm font-medium rounded-lg transition-colors"
+                  className="mt-4 px-4 py-2 bg-emerald-500 hover:bg-emerald-600 text-white text-sm font-medium rounded-lg transition-colors"
                 >
                   Bedrijven zoeken
                 </button>
               </div>
             ) : (
-              <div className="bg-white rounded-xl shadow-sm border border-gray-200 divide-y divide-gray-100">
+              <div className="bg-gray-800/60 backdrop-blur-xl rounded-2xl border border-gray-700/50 divide-y divide-gray-700/50">
                 {filteredLeads.map((lead) => (
-                  <div key={lead.id} className="p-4 hover:bg-gray-50 transition-colors">
+                  <div key={lead.id} className="p-4 hover:bg-gray-700/50 transition-colors">
                     <div className="flex items-start justify-between gap-4">
                       <div className="flex-1 min-w-0">
                         <div className="flex items-center gap-2 mb-1">
-                          <h4 className="font-medium text-gray-900 truncate">
+                          <h4 className="font-medium text-white truncate">
                             {lead.companyName}
                           </h4>
                           <span className={`px-2 py-0.5 rounded-full text-xs font-medium ${statusConfig[lead.status].bg} ${statusConfig[lead.status].color}`}>
                             {statusConfig[lead.status].label}
                           </span>
                         </div>
-                        <p className="text-sm text-gray-500">
+                        <p className="text-sm text-gray-400">
                           {lead.address}, {lead.city}
                         </p>
-                        <div className="flex flex-wrap gap-3 mt-2 text-xs text-gray-500">
+                        <div className="flex flex-wrap gap-3 mt-2 text-xs text-gray-400">
                           {lead.phone && (
-                            <a href={`tel:${lead.phone}`} className="flex items-center gap-1 hover:text-primary-600">
+                            <a href={`tel:${lead.phone}`} className="flex items-center gap-1 hover:text-emerald-400">
                               <Phone className="w-3 h-3" />
                               {lead.phone}
                             </a>
@@ -664,7 +671,7 @@ export default function MarketingDashboard() {
                             </span>
                           )}
                           {lead.emailsSent > 0 && (
-                            <span className="flex items-center gap-1 text-green-600">
+                            <span className="flex items-center gap-1 text-emerald-400">
                               <Send className="w-3 h-3" />
                               {lead.emailsSent}x gemaild
                             </span>
@@ -672,11 +679,11 @@ export default function MarketingDashboard() {
                         </div>
                       </div>
                       
-                      <div className="flex items-center gap-2">
+                      <div className="flex items-center gap-2 flex-shrink-0">
                         <select
                           value={lead.status}
                           onChange={(e) => updateLead(lead.id, { status: e.target.value as Lead['status'] })}
-                          className="text-xs border border-gray-300 rounded-lg px-2 py-1.5 focus:ring-2 focus:ring-primary-500"
+                          className="text-xs bg-gray-700 border border-gray-600 text-white rounded-lg px-2 py-1.5 focus:ring-2 focus:ring-emerald-500"
                         >
                           {Object.entries(statusConfig).map(([value, config]) => (
                             <option key={value} value={value}>{config.label}</option>
@@ -686,7 +693,7 @@ export default function MarketingDashboard() {
                         <button
                           onClick={() => openEmailModal(lead)}
                           disabled={!lead.email}
-                          className="p-2 text-primary-600 hover:bg-primary-50 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                          className="p-2 text-emerald-400 hover:bg-gray-700 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                           title={lead.email ? 'Email versturen' : 'Geen email adres'}
                         >
                           <Mail className="w-4 h-4" />
@@ -694,7 +701,7 @@ export default function MarketingDashboard() {
                         
                         <button
                           onClick={() => deleteLead(lead.id)}
-                          className="p-2 text-red-600 hover:bg-red-50 rounded-lg transition-colors"
+                          className="p-2 text-red-400 hover:bg-gray-700 rounded-lg transition-colors"
                           title="Verwijderen"
                         >
                           <Trash2 className="w-4 h-4" />
@@ -704,21 +711,21 @@ export default function MarketingDashboard() {
 
                     {/* Notes */}
                     {lead.notes && (
-                      <div className="mt-3 p-2 bg-gray-50 rounded-lg">
-                        <p className="text-xs text-gray-600">{lead.notes}</p>
+                      <div className="mt-3 p-2 bg-gray-700/50 rounded-lg">
+                        <p className="text-xs text-gray-300">{lead.notes}</p>
                       </div>
                     )}
 
                     {/* Edit contact person / email */}
                     {!lead.email && (
-                      <div className="mt-3 p-3 bg-yellow-50 rounded-lg">
-                        <p className="text-xs text-yellow-700 mb-2">
+                      <div className="mt-3 p-3 bg-amber-500/10 border border-amber-500/30 rounded-lg">
+                        <p className="text-xs text-amber-400 mb-2">
                           ⚠️ Geen email adres - voeg toe om te kunnen mailen
                         </p>
                         <input
                           type="email"
                           placeholder="Email toevoegen..."
-                          className="w-full text-sm px-3 py-1.5 border border-yellow-300 rounded-lg focus:ring-2 focus:ring-yellow-500"
+                          className="w-full text-sm px-3 py-1.5 bg-gray-800 border border-amber-500/50 text-white placeholder-gray-500 rounded-lg focus:ring-2 focus:ring-amber-500"
                           onBlur={(e) => {
                             if (e.target.value) {
                               updateLead(lead.id, { email: e.target.value })
@@ -747,7 +754,7 @@ export default function MarketingDashboard() {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50"
+            className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm"
             onClick={() => setShowEmailModal(false)}
           >
             <motion.div
@@ -755,16 +762,16 @@ export default function MarketingDashboard() {
               animate={{ scale: 1, opacity: 1 }}
               exit={{ scale: 0.95, opacity: 0 }}
               onClick={(e) => e.stopPropagation()}
-              className="w-full max-w-2xl max-h-[90vh] overflow-y-auto bg-white rounded-xl shadow-xl"
+              className="w-full max-w-2xl max-h-[90vh] overflow-y-auto bg-gray-800 border border-gray-700 rounded-2xl shadow-2xl"
             >
-              <div className="p-4 border-b border-gray-200 flex items-center justify-between">
+              <div className="p-4 border-b border-gray-700 flex items-center justify-between">
                 <div>
-                  <h2 className="font-semibold text-gray-900">Email versturen</h2>
-                  <p className="text-sm text-gray-500">Naar: {emailTo.companyName}</p>
+                  <h2 className="font-semibold text-white">Email versturen</h2>
+                  <p className="text-sm text-gray-400">Naar: {emailTo.companyName}</p>
                 </div>
                 <button
                   onClick={() => setShowEmailModal(false)}
-                  className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
+                  className="p-2 text-gray-400 hover:bg-gray-700 rounded-lg transition-colors"
                 >
                   <X className="w-5 h-5" />
                 </button>
@@ -773,7 +780,7 @@ export default function MarketingDashboard() {
               <div className="p-4 space-y-4">
                 {/* Template selector */}
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                  <label className="block text-sm font-medium text-gray-300 mb-2">
                     Kies een template
                   </label>
                   <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
@@ -783,11 +790,11 @@ export default function MarketingDashboard() {
                         onClick={() => selectTemplate(t)}
                         className={`p-3 text-left rounded-lg border-2 transition-colors ${
                           selectedTemplate?.id === t.id
-                            ? 'border-primary-500 bg-primary-50'
-                            : 'border-gray-200 hover:border-gray-300'
+                            ? 'border-emerald-500 bg-emerald-500/10'
+                            : 'border-gray-600 hover:border-gray-500 bg-gray-700/50'
                         }`}
                       >
-                        <span className="font-medium text-sm text-gray-900">{t.name}</span>
+                        <span className="font-medium text-sm text-white">{t.name}</span>
                       </button>
                     ))}
                   </div>
@@ -795,19 +802,19 @@ export default function MarketingDashboard() {
 
                 {/* Email fields */}
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                  <label className="block text-sm font-medium text-gray-300 mb-1">
                     Aan
                   </label>
                   <input
                     type="email"
                     value={emailTo.email}
                     readOnly
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg bg-gray-50 text-gray-500"
+                    className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-lg text-gray-400"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                  <label className="block text-sm font-medium text-gray-300 mb-1">
                     Onderwerp
                   </label>
                   <input
@@ -815,12 +822,12 @@ export default function MarketingDashboard() {
                     value={emailSubject}
                     onChange={(e) => setEmailSubject(e.target.value)}
                     placeholder="Onderwerp..."
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
+                    className="w-full px-3 py-2 bg-gray-700 border border-gray-600 text-white placeholder-gray-500 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                  <label className="block text-sm font-medium text-gray-300 mb-1">
                     Bericht
                   </label>
                   <textarea
@@ -828,26 +835,26 @@ export default function MarketingDashboard() {
                     onChange={(e) => setEmailBody(e.target.value)}
                     rows={12}
                     placeholder="Typ je bericht..."
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 font-mono text-sm"
+                    className="w-full px-3 py-2 bg-gray-700 border border-gray-600 text-white placeholder-gray-500 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 font-mono text-sm"
                   />
                 </div>
               </div>
 
-              <div className="p-4 border-t border-gray-200 flex items-center justify-between">
+              <div className="p-4 border-t border-gray-700 flex items-center justify-between">
                 <p className="text-xs text-gray-500">
                   Verstuurd vanaf: info@webstability.nl
                 </p>
                 <div className="flex gap-2">
                   <button
                     onClick={() => setShowEmailModal(false)}
-                    className="px-4 py-2 text-gray-600 hover:bg-gray-100 rounded-lg transition-colors"
+                    className="px-4 py-2 text-gray-300 hover:bg-gray-700 rounded-lg transition-colors"
                   >
                     Annuleren
                   </button>
                   <button
                     onClick={sendEmail}
                     disabled={isSending || !emailSubject || !emailBody}
-                    className="px-4 py-2 bg-primary-500 hover:bg-primary-600 disabled:bg-gray-300 text-white font-medium rounded-lg transition-colors flex items-center gap-2"
+                    className="px-4 py-2 bg-emerald-500 hover:bg-emerald-600 disabled:bg-gray-600 disabled:text-gray-400 text-white font-medium rounded-lg transition-colors flex items-center gap-2"
                   >
                     {isSending ? (
                       <>
