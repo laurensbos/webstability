@@ -267,6 +267,17 @@ export default function MarketingDashboard() {
     type: string
   }>>([])
   
+  // Last search state (for repeat button)
+  const [lastSearch, setLastSearch] = useState<{
+    city: string
+    query: string
+    type: string
+    radius: string
+  } | null>(() => {
+    const saved = localStorage.getItem('webstability_last_search')
+    return saved ? JSON.parse(saved) : null
+  })
+  
   // Website analysis state
   interface WebsiteIssue {
     type: 'critical' | 'warning' | 'info'
@@ -443,10 +454,23 @@ export default function MarketingDashboard() {
   ]
 
   // Search businesses via API
-  const handleBusinessSearch = async () => {
-    if (!searchCity.trim()) {
+  const handleBusinessSearch = async (repeatSearch?: { city: string; query: string; type: string; radius: string }) => {
+    const city = repeatSearch?.city || searchCity
+    const query = repeatSearch?.query || businessNameQuery
+    const type = repeatSearch?.type || searchType
+    const radius = repeatSearch?.radius || searchRadius
+    
+    if (!city.trim()) {
       setSearchError('Vul een stad of postcode in')
       return
+    }
+
+    // Update input fields if repeating
+    if (repeatSearch) {
+      setSearchCity(repeatSearch.city)
+      setBusinessNameQuery(repeatSearch.query)
+      setSearchType(repeatSearch.type)
+      setSearchRadius(repeatSearch.radius)
     }
 
     setIsSearching(true)
@@ -455,20 +479,20 @@ export default function MarketingDashboard() {
 
     try {
       // Converteer km naar meters voor de API
-      const radiusInMeters = (parseInt(searchRadius) * 1000).toString()
+      const radiusInMeters = (parseInt(radius) * 1000).toString()
       
       const params = new URLSearchParams({
-        city: searchCity.trim(),
-        type: searchType,
+        city: city.trim(),
+        type: type,
         radius: radiusInMeters
       })
 
       // Voeg bedrijfsnaam query toe als die is ingevuld
-      if (businessNameQuery.trim()) {
-        params.set('query', businessNameQuery.trim())
+      if (query.trim()) {
+        params.set('query', query.trim())
       }
 
-      console.log(`[Search] Zoeken naar ${businessNameQuery || searchType} in ${searchCity}, radius ${searchRadius}km...`)
+      console.log(`[Search] Zoeken naar ${query || type} in ${city}, radius ${radius}km...`)
       
       const response = await fetch(`/api/marketing/search-businesses?${params}`)
       const data = await response.json()
@@ -477,8 +501,14 @@ export default function MarketingDashboard() {
 
       if (data.success) {
         setSearchResults(data.businesses || [])
+        
+        // Save last search
+        const searchData = { city: city.trim(), query: query.trim(), type, radius }
+        setLastSearch(searchData)
+        localStorage.setItem('webstability_last_search', JSON.stringify(searchData))
+        
         if (!data.businesses || data.businesses.length === 0) {
-          setSearchError(data.error || `Geen ${businessNameQuery || searchType} bedrijven gevonden binnen ${searchRadius}km van ${searchCity}. Probeer een groter zoekgebied.`)
+          setSearchError(data.error || `Geen ${query || type} bedrijven gevonden binnen ${radius}km van ${city}. Probeer een groter zoekgebied.`)
         }
       } else {
         setSearchError(data.error || 'Zoeken mislukt - probeer opnieuw')
@@ -1076,7 +1106,7 @@ export default function MarketingDashboard() {
                 <motion.button
                   whileHover={{ scale: 1.02 }}
                   whileTap={{ scale: 0.98 }}
-                  onClick={handleBusinessSearch}
+                  onClick={() => handleBusinessSearch()}
                   disabled={isSearching || !searchCity.trim()}
                   className="w-full px-4 sm:px-6 py-2 sm:py-2.5 bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-600 hover:to-emerald-700 disabled:from-gray-400 disabled:to-gray-500 text-white font-medium rounded-xl transition-all flex items-center justify-center gap-2 text-sm"
                 >
@@ -1089,6 +1119,28 @@ export default function MarketingDashboard() {
                 </motion.button>
               </div>
             </div>
+            
+            {/* Last search repeat button */}
+            {lastSearch && !isSearching && searchResults.length === 0 && (
+              <motion.button
+                initial={{ opacity: 0, y: -10 }}
+                animate={{ opacity: 1, y: 0 }}
+                whileHover={{ scale: 1.01 }}
+                whileTap={{ scale: 0.99 }}
+                onClick={() => handleBusinessSearch(lastSearch)}
+                className={`w-full sm:w-auto flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl text-sm font-medium transition-colors mb-4 ${
+                  darkMode 
+                    ? 'bg-gray-700 hover:bg-gray-600 text-gray-300' 
+                    : 'bg-gray-100 hover:bg-gray-200 text-gray-700'
+                }`}
+              >
+                <RefreshCw className="w-4 h-4" />
+                <span className="hidden sm:inline">Vorige zoekopdracht:</span>
+                <span className="font-medium">
+                  {lastSearch.query || lastSearch.type} in {lastSearch.city}
+                </span>
+              </motion.button>
+            )}
 
             {searchError && (
               <p className={`text-sm mb-4 ${darkMode ? 'text-red-400' : 'text-red-600'}`}>{searchError}</p>
