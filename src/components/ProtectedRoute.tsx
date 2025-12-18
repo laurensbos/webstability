@@ -70,21 +70,33 @@ export const ProtectedRoute: React.FC<ProtectedRouteProps> = ({
 
 // Fallback login voor development (zonder Supabase)
 const FallbackLogin: React.FC<{ children: React.ReactNode; requireRole?: 'developer' | 'admin' | 'marketing' }> = ({ children, requireRole }) => {
-  const [isAuthenticated, setIsAuthenticated] = React.useState(() => {
-    return localStorage.getItem('dev_authenticated') === 'true'
-  })
-  const [userRole, setUserRole] = React.useState(() => {
-    return localStorage.getItem('dev_user_role') || ''
-  })
+  // Session-based auth - cleared on page refresh/close
+  const [isAuthenticated, setIsAuthenticated] = React.useState(false)
+  const [userRole, setUserRole] = React.useState('')
   const [email, setEmail] = React.useState('')
   const [password, setPassword] = React.useState('')
   const [error, setError] = React.useState('')
 
-  // Force logout function
-  const forceLogout = () => {
+  // Clear any stored auth on mount - force re-login every session
+  React.useEffect(() => {
+    // Use sessionStorage instead of localStorage for session-based auth
+    const sessionAuth = sessionStorage.getItem('dev_authenticated')
+    const sessionRole = sessionStorage.getItem('dev_user_role')
+    if (sessionAuth === 'true' && sessionRole) {
+      setIsAuthenticated(true)
+      setUserRole(sessionRole)
+    }
+    // Clear localStorage legacy auth
     localStorage.removeItem('dev_authenticated')
     localStorage.removeItem('dev_user_role')
     localStorage.removeItem('dev_user_email')
+  }, [])
+
+  // Force logout function
+  const forceLogout = () => {
+    sessionStorage.removeItem('dev_authenticated')
+    sessionStorage.removeItem('dev_user_role')
+    sessionStorage.removeItem('dev_user_email')
     setIsAuthenticated(false)
     setUserRole('')
   }
@@ -129,6 +141,10 @@ const FallbackLogin: React.FC<{ children: React.ReactNode; requireRole?: 'develo
       localStorage.setItem('dev_authenticated', 'true')
       localStorage.setItem('dev_user_email', email)
       localStorage.setItem('dev_user_role', matchedCred.role)
+      // Also set sessionStorage for current session
+      sessionStorage.setItem('dev_authenticated', 'true')
+      sessionStorage.setItem('dev_user_email', email)
+      sessionStorage.setItem('dev_user_role', matchedCred.role)
       setIsAuthenticated(true)
       setUserRole(matchedCred.role)
       setError('')
@@ -138,8 +154,8 @@ const FallbackLogin: React.FC<{ children: React.ReactNode; requireRole?: 'develo
   }
 
   if (isAuthenticated) {
-    // Re-check role from localStorage (might have been updated)
-    const currentRole = localStorage.getItem('dev_user_role') || userRole
+    // Re-check role from sessionStorage (might have been updated)
+    const currentRole = sessionStorage.getItem('dev_user_role') || userRole
     
     // Check role permissions
     const isDeveloper = currentRole === 'developer' || currentRole === 'admin'
