@@ -369,60 +369,6 @@ export default function MarketingDashboard() {
         // API not available, continue with local data
         console.log('API not available, using local data')
       }
-      
-      // If no data at all, use demo data
-      if (!saved) {
-        setLeads([
-        {
-          id: '1',
-          companyName: 'Bakkerij De Gouden Korrel',
-          contactPerson: 'Jan Bakker',
-          email: 'info@degoudenkorrel.nl',
-          phone: '06-12345678',
-          address: 'Dorpsstraat 15',
-          city: 'Leiden',
-          notes: 'Geen website, alleen Facebook pagina',
-          status: 'nieuw',
-          priority: true,
-          createdAt: new Date().toISOString(),
-          emailsSent: 0,
-          emailHistory: [],
-          notesTimeline: []
-        },
-        {
-          id: '2',
-          companyName: 'Schildersbedrijf Jansen',
-          contactPerson: 'Piet Jansen',
-          email: 'piet@jansenschilders.nl',
-          phone: '06-98765432',
-          website: 'www.jansenschilders.nl',
-          address: 'Industrieweg 8',
-          city: 'Alphen aan den Rijn',
-          notes: 'Website uit 2015, niet mobiel vriendelijk',
-          status: 'gecontacteerd',
-          priority: false,
-          createdAt: new Date(Date.now() - 86400000).toISOString(),
-          lastContact: new Date(Date.now() - 3600000).toISOString(),
-          emailsSent: 1,
-          emailHistory: [
-            {
-              id: 'eh1',
-              subject: 'Tijd voor een nieuwe website, Schildersbedrijf Jansen?',
-              templateName: 'Verouderde website',
-              sentAt: new Date(Date.now() - 3600000).toISOString()
-            }
-          ],
-          notesTimeline: [
-            {
-              id: 'n1',
-              text: 'Website uit 2015, niet mobiel vriendelijk',
-              createdAt: new Date(Date.now() - 86400000).toISOString()
-            }
-          ],
-          followUpDate: new Date(Date.now() + 86400000 * 3).toISOString().split('T')[0]
-        }
-      ])
-      }
     }
     
     loadLeads()
@@ -455,24 +401,29 @@ export default function MarketingDashboard() {
 
     try {
       const params = new URLSearchParams({
-        city: searchCity,
+        city: searchCity.trim(),
         type: searchType,
         radius: searchRadius
       })
 
+      console.log(`[Search] Zoeken naar ${searchType} in ${searchCity}...`)
+      
       const response = await fetch(`/api/marketing/search-businesses?${params}`)
       const data = await response.json()
 
+      console.log('[Search] Response:', data)
+
       if (data.success) {
-        setSearchResults(data.businesses)
-        if (data.businesses.length === 0) {
-          setSearchError('Geen bedrijven gevonden in dit gebied')
+        setSearchResults(data.businesses || [])
+        if (!data.businesses || data.businesses.length === 0) {
+          setSearchError(data.error || `Geen ${searchType} bedrijven gevonden binnen ${searchRadius}m van ${searchCity}. Probeer een groter zoekgebied.`)
         }
       } else {
-        setSearchError(data.error || 'Zoeken mislukt')
+        setSearchError(data.error || 'Zoeken mislukt - probeer opnieuw')
       }
-    } catch {
-      setSearchError('Netwerkfout - probeer opnieuw')
+    } catch (error) {
+      console.error('[Search] Error:', error)
+      setSearchError('Netwerkfout - controleer je verbinding en probeer opnieuw')
     } finally {
       setIsSearching(false)
     }
@@ -1913,38 +1864,51 @@ function LeadRow({
 
             <div className="flex-1" />
 
-            {/* Email button with dropdown - responsive */}
-            <div className="relative shrink-0">
-              <button
-                onClick={(e) => {
-                  e.stopPropagation()
-                  setShowTemplates(!showTemplates)
-                  setShowMenu(false)
-                }}
-                className="flex items-center gap-2 px-3 sm:px-4 py-2 bg-emerald-600 text-white text-sm font-medium rounded-lg hover:bg-emerald-700 transition-colors"
-              >
-                <Mail className="w-4 h-4" />
-                <span className="hidden sm:inline">Email sturen</span>
-                <ChevronDown className={`w-4 h-4 transition-transform ${showTemplates ? 'rotate-180' : ''}`} />
-              </button>
+            {/* Email button - opens template modal */}
+            <button
+              onClick={(e) => {
+                e.stopPropagation()
+                setShowTemplates(true)
+                setShowMenu(false)
+              }}
+              className="flex items-center gap-2 px-3 sm:px-4 py-2 bg-emerald-600 text-white text-sm font-medium rounded-lg hover:bg-emerald-700 transition-colors shrink-0"
+            >
+              <Mail className="w-4 h-4" />
+              <span className="hidden sm:inline">Email sturen</span>
+            </button>
 
-              <AnimatePresence>
-                {showTemplates && (
-                  <>
-                    {/* Backdrop to close on click outside */}
-                    <div 
-                      className="fixed inset-0 z-10" 
-                      onClick={() => setShowTemplates(false)}
-                    />
-                    <motion.div
-                      initial={{ opacity: 0, y: -10 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      exit={{ opacity: 0, y: -10 }}
-                      className={`absolute right-0 mt-2 w-64 rounded-xl shadow-xl border z-20 max-h-80 overflow-y-auto ${
-                        darkMode ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-100'
-                      }`}
-                    >
-                    <div className="p-2">
+            {/* Template selection modal */}
+            <AnimatePresence>
+              {showTemplates && (
+                <motion.div
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  exit={{ opacity: 0 }}
+                  className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm"
+                  onClick={() => setShowTemplates(false)}
+                >
+                  <motion.div
+                    initial={{ scale: 0.95, opacity: 0 }}
+                    animate={{ scale: 1, opacity: 1 }}
+                    exit={{ scale: 0.95, opacity: 0 }}
+                    onClick={(e) => e.stopPropagation()}
+                    className={`w-full max-w-md rounded-2xl p-6 ${
+                      darkMode ? 'bg-gray-800' : 'bg-white'
+                    } shadow-2xl`}
+                  >
+                    <div className="flex items-center justify-between mb-4">
+                      <h3 className={`text-lg font-semibold ${darkMode ? 'text-white' : 'text-gray-900'}`}>
+                        Kies email template
+                      </h3>
+                      <button
+                        onClick={() => setShowTemplates(false)}
+                        className={`p-2 rounded-lg ${darkMode ? 'hover:bg-gray-700 text-gray-400' : 'hover:bg-gray-100 text-gray-500'}`}
+                      >
+                        <X className="w-5 h-5" />
+                      </button>
+                    </div>
+                    
+                    <div className="space-y-2">
                       {templates.map((template) => (
                         <button
                           key={template.id}
@@ -1952,33 +1916,46 @@ function LeadRow({
                             onEmail(template)
                             setShowTemplates(false)
                           }}
-                          className={`w-full p-3 text-left rounded-lg transition-colors ${
-                            darkMode ? 'hover:bg-gray-700' : 'hover:bg-emerald-50'
+                          className={`w-full p-4 text-left rounded-xl border transition-all ${
+                            darkMode 
+                              ? 'border-gray-700 hover:border-emerald-500 hover:bg-emerald-500/10' 
+                              : 'border-gray-200 hover:border-emerald-500 hover:bg-emerald-50'
                           }`}
                         >
-                          <p className={`font-medium text-sm ${darkMode ? 'text-white' : 'text-gray-900'}`}>{template.name}</p>
-                          <p className={`text-xs ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>{template.description}</p>
+                          <p className={`font-medium ${darkMode ? 'text-white' : 'text-gray-900'}`}>
+                            {template.name}
+                          </p>
+                          <p className={`text-sm mt-1 ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>
+                            {template.description}
+                          </p>
                         </button>
                       ))}
-                      <hr className={`my-2 ${darkMode ? 'border-gray-700' : 'border-gray-200'}`} />
+                      
+                      <hr className={`my-3 ${darkMode ? 'border-gray-700' : 'border-gray-200'}`} />
+                      
                       <button
                         onClick={() => {
                           onEmail()
                           setShowTemplates(false)
                         }}
-                        className={`w-full p-3 text-left rounded-lg transition-colors ${
-                          darkMode ? 'hover:bg-gray-700' : 'hover:bg-gray-50'
+                        className={`w-full p-4 text-left rounded-xl border transition-all ${
+                          darkMode 
+                            ? 'border-gray-700 hover:border-gray-500 hover:bg-gray-700' 
+                            : 'border-gray-200 hover:border-gray-400 hover:bg-gray-50'
                         }`}
                       >
-                        <p className={`font-medium text-sm ${darkMode ? 'text-white' : 'text-gray-900'}`}>Leeg bericht</p>
-                        <p className={`text-xs ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>Schrijf zelf een email</p>
+                        <p className={`font-medium ${darkMode ? 'text-white' : 'text-gray-900'}`}>
+                          ✏️ Leeg bericht
+                        </p>
+                        <p className={`text-sm mt-1 ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>
+                          Schrijf zelf een email
+                        </p>
                       </button>
                     </div>
                   </motion.div>
-                  </>
-                )}
-              </AnimatePresence>
-            </div>
+                </motion.div>
+              )}
+            </AnimatePresence>
 
             {/* More menu */}
             <div className="relative">
