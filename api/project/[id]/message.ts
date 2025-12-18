@@ -1,6 +1,7 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node'
 import { Redis } from '@upstash/redis'
 import { Resend } from 'resend'
+import nodemailer from 'nodemailer'
 
 // Initialize Redis
 const REDIS_URL = process.env.UPSTASH_REDIS_REST_URL
@@ -13,6 +14,32 @@ const kv = REDIS_URL && REDIS_TOKEN
 // Initialize Resend for email notifications
 const RESEND_API_KEY = process.env.RESEND_API_KEY || ''
 const resend = RESEND_API_KEY ? new Resend(RESEND_API_KEY) : null
+
+// SMTP Configuration (fallback if Resend not available)
+const SMTP_HOST = process.env.SMTP_HOST
+const SMTP_PORT = parseInt(process.env.SMTP_PORT || '465')
+const SMTP_USER = process.env.SMTP_USER
+const SMTP_PASS = process.env.SMTP_PASS
+const SMTP_FROM = process.env.SMTP_FROM || 'Webstability <info@webstability.nl>'
+
+const isSmtpConfigured = () => Boolean(SMTP_HOST && SMTP_USER && SMTP_PASS)
+
+const createTransporter = () => {
+  if (!isSmtpConfigured()) return null
+  
+  return nodemailer.createTransport({
+    host: SMTP_HOST,
+    port: SMTP_PORT,
+    secure: SMTP_PORT === 465,
+    auth: {
+      user: SMTP_USER,
+      pass: SMTP_PASS,
+    },
+  })
+}
+
+// Developer notification email - where to send client messages
+const DEV_NOTIFICATION_EMAIL = process.env.DEV_NOTIFICATION_EMAIL || 'info@webstability.nl'
 
 const BASE_URL = process.env.VERCEL_URL 
   ? `https://${process.env.VERCEL_URL}` 
@@ -100,104 +127,133 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
     console.log(`Message sent for project ${projectId} from ${from}`)
 
-    // Send email notification
-    if (resend) {
-      try {
-        if (from === 'client' && project.contactEmail) {
-          // Notify developer about new client message
+    // Helper function to send email via Resend or SMTP
+    const sendEmail = async (to: string, subject: string, html: string) => {
+      // Try Resend first
+      if (resend) {
+        try {
           await resend.emails.send({
             from: 'Webstability <noreply@webstability.nl>',
-            to: 'developer@webstability.nl',
-            subject: `💬 Nieuw bericht: ${project.businessName || 'Project'}`,
-            html: `
-              <!DOCTYPE html>
-              <html>
-              <body style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: #f8fafc; color: #334155; margin: 0; padding: 20px;">
-                <div style="max-width: 600px; margin: 0 auto; background: white; border-radius: 16px; overflow: hidden; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);">
-                  <div style="background: linear-gradient(135deg, #10b981 0%, #059669 100%); padding: 32px; text-align: center;">
-                    <h1 style="color: white; margin: 0; font-size: 24px;">💬 Nieuw Bericht</h1>
-                  </div>
-                  <div style="padding: 24px;">
-                    <p><strong>Project:</strong> ${project.businessName || projectId}</p>
-                    <p><strong>Van:</strong> ${project.contactName || project.contactEmail || 'Klant'}</p>
-                    <div style="background: #f0fdf4; border-left: 4px solid #10b981; border-radius: 8px; padding: 16px; margin: 16px 0;">
-                      <p style="margin: 0; color: #334155; white-space: pre-wrap;">${message}</p>
-                    </div>
-                    <p style="text-align: center; margin: 24px 0 0 0;">
-                      <a href="${BASE_URL}/developer" style="display: inline-block; background: linear-gradient(135deg, #10b981 0%, #059669 100%); color: white; padding: 14px 28px; border-radius: 12px; text-decoration: none; font-weight: 600;">
-                        Beantwoorden →
-                      </a>
-                    </p>
-                  </div>
-                  <div style="background: #f8fafc; padding: 20px; text-align: center; border-top: 1px solid #e2e8f0;">
-                    <p style="margin: 0 0 8px 0; color: #64748b; font-size: 13px;">
-                      Met vriendelijke groet,<br><strong style="color: #334155;">Team Webstability</strong>
-                    </p>
-                    <p style="margin: 0 0 8px 0; color: #94a3b8; font-size: 12px;">
-                      <a href="https://webstability.nl" style="color: #10b981; text-decoration: none;">webstability.nl</a>
-                      &nbsp;•&nbsp;
-                      <a href="mailto:info@webstability.nl" style="color: #10b981; text-decoration: none;">info@webstability.nl</a>
-                      &nbsp;•&nbsp;
-                      <a href="tel:+31644712573" style="color: #10b981; text-decoration: none;">06-44712573</a>
-                    </p>
-                    <p style="margin: 0; color: #cbd5e1; font-size: 11px;">KvK: 94081468 • BTW: NL004892818B28</p>
-                  </div>
-                </div>
-              </body>
-              </html>
-            `
+            to,
+            subject,
+            html,
+            replyTo: 'info@webstability.nl'
           })
-          console.log(`[Message] Developer notification sent`)
-        } else if (from === 'developer' && project.contactEmail) {
-          // Notify client about developer response
-          await resend.emails.send({
-            from: 'Webstability <noreply@webstability.nl>',
-            to: project.contactEmail,
-            subject: `💬 Nieuw bericht over ${project.businessName || 'je project'}`,
-            html: `
-              <!DOCTYPE html>
-              <html>
-              <body style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: #f8fafc; color: #334155; margin: 0; padding: 20px;">
-                <div style="max-width: 600px; margin: 0 auto; background: white; border-radius: 16px; overflow: hidden; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);">
-                  <div style="background: linear-gradient(135deg, #10b981 0%, #059669 100%); padding: 32px; text-align: center;">
-                    <h1 style="color: white; margin: 0; font-size: 24px;">💬 Nieuw Bericht</h1>
-                  </div>
-                  <div style="padding: 24px;">
-                    <p style="margin: 0 0 16px 0;">Hoi${project.contactName ? ` ${project.contactName}` : ''},</p>
-                    <p style="margin: 0 0 16px 0;">Je hebt een nieuw bericht ontvangen over <strong>${project.businessName || 'je project'}</strong>:</p>
-                    <div style="background: #f0fdf4; border-left: 4px solid #10b981; border-radius: 8px; padding: 16px; margin: 16px 0;">
-                      <p style="margin: 0; color: #334155; white-space: pre-wrap;">${message}</p>
-                    </div>
-                    <p style="text-align: center; margin: 24px 0 0 0;">
-                      <a href="${BASE_URL}/status/${projectId}" style="display: inline-block; background: linear-gradient(135deg, #10b981 0%, #059669 100%); color: white; padding: 14px 28px; border-radius: 12px; text-decoration: none; font-weight: 600;">
-                        Bekijk & Beantwoord →
-                      </a>
-                    </p>
-                  </div>
-                  <div style="background: #f8fafc; padding: 20px; text-align: center; border-top: 1px solid #e2e8f0;">
-                    <p style="margin: 0 0 8px 0; color: #64748b; font-size: 13px;">
-                      Met vriendelijke groet,<br><strong style="color: #334155;">Team Webstability</strong>
-                    </p>
-                    <p style="margin: 0 0 8px 0; color: #94a3b8; font-size: 12px;">
-                      <a href="https://webstability.nl" style="color: #10b981; text-decoration: none;">webstability.nl</a>
-                      &nbsp;•&nbsp;
-                      <a href="mailto:info@webstability.nl" style="color: #10b981; text-decoration: none;">info@webstability.nl</a>
-                      &nbsp;•&nbsp;
-                      <a href="tel:+31644712573" style="color: #10b981; text-decoration: none;">06-44712573</a>
-                    </p>
-                    <p style="margin: 0; color: #cbd5e1; font-size: 11px;">KvK: 94081468 • BTW: NL004892818B28</p>
-                  </div>
-                </div>
-              </body>
-              </html>
-            `
-          })
-          console.log(`[Message] Client notification sent to ${project.contactEmail}`)
+          console.log(`[Message] Email sent via Resend to ${to}`)
+          return true
+        } catch (err) {
+          console.error('[Message] Resend failed, trying SMTP:', err)
         }
-      } catch (emailError) {
-        console.error('[Message] Email notification error:', emailError)
-        // Continue even if email fails
       }
+      
+      // Fallback to SMTP
+      const transporter = createTransporter()
+      if (transporter) {
+        try {
+          await transporter.sendMail({
+            from: SMTP_FROM,
+            to,
+            subject,
+            html,
+            replyTo: 'info@webstability.nl'
+          })
+          console.log(`[Message] Email sent via SMTP to ${to}`)
+          return true
+        } catch (err) {
+          console.error('[Message] SMTP failed:', err)
+        }
+      }
+      
+      console.warn('[Message] No email service available')
+      return false
+    }
+
+    // Send email notification
+    try {
+      if (from === 'client') {
+        // Notify developer about new client message
+        const html = `
+          <!DOCTYPE html>
+          <html>
+          <body style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: #f8fafc; color: #334155; margin: 0; padding: 20px;">
+            <div style="max-width: 600px; margin: 0 auto; background: white; border-radius: 16px; overflow: hidden; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);">
+              <div style="background: linear-gradient(135deg, #10b981 0%, #059669 100%); padding: 32px; text-align: center;">
+                <h1 style="color: white; margin: 0; font-size: 24px;">💬 Nieuw Bericht van Klant</h1>
+              </div>
+              <div style="padding: 24px;">
+                <p><strong>Project:</strong> ${project.businessName || projectId}</p>
+                <p><strong>Van:</strong> ${project.contactName || project.contactEmail || 'Klant'}</p>
+                <div style="background: #f0fdf4; border-left: 4px solid #10b981; border-radius: 8px; padding: 16px; margin: 16px 0;">
+                  <p style="margin: 0; color: #334155; white-space: pre-wrap;">${message}</p>
+                </div>
+                <p style="text-align: center; margin: 24px 0 0 0;">
+                  <a href="${BASE_URL}/developer" style="display: inline-block; background: linear-gradient(135deg, #10b981 0%, #059669 100%); color: white; padding: 14px 28px; border-radius: 12px; text-decoration: none; font-weight: 600;">
+                    Beantwoorden →
+                  </a>
+                </p>
+              </div>
+              <div style="background: #f8fafc; padding: 20px; text-align: center; border-top: 1px solid #e2e8f0;">
+                <p style="margin: 0 0 8px 0; color: #64748b; font-size: 13px;">
+                  Met vriendelijke groet,<br><strong style="color: #334155;">Team Webstability</strong>
+                </p>
+                <p style="margin: 0 0 8px 0; color: #94a3b8; font-size: 12px;">
+                  <a href="https://webstability.nl" style="color: #10b981; text-decoration: none;">webstability.nl</a>
+                  &nbsp;•&nbsp;
+                  <a href="mailto:info@webstability.nl" style="color: #10b981; text-decoration: none;">info@webstability.nl</a>
+                  &nbsp;•&nbsp;
+                  <a href="tel:+31644712573" style="color: #10b981; text-decoration: none;">06-44712573</a>
+                </p>
+                <p style="margin: 0; color: #cbd5e1; font-size: 11px;">KvK: 94081468 • BTW: NL004892818B28</p>
+              </div>
+            </div>
+          </body>
+          </html>
+        `
+        await sendEmail(DEV_NOTIFICATION_EMAIL, `💬 Nieuw bericht: ${project.businessName || 'Project'}`, html)
+      } else if (from === 'developer' && project.contactEmail) {
+        // Notify client about developer response
+        const html = `
+          <!DOCTYPE html>
+          <html>
+          <body style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: #f8fafc; color: #334155; margin: 0; padding: 20px;">
+            <div style="max-width: 600px; margin: 0 auto; background: white; border-radius: 16px; overflow: hidden; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);">
+              <div style="background: linear-gradient(135deg, #10b981 0%, #059669 100%); padding: 32px; text-align: center;">
+                <h1 style="color: white; margin: 0; font-size: 24px;">💬 Nieuw Bericht</h1>
+              </div>
+              <div style="padding: 24px;">
+                <p style="margin: 0 0 16px 0;">Hoi${project.contactName ? ` ${project.contactName}` : ''},</p>
+                <p style="margin: 0 0 16px 0;">Je hebt een nieuw bericht ontvangen over <strong>${project.businessName || 'je project'}</strong>:</p>
+                <div style="background: #f0fdf4; border-left: 4px solid #10b981; border-radius: 8px; padding: 16px; margin: 16px 0;">
+                  <p style="margin: 0; color: #334155; white-space: pre-wrap;">${message}</p>
+                </div>
+                <p style="text-align: center; margin: 24px 0 0 0;">
+                  <a href="${BASE_URL}/status/${projectId}" style="display: inline-block; background: linear-gradient(135deg, #10b981 0%, #059669 100%); color: white; padding: 14px 28px; border-radius: 12px; text-decoration: none; font-weight: 600;">
+                    Bekijk & Beantwoord →
+                  </a>
+                </p>
+              </div>
+              <div style="background: #f8fafc; padding: 20px; text-align: center; border-top: 1px solid #e2e8f0;">
+                <p style="margin: 0 0 8px 0; color: #64748b; font-size: 13px;">
+                  Met vriendelijke groet,<br><strong style="color: #334155;">Team Webstability</strong>
+                </p>
+                <p style="margin: 0 0 8px 0; color: #94a3b8; font-size: 12px;">
+                  <a href="https://webstability.nl" style="color: #10b981; text-decoration: none;">webstability.nl</a>
+                  &nbsp;•&nbsp;
+                  <a href="mailto:info@webstability.nl" style="color: #10b981; text-decoration: none;">info@webstability.nl</a>
+                  &nbsp;•&nbsp;
+                  <a href="tel:+31644712573" style="color: #10b981; text-decoration: none;">06-44712573</a>
+                </p>
+                <p style="margin: 0; color: #cbd5e1; font-size: 11px;">KvK: 94081468 • BTW: NL004892818B28</p>
+              </div>
+            </div>
+          </body>
+          </html>
+        `
+        await sendEmail(project.contactEmail, `💬 Nieuw bericht over ${project.businessName || 'je project'}`, html)
+      }
+    } catch (emailError) {
+      console.error('[Message] Email notification error:', emailError)
+      // Continue even if email fails
     }
 
     return res.status(201).json({

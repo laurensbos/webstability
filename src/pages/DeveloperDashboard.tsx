@@ -3442,18 +3442,17 @@ function MessagesView({ darkMode, projects, onUpdateProject }: MessagesViewProps
     onUpdateProject(updatedProject)
     setNewMessage('')
 
-    // Send to API
+    // Send to API - use unified message endpoint
     try {
-      const token = sessionStorage.getItem('webstability_dev_token')
-      await fetch('/api/developer/messages', {
+      const projectId = selectedProject.projectId || selectedProject.id
+      await fetch(`/api/project/${projectId}/message`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`
         },
         body: JSON.stringify({
-          projectId: selectedProject.projectId || selectedProject.id,
-          message: message.message
+          message: message.message,
+          from: 'developer'
         })
       })
     } catch (error) {

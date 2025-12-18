@@ -42,6 +42,9 @@ const kv = REDIS_URL && REDIS_TOKEN
 const RESEND_API_KEY = process.env.RESEND_API_KEY || ''
 const resend = RESEND_API_KEY ? new Resend(RESEND_API_KEY) : null
 
+// Developer notification email
+const DEV_NOTIFICATION_EMAIL = process.env.DEV_NOTIFICATION_EMAIL || 'info@webstability.nl'
+
 // Pakket prijzen (incl. BTW)
 const PACKAGE_PRICES: Record<string, { name: string; price: number }> = {
   starter: { name: 'Starter', price: 29.00 },
@@ -397,14 +400,14 @@ async function sendDeveloperNotification(
   `
   
   try {
-    // Developer email - update with your email
+    // Developer email notification
     await resend.emails.send({
       from: 'Webstability <noreply@webstability.nl>',
-      to: 'developer@webstability.nl',
+      to: DEV_NOTIFICATION_EMAIL,
       subject,
       html
     })
-    console.log(`[Feedback] Developer notification sent`)
+    console.log(`[Feedback] Developer notification sent to ${DEV_NOTIFICATION_EMAIL}`)
   } catch (err) {
     console.error('[Feedback] Developer notification error:', err)
   }
