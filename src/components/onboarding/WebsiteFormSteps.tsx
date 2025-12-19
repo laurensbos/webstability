@@ -588,12 +588,12 @@ export function WebsiteBedrijfStep({ data, onChange, disabled }: FormStepProps) 
             <Check className="w-4 h-4" />
             Gegevens overgenomen van je aanmelding
           </div>
-          <div className="grid grid-cols-2 gap-2 text-sm text-green-600 dark:text-green-300">
+          <div className="space-y-1 text-sm text-green-600 dark:text-green-300">
             {(data.businessName || data.companyName) && (
               <div>Bedrijf: <strong>{data.businessName || data.companyName}</strong></div>
             )}
             {data.contactEmail && (
-              <div>Email: <strong>{data.contactEmail}</strong></div>
+              <div className="break-all">Email: <strong>{data.contactEmail}</strong></div>
             )}
             {data.industry && (
               <div>Branche: <strong>{data.industry}</strong></div>
