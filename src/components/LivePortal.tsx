@@ -22,7 +22,8 @@ import {
   Send,
   Sparkles,
   Globe,
-  CheckCircle2
+  CheckCircle2,
+  HelpCircle
 } from 'lucide-react'
 import type { Project } from '../types/project'
 
@@ -341,6 +342,70 @@ export default function LivePortal({
               )}
             </div>
 
+            {/* Website Statistics */}
+            <div className="bg-gray-800/60 backdrop-blur-sm rounded-xl sm:rounded-2xl border border-gray-700/50 p-4 sm:p-6">
+              <h3 className="text-white font-semibold mb-4 flex items-center gap-2">
+                <Star className="w-5 h-5 text-yellow-400" />
+                Website statistieken
+              </h3>
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+                <div className="bg-gray-900/50 rounded-xl p-3 text-center">
+                  <p className="text-2xl sm:text-3xl font-bold text-white">--</p>
+                  <p className="text-gray-400 text-xs mt-1">Bezoekers (week)</p>
+                </div>
+                <div className="bg-gray-900/50 rounded-xl p-3 text-center">
+                  <p className="text-2xl sm:text-3xl font-bold text-white">--</p>
+                  <p className="text-gray-400 text-xs mt-1">Paginaweergaves</p>
+                </div>
+                <div className="bg-gray-900/50 rounded-xl p-3 text-center">
+                  <p className="text-2xl sm:text-3xl font-bold text-green-400">99.9%</p>
+                  <p className="text-gray-400 text-xs mt-1">Uptime</p>
+                </div>
+                <div className="bg-gray-900/50 rounded-xl p-3 text-center">
+                  <p className="text-2xl sm:text-3xl font-bold text-blue-400">A+</p>
+                  <p className="text-gray-400 text-xs mt-1">SSL Score</p>
+                </div>
+              </div>
+              <p className="text-gray-500 text-xs mt-3 text-center">
+                Analytics worden binnenkort beschikbaar • Hosting & SSL inbegrepen
+              </p>
+            </div>
+
+            {/* Recent Updates */}
+            <div className="bg-gray-800/60 backdrop-blur-sm rounded-xl sm:rounded-2xl border border-gray-700/50 p-4 sm:p-6">
+              <h3 className="text-white font-semibold mb-4 flex items-center gap-2">
+                <Clock className="w-5 h-5 text-blue-400" />
+                Laatste updates
+              </h3>
+              <div className="space-y-3">
+                <div className="flex items-start gap-3 p-3 bg-gray-900/50 rounded-xl">
+                  <div className="w-2 h-2 bg-green-400 rounded-full mt-2 flex-shrink-0" />
+                  <div className="flex-1">
+                    <p className="text-white text-sm font-medium">Website live gezet</p>
+                    <p className="text-gray-500 text-xs mt-0.5">
+                      {project.createdAt ? new Date(project.createdAt).toLocaleDateString('nl-NL', { day: 'numeric', month: 'long', year: 'numeric' }) : 'Recent'}
+                    </p>
+                  </div>
+                </div>
+                {project.revisionsUsed && project.revisionsUsed > 0 && (
+                  <div className="flex items-start gap-3 p-3 bg-gray-900/50 rounded-xl">
+                    <div className="w-2 h-2 bg-blue-400 rounded-full mt-2 flex-shrink-0" />
+                    <div className="flex-1">
+                      <p className="text-white text-sm font-medium">{project.revisionsUsed} revisie{project.revisionsUsed > 1 ? 's' : ''} verwerkt</p>
+                      <p className="text-gray-500 text-xs mt-0.5">Aanpassingen doorgevoerd</p>
+                    </div>
+                  </div>
+                )}
+                <div className="flex items-start gap-3 p-3 bg-gray-900/50 rounded-xl">
+                  <div className="w-2 h-2 bg-purple-400 rounded-full mt-2 flex-shrink-0" />
+                  <div className="flex-1">
+                    <p className="text-white text-sm font-medium">Dagelijkse backup actief</p>
+                    <p className="text-gray-500 text-xs mt-0.5">Je website wordt automatisch veilig bewaard</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+
             {/* Tips & Info */}
             <div className="bg-gray-800/60 backdrop-blur-sm rounded-xl sm:rounded-2xl border border-gray-700/50 p-4 sm:p-6">
               <h3 className="text-white font-semibold mb-4 flex items-center gap-2">
@@ -369,6 +434,52 @@ export default function LivePortal({
                     <p className="text-gray-400 text-xs mt-0.5">Vraag ons om updates wanneer nodig</p>
                   </div>
                 </div>
+              </div>
+            </div>
+
+            {/* FAQ Section */}
+            <div className="bg-gray-800/60 backdrop-blur-sm rounded-xl sm:rounded-2xl border border-gray-700/50 p-4 sm:p-6">
+              <h3 className="text-white font-semibold mb-4 flex items-center gap-2">
+                <HelpCircle className="w-5 h-5 text-blue-400" />
+                Veelgestelde vragen
+              </h3>
+              <div className="space-y-3">
+                <details className="group bg-gray-900/50 rounded-xl">
+                  <summary className="flex items-center justify-between p-3 cursor-pointer list-none">
+                    <span className="text-white text-sm font-medium">Hoe vraag ik een wijziging aan?</span>
+                    <ChevronRight className="w-4 h-4 text-gray-400 group-open:rotate-90 transition-transform" />
+                  </summary>
+                  <div className="px-3 pb-3 text-gray-400 text-sm">
+                    Klik op "Wijziging aanvragen" en beschrijf wat je wilt veranderen. We nemen binnen 24 uur contact op.
+                  </div>
+                </details>
+                <details className="group bg-gray-900/50 rounded-xl">
+                  <summary className="flex items-center justify-between p-3 cursor-pointer list-none">
+                    <span className="text-white text-sm font-medium">Wat zit er in mijn abonnement?</span>
+                    <ChevronRight className="w-4 h-4 text-gray-400 group-open:rotate-90 transition-transform" />
+                  </summary>
+                  <div className="px-3 pb-3 text-gray-400 text-sm">
+                    Hosting, SSL-certificaat, dagelijkse backups, beveiligingsupdates en 2 kleine wijzigingen per maand.
+                  </div>
+                </details>
+                <details className="group bg-gray-900/50 rounded-xl">
+                  <summary className="flex items-center justify-between p-3 cursor-pointer list-none">
+                    <span className="text-white text-sm font-medium">Kan ik mijn abonnement opzeggen?</span>
+                    <ChevronRight className="w-4 h-4 text-gray-400 group-open:rotate-90 transition-transform" />
+                  </summary>
+                  <div className="px-3 pb-3 text-gray-400 text-sm">
+                    Ja, je kunt maandelijks opzeggen. Na opzegging blijft je website nog 30 dagen online.
+                  </div>
+                </details>
+                <details className="group bg-gray-900/50 rounded-xl">
+                  <summary className="flex items-center justify-between p-3 cursor-pointer list-none">
+                    <span className="text-white text-sm font-medium">Hoe neem ik contact op?</span>
+                    <ChevronRight className="w-4 h-4 text-gray-400 group-open:rotate-90 transition-transform" />
+                  </summary>
+                  <div className="px-3 pb-3 text-gray-400 text-sm">
+                    Via het contactformulier, WhatsApp of stuur een bericht naar info@webstability.nl.
+                  </div>
+                </details>
               </div>
             </div>
           </motion.div>
