@@ -12,7 +12,7 @@ const comparisons = [
 		category: 'Opstartkosten',
 		icon: TrendingUp,
 		diy: { value: '€0-100', neutral: true },
-		webstability: { value: '€149 eenmalig', good: true },
+		webstability: { value: '€120 eenmalig', good: true },
 	},
 	{
 		category: 'Maandelijkse kosten',

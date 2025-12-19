@@ -11,6 +11,7 @@ import Comparison from './components/Comparison'
 import Portfolio from './components/Portfolio'
 import ExtraServices from './components/ExtraServices'
 import DashboardPreview from './components/DashboardPreview'
+import StickyCTA from './components/StickyCTA'
 import './index.css'
 
 export default function App() {
@@ -26,11 +27,12 @@ export default function App() {
         <HowItWorks />
         <Features />
         <DashboardPreview />
+        <FAQ />
         <DomainChecker />
         <ExtraServices />
-        <FAQ />
       </main>
       <Footer />
+      <StickyCTA />
     </div>
   )
 }
