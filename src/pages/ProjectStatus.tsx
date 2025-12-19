@@ -43,6 +43,7 @@ import FeedbackModule from '../components/FeedbackModule'
 import TaskList, { type Task } from '../components/TaskList'
 import PaymentSection from '../components/PaymentSection'
 import DesignApprovalCard from '../components/DesignApprovalCard'
+import LivePortal from '../components/LivePortal'
 import DeadlineTracker from '../components/DeadlineTracker'
 import type { Project, ProjectPhase, ProjectMessage, Invoice } from '../types/project'
 import { getProgressPercentage, groupUpdatesByDate, PHASE_FAQS, PRIORITY_CONFIG } from '../types/project'
@@ -176,9 +177,6 @@ export default function ProjectStatus() {
   // Onboarding status
   const [onboardingCompleted, setOnboardingCompleted] = useState(false)
   const [onboardingDate, setOnboardingDate] = useState<string | null>(null)
-  const [changeRequestText, setChangeRequestText] = useState('')
-  const [changeRequestLoading, setChangeRequestLoading] = useState(false)
-  const [changeRequestSent, setChangeRequestSent] = useState(false)
   
   // Password verification state
   const [isVerified, setIsVerified] = useState(false)
@@ -195,7 +193,6 @@ export default function ProjectStatus() {
   const [newMessage, setNewMessage] = useState('')
   const [messageLoading, setMessageLoading] = useState(false)
   const [showFaq, setShowFaq] = useState(false)
-  const [changePriority, setChangePriority] = useState<'low' | 'normal' | 'urgent'>('normal')
   const messagesEndRef = useRef<HTMLDivElement>(null)
   
   const [lookupQuery, setLookupQuery] = useState('')
@@ -404,43 +401,6 @@ export default function ProjectStatus() {
       console.error('Feedback error:', err)
     }
     setFeedbackLoading(false)
-  }
-
-  const sendChangeRequest = async () => {
-    if (!projectId || !changeRequestText.trim()) return
-    setChangeRequestLoading(true)
-    try {
-      const response = await fetch(`/api/project/${projectId}/change-request`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          request: changeRequestText,
-          priority: changePriority
-        })
-      })
-      const data = await response.json()
-      if (data.success && project) {
-        const newChangeRequest = {
-          id: Date.now().toString(),
-          date: new Date().toISOString(),
-          request: changeRequestText,
-          priority: changePriority,
-          status: 'pending' as const
-        }
-        setProject({
-          ...project,
-          revisionsUsed: data.revisionsUsed,
-          revisionsTotal: data.revisionsTotal,
-          changeRequests: [...(project.changeRequests || []), newChangeRequest]
-        })
-      }
-      setChangeRequestSent(true)
-      setChangeRequestText('')
-      setChangePriority('normal')
-    } catch (err) {
-      console.error('Change request error:', err)
-    }
-    setChangeRequestLoading(false)
   }
 
   const fetchMessages = async (id: string) => {
@@ -1865,109 +1825,33 @@ export default function ProjectStatus() {
           />
         </motion.div>
 
-        {/* Change Request Section - Only when live */}
+        {/* Live Portal - Complete klantportaal voor live projecten */}
         {project.status === 'live' && (
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.4 }}
-            className="bg-gray-800/60 backdrop-blur-sm rounded-xl sm:rounded-2xl border border-gray-700/50 p-4 sm:p-6 md:p-8 mb-6"
-          >
-            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
-              <div className="flex items-center gap-3">
-                <div className="w-10 h-10 sm:w-12 sm:h-12 bg-blue-500/20 rounded-lg sm:rounded-xl flex items-center justify-center">
-                  <Edit3 className="w-5 h-5 sm:w-6 sm:h-6 text-blue-400" />
-                </div>
-                <div>
-                  <h2 className="text-lg sm:text-xl font-bold text-white">Aanpassing aanvragen</h2>
-                  <p className="text-gray-400 text-xs sm:text-sm">Wil je iets laten wijzigen aan je website?</p>
-                </div>
-              </div>
-              {project.revisionsTotal && (
-                <div className="text-left sm:text-right px-4 py-2 bg-gray-900/50 rounded-xl">
-                  <p className="text-xs sm:text-sm text-gray-500">Revisies</p>
-                  <p className={`text-lg font-bold ${
-                    (project.revisionsUsed || 0) >= project.revisionsTotal 
-                      ? 'text-red-400' 
-                      : 'text-white'
-                  }`}>
-                    {project.revisionsUsed || 0} / {project.revisionsTotal}
-                  </p>
-                </div>
-              )}
-            </div>
-
-            {project.liveUrl && (
-              <a
-                href={project.liveUrl}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="flex items-center gap-2 mb-6 p-4 bg-green-500/10 rounded-xl text-green-400 hover:bg-green-500/20 transition border border-green-500/30 group"
-              >
-                <Rocket className="w-5 h-5" />
-                <span className="font-medium truncate flex-1 text-sm sm:text-base">{project.liveUrl}</span>
-                <ExternalLink className="w-4 h-4 group-hover:translate-x-1 transition flex-shrink-0" />
-              </a>
-            )}
-
-            {!changeRequestSent ? (
-              <div className="space-y-4">
-                <textarea
-                  value={changeRequestText}
-                  onChange={(e) => setChangeRequestText(e.target.value)}
-                  placeholder="Beschrijf wat je wilt laten aanpassen..."
-                  rows={4}
-                  className="w-full px-4 py-3 bg-gray-900/50 border border-gray-700 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-white placeholder-gray-500 transition text-sm"
-                />
-                
-                <div>
-                  <label className="block text-sm font-medium text-gray-300 mb-2">Prioriteit</label>
-                  <div className="flex gap-2">
-                    {(['low', 'normal', 'urgent'] as const).map((priority) => (
-                      <button
-                        key={priority}
-                        onClick={() => setChangePriority(priority)}
-                        className={`flex-1 py-2.5 sm:py-3 px-3 sm:px-4 rounded-xl border text-xs sm:text-sm font-medium transition ${
-                          changePriority === priority
-                            ? priority === 'urgent' 
-                              ? 'border-red-500 bg-red-500/20 text-red-400'
-                              : priority === 'normal'
-                              ? 'border-blue-500 bg-blue-500/20 text-blue-400'
-                              : 'border-gray-500 bg-gray-500/20 text-gray-300'
-                            : 'border-gray-700 text-gray-500 hover:border-gray-600'
-                        }`}
-                      >
-                        {PRIORITY_CONFIG[priority].label}
-                      </button>
-                    ))}
-                  </div>
-                </div>
-                
-                <motion.button
-                  onClick={sendChangeRequest}
-                  disabled={changeRequestLoading || !changeRequestText.trim()}
-                  whileHover={{ scale: 1.02 }}
-                  whileTap={{ scale: 0.98 }}
-                  className="w-full flex items-center justify-center gap-2 px-6 py-3 sm:py-4 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white font-semibold rounded-xl transition disabled:opacity-50 shadow-lg shadow-blue-500/25 text-sm sm:text-base"
-                >
-                  <Send className="w-5 h-5" />
-                  Aanpassing aanvragen
-                </motion.button>
-              </div>
-            ) : (
-              <div className="bg-blue-500/10 rounded-xl p-6 text-center border border-blue-500/30">
-                <CheckCircle2 className="w-10 h-10 sm:w-12 sm:h-12 text-blue-400 mx-auto mb-3" />
-                <p className="font-semibold text-white text-base sm:text-lg">Aanvraag ontvangen!</p>
-                <p className="text-sm text-blue-400 mb-4">We nemen zo snel mogelijk contact met je op.</p>
-                <button
-                  onClick={() => setChangeRequestSent(false)}
-                  className="text-blue-400 hover:text-blue-300 text-sm font-medium underline"
-                >
-                  Nog een aanpassing aanvragen
-                </button>
-              </div>
-            )}
-          </motion.div>
+          <LivePortal
+            project={project}
+            onSendMessage={async (message) => {
+              if (!projectId || !message.trim()) return
+              try {
+                const response = await fetch(`/api/project/${projectId}/message`, {
+                  method: 'POST',
+                  headers: { 'Content-Type': 'application/json' },
+                  body: JSON.stringify({
+                    message,
+                    from: 'client'
+                  })
+                })
+                const data = await response.json()
+                if (data.success) {
+                  setMessages(prev => [...prev, data.message])
+                }
+              } catch (err) {
+                console.error('Send message error:', err)
+              }
+            }}
+            onUpdateProject={(updates) => {
+              setProject(prev => prev ? { ...prev, ...updates } : null)
+            }}
+          />
         )}
 
         {/* Change Request History */}
