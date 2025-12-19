@@ -1,6 +1,6 @@
 import { motion } from 'framer-motion'
-import { Check, ArrowRight } from 'lucide-react'
-import { packages, trustBadges } from '../data/packages'
+import { Check, ArrowRight, Sparkles, Shield, Clock, CreditCard } from 'lucide-react'
+import { packages } from '../data/packages'
 import { useState, useRef, useEffect } from 'react'
 
 export default function Pricing() {
@@ -26,48 +26,110 @@ export default function Pricing() {
 		setActiveIndex(Math.min(index, packages.length - 1))
 	}
 
+	const riskFreeFeatures = [
+		{
+			icon: Sparkles,
+			title: 'Gratis design',
+			description: 'Wij maken eerst een ontwerp. Vind je het niks? Dan stop je gewoon.'
+		},
+		{
+			icon: CreditCard,
+			title: 'Geen opstartkosten',
+			description: 'Je betaalt pas na goedkeuring van het design. Geen cent ervoor.'
+		},
+		{
+			icon: Shield,
+			title: '14 dagen geld-terug',
+			description: 'Niet tevreden na lancering? Volledige terugbetaling, geen vragen.'
+		},
+		{
+			icon: Clock,
+			title: 'Maandelijks opzegbaar',
+			description: 'Na 3 maanden kun je elk moment stoppen. Geen lange contracten.'
+		}
+	]
+
 	return (
 		<section id="pricing" className="py-16 lg:py-24 bg-white dark:bg-gray-900 relative overflow-hidden">
+			{/* Background decoration */}
+			<div className="absolute inset-0 overflow-hidden pointer-events-none">
+				<div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-gradient-to-r from-primary-50/30 via-blue-50/20 to-emerald-50/30 dark:from-primary-900/10 dark:via-blue-900/5 dark:to-emerald-900/10 rounded-full blur-3xl" />
+			</div>
+
 			<div className="relative max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+				{/* Risk-Free Section - Above pricing */}
+				<motion.div
+					initial={{ opacity: 0, y: 20 }}
+					whileInView={{ opacity: 1, y: 0 }}
+					viewport={{ once: true }}
+					className="mb-12 lg:mb-16"
+				>
+					<div className="text-center mb-8">
+						<span className="inline-flex items-center gap-2 bg-gradient-to-r from-emerald-50 to-green-50 dark:from-emerald-900/30 dark:to-green-900/30 border border-emerald-200/50 dark:border-emerald-700/50 rounded-full px-4 py-2 mb-4">
+							<Sparkles className="w-4 h-4 text-emerald-600 dark:text-emerald-400" />
+							<span className="text-sm font-medium text-emerald-700 dark:text-emerald-300">100% Vrijblijvend starten</span>
+						</span>
+						<h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-gray-900 dark:text-white mb-3">
+							Probeer zonder{' '}
+							<span className="bg-gradient-to-r from-emerald-600 to-green-600 bg-clip-text text-transparent">risico</span>
+						</h2>
+						<p className="text-gray-600 dark:text-gray-400 max-w-xl mx-auto">
+							We maken eerst een design op maat. Pas als je 100% tevreden bent, ga je betalen.
+						</p>
+					</div>
+
+					{/* Risk-free features grid */}
+					<div className="grid grid-cols-2 lg:grid-cols-4 gap-3 lg:gap-4">
+						{riskFreeFeatures.map((feature, index) => (
+							<motion.div
+								key={feature.title}
+								initial={{ opacity: 0, y: 20 }}
+								whileInView={{ opacity: 1, y: 0 }}
+								viewport={{ once: true }}
+								transition={{ delay: index * 0.1 }}
+								className="bg-gradient-to-br from-white to-gray-50 dark:from-gray-800 dark:to-gray-900 border border-gray-100 dark:border-gray-700 rounded-xl p-4 lg:p-5 text-center hover:border-emerald-200 dark:hover:border-emerald-800 hover:shadow-lg hover:shadow-emerald-100 dark:hover:shadow-emerald-900/20 transition-all"
+							>
+								<div className="w-10 h-10 lg:w-12 lg:h-12 bg-gradient-to-br from-emerald-100 to-green-100 dark:from-emerald-900/50 dark:to-green-900/50 rounded-xl flex items-center justify-center mx-auto mb-3">
+									<feature.icon className="w-5 h-5 lg:w-6 lg:h-6 text-emerald-600 dark:text-emerald-400" />
+								</div>
+								<h3 className="font-semibold text-gray-900 dark:text-white text-sm lg:text-base mb-1">
+									{feature.title}
+								</h3>
+								<p className="text-xs lg:text-sm text-gray-500 dark:text-gray-400 leading-relaxed">
+									{feature.description}
+								</p>
+							</motion.div>
+						))}
+					</div>
+				</motion.div>
+
+				{/* Divider */}
+				<div className="flex items-center gap-4 mb-12 lg:mb-16">
+					<div className="flex-1 h-px bg-gradient-to-r from-transparent via-gray-200 dark:via-gray-700 to-transparent" />
+					<span className="text-xs font-medium text-gray-400 dark:text-gray-500 uppercase tracking-wider">Kies je pakket</span>
+					<div className="flex-1 h-px bg-gradient-to-r from-transparent via-gray-200 dark:via-gray-700 to-transparent" />
+				</div>
+
 				{/* Header */}
-				<div className="text-center max-w-3xl mx-auto mb-8 lg:mb-16">
-					<motion.span
-						initial={{ opacity: 0, y: 20 }}
-						whileInView={{ opacity: 1, y: 0 }}
-						viewport={{ once: true }}
-						className="inline-block text-primary-600 font-semibold text-sm tracking-wider uppercase mb-3 lg:mb-4"
-					>
-						Pakketten
-					</motion.span>
+				<div className="text-center max-w-3xl mx-auto mb-8 lg:mb-12">
 					<motion.h2
 						initial={{ opacity: 0, y: 20 }}
 						whileInView={{ opacity: 1, y: 0 }}
 						viewport={{ once: true }}
-						transition={{ delay: 0.1 }}
-						className="text-2xl sm:text-3xl lg:text-5xl font-bold text-gray-900 dark:text-white mb-4 lg:mb-6"
+						className="text-2xl sm:text-3xl lg:text-4xl font-bold text-gray-900 dark:text-white mb-4"
 					>
-						Kies het pakket dat{' '}
-						<span className="text-primary-600">bij je past</span>
+						Transparante{' '}
+						<span className="bg-gradient-to-r from-primary-600 to-blue-600 bg-clip-text text-transparent">maandprijzen</span>
 					</motion.h2>
 					<motion.p
 						initial={{ opacity: 0, y: 20 }}
 						whileInView={{ opacity: 1, y: 0 }}
 						viewport={{ once: true }}
-						transition={{ delay: 0.2 }}
-						className="text-gray-600 dark:text-gray-400 text-base lg:text-lg mb-4"
+						transition={{ delay: 0.1 }}
+						className="text-gray-600 dark:text-gray-400 text-base lg:text-lg"
 					>
-						Alle pakketten inclusief hosting, onderhoud en support. Geen verborgen kosten.
+						Inclusief hosting, SSL, onderhoud, updates en support. Geen verrassingen.
 					</motion.p>
-					<motion.div
-						initial={{ opacity: 0, y: 20 }}
-						whileInView={{ opacity: 1, y: 0 }}
-						viewport={{ once: true }}
-						transition={{ delay: 0.3 }}
-						className="inline-flex items-center gap-2 px-4 py-2 bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400 rounded-full text-sm font-medium"
-					>
-						<Check className="w-4 h-4" />
-						Betaling pas na goedkeuring design
-					</motion.div>
 				</div>
 
 				{/* Mobile: Horizontal scroll carousel */}
@@ -249,27 +311,18 @@ export default function Pricing() {
 					))}
 				</div>
 
-				{/* What's always included - combined with trust badges */}
+				{/* BTW notice */}
 				<motion.div
 					initial={{ opacity: 0, y: 20 }}
 					whileInView={{ opacity: 1, y: 0 }}
 					viewport={{ once: true }}
-					className="text-center space-y-3 mt-6 lg:mt-0"
+					className="text-center mt-8 lg:mt-12"
 				>
-					{/* Trust badges - horizontal scroll on mobile, flex on desktop */}
-					<div className="flex flex-wrap justify-center gap-x-4 gap-y-1.5 lg:gap-x-6 lg:gap-y-2">
-						{trustBadges.map((badge) => (
-							<span key={badge} className="flex items-center gap-1.5 text-xs sm:text-sm text-gray-500 dark:text-gray-400">
-								<Check className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-green-500 flex-shrink-0" />
-								<span className="whitespace-nowrap">{badge}</span>
-							</span>
-						))}
-					</div>
-					<p className="text-xs sm:text-sm text-gray-500 dark:text-gray-400 px-4">
-						Alle prijzen zijn inclusief 21% BTW
-						<span className="hidden sm:inline"> • </span>
-						<br className="sm:hidden" />
-						<span className="text-primary-600 dark:text-primary-400 font-medium">Als ondernemer krijg je de BTW terug via je belastingaangifte</span>
+					<p className="text-sm text-gray-500 dark:text-gray-400">
+						Alle prijzen zijn inclusief 21% BTW •{' '}
+						<span className="text-primary-600 dark:text-primary-400 font-medium">
+							Als ondernemer krijg je de BTW terug via je belastingaangifte
+						</span>
 					</p>
 				</motion.div>
 			</div>
