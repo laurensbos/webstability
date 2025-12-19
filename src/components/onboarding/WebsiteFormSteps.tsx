@@ -1302,15 +1302,259 @@ export function WebsiteExtraStep({ data, onChange, disabled, packageId, onUpgrad
         rows={4}
       />
 
-      {/* Ready indicator */}
+    </motion.div>
+  )
+}
+
+// Step 7: Samenvatting - overzicht van alle ingevulde gegevens
+export function WebsiteSamenvattingStep({ data, packageId, onUpgrade }: FormStepProps) {
+  const pkg = getPackageConfig(packageId || data.package || data.packageType)
+  const prefilledPages = data.pages || data.selectedPages || []
+  const customPages = data.customPages || []
+  const allPages = [...prefilledPages, ...customPages]
+
+  const SummaryItem = ({ label, value }: { label: string; value?: string | null }) => {
+    if (!value) return null
+    return (
+      <div className="flex flex-col sm:flex-row sm:justify-between gap-1">
+        <span className="text-gray-500 dark:text-gray-400">{label}:</span>
+        <span className="font-medium text-gray-900 dark:text-white break-words sm:text-right sm:max-w-[60%]">{value}</span>
+      </div>
+    )
+  }
+
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 10 }}
+      animate={{ opacity: 1, y: 0 }}
+      className="space-y-6"
+    >
+      <div className="flex items-center gap-3 mb-6">
+        <div className="w-10 h-10 rounded-xl bg-green-100 dark:bg-green-900/30 flex items-center justify-center">
+          <Check className="w-5 h-5 text-green-600 dark:text-green-400" />
+        </div>
+        <div>
+          <h3 className="font-semibold text-gray-900 dark:text-white">Controleer je gegevens</h3>
+          <p className="text-sm text-gray-500 dark:text-gray-400">Alles correct? Dan kunnen we beginnen!</p>
+        </div>
+      </div>
+
+      {/* Package info */}
+      <div className="bg-gradient-to-r from-primary-500 to-blue-500 rounded-xl p-4 text-white">
+        <div className="flex items-center justify-between">
+          <div>
+            <span className="text-sm opacity-80">Gekozen pakket</span>
+            <div className="text-xl font-bold">{pkg.name}</div>
+          </div>
+          <div className="text-right">
+            <div className="text-2xl font-bold">{pkg.price}</div>
+            <span className="text-sm opacity-80">Max {pkg.maxPages} pagina's</span>
+          </div>
+        </div>
+        {pkg.id !== 'business' && onUpgrade && (
+          <button
+            onClick={() => onUpgrade(pkg.id === 'starter' ? 'professional' : 'business')}
+            className="mt-3 w-full py-2 bg-white/20 hover:bg-white/30 rounded-lg text-sm font-medium transition-colors"
+          >
+            Upgrade naar {pkg.id === 'starter' ? 'Professioneel' : 'Business'} →
+          </button>
+        )}
+      </div>
+
+      {/* Bedrijfsgegevens */}
+      <div className="bg-primary-50 dark:bg-primary-900/20 border border-primary-200 dark:border-primary-800 rounded-xl p-4">
+        <div className="flex items-center gap-2 mb-3">
+          <div className="w-8 h-8 rounded-lg bg-primary-100 dark:bg-primary-900/30 flex items-center justify-center">
+            <Building2 className="w-4 h-4 text-primary-600 dark:text-primary-400" />
+          </div>
+          <span className="font-medium text-primary-700 dark:text-primary-300">Bedrijfsgegevens</span>
+        </div>
+        <div className="space-y-2 text-sm">
+          <SummaryItem label="Bedrijfsnaam" value={data.businessName || data.companyName} />
+          <SummaryItem label="E-mail" value={data.contactEmail} />
+          <SummaryItem label="Branche" value={data.industry} />
+          <SummaryItem label="Domein" value={data.preferredDomain || data.existingDomain} />
+          <SummaryItem label="Zakelijk e-mail" value={
+            data.needsBusinessEmail === 'yes' ? 'Ja, nodig' :
+            data.needsBusinessEmail === 'already' ? 'Heb ik al' :
+            data.needsBusinessEmail === 'no' ? 'Niet nodig' : undefined
+          } />
+          {data.aboutBusiness && (
+            <div className="pt-2 border-t border-primary-200 dark:border-primary-700">
+              <span className="text-gray-500 dark:text-gray-400 block mb-1">Over het bedrijf:</span>
+              <p className="text-gray-700 dark:text-gray-300 text-sm line-clamp-3">{data.aboutBusiness}</p>
+            </div>
+          )}
+        </div>
+      </div>
+
+      {/* Logo & Huisstijl */}
+      <div className="bg-purple-50 dark:bg-purple-900/20 border border-purple-200 dark:border-purple-800 rounded-xl p-4">
+        <div className="flex items-center gap-2 mb-3">
+          <div className="w-8 h-8 rounded-lg bg-purple-100 dark:bg-purple-900/30 flex items-center justify-center">
+            <Palette className="w-4 h-4 text-purple-600 dark:text-purple-400" />
+          </div>
+          <span className="font-medium text-purple-700 dark:text-purple-300">Logo & Huisstijl</span>
+        </div>
+        <div className="space-y-2 text-sm">
+          <SummaryItem label="Design stijl" value={data.designStyle} />
+          <SummaryItem label="Logo" value={
+            data.hasLogo === 'yes' ? 'Ja, ik heb een logo' :
+            data.hasLogo === 'no' ? 'Nee, nog niet' :
+            data.hasLogo === 'need_refresh' ? 'Wil nieuw logo' : undefined
+          } />
+          {(data.brandColors || data.colorPreferences)?.length > 0 && (
+            <div className="flex items-center gap-2 flex-wrap">
+              <span className="text-gray-500 dark:text-gray-400">Kleuren:</span>
+              {(data.brandColors || data.colorPreferences)?.map((color: string) => (
+                <span 
+                  key={color} 
+                  className="w-5 h-5 rounded-full border border-gray-200 dark:border-gray-600"
+                  style={{ backgroundColor: color }}
+                  title={color}
+                />
+              ))}
+            </div>
+          )}
+          {data.inspirationUrls?.length > 0 && (
+            <div>
+              <span className="text-gray-500 dark:text-gray-400">Inspiratie:</span>
+              <span className="ml-2 text-purple-600 dark:text-purple-400">{data.inspirationUrls.length} website(s)</span>
+            </div>
+          )}
+        </div>
+      </div>
+
+      {/* Doelen */}
+      <div className="bg-emerald-50 dark:bg-emerald-900/20 border border-emerald-200 dark:border-emerald-800 rounded-xl p-4">
+        <div className="flex items-center gap-2 mb-3">
+          <div className="w-8 h-8 rounded-lg bg-emerald-100 dark:bg-emerald-900/30 flex items-center justify-center">
+            <Target className="w-4 h-4 text-emerald-600 dark:text-emerald-400" />
+          </div>
+          <span className="font-medium text-emerald-700 dark:text-emerald-300">Doelen & Conversie</span>
+        </div>
+        <div className="space-y-2 text-sm">
+          <SummaryItem label="Hoofddoel" value={data.goal || data.mainGoal} />
+          <SummaryItem label="Call-to-action" value={data.callToAction} />
+          <SummaryItem label="Conversie" value={
+            data.conversionSpeed === 'direct' ? 'Direct contact' :
+            data.conversionSpeed === 'considered' ? 'Na informeren' :
+            data.conversionSpeed === 'long' ? 'Langere oriëntatie' : undefined
+          } />
+          {data.contactMethods?.length > 0 && (
+            <div>
+              <span className="text-gray-500 dark:text-gray-400">Contactmethodes:</span>
+              <div className="flex flex-wrap gap-1 mt-1">
+                {data.contactMethods.map((method: string) => (
+                  <span key={method} className="px-2 py-0.5 bg-emerald-100 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-300 rounded text-xs">
+                    {method === 'form' ? 'Formulier' :
+                     method === 'email' ? 'E-mail' :
+                     method === 'phone' ? 'Telefoon' :
+                     method === 'whatsapp' ? 'WhatsApp' :
+                     method === 'booking' ? 'Afspraken' :
+                     method === 'chat' ? 'Live chat' : method}
+                  </span>
+                ))}
+              </div>
+            </div>
+          )}
+        </div>
+      </div>
+
+      {/* Pagina's */}
+      <div className="bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800 rounded-xl p-4">
+        <div className="flex items-center gap-2 mb-3">
+          <div className="w-8 h-8 rounded-lg bg-amber-100 dark:bg-amber-900/30 flex items-center justify-center">
+            <FileText className="w-4 h-4 text-amber-600 dark:text-amber-400" />
+          </div>
+          <span className="font-medium text-amber-700 dark:text-amber-300">Pagina's ({allPages.length})</span>
+        </div>
+        <div className="flex flex-wrap gap-1.5">
+          {allPages.map((page: string) => (
+            <span key={page} className="px-2 py-1 bg-amber-100 dark:bg-amber-900/30 text-amber-700 dark:text-amber-300 rounded text-xs font-medium">
+              {page}
+            </span>
+          ))}
+        </div>
+      </div>
+
+      {/* Content */}
+      <div className="bg-cyan-50 dark:bg-cyan-900/20 border border-cyan-200 dark:border-cyan-800 rounded-xl p-4">
+        <div className="flex items-center gap-2 mb-3">
+          <div className="w-8 h-8 rounded-lg bg-cyan-100 dark:bg-cyan-900/30 flex items-center justify-center">
+            <Image className="w-4 h-4 text-cyan-600 dark:text-cyan-400" />
+          </div>
+          <span className="font-medium text-cyan-700 dark:text-cyan-300">Content & Media</span>
+        </div>
+        <div className="space-y-2 text-sm">
+          <SummaryItem label="Teksten" value={
+            data.hasContent === 'yes' ? 'Lever ik aan' :
+            data.hasContent === 'partial' ? 'Gedeeltelijk hulp nodig' :
+            data.hasContent === 'no' ? 'AI-gegenereerd' : undefined
+          } />
+          <SummaryItem label="Foto's" value={
+            data.hasPhotos === 'yes' ? 'Eigen foto\'s' :
+            data.hasPhotos === 'some' ? 'Gedeeltelijk' :
+            data.hasPhotos === 'no' ? 'Stockfoto\'s' : undefined
+          } />
+          {pkg.features.blog && (
+            <SummaryItem label="Blog" value={
+              data.wantsBlog === 'yes' ? 'Ja' :
+              data.wantsBlog === 'later' ? 'Later' :
+              data.wantsBlog === 'no' ? 'Nee' : undefined
+            } />
+          )}
+        </div>
+      </div>
+
+      {/* Planning */}
+      <div className="bg-violet-50 dark:bg-violet-900/20 border border-violet-200 dark:border-violet-800 rounded-xl p-4">
+        <div className="flex items-center gap-2 mb-3">
+          <div className="w-8 h-8 rounded-lg bg-violet-100 dark:bg-violet-900/30 flex items-center justify-center">
+            <Settings className="w-4 h-4 text-violet-600 dark:text-violet-400" />
+          </div>
+          <span className="font-medium text-violet-700 dark:text-violet-300">Planning</span>
+        </div>
+        <div className="space-y-2 text-sm">
+          <SummaryItem label="Deadline" value={
+            data.deadline === 'asap' ? 'Zo snel mogelijk' :
+            data.deadline === 'month' ? 'Binnen een maand' :
+            data.deadline === 'quarter' ? 'Binnen 3 maanden' :
+            data.deadline === 'flexible' ? 'Geen haast' :
+            data.deadline === 'specific' ? data.specificDeadline : undefined
+          } />
+          {pkg.features.multilang && data.wantsMultilang && data.wantsMultilang !== 'no' && (
+            <SummaryItem label="Talen" value={
+              data.wantsMultilang === 'en' ? 'Nederlands + Engels' :
+              data.wantsMultilang === 'multi' ? data.languages : undefined
+            } />
+          )}
+        </div>
+      </div>
+
+      {/* Confirmation */}
       <div className="bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-xl p-4">
         <div className="flex items-center gap-2 text-green-700 dark:text-green-400 font-medium">
           <Check className="w-5 h-5" />
-          Bijna klaar!
+          Klaar om te versturen!
         </div>
-        <p className="text-sm text-green-600 dark:text-green-300 mt-1">
-          Na het indienen nemen we binnen 24 uur contact op om het design te bespreken.
+        <p className="text-sm text-green-600 dark:text-green-300 mt-2">
+          Na het indienen ontvang je binnen 24 uur:
         </p>
+        <ul className="mt-2 space-y-1 text-sm text-green-600 dark:text-green-300">
+          <li className="flex items-center gap-2">
+            <span className="w-1.5 h-1.5 rounded-full bg-green-500" />
+            Een Google Drive link voor je bestanden
+          </li>
+          <li className="flex items-center gap-2">
+            <span className="w-1.5 h-1.5 rounded-full bg-green-500" />
+            Bevestiging van je ontwerp-afspraak
+          </li>
+          <li className="flex items-center gap-2">
+            <span className="w-1.5 h-1.5 rounded-full bg-green-500" />
+            Toegang tot je persoonlijke klantportaal
+          </li>
+        </ul>
       </div>
     </motion.div>
   )
@@ -1327,4 +1571,5 @@ export const WebsiteSteps = {
   paginas: WebsitePaginasStep,
   content: WebsiteContentStep,
   extra: WebsiteExtraStep,
+  samenvatting: WebsiteSamenvattingStep,
 }
