@@ -1742,6 +1742,11 @@ function ProjectsView({ darkMode, projects, onUpdateProject, onDeleteProject: _o
   const [searchQuery, setSearchQuery] = useState('')
   const [selectedProject, setSelectedProject] = useState<Project | null>(null)
   const [showProjectModal, setShowProjectModal] = useState(false)
+  
+  // State for phase change confirmation modal
+  const [phaseChangeProject, setPhaseChangeProject] = useState<Project | null>(null)
+  const [phaseChangeDirection, setPhaseChangeDirection] = useState<'next' | 'previous'>('next')
+  const [phaseChangeLoading, setPhaseChangeLoading] = useState(false)
 
   const phases: { key: ProjectPhase; label: string; color: string; bgColor: string }[] = [
     { key: 'onboarding', label: 'Onboarding', color: 'bg-yellow-500', bgColor: darkMode ? 'bg-yellow-900/20' : 'bg-yellow-50' },
@@ -1750,6 +1755,78 @@ function ProjectsView({ darkMode, projects, onUpdateProject, onDeleteProject: _o
     { key: 'review', label: 'Review', color: 'bg-orange-500', bgColor: darkMode ? 'bg-orange-900/20' : 'bg-orange-50' },
     { key: 'live', label: 'Live', color: 'bg-green-500', bgColor: darkMode ? 'bg-green-900/20' : 'bg-green-50' },
   ]
+
+  // Phase-specific checklists for confirmation
+  const phaseChecklists: Record<ProjectPhase, { id: string; label: string }[]> = {
+    onboarding: [
+      { id: 'onb_form', label: 'Onboarding formulier ingevuld' },
+      { id: 'onb_logo', label: 'Logo ontvangen' },
+      { id: 'onb_content', label: 'Teksten/content ontvangen' },
+      { id: 'onb_colors', label: 'Huisstijl/kleuren bepaald' },
+    ],
+    design: [
+      { id: 'des_mockup', label: 'Design mockup gemaakt' },
+      { id: 'des_sent', label: 'Design naar klant gestuurd' },
+      { id: 'des_approved', label: 'Design goedgekeurd door klant' },
+    ],
+    development: [
+      { id: 'dev_pages', label: 'Alle pagina\'s gebouwd' },
+      { id: 'dev_forms', label: 'Formulieren werkend' },
+      { id: 'dev_responsive', label: 'Responsive getest' },
+    ],
+    review: [
+      { id: 'rev_test', label: 'Uitgebreid getest' },
+      { id: 'rev_client_test', label: 'Klant heeft getest' },
+      { id: 'rev_approval', label: 'Klant akkoord voor live' },
+    ],
+    live: [],
+  }
+
+  // Handle confirmed phase change
+  const handleConfirmedPhaseChange = async (project: Project, direction: 'next' | 'previous') => {
+    setPhaseChangeLoading(true)
+    const phaseOrder: ProjectPhase[] = ['onboarding', 'design', 'development', 'review', 'live']
+    const currentIndex = phaseOrder.indexOf(project.phase)
+    const targetIndex = direction === 'next' ? currentIndex + 1 : currentIndex - 1
+    
+    if (targetIndex < 0 || targetIndex >= phaseOrder.length) {
+      setPhaseChangeLoading(false)
+      setPhaseChangeProject(null)
+      return
+    }
+    
+    const newPhase = phaseOrder[targetIndex]
+    
+    // Update project phase
+    onUpdateProject({ ...project, phase: newPhase, updatedAt: new Date().toISOString() })
+    
+    // Send phase change email to client (only for forward moves)
+    if (direction === 'next') {
+      try {
+        const token = sessionStorage.getItem('webstability_dev_token')
+        await fetch('/api/send-phase-email', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`
+          },
+          body: JSON.stringify({
+            projectId: project.projectId,
+            projectName: project.businessName,
+            customerEmail: project.contactEmail,
+            customerName: project.contactName || project.businessName,
+            newPhase: newPhase
+          })
+        })
+        console.log(`✅ Fase-wijziging email verstuurd naar ${project.contactEmail}`)
+      } catch (error) {
+        console.error('Kon fase-email niet versturen:', error)
+      }
+    }
+    
+    setPhaseChangeLoading(false)
+    setPhaseChangeProject(null)
+  }
 
   const filteredProjects = projects.filter(p => {
     const matchesPhase = filterPhase === 'all' || p.phase === filterPhase
@@ -1785,39 +1862,17 @@ function ProjectsView({ darkMode, projects, onUpdateProject, onDeleteProject: _o
     const pkg = getPackageBadge(project.package)
     const unreadCount = project.messages.filter(m => !m.read && m.from === 'client').length
 
-    // Quick action handlers
-    const handleMoveToNextPhase = async (e: React.MouseEvent) => {
+    // Quick action handlers - now opens confirmation modal
+    const handleMoveToNextPhase = (e: React.MouseEvent) => {
       e.stopPropagation()
-      const phaseOrder: ProjectPhase[] = ['onboarding', 'design', 'development', 'review', 'live']
-      const currentIndex = phaseOrder.indexOf(project.phase)
-      if (currentIndex < phaseOrder.length - 1) {
-        const nextPhase = phaseOrder[currentIndex + 1]
-        
-        // Update project phase
-        onUpdateProject({ ...project, phase: nextPhase, updatedAt: new Date().toISOString() })
-        
-        // Send phase change email to client
-        try {
-          const token = sessionStorage.getItem('webstability_dev_token')
-          await fetch('/api/send-phase-email', {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-              'Authorization': `Bearer ${token}`
-            },
-            body: JSON.stringify({
-              projectId: project.projectId,
-              projectName: project.businessName,
-              customerEmail: project.contactEmail,
-              customerName: project.contactName || project.businessName,
-              newPhase: nextPhase
-            })
-          })
-          console.log(`✅ Fase-wijziging email verstuurd naar ${project.contactEmail}`)
-        } catch (error) {
-          console.error('Kon fase-email niet versturen:', error)
-        }
-      }
+      setPhaseChangeProject(project)
+      setPhaseChangeDirection('next')
+    }
+
+    const handleMoveToPreviousPhase = (e: React.MouseEvent) => {
+      e.stopPropagation()
+      setPhaseChangeProject(project)
+      setPhaseChangeDirection('previous')
     }
 
     const handleSendMessage = (e: React.MouseEvent) => {
@@ -1921,6 +1976,20 @@ function ProjectsView({ darkMode, projects, onUpdateProject, onDeleteProject: _o
 
         {/* Quick Actions - visible on hover */}
         <div className={`flex items-center gap-1 pt-2 border-t ${darkMode ? 'border-gray-700' : 'border-gray-100'}`}>
+          {/* Previous phase button */}
+          {project.phase !== 'onboarding' && (
+            <button
+              onClick={handleMoveToPreviousPhase}
+              className={`p-1.5 rounded-lg transition-colors ${
+                darkMode 
+                  ? 'bg-gray-700 text-gray-400 hover:bg-gray-600 hover:text-gray-300' 
+                  : 'bg-gray-100 text-gray-500 hover:bg-gray-200 hover:text-gray-700'
+              }`}
+              title="Terug naar vorige fase"
+            >
+              <ChevronRight className="w-3.5 h-3.5 rotate-180" />
+            </button>
+          )}
           {project.phase !== 'live' && (
             <button
               onClick={handleMoveToNextPhase}
@@ -2378,6 +2447,159 @@ function ProjectsView({ darkMode, projects, onUpdateProject, onDeleteProject: _o
             onUpdate={onUpdateProject}
             phases={phases}
           />
+        )}
+      </AnimatePresence>
+
+      {/* Phase Change Confirmation Modal */}
+      <AnimatePresence>
+        {phaseChangeProject && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm"
+            onClick={() => setPhaseChangeProject(null)}
+          >
+            <motion.div
+              initial={{ scale: 0.95, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.95, opacity: 0 }}
+              onClick={(e) => e.stopPropagation()}
+              className={`w-full max-w-md rounded-2xl p-6 ${
+                darkMode ? 'bg-gray-800' : 'bg-white'
+              } shadow-2xl`}
+            >
+              {(() => {
+                const phaseOrder: ProjectPhase[] = ['onboarding', 'design', 'development', 'review', 'live']
+                const currentIndex = phaseOrder.indexOf(phaseChangeProject.phase)
+                const targetIndex = phaseChangeDirection === 'next' ? currentIndex + 1 : currentIndex - 1
+                const targetPhase = phaseOrder[targetIndex]
+                const currentPhaseConfig = phases.find(p => p.key === phaseChangeProject.phase)
+                const targetPhaseConfig = phases.find(p => p.key === targetPhase)
+                const currentChecklist = phaseChecklists[phaseChangeProject.phase] || []
+                const isMovingForward = phaseChangeDirection === 'next'
+
+                return (
+                  <>
+                    <div className="flex items-center justify-between mb-4">
+                      <h3 className={`text-lg font-bold ${darkMode ? 'text-white' : 'text-gray-900'}`}>
+                        {isMovingForward ? 'Naar volgende fase' : 'Terug naar vorige fase'}
+                      </h3>
+                      <button
+                        onClick={() => setPhaseChangeProject(null)}
+                        className={`p-2 rounded-lg ${darkMode ? 'hover:bg-gray-700' : 'hover:bg-gray-100'}`}
+                      >
+                        <X className="w-5 h-5" />
+                      </button>
+                    </div>
+
+                    {/* Project info */}
+                    <div className={`p-3 rounded-xl mb-4 ${darkMode ? 'bg-gray-700/50' : 'bg-gray-50'}`}>
+                      <p className={`font-medium ${darkMode ? 'text-white' : 'text-gray-900'}`}>
+                        {phaseChangeProject.businessName}
+                      </p>
+                      <p className={`text-sm ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>
+                        {phaseChangeProject.projectId}
+                      </p>
+                    </div>
+
+                    {/* Phase transition visual */}
+                    <div className="flex items-center justify-center gap-3 mb-4">
+                      <div className={`px-3 py-2 rounded-lg ${currentPhaseConfig?.color} text-white font-medium text-sm`}>
+                        {currentPhaseConfig?.label}
+                      </div>
+                      <ArrowRight className={`w-5 h-5 ${darkMode ? 'text-gray-400' : 'text-gray-500'}`} />
+                      <div className={`px-3 py-2 rounded-lg ${targetPhaseConfig?.color} text-white font-medium text-sm`}>
+                        {targetPhaseConfig?.label}
+                      </div>
+                    </div>
+
+                    {/* Checklist for forward moves */}
+                    {isMovingForward && currentChecklist.length > 0 && (
+                      <div className={`p-4 rounded-xl mb-4 border ${
+                        darkMode 
+                          ? 'bg-amber-900/20 border-amber-700' 
+                          : 'bg-amber-50 border-amber-200'
+                      }`}>
+                        <p className={`text-sm font-medium mb-3 ${darkMode ? 'text-amber-400' : 'text-amber-700'}`}>
+                          ⚠️ Controleer voor je doorgaat:
+                        </p>
+                        <ul className="space-y-2">
+                          {currentChecklist.map(item => (
+                            <li key={item.id} className={`flex items-center gap-2 text-sm ${
+                              darkMode ? 'text-amber-300' : 'text-amber-600'
+                            }`}>
+                              <CheckCircle2 className="w-4 h-4 flex-shrink-0" />
+                              {item.label}
+                            </li>
+                          ))}
+                        </ul>
+                      </div>
+                    )}
+
+                    {/* Warning for backward moves */}
+                    {!isMovingForward && (
+                      <div className={`p-4 rounded-xl mb-4 border ${
+                        darkMode 
+                          ? 'bg-orange-900/20 border-orange-700' 
+                          : 'bg-orange-50 border-orange-200'
+                      }`}>
+                        <p className={`text-sm ${darkMode ? 'text-orange-300' : 'text-orange-700'}`}>
+                          <AlertTriangle className="w-4 h-4 inline mr-2" />
+                          Let op: de klant ontvangt <strong>geen</strong> email bij terugzetten naar een vorige fase.
+                        </p>
+                      </div>
+                    )}
+
+                    {/* Email notification info for forward */}
+                    {isMovingForward && (
+                      <div className={`p-3 rounded-xl mb-4 border ${
+                        darkMode 
+                          ? 'bg-emerald-900/20 border-emerald-700' 
+                          : 'bg-emerald-50 border-emerald-200'
+                      }`}>
+                        <p className={`text-sm ${darkMode ? 'text-emerald-300' : 'text-emerald-700'}`}>
+                          <Mail className="w-4 h-4 inline mr-2" />
+                          De klant ontvangt automatisch een email over de fase-wijziging.
+                        </p>
+                      </div>
+                    )}
+
+                    {/* Action buttons */}
+                    <div className="flex gap-3">
+                      <button
+                        onClick={() => setPhaseChangeProject(null)}
+                        className={`flex-1 py-2.5 rounded-xl font-medium transition-colors ${
+                          darkMode 
+                            ? 'bg-gray-700 text-gray-300 hover:bg-gray-600' 
+                            : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                        }`}
+                      >
+                        Annuleren
+                      </button>
+                      <button
+                        onClick={() => handleConfirmedPhaseChange(phaseChangeProject, phaseChangeDirection)}
+                        disabled={phaseChangeLoading}
+                        className={`flex-1 py-2.5 rounded-xl font-medium transition-colors flex items-center justify-center gap-2 ${
+                          isMovingForward
+                            ? 'bg-emerald-500 text-white hover:bg-emerald-600'
+                            : 'bg-orange-500 text-white hover:bg-orange-600'
+                        } disabled:opacity-50`}
+                      >
+                        {phaseChangeLoading ? (
+                          <Loader2 className="w-4 h-4 animate-spin" />
+                        ) : (
+                          <>
+                            {isMovingForward ? 'Bevestigen' : 'Terugzetten'}
+                          </>
+                        )}
+                      </button>
+                    </div>
+                  </>
+                )
+              })()}
+            </motion.div>
+          </motion.div>
         )}
       </AnimatePresence>
     </div>
@@ -6753,11 +6975,21 @@ export default function DeveloperDashboardNew() {
   }, [isAuthenticated])
 
   // Auto-refresh data every 30 seconds for real-time updates
+  // Skip refresh when user is actively interacting (modal open, form focused, etc.)
   useEffect(() => {
     if (!isAuthenticated) return
     
     const refreshInterval = setInterval(() => {
-      loadData()
+      // Check if there's an open modal or focused input - don't refresh during interaction
+      const hasOpenModal = document.querySelector('[role="dialog"], .fixed.inset-0.z-50')
+      const hasFocusedInput = document.activeElement instanceof HTMLInputElement || 
+                              document.activeElement instanceof HTMLTextAreaElement ||
+                              document.activeElement instanceof HTMLSelectElement
+      
+      // Only refresh if user is not actively interacting
+      if (!hasOpenModal && !hasFocusedInput) {
+        loadData()
+      }
     }, 30000) // 30 seconds
     
     return () => clearInterval(refreshInterval)
