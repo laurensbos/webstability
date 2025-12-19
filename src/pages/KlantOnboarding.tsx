@@ -339,6 +339,36 @@ export default function KlantOnboarding() {
 
   // Already submitted
   if (existingOnboarding && !editMode && !submitted) {
+    const nextSteps = [
+      {
+        icon: FileText,
+        title: 'Drive link klaarzetten',
+        description: 'Wij sturen je een Google Drive link waar je je logo, foto\'s en andere bestanden kunt uploaden.',
+        time: 'Binnen 24 uur',
+        color: 'from-blue-500 to-blue-600',
+        bgColor: 'bg-blue-50',
+        textColor: 'text-blue-600',
+      },
+      {
+        icon: Palette,
+        title: 'Eerste ontwerp',
+        description: 'We gaan aan de slag met je website en sturen je binnen 5-7 werkdagen het eerste ontwerp.',
+        time: '5-7 werkdagen',
+        color: 'from-purple-500 to-purple-600',
+        bgColor: 'bg-purple-50',
+        textColor: 'text-purple-600',
+      },
+      {
+        icon: CheckCircle2,
+        title: 'Feedback & live!',
+        description: 'Na jouw goedkeuring maken we de laatste aanpassingen en gaat je website live.',
+        time: 'Na goedkeuring',
+        color: 'from-emerald-500 to-emerald-600',
+        bgColor: 'bg-emerald-50',
+        textColor: 'text-emerald-600',
+      },
+    ]
+
     return (
       <div className="min-h-screen bg-gradient-to-br from-slate-50 via-emerald-50/30 to-white">
         <div className="absolute inset-0 overflow-hidden pointer-events-none">
@@ -346,6 +376,11 @@ export default function KlantOnboarding() {
             className="absolute top-0 right-0 w-[800px] h-[800px] bg-gradient-to-br from-emerald-200/60 via-green-100/40 to-teal-100/30 rounded-full blur-3xl -translate-y-1/3 translate-x-1/4"
             animate={{ scale: [1, 1.05, 1] }}
             transition={{ duration: 8, repeat: Infinity, ease: "easeInOut" }}
+          />
+          <motion.div 
+            className="absolute bottom-0 left-0 w-[600px] h-[600px] bg-gradient-to-tr from-blue-100/40 via-primary-100/30 to-transparent rounded-full blur-3xl translate-y-1/3 -translate-x-1/4"
+            animate={{ scale: [1, 1.08, 1] }}
+            transition={{ duration: 10, repeat: Infinity, ease: "easeInOut" }}
           />
         </div>
 
@@ -367,12 +402,20 @@ export default function KlantOnboarding() {
               initial={{ scale: 0 }}
               animate={{ scale: 1 }}
               transition={{ type: 'spring', stiffness: 200 }}
-              className="w-16 h-16 bg-gradient-to-br from-emerald-500 to-green-600 rounded-full flex items-center justify-center mx-auto mb-4 shadow-lg shadow-emerald-500/30"
+              className="relative w-16 h-16 md:w-20 md:h-20 bg-gradient-to-br from-emerald-500 to-green-600 rounded-full flex items-center justify-center mx-auto mb-4 shadow-lg shadow-emerald-500/30"
             >
-              <CheckCircle2 className="w-8 h-8 text-white" />
+              <CheckCircle2 className="w-8 h-8 md:w-10 md:h-10 text-white" />
+              <motion.div
+                initial={{ scale: 0 }}
+                animate={{ scale: 1 }}
+                transition={{ delay: 0.3 }}
+                className="absolute -top-1 -right-1"
+              >
+                <Sparkles className="w-5 h-5 text-emerald-500" />
+              </motion.div>
             </motion.div>
-            <h1 className="text-2xl font-bold text-gray-900 mb-2">Onboarding voltooid!</h1>
-            <p className="text-gray-600 dark:text-gray-400">
+            <h1 className="text-xl md:text-2xl font-bold text-gray-900 mb-2">Onboarding voltooid! 🎉</h1>
+            <p className="text-gray-600 text-sm md:text-base">
               Ingevuld op{' '}
               <strong>{new Date(existingOnboarding.submittedAt).toLocaleDateString('nl-NL', {
                 day: 'numeric',
@@ -384,16 +427,65 @@ export default function KlantOnboarding() {
             </p>
           </motion.div>
 
-          {/* Summary of submitted data */}
+          {/* What to expect - Timeline */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.1 }}
-            className="bg-white dark:bg-gray-900 rounded-2xl shadow-xl border border-gray-100 p-6 md:p-8 mb-6"
+            className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-xl border border-white/50 p-6 md:p-8 mb-6"
+          >
+            <h2 className="text-lg md:text-xl font-bold text-gray-900 mb-6 flex items-center gap-2">
+              <Clock className="w-5 h-5 text-primary-500" />
+              Wat kun je nu verwachten?
+            </h2>
+
+            <div className="space-y-4">
+              {nextSteps.map((step, index) => (
+                <motion.div
+                  key={step.title}
+                  initial={{ opacity: 0, x: -20 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ delay: 0.2 + index * 0.1 }}
+                  className="relative flex gap-4"
+                >
+                  {/* Timeline line */}
+                  {index < nextSteps.length - 1 && (
+                    <div className="absolute left-5 top-12 w-0.5 h-[calc(100%-1rem)] bg-gradient-to-b from-gray-200 to-gray-100" />
+                  )}
+                  
+                  {/* Icon */}
+                  <div className={`relative flex-shrink-0 w-10 h-10 rounded-xl bg-gradient-to-br ${step.color} flex items-center justify-center shadow-lg`}>
+                    <step.icon className="w-5 h-5 text-white" />
+                    <span className="absolute -top-1 -left-1 w-5 h-5 bg-white rounded-full flex items-center justify-center text-xs font-bold text-gray-600 shadow">
+                      {index + 1}
+                    </span>
+                  </div>
+                  
+                  {/* Content */}
+                  <div className="flex-1 pb-4">
+                    <div className="flex flex-wrap items-center gap-2 mb-1">
+                      <h3 className="font-semibold text-gray-900">{step.title}</h3>
+                      <span className={`text-xs px-2 py-0.5 rounded-full ${step.bgColor} ${step.textColor} font-medium`}>
+                        {step.time}
+                      </span>
+                    </div>
+                    <p className="text-sm text-gray-600">{step.description}</p>
+                  </div>
+                </motion.div>
+              ))}
+            </div>
+          </motion.div>
+
+          {/* Summary of submitted data */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.2 }}
+            className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-xl border border-white/50 p-6 md:p-8 mb-6"
           >
             <h2 className="text-lg font-bold text-gray-900 mb-4 flex items-center gap-2">
               <FileText className="w-5 h-5 text-primary-500" />
-              Ingevulde gegevens
+              Jouw ingevulde gegevens
             </h2>
 
             <div className="space-y-4">
@@ -424,13 +516,13 @@ export default function KlantOnboarding() {
                     {formData.hasLogo && (
                       <div>
                         <span className="text-xs text-gray-400">Logo</span>
-                        <p className="text-gray-700 dark:text-gray-300">{formData.hasLogo === 'ja_vector' ? 'Ja (vector)' : formData.hasLogo === 'ja_afbeelding' ? 'Ja (afbeelding)' : formData.hasLogo === 'nee_nodig' ? 'Logo nodig' : 'Alleen tekst'}</p>
+                        <p className="text-gray-700">{formData.hasLogo === 'ja_vector' ? 'Ja (vector)' : formData.hasLogo === 'ja_afbeelding' ? 'Ja (afbeelding)' : formData.hasLogo === 'nee_nodig' ? 'Logo nodig' : 'Alleen tekst'}</p>
                       </div>
                     )}
                     {formData.brandColors && (
                       <div>
                         <span className="text-xs text-gray-400">Kleuren</span>
-                        <p className="text-gray-700 dark:text-gray-300">{formData.brandColors}</p>
+                        <p className="text-gray-700">{formData.brandColors}</p>
                       </div>
                     )}
                   </div>
@@ -483,7 +575,7 @@ export default function KlantOnboarding() {
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.2 }}
+            transition={{ delay: 0.3 }}
             className="flex flex-col sm:flex-row gap-3 justify-center"
           >
             <button
@@ -505,8 +597,8 @@ export default function KlantOnboarding() {
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
-            transition={{ delay: 0.3 }}
-            className="mt-8 flex flex-wrap justify-center gap-6 text-sm text-gray-500 dark:text-gray-400"
+            transition={{ delay: 0.4 }}
+            className="mt-8 flex flex-wrap justify-center gap-4 sm:gap-6 text-sm text-gray-500"
           >
             <div className="flex items-center gap-2">
               <Shield className="w-4 h-4 text-emerald-500" />
@@ -522,8 +614,38 @@ export default function KlantOnboarding() {
     )
   }
 
-  // Submitted successfully
+  // Submitted successfully - Enhanced thank you screen
   if (submitted) {
+    const nextSteps = [
+      {
+        icon: FileText,
+        title: 'Drive link klaarzetten',
+        description: 'Wij sturen je een Google Drive link waar je je logo, foto\'s en andere bestanden kunt uploaden.',
+        time: 'Binnen 24 uur',
+        color: 'from-blue-500 to-blue-600',
+        bgColor: 'bg-blue-50',
+        textColor: 'text-blue-600',
+      },
+      {
+        icon: Palette,
+        title: 'Eerste ontwerp',
+        description: 'We gaan aan de slag met je website en sturen je binnen 5-7 werkdagen het eerste ontwerp.',
+        time: '5-7 werkdagen',
+        color: 'from-purple-500 to-purple-600',
+        bgColor: 'bg-purple-50',
+        textColor: 'text-purple-600',
+      },
+      {
+        icon: CheckCircle2,
+        title: 'Feedback & live!',
+        description: 'Na jouw goedkeuring maken we de laatste aanpassingen en gaat je website live.',
+        time: 'Na goedkeuring',
+        color: 'from-emerald-500 to-emerald-600',
+        bgColor: 'bg-emerald-50',
+        textColor: 'text-emerald-600',
+      },
+    ]
+
     return (
       <div className="min-h-screen bg-gradient-to-br from-slate-50 via-emerald-50/30 to-white">
         <div className="absolute inset-0 overflow-hidden pointer-events-none">
@@ -532,19 +654,26 @@ export default function KlantOnboarding() {
             animate={{ scale: [1, 1.05, 1] }}
             transition={{ duration: 8, repeat: Infinity, ease: "easeInOut" }}
           />
+          <motion.div 
+            className="absolute bottom-0 left-0 w-[600px] h-[600px] bg-gradient-to-tr from-blue-100/40 via-primary-100/30 to-transparent rounded-full blur-3xl translate-y-1/3 -translate-x-1/4"
+            animate={{ scale: [1, 1.08, 1] }}
+            transition={{ duration: 10, repeat: Infinity, ease: "easeInOut" }}
+          />
         </div>
 
         <header className="relative z-10 border-b bg-white/80 backdrop-blur-sm sticky top-0">
-          <div className="max-w-7xl mx-auto px-4 py-4">
+          <div className="max-w-7xl mx-auto px-4 py-4 flex justify-between items-center">
             <Link to="/"><Logo /></Link>
+            <span className="text-sm text-gray-500 bg-gray-100 px-3 py-1 rounded-full">Project: {projectId}</span>
           </div>
         </header>
 
-        <main className="relative z-10 max-w-xl mx-auto px-4 py-16">
+        <main className="relative z-10 max-w-2xl mx-auto px-4 py-8 md:py-12">
+          {/* Success Header */}
           <motion.div
             initial={{ opacity: 0, scale: 0.95 }}
             animate={{ opacity: 1, scale: 1 }}
-            className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-xl border border-white/50 p-8 text-center"
+            className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-xl border border-white/50 p-6 md:p-8 text-center mb-6"
           >
             <motion.div
               initial={{ scale: 0 }}
@@ -562,24 +691,117 @@ export default function KlantOnboarding() {
                 <Sparkles className="w-6 h-6 text-emerald-500" />
               </motion.div>
             </motion.div>
-            <h1 className="text-2xl font-bold text-gray-900 mb-2">Bedankt!</h1>
-            <p className="text-gray-600 mb-4">
-              We hebben je informatie ontvangen en gaan direct aan de slag met je website.
-            </p>
             
-            <div className="bg-amber-50 border border-amber-200 rounded-xl p-4 mb-6 text-left">
-              <p className="text-amber-800 text-sm">
-                <strong>Tip:</strong> Onze e-mails kunnen soms in je spam/ongewenste map terechtkomen. 
-                Voeg <span className="font-medium">info@webstability.nl</span> toe aan je contacten.
-              </p>
-            </div>
+            <h1 className="text-2xl md:text-3xl font-bold text-gray-900 mb-3">
+              Bedankt voor het invullen! 🎉
+            </h1>
+            <p className="text-gray-600 text-sm md:text-base max-w-md mx-auto">
+              We hebben al je informatie ontvangen en gaan direct aan de slag met je website.
+            </p>
+          </motion.div>
 
+          {/* What to expect - Timeline */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.1 }}
+            className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-xl border border-white/50 p-6 md:p-8 mb-6"
+          >
+            <h2 className="text-lg md:text-xl font-bold text-gray-900 mb-6 flex items-center gap-2">
+              <Clock className="w-5 h-5 text-primary-500" />
+              Wat kun je nu verwachten?
+            </h2>
+
+            <div className="space-y-4">
+              {nextSteps.map((step, index) => (
+                <motion.div
+                  key={step.title}
+                  initial={{ opacity: 0, x: -20 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ delay: 0.2 + index * 0.1 }}
+                  className="relative flex gap-4"
+                >
+                  {/* Timeline line */}
+                  {index < nextSteps.length - 1 && (
+                    <div className="absolute left-5 top-12 w-0.5 h-[calc(100%-1rem)] bg-gradient-to-b from-gray-200 to-gray-100" />
+                  )}
+                  
+                  {/* Icon */}
+                  <div className={`relative flex-shrink-0 w-10 h-10 rounded-xl bg-gradient-to-br ${step.color} flex items-center justify-center shadow-lg`}>
+                    <step.icon className="w-5 h-5 text-white" />
+                    <span className="absolute -top-1 -left-1 w-5 h-5 bg-white rounded-full flex items-center justify-center text-xs font-bold text-gray-600 shadow">
+                      {index + 1}
+                    </span>
+                  </div>
+                  
+                  {/* Content */}
+                  <div className="flex-1 pb-4">
+                    <div className="flex flex-wrap items-center gap-2 mb-1">
+                      <h3 className="font-semibold text-gray-900">{step.title}</h3>
+                      <span className={`text-xs px-2 py-0.5 rounded-full ${step.bgColor} ${step.textColor} font-medium`}>
+                        {step.time}
+                      </span>
+                    </div>
+                    <p className="text-sm text-gray-600">{step.description}</p>
+                  </div>
+                </motion.div>
+              ))}
+            </div>
+          </motion.div>
+
+          {/* Tip box */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.3 }}
+            className="bg-amber-50 border border-amber-200 rounded-xl p-4 mb-6"
+          >
+            <p className="text-amber-800 text-sm">
+              <strong>💡 Tip:</strong> Onze e-mails kunnen soms in je spam/ongewenste map terechtkomen. 
+              Voeg <span className="font-medium">info@webstability.nl</span> toe aan je contacten zodat je niks mist!
+            </p>
+          </motion.div>
+
+          {/* Actions */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.4 }}
+            className="flex flex-col sm:flex-row gap-3 justify-center"
+          >
+            <button
+              onClick={() => {
+                setSubmitted(false)
+                setStep(1)
+              }}
+              className="inline-flex items-center justify-center gap-2 px-6 py-3 border-2 border-primary-500 text-primary-600 rounded-xl font-semibold hover:bg-primary-50 transition"
+            >
+              <Edit3 className="w-5 h-5" />
+              Antwoorden bekijken/wijzigen
+            </button>
             <Link
               to={`/status/${projectId}`}
-              className="inline-flex items-center gap-2 bg-gradient-to-r from-primary-500 to-primary-600 text-white px-6 py-3 rounded-xl font-semibold hover:from-primary-600 hover:to-primary-700 transition shadow-lg shadow-primary-500/25"
+              className="inline-flex items-center justify-center gap-2 bg-gradient-to-r from-primary-500 to-primary-600 text-white px-6 py-3 rounded-xl font-semibold hover:from-primary-600 hover:to-primary-700 transition shadow-lg shadow-primary-500/25"
             >
               Bekijk project status <ExternalLink className="w-5 h-5" />
             </Link>
+          </motion.div>
+
+          {/* Trust indicators */}
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 0.5 }}
+            className="mt-8 flex flex-wrap justify-center gap-4 sm:gap-6 text-sm text-gray-500"
+          >
+            <div className="flex items-center gap-2">
+              <Shield className="w-4 h-4 text-emerald-500" />
+              <span>Gegevens veilig opgeslagen</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <Clock className="w-4 h-4 text-primary-500" />
+              <span>Altijd te wijzigen</span>
+            </div>
           </motion.div>
         </main>
       </div>
