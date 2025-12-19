@@ -41,7 +41,7 @@ export default function StickyCTA() {
                 </div>
                 <div className="text-center sm:text-left">
                   <p className="text-gray-900 font-semibold text-sm sm:text-base">
-                    Start nu vanaf <span className="text-primary-600">€96/maand</span> <span className="text-gray-400 text-xs">(incl. BTW)</span>
+                    Start nu vanaf <span className="text-primary-600">€99/maand</span> <span className="text-gray-400 text-xs">(incl. BTW)</span>
                   </p>
                   <p className="text-gray-500 text-xs sm:text-sm">
                     Eenmalig €120 • Online binnen 7 dagen

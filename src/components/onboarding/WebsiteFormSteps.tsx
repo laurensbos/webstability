@@ -75,7 +75,7 @@ export const PACKAGE_CONFIGS: Record<PackageId, PackageConfig> = {
     id: 'business',
     name: 'Business',
     price: '€349/maand',
-    maxPages: 20,
+    maxPages: 999, // Unlimited
     features: {
       blog: true,
       booking: true,
@@ -94,6 +94,11 @@ export function getMinPackageForFeature(feature: keyof PackageConfig['features']
   if (PACKAGE_CONFIGS.starter.features[feature]) return 'starter'
   if (PACKAGE_CONFIGS.professional.features[feature]) return 'professional'
   return 'business'
+}
+
+// Helper to format max pages (show "Onbeperkt" for high values)
+function formatMaxPages(maxPages: number): string {
+  return maxPages >= 100 ? 'Onbeperkt pagina\'s' : `Max ${maxPages} pagina's`
 }
 
 // ===========================================
@@ -930,12 +935,14 @@ export function WebsitePaginasStep({ data, onChange, disabled, packageId, onUpgr
         <div className="flex items-center justify-between">
           <div>
             <span className={`font-medium ${isAtLimit ? 'text-red-700 dark:text-red-400' : 'text-blue-700 dark:text-blue-400'}`}>
-              {totalPages} / {pkg.maxPages} pagina's
+              {pkg.maxPages >= 100 ? `${totalPages} pagina's` : `${totalPages} / ${pkg.maxPages} pagina's`}
             </span>
             <p className={`text-xs mt-0.5 ${isAtLimit ? 'text-red-600 dark:text-red-300' : 'text-blue-600 dark:text-blue-300'}`}>
               {isAtLimit 
                 ? `Je ${pkg.name} pakket zit vol` 
-                : `Nog ${pagesRemaining} pagina${pagesRemaining === 1 ? '' : "'s"} beschikbaar in ${pkg.name}`
+                : pkg.maxPages >= 100 
+                  ? `Onbeperkt pagina's in ${pkg.name}`
+                  : `Nog ${pagesRemaining} pagina${pagesRemaining === 1 ? '' : "'s"} beschikbaar in ${pkg.name}`
               }
             </p>
           </div>
@@ -1172,7 +1179,7 @@ export function WebsiteExtraStep({ data, onChange, disabled, packageId, onUpgrad
         </div>
         <div className="flex flex-wrap gap-2 text-xs">
           <span className="px-2 py-1 bg-white dark:bg-gray-800 rounded text-gray-600 dark:text-gray-400">
-            Max {pkg.maxPages} pagina's
+            {formatMaxPages(pkg.maxPages)}
           </span>
           {pkg.features.blog && (
             <span className="px-2 py-1 bg-green-100 dark:bg-green-900/30 rounded text-green-700 dark:text-green-400">
@@ -1366,7 +1373,7 @@ export function WebsiteSamenvattingStep({ data, packageId, onUpgrade, onGoToStep
           </div>
           <div className="text-right">
             <div className="text-2xl font-bold">{pkg.price}</div>
-            <span className="text-sm opacity-80">Max {pkg.maxPages} pagina's</span>
+            <span className="text-sm opacity-80">{formatMaxPages(pkg.maxPages)}</span>
           </div>
         </div>
         {pkg.id !== 'business' && onUpgrade && (

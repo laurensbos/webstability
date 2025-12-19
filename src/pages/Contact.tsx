@@ -117,7 +117,7 @@ const faqs = [
   },
   {
     q: 'Wat kost een website?',
-    a: 'Onze abonnementen starten vanaf €96/maand (incl. BTW). De BTW kun je als ondernemer terugvragen via je belastingaangifte.',
+    a: 'Onze abonnementen starten vanaf €99/maand (incl. BTW). De BTW kun je als ondernemer terugvragen via je belastingaangifte.',
   },
   {
     q: 'Waar zijn jullie gevestigd?',

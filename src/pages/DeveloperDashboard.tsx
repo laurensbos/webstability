@@ -148,10 +148,10 @@ const TOKEN_KEY = 'webstability_dev_token'
 const DARK_MODE_KEY = 'webstability_dark_mode'
 
 const PACKAGE_CONFIG = {
-  starter: { name: 'Starter', price: 96, color: 'blue' },
-  professional: { name: 'Professioneel', price: 180, color: 'purple' },
-  business: { name: 'Business', price: 301, color: 'amber' },
-  webshop: { name: 'Webshop', price: 422, color: 'emerald' },
+  starter: { name: 'Starter', price: 99, color: 'blue' },
+  professional: { name: 'Professioneel', price: 199, color: 'purple' },
+  business: { name: 'Business', price: 349, color: 'amber' },
+  webshop: { name: 'Webshop', price: 349, color: 'emerald' },
 }
 
 const PHASE_CONFIG: Record<ProjectPhase, { label: string; color: string; bg: string; icon: typeof FileText }> = {
@@ -1849,10 +1849,10 @@ function ProjectsView({ darkMode, projects, onUpdateProject, onDeleteProject: _o
 
   const getPackageBadge = (pkg: Project['package']) => {
     const badges = {
-      starter: { label: 'Starter', color: 'bg-gray-500', price: '€96/m' },
-      professional: { label: 'Professional', color: 'bg-emerald-500', price: '€180/m' },
-      business: { label: 'Business', color: 'bg-purple-500', price: '€301/m' },
-      webshop: { label: 'Webshop', color: 'bg-orange-500', price: '€422/m' },
+      starter: { label: 'Starter', color: 'bg-gray-500', price: '€99/m' },
+      professional: { label: 'Professional', color: 'bg-emerald-500', price: '€199/m' },
+      business: { label: 'Business', color: 'bg-purple-500', price: '€349/m' },
+      webshop: { label: 'Webshop', color: 'bg-orange-500', price: '€349/m' },
     }
     return badges[pkg]
   }
@@ -2754,7 +2754,7 @@ function ProjectDetailModal({ project, darkMode, onClose, onUpdate, phases }: Om
   }
 
   const getPackagePrice = (pkg: Project['package']) => {
-    const prices = { starter: 96, professional: 180, business: 301, webshop: 422 }
+    const prices = { starter: 99, professional: 199, business: 349, webshop: 349 }
     return prices[pkg]
   }
 
@@ -5151,10 +5151,10 @@ interface DiscountCode {
 
 // Package prices (monthly)
 const PACKAGE_PRICING = {
-  starter: { name: 'Starter', monthlyExVat: 79.34, monthlyInclVat: 96 },
-  professional: { name: 'Professional', monthlyExVat: 148.76, monthlyInclVat: 180 },
-  business: { name: 'Business', monthlyExVat: 248.76, monthlyInclVat: 301 },
-  webshop: { name: 'Webshop', monthlyExVat: 348.76, monthlyInclVat: 422 },
+  starter: { name: 'Starter', monthlyExVat: 81.82, monthlyInclVat: 99 },
+  professional: { name: 'Professional', monthlyExVat: 164.46, monthlyInclVat: 199 },
+  business: { name: 'Business', monthlyExVat: 288.43, monthlyInclVat: 349 },
+  webshop: { name: 'Webshop', monthlyExVat: 288.43, monthlyInclVat: 349 },
 }
 
 function PaymentsView({ darkMode, projects, onUpdateProject }: PaymentsViewProps) {
@@ -7065,7 +7065,7 @@ export default function DeveloperDashboardNew() {
           
           // Generate clients from projects
           const clientMap = new Map<string, Client>()
-          const packagePrices = { starter: 96, professional: 180, business: 301, webshop: 422 }
+          const packagePrices = { starter: 99, professional: 199, business: 349, webshop: 349 }
           mappedProjects.forEach((p: Project) => {
             const projectPrice = packagePrices[p.package] || 0
             if (p.contactEmail && !clientMap.has(p.contactEmail)) {

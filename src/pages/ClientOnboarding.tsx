@@ -778,8 +778,8 @@ export default function ClientOnboarding() {
 
     const packagePrices: Record<string, string> = {
       'starter': '€99/maand',
-      'professional': '€149/maand',
-      'business': '€249/maand',
+      'professional': '€199/maand',
+      'business': '€349/maand',
       'webshopStarter': '€349/maand',
       'webshopPro': '€599/maand'
     }

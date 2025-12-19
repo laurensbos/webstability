@@ -891,9 +891,9 @@ export default function Dashboard() {
 
   const getPackageLabel = (pkg: string) => {
     switch (pkg) {
-      case 'starter': return 'Starter €96/mnd'
-      case 'professional': return 'Professional €180/mnd'
-      case 'business': return 'Business €301/mnd'
+      case 'starter': return 'Starter €99/mnd'
+      case 'professional': return 'Professional €199/mnd'
+      case 'business': return 'Business €349/mnd'
       default: return pkg
     }
   }

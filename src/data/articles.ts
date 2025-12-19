@@ -42,7 +42,7 @@ De modernste en voordeligste manier om een professionele website te krijgen is v
 - **Support** - hulp wanneer je het nodig hebt
 - **SEO basis** - goed vindbaar in Google
 
-Bij Webstability betaal je bijvoorbeeld **€96/maand** voor een complete website, met eenmalige opstartkosten vanaf €120 (alle prijzen incl. BTW). Als ondernemer kun je de 21% BTW terugvragen bij je belastingaangifte.
+Bij Webstability betaal je bijvoorbeeld **€99/maand** voor een complete website, met eenmalige opstartkosten vanaf €120 (alle prijzen incl. BTW). Als ondernemer kun je de 21% BTW terugvragen bij je belastingaangifte.
 
 ### Waarom een abonnement voordeliger is
 
@@ -232,7 +232,7 @@ Met goede SEO word je gevonden door mensen die zoeken naar jouw diensten.
 
 ### Hoeveel kost een ZZP-website?
 
-Bij Webstability krijg je een complete, professionele website voor **€96/maand** met eenmalige opstartkosten vanaf €120 (incl. BTW). Als ondernemer kun je de 21% BTW terugvragen bij je belastingaangifte. Ideaal voor ZZP'ers die een professionele uitstraling willen zonder gedoe.
+Bij Webstability krijg je een complete, professionele website voor **€99/maand** met eenmalige opstartkosten vanaf €120 (incl. BTW). Als ondernemer kun je de 21% BTW terugvragen bij je belastingaangifte. Ideaal voor ZZP'ers die een professionele uitstraling willen zonder gedoe.
 
 **Wat zit er allemaal in?**
 - Professioneel op maat gemaakt ontwerp
@@ -1379,7 +1379,7 @@ Steeds meer ondernemers ontdekken de voordelen van een website abonnement. In di
 
 ### Wat is een website abonnement?
 
-Met een website abonnement betaal je een vast bedrag per maand voor een complete website. Bij Webstability krijg je voor **€96/maand**:
+Met een website abonnement betaal je een vast bedrag per maand voor een complete website. Bij Webstability krijg je voor **€99/maand**:
 
 - **Professioneel ontwerp** op maat gemaakt
 - **Hosting** - je website staat online
@@ -1479,7 +1479,7 @@ Dit is lastiger, maar essentieel:
 
 **Situatie:** ZZP'er met website abonnement
 
-- Website kosten: €96/mnd × 12 = €1.152/jaar (incl. BTW)
+- Website kosten: €99/mnd × 12 = €1.188/jaar (incl. BTW)
 - Netto kosten na BTW-aftrek: €952/jaar
 - Gemiddelde klantwaarde: €500
 - Nieuwe klanten via website: 4/jaar

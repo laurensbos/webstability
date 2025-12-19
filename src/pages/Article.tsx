@@ -415,7 +415,7 @@ export default function Article() {
                       </div>
                       <h3 className="font-bold text-lg mb-2">Klaar voor je eigen website?</h3>
                       <p className="text-primary-100 text-sm mb-5 leading-relaxed">
-                        Professionele website vanaf €96/maand (incl. BTW).
+                        Professionele website vanaf €99/maand (incl. BTW).
                       </p>
                       <Link
                         to="/start"
