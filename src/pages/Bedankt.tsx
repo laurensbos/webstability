@@ -78,23 +78,23 @@ export default function Bedankt() {
   const steps = [
     {
       icon: Mail,
-      title: 'Bevestigingsmail',
-      description: 'Je ontvangt nu een bevestiging op je e-mailadres.',
-      time: 'Nu',
+      title: 'Onboarding invullen',
+      description: 'Vertel ons meer over je wensen via de onboarding. Dit duurt 2-3 minuten.',
+      time: 'Stap 1',
       color: 'bg-blue-500',
     },
     {
       icon: Clock,
-      title: 'Binnen 24 uur',
-      description: 'We nemen contact met je op om je wensen te bespreken.',
-      time: '24 uur',
+      title: 'Wij sturen een ontwerp',
+      description: 'Binnen 5-7 werkdagen ontvang je het eerste ontwerp van je website.',
+      time: 'Stap 2',
       color: 'bg-amber-500',
     },
     {
       icon: Palette,
-      title: 'Binnen 5 dagen',
-      description: 'Na akkoord ontvang je het eerste ontwerp.',
-      time: '5 dagen',
+      title: 'Feedback & live!',
+      description: 'Na jouw goedkeuring gaat je website live. Pas daarna start de betaling.',
+      time: 'Stap 3',
       color: 'bg-green-500',
     },
   ]
@@ -155,7 +155,7 @@ export default function Bedankt() {
               transition={{ delay: 0.3 }}
               className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white mb-3"
             >
-              Bedankt voor je aanvraag!
+              Super, je project is aangemaakt! 🎉
             </motion.h1>
             
             <motion.p 
@@ -164,7 +164,7 @@ export default function Bedankt() {
               transition={{ delay: 0.4 }}
               className="text-gray-600 dark:text-gray-400 text-sm sm:text-base"
             >
-              We gaan direct voor je aan de slag.
+              Vul nu de onboarding in zodat we kunnen beginnen met je ontwerp.
             </motion.p>
           </motion.div>
 
@@ -208,16 +208,42 @@ export default function Bedankt() {
                 to={`/intake/${projectId}`}
                 className="flex items-center justify-center gap-2 w-full px-4 py-3 bg-white text-gray-900 rounded-xl font-semibold hover:bg-gray-50 transition-colors shadow-lg"
               >
-                Start onboarding
+                <Sparkles className="w-4 h-4" />
+                Start onboarding (2 min)
                 <ArrowRight className="w-4 h-4" />
               </Link>
-              <Link
-                to={`/status/${projectId}`}
-                className="flex items-center justify-center gap-2 w-full px-4 py-3 bg-white/15 text-white rounded-xl font-medium hover:bg-white/25 transition-colors"
-              >
-                Bekijk project status
-              </Link>
             </div>
+          </motion.div>
+
+          {/* What to expect */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.55 }}
+            className="bg-gradient-to-r from-primary-50 to-blue-50 dark:from-gray-800 dark:to-gray-800 rounded-2xl p-5 sm:p-6 mb-6 border border-primary-100 dark:border-gray-700"
+          >
+            <h2 className="font-semibold text-gray-900 dark:text-white mb-3 flex items-center gap-2">
+              <Shield className="w-5 h-5 text-primary-500" />
+              Wat kun je verwachten?
+            </h2>
+            <ul className="space-y-2 text-sm text-gray-600 dark:text-gray-400">
+              <li className="flex items-start gap-2">
+                <Check className="w-4 h-4 text-green-500 mt-0.5 flex-shrink-0" />
+                <span><strong className="text-gray-900 dark:text-white">Gratis ontwerp</strong> — Je betaalt pas na goedkeuring</span>
+              </li>
+              <li className="flex items-start gap-2">
+                <Check className="w-4 h-4 text-green-500 mt-0.5 flex-shrink-0" />
+                <span><strong className="text-gray-900 dark:text-white">5-7 werkdagen</strong> — Eerste ontwerp klaar</span>
+              </li>
+              <li className="flex items-start gap-2">
+                <Check className="w-4 h-4 text-green-500 mt-0.5 flex-shrink-0" />
+                <span><strong className="text-gray-900 dark:text-white">Onbeperkte revisies</strong> — Tot je 100% tevreden bent</span>
+              </li>
+              <li className="flex items-start gap-2">
+                <Check className="w-4 h-4 text-green-500 mt-0.5 flex-shrink-0" />
+                <span><strong className="text-gray-900 dark:text-white">Direct contact</strong> — Via je persoonlijke dashboard</span>
+              </li>
+            </ul>
           </motion.div>
 
           {/* Timeline Steps - Swipeable on Mobile */}
@@ -228,7 +254,7 @@ export default function Bedankt() {
             className="bg-gray-50 dark:bg-gray-800 rounded-2xl p-5 sm:p-6 mb-6"
           >
             <h2 className="font-semibold text-gray-900 dark:text-white mb-4 text-sm sm:text-base">
-              Wat gebeurt er nu?
+              Zo werkt het
             </h2>
 
             {/* Mobile: Swipe Cards */}
@@ -378,6 +404,21 @@ export default function Bedankt() {
                 WhatsApp ons direct
               </a>
             </div>
+          </motion.div>
+
+          {/* Project Status Link */}
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 0.9 }}
+            className="text-center mt-6"
+          >
+            <Link
+              to={`/status/${projectId}`}
+              className="text-sm text-gray-500 dark:text-gray-400 hover:text-primary-600 dark:hover:text-primary-400 transition-colors"
+            >
+              Of bekijk direct je project status →
+            </Link>
           </motion.div>
 
         </div>
