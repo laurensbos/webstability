@@ -2731,7 +2731,9 @@ interface ClientsViewProps {
   onDeleteClient: (clientId: string, projectIds: string[]) => Promise<void>
 }
 
-function _ClientsView({ darkMode, clients, projects, onSelectClient, onAddClient, onDeleteClient }: ClientsViewProps) {
+// Unused but kept for future use
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+export function _ClientsView({ darkMode, clients, projects, onSelectClient, onAddClient, onDeleteClient }: ClientsViewProps) {
   const [searchQuery, setSearchQuery] = useState('')
   const [sortBy, setSortBy] = useState<'name' | 'projects' | 'spent' | 'date'>('date')
   const [_selectedClient, setSelectedClient] = useState<Client | null>(null)
@@ -3890,7 +3892,8 @@ function MessagesView({ darkMode, projects, onUpdateProject }: MessagesViewProps
   )
 }
 
-function _OnboardingView({ 
+// Unused but kept for future use
+export function _OnboardingView({ 
   darkMode, 
   projects, 
   onUpdateProject,
@@ -5410,7 +5413,8 @@ const SERVICE_DETAILS: Record<ServiceType, {
   },
 }
 
-function _ServicesView({ darkMode, serviceRequests, onUpdateRequest }: ServicesViewProps) {
+// Unused but kept for future use
+export function _ServicesView({ darkMode, serviceRequests, onUpdateRequest }: ServicesViewProps) {
   const [filterStatus, setFilterStatus] = useState<ServiceRequest['status'] | 'all'>('all')
   const [filterType, setFilterType] = useState<ServiceType | 'all'>('all')
   const [selectedRequest, setSelectedRequest] = useState<ServiceRequest | null>(null)
@@ -5779,7 +5783,8 @@ interface SettingsViewProps {
   setDarkMode: (value: boolean) => void
 }
 
-function _SettingsView({ darkMode, setDarkMode }: SettingsViewProps) {
+// Unused but kept for future use
+export function _SettingsView({ darkMode, setDarkMode }: SettingsViewProps) {
   const [activeSection, setActiveSection] = useState<'profile' | 'notifications' | 'api' | 'danger'>('profile')
   
   // Profile settings
