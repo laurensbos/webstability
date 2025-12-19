@@ -10,7 +10,9 @@ import {
   X,
   ArrowUpRight,
   Sparkles,
-  Lock
+  Lock,
+  Building2,
+  Palette
 } from 'lucide-react'
 import { useState } from 'react'
 
@@ -910,6 +912,258 @@ export function WebshopContentStep({ data, onChange, disabled }: FormStepProps) 
 }
 
 // ===========================================
+// SAMENVATTING STEP
+// ===========================================
+
+interface SamenvattingStepProps extends FormStepProps {
+  onGoToStep?: (stepIndex: number) => void
+}
+
+export function WebshopSamenvattingStep({ data, packageId, onUpgrade, onGoToStep }: SamenvattingStepProps) {
+  const pkg = WEBSHOP_PACKAGE_CONFIGS[packageId as WebshopPackageId] || WEBSHOP_PACKAGE_CONFIGS.webshopStarter
+
+  const SummaryItem = ({ label, value }: { label: string; value?: string | null }) => {
+    if (!value) return null
+    return (
+      <div className="flex flex-col sm:flex-row sm:justify-between gap-1">
+        <span className="text-gray-500 dark:text-gray-400">{label}:</span>
+        <span className="font-medium text-gray-900 dark:text-white break-words sm:text-right sm:max-w-[60%]">{value}</span>
+      </div>
+    )
+  }
+
+  const EditButton = ({ step }: { step: number }) => {
+    if (!onGoToStep) return null
+    return (
+      <button
+        onClick={() => onGoToStep(step)}
+        className="ml-auto text-xs px-2 py-1 text-gray-500 hover:text-emerald-600 hover:bg-emerald-50 dark:hover:bg-emerald-900/20 rounded-lg transition-colors flex items-center gap-1"
+      >
+        <ArrowUpRight className="w-3 h-3" />
+        Wijzig
+      </button>
+    )
+  }
+
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 10 }}
+      animate={{ opacity: 1, y: 0 }}
+      className="space-y-6"
+    >
+      <div className="flex items-center gap-3 mb-6">
+        <div className="w-10 h-10 rounded-xl bg-green-100 dark:bg-green-900/30 flex items-center justify-center">
+          <Check className="w-5 h-5 text-green-600 dark:text-green-400" />
+        </div>
+        <div>
+          <h3 className="font-semibold text-gray-900 dark:text-white">Controleer je gegevens</h3>
+          <p className="text-sm text-gray-500 dark:text-gray-400">Alles correct? Dan kunnen we beginnen!</p>
+        </div>
+      </div>
+
+      {/* Package info */}
+      <div className="bg-gradient-to-r from-emerald-500 to-teal-500 rounded-xl p-4 text-white">
+        <div className="flex items-center justify-between">
+          <div>
+            <span className="text-sm opacity-80">Gekozen pakket</span>
+            <div className="text-xl font-bold">{pkg.name}</div>
+          </div>
+          <div className="text-right">
+            <div className="text-2xl font-bold">{pkg.price}</div>
+            <span className="text-sm opacity-80">{pkg.id === 'webshopPro' ? 'Onbeperkt producten' : `Max ${pkg.maxProducts} producten`}</span>
+          </div>
+        </div>
+        {pkg.id !== 'webshopPro' && onUpgrade && (
+          <button
+            onClick={() => onUpgrade('webshopPro')}
+            className="mt-3 w-full py-2 bg-white/20 hover:bg-white/30 rounded-lg text-sm font-medium transition-colors"
+          >
+            Upgrade naar Webshop Pro →
+          </button>
+        )}
+      </div>
+
+      {/* Bedrijfsgegevens */}
+      <div className="bg-emerald-50 dark:bg-emerald-900/20 border border-emerald-200 dark:border-emerald-800 rounded-xl p-4">
+        <div className="flex items-center gap-2 mb-3">
+          <div className="w-8 h-8 rounded-lg bg-emerald-100 dark:bg-emerald-900/30 flex items-center justify-center">
+            <Building2 className="w-4 h-4 text-emerald-600 dark:text-emerald-400" />
+          </div>
+          <span className="font-medium text-emerald-700 dark:text-emerald-300">Bedrijfsgegevens</span>
+          <EditButton step={1} />
+        </div>
+        <div className="space-y-2 text-sm">
+          <SummaryItem label="Bedrijfsnaam" value={data.businessName} />
+          <SummaryItem label="Contactpersoon" value={data.contactName} />
+          <SummaryItem label="E-mail" value={data.contactEmail} />
+          <SummaryItem label="Telefoon" value={data.contactPhone} />
+          <SummaryItem label="Doelgroep" value={data.targetAudience} />
+          {data.aboutBusiness && (
+            <div className="pt-2 border-t border-emerald-200 dark:border-emerald-700">
+              <span className="text-gray-500 dark:text-gray-400 block mb-1">Wat verkoop je:</span>
+              <p className="text-gray-700 dark:text-gray-300 text-sm line-clamp-3">{data.aboutBusiness}</p>
+            </div>
+          )}
+        </div>
+      </div>
+
+      {/* Branding */}
+      <div className="bg-purple-50 dark:bg-purple-900/20 border border-purple-200 dark:border-purple-800 rounded-xl p-4">
+        <div className="flex items-center gap-2 mb-3">
+          <div className="w-8 h-8 rounded-lg bg-purple-100 dark:bg-purple-900/30 flex items-center justify-center">
+            <Palette className="w-4 h-4 text-purple-600 dark:text-purple-400" />
+          </div>
+          <span className="font-medium text-purple-700 dark:text-purple-300">Branding & Stijl</span>
+          <EditButton step={2} />
+        </div>
+        <div className="space-y-2 text-sm">
+          <SummaryItem label="Logo" value={
+            data.hasLogo === 'yes' ? 'Ja, ik heb een logo' :
+            data.hasLogo === 'no' ? 'Wil logo laten maken' : undefined
+          } />
+          <SummaryItem label="Stijl" value={
+            data.webshopStyle === 'minimal' ? 'Minimalistisch' :
+            data.webshopStyle === 'bold' ? 'Bold & Opvallend' :
+            data.webshopStyle === 'luxury' ? 'Luxe & Premium' :
+            data.webshopStyle === 'playful' ? 'Speels & Vrolijk' :
+            data.webshopStyle === 'corporate' ? 'Zakelijk' : undefined
+          } />
+          {data.exampleShops?.length > 0 && (
+            <div>
+              <span className="text-gray-500 dark:text-gray-400">Voorbeelden:</span>
+              <span className="ml-2 text-purple-600 dark:text-purple-400">{data.exampleShops.length} webshop(s)</span>
+            </div>
+          )}
+        </div>
+      </div>
+
+      {/* Producten */}
+      <div className="bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800 rounded-xl p-4">
+        <div className="flex items-center gap-2 mb-3">
+          <div className="w-8 h-8 rounded-lg bg-amber-100 dark:bg-amber-900/30 flex items-center justify-center">
+            <Package className="w-4 h-4 text-amber-600 dark:text-amber-400" />
+          </div>
+          <span className="font-medium text-amber-700 dark:text-amber-300">Producten</span>
+          <EditButton step={3} />
+        </div>
+        <div className="space-y-2 text-sm">
+          <SummaryItem label="Aantal producten" value={data.estimatedProductCount} />
+          <SummaryItem label="Beschrijvingen" value={
+            data.productDescriptions === 'customer_provides' ? 'Lever ik aan' :
+            data.productDescriptions === 'needs_help' ? 'Hulp nodig' :
+            data.productDescriptions === 'ai_generated' ? 'AI-gegenereerd' : undefined
+          } />
+          <SummaryItem label="Productfoto's" value={
+            data.hasProductPhotos === 'yes' ? 'Ja, goede foto\'s' :
+            data.hasProductPhotos === 'needs_editing' ? 'Moeten bewerkt worden' :
+            data.hasProductPhotos === 'needs_photography' ? 'Fotografie nodig' : undefined
+          } />
+          {data.productCategories?.length > 0 && (
+            <div className="flex flex-wrap gap-1 mt-2">
+              {data.productCategories.map((cat: string) => (
+                <span key={cat} className="px-2 py-0.5 bg-amber-100 dark:bg-amber-900/30 text-amber-700 dark:text-amber-300 rounded text-xs">
+                  {cat}
+                </span>
+              ))}
+            </div>
+          )}
+        </div>
+      </div>
+
+      {/* Betaling & Verzending */}
+      <div className="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-xl p-4">
+        <div className="flex items-center gap-2 mb-3">
+          <div className="w-8 h-8 rounded-lg bg-blue-100 dark:bg-blue-900/30 flex items-center justify-center">
+            <CreditCard className="w-4 h-4 text-blue-600 dark:text-blue-400" />
+          </div>
+          <span className="font-medium text-blue-700 dark:text-blue-300">Betaling & Verzending</span>
+          <EditButton step={4} />
+        </div>
+        <div className="space-y-2 text-sm">
+          {data.paymentMethods?.length > 0 && (
+            <div>
+              <span className="text-gray-500 dark:text-gray-400">Betaalmethoden:</span>
+              <div className="flex flex-wrap gap-1 mt-1">
+                {data.paymentMethods.map((method: string) => (
+                  <span key={method} className="px-2 py-0.5 bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 rounded text-xs capitalize">
+                    {method}
+                  </span>
+                ))}
+              </div>
+            </div>
+          )}
+          {data.shippingMethods?.length > 0 && (
+            <div>
+              <span className="text-gray-500 dark:text-gray-400">Verzending:</span>
+              <div className="flex flex-wrap gap-1 mt-1">
+                {data.shippingMethods.map((method: string) => (
+                  <span key={method} className="px-2 py-0.5 bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 rounded text-xs capitalize">
+                    {method}
+                  </span>
+                ))}
+              </div>
+            </div>
+          )}
+        </div>
+      </div>
+
+      {/* Features */}
+      <div className="bg-violet-50 dark:bg-violet-900/20 border border-violet-200 dark:border-violet-800 rounded-xl p-4">
+        <div className="flex items-center gap-2 mb-3">
+          <div className="w-8 h-8 rounded-lg bg-violet-100 dark:bg-violet-900/30 flex items-center justify-center">
+            <Settings className="w-4 h-4 text-violet-600 dark:text-violet-400" />
+          </div>
+          <span className="font-medium text-violet-700 dark:text-violet-300">Functionaliteiten</span>
+          <EditButton step={5} />
+        </div>
+        {data.features?.length > 0 && (
+          <div className="flex flex-wrap gap-1">
+            {data.features.map((feature: string) => (
+              <span key={feature} className="px-2 py-0.5 bg-violet-100 dark:bg-violet-900/30 text-violet-700 dark:text-violet-300 rounded text-xs">
+                {feature === 'inventory' ? 'Voorraadbeheer' :
+                 feature === 'customerAccounts' ? 'Klantaccounts' :
+                 feature === 'discountCodes' ? 'Kortingscodes' :
+                 feature === 'giftCards' ? 'Cadeaubonnen' :
+                 feature === 'reviews' ? 'Reviews' :
+                 feature === 'newsletter' ? 'Nieuwsbrief' :
+                 feature === 'wishlist' ? 'Verlanglijst' :
+                 feature === 'abandonedCart' ? 'Verlaten winkelwagen' :
+                 feature}
+              </span>
+            ))}
+          </div>
+        )}
+      </div>
+
+      {/* Confirmation */}
+      <div className="bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-xl p-4">
+        <div className="flex items-center gap-2 text-green-700 dark:text-green-400 font-medium">
+          <Check className="w-5 h-5" />
+          Klaar om te versturen!
+        </div>
+        <p className="text-sm text-green-600 dark:text-green-300 mt-2">
+          Na het indienen ontvang je binnen 24 uur:
+        </p>
+        <ul className="mt-2 space-y-1 text-sm text-green-600 dark:text-green-300">
+          <li className="flex items-center gap-2">
+            <span className="w-1.5 h-1.5 rounded-full bg-green-500" />
+            Een Google Drive link voor je bestanden
+          </li>
+          <li className="flex items-center gap-2">
+            <span className="w-1.5 h-1.5 rounded-full bg-green-500" />
+            Bevestiging van je ontwerp-afspraak
+          </li>
+          <li className="flex items-center gap-2">
+            <span className="w-1.5 h-1.5 rounded-full bg-green-500" />
+            Toegang tot je persoonlijke klantportaal
+          </li>
+        </ul>
+      </div>
+    </motion.div>
+  )
+}
+
+// ===========================================
 // EXPORT
 // ===========================================
 
@@ -920,4 +1174,5 @@ export const WebshopSteps = {
   betaling: WebshopBetalingStep,
   features: WebshopFeaturesStep,
   content: WebshopContentStep,
+  samenvatting: WebshopSamenvattingStep,
 }

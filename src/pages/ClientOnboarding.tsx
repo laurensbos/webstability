@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback, useRef } from 'react'
 import { useParams, useSearchParams } from 'react-router-dom'
 import { motion, AnimatePresence } from 'framer-motion'
 import {
@@ -27,7 +27,8 @@ import {
   ExternalLink,
   Shield,
   Mail,
-  FolderOpen
+  FolderOpen,
+  Save
 } from 'lucide-react'
 import Logo from '../components/Logo'
 import type { 
@@ -112,6 +113,7 @@ const getStepsForService = (service: ServiceType): StepConfig[] => {
         { id: 'betaling', title: 'Betaling', icon: Target },
         { id: 'features', title: 'Features', icon: Settings },
         { id: 'content', title: 'Content', icon: Image },
+        { id: 'samenvatting', title: 'Controle', icon: CheckCircle2 },
       ]
     case 'drone':
       return [
@@ -119,6 +121,7 @@ const getStepsForService = (service: ServiceType): StepConfig[] => {
         { id: 'locatie', title: 'Locatie', icon: Building2 },
         { id: 'planning', title: 'Planning', icon: Clock },
         { id: 'levering', title: 'Levering', icon: FileText },
+        { id: 'samenvatting', title: 'Controle', icon: CheckCircle2 },
       ]
     case 'logo':
       return [
@@ -126,10 +129,231 @@ const getStepsForService = (service: ServiceType): StepConfig[] => {
         { id: 'stijl', title: 'Stijl', icon: Palette },
         { id: 'inspiratie', title: 'Inspiratie', icon: Image },
         { id: 'gebruik', title: 'Gebruik', icon: Settings },
+        { id: 'samenvatting', title: 'Controle', icon: CheckCircle2 },
       ]
     default:
       return baseSteps
   }
+}
+
+// ===========================================
+// VALIDATION CONFIGURATION
+// ===========================================
+
+type ValidationRule = {
+  required?: string[] // Field names that are required
+  minLength?: { field: string; min: number; label: string }[]
+}
+
+const VALIDATION_RULES: Record<ServiceType, Record<string, ValidationRule>> = {
+  website: {
+    bedrijf: { 
+      required: ['businessName', 'contactEmail'],
+      minLength: [{ field: 'businessName', min: 2, label: 'Bedrijfsnaam' }]
+    },
+    branding: {},
+    doelen: {},
+    paginas: {},
+    content: {},
+    extra: {},
+    samenvatting: {}
+  },
+  webshop: {
+    bedrijf: { 
+      required: ['businessName', 'contactEmail', 'aboutBusiness'],
+      minLength: [{ field: 'businessName', min: 2, label: 'Bedrijfsnaam' }]
+    },
+    branding: {},
+    producten: {},
+    betaling: {},
+    features: {},
+    content: {},
+    samenvatting: {}
+  },
+  drone: {
+    project: { 
+      required: ['contactName', 'contactEmail', 'projectType']
+    },
+    locatie: { 
+      required: ['locationAddress', 'locationCity']
+    },
+    planning: { 
+      required: ['preferredDate']
+    },
+    levering: {},
+    samenvatting: {}
+  },
+  logo: {
+    bedrijf: { 
+      required: ['businessName', 'contactEmail', 'aboutBusiness'],
+      minLength: [{ field: 'businessName', min: 2, label: 'Bedrijfsnaam' }]
+    },
+    branding: {},
+    stijl: {},
+    inspiratie: {},
+    gebruik: {},
+    samenvatting: {}
+  }
+}
+
+// Helper to validate step
+const validateStep = (service: ServiceType, stepId: string, data: Record<string, any>): string[] => {
+  const rules = VALIDATION_RULES[service]?.[stepId]
+  if (!rules) return []
+  
+  const errors: string[] = []
+  
+  // Check required fields
+  if (rules.required) {
+    for (const field of rules.required) {
+      const value = data[field]
+      if (!value || (typeof value === 'string' && value.trim() === '')) {
+        const fieldLabels: Record<string, string> = {
+          businessName: 'Bedrijfsnaam',
+          contactEmail: 'E-mailadres',
+          contactName: 'Contactpersoon',
+          aboutBusiness: 'Bedrijfsbeschrijving',
+          projectType: 'Type project',
+          locationAddress: 'Adres',
+          locationCity: 'Plaats',
+          preferredDate: 'Gewenste datum'
+        }
+        errors.push(`${fieldLabels[field] || field} is verplicht`)
+      }
+    }
+  }
+  
+  // Check email format
+  if (data.contactEmail && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(data.contactEmail)) {
+    errors.push('Vul een geldig e-mailadres in')
+  }
+  
+  // Check min length
+  if (rules.minLength) {
+    for (const { field, min, label } of rules.minLength) {
+      if (data[field] && data[field].length < min) {
+        errors.push(`${label} moet minimaal ${min} karakters zijn`)
+      }
+    }
+  }
+  
+  return errors
+}
+
+// ===========================================
+// AUTO-SAVE HOOK
+// ===========================================
+
+const AUTOSAVE_DELAY = 2000 // 2 seconds debounce
+const LOCAL_STORAGE_KEY = 'onboarding_draft'
+
+function useAutoSave(
+  projectId: string | undefined,
+  serviceType: ServiceType,
+  formData: Record<string, any>,
+  currentStep: number,
+  canEdit: boolean
+) {
+  const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null)
+  const [autoSaveStatus, setAutoSaveStatus] = useState<'idle' | 'saving' | 'saved' | 'error'>('idle')
+  const lastSavedRef = useRef<string>('')
+
+  // Save to localStorage immediately
+  const saveToLocal = useCallback(() => {
+    try {
+      const key = projectId ? `${LOCAL_STORAGE_KEY}_${projectId}` : `${LOCAL_STORAGE_KEY}_new_${serviceType}`
+      localStorage.setItem(key, JSON.stringify({
+        serviceType,
+        formData,
+        currentStep,
+        savedAt: new Date().toISOString()
+      }))
+    } catch (e) {
+      console.error('Failed to save to localStorage:', e)
+    }
+  }, [projectId, serviceType, formData, currentStep])
+
+  // Save to server with debounce
+  const saveToServer = useCallback(async () => {
+    if (!canEdit) return
+    
+    const dataHash = JSON.stringify(formData)
+    if (dataHash === lastSavedRef.current) return // No changes
+    
+    setAutoSaveStatus('saving')
+    try {
+      const response = await fetch(`/api/client-onboarding?projectId=${projectId || 'new'}`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          serviceType,
+          formData,
+          currentStep,
+          isAutoSave: true
+        })
+      })
+      
+      if (response.ok) {
+        lastSavedRef.current = dataHash
+        setAutoSaveStatus('saved')
+        setTimeout(() => setAutoSaveStatus('idle'), 2000)
+      } else {
+        setAutoSaveStatus('error')
+      }
+    } catch (e) {
+      console.error('Auto-save failed:', e)
+      setAutoSaveStatus('error')
+    }
+  }, [projectId, serviceType, formData, currentStep, canEdit])
+
+  // Debounced auto-save on data change
+  useEffect(() => {
+    if (!canEdit) return
+    
+    // Save to localStorage immediately
+    saveToLocal()
+    
+    // Debounce server save
+    if (timeoutRef.current) {
+      clearTimeout(timeoutRef.current)
+    }
+    
+    timeoutRef.current = setTimeout(() => {
+      saveToServer()
+    }, AUTOSAVE_DELAY)
+    
+    return () => {
+      if (timeoutRef.current) {
+        clearTimeout(timeoutRef.current)
+      }
+    }
+  }, [formData, saveToLocal, saveToServer, canEdit])
+
+  // Load from localStorage on mount
+  const loadFromLocal = useCallback((): Record<string, any> | null => {
+    try {
+      const key = projectId ? `${LOCAL_STORAGE_KEY}_${projectId}` : `${LOCAL_STORAGE_KEY}_new_${serviceType}`
+      const saved = localStorage.getItem(key)
+      if (saved) {
+        return JSON.parse(saved)
+      }
+    } catch (e) {
+      console.error('Failed to load from localStorage:', e)
+    }
+    return null
+  }, [projectId, serviceType])
+
+  // Clear local storage draft
+  const clearLocalDraft = useCallback(() => {
+    try {
+      const key = projectId ? `${LOCAL_STORAGE_KEY}_${projectId}` : `${LOCAL_STORAGE_KEY}_new_${serviceType}`
+      localStorage.removeItem(key)
+    } catch (e) {
+      console.error('Failed to clear localStorage:', e)
+    }
+  }, [projectId, serviceType])
+
+  return { autoSaveStatus, loadFromLocal, clearLocalDraft }
 }
 
 // ===========================================
@@ -312,6 +536,16 @@ export default function ClientOnboarding() {
   const [success, setSuccess] = useState('')
   const [projectFound, setProjectFound] = useState<boolean | null>(null)
   const [submitted, setSubmitted] = useState(false)
+  const [validationErrors, setValidationErrors] = useState<string[]>([])
+
+  // Auto-save hook
+  const { autoSaveStatus, loadFromLocal, clearLocalDraft } = useAutoSave(
+    projectId,
+    serviceType,
+    formData,
+    currentStep,
+    canEdit
+  )
 
   // Get steps for current service
   const steps = getStepsForService(serviceType)
@@ -319,11 +553,34 @@ export default function ClientOnboarding() {
   const currentStepConfig = steps[currentStep - 1]
   const serviceConfig = SERVICE_CONFIG[serviceType]
 
+  // Validate current step
+  const validateCurrentStep = (): boolean => {
+    const errors = validateStep(serviceType, currentStepConfig?.id || '', formData)
+    setValidationErrors(errors)
+    return errors.length === 0
+  }
+
   // Initialize
   useEffect(() => {
     const service = searchParams.get('service') as ServiceType
     if (service && SERVICE_CONFIG[service]) {
       setServiceType(service)
+    }
+
+    // Try to load draft from localStorage first
+    const localDraft = loadFromLocal()
+    if (localDraft && !projectId) {
+      // Show restore prompt for new projects
+      const savedAt = new Date(localDraft.savedAt).toLocaleString('nl-NL')
+      if (confirm(`Er is een concept gevonden van ${savedAt}. Wil je verder gaan waar je gebleven was?`)) {
+        setFormData(localDraft.formData || {})
+        setCurrentStep(localDraft.currentStep || 1)
+        if (localDraft.serviceType) {
+          setServiceType(localDraft.serviceType)
+        }
+      } else {
+        clearLocalDraft()
+      }
     }
 
     if (projectId) {
@@ -485,8 +742,14 @@ export default function ClientOnboarding() {
 
   // Navigate steps
   const nextStep = () => {
+    // Validate current step before proceeding
+    if (!validateCurrentStep()) {
+      return // Don't proceed if validation fails
+    }
+    
     if (currentStep < totalSteps) {
       setCurrentStep(currentStep + 1)
+      setValidationErrors([]) // Clear errors when moving to next step
       saveProgress()
     }
   }
@@ -992,34 +1255,80 @@ export default function ClientOnboarding() {
               </AnimatePresence>
 
               {/* Navigation buttons */}
-              <div className="flex items-center justify-between pt-6 border-t dark:border-gray-700">
-                <button
-                  onClick={prevStep}
-                  disabled={currentStep === 1}
-                  className="flex items-center gap-2 px-4 py-2 text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
-                >
-                  <ChevronLeft className="w-5 h-5" />
-                  Vorige
-                </button>
-
-                {currentStep === totalSteps ? (
-                  <button
-                    onClick={submitOnboarding}
-                    disabled={saving || !canEdit}
-                    className={`flex items-center gap-2 px-6 py-3 bg-gradient-to-r ${serviceConfig.gradient} text-white rounded-xl font-medium hover:shadow-lg transition-all disabled:opacity-50`}
+              <div className="flex flex-col gap-4 pt-6 border-t dark:border-gray-700">
+                {/* Validation errors */}
+                {validationErrors.length > 0 && (
+                  <motion.div
+                    initial={{ opacity: 0, y: -10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 text-red-700 dark:text-red-400 px-4 py-3 rounded-xl"
                   >
-                    {saving ? <Loader2 className="w-5 h-5 animate-spin" /> : <CheckCircle2 className="w-5 h-5" />}
-                    Indienen
-                  </button>
-                ) : (
-                  <button
-                    onClick={nextStep}
-                    className={`flex items-center gap-2 px-6 py-3 bg-gradient-to-r ${serviceConfig.gradient} text-white rounded-xl font-medium hover:shadow-lg transition-all`}
-                  >
-                    Volgende
-                    <ChevronRight className="w-5 h-5" />
-                  </button>
+                    <div className="flex items-center gap-2 font-medium mb-2">
+                      <AlertCircle className="w-5 h-5" />
+                      Vul de verplichte velden in:
+                    </div>
+                    <ul className="list-disc list-inside text-sm space-y-1">
+                      {validationErrors.map((error, i) => (
+                        <li key={i}>{error}</li>
+                      ))}
+                    </ul>
+                  </motion.div>
                 )}
+                
+                {/* Auto-save status */}
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-2 text-sm text-gray-500 dark:text-gray-400">
+                    {autoSaveStatus === 'saving' && (
+                      <>
+                        <Loader2 className="w-4 h-4 animate-spin" />
+                        <span>Opslaan...</span>
+                      </>
+                    )}
+                    {autoSaveStatus === 'saved' && (
+                      <>
+                        <Save className="w-4 h-4 text-green-500" />
+                        <span className="text-green-600 dark:text-green-400">Opgeslagen</span>
+                      </>
+                    )}
+                    {autoSaveStatus === 'error' && (
+                      <>
+                        <AlertCircle className="w-4 h-4 text-red-500" />
+                        <span className="text-red-600 dark:text-red-400">Opslaan mislukt</span>
+                      </>
+                    )}
+                  </div>
+                </div>
+                
+                {/* Navigation */}
+                <div className="flex items-center justify-between">
+                  <button
+                    onClick={prevStep}
+                    disabled={currentStep === 1}
+                    className="flex items-center gap-2 px-4 py-2 text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                  >
+                    <ChevronLeft className="w-5 h-5" />
+                    Vorige
+                  </button>
+
+                  {currentStep === totalSteps ? (
+                    <button
+                      onClick={submitOnboarding}
+                      disabled={saving || !canEdit}
+                      className={`flex items-center gap-2 px-6 py-3 bg-gradient-to-r ${serviceConfig.gradient} text-white rounded-xl font-medium hover:shadow-lg transition-all disabled:opacity-50`}
+                    >
+                      {saving ? <Loader2 className="w-5 h-5 animate-spin" /> : <CheckCircle2 className="w-5 h-5" />}
+                      Indienen
+                    </button>
+                  ) : (
+                    <button
+                      onClick={nextStep}
+                      className={`flex items-center gap-2 px-6 py-3 bg-gradient-to-r ${serviceConfig.gradient} text-white rounded-xl font-medium hover:shadow-lg transition-all`}
+                    >
+                      Volgende
+                      <ChevronRight className="w-5 h-5" />
+                    </button>
+                  )}
+                </div>
               </div>
             </div>
 

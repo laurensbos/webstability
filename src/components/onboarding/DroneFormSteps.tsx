@@ -5,7 +5,8 @@ import {
   Calendar,
   Package,
   Camera,
-  Check
+  Check,
+  ArrowUpRight
 } from 'lucide-react'
 
 // ===========================================
@@ -548,6 +549,240 @@ export function DroneLeveringStep({ data, onChange, disabled }: FormStepProps) {
 }
 
 // ===========================================
+// SAMENVATTING STEP
+// ===========================================
+
+interface SamenvattingStepProps extends FormStepProps {
+  onGoToStep?: (stepIndex: number) => void
+}
+
+export function DroneSamenvattingStep({ data, onGoToStep }: SamenvattingStepProps) {
+  const SummaryItem = ({ label, value }: { label: string; value?: string | null }) => {
+    if (!value) return null
+    return (
+      <div className="flex flex-col sm:flex-row sm:justify-between gap-1">
+        <span className="text-gray-500 dark:text-gray-400">{label}:</span>
+        <span className="font-medium text-gray-900 dark:text-white break-words sm:text-right sm:max-w-[60%]">{value}</span>
+      </div>
+    )
+  }
+
+  const EditButton = ({ step }: { step: number }) => {
+    if (!onGoToStep) return null
+    return (
+      <button
+        onClick={() => onGoToStep(step)}
+        className="ml-auto text-xs px-2 py-1 text-gray-500 hover:text-orange-600 hover:bg-orange-50 dark:hover:bg-orange-900/20 rounded-lg transition-colors flex items-center gap-1"
+      >
+        <ArrowUpRight className="w-3 h-3" />
+        Wijzig
+      </button>
+    )
+  }
+
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 10 }}
+      animate={{ opacity: 1, y: 0 }}
+      className="space-y-6"
+    >
+      <div className="flex items-center gap-3 mb-6">
+        <div className="w-10 h-10 rounded-xl bg-green-100 dark:bg-green-900/30 flex items-center justify-center">
+          <Check className="w-5 h-5 text-green-600 dark:text-green-400" />
+        </div>
+        <div>
+          <h3 className="font-semibold text-gray-900 dark:text-white">Controleer je gegevens</h3>
+          <p className="text-sm text-gray-500 dark:text-gray-400">Alles correct? Dan nemen we contact op!</p>
+        </div>
+      </div>
+
+      {/* Service info */}
+      <div className="bg-gradient-to-r from-orange-500 to-amber-500 rounded-xl p-4 text-white">
+        <div className="flex items-center justify-between">
+          <div>
+            <span className="text-sm opacity-80">Dienst</span>
+            <div className="text-xl font-bold">{DRONE_SERVICE_INFO.name}</div>
+          </div>
+          <div className="text-right">
+            <div className="text-2xl font-bold">{DRONE_SERVICE_INFO.price}</div>
+            <span className="text-sm opacity-80">{DRONE_SERVICE_INFO.priceType}</span>
+          </div>
+        </div>
+      </div>
+
+      {/* Project info */}
+      <div className="bg-orange-50 dark:bg-orange-900/20 border border-orange-200 dark:border-orange-800 rounded-xl p-4">
+        <div className="flex items-center gap-2 mb-3">
+          <div className="w-8 h-8 rounded-lg bg-orange-100 dark:bg-orange-900/30 flex items-center justify-center">
+            <Plane className="w-4 h-4 text-orange-600 dark:text-orange-400" />
+          </div>
+          <span className="font-medium text-orange-700 dark:text-orange-300">Project</span>
+          <EditButton step={1} />
+        </div>
+        <div className="space-y-2 text-sm">
+          <SummaryItem label="Contactpersoon" value={data.contactName} />
+          <SummaryItem label="E-mail" value={data.contactEmail} />
+          <SummaryItem label="Telefoon" value={data.contactPhone} />
+          <SummaryItem label="Type" value={
+            data.projectType === 'real_estate' ? 'Vastgoed / Makelaardij' :
+            data.projectType === 'event' ? 'Evenement' :
+            data.projectType === 'construction' ? 'Bouw / Inspectie' :
+            data.projectType === 'nature' ? 'Natuur / Landschap' :
+            data.projectType === 'commercial' ? 'Commercieel / Reclame' :
+            data.projectType === 'other' ? data.projectTypeOther : undefined
+          } />
+        </div>
+      </div>
+
+      {/* Locatie */}
+      <div className="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-xl p-4">
+        <div className="flex items-center gap-2 mb-3">
+          <div className="w-8 h-8 rounded-lg bg-blue-100 dark:bg-blue-900/30 flex items-center justify-center">
+            <MapPin className="w-4 h-4 text-blue-600 dark:text-blue-400" />
+          </div>
+          <span className="font-medium text-blue-700 dark:text-blue-300">Locatie</span>
+          <EditButton step={2} />
+        </div>
+        <div className="space-y-2 text-sm">
+          <SummaryItem label="Adres" value={data.locationAddress} />
+          <SummaryItem label="Postcode" value={data.locationPostcode} />
+          <SummaryItem label="Plaats" value={data.locationCity} />
+          <SummaryItem label="Binnen/buiten" value={
+            data.isIndoor === 'yes' ? 'Binnenopnames (FPV)' :
+            data.isIndoor === 'both' ? 'Binnen en buiten' :
+            data.isIndoor === 'no' ? 'Buitenopnames' : undefined
+          } />
+          <SummaryItem label="Vergunningen" value={
+            data.hasPermissions === 'not_needed' ? 'Niet nodig' :
+            data.hasPermissions === 'have_permission' ? 'Geregeld' :
+            data.hasPermissions === 'need_help' ? 'Hulp nodig' : undefined
+          } />
+          {data.locationNotes && (
+            <div className="pt-2 border-t border-blue-200 dark:border-blue-700">
+              <span className="text-gray-500 dark:text-gray-400 block mb-1">Extra info:</span>
+              <p className="text-gray-700 dark:text-gray-300 text-sm">{data.locationNotes}</p>
+            </div>
+          )}
+        </div>
+      </div>
+
+      {/* Planning */}
+      <div className="bg-purple-50 dark:bg-purple-900/20 border border-purple-200 dark:border-purple-800 rounded-xl p-4">
+        <div className="flex items-center gap-2 mb-3">
+          <div className="w-8 h-8 rounded-lg bg-purple-100 dark:bg-purple-900/30 flex items-center justify-center">
+            <Calendar className="w-4 h-4 text-purple-600 dark:text-purple-400" />
+          </div>
+          <span className="font-medium text-purple-700 dark:text-purple-300">Planning</span>
+          <EditButton step={3} />
+        </div>
+        <div className="space-y-2 text-sm">
+          <SummaryItem label="Gewenste datum" value={data.preferredDate} />
+          <SummaryItem label="Tijdstip" value={
+            data.preferredTimeOfDay === 'morning' ? 'Ochtend' :
+            data.preferredTimeOfDay === 'midday' ? 'Middag' :
+            data.preferredTimeOfDay === 'evening' ? 'Avond' :
+            data.preferredTimeOfDay === 'golden_hour' ? 'Golden hour' :
+            data.preferredTimeOfDay === 'flexible' ? 'Flexibel' : undefined
+          } />
+          <SummaryItem label="Flexibel" value={
+            data.isFlexibleDate === 'yes' ? 'Ja, flexibel' :
+            data.isFlexibleDate === 'somewhat' ? 'Enigszins' :
+            data.isFlexibleDate === 'no' ? 'Vaste datum' : undefined
+          } />
+          <SummaryItem label="Deadline" value={data.deadlineDate} />
+        </div>
+      </div>
+
+      {/* Levering */}
+      <div className="bg-emerald-50 dark:bg-emerald-900/20 border border-emerald-200 dark:border-emerald-800 rounded-xl p-4">
+        <div className="flex items-center gap-2 mb-3">
+          <div className="w-8 h-8 rounded-lg bg-emerald-100 dark:bg-emerald-900/30 flex items-center justify-center">
+            <Package className="w-4 h-4 text-emerald-600 dark:text-emerald-400" />
+          </div>
+          <span className="font-medium text-emerald-700 dark:text-emerald-300">Levering</span>
+          <EditButton step={4} />
+        </div>
+        <div className="space-y-2 text-sm">
+          {data.contentNeeded?.length > 0 && (
+            <div>
+              <span className="text-gray-500 dark:text-gray-400">Content:</span>
+              <div className="flex flex-wrap gap-1 mt-1">
+                {data.contentNeeded.map((type: string) => (
+                  <span key={type} className="px-2 py-0.5 bg-emerald-100 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-300 rounded text-xs">
+                    {type === 'photos' ? 'Foto\'s' :
+                     type === 'video' ? 'Video' :
+                     type === '360_panorama' ? '360° Panorama' :
+                     type === 'timelapse' ? 'Timelapse' : type}
+                  </span>
+                ))}
+              </div>
+            </div>
+          )}
+          <SummaryItem label="Bewerking" value={
+            data.needsEditing === 'yes' ? 'Volledig bewerkt' :
+            data.needsEditing === 'basic' ? 'Basis bewerking' :
+            data.needsEditing === 'no' ? 'Alleen ruwe bestanden' : undefined
+          } />
+          <SummaryItem label="Stijl" value={
+            data.editingStyle === 'natural' ? 'Natuurlijk' :
+            data.editingStyle === 'cinematic' ? 'Cinematic' :
+            data.editingStyle === 'corporate' ? 'Corporate' :
+            data.editingStyle === 'bright' ? 'Bright & Airy' : undefined
+          } />
+          <SummaryItem label="Levering via" value={
+            data.deliveryFormat === 'digital_download' ? 'Digitale download' :
+            data.deliveryFormat === 'usb' ? 'USB-stick' :
+            data.deliveryFormat === 'both' ? 'Beide' : undefined
+          } />
+          {data.usagePurpose?.length > 0 && (
+            <div>
+              <span className="text-gray-500 dark:text-gray-400">Gebruik:</span>
+              <div className="flex flex-wrap gap-1 mt-1">
+                {data.usagePurpose.map((purpose: string) => (
+                  <span key={purpose} className="px-2 py-0.5 bg-emerald-100 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-300 rounded text-xs">
+                    {purpose === 'website' ? 'Website' :
+                     purpose === 'social_media' ? 'Social media' :
+                     purpose === 'print' ? 'Print' :
+                     purpose === 'video_production' ? 'Video' :
+                     purpose === 'advertising' ? 'Advertenties' :
+                     purpose === 'internal' ? 'Intern' : purpose}
+                  </span>
+                ))}
+              </div>
+            </div>
+          )}
+        </div>
+      </div>
+
+      {/* Confirmation */}
+      <div className="bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-xl p-4">
+        <div className="flex items-center gap-2 text-green-700 dark:text-green-400 font-medium">
+          <Check className="w-5 h-5" />
+          Klaar om te versturen!
+        </div>
+        <p className="text-sm text-green-600 dark:text-green-300 mt-2">
+          Na het indienen nemen we binnen 24 uur contact op voor:
+        </p>
+        <ul className="mt-2 space-y-1 text-sm text-green-600 dark:text-green-300">
+          <li className="flex items-center gap-2">
+            <span className="w-1.5 h-1.5 rounded-full bg-green-500" />
+            Bevestiging van de datum
+          </li>
+          <li className="flex items-center gap-2">
+            <span className="w-1.5 h-1.5 rounded-full bg-green-500" />
+            Locatie check en vergunningen
+          </li>
+          <li className="flex items-center gap-2">
+            <span className="w-1.5 h-1.5 rounded-full bg-green-500" />
+            Offerte en planning
+          </li>
+        </ul>
+      </div>
+    </motion.div>
+  )
+}
+
+// ===========================================
 // EXPORT
 // ===========================================
 
@@ -556,4 +791,5 @@ export const DroneSteps = {
   locatie: DroneLocatieStep,
   planning: DronePlanningStep,
   levering: DroneLeveringStep,
+  samenvatting: DroneSamenvattingStep,
 }

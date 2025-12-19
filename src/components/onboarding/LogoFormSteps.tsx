@@ -6,7 +6,9 @@ import {
   Settings,
   Check,
   Plus,
-  X
+  X,
+  ArrowUpRight,
+  Building2
 } from 'lucide-react'
 import { useState } from 'react'
 
@@ -737,6 +739,283 @@ export function LogoGebruikStep({ data, onChange, disabled }: FormStepProps) {
 }
 
 // ===========================================
+// SAMENVATTING STEP
+// ===========================================
+
+interface SamenvattingStepProps extends FormStepProps {
+  onGoToStep?: (stepIndex: number) => void
+}
+
+export function LogoSamenvattingStep({ data, onGoToStep }: SamenvattingStepProps) {
+  const SummaryItem = ({ label, value }: { label: string; value?: string | null }) => {
+    if (!value) return null
+    return (
+      <div className="flex flex-col sm:flex-row sm:justify-between gap-1">
+        <span className="text-gray-500 dark:text-gray-400">{label}:</span>
+        <span className="font-medium text-gray-900 dark:text-white break-words sm:text-right sm:max-w-[60%]">{value}</span>
+      </div>
+    )
+  }
+
+  const EditButton = ({ step }: { step: number }) => {
+    if (!onGoToStep) return null
+    return (
+      <button
+        onClick={() => onGoToStep(step)}
+        className="ml-auto text-xs px-2 py-1 text-gray-500 hover:text-purple-600 hover:bg-purple-50 dark:hover:bg-purple-900/20 rounded-lg transition-colors flex items-center gap-1"
+      >
+        <ArrowUpRight className="w-3 h-3" />
+        Wijzig
+      </button>
+    )
+  }
+
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 10 }}
+      animate={{ opacity: 1, y: 0 }}
+      className="space-y-6"
+    >
+      <div className="flex items-center gap-3 mb-6">
+        <div className="w-10 h-10 rounded-xl bg-green-100 dark:bg-green-900/30 flex items-center justify-center">
+          <Check className="w-5 h-5 text-green-600 dark:text-green-400" />
+        </div>
+        <div>
+          <h3 className="font-semibold text-gray-900 dark:text-white">Controleer je gegevens</h3>
+          <p className="text-sm text-gray-500 dark:text-gray-400">Alles correct? Dan gaan we aan de slag!</p>
+        </div>
+      </div>
+
+      {/* Service info */}
+      <div className="bg-gradient-to-r from-purple-500 to-pink-500 rounded-xl p-4 text-white">
+        <div className="flex items-center justify-between">
+          <div>
+            <span className="text-sm opacity-80">Dienst</span>
+            <div className="text-xl font-bold">{LOGO_SERVICE_INFO.name}</div>
+          </div>
+          <div className="text-right">
+            <div className="text-2xl font-bold">{LOGO_SERVICE_INFO.price}</div>
+            <span className="text-sm opacity-80">{LOGO_SERVICE_INFO.priceType}</span>
+          </div>
+        </div>
+      </div>
+
+      {/* Bedrijfsgegevens */}
+      <div className="bg-purple-50 dark:bg-purple-900/20 border border-purple-200 dark:border-purple-800 rounded-xl p-4">
+        <div className="flex items-center gap-2 mb-3">
+          <div className="w-8 h-8 rounded-lg bg-purple-100 dark:bg-purple-900/30 flex items-center justify-center">
+            <Building2 className="w-4 h-4 text-purple-600 dark:text-purple-400" />
+          </div>
+          <span className="font-medium text-purple-700 dark:text-purple-300">Bedrijfsgegevens</span>
+          <EditButton step={1} />
+        </div>
+        <div className="space-y-2 text-sm">
+          <SummaryItem label="Bedrijfsnaam" value={data.businessName} />
+          <SummaryItem label="Contactpersoon" value={data.contactName} />
+          <SummaryItem label="E-mail" value={data.contactEmail} />
+          <SummaryItem label="Telefoon" value={data.contactPhone} />
+          <SummaryItem label="Branche" value={data.industry} />
+          {data.values?.length > 0 && (
+            <div className="flex flex-wrap gap-1 mt-2">
+              {data.values.map((value: string) => (
+                <span key={value} className="px-2 py-0.5 bg-purple-100 dark:bg-purple-900/30 text-purple-700 dark:text-purple-300 rounded text-xs">
+                  {value}
+                </span>
+              ))}
+            </div>
+          )}
+          {data.aboutBusiness && (
+            <div className="pt-2 border-t border-purple-200 dark:border-purple-700">
+              <span className="text-gray-500 dark:text-gray-400 block mb-1">Over het bedrijf:</span>
+              <p className="text-gray-700 dark:text-gray-300 text-sm line-clamp-3">{data.aboutBusiness}</p>
+            </div>
+          )}
+        </div>
+      </div>
+
+      {/* Kleuren & Stijl */}
+      <div className="bg-pink-50 dark:bg-pink-900/20 border border-pink-200 dark:border-pink-800 rounded-xl p-4">
+        <div className="flex items-center gap-2 mb-3">
+          <div className="w-8 h-8 rounded-lg bg-pink-100 dark:bg-pink-900/30 flex items-center justify-center">
+            <Palette className="w-4 h-4 text-pink-600 dark:text-pink-400" />
+          </div>
+          <span className="font-medium text-pink-700 dark:text-pink-300">Kleuren & Stijl</span>
+          <EditButton step={2} />
+        </div>
+        <div className="space-y-2 text-sm">
+          <SummaryItem label="Kleurvoorkeur" value={
+            data.colorPreferences === 'has_colors' ? 'Specifieke kleuren' :
+            data.colorPreferences === 'suggest' ? 'Doe een voorstel' : undefined
+          } />
+          {data.brandColors?.length > 0 && (
+            <div className="flex items-center gap-2 flex-wrap">
+              <span className="text-gray-500 dark:text-gray-400">Kleuren:</span>
+              {data.brandColors.map((color: string) => (
+                <span 
+                  key={color} 
+                  className="w-5 h-5 rounded-full border border-gray-200 dark:border-gray-600"
+                  style={{ backgroundColor: color }}
+                  title={color}
+                />
+              ))}
+            </div>
+          )}
+          {data.stylePreferences?.length > 0 && (
+            <div className="flex flex-wrap gap-1 mt-2">
+              {data.stylePreferences.map((style: string) => (
+                <span key={style} className="px-2 py-0.5 bg-pink-100 dark:bg-pink-900/30 text-pink-700 dark:text-pink-300 rounded text-xs capitalize">
+                  {style}
+                </span>
+              ))}
+            </div>
+          )}
+        </div>
+      </div>
+
+      {/* Logo Type */}
+      <div className="bg-violet-50 dark:bg-violet-900/20 border border-violet-200 dark:border-violet-800 rounded-xl p-4">
+        <div className="flex items-center gap-2 mb-3">
+          <div className="w-8 h-8 rounded-lg bg-violet-100 dark:bg-violet-900/30 flex items-center justify-center">
+            <PenTool className="w-4 h-4 text-violet-600 dark:text-violet-400" />
+          </div>
+          <span className="font-medium text-violet-700 dark:text-violet-300">Logo Type</span>
+          <EditButton step={3} />
+        </div>
+        <div className="space-y-2 text-sm">
+          <SummaryItem label="Type" value={
+            data.logoType === 'wordmark' ? 'Woordmerk' :
+            data.logoType === 'lettermark' ? 'Lettermerk' :
+            data.logoType === 'icon' ? 'Symbool / Pictogram' :
+            data.logoType === 'combination' ? 'Combinatie' :
+            data.logoType === 'emblem' ? 'Embleem' :
+            data.logoType === 'flexible' ? 'Flexibel' : undefined
+          } />
+          <SummaryItem label="Bestaand logo" value={
+            data.hasExistingLogo === 'no' ? 'Nee, nieuw logo' :
+            data.hasExistingLogo === 'yes_refresh' ? 'Ja, wil nieuw design' :
+            data.hasExistingLogo === 'yes_update' ? 'Ja, wil moderniseren' : undefined
+          } />
+        </div>
+      </div>
+
+      {/* Inspiratie */}
+      <div className="bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800 rounded-xl p-4">
+        <div className="flex items-center gap-2 mb-3">
+          <div className="w-8 h-8 rounded-lg bg-amber-100 dark:bg-amber-900/30 flex items-center justify-center">
+            <Image className="w-4 h-4 text-amber-600 dark:text-amber-400" />
+          </div>
+          <span className="font-medium text-amber-700 dark:text-amber-300">Inspiratie</span>
+          <EditButton step={4} />
+        </div>
+        <div className="space-y-2 text-sm">
+          {data.likedLogos?.length > 0 && (
+            <div>
+              <span className="text-gray-500 dark:text-gray-400">Mooie logo's:</span>
+              <span className="ml-2 text-amber-600 dark:text-amber-400">{data.likedLogos.length} voorbeelden</span>
+            </div>
+          )}
+          {data.dislikedLogos?.length > 0 && (
+            <div>
+              <span className="text-gray-500 dark:text-gray-400">Niet mooi:</span>
+              <span className="ml-2 text-amber-600 dark:text-amber-400">{data.dislikedLogos.length} voorbeelden</span>
+            </div>
+          )}
+          {data.competitorLogos?.length > 0 && (
+            <div>
+              <span className="text-gray-500 dark:text-gray-400">Concurrenten:</span>
+              <span className="ml-2 text-amber-600 dark:text-amber-400">{data.competitorLogos.length} merken</span>
+            </div>
+          )}
+        </div>
+      </div>
+
+      {/* Gebruik */}
+      <div className="bg-emerald-50 dark:bg-emerald-900/20 border border-emerald-200 dark:border-emerald-800 rounded-xl p-4">
+        <div className="flex items-center gap-2 mb-3">
+          <div className="w-8 h-8 rounded-lg bg-emerald-100 dark:bg-emerald-900/30 flex items-center justify-center">
+            <Settings className="w-4 h-4 text-emerald-600 dark:text-emerald-400" />
+          </div>
+          <span className="font-medium text-emerald-700 dark:text-emerald-300">Gebruik & Levering</span>
+          <EditButton step={5} />
+        </div>
+        <div className="space-y-2 text-sm">
+          {data.primaryUsage?.length > 0 && (
+            <div>
+              <span className="text-gray-500 dark:text-gray-400">Gebruik:</span>
+              <div className="flex flex-wrap gap-1 mt-1">
+                {data.primaryUsage.map((usage: string) => (
+                  <span key={usage} className="px-2 py-0.5 bg-emerald-100 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-300 rounded text-xs">
+                    {usage === 'website' ? 'Website' :
+                     usage === 'social_media' ? 'Social media' :
+                     usage === 'print' ? 'Print' :
+                     usage === 'signage' ? 'Signing' :
+                     usage === 'merchandise' ? 'Merchandise' :
+                     usage === 'packaging' ? 'Verpakkingen' : usage}
+                  </span>
+                ))}
+              </div>
+            </div>
+          )}
+          {data.neededFormats?.length > 0 && (
+            <div>
+              <span className="text-gray-500 dark:text-gray-400">Formaten:</span>
+              <div className="flex flex-wrap gap-1 mt-1">
+                {data.neededFormats.map((format: string) => (
+                  <span key={format} className="px-2 py-0.5 bg-emerald-100 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-300 rounded text-xs uppercase">
+                    {format}
+                  </span>
+                ))}
+              </div>
+            </div>
+          )}
+          {data.extras?.length > 0 && (
+            <div>
+              <span className="text-gray-500 dark:text-gray-400">Extra's:</span>
+              <div className="flex flex-wrap gap-1 mt-1">
+                {data.extras.map((extra: string) => (
+                  <span key={extra} className="px-2 py-0.5 bg-emerald-100 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-300 rounded text-xs">
+                    {extra === 'variations' ? 'Variaties' :
+                     extra === 'colorPalette' ? 'Kleurenpalet' :
+                     extra === 'brandGuidelines' ? 'Huisstijl' :
+                     extra === 'favicon' ? 'Favicon' :
+                     extra === 'socialCovers' ? 'Social covers' : extra}
+                  </span>
+                ))}
+              </div>
+            </div>
+          )}
+        </div>
+      </div>
+
+      {/* Confirmation */}
+      <div className="bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-xl p-4">
+        <div className="flex items-center gap-2 text-green-700 dark:text-green-400 font-medium">
+          <Check className="w-5 h-5" />
+          Klaar om te versturen!
+        </div>
+        <p className="text-sm text-green-600 dark:text-green-300 mt-2">
+          Na het indienen ontvang je binnen 24 uur:
+        </p>
+        <ul className="mt-2 space-y-1 text-sm text-green-600 dark:text-green-300">
+          <li className="flex items-center gap-2">
+            <span className="w-1.5 h-1.5 rounded-full bg-green-500" />
+            Bevestiging van ontvangst
+          </li>
+          <li className="flex items-center gap-2">
+            <span className="w-1.5 h-1.5 rounded-full bg-green-500" />
+            Planning voor intake gesprek
+          </li>
+          <li className="flex items-center gap-2">
+            <span className="w-1.5 h-1.5 rounded-full bg-green-500" />
+            Moodboard met eerste concepten
+          </li>
+        </ul>
+      </div>
+    </motion.div>
+  )
+}
+
+// ===========================================
 // EXPORT
 // ===========================================
 
@@ -746,4 +1025,5 @@ export const LogoSteps = {
   stijl: LogoStijlStep,
   inspiratie: LogoInspiratieStep,
   gebruik: LogoGebruikStep,
+  samenvatting: LogoSamenvattingStep,
 }
