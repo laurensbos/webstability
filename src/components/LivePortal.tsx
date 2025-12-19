@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import {
   ExternalLink,
@@ -26,7 +26,7 @@ import {
   Sparkles
 } from 'lucide-react'
 import type { Project } from '../types/project'
-import { ReferralWidget, PackageValueCard, SatisfactionCheck } from './GrowthTools'
+import { ReferralWidget, PackageValueCard, SatisfactionCheck, MilestoneCelebration } from './GrowthTools'
 
 interface LivePortalProps {
   project: Project
@@ -85,10 +85,59 @@ export default function LivePortal({
   // Satisfaction check state
   const [showSatisfactionCheck, setShowSatisfactionCheck] = useState(false)
 
+  // Milestone state
+  const [currentMilestone, setCurrentMilestone] = useState<'1_month' | '3_months' | '6_months' | '1_year' | null>(null)
+
   // Calculate months active
   const monthsActive = project.liveDate 
     ? Math.max(1, Math.floor((Date.now() - new Date(project.liveDate).getTime()) / (30 * 24 * 60 * 60 * 1000)))
     : 1
+
+  // Track activity and check for milestones/satisfaction on mount
+  useEffect(() => {
+    const checkActivityAndMilestones = async () => {
+      try {
+        // Track page view
+        await fetch('/api/project-activity', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ 
+            projectId: project.projectId,
+            type: 'page_view'
+          })
+        })
+
+        // Get activity stats
+        const res = await fetch(`/api/project-activity?projectId=${project.projectId}`)
+        if (res.ok) {
+          const data = await res.json()
+          
+          // Show satisfaction check if needed
+          if (data.activity?.showSatisfactionCheck) {
+            setTimeout(() => setShowSatisfactionCheck(true), 3000)
+          }
+          
+          // Show unclaimed milestones
+          if (data.activity?.unclaimedMilestones?.length > 0) {
+            const milestoneMap: Record<string, '1_month' | '3_months' | '6_months' | '1_year'> = {
+              'oneMonth': '1_month',
+              'threeMonths': '3_months',
+              'sixMonths': '6_months',
+              'oneYear': '1_year'
+            }
+            const firstUnclaimed = data.activity.unclaimedMilestones[0]
+            if (milestoneMap[firstUnclaimed]) {
+              setTimeout(() => setCurrentMilestone(milestoneMap[firstUnclaimed]), 1500)
+            }
+          }
+        }
+      } catch (e) {
+        console.error('Activity tracking error:', e)
+      }
+    }
+
+    checkActivityAndMilestones()
+  }, [project.projectId])
 
   // Handle referral code copy
   const handleCopyReferral = async () => {
@@ -143,6 +192,13 @@ export default function LivePortal({
       if (response.ok) {
         setChangeRequestSent(true)
         setChangeRequestText('')
+        
+        // Track activity
+        fetch('/api/project-activity', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ projectId: project.projectId, type: 'change_request' })
+        }).catch(() => {})
       }
     } catch (error) {
       console.error('Error sending change request:', error)
@@ -224,6 +280,13 @@ export default function LivePortal({
       setMessageSent(true)
       setQuickMessage('')
       setTimeout(() => setMessageSent(false), 3000)
+      
+      // Track activity
+      fetch('/api/project-activity', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ projectId: project.projectId, type: 'message' })
+      }).catch(() => {})
     } catch (error) {
       console.error('Error sending message:', error)
     } finally {
@@ -561,6 +624,31 @@ export default function LivePortal({
                   onDismiss={() => setShowSatisfactionCheck(false)}
                 />
               </div>
+            )}
+
+            {/* Milestone Celebration Modal */}
+            {currentMilestone && (
+              <MilestoneCelebration
+                type={currentMilestone}
+                onClaim={async () => {
+                  try {
+                    await fetch('/api/project-activity', {
+                      method: 'POST',
+                      headers: { 'Content-Type': 'application/json' },
+                      body: JSON.stringify({ 
+                        projectId: project.projectId,
+                        claimMilestone: currentMilestone.replace('_', '') === '1month' ? 'oneMonth' :
+                                        currentMilestone === '3_months' ? 'threeMonths' :
+                                        currentMilestone === '6_months' ? 'sixMonths' : 'oneYear'
+                      })
+                    })
+                    setCurrentMilestone(null)
+                  } catch (e) {
+                    console.error('Claim error:', e)
+                  }
+                }}
+                onDismiss={() => setCurrentMilestone(null)}
+              />
             )}
           </motion.div>
         )}
