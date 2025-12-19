@@ -102,15 +102,15 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       const storedHash = await kv.get<string>(`email_verification:${normalizedId}`)
 
       if (!storedHash || storedHash !== tokenHash) {
-        // Redirect to error page
-        return res.redirect(302, `${BASE_URL}/project/${normalizedId}?verified=false&error=invalid_token`)
+        // Redirect to email verified page with error
+        return res.redirect(302, `${BASE_URL}/email-verified?projectId=${normalizedId}&verified=false&error=invalid_token`)
       }
 
       // Token is valid, update project
       const project = await kv.get<Project>(`project:${normalizedId}`)
       
       if (!project) {
-        return res.redirect(302, `${BASE_URL}/project/${normalizedId}?verified=false&error=project_not_found`)
+        return res.redirect(302, `${BASE_URL}/email-verified?projectId=${normalizedId}&verified=false&error=project_not_found`)
       }
 
       // Mark email as verified
@@ -128,8 +128,8 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
       console.log(`Email verified for project ${normalizedId}`)
 
-      // Redirect to project page with success message
-      return res.redirect(302, `${BASE_URL}/project/${normalizedId}?verified=true`)
+      // Redirect to email verified page with success
+      return res.redirect(302, `${BASE_URL}/email-verified?projectId=${normalizedId}&verified=true`)
     }
 
     // POST: Send verification email

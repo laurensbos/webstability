@@ -42,6 +42,7 @@ const Login = lazy(() => import('./pages/Login'))
 const MarketingDashboard = lazy(() => import('./pages/MarketingDashboard'))
 const Unauthorized = lazy(() => import('./pages/Unauthorized'))
 const ClientOnboarding = lazy(() => import('./pages/ClientOnboarding'))
+const EmailVerified = lazy(() => import('./pages/EmailVerified'))
 
 // Loading spinner component
 function PageLoader() {
@@ -122,6 +123,10 @@ createRoot(document.getElementById('root')!).render(
             <Route path="/reset-password" element={<ResetPassword />} />
             <Route path="/wachtwoord-resetten" element={<WachtwoordResetten />} />
             <Route path="/wachtwoord-vergeten" element={<WachtwoordResetten />} />
+            
+            {/* Email verification */}
+            <Route path="/email-verified" element={<EmailVerified />} />
+            <Route path="/email-bevestigd" element={<EmailVerified />} />
             
             {/* Developer dashboard - protected */}
             <Route 
