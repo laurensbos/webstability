@@ -1020,8 +1020,32 @@ function LoginScreen({ onLogin }: LoginScreenProps) {
 }
 
 // ===========================================
-// OVERVIEW VIEW - UITGEBREID
+// OVERVIEW VIEW - SMART ACTION CENTER
 // ===========================================
+
+// Action types for smart action center
+type SmartAction = {
+  id: string
+  projectId: string
+  projectName: string
+  type: 'reply_message' | 'send_drive_link' | 'go_live' | 'start_design' | 'start_development' | 'send_review_request' | 'awaiting_payment'
+  priority: 'high' | 'medium' | 'low'
+  label: string
+  description: string
+  icon: React.ReactNode
+  color: string
+  bgColor: string
+}
+
+// Message templates for quick responses
+const MESSAGE_TEMPLATES = [
+  { id: 'drive_link', label: '📁 Drive link', message: 'Hi! Hier is de Google Drive link met alle bestanden: [LINK]. Laat me weten als je vragen hebt!' },
+  { id: 'design_ready', label: '🎨 Design klaar', message: 'Het design is klaar voor review! Bekijk het hier: [STAGING_URL]. Ik hoor graag je feedback.' },
+  { id: 'development_start', label: '🚀 Development start', message: 'Goed nieuws! Ik ga nu aan de slag met de development. Ik hou je op de hoogte van de voortgang.' },
+  { id: 'feedback_request', label: '💬 Vraag feedback', message: 'Kun je even kijken naar de laatste updates? Je feedback is heel belangrijk!' },
+  { id: 'live_announcement', label: '🎉 Website live', message: 'Je website staat live! 🎉 Bekijk hem hier: [LIVE_URL]. Gefeliciteerd!' },
+  { id: 'quick_thanks', label: '👍 Bedankt', message: 'Bedankt voor je bericht! Ik ga er direct mee aan de slag.' },
+]
 
 interface OverviewViewProps {
   darkMode: boolean
@@ -1031,111 +1055,411 @@ interface OverviewViewProps {
   setActiveView: (view: DashboardView) => void
   onSelectProject: (project: Project) => void
   onUpdateProject: (project: Project) => Promise<void>
+  onSendMessage?: (projectId: string, message: string) => Promise<void>
 }
 
-function OverviewView({ darkMode, projects, setActiveView, onSelectProject, onUpdateProject }: OverviewViewProps) {
-  const [goingLive, setGoingLive] = useState<string | null>(null)
+function OverviewView({ darkMode, projects, setActiveView, onSelectProject, onUpdateProject, onSendMessage }: OverviewViewProps) {
+  const [loadingAction, setLoadingAction] = useState<string | null>(null)
+  const [showTemplates, setShowTemplates] = useState<string | null>(null)
+  const [customMessage, setCustomMessage] = useState('')
+  const [completedActions, setCompletedActions] = useState<string[]>([])
   
-  const handleGoLive = async (project: Project) => {
-    setGoingLive(project.id)
+  // Generate smart actions from projects
+  const generateSmartActions = (): SmartAction[] => {
+    const actions: SmartAction[] = []
+    
+    projects.forEach(project => {
+      // Unread messages - highest priority
+      const unreadCount = project.messages.filter(m => !m.read && m.from === 'client').length
+      if (unreadCount > 0) {
+        actions.push({
+          id: `reply_${project.id}`,
+          projectId: project.id,
+          projectName: project.businessName,
+          type: 'reply_message',
+          priority: 'high',
+          label: `Beantwoord ${unreadCount} bericht${unreadCount > 1 ? 'en' : ''}`,
+          description: project.messages.filter(m => !m.read && m.from === 'client')[0]?.message.slice(0, 60) + '...' || 'Nieuw bericht',
+          icon: <MessageSquare className="w-4 h-4" />,
+          color: 'text-red-500',
+          bgColor: 'bg-red-500/10'
+        })
+      }
+      
+      // Ready to go live
+      if (project.paymentStatus === 'paid' && project.phase === 'review') {
+        actions.push({
+          id: `live_${project.id}`,
+          projectId: project.id,
+          projectName: project.businessName,
+          type: 'go_live',
+          priority: 'high',
+          label: 'Zet live',
+          description: 'Betaald & review compleet - klaar voor launch!',
+          icon: <Rocket className="w-4 h-4" />,
+          color: 'text-green-500',
+          bgColor: 'bg-green-500/10'
+        })
+      }
+      
+      // Awaiting payment
+      if (project.paymentStatus === 'awaiting_payment') {
+        actions.push({
+          id: `payment_${project.id}`,
+          projectId: project.id,
+          projectName: project.businessName,
+          type: 'awaiting_payment',
+          priority: 'medium',
+          label: 'Wacht op betaling',
+          description: 'Herinner klant of check status',
+          icon: <CreditCard className="w-4 h-4" />,
+          color: 'text-amber-500',
+          bgColor: 'bg-amber-500/10'
+        })
+      }
+      
+      // Onboarding complete, ready for design
+      if (project.phase === 'onboarding' && project.onboardingData?.completed) {
+        actions.push({
+          id: `design_${project.id}`,
+          projectId: project.id,
+          projectName: project.businessName,
+          type: 'start_design',
+          priority: 'medium',
+          label: 'Start design fase',
+          description: 'Onboarding compleet - begin met ontwerp',
+          icon: <Palette className="w-4 h-4" />,
+          color: 'text-purple-500',
+          bgColor: 'bg-purple-500/10'
+        })
+      }
+      
+      // Design approved, ready for development
+      if (project.phase === 'design' && project.designApproved) {
+        actions.push({
+          id: `dev_${project.id}`,
+          projectId: project.id,
+          projectName: project.businessName,
+          type: 'start_development',
+          priority: 'medium',
+          label: 'Start development',
+          description: 'Design goedgekeurd - begin met bouwen',
+          icon: <Code className="w-4 h-4" />,
+          color: 'text-blue-500',
+          bgColor: 'bg-blue-500/10'
+        })
+      }
+      
+      // Development done, send for review
+      if (project.phase === 'development' && project.stagingUrl) {
+        actions.push({
+          id: `review_${project.id}`,
+          projectId: project.id,
+          projectName: project.businessName,
+          type: 'send_review_request',
+          priority: 'medium',
+          label: 'Stuur review verzoek',
+          description: 'Development klaar - vraag feedback',
+          icon: <Eye className="w-4 h-4" />,
+          color: 'text-orange-500',
+          bgColor: 'bg-orange-500/10'
+        })
+      }
+    })
+    
+    // Sort by priority
+    const priorityOrder = { high: 0, medium: 1, low: 2 }
+    return actions
+      .filter(a => !completedActions.includes(a.id))
+      .sort((a, b) => priorityOrder[a.priority] - priorityOrder[b.priority])
+  }
+  
+  const smartActions = generateSmartActions()
+  
+  // Handle quick actions
+  const handleAction = async (action: SmartAction) => {
+    const project = projects.find(p => p.id === action.projectId)
+    if (!project) return
+    
+    setLoadingAction(action.id)
+    
     try {
-      await onUpdateProject({ ...project, phase: 'live' })
+      switch (action.type) {
+        case 'go_live':
+          await onUpdateProject({ ...project, phase: 'live' })
+          setCompletedActions(prev => [...prev, action.id])
+          break
+        case 'start_design':
+          await onUpdateProject({ ...project, phase: 'design' })
+          setCompletedActions(prev => [...prev, action.id])
+          break
+        case 'start_development':
+          await onUpdateProject({ ...project, phase: 'development' })
+          setCompletedActions(prev => [...prev, action.id])
+          break
+        case 'reply_message':
+          // Show templates for this project
+          setShowTemplates(action.id)
+          break
+        case 'send_review_request':
+          if (onSendMessage) {
+            const reviewMsg = `De website is klaar voor review! 🎉\n\nBekijk hem hier: ${project.stagingUrl}\n\nLaat me weten wat je ervan vindt!`
+            await onSendMessage(project.id, reviewMsg)
+            await onUpdateProject({ ...project, phase: 'review' })
+            setCompletedActions(prev => [...prev, action.id])
+          }
+          break
+        case 'awaiting_payment':
+          onSelectProject(project)
+          setActiveView('payments')
+          break
+      }
     } catch (error) {
-      console.error('Error setting project live:', error)
+      console.error('Error executing action:', error)
     } finally {
-      setGoingLive(null)
+      setLoadingAction(null)
+    }
+  }
+  
+  // Send templated message
+  const sendTemplatedMessage = async (actionId: string, projectId: string, template: typeof MESSAGE_TEMPLATES[0]) => {
+    const project = projects.find(p => p.id === projectId)
+    if (!project || !onSendMessage) return
+    
+    setLoadingAction(actionId)
+    try {
+      let message = template.message
+        .replace('[STAGING_URL]', project.stagingUrl || 'https://preview.webstability.nl')
+        .replace('[LIVE_URL]', project.liveUrl || 'https://webstability.nl')
+        .replace('[LINK]', 'https://drive.google.com/...')
+      
+      await onSendMessage(projectId, message)
+      setShowTemplates(null)
+      setCompletedActions(prev => [...prev, actionId])
+    } catch (error) {
+      console.error('Error sending message:', error)
+    } finally {
+      setLoadingAction(null)
+    }
+  }
+  
+  // Send custom message
+  const sendCustomMessage = async (actionId: string, projectId: string) => {
+    if (!customMessage.trim() || !onSendMessage) return
+    
+    setLoadingAction(actionId)
+    try {
+      await onSendMessage(projectId, customMessage)
+      setShowTemplates(null)
+      setCustomMessage('')
+      setCompletedActions(prev => [...prev, actionId])
+    } catch (error) {
+      console.error('Error sending message:', error)
+    } finally {
+      setLoadingAction(null)
     }
   }
 
-  // Simpele stats
+  // Stats
   const unreadMessages = projects.reduce((acc, p) => 
     acc + p.messages.filter(m => !m.read && m.from === 'client').length, 0
   )
   const pendingPayments = projects.filter(p => p.paymentStatus === 'awaiting_payment').length
-  
-  // Projecten die actie nodig hebben
-  const needsAction = projects.filter(p => {
-    const hasUnread = p.messages.some(m => !m.read && m.from === 'client')
-    return hasUnread || (p.paymentStatus === 'paid' && p.phase === 'review')
-  })
+  const activeProjects = projects.filter(p => p.phase !== 'live').length
 
   return (
     <div className="space-y-6">
-      {/* Simpele header */}
+      {/* Header met vandaag focus */}
       <div className="flex items-center justify-between">
         <div>
           <h1 className={`text-xl font-bold ${darkMode ? 'text-white' : 'text-gray-900'}`}>
-            Dashboard
+            Goedemorgen! 👋
           </h1>
           <p className={`text-sm ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>
-            {projects.length} project{projects.length !== 1 ? 'en' : ''}
+            {smartActions.length > 0 
+              ? `${smartActions.length} actie${smartActions.length !== 1 ? 's' : ''} wachten op je` 
+              : 'Alles is up-to-date! 🎉'}
           </p>
+        </div>
+        <div className={`px-3 py-1.5 rounded-full text-sm font-medium ${
+          darkMode ? 'bg-emerald-500/20 text-emerald-400' : 'bg-emerald-100 text-emerald-700'
+        }`}>
+          {activeProjects} actief
         </div>
       </div>
 
-      {/* Actie nodig - alleen tonen als er iets is */}
-      {needsAction.length > 0 && (
+      {/* 🎯 Smart Action Center */}
+      {smartActions.length > 0 && (
         <div className={`p-4 rounded-2xl border-2 ${
-          darkMode ? 'bg-red-900/20 border-red-500/50' : 'bg-red-50 border-red-200'
+          darkMode ? 'bg-gray-800 border-emerald-500/30' : 'bg-white border-emerald-200'
         }`}>
-          <div className="flex items-center gap-2 mb-3">
-            <AlertCircle className="w-5 h-5 text-red-500" />
-            <h3 className={`font-semibold ${darkMode ? 'text-white' : 'text-gray-900'}`}>
-              Jouw actie nodig ({needsAction.length})
-            </h3>
+          <div className="flex items-center gap-2 mb-4">
+            <div className={`p-2 rounded-lg ${darkMode ? 'bg-emerald-500/20' : 'bg-emerald-100'}`}>
+              <CheckCircle2 className="w-5 h-5 text-emerald-500" />
+            </div>
+            <div>
+              <h3 className={`font-semibold ${darkMode ? 'text-white' : 'text-gray-900'}`}>
+                Vandaag te doen
+              </h3>
+              <p className={`text-xs ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>
+                Klik om direct actie te ondernemen
+              </p>
+            </div>
           </div>
+          
           <div className="space-y-2">
-            {needsAction.slice(0, 3).map(p => {
-              const hasUnread = p.messages.some(m => !m.read && m.from === 'client')
-              const isReadyLive = p.paymentStatus === 'paid' && p.phase === 'review'
-              return (
-                <div
-                  key={p.id}
-                  onClick={() => {
-                    onSelectProject(p)
-                    setActiveView('projects')
-                  }}
-                  className={`flex items-center justify-between p-3 rounded-xl cursor-pointer ${
-                    darkMode ? 'bg-gray-800 hover:bg-gray-750' : 'bg-white hover:bg-gray-50'
-                  }`}
+            {smartActions.slice(0, 5).map((action) => (
+              <div key={action.id}>
+                <motion.div
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  className={`flex items-center justify-between p-3 rounded-xl cursor-pointer transition-all ${
+                    darkMode ? 'bg-gray-700/50 hover:bg-gray-700' : 'bg-gray-50 hover:bg-gray-100'
+                  } ${action.priority === 'high' ? 'ring-2 ring-red-500/30' : ''}`}
+                  onClick={() => handleAction(action)}
                 >
-                  <div className="flex items-center gap-3">
-                    <div className={`w-8 h-8 rounded-lg flex items-center justify-center ${
-                      hasUnread ? 'bg-red-500' : 'bg-green-500'
-                    }`}>
-                      {hasUnread ? (
-                        <MessageSquare className="w-4 h-4 text-white" />
-                      ) : (
-                        <Rocket className="w-4 h-4 text-white" />
-                      )}
+                  <div className="flex items-center gap-3 flex-1 min-w-0">
+                    <div className={`p-2 rounded-lg ${action.bgColor}`}>
+                      <span className={action.color}>{action.icon}</span>
                     </div>
-                    <div>
-                      <p className={`font-medium text-sm ${darkMode ? 'text-white' : 'text-gray-900'}`}>
-                        {p.businessName}
-                      </p>
-                      <p className={`text-xs ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>
-                        {hasUnread ? 'Beantwoord bericht' : 'Klaar om live te zetten'}
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center gap-2">
+                        <p className={`font-medium text-sm ${darkMode ? 'text-white' : 'text-gray-900'}`}>
+                          {action.projectName}
+                        </p>
+                        {action.priority === 'high' && (
+                          <span className="px-1.5 py-0.5 bg-red-500 text-white text-[10px] font-bold rounded">
+                            URGENT
+                          </span>
+                        )}
+                      </div>
+                      <p className={`text-xs truncate ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>
+                        {action.description}
                       </p>
                     </div>
                   </div>
-                  {isReadyLive && !hasUnread && (
-                    <button
-                      onClick={(e) => { e.stopPropagation(); handleGoLive(p); }}
-                      disabled={goingLive === p.id}
-                      className="px-3 py-1.5 bg-green-500 text-white text-xs font-medium rounded-lg"
+                  <button
+                    disabled={loadingAction === action.id}
+                    className={`flex-shrink-0 px-3 py-1.5 rounded-lg text-xs font-medium transition-colors ${
+                      action.type === 'go_live' 
+                        ? 'bg-green-500 text-white hover:bg-green-600' 
+                        : action.type === 'reply_message'
+                        ? 'bg-emerald-500 text-white hover:bg-emerald-600'
+                        : darkMode 
+                        ? 'bg-gray-600 text-white hover:bg-gray-500' 
+                        : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
+                    }`}
+                  >
+                    {loadingAction === action.id ? (
+                      <Loader2 className="w-3 h-3 animate-spin" />
+                    ) : (
+                      action.label
+                    )}
+                  </button>
+                </motion.div>
+                
+                {/* Template picker voor berichten */}
+                <AnimatePresence>
+                  {showTemplates === action.id && (
+                    <motion.div
+                      initial={{ opacity: 0, height: 0 }}
+                      animate={{ opacity: 1, height: 'auto' }}
+                      exit={{ opacity: 0, height: 0 }}
+                      className={`mt-2 p-3 rounded-xl ${darkMode ? 'bg-gray-700' : 'bg-gray-100'}`}
                     >
-                      {goingLive === p.id ? '...' : 'Zet live'}
-                    </button>
+                      <div className="flex items-center justify-between mb-2">
+                        <p className={`text-xs font-medium ${darkMode ? 'text-gray-300' : 'text-gray-600'}`}>
+                          Kies een template of schrijf zelf
+                        </p>
+                        <button 
+                          onClick={(e) => { e.stopPropagation(); setShowTemplates(null); }}
+                          className={`p-1 rounded ${darkMode ? 'hover:bg-gray-600' : 'hover:bg-gray-200'}`}
+                        >
+                          <X className="w-3 h-3" />
+                        </button>
+                      </div>
+                      
+                      <div className="flex flex-wrap gap-1.5 mb-3">
+                        {MESSAGE_TEMPLATES.map(template => (
+                          <button
+                            key={template.id}
+                            onClick={(e) => { 
+                              e.stopPropagation(); 
+                              sendTemplatedMessage(action.id, action.projectId, template); 
+                            }}
+                            disabled={loadingAction === action.id}
+                            className={`px-2 py-1 text-xs rounded-lg transition-colors ${
+                              darkMode 
+                                ? 'bg-gray-600 hover:bg-gray-500 text-white' 
+                                : 'bg-white hover:bg-gray-50 text-gray-700 border border-gray-200'
+                            }`}
+                          >
+                            {template.label}
+                          </button>
+                        ))}
+                      </div>
+                      
+                      <div className="flex gap-2">
+                        <input
+                          type="text"
+                          value={customMessage}
+                          onChange={(e) => setCustomMessage(e.target.value)}
+                          onClick={(e) => e.stopPropagation()}
+                          placeholder="Of typ je eigen bericht..."
+                          className={`flex-1 px-3 py-2 rounded-lg text-sm ${
+                            darkMode 
+                              ? 'bg-gray-800 text-white placeholder-gray-500 border-gray-600' 
+                              : 'bg-white text-gray-900 placeholder-gray-400 border-gray-200'
+                          } border focus:outline-none focus:ring-2 focus:ring-emerald-500/50`}
+                        />
+                        <button
+                          onClick={(e) => { 
+                            e.stopPropagation(); 
+                            sendCustomMessage(action.id, action.projectId); 
+                          }}
+                          disabled={!customMessage.trim() || loadingAction === action.id}
+                          className="px-3 py-2 bg-emerald-500 text-white rounded-lg hover:bg-emerald-600 disabled:opacity-50"
+                        >
+                          <Send className="w-4 h-4" />
+                        </button>
+                      </div>
+                    </motion.div>
                   )}
-                </div>
-              )
-            })}
+                </AnimatePresence>
+              </div>
+            ))}
+            
+            {smartActions.length > 5 && (
+              <button
+                onClick={() => setActiveView('projects')}
+                className={`w-full p-2 text-center text-sm font-medium rounded-lg ${
+                  darkMode ? 'text-emerald-400 hover:bg-gray-700' : 'text-emerald-600 hover:bg-gray-100'
+                }`}
+              >
+                Bekijk alle {smartActions.length} acties →
+              </button>
+            )}
           </div>
         </div>
       )}
 
-      {/* Simpele snelknoppen - 2x2 grid op mobiel */}
-      <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+      {/* All done state */}
+      {smartActions.length === 0 && (
+        <div className={`p-6 rounded-2xl text-center ${
+          darkMode ? 'bg-gray-800' : 'bg-gradient-to-br from-emerald-50 to-green-50 border border-emerald-100'
+        }`}>
+          <div className="text-4xl mb-2">🎉</div>
+          <h3 className={`font-semibold mb-1 ${darkMode ? 'text-white' : 'text-gray-900'}`}>
+            Alles afgerond!
+          </h3>
+          <p className={`text-sm ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>
+            Geen openstaande acties. Neem even pauze of werk aan nieuwe projecten.
+          </p>
+        </div>
+      )}
+
+      {/* Quick stats - 3 cards */}
+      <div className="grid grid-cols-3 gap-3">
         <button
           onClick={() => setActiveView('projects')}
           className={`p-4 rounded-xl text-left transition-colors ${
@@ -1143,8 +1467,8 @@ function OverviewView({ darkMode, projects, setActiveView, onSelectProject, onUp
           }`}
         >
           <FolderKanban className={`w-5 h-5 mb-2 ${darkMode ? 'text-emerald-400' : 'text-emerald-600'}`} />
-          <p className={`font-semibold ${darkMode ? 'text-white' : 'text-gray-900'}`}>Projecten</p>
-          <p className={`text-xs ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>{projects.length} totaal</p>
+          <p className={`text-2xl font-bold ${darkMode ? 'text-white' : 'text-gray-900'}`}>{projects.length}</p>
+          <p className={`text-xs ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>Projecten</p>
         </button>
         
         <button
@@ -1159,8 +1483,8 @@ function OverviewView({ darkMode, projects, setActiveView, onSelectProject, onUp
             </span>
           )}
           <MessageSquare className={`w-5 h-5 mb-2 ${unreadMessages > 0 ? 'text-red-500' : darkMode ? 'text-purple-400' : 'text-purple-600'}`} />
-          <p className={`font-semibold ${darkMode ? 'text-white' : 'text-gray-900'}`}>Berichten</p>
-          <p className={`text-xs ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>{unreadMessages} ongelezen</p>
+          <p className={`text-2xl font-bold ${darkMode ? 'text-white' : 'text-gray-900'}`}>{unreadMessages}</p>
+          <p className={`text-xs ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>Ongelezen</p>
         </button>
         
         <button
@@ -1170,41 +1494,39 @@ function OverviewView({ darkMode, projects, setActiveView, onSelectProject, onUp
           }`}
         >
           <CreditCard className={`w-5 h-5 mb-2 ${pendingPayments > 0 ? 'text-amber-500' : darkMode ? 'text-green-400' : 'text-green-600'}`} />
-          <p className={`font-semibold ${darkMode ? 'text-white' : 'text-gray-900'}`}>Betalingen</p>
-          <p className={`text-xs ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>{pendingPayments} wachtend</p>
+          <p className={`text-2xl font-bold ${darkMode ? 'text-white' : 'text-gray-900'}`}>{pendingPayments}</p>
+          <p className={`text-xs ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>Wachtend</p>
         </button>
       </div>
 
-      {/* Projecten per fase - simpele lijst */}
+      {/* Projecten per fase - compact */}
       <div className={`p-4 rounded-2xl ${darkMode ? 'bg-gray-800' : 'bg-white border border-gray-200'}`}>
-        <h3 className={`font-semibold mb-4 ${darkMode ? 'text-white' : 'text-gray-900'}`}>
+        <h3 className={`font-semibold mb-3 ${darkMode ? 'text-white' : 'text-gray-900'}`}>
           Projecten per fase
         </h3>
-        <div className="space-y-2">
+        <div className="grid grid-cols-5 gap-2">
           {(['onboarding', 'design', 'development', 'review', 'live'] as ProjectPhase[]).map(phase => {
             const count = projects.filter(p => p.phase === phase).length
             const config = PHASE_CONFIG[phase]
             const PhaseIcon = config.icon
             return (
-              <div
+              <button
                 key={phase}
                 onClick={() => setActiveView('projects')}
-                className={`flex items-center justify-between p-3 rounded-xl cursor-pointer transition-colors ${
+                className={`p-3 rounded-xl text-center transition-colors ${
                   darkMode ? 'hover:bg-gray-700' : 'hover:bg-gray-50'
-                }`}
+                } ${count > 0 ? '' : 'opacity-50'}`}
               >
-                <div className="flex items-center gap-3">
-                  <div className={`p-2 rounded-lg ${config.bg}`}>
-                    <PhaseIcon className={`w-4 h-4 ${config.color}`} />
-                  </div>
-                  <span className={`font-medium ${darkMode ? 'text-white' : 'text-gray-900'}`}>
-                    {config.label}
-                  </span>
+                <div className={`p-2 rounded-lg mx-auto w-fit ${config.bg}`}>
+                  <PhaseIcon className={`w-4 h-4 ${config.color}`} />
                 </div>
-                <span className={`font-bold ${darkMode ? 'text-white' : 'text-gray-900'}`}>
+                <p className={`text-lg font-bold mt-1 ${darkMode ? 'text-white' : 'text-gray-900'}`}>
                   {count}
-                </span>
-              </div>
+                </p>
+                <p className={`text-[10px] ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>
+                  {config.label}
+                </p>
+              </button>
             )
           })}
         </div>
@@ -6544,6 +6866,32 @@ export default function DeveloperDashboardNew() {
     setNotifications(prev => prev.map(n => ({ ...n, read: true })))
   }
 
+  // Send message to project from overview
+  const handleSendMessageToProject = async (projectId: string, message: string) => {
+    const project = projects.find(p => p.id === projectId)
+    if (!project) return
+    
+    const newMessage: ChatMessage = {
+      id: crypto.randomUUID(),
+      date: new Date().toISOString(),
+      from: 'developer',
+      message: message,
+      read: true
+    }
+    
+    // Mark all client messages as read
+    const updatedMessages = project.messages.map(m => 
+      m.from === 'client' ? { ...m, read: true } : m
+    )
+    
+    const updatedProject = {
+      ...project,
+      messages: [...updatedMessages, newMessage]
+    }
+    
+    await handleUpdateProject(updatedProject)
+  }
+
   // Calculate badge counts
   const unreadMessages = projects.reduce((acc, p) => 
     acc + p.messages.filter(m => !m.read && m.from === 'client').length, 0
@@ -6622,6 +6970,7 @@ export default function DeveloperDashboardNew() {
                       setActiveView('projects')
                     }}
                     onUpdateProject={handleUpdateProject}
+                    onSendMessage={handleSendMessageToProject}
                   />
                 )}
                 {activeView === 'projects' && (
