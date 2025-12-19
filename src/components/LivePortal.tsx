@@ -20,12 +20,13 @@ import {
   Shield,
   Clock,
   Send,
-  Sparkles,
   Globe,
   CheckCircle2,
-  HelpCircle
+  HelpCircle,
+  Sparkles
 } from 'lucide-react'
 import type { Project } from '../types/project'
+import { ReferralWidget, PackageValueCard, SatisfactionCheck } from './GrowthTools'
 
 interface LivePortalProps {
   project: Project
@@ -75,6 +76,56 @@ export default function LivePortal({
   const [quickMessage, setQuickMessage] = useState('')
   const [messageLoading, setMessageLoading] = useState(false)
   const [messageSent, setMessageSent] = useState(false)
+
+  // Referral state
+  const [referralCode, setReferralCode] = useState(project.referralCode || '')
+  const [referralsCount] = useState(project.referralsCount || 0)
+  const [referralRewards] = useState(project.referralRewards || 0)
+
+  // Satisfaction check state
+  const [showSatisfactionCheck, setShowSatisfactionCheck] = useState(false)
+
+  // Calculate months active
+  const monthsActive = project.liveDate 
+    ? Math.max(1, Math.floor((Date.now() - new Date(project.liveDate).getTime()) / (30 * 24 * 60 * 60 * 1000)))
+    : 1
+
+  // Handle referral code copy
+  const handleCopyReferral = async () => {
+    if (!referralCode) {
+      // Generate new code if needed
+      try {
+        const res = await fetch('/api/referral', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ action: 'create', projectId: project.projectId })
+        })
+        const data = await res.json()
+        if (data.referralCode) {
+          setReferralCode(data.referralCode)
+        }
+      } catch {
+        console.error('Error generating referral code')
+      }
+    }
+  }
+
+  const handleSatisfactionRate = async (rating: number) => {
+    try {
+      await fetch(`/api/project/${project.projectId}/satisfaction`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ rating })
+      })
+      setShowSatisfactionCheck(false)
+      if (rating >= 4) {
+        // Redirect to Trustpilot after high rating
+        window.open('https://nl.trustpilot.com/review/webstability.nl', '_blank')
+      }
+    } catch {
+      console.error('Error submitting satisfaction')
+    }
+  }
 
   // Handle change request submit
   const handleChangeRequestSubmit = async () => {
@@ -483,67 +534,34 @@ export default function LivePortal({
               </div>
             </div>
 
-            {/* Referral Section */}
-            <div className="bg-gradient-to-r from-purple-900/40 to-pink-900/40 backdrop-blur-sm rounded-xl sm:rounded-2xl border border-purple-500/30 p-4 sm:p-6">
-              <div className="flex items-center gap-3 mb-4">
-                <div className="w-10 h-10 bg-gradient-to-r from-purple-500 to-pink-500 rounded-xl flex items-center justify-center">
-                  <Sparkles className="w-5 h-5 text-white" />
-                </div>
-                <div>
-                  <h3 className="text-white font-semibold">Verdien geld met doorverwijzingen!</h3>
-                  <p className="text-purple-300 text-xs sm:text-sm">Krijg €25 voor elke nieuwe klant</p>
-                </div>
-              </div>
-              
-              <div className="bg-gray-900/50 rounded-xl p-4 mb-4">
-                <p className="text-gray-400 text-sm mb-3">
-                  Deel je persoonlijke referral code met andere ondernemers. Voor elke klant die zich aanmeldt:
-                </p>
-                <div className="flex gap-4 text-center">
-                  <div className="flex-1 p-3 bg-purple-500/20 rounded-lg">
-                    <p className="text-2xl font-bold text-purple-400">€25</p>
-                    <p className="text-xs text-gray-400">voor jou</p>
-                  </div>
-                  <div className="flex-1 p-3 bg-pink-500/20 rounded-lg">
-                    <p className="text-2xl font-bold text-pink-400">€25</p>
-                    <p className="text-xs text-gray-400">korting voor hen</p>
-                  </div>
-                </div>
-              </div>
+            {/* Package Value Card - Laat waarde zien */}
+            <PackageValueCard
+              currentPackage={(project.package as 'starter' | 'professional' | 'business') || 'starter'}
+              monthsActive={monthsActive}
+              totalValue={0}
+            />
 
-              <div className="flex flex-col sm:flex-row gap-3">
-                <div className="flex-1 bg-gray-900/70 rounded-xl p-3 flex items-center justify-between">
-                  <code className="text-purple-300 font-mono text-sm sm:text-base">
-                    {project.businessName?.substring(0, 4).toUpperCase() || 'WSB'}-XXXX
-                  </code>
-                  <button 
-                    onClick={() => {
-                      // Generate referral code via API
-                      fetch('/api/referral', {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ action: 'create', projectId: project.projectId })
-                      })
-                        .then(res => res.json())
-                        .then(data => {
-                          if (data.referralCode) {
-                            navigator.clipboard.writeText(`https://webstability.nl/start?ref=${data.referralCode}`)
-                            alert(`Link gekopieerd! Je code: ${data.referralCode}`)
-                          }
-                        })
-                        .catch(() => alert('Er ging iets mis, probeer het later opnieuw'))
-                    }}
-                    className="px-3 py-1.5 bg-purple-500 hover:bg-purple-600 text-white rounded-lg text-sm font-medium transition-colors"
-                  >
-                    Kopieer link
-                  </button>
-                </div>
-              </div>
-              
-              <p className="text-gray-500 text-xs mt-3 text-center">
-                Verdien tot €250 aan beloningen • Wordt verrekend met je factuur
-              </p>
+            {/* Referral Widget - Verbeterde versie */}
+            <div className="mt-6">
+              <ReferralWidget
+                referralCode={referralCode || `${project.businessName?.substring(0, 4).toUpperCase() || 'WSB'}-XXXX`}
+                referralUrl={referralCode ? `https://webstability.nl/start?ref=${referralCode}` : '#'}
+                referralsCount={referralsCount}
+                totalEarned={referralRewards}
+                onCopyCode={handleCopyReferral}
+                onShare={() => {}}
+              />
             </div>
+
+            {/* Satisfaction Check Modal */}
+            {showSatisfactionCheck && (
+              <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50">
+                <SatisfactionCheck
+                  onRate={handleSatisfactionRate}
+                  onDismiss={() => setShowSatisfactionCheck(false)}
+                />
+              </div>
+            )}
           </motion.div>
         )}
 

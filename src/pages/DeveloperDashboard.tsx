@@ -52,6 +52,7 @@ import {
   AlertTriangle,
 } from 'lucide-react'
 import Logo from '../components/Logo'
+// GrowthTools components available: ChurnAlert, UpsellBanner for future use
 
 // ===========================================
 // TYPES
@@ -92,6 +93,8 @@ interface Project {
   discountCode?: string
   internalNotes?: string
   phaseChecklist?: Record<string, boolean>
+  lastActivityAt?: string  // Voor churn detection
+  liveDate?: string        // Wanneer live gegaan
 }
 
 interface ChatMessage {
@@ -1028,7 +1031,7 @@ type SmartAction = {
   id: string
   projectId: string
   projectName: string
-  type: 'reply_message' | 'send_drive_link' | 'go_live' | 'start_design' | 'start_development' | 'send_review_request' | 'awaiting_payment'
+  type: 'reply_message' | 'send_drive_link' | 'go_live' | 'start_design' | 'start_development' | 'send_review_request' | 'awaiting_payment' | 'send_update' | 'churn_alert' | 'check_in'
   priority: 'high' | 'medium' | 'low'
   label: string
   description: string
@@ -1164,6 +1167,40 @@ function OverviewView({ darkMode, projects, setActiveView, onSelectProject, onUp
           color: 'text-orange-500',
           bgColor: 'bg-orange-500/10'
         })
+      }
+
+      // Churn detection - live projects with no activity
+      if (project.phase === 'live') {
+        const lastActivity = project.lastActivityAt || project.updatedAt
+        const daysSinceActivity = Math.floor((Date.now() - new Date(lastActivity).getTime()) / (24 * 60 * 60 * 1000))
+        
+        if (daysSinceActivity > 30) {
+          actions.push({
+            id: `churn_${project.id}`,
+            projectId: project.id,
+            projectName: project.businessName,
+            type: 'send_update',
+            priority: 'high',
+            label: 'Churn risico!',
+            description: `${daysSinceActivity} dagen geen activiteit - stuur check-in`,
+            icon: <AlertTriangle className="w-4 h-4" />,
+            color: 'text-red-500',
+            bgColor: 'bg-red-500/10'
+          })
+        } else if (daysSinceActivity > 14) {
+          actions.push({
+            id: `checkin_${project.id}`,
+            projectId: project.id,
+            projectName: project.businessName,
+            type: 'send_update',
+            priority: 'low',
+            label: 'Check-in nodig',
+            description: `${daysSinceActivity} dagen geen activiteit`,
+            icon: <Clock className="w-4 h-4" />,
+            color: 'text-amber-500',
+            bgColor: 'bg-amber-500/10'
+          })
+        }
       }
     })
     

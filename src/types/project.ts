@@ -94,6 +94,8 @@ export interface Project {
   revisionsUsed?: number
   revisionsTotal?: number
   googleDriveUrl?: string
+  // Live datum - wanneer website live ging
+  liveDate?: string
   // Geschatte deadlines per fase
   phaseDeadlines?: {
     onboarding?: string
