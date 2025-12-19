@@ -805,7 +805,7 @@ export function WebsiteDoelenStep({ data, onChange, disabled, packageId, onUpgra
         <p className="text-xs text-gray-500 dark:text-gray-400 mt-0.5">
           Beschikbaar in je {pkg.name} pakket
         </p>
-        <div className="mt-3 grid grid-cols-2 gap-3">
+        <div className="mt-3 grid grid-cols-2 gap-2">
           {contactOptions.map(opt => {
             const isSelected = (data.contactMethods || ['form', 'email']).includes(opt.value)
             const isLocked = !opt.available
@@ -828,7 +828,7 @@ export function WebsiteDoelenStep({ data, onChange, disabled, packageId, onUpgra
                 }}
                 disabled={disabled}
                 className={`
-                  flex items-center gap-3 px-4 py-3 rounded-xl border-2 text-left transition-all relative
+                  flex items-center gap-2 px-3 py-3 rounded-xl border-2 text-left transition-all relative min-w-0
                   ${isLocked 
                     ? 'border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800/50 opacity-60'
                     : isSelected 
@@ -846,7 +846,7 @@ export function WebsiteDoelenStep({ data, onChange, disabled, packageId, onUpgra
                 `}>
                   {isSelected && !isLocked && <Check className="w-3 h-3 text-white" />}
                 </div>
-                <span className="text-sm font-medium">{opt.label}</span>
+                <span className="text-sm font-medium truncate">{opt.label}</span>
               </button>
             )
           })}
