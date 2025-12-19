@@ -3500,15 +3500,15 @@ function MessagesView({ darkMode, projects, onUpdateProject }: MessagesViewProps
   ]
 
   return (
-    <div className="h-[calc(100vh-180px)] flex rounded-2xl overflow-hidden border"
+    <div className="h-[calc(100vh-140px)] sm:h-[calc(100vh-180px)] flex rounded-2xl overflow-hidden border"
       style={{ 
         borderColor: darkMode ? 'rgb(55, 65, 81)' : 'rgb(229, 231, 235)',
         backgroundColor: darkMode ? 'rgb(31, 41, 55)' : 'white'
       }}
     >
       {/* Conversations List - Always visible on desktop, hidden on mobile when chat selected */}
-      <div className={`w-80 lg:w-96 flex-shrink-0 border-r flex-col ${
-        darkMode ? 'border-gray-700 bg-gray-800/50' : 'border-gray-200 bg-gray-50'
+      <div className={`w-full md:w-80 lg:w-96 flex-shrink-0 md:border-r flex-col ${
+        darkMode ? 'md:border-gray-700 bg-gray-800/50' : 'md:border-gray-200 bg-gray-50'
       } ${selectedProjectId ? 'hidden md:flex' : 'flex'}`}>
         {/* Search & Filter Header */}
         <div className={`p-4 border-b ${darkMode ? 'border-gray-700' : 'border-gray-200'}`}>
@@ -3675,36 +3675,37 @@ function MessagesView({ darkMode, projects, onUpdateProject }: MessagesViewProps
       </div>
 
       {/* Chat Area */}
-      <div className={`flex-1 flex flex-col ${!selectedProjectId ? 'hidden md:flex' : 'flex'}`}>
+      <div className={`flex-1 flex flex-col min-w-0 ${!selectedProjectId ? 'hidden md:flex' : 'flex'}`}>
         {selectedProject ? (
           <>
             {/* Chat Header */}
-            <div className={`p-4 border-b flex items-center gap-4 ${
+            <div className={`p-3 sm:p-4 border-b flex items-center gap-2 sm:gap-4 ${
               darkMode ? 'border-gray-700 bg-gray-800' : 'border-gray-200 bg-white'
             }`}>
               <button
                 onClick={() => setSelectedProjectId(null)}
-                className={`md:hidden p-2 rounded-xl ${
+                className={`md:hidden p-2 rounded-xl flex-shrink-0 ${
                   darkMode ? 'hover:bg-gray-700 text-gray-400' : 'hover:bg-gray-100 text-gray-500'
                 }`}
               >
                 <ChevronRight className="w-5 h-5 rotate-180" />
               </button>
               
-              <div className="w-10 h-10 rounded-full bg-gradient-to-br from-emerald-500 to-purple-500 flex items-center justify-center text-white font-bold">
+              <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-gradient-to-br from-emerald-500 to-purple-500 flex items-center justify-center text-white font-bold text-sm sm:text-base flex-shrink-0">
                 {selectedProject.businessName.charAt(0)}
               </div>
               
               <div className="flex-1 min-w-0">
-                <h3 className={`font-semibold truncate ${darkMode ? 'text-white' : 'text-gray-900'}`}>
+                <h3 className={`font-semibold truncate text-sm sm:text-base ${darkMode ? 'text-white' : 'text-gray-900'}`}>
                   {selectedProject.businessName}
                 </h3>
-                <p className={`text-sm truncate ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>
-                  {selectedProject.contactName} • {selectedProject.contactEmail}
+                <p className={`text-xs sm:text-sm truncate ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>
+                  <span className="hidden sm:inline">{selectedProject.contactName} • </span>
+                  {selectedProject.contactEmail}
                 </p>
               </div>
 
-              <div className="flex items-center gap-2">
+              <div className="flex items-center gap-1 sm:gap-2 flex-shrink-0">
                 {selectedProject.stagingUrl && (
                   <a
                     href={selectedProject.stagingUrl}
@@ -3715,12 +3716,12 @@ function MessagesView({ darkMode, projects, onUpdateProject }: MessagesViewProps
                     }`}
                     title="Preview bekijken"
                   >
-                    <ExternalLink className="w-5 h-5" />
+                    <ExternalLink className="w-4 h-4 sm:w-5 sm:h-5" />
                   </a>
                 )}
                 <a
                   href={`mailto:${selectedProject.contactEmail}`}
-                  className={`p-2 rounded-xl transition-colors ${
+                  className={`p-2 rounded-xl transition-colors hidden sm:block ${
                     darkMode ? 'hover:bg-gray-700 text-gray-400' : 'hover:bg-gray-100 text-gray-500'
                   }`}
                   title="E-mail versturen"
@@ -3731,7 +3732,7 @@ function MessagesView({ darkMode, projects, onUpdateProject }: MessagesViewProps
             </div>
 
             {/* Messages Area */}
-            <div className={`flex-1 overflow-y-auto p-4 space-y-4 ${
+            <div className={`flex-1 overflow-y-auto p-3 sm:p-4 space-y-3 sm:space-y-4 ${
               darkMode ? 'bg-gray-900/50' : 'bg-gray-50'
             }`}>
               {selectedProject.messages.length === 0 ? (
@@ -3801,8 +3802,8 @@ function MessagesView({ darkMode, projects, onUpdateProject }: MessagesViewProps
               )}
             </div>
 
-            {/* Quick Replies */}
-            <div className={`px-4 py-2 border-t flex gap-2 overflow-x-auto ${
+            {/* Quick Replies - hidden on mobile for more space */}
+            <div className={`px-3 sm:px-4 py-2 border-t hidden sm:flex gap-2 overflow-x-auto ${
               darkMode ? 'border-gray-700 bg-gray-800/50' : 'border-gray-200 bg-white'
             }`}>
               {quickReplies.map((reply, i) => (
@@ -3821,11 +3822,11 @@ function MessagesView({ darkMode, projects, onUpdateProject }: MessagesViewProps
             </div>
 
             {/* Message Input */}
-            <div className={`p-4 border-t ${
+            <div className={`p-3 sm:p-4 border-t ${
               darkMode ? 'border-gray-700 bg-gray-800' : 'border-gray-200 bg-white'
             }`}>
-              <div className="flex gap-3">
-                <div className="flex-1 relative">
+              <div className="flex gap-2 sm:gap-3">
+                <div className="flex-1 min-w-0">
                   <textarea
                     value={newMessage}
                     onChange={(e) => setNewMessage(e.target.value)}
@@ -3837,18 +3838,18 @@ function MessagesView({ darkMode, projects, onUpdateProject }: MessagesViewProps
                     }}
                     placeholder="Typ een bericht..."
                     rows={1}
-                    className={`w-full px-4 py-3 rounded-2xl border resize-none ${
+                    className={`w-full px-3 sm:px-4 py-3 rounded-2xl border resize-none text-base ${
                       darkMode 
                         ? 'bg-gray-700 border-gray-600 text-white placeholder-gray-500' 
                         : 'bg-gray-50 border-gray-200 text-gray-900 placeholder-gray-400'
                     } focus:outline-none focus:ring-2 focus:ring-emerald-500/50`}
-                    style={{ minHeight: '48px', maxHeight: '120px' }}
+                    style={{ minHeight: '48px', maxHeight: '120px', fontSize: '16px' }}
                   />
                 </div>
                 <button
                   onClick={handleSendMessage}
                   disabled={!newMessage.trim()}
-                  className={`px-5 rounded-2xl font-semibold transition-all flex items-center gap-2 ${
+                  className={`px-4 sm:px-5 rounded-2xl font-semibold transition-all flex items-center justify-center flex-shrink-0 ${
                     newMessage.trim()
                       ? 'bg-emerald-500 hover:bg-emerald-600 text-white'
                       : darkMode 
@@ -3859,7 +3860,7 @@ function MessagesView({ darkMode, projects, onUpdateProject }: MessagesViewProps
                   <Send className="w-5 h-5" />
                 </button>
               </div>
-              <p className={`text-xs mt-2 ${darkMode ? 'text-gray-500' : 'text-gray-400'}`}>
+              <p className={`text-xs mt-2 hidden sm:block ${darkMode ? 'text-gray-500' : 'text-gray-400'}`}>
                 Enter om te verzenden, Shift+Enter voor nieuwe regel
               </p>
             </div>
