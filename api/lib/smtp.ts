@@ -284,35 +284,44 @@ export const sendWelcomeEmail = async (customer: {
       Super dat je voor Webstability hebt gekozen! We gaan direct voor je aan de slag.
     </p>
     
-    <!-- Project ID Card -->
-    <div style="background: ${colors.gradient}; border-radius: 12px; padding: 24px; margin-bottom: 24px; text-align: center;">
-      <p style="margin: 0 0 8px; color: rgba(255,255,255,0.8); font-size: 14px;">Je project ID</p>
-      <p style="margin: 0; color: white; font-size: 24px; font-weight: 700; font-family: monospace; letter-spacing: 2px;">${customer.projectId}</p>
-    </div>
-    
     ${customer.password ? `
-    <!-- Login Credentials Card -->
+    <!-- Login Credentials Card - prominently displayed when password is set -->
     <div style="background: linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%); border: 2px solid #10b981; border-radius: 12px; padding: 24px; margin-bottom: 24px;">
-      <h3 style="margin: 0 0 16px; font-size: 16px; font-weight: 600; color: #166534;">🔐 Je login gegevens voor het klantportaal</h3>
-      <table role="presentation" width="100%" cellspacing="0" cellpadding="0">
+      <h3 style="margin: 0 0 8px; font-size: 18px; font-weight: 700; color: #166534;">🔐 Je inloggegevens</h3>
+      <p style="margin: 0 0 16px; color: #15803d; font-size: 14px;">Gebruik deze gegevens om de status van je project te volgen</p>
+      <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="background: white; border-radius: 8px; overflow: hidden;">
         <tr>
-          <td style="padding: 8px 0;">
-            <p style="margin: 0; color: #64748b; font-size: 14px;">Project ID:</p>
-            <p style="margin: 4px 0 0; color: #0f172a; font-size: 16px; font-weight: 600; font-family: monospace;">${customer.projectId}</p>
+          <td style="padding: 16px; border-bottom: 1px solid #e2e8f0;">
+            <p style="margin: 0; color: #64748b; font-size: 12px; text-transform: uppercase; letter-spacing: 0.5px;">Project ID (gebruikersnaam)</p>
+            <p style="margin: 6px 0 0; color: #0f172a; font-size: 20px; font-weight: 700; font-family: monospace; letter-spacing: 1px;">${customer.projectId}</p>
           </td>
         </tr>
         <tr>
-          <td style="padding: 8px 0;">
-            <p style="margin: 0; color: #64748b; font-size: 14px;">Wachtwoord:</p>
-            <p style="margin: 4px 0 0; color: #0f172a; font-size: 16px; font-weight: 600; font-family: monospace;">${customer.password}</p>
+          <td style="padding: 16px;">
+            <p style="margin: 0; color: #64748b; font-size: 12px; text-transform: uppercase; letter-spacing: 0.5px;">Wachtwoord</p>
+            <p style="margin: 6px 0 0; color: #0f172a; font-size: 20px; font-weight: 700; font-family: monospace;">${customer.password}</p>
           </td>
         </tr>
       </table>
-      <p style="margin: 16px 0 0; color: #15803d; font-size: 13px;">
-        💡 Bewaar deze gegevens goed! Je kunt hiermee inloggen op <a href="https://webstability.nl/status/${customer.projectId}" style="color: #10b981;">webstability.nl/status/${customer.projectId}</a>
+      <div style="margin-top: 16px; padding: 12px; background: white; border-radius: 8px;">
+        <p style="margin: 0; color: #166534; font-size: 13px; line-height: 1.5;">
+          <strong>💡 Zo log je in:</strong><br>
+          1. Ga naar <a href="https://webstability.nl/status" style="color: #10b981; font-weight: 600;">webstability.nl/status</a><br>
+          2. Vul je Project ID in als gebruikersnaam<br>
+          3. Vul je wachtwoord in en klik op inloggen
+        </p>
+      </div>
+    </div>
+    ` : `
+    <!-- Project ID Card - when no password is set yet -->
+    <div style="background: ${colors.gradient}; border-radius: 12px; padding: 24px; margin-bottom: 24px; text-align: center;">
+      <p style="margin: 0 0 8px; color: rgba(255,255,255,0.8); font-size: 14px;">Je project ID</p>
+      <p style="margin: 0; color: white; font-size: 24px; font-weight: 700; font-family: monospace; letter-spacing: 2px;">${customer.projectId}</p>
+      <p style="margin: 16px 0 0; color: rgba(255,255,255,0.9); font-size: 13px;">
+        Bewaar dit ID goed - je hebt het nodig om je project te volgen
       </p>
     </div>
-    ` : ''}
+    `}
     
     <!-- Steps -->
     <h2 style="margin: 0 0 20px; font-size: 18px; font-weight: 600; color: #0f172a;">Zo werkt het:</h2>
