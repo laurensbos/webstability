@@ -102,6 +102,16 @@ export interface Project {
     review?: string
     live?: string
   }
+  // Referral systeem
+  referralCode?: string          // Unieke code voor deze klant
+  referredBy?: string            // Referral code van andere klant
+  referralDiscount?: number      // Korting in € door referral
+  referralsCount?: number        // Aantal doorverwijzingen
+  referralRewards?: number       // Verdiende beloningen in €
+  // Review status
+  reviewRequested?: boolean      // Is review gevraagd?
+  reviewRequestedAt?: string     // Wanneer gevraagd
+  trustpilotReviewUrl?: string   // Link naar Trustpilot review
   // Intake data van StartProject - wordt hergebruikt in onboarding
   intakeData?: {
     industry?: string

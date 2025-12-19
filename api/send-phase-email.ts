@@ -100,6 +100,33 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     })
     
     console.log(`[PhaseEmail] ✅ Email verstuurd`)
+
+    // If phase is 'live', schedule Trustpilot review request for 7 days later
+    if (newPhase === 'live') {
+      try {
+        // We'll trigger the review request with delay flag
+        const baseUrl = process.env.VERCEL_URL 
+          ? `https://${process.env.VERCEL_URL}` 
+          : 'https://webstability.nl'
+        
+        await fetch(`${baseUrl}/api/review-request`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            projectId,
+            customerEmail,
+            customerName,
+            websiteUrl: req.body.websiteUrl,
+            delay: true // Schedule for later
+          })
+        })
+        
+        console.log(`[PhaseEmail] Trustpilot review gepland voor project ${projectId}`)
+      } catch (reviewError) {
+        console.error('[PhaseEmail] Review scheduling error:', reviewError)
+        // Don't fail the main request
+      }
+    }
     
     return res.status(200).json({
       success: true,

@@ -6962,6 +6962,10 @@ export default function DeveloperDashboardNew() {
 
   // Update project via API and local state
   const handleUpdateProject = async (updatedProject: Project) => {
+    // Find the current project to check for phase change
+    const currentProject = projects.find(p => p.id === updatedProject.id)
+    const phaseChanged = currentProject && currentProject.phase !== updatedProject.phase
+
     // Optimistically update local state
     setProjects(prev => prev.map(p => 
       p.id === updatedProject.id ? updatedProject : p
@@ -6994,6 +6998,28 @@ export default function DeveloperDashboardNew() {
         console.error('Failed to update project')
         // Revert on failure
         // loadData()
+      }
+
+      // Send phase change email if phase changed
+      if (phaseChanged && updatedProject.contactEmail) {
+        try {
+          await fetch('/api/send-phase-email', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              projectId: updatedProject.id,
+              projectName: updatedProject.businessName,
+              customerEmail: updatedProject.contactEmail,
+              customerName: updatedProject.contactName || 'Klant',
+              newPhase: updatedProject.phase,
+              websiteUrl: updatedProject.liveUrl || updatedProject.stagingUrl
+            })
+          })
+          console.log(`[Dashboard] Fase email verstuurd voor ${updatedProject.id}: ${currentProject?.phase} → ${updatedProject.phase}`)
+        } catch (emailError) {
+          console.error('Failed to send phase email:', emailError)
+          // Don't block the update
+        }
       }
     } catch (error) {
       console.error('Error updating project:', error)
