@@ -1,23 +1,19 @@
 import { motion } from 'framer-motion'
 import { ArrowRight, Star, TrendingUp } from 'lucide-react'
 
-// Floating particles component
+// Floating particles component - hidden on mobile for performance
 function FloatingParticles() {
   const particles = [
-    { size: 4, x: '10%', y: '20%', delay: 0, duration: 4 },
-    { size: 6, x: '20%', y: '60%', delay: 1, duration: 5 },
-    { size: 3, x: '80%', y: '30%', delay: 0.5, duration: 4.5 },
-    { size: 5, x: '70%', y: '70%', delay: 1.5, duration: 5.5 },
-    { size: 4, x: '90%', y: '50%', delay: 2, duration: 4 },
-    { size: 7, x: '15%', y: '80%', delay: 0.8, duration: 6 },
-    { size: 3, x: '60%', y: '15%', delay: 1.2, duration: 4.2 },
-    { size: 5, x: '40%', y: '85%', delay: 0.3, duration: 5.3 },
-    { size: 4, x: '85%', y: '85%', delay: 1.8, duration: 4.8 },
-    { size: 6, x: '5%', y: '45%', delay: 2.2, duration: 5.2 },
+    { size: 4, x: '10%', y: '20%', delay: 0, duration: 6 },
+    { size: 6, x: '20%', y: '60%', delay: 1, duration: 7 },
+    { size: 3, x: '80%', y: '30%', delay: 0.5, duration: 6.5 },
+    { size: 5, x: '70%', y: '70%', delay: 1.5, duration: 7.5 },
+    { size: 4, x: '90%', y: '50%', delay: 2, duration: 6 },
   ]
 
   return (
-    <>
+    // Only show on large screens to avoid mobile performance issues
+    <div className="hidden lg:block">
       {particles.map((p, i) => (
         <motion.div
           key={i}
@@ -27,12 +23,12 @@ function FloatingParticles() {
             height: p.size, 
             left: p.x, 
             top: p.y,
-            opacity: 0.4 + (p.size / 20)
+            opacity: 0.4 + (p.size / 20),
+            willChange: 'transform',
+            transform: 'translateZ(0)',
           }}
           animate={{
-            y: [0, -20, 0],
-            opacity: [0.3, 0.6, 0.3],
-            scale: [1, 1.2, 1],
+            y: [0, -15, 0],
           }}
           transition={{
             duration: p.duration,
@@ -42,7 +38,7 @@ function FloatingParticles() {
           }}
         />
       ))}
-    </>
+    </div>
   )
 }
 
@@ -52,24 +48,16 @@ export default function Hero() {
     <section className="relative min-h-screen flex items-center overflow-hidden bg-gradient-to-br from-slate-50 via-blue-50/30 to-white dark:from-gray-900 dark:via-gray-900 dark:to-gray-800 pt-20">
       {/* Background decorations */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        {/* Gradient blobs - more colorful */}
-        <motion.div 
-          className="absolute top-0 right-0 w-[900px] h-[900px] bg-gradient-to-br from-primary-200/60 via-blue-100/40 to-cyan-100/30 dark:from-primary-800/30 dark:via-blue-900/20 dark:to-cyan-900/10 rounded-full blur-3xl -translate-y-1/3 translate-x-1/4"
-          animate={{ 
-            scale: [1, 1.05, 1],
-            rotate: [0, 5, 0]
-          }}
-          transition={{ duration: 8, repeat: Infinity, ease: "easeInOut" }}
+        {/* Gradient blobs - static on mobile, animated on desktop for performance */}
+        <div className="absolute top-0 right-0 w-[600px] h-[600px] lg:w-[900px] lg:h-[900px] bg-gradient-to-br from-primary-200/60 via-blue-100/40 to-cyan-100/30 dark:from-primary-800/30 dark:via-blue-900/20 dark:to-cyan-900/10 rounded-full blur-3xl -translate-y-1/3 translate-x-1/4" 
+          style={{ willChange: 'auto', transform: 'translate3d(25%, -33%, 0)' }}
         />
-        <motion.div 
-          className="absolute bottom-0 left-0 w-[700px] h-[700px] bg-gradient-to-tr from-primary-100/50 via-blue-100/40 to-transparent dark:from-primary-900/30 dark:via-blue-900/20 dark:to-transparent rounded-full blur-3xl translate-y-1/3 -translate-x-1/4"
-          animate={{ 
-            scale: [1, 1.08, 1],
-            rotate: [0, -5, 0]
-          }}
-          transition={{ duration: 10, repeat: Infinity, ease: "easeInOut" }}
+        <div className="absolute bottom-0 left-0 w-[500px] h-[500px] lg:w-[700px] lg:h-[700px] bg-gradient-to-tr from-primary-100/50 via-blue-100/40 to-transparent dark:from-primary-900/30 dark:via-blue-900/20 dark:to-transparent rounded-full blur-3xl translate-y-1/3 -translate-x-1/4"
+          style={{ willChange: 'auto', transform: 'translate3d(-25%, 33%, 0)' }}
         />
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] bg-gradient-to-r from-cyan-100/30 via-primary-100/20 to-blue-100/30 dark:from-cyan-900/20 dark:via-primary-900/10 dark:to-blue-900/20 rounded-full blur-3xl" />
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[400px] h-[400px] lg:w-[500px] lg:h-[500px] bg-gradient-to-r from-cyan-100/30 via-primary-100/20 to-blue-100/30 dark:from-cyan-900/20 dark:via-primary-900/10 dark:to-blue-900/20 rounded-full blur-3xl"
+          style={{ transform: 'translate3d(-50%, -50%, 0)' }}
+        />
         
         {/* Floating particles */}
         <FloatingParticles />
@@ -77,10 +65,10 @@ export default function Hero() {
         {/* Subtle grid with brand color */}
         <div className="absolute inset-0 bg-[linear-gradient(to_right,#dbeafe33_1px,transparent_1px),linear-gradient(to_bottom,#dbeafe33_1px,transparent_1px)] dark:bg-[linear-gradient(to_right,#1e3a5f33_1px,transparent_1px),linear-gradient(to_bottom,#1e3a5f33_1px,transparent_1px)] bg-[size:4rem_4rem] [mask-image:radial-gradient(ellipse_80%_50%_at_50%_0%,#000_70%,transparent_110%)]" />
         
-        {/* Decorative rings */}
-        <div className="absolute top-20 right-20 w-32 h-32 border border-primary-200/30 dark:border-primary-700/30 rounded-full" />
-        <div className="absolute top-24 right-24 w-24 h-24 border border-primary-300/20 dark:border-primary-600/20 rounded-full" />
-        <div className="absolute bottom-32 left-20 w-20 h-20 border border-blue-200/40 dark:border-blue-700/40 rounded-full" />
+        {/* Decorative rings - hidden on mobile */}
+        <div className="hidden lg:block absolute top-20 right-20 w-32 h-32 border border-primary-200/30 dark:border-primary-700/30 rounded-full" />
+        <div className="hidden lg:block absolute top-24 right-24 w-24 h-24 border border-primary-300/20 dark:border-primary-600/20 rounded-full" />
+        <div className="hidden lg:block absolute bottom-32 left-20 w-20 h-20 border border-blue-200/40 dark:border-blue-700/40 rounded-full" />
       </div>
 
       <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12 lg:py-24">
@@ -100,7 +88,7 @@ export default function Hero() {
               className="inline-flex items-center gap-2 bg-gradient-to-r from-primary-50 to-blue-50 border border-primary-200/50 rounded-full px-3 py-1.5 sm:px-4 sm:py-2 mb-4 sm:mb-6"
             >
               <span className="relative flex h-2 w-2">
-                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary-400 opacity-75"></span>
+                <span className="hidden sm:inline-flex animate-ping absolute h-full w-full rounded-full bg-primary-400 opacity-75"></span>
                 <span className="relative inline-flex rounded-full h-2 w-2 bg-primary-500"></span>
               </span>
               <span className="text-xs sm:text-sm font-medium text-primary-700">100+ websites opgeleverd</span>
