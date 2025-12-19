@@ -1935,6 +1935,7 @@ function ProjectDetailModal({ project, darkMode, onClose, onUpdate, phases }: Om
       { id: 'rev_client_test', label: 'Klant heeft getest' },
       { id: 'rev_feedback', label: 'Laatste feedback verwerkt' },
       { id: 'rev_approval', label: 'Klant akkoord voor live' },
+      { id: 'rev_transfer_code', label: 'Verhuiscode domein ontvangen (indien nodig)' },
     ],
     live: [
       { id: 'live_domain', label: 'Domein gekoppeld' },

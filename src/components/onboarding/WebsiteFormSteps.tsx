@@ -634,6 +634,19 @@ export function WebsiteBedrijfStep({ data, onChange, disabled }: FormStepProps) 
         disabled={disabled}
         hint="Heb je al een domeinnaam of een voorkeur? Laat het leeg als je hulp wilt"
       />
+
+      <RadioGroup
+        label="Heb je een zakelijk e-mailadres nodig?"
+        name="needsBusinessEmail"
+        value={data.needsBusinessEmail || ''}
+        onChange={onChange}
+        disabled={disabled}
+        options={[
+          { value: 'yes', label: 'Ja, ik wil een zakelijk e-mail', description: 'Bijv. info@jouwbedrijf.nl' },
+          { value: 'already', label: 'Ik heb al een zakelijk e-mailadres' },
+          { value: 'no', label: 'Nee, niet nodig' },
+        ]}
+      />
     </motion.div>
   )
 }
@@ -688,7 +701,7 @@ export function WebsiteBrandingStep({ data, onChange, disabled }: FormStepProps)
         onChange={onChange}
         disabled={disabled}
         options={[
-          { value: 'yes', label: 'Ja, ik heb een logo', description: 'Stuur het logo naar info@webstability.nl' },
+          { value: 'yes', label: 'Ja, ik heb een logo', description: 'Upload via de Drive link die we klaarzetten' },
           { value: 'no', label: 'Nee, nog niet', description: 'We kunnen een logo voor je ontwerpen (apart te bestellen)' },
           { value: 'need_refresh', label: 'Ja, maar ik wil een nieuw logo', description: 'We bespreken de mogelijkheden' },
         ]}
@@ -703,7 +716,7 @@ export function WebsiteBrandingStep({ data, onChange, disabled }: FormStepProps)
           placeholder="Beschrijf je logo kort (kleuren, vorm, stijl)"
           disabled={disabled}
           rows={2}
-          hint="Upload je logobestanden via e-mail naar info@webstability.nl"
+          hint="Upload je logobestanden via de Drive link die we voor je klaarzetten"
         />
       )}
 
@@ -1049,7 +1062,7 @@ export function WebsiteContentStep({ data, onChange, disabled, packageId, onUpgr
         onChange={onChange}
         disabled={disabled}
         options={[
-          { value: 'yes', label: 'Ja, ik lever de teksten aan', description: 'Stuur teksten naar info@webstability.nl' },
+          { value: 'yes', label: 'Ja, ik lever de teksten aan', description: 'Upload via de Drive link die we klaarzetten' },
           { value: 'partial', label: 'Gedeeltelijk, ik heb hulp nodig' },
           { value: 'no', label: 'Nee, ik wil hulp bij het schrijven', description: 'We maken AI-gegenereerde teksten (gratis inbegrepen)' },
         ]}
@@ -1062,10 +1075,9 @@ export function WebsiteContentStep({ data, onChange, disabled, packageId, onUpgr
         onChange={onChange}
         disabled={disabled}
         options={[
-          { value: 'yes', label: 'Ja, ik heb goede foto\'s', description: 'Stuur foto\'s naar info@webstability.nl' },
+          { value: 'yes', label: 'Ja, ik heb goede foto\'s', description: 'Upload via de Drive link die we voor je klaarzetten' },
           { value: 'some', label: 'Een paar, maar niet genoeg' },
           { value: 'no', label: 'Nee, gebruik stockfoto\'s', description: 'We zoeken passende stockfoto\'s uit' },
-          { value: 'need_shoot', label: 'Nee, ik wil een fotoshoot', description: 'We kunnen dit voor je regelen' },
         ]}
       />
 
@@ -1115,7 +1127,7 @@ export function WebsiteContentStep({ data, onChange, disabled, packageId, onUpgr
 
       <div className="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-xl p-4">
         <p className="text-sm text-blue-700 dark:text-blue-300">
-          💡 <strong>Tip:</strong> Stuur je content (teksten, logo, foto's) naar <strong>info@webstability.nl</strong> met je projectnummer.
+          💡 <strong>Tip:</strong> Na je aanmelding ontvang je van ons een Google Drive link waar je al je bestanden (teksten, logo, foto's) kunt uploaden.
         </p>
       </div>
     </motion.div>
