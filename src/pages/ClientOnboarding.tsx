@@ -102,7 +102,8 @@ const getStepsForService = (service: ServiceType): StepConfig[] => {
         { id: 'doelen', title: 'Doelen', icon: Target },
         { id: 'paginas', title: "Pagina's", icon: FileText },
         { id: 'content', title: 'Content', icon: Image },
-        { id: 'extra', title: 'Extra', icon: Settings },
+        { id: 'extra', title: 'Planning', icon: Settings },
+        { id: 'samenvatting', title: 'Controle', icon: CheckCircle2 },
       ]
     case 'webshop':
       return [
@@ -551,7 +552,8 @@ export default function ClientOnboarding() {
       onChange: updateField,
       disabled: !canEdit,
       packageId: currentPackage,
-      onUpgrade: handleUpgradeRequest
+      onUpgrade: handleUpgradeRequest,
+      onGoToStep: goToStep
     }
 
     // Get the step component based on service type

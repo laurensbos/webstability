@@ -1307,7 +1307,11 @@ export function WebsiteExtraStep({ data, onChange, disabled, packageId, onUpgrad
 }
 
 // Step 7: Samenvatting - overzicht van alle ingevulde gegevens
-export function WebsiteSamenvattingStep({ data, packageId, onUpgrade }: FormStepProps) {
+interface SamenvattingStepProps extends FormStepProps {
+  onGoToStep?: (stepIndex: number) => void
+}
+
+export function WebsiteSamenvattingStep({ data, packageId, onUpgrade, onGoToStep }: SamenvattingStepProps) {
   const pkg = getPackageConfig(packageId || data.package || data.packageType)
   const prefilledPages = data.pages || data.selectedPages || []
   const customPages = data.customPages || []
@@ -1320,6 +1324,20 @@ export function WebsiteSamenvattingStep({ data, packageId, onUpgrade }: FormStep
         <span className="text-gray-500 dark:text-gray-400">{label}:</span>
         <span className="font-medium text-gray-900 dark:text-white break-words sm:text-right sm:max-w-[60%]">{value}</span>
       </div>
+    )
+  }
+
+  // Edit button component
+  const EditButton = ({ step }: { step: number }) => {
+    if (!onGoToStep) return null
+    return (
+      <button
+        onClick={() => onGoToStep(step)}
+        className="ml-auto text-xs px-2 py-1 text-gray-500 hover:text-primary-600 hover:bg-primary-50 dark:hover:bg-primary-900/20 rounded-lg transition-colors flex items-center gap-1"
+      >
+        <ArrowUpRight className="w-3 h-3" />
+        Wijzig
+      </button>
     )
   }
 
@@ -1368,6 +1386,7 @@ export function WebsiteSamenvattingStep({ data, packageId, onUpgrade }: FormStep
             <Building2 className="w-4 h-4 text-primary-600 dark:text-primary-400" />
           </div>
           <span className="font-medium text-primary-700 dark:text-primary-300">Bedrijfsgegevens</span>
+          <EditButton step={1} />
         </div>
         <div className="space-y-2 text-sm">
           <SummaryItem label="Bedrijfsnaam" value={data.businessName || data.companyName} />
@@ -1395,6 +1414,7 @@ export function WebsiteSamenvattingStep({ data, packageId, onUpgrade }: FormStep
             <Palette className="w-4 h-4 text-purple-600 dark:text-purple-400" />
           </div>
           <span className="font-medium text-purple-700 dark:text-purple-300">Logo & Huisstijl</span>
+          <EditButton step={2} />
         </div>
         <div className="space-y-2 text-sm">
           <SummaryItem label="Design stijl" value={data.designStyle} />
@@ -1432,6 +1452,7 @@ export function WebsiteSamenvattingStep({ data, packageId, onUpgrade }: FormStep
             <Target className="w-4 h-4 text-emerald-600 dark:text-emerald-400" />
           </div>
           <span className="font-medium text-emerald-700 dark:text-emerald-300">Doelen & Conversie</span>
+          <EditButton step={3} />
         </div>
         <div className="space-y-2 text-sm">
           <SummaryItem label="Hoofddoel" value={data.goal || data.mainGoal} />
@@ -1468,6 +1489,7 @@ export function WebsiteSamenvattingStep({ data, packageId, onUpgrade }: FormStep
             <FileText className="w-4 h-4 text-amber-600 dark:text-amber-400" />
           </div>
           <span className="font-medium text-amber-700 dark:text-amber-300">Pagina's ({allPages.length})</span>
+          <EditButton step={4} />
         </div>
         <div className="flex flex-wrap gap-1.5">
           {allPages.map((page: string) => (
@@ -1485,6 +1507,7 @@ export function WebsiteSamenvattingStep({ data, packageId, onUpgrade }: FormStep
             <Image className="w-4 h-4 text-cyan-600 dark:text-cyan-400" />
           </div>
           <span className="font-medium text-cyan-700 dark:text-cyan-300">Content & Media</span>
+          <EditButton step={5} />
         </div>
         <div className="space-y-2 text-sm">
           <SummaryItem label="Teksten" value={
@@ -1514,6 +1537,7 @@ export function WebsiteSamenvattingStep({ data, packageId, onUpgrade }: FormStep
             <Settings className="w-4 h-4 text-violet-600 dark:text-violet-400" />
           </div>
           <span className="font-medium text-violet-700 dark:text-violet-300">Planning</span>
+          <EditButton step={6} />
         </div>
         <div className="space-y-2 text-sm">
           <SummaryItem label="Deadline" value={

@@ -350,6 +350,21 @@ export const sendWelcomeEmail = async (customer: {
                 <div style="width: 36px; height: 36px; background: ${colors.primary}; border-radius: 50%; color: white; font-weight: 700; font-size: 16px; text-align: center; line-height: 36px;">2</div>
               </td>
               <td style="vertical-align: top;">
+                <p style="margin: 0 0 4px; font-weight: 600; color: #0f172a;">Drive link ontvangen</p>
+                <p style="margin: 0; color: #64748b; font-size: 14px;">Binnen 24 uur sturen we je een Google Drive link voor je bestanden (logo, foto's, etc.)</p>
+              </td>
+            </tr>
+          </table>
+        </td>
+      </tr>
+      <tr>
+        <td style="padding: 16px 0; border-bottom: 1px solid #f1f5f9;">
+          <table role="presentation" cellspacing="0" cellpadding="0">
+            <tr>
+              <td style="width: 48px; vertical-align: top;">
+                <div style="width: 36px; height: 36px; background: ${colors.primary}; border-radius: 50%; color: white; font-weight: 700; font-size: 16px; text-align: center; line-height: 36px;">3</div>
+              </td>
+              <td style="vertical-align: top;">
                 <p style="margin: 0 0 4px; font-weight: 600; color: #0f172a;">Wij ontwerpen</p>
                 <p style="margin: 0; color: #64748b; font-size: 14px;">Binnen 5-7 dagen ontvang je het eerste design.</p>
               </td>
@@ -362,7 +377,7 @@ export const sendWelcomeEmail = async (customer: {
           <table role="presentation" cellspacing="0" cellpadding="0">
             <tr>
               <td style="width: 48px; vertical-align: top;">
-                <div style="width: 36px; height: 36px; background: ${colors.primary}; border-radius: 50%; color: white; font-weight: 700; font-size: 16px; text-align: center; line-height: 36px;">3</div>
+                <div style="width: 36px; height: 36px; background: ${colors.primary}; border-radius: 50%; color: white; font-weight: 700; font-size: 16px; text-align: center; line-height: 36px;">4</div>
               </td>
               <td style="vertical-align: top;">
                 <p style="margin: 0 0 4px; font-weight: 600; color: #0f172a;">Feedback & goedkeuren</p>
@@ -377,7 +392,7 @@ export const sendWelcomeEmail = async (customer: {
           <table role="presentation" cellspacing="0" cellpadding="0">
             <tr>
               <td style="width: 48px; vertical-align: top;">
-                <div style="width: 36px; height: 36px; background: #f59e0b; border-radius: 50%; color: white; font-weight: 700; font-size: 16px; text-align: center; line-height: 36px;">€</div>
+                <div style="width: 36px; height: 36px; background: #f59e0b; border-radius: 50%; color: white; font-weight: 700; font-size: 16px; text-align: center; line-height: 36px;">5</div>
               </td>
               <td style="vertical-align: top;">
                 <p style="margin: 0 0 4px; font-weight: 600; color: #0f172a;">Betaling</p>

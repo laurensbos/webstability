@@ -157,13 +157,21 @@ export const sendWelcomeEmail = async (customer: {
           <div class="step">
             <div class="step-num">2</div>
             <div class="step-text">
+              <strong>Drive link ontvangen</strong><br>
+              Binnen 24 uur sturen we je een Google Drive link voor je bestanden.
+            </div>
+          </div>
+          
+          <div class="step">
+            <div class="step-num">3</div>
+            <div class="step-text">
               <strong>Wij ontwerpen</strong><br>
               Binnen 5-7 dagen ontvang je het eerste design.
             </div>
           </div>
           
           <div class="step">
-            <div class="step-num">3</div>
+            <div class="step-num">4</div>
             <div class="step-text">
               <strong>Feedback geven</strong><br>
               Bekijk het design en geef feedback. Tot 3 revisies inbegrepen!
@@ -171,10 +179,10 @@ export const sendWelcomeEmail = async (customer: {
           </div>
           
           <div class="step">
-            <div class="step-num">4</div>
+            <div class="step-num">5</div>
             <div class="step-text">
-              <strong>Live!</strong><br>
-              Na goedkeuring en betaling gaat je website direct live.
+              <strong>Betaling & Live!</strong><br>
+              Pas na goedkeuring betaal je. Dan gaat je website direct live.
             </div>
           </div>
           
