@@ -46,13 +46,13 @@ function FloatingParticles() {
 const portfolioItems = [
   {
     id: 1,
-    name: 'Lissers',
+    name: 'Lissers Rijschool',
     url: 'https://lissers.nl',
-    description: 'Moderne website voor een professioneel bedrijf in de Bollenstreek.',
-    category: 'Zakelijk',
+    description: 'Moderne website voor autorijschool met online inschrijving en pakketoverzicht.',
+    category: 'Rijschool',
     gradient: 'from-blue-600 to-indigo-700',
-    icon: '🏢',
-    result: 'Website binnen 5 dagen live',
+    icon: '🚗',
+    result: 'Online leerlingen werven',
   },
   {
     id: 2,
@@ -62,17 +62,17 @@ const portfolioItems = [
     category: 'Dienstverlening',
     gradient: 'from-emerald-600 to-teal-700',
     icon: '🏡',
-    result: 'Meer offerteaanvragen via website',
+    result: 'Meer offerteaanvragen',
   },
   {
     id: 3,
     name: 'Rietveld Hoveniers',
     url: 'https://rietveld-hoveniers.nl',
     description: 'Stijlvolle website voor hoveniersbedrijf met portfolio van projecten.',
-    category: 'Dienstverlening',
-    gradient: 'from-orange-500 to-amber-600',
+    category: 'Hoveniers',
+    gradient: 'from-green-600 to-emerald-700',
     icon: '🌿',
-    result: 'Professionele online uitstraling',
+    result: 'Professionele uitstraling',
   },
 ]
 

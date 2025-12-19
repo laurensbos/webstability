@@ -13,7 +13,7 @@ const extraServices = [
     icon: Palette,
     title: 'Logo laten maken',
     description: 'Professioneel logo ontwerp inclusief 3 concepten en 2 revisierondes.',
-    price: '150',
+    price: '169',
     color: 'purple',
     features: ['3 unieke concepten', '2 revisierondes', 'Alle bestandsformaten', 'Binnen 2 weken klaar'],
     link: '/logo'
@@ -23,7 +23,7 @@ const extraServices = [
     icon: Plane,
     title: 'Luchtvideografie',
     description: 'Spectaculaire luchtopnames van je bedrijf door een gecertificeerde piloot.',
-    price: '399',
+    price: '349',
     color: 'sky',
     features: ['4K video opnames', '10-15 bewerkte foto\'s', 'Gecertificeerd piloot', 'Heel Nederland'],
     link: '/luchtvideografie'
@@ -78,7 +78,7 @@ export default function ExtraServices() {
                       </div>
                       <div className="text-right">
                         <span className="text-2xl font-bold">€{service.price}</span>
-                        <span className="text-white/70 text-xs block">excl. btw</span>
+                        <span className="text-white/70 text-xs block">incl. btw</span>
                       </div>
                     </div>
                     <h3 className="font-bold text-lg">{service.title}</h3>
@@ -213,7 +213,7 @@ export default function ExtraServices() {
                       <div>
                         <h3 className="text-xl font-bold text-gray-900 dark:text-white">{service.title}</h3>
                         <p className={`text-lg font-bold ${colorClasses.text}`}>
-                          €{service.price} <span className="text-gray-400 dark:text-gray-500 font-normal text-sm">excl. btw</span>
+                          €{service.price} <span className="text-gray-400 dark:text-gray-500 font-normal text-sm">incl. btw</span>
                         </p>
                       </div>
                       <div className={`p-2.5 ${colorClasses.light} dark:bg-opacity-20 rounded-xl`}>
