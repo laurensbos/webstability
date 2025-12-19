@@ -1267,13 +1267,21 @@ function OverviewView({ darkMode, projects, setActiveView, onSelectProject, onUp
   const pendingPayments = projects.filter(p => p.paymentStatus === 'awaiting_payment').length
   const activeProjects = projects.filter(p => p.phase !== 'live').length
 
+  // Time-based greeting
+  const getGreeting = () => {
+    const hour = new Date().getHours()
+    if (hour < 12) return 'Goedemorgen'
+    if (hour < 18) return 'Goedemiddag'
+    return 'Goedenavond'
+  }
+
   return (
     <div className="space-y-6">
       {/* Header met vandaag focus */}
       <div className="flex items-center justify-between">
         <div>
           <h1 className={`text-xl font-bold ${darkMode ? 'text-white' : 'text-gray-900'}`}>
-            Goedemorgen! 👋
+            {getGreeting()}! 👋
           </h1>
           <p className={`text-sm ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>
             {smartActions.length > 0 
@@ -1281,12 +1289,52 @@ function OverviewView({ darkMode, projects, setActiveView, onSelectProject, onUp
               : 'Alles is up-to-date! 🎉'}
           </p>
         </div>
-        <div className={`px-3 py-1.5 rounded-full text-sm font-medium ${
-          darkMode ? 'bg-emerald-500/20 text-emerald-400' : 'bg-emerald-100 text-emerald-700'
-        }`}>
-          {activeProjects} actief
+        <div className="flex items-center gap-2">
+          {/* Keyboard hint */}
+          <div className={`hidden sm:flex items-center gap-1 px-2 py-1 rounded-lg text-xs ${
+            darkMode ? 'bg-gray-700 text-gray-400' : 'bg-gray-100 text-gray-500'
+          }`}>
+            <kbd className={`px-1.5 py-0.5 rounded font-mono text-[10px] ${
+              darkMode ? 'bg-gray-600' : 'bg-white border border-gray-200'
+            }`}>1-4</kbd>
+            <span>navigeer</span>
+          </div>
+          <div className={`px-3 py-1.5 rounded-full text-sm font-medium ${
+            darkMode ? 'bg-emerald-500/20 text-emerald-400' : 'bg-emerald-100 text-emerald-700'
+          }`}>
+            {activeProjects} actief
+          </div>
         </div>
       </div>
+
+      {/* Quick Search */}
+      {projects.length > 3 && (
+        <div className="relative">
+          <Search className={`absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 ${darkMode ? 'text-gray-500' : 'text-gray-400'}`} />
+          <input
+            type="text"
+            placeholder="Zoek project... (⌘K)"
+            className={`w-full pl-10 pr-4 py-2.5 rounded-xl border text-sm ${
+              darkMode 
+                ? 'bg-gray-800 border-gray-700 text-white placeholder-gray-500 focus:border-emerald-500' 
+                : 'bg-white border-gray-200 text-gray-900 placeholder-gray-400 focus:border-emerald-500'
+            } focus:outline-none focus:ring-2 focus:ring-emerald-500/20 transition-all`}
+            onChange={(e) => {
+              const query = e.target.value.toLowerCase()
+              if (query.length > 1) {
+                const match = projects.find(p => 
+                  p.businessName.toLowerCase().includes(query) ||
+                  p.contactEmail.toLowerCase().includes(query)
+                )
+                if (match) {
+                  onSelectProject(match)
+                  setActiveView('projects')
+                }
+              }
+            }}
+          />
+        </div>
+      )}
 
       {/* 🎯 Smart Action Center */}
       {smartActions.length > 0 && (
@@ -1531,6 +1579,107 @@ function OverviewView({ darkMode, projects, setActiveView, onSelectProject, onUp
           })}
         </div>
       </div>
+
+      {/* Recent Activity - laatste activiteiten */}
+      {(() => {
+        // Verzamel recente activiteiten
+        const recentActivities = projects
+          .flatMap(project => {
+            const activities: { type: 'message' | 'phase' | 'payment'; project: Project; date: string; details: string }[] = []
+            
+            // Laatste berichten (alleen client berichten)
+            project.messages
+              .filter(m => m.from === 'client')
+              .slice(-2)
+              .forEach(m => {
+                activities.push({
+                  type: 'message',
+                  project,
+                  date: m.date,
+                  details: m.message.slice(0, 50) + (m.message.length > 50 ? '...' : '')
+                })
+              })
+            
+            // Project updates gebaseerd op updatedAt
+            if (project.updatedAt) {
+              activities.push({
+                type: 'phase',
+                project,
+                date: project.updatedAt,
+                details: `Fase: ${PHASE_CONFIG[project.phase]?.label || project.phase}`
+              })
+            }
+            
+            return activities
+          })
+          .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
+          .slice(0, 5)
+        
+        if (recentActivities.length === 0) return null
+        
+        const formatActivityTime = (dateStr: string) => {
+          const date = new Date(dateStr)
+          const now = new Date()
+          const diffMs = now.getTime() - date.getTime()
+          const diffMins = Math.floor(diffMs / 60000)
+          const diffHours = Math.floor(diffMs / 3600000)
+          const diffDays = Math.floor(diffMs / 86400000)
+          
+          if (diffMins < 1) return 'Zojuist'
+          if (diffMins < 60) return `${diffMins}m geleden`
+          if (diffHours < 24) return `${diffHours}u geleden`
+          if (diffDays < 7) return `${diffDays}d geleden`
+          return date.toLocaleDateString('nl-NL', { day: 'numeric', month: 'short' })
+        }
+        
+        return (
+          <div className={`p-4 rounded-2xl ${darkMode ? 'bg-gray-800' : 'bg-white border border-gray-200'}`}>
+            <div className="flex items-center justify-between mb-3">
+              <h3 className={`font-semibold ${darkMode ? 'text-white' : 'text-gray-900'}`}>
+                Recente activiteit
+              </h3>
+              <Clock className={`w-4 h-4 ${darkMode ? 'text-gray-500' : 'text-gray-400'}`} />
+            </div>
+            <div className="space-y-2">
+              {recentActivities.map((activity, idx) => (
+                <div
+                  key={`${activity.project.id}-${activity.type}-${idx}`}
+                  onClick={() => {
+                    onSelectProject(activity.project)
+                    setActiveView(activity.type === 'message' ? 'messages' : 'projects')
+                  }}
+                  className={`flex items-center gap-3 p-2 rounded-lg cursor-pointer transition-colors ${
+                    darkMode ? 'hover:bg-gray-700' : 'hover:bg-gray-50'
+                  }`}
+                >
+                  <div className={`w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0 ${
+                    activity.type === 'message' 
+                      ? 'bg-blue-100 dark:bg-blue-900/30' 
+                      : 'bg-purple-100 dark:bg-purple-900/30'
+                  }`}>
+                    {activity.type === 'message' ? (
+                      <MessageSquare className="w-4 h-4 text-blue-600 dark:text-blue-400" />
+                    ) : (
+                      <RefreshCw className="w-4 h-4 text-purple-600 dark:text-purple-400" />
+                    )}
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <p className={`text-sm font-medium truncate ${darkMode ? 'text-white' : 'text-gray-900'}`}>
+                      {activity.project.businessName}
+                    </p>
+                    <p className={`text-xs truncate ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>
+                      {activity.details}
+                    </p>
+                  </div>
+                  <span className={`text-xs flex-shrink-0 ${darkMode ? 'text-gray-500' : 'text-gray-400'}`}>
+                    {formatActivityTime(activity.date)}
+                  </span>
+                </div>
+              ))}
+            </div>
+          </div>
+        )
+      })()}
     </div>
   )
 }
@@ -6580,13 +6729,28 @@ export default function DeveloperDashboardNew() {
   // Keyboard shortcuts
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
+      // Skip if typing in input fields
       if (e.target instanceof HTMLInputElement || e.target instanceof HTMLTextAreaElement) return
       
+      // Escape closes sidebar
       if (e.key === 'Escape') {
         setSidebarOpen(false)
       }
-      if (e.key === 'd' || e.key === 'D') {
-        setDarkMode(!darkMode)
+      
+      // Cmd/Ctrl + K for search focus
+      if ((e.metaKey || e.ctrlKey) && e.key === 'k') {
+        e.preventDefault()
+        const searchInput = document.querySelector('input[placeholder*="Zoek"]') as HTMLInputElement
+        if (searchInput) searchInput.focus()
+      }
+      
+      // Numeric shortcuts for views (1-4)
+      if (!e.metaKey && !e.ctrlKey && !e.altKey) {
+        if (e.key === '1') setActiveView('overview')
+        if (e.key === '2') setActiveView('projects')
+        if (e.key === '3') setActiveView('messages')
+        if (e.key === '4') setActiveView('payments')
+        if (e.key === 'd' || e.key === 'D') setDarkMode(!darkMode)
       }
     }
     
