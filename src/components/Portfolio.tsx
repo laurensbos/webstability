@@ -48,43 +48,36 @@ const portfolioItems = [
     id: 1,
     name: 'Lissers',
     url: 'https://lissers.nl',
-    description: 'Professionele website voor een innovatief bedrijf',
+    description: 'Moderne website voor een professioneel bedrijf in de Bollenstreek.',
     category: 'Zakelijk',
-    gradient: 'from-blue-500 to-purple-600',
-    screenshot: 'https://api.microlink.io/?url=https://lissers.nl&screenshot=true&meta=false&embed=screenshot.url&waitForTimeout=3000',
+    gradient: 'from-blue-600 to-indigo-700',
+    icon: '🏢',
+    result: 'Website binnen 5 dagen live',
   },
   {
     id: 2,
     name: 'Hoogduin Onderhoud',
     url: 'https://hoogduinonderhoud.nl',
-    description: 'Moderne website voor onderhoudsbedrijf',
+    description: 'Professionele website voor onderhoud en renovatie in de Bollenstreek.',
     category: 'Dienstverlening',
-    gradient: 'from-green-500 to-teal-600',
-    screenshot: 'https://api.microlink.io/?url=https://hoogduinonderhoud.nl&screenshot=true&meta=false&embed=screenshot.url&waitForTimeout=3000',
+    gradient: 'from-emerald-600 to-teal-700',
+    icon: '🏡',
+    result: 'Meer offerteaanvragen via website',
   },
   {
     id: 3,
     name: 'Rietveld Hoveniers',
     url: 'https://rietveld-hoveniers.nl',
-    description: 'Stijlvolle website voor hoveniersbedrijf',
+    description: 'Stijlvolle website voor hoveniersbedrijf met portfolio van projecten.',
     category: 'Dienstverlening',
-    gradient: 'from-orange-500 to-red-600',
-    screenshot: 'https://api.microlink.io/?url=https://rietveld-hoveniers.nl&screenshot=true&meta=false&embed=screenshot.url&waitForTimeout=3000',
+    gradient: 'from-orange-500 to-amber-600',
+    icon: '🌿',
+    result: 'Professionele online uitstraling',
   },
 ]
 
 export default function Portfolio() {
   const [hoveredItem, setHoveredItem] = useState<number | null>(null)
-  const [loadedImages, setLoadedImages] = useState<Set<number>>(new Set())
-  const [failedImages, setFailedImages] = useState<Set<number>>(new Set())
-
-  const handleImageLoad = (id: number) => {
-    setLoadedImages(prev => new Set(prev).add(id))
-  }
-
-  const handleImageError = (id: number) => {
-    setFailedImages(prev => new Set(prev).add(id))
-  }
 
   return (
     <section id="portfolio" className="py-16 lg:py-24 bg-gradient-to-b from-white via-gray-50 to-white dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 relative overflow-hidden">
@@ -93,8 +86,8 @@ export default function Portfolio() {
       
       {/* Background gradient blobs */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute -top-40 -right-40 w-80 h-80 bg-gradient-to-bl from-primary-100/30 to-blue-100/20 rounded-full blur-3xl" />
-        <div className="absolute -bottom-40 -left-40 w-96 h-96 bg-gradient-to-tr from-purple-100/20 to-primary-100/20 rounded-full blur-3xl" />
+        <div className="absolute -top-40 -right-40 w-80 h-80 bg-gradient-to-bl from-primary-100/30 to-blue-100/20 dark:from-primary-900/20 dark:to-blue-900/10 rounded-full blur-3xl" />
+        <div className="absolute -bottom-40 -left-40 w-96 h-96 bg-gradient-to-tr from-purple-100/20 to-primary-100/20 dark:from-purple-900/10 dark:to-primary-900/10 rounded-full blur-3xl" />
       </div>
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
@@ -138,43 +131,33 @@ export default function Portfolio() {
                 transition={{ delay: index * 0.1 }}
                 className="flex-shrink-0 w-[280px] snap-start group block"
               >
-                <div className="relative bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-xl overflow-hidden shadow-lg border border-gray-200/80 dark:border-gray-700 hover:shadow-xl hover:border-primary-200/50 dark:hover:border-primary-700/50 transition-all">
-                  {/* Screenshot Container */}
-                  <div className="relative aspect-[16/10] overflow-hidden">
-                    {/* Gradient Fallback */}
-                    <div className={`absolute inset-0 bg-gradient-to-br ${item.gradient} flex items-center justify-center`}>
-                      {!loadedImages.has(item.id) && !failedImages.has(item.id) && (
-                        <div className="w-6 h-6 border-2 border-white/30 border-t-white rounded-full animate-spin" />
-                      )}
-                      {failedImages.has(item.id) && (
-                        <div className="text-white text-center">
-                          <div className="text-2xl font-bold">{item.name.charAt(0)}</div>
-                        </div>
-                      )}
+                <div className="relative bg-gray-50 dark:bg-gray-800 rounded-xl overflow-hidden shadow-lg border border-gray-200 dark:border-gray-700 hover:shadow-xl hover:border-primary-300 dark:hover:border-primary-700 transition-all">
+                  {/* Gradient Header with Icon */}
+                  <div className={`relative bg-gradient-to-br ${item.gradient} p-6 text-center`}>
+                    <div className="text-4xl mb-2">{item.icon}</div>
+                    <div className="text-white/80 text-xs font-medium tracking-wider uppercase">
+                      {item.url.replace('https://', '')}
                     </div>
-                    
-                    <img
-                      src={item.screenshot}
-                      alt={`Screenshot van ${item.name}`}
-                      className={`relative w-full h-full object-cover object-top transition-opacity duration-500 ${
-                        loadedImages.has(item.id) ? 'opacity-100' : 'opacity-0'
-                      }`}
-                      loading="lazy"
-                      onLoad={() => handleImageLoad(item.id)}
-                      onError={() => handleImageError(item.id)}
-                    />
                   </div>
 
                   {/* Content */}
-                  <div className="p-4">
-                    <span className="text-[10px] font-semibold text-primary-600 bg-gradient-to-r from-primary-50 to-blue-50 px-2.5 py-1 rounded-full border border-primary-100/50">
+                  <div className="p-4 bg-white dark:bg-gray-800">
+                    <span className="text-[10px] font-semibold text-primary-600 dark:text-primary-400 bg-primary-50 dark:bg-primary-900/30 px-2.5 py-1 rounded-full border border-primary-100 dark:border-primary-800">
                       {item.category}
                     </span>
-                    <h3 className="text-base font-bold text-gray-900 mt-2 mb-1">
+                    <h3 className="text-base font-bold text-gray-900 dark:text-white mt-2 mb-1">
                       {item.name}
                     </h3>
-                    <div className="flex items-center gap-1.5 text-primary-600 font-semibold text-xs">
-                      <span>Bekijk</span>
+                    <p className="text-xs text-gray-500 dark:text-gray-400 mb-3">
+                      {item.description}
+                    </p>
+                    {/* Result badge */}
+                    <div className="flex items-center gap-1.5 text-emerald-600 dark:text-emerald-400 text-xs font-medium">
+                      <span>✓</span>
+                      <span>{item.result}</span>
+                    </div>
+                    <div className="flex items-center gap-1.5 text-primary-600 dark:text-primary-400 font-semibold text-xs mt-3">
+                      <span>Bekijk website</span>
                       <ExternalLink className="w-3 h-3" />
                     </div>
                   </div>
@@ -206,58 +189,45 @@ export default function Portfolio() {
               onMouseLeave={() => setHoveredItem(null)}
               className="group block"
             >
-              <div className="relative bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-2xl overflow-hidden shadow-lg hover:shadow-2xl hover:shadow-primary-500/10 transition-all duration-500 border border-gray-200/80 dark:border-gray-700 hover:border-primary-200/50 dark:hover:border-primary-700/50 hover:-translate-y-1">
-                {/* Screenshot Container */}
-                <div className="relative aspect-[16/10] overflow-hidden">
-                  {/* Browser Chrome */}
-                  <div className="absolute top-0 left-0 right-0 h-8 bg-gradient-to-b from-gray-100 to-gray-200 dark:from-gray-700 dark:to-gray-800 flex items-center px-3 gap-1.5 z-10 border-b border-gray-200/50 dark:border-gray-600">
-                    <div className="w-2.5 h-2.5 rounded-full bg-red-400 shadow-sm" />
-                    <div className="w-2.5 h-2.5 rounded-full bg-yellow-400 shadow-sm" />
-                    <div className="w-2.5 h-2.5 rounded-full bg-green-400 shadow-sm" />
-                    <div className="flex-1 mx-3">
-                      <div className="bg-white/80 dark:bg-gray-700/80 backdrop-blur-sm rounded-md px-3 py-1 text-xs text-gray-500 dark:text-gray-400 truncate border border-gray-200/50 dark:border-gray-600">
-                        {item.url.replace('https://', '')}
-                      </div>
-                    </div>
+              <div className="relative bg-white dark:bg-gray-800 rounded-2xl overflow-hidden shadow-lg hover:shadow-2xl hover:shadow-primary-500/10 transition-all duration-500 border border-gray-200 dark:border-gray-700 hover:border-primary-300 dark:hover:border-primary-600 hover:-translate-y-1">
+                {/* Gradient Header */}
+                <div className={`relative bg-gradient-to-br ${item.gradient} p-8`}>
+                  {/* Browser Chrome Dots */}
+                  <div className="absolute top-4 left-4 flex gap-1.5">
+                    <div className="w-2.5 h-2.5 rounded-full bg-white/30" />
+                    <div className="w-2.5 h-2.5 rounded-full bg-white/30" />
+                    <div className="w-2.5 h-2.5 rounded-full bg-white/30" />
                   </div>
                   
-                  {/* Screenshot with gradient fallback */}
-                  <div className="pt-8 h-full relative">
-                    {/* Gradient Fallback (always visible behind image) */}
-                    <div className={`absolute inset-0 bg-gradient-to-br ${item.gradient} flex items-center justify-center`}>
-                      {!loadedImages.has(item.id) && !failedImages.has(item.id) && (
-                        <div className="w-8 h-8 border-3 border-white/30 border-t-white rounded-full animate-spin" />
-                      )}
-                      {failedImages.has(item.id) && (
-                        <div className="text-white text-center">
-                          <div className="text-4xl font-bold mb-2">{item.name.charAt(0)}</div>
-                          <div className="text-sm opacity-75">{item.url.replace('https://', '')}</div>
-                        </div>
-                      )}
+                  {/* Icon and URL */}
+                  <div className="text-center pt-4">
+                    <motion.div 
+                      className="text-5xl mb-3"
+                      animate={{ 
+                        scale: hoveredItem === item.id ? 1.1 : 1,
+                        rotate: hoveredItem === item.id ? [0, -5, 5, 0] : 0
+                      }}
+                      transition={{ duration: 0.3 }}
+                    >
+                      {item.icon}
+                    </motion.div>
+                    <div className="inline-flex items-center gap-2 bg-white/20 backdrop-blur-sm rounded-full px-4 py-1.5">
+                      <div className="w-2 h-2 rounded-full bg-green-400 animate-pulse" />
+                      <span className="text-white/90 text-sm font-medium">
+                        {item.url.replace('https://', '')}
+                      </span>
                     </div>
-                    
-                    {/* Actual Screenshot */}
-                    <img
-                      src={item.screenshot}
-                      alt={`Screenshot van ${item.name}`}
-                      className={`relative w-full h-full object-cover object-top transition-opacity duration-500 ${
-                        loadedImages.has(item.id) ? 'opacity-100' : 'opacity-0'
-                      }`}
-                      loading="lazy"
-                      onLoad={() => handleImageLoad(item.id)}
-                      onError={() => handleImageError(item.id)}
-                    />
                   </div>
 
                   {/* Hover Overlay */}
                   <motion.div
                     initial={false}
                     animate={{ opacity: hoveredItem === item.id ? 1 : 0 }}
-                    className="absolute inset-0 bg-gradient-to-t from-gray-900/90 via-gray-900/50 to-transparent flex items-end justify-center pb-8 pointer-events-none"
+                    className="absolute inset-0 bg-black/20 flex items-center justify-center pointer-events-none"
                   >
-                    <div className="flex items-center gap-2 text-white font-semibold">
-                      <ExternalLink className="w-5 h-5" />
-                      <span>Bekijk live website</span>
+                    <div className="flex items-center gap-2 text-white font-semibold bg-white/20 backdrop-blur-sm rounded-full px-4 py-2">
+                      <ExternalLink className="w-4 h-4" />
+                      <span>Bekijk live</span>
                     </div>
                   </motion.div>
                 </div>
@@ -265,8 +235,13 @@ export default function Portfolio() {
                 {/* Content */}
                 <div className="p-6">
                   <div className="flex items-center justify-between mb-3">
-                    <span className="text-xs font-semibold text-primary-600 dark:text-primary-400 bg-gradient-to-r from-primary-50 to-blue-50 dark:from-primary-900/30 dark:to-blue-900/30 px-3 py-1.5 rounded-full border border-primary-100/50 dark:border-primary-800/50">
+                    <span className="text-xs font-semibold text-primary-600 dark:text-primary-400 bg-primary-50 dark:bg-primary-900/30 px-3 py-1.5 rounded-full border border-primary-100 dark:border-primary-800">
                       {item.category}
+                    </span>
+                    {/* Result badge */}
+                    <span className="text-xs font-medium text-emerald-600 dark:text-emerald-400 flex items-center gap-1">
+                      <span>✓</span>
+                      <span className="hidden sm:inline">{item.result}</span>
                     </span>
                   </div>
                   <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-2 group-hover:text-primary-600 dark:group-hover:text-primary-400 transition-colors">
