@@ -1,5 +1,5 @@
 import { motion } from 'framer-motion'
-import { ArrowRight, Mail, Phone, MapPin, ChevronDown, Sparkles } from 'lucide-react'
+import { ArrowRight, Mail, Phone, MapPin, ChevronDown, Sparkles, Star, ExternalLink } from 'lucide-react'
 import { Link } from 'react-router-dom'
 import { useState } from 'react'
 import Logo from './Logo'
@@ -436,6 +436,87 @@ export default function Footer({ ctaVariant = 'default' }: FooterProps) {
                   </li>
                 ))}
               </ul>
+            </div>
+          </div>
+        </div>
+
+        {/* Trustpilot Reviews Section */}
+        <div className="py-6 lg:py-8 border-t border-gray-200 dark:border-gray-800">
+          <div className="flex flex-col items-center text-center">
+            {/* Trustpilot Header */}
+            <a 
+              href="https://nl.trustpilot.com/review/webstability.nl"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="group flex flex-col sm:flex-row items-center gap-3 sm:gap-4 mb-4 hover:opacity-80 transition-opacity"
+            >
+              {/* Trustpilot Logo */}
+              <div className="flex items-center gap-2">
+                <svg viewBox="0 0 126 31" className="h-6 sm:h-7" aria-label="Trustpilot">
+                  <path fill="#00b67a" d="M30.141 11.07H18.63L15.07.517l-3.563 10.553L0 11.036l9.328 6.772-3.563 10.553 9.329-6.772 9.328 6.772-3.563-10.553z"/>
+                  <path fill="#005128" d="m21.185 20.136-1.077-3.328-5.037 3.656z"/>
+                  <text x="36" y="22" fill="currentColor" className="text-gray-900 dark:text-white" fontSize="16" fontWeight="700" fontFamily="system-ui">Trustpilot</text>
+                </svg>
+              </div>
+              
+              {/* Stars */}
+              <div className="flex items-center gap-0.5">
+                {[1, 2, 3, 4, 5].map((i) => (
+                  <div key={i} className="w-5 h-5 sm:w-6 sm:h-6 bg-[#00b67a] flex items-center justify-center">
+                    <Star className="w-3 h-3 sm:w-4 sm:h-4 text-white fill-white" />
+                  </div>
+                ))}
+              </div>
+              
+              {/* Rating */}
+              <span className="text-sm text-gray-600 dark:text-gray-400 group-hover:text-primary-600 dark:group-hover:text-primary-400 transition-colors flex items-center gap-1">
+                Beoordeel ons
+                <ExternalLink className="w-3 h-3" />
+              </span>
+            </a>
+            
+            {/* Review Cards - Horizontal scroll on mobile */}
+            <div className="w-full overflow-x-auto pb-2 -mx-4 px-4 sm:mx-0 sm:px-0 scrollbar-hide">
+              <div className="flex gap-3 sm:gap-4 min-w-max sm:min-w-0 sm:justify-center">
+                {/* Review 1 */}
+                <div className="flex-shrink-0 w-[260px] sm:w-auto sm:flex-1 sm:max-w-[280px] bg-white dark:bg-gray-800 rounded-xl p-4 border border-gray-200 dark:border-gray-700 shadow-sm">
+                  <div className="flex items-center gap-0.5 mb-2">
+                    {[1, 2, 3, 4, 5].map((i) => (
+                      <Star key={i} className="w-4 h-4 text-[#00b67a] fill-[#00b67a]" />
+                    ))}
+                  </div>
+                  <p className="text-gray-700 dark:text-gray-300 text-sm line-clamp-3 mb-2">
+                    "Supersnelle service en een prachtig resultaat. Precies wat ik zocht voor mijn bedrijf!"
+                  </p>
+                  <p className="text-xs text-gray-500 dark:text-gray-400 font-medium">— Peter V.</p>
+                </div>
+                
+                {/* Review 2 */}
+                <div className="flex-shrink-0 w-[260px] sm:w-auto sm:flex-1 sm:max-w-[280px] bg-white dark:bg-gray-800 rounded-xl p-4 border border-gray-200 dark:border-gray-700 shadow-sm">
+                  <div className="flex items-center gap-0.5 mb-2">
+                    {[1, 2, 3, 4, 5].map((i) => (
+                      <Star key={i} className="w-4 h-4 text-[#00b67a] fill-[#00b67a]" />
+                    ))}
+                  </div>
+                  <p className="text-gray-700 dark:text-gray-300 text-sm line-clamp-3 mb-2">
+                    "Professioneel, snel en betaalbaar. De communicatie was top en de website is prachtig!"
+                  </p>
+                  <p className="text-xs text-gray-500 dark:text-gray-400 font-medium">— Sandra M.</p>
+                </div>
+                
+                {/* Review 3 */}
+                <div className="flex-shrink-0 w-[260px] sm:w-auto sm:flex-1 sm:max-w-[280px] bg-white dark:bg-gray-800 rounded-xl p-4 border border-gray-200 dark:border-gray-700 shadow-sm">
+                  <div className="flex items-center gap-0.5 mb-2">
+                    {[1, 2, 3, 4, 5].map((i) => (
+                      <Star key={i} className="w-4 h-4 text-[#00b67a] fill-[#00b67a]" />
+                    ))}
+                  </div>
+                  <p className="text-gray-700 dark:text-gray-300 text-sm line-clamp-3 mb-2">
+                    "Eindelijk een partij die snapt wat ondernemers nodig hebben. Absolute aanrader!"
+                  </p>
+                  <p className="text-xs text-gray-500 dark:text-gray-400 font-medium">— Mark B.</p>
+                </div>
+              </div>
             </div>
           </div>
         </div>
