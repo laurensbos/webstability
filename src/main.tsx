@@ -2,7 +2,7 @@ import { StrictMode, lazy, Suspense } from 'react'
 import { createRoot } from 'react-dom/client'
 import './index.css'
 import App from './App'
-import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
+import { BrowserRouter, Routes, Route, Navigate, useParams } from 'react-router-dom'
 import ScrollToTop from './components/ScrollToTop'
 import CookieConsent from './components/CookieConsent'
 import { AuthProvider } from './contexts/AuthContext'
@@ -12,6 +12,17 @@ import { initSentry } from './lib/sentry'
 
 // Initialize Sentry error tracking
 initSentry()
+
+// Redirect components that preserve URL parameters
+function RedirectToOnboarding() {
+  const { projectId } = useParams()
+  return <Navigate to={projectId ? `/onboarding/${projectId}` : '/onboarding'} replace />
+}
+
+function RedirectToStatus() {
+  const { projectId } = useParams()
+  return <Navigate to={projectId ? `/status/${projectId}` : '/status'} replace />
+}
 
 // Lazy load pagina's voor betere performance
 const OnboardingWizard = lazy(() => import('./components/OnboardingWizard').then(m => ({ default: m.OnboardingWizard })))
@@ -84,7 +95,7 @@ createRoot(document.getElementById('root')!).render(
             {/* Onboarding routes - canonical path + redirects */}
             <Route path="/onboarding/:projectId" element={<KlantOnboarding />} />
             <Route path="/onboarding" element={<KlantOnboarding />} />
-            <Route path="/klant-onboarding/:projectId" element={<Navigate to="/onboarding/:projectId" replace />} />
+            <Route path="/klant-onboarding/:projectId" element={<RedirectToOnboarding />} />
             <Route path="/klant-onboarding" element={<Navigate to="/onboarding" replace />} />
             
             {/* New client onboarding with service-specific forms */}
@@ -94,9 +105,9 @@ createRoot(document.getElementById('root')!).render(
             {/* Project status routes - canonical path + redirects */}
             <Route path="/status/:projectId" element={<ProjectStatus />} />
             <Route path="/status" element={<ProjectStatus />} />
-            <Route path="/project-status/:projectId" element={<Navigate to="/status/:projectId" replace />} />
+            <Route path="/project-status/:projectId" element={<RedirectToStatus />} />
             <Route path="/project-status" element={<Navigate to="/status" replace />} />
-            <Route path="/project/:projectId" element={<Navigate to="/status/:projectId" replace />} />
+            <Route path="/project/:projectId" element={<RedirectToStatus />} />
             <Route path="/project" element={<Navigate to="/status" replace />} />
             
             <Route path="/over-ons" element={<OverOns />} />
