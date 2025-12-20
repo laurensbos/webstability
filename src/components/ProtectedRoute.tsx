@@ -221,7 +221,7 @@ const FallbackLogin: React.FC<{ children: React.ReactNode; requireRole?: 'develo
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-gray-900 via-blue-900 to-indigo-900 p-4 relative overflow-hidden">
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-gray-900 via-emerald-900 to-teal-900 p-4 relative overflow-hidden">
       {/* Background decorations */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
         <motion.div
@@ -231,7 +231,7 @@ const FallbackLogin: React.FC<{ children: React.ReactNode; requireRole?: 'develo
             scale: [1, 1.2, 1]
           }}
           transition={{ repeat: Infinity, duration: 20, ease: 'easeInOut' }}
-          className="absolute -top-40 -left-40 w-96 h-96 bg-blue-500/20 rounded-full blur-3xl"
+          className="absolute -top-40 -left-40 w-96 h-96 bg-emerald-500/20 rounded-full blur-3xl"
         />
         <motion.div
           animate={{ 
@@ -263,7 +263,7 @@ const FallbackLogin: React.FC<{ children: React.ReactNode; requireRole?: 'develo
           <h1 className="text-2xl font-bold text-white">
             {requireRole === 'developer' ? 'Developer Dashboard' : requireRole === 'admin' ? 'Admin Dashboard' : 'Marketing Dashboard'}
           </h1>
-          <p className="text-blue-200 mt-1">Log in om toegang te krijgen.</p>
+          <p className="text-emerald-200 mt-1">Log in om toegang te krijgen.</p>
         </motion.div>
 
         {/* Login form */}
@@ -275,16 +275,16 @@ const FallbackLogin: React.FC<{ children: React.ReactNode; requireRole?: 'develo
           className="bg-white/10 backdrop-blur-xl rounded-2xl p-6 sm:p-8 border border-white/20 shadow-2xl space-y-5"
         >
           <div>
-            <label className="block text-sm font-medium text-blue-100 mb-2">
+            <label className="block text-sm font-medium text-emerald-100 mb-2">
               Naam
             </label>
             <div className="relative">
-              <User className="absolute left-3 sm:left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-blue-300" />
+              <User className="absolute left-3 sm:left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-emerald-300" />
               <input
                 type="text"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                className="w-full pl-10 sm:pl-12 pr-4 py-3 bg-white/10 border border-white/20 rounded-xl text-white placeholder-blue-300/70 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all text-base"
+                className="w-full pl-10 sm:pl-12 pr-4 py-3 bg-white/10 border border-white/20 rounded-xl text-white placeholder-emerald-300/70 focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition-all text-base"
                 placeholder="Gebruikersnaam"
                 required
               />
@@ -292,16 +292,16 @@ const FallbackLogin: React.FC<{ children: React.ReactNode; requireRole?: 'develo
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-blue-100 mb-2">
+            <label className="block text-sm font-medium text-emerald-100 mb-2">
               Wachtwoord
             </label>
             <div className="relative">
-              <Lock className="absolute left-3 sm:left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-blue-300" />
+              <Lock className="absolute left-3 sm:left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-emerald-300" />
               <input
                 type="password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                className="w-full pl-10 sm:pl-12 pr-4 py-3 bg-white/10 border border-white/20 rounded-xl text-white placeholder-blue-300/70 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all text-base"
+                className="w-full pl-10 sm:pl-12 pr-4 py-3 bg-white/10 border border-white/20 rounded-xl text-white placeholder-emerald-300/70 focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition-all text-base"
                 placeholder="••••••••"
                 required
               />
@@ -325,13 +325,13 @@ const FallbackLogin: React.FC<{ children: React.ReactNode; requireRole?: 'develo
             whileHover={{ scale: 1.02 }}
             whileTap={{ scale: 0.98 }}
             type="submit"
-            className="w-full py-3 bg-gradient-to-r from-blue-500 to-indigo-500 text-white font-semibold rounded-xl hover:from-blue-600 hover:to-indigo-600 transition-all shadow-lg"
+            className="w-full py-3 bg-gradient-to-r from-emerald-500 to-teal-500 text-white font-semibold rounded-xl hover:from-emerald-600 hover:to-teal-600 transition-all shadow-lg"
           >
             Inloggen
           </motion.button>
         </motion.form>
 
-        <p className="text-center text-blue-300/60 text-sm mt-6">
+        <p className="text-center text-emerald-300/60 text-sm mt-6">
           © {new Date().getFullYear()} Webstability
         </p>
       </motion.div>
