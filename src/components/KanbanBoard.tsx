@@ -74,11 +74,11 @@ function TaskCard({
       initial={{ opacity: 0, scale: 0.95 }}
       animate={{ opacity: 1, scale: 1 }}
       exit={{ opacity: 0, scale: 0.95 }}
-      className={`${darkMode ? 'bg-gray-800 border-gray-700 hover:border-gray-600' : 'bg-white border-gray-100 hover:border-gray-200'} rounded-xl p-4 shadow-sm border hover:shadow-md transition cursor-pointer group relative`}
+      className={`${darkMode ? 'bg-gray-800 border-gray-700 hover:border-gray-600' : 'bg-white border-gray-100 hover:border-gray-200'} rounded-xl p-4 shadow-sm border hover:shadow-md transition-all group relative select-none`}
       onClick={onClick}
     >
       {/* Drag Handle */}
-      <div className="absolute left-1 top-1/2 -translate-y-1/2 opacity-0 group-hover:opacity-50 cursor-grab">
+      <div className="absolute left-1 top-1/2 -translate-y-1/2 opacity-0 group-hover:opacity-100 transition-opacity">
         <GripVertical className={`w-4 h-4 ${darkMode ? 'text-gray-500' : 'text-gray-400'}`} />
       </div>
 
@@ -198,17 +198,66 @@ export default function KanbanBoard({
   darkMode = false
 }: KanbanBoardProps) {
   const [draggedTask, setDraggedTask] = useState<{ task: KanbanTask; fromColumn: string } | null>(null)
+  const [dragOverColumn, setDragOverColumn] = useState<string | null>(null)
   const [expandedColumns, setExpandedColumns] = useState<Set<string>>(new Set(columns.map(c => c.id)))
 
-  const handleDragStart = (task: KanbanTask, columnId: string) => {
+  const handleDragStart = (e: React.DragEvent<HTMLDivElement>, task: KanbanTask, columnId: string) => {
+    // Set drag data for HTML5 drag and drop
+    e.dataTransfer.setData('text/plain', JSON.stringify({ taskId: task.id, fromColumn: columnId }))
+    e.dataTransfer.effectAllowed = 'move'
+    
+    // Store in state as backup
     setDraggedTask({ task, fromColumn: columnId })
+    
+    // Add visual feedback
+    if (e.currentTarget) {
+      e.currentTarget.style.opacity = '0.5'
+    }
   }
 
-  const handleDragEnd = () => {
+  const handleDragEnd = (e: React.DragEvent<HTMLDivElement>) => {
+    // Reset visual feedback
+    if (e.currentTarget) {
+      e.currentTarget.style.opacity = '1'
+    }
     setDraggedTask(null)
+    setDragOverColumn(null)
   }
 
-  const handleDrop = (toColumnId: string) => {
+  const handleDragOver = (e: React.DragEvent<HTMLDivElement>, columnId: string) => {
+    e.preventDefault()
+    e.dataTransfer.dropEffect = 'move'
+    setDragOverColumn(columnId)
+  }
+
+  const handleDragLeave = (e: React.DragEvent<HTMLDivElement>) => {
+    // Only reset if we're actually leaving the column (not entering a child)
+    const relatedTarget = e.relatedTarget as HTMLElement
+    if (!e.currentTarget.contains(relatedTarget)) {
+      setDragOverColumn(null)
+    }
+  }
+
+  const handleDrop = (e: React.DragEvent<HTMLDivElement>, toColumnId: string) => {
+    e.preventDefault()
+    setDragOverColumn(null)
+    
+    // Try to get data from dataTransfer first
+    try {
+      const data = e.dataTransfer.getData('text/plain')
+      if (data) {
+        const { taskId, fromColumn } = JSON.parse(data)
+        if (fromColumn !== toColumnId) {
+          onTaskMove(taskId, fromColumn, toColumnId)
+        }
+        setDraggedTask(null)
+        return
+      }
+    } catch {
+      // Fall back to state
+    }
+    
+    // Fallback to state-based approach
     if (draggedTask && draggedTask.fromColumn !== toColumnId) {
       onTaskMove(draggedTask.task.id, draggedTask.fromColumn, toColumnId)
     }
@@ -255,19 +304,14 @@ export default function KanbanBoard({
             ) : (
               /* Expanded Column */
               <div
-                onDragOver={(e) => {
-                  e.preventDefault()
-                  e.currentTarget.classList.add('ring-2', 'ring-blue-400')
-                }}
-                onDragLeave={(e) => {
-                  e.currentTarget.classList.remove('ring-2', 'ring-blue-400')
-                }}
-                onDrop={(e) => {
-                  e.preventDefault()
-                  e.currentTarget.classList.remove('ring-2', 'ring-blue-400')
-                  handleDrop(column.id)
-                }}
-                className={`${darkMode ? 'bg-gray-800/50' : 'bg-gray-50'} rounded-xl p-3 h-full min-h-[400px] transition`}
+                onDragOver={(e) => handleDragOver(e, column.id)}
+                onDragLeave={handleDragLeave}
+                onDrop={(e) => handleDrop(e, column.id)}
+                className={`${darkMode ? 'bg-gray-800/50' : 'bg-gray-50'} rounded-xl p-3 h-full min-h-[400px] transition-all duration-200 ${
+                  dragOverColumn === column.id 
+                    ? 'ring-2 ring-blue-400 bg-blue-50/50 dark:bg-blue-900/20' 
+                    : ''
+                }`}
               >
                 {/* Column Header */}
                 <div className="flex items-center justify-between mb-4">
@@ -306,8 +350,9 @@ export default function KanbanBoard({
                       <div
                         key={task.id}
                         draggable
-                        onDragStart={() => handleDragStart(task, column.id)}
+                        onDragStart={(e) => handleDragStart(e, task, column.id)}
                         onDragEnd={handleDragEnd}
+                        className="cursor-grab active:cursor-grabbing"
                       >
                         <TaskCard
                           task={task}

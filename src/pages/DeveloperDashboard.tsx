@@ -2101,16 +2101,29 @@ function ProjectsView({ darkMode, projects, onUpdateProject, onDeleteProject: _o
     
     return (
       <div 
-        className={`flex-1 min-w-0 rounded-2xl ${phase.bgColor} p-4 transition-all ${
-          isDragOver ? 'ring-2 ring-emerald-500 ring-offset-2 scale-[1.02]' : ''
+        className={`flex-1 min-w-0 rounded-2xl ${phase.bgColor} p-4 transition-all duration-200 ${
+          isDragOver ? 'ring-2 ring-emerald-500 ring-offset-2 scale-[1.01] bg-emerald-50/50 dark:bg-emerald-900/20' : ''
         } ${draggedProject ? 'cursor-pointer' : ''}`}
         onDragOver={(e) => {
+          e.preventDefault()
+          e.dataTransfer.dropEffect = 'move'
+          if (draggedProject && draggedProject.phase !== phase.key) {
+            setDragOverPhase(phase.key)
+          }
+        }}
+        onDragEnter={(e) => {
           e.preventDefault()
           if (draggedProject && draggedProject.phase !== phase.key) {
             setDragOverPhase(phase.key)
           }
         }}
-        onDragLeave={() => setDragOverPhase(null)}
+        onDragLeave={(e) => {
+          // Only reset if we're actually leaving the column (not entering a child)
+          const relatedTarget = e.relatedTarget as HTMLElement
+          if (!e.currentTarget.contains(relatedTarget)) {
+            setDragOverPhase(null)
+          }
+        }}
         onDrop={(e) => {
           e.preventDefault()
           handleDropOnPhase(phase.key)
@@ -2136,12 +2149,16 @@ function ProjectsView({ darkMode, projects, onUpdateProject, onDeleteProject: _o
               <div
                 key={project.id}
                 draggable
-                onDragStart={() => setDraggedProject(project)}
+                onDragStart={(e) => {
+                  e.dataTransfer.setData('text/plain', project.id.toString())
+                  e.dataTransfer.effectAllowed = 'move'
+                  setDraggedProject(project)
+                }}
                 onDragEnd={() => {
                   setDraggedProject(null)
                   setDragOverPhase(null)
                 }}
-                className={`${draggedProject?.id === project.id ? 'opacity-50' : ''}`}
+                className={`cursor-grab active:cursor-grabbing ${draggedProject?.id === project.id ? 'opacity-50' : ''}`}
               >
                 <ProjectCard project={project} />
               </div>
