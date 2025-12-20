@@ -342,9 +342,9 @@ export default function KlantOnboarding() {
     const nextSteps = [
       {
         icon: FileText,
-        title: 'Drive link klaarzetten',
-        description: 'Wij sturen je een Google Drive link waar je je logo, foto\'s en andere bestanden kunt uploaden.',
-        time: 'Binnen 24 uur',
+        title: 'Google Drive map',
+        description: 'Je vindt de Google Drive link in je welkomst-email. Hier kun je je logo, foto\'s en andere bestanden uploaden.',
+        time: 'In je mail',
         color: 'from-blue-500 to-blue-600',
         bgColor: 'bg-blue-50',
         textColor: 'text-blue-600',
@@ -619,9 +619,9 @@ export default function KlantOnboarding() {
     const nextSteps = [
       {
         icon: FileText,
-        title: 'Drive link klaarzetten',
-        description: 'Wij sturen je een Google Drive link waar je je logo, foto\'s en andere bestanden kunt uploaden.',
-        time: 'Binnen 24 uur',
+        title: 'Google Drive map',
+        description: 'Je vindt de Google Drive link in je welkomst-email. Hier kun je je logo, foto\'s en andere bestanden uploaden.',
+        time: 'In je mail',
         color: 'from-blue-500 to-blue-600',
         bgColor: 'bg-blue-50',
         textColor: 'text-blue-600',

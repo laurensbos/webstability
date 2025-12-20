@@ -761,7 +761,7 @@ export function DroneSamenvattingStep({ data, onGoToStep }: SamenvattingStepProp
           Klaar om te versturen!
         </div>
         <p className="text-sm text-green-600 dark:text-green-300 mt-2">
-          Na het indienen nemen we binnen 24 uur contact op voor:
+          Na het indienen nemen we snel contact op voor:
         </p>
         <ul className="mt-2 space-y-1 text-sm text-green-600 dark:text-green-300">
           <li className="flex items-center gap-2">

@@ -29,7 +29,8 @@ import {
   Shield,
   Mail,
   FolderOpen,
-  Save
+  Save,
+  ArrowRight
 } from 'lucide-react'
 import Logo from '../components/Logo'
 import type { 
@@ -538,6 +539,7 @@ export default function ClientOnboarding() {
   const [projectFound, setProjectFound] = useState<boolean | null>(null)
   const [submitted, setSubmitted] = useState(false)
   const [validationErrors, setValidationErrors] = useState<string[]>([])
+  const [driveUrl, setDriveUrl] = useState<string>('')
 
   // Auto-save hook
   const { autoSaveStatus, loadFromLocal, clearLocalDraft } = useAutoSave(
@@ -630,6 +632,8 @@ export default function ClientOnboarding() {
           setCurrentPhase(project.status || 'intake')
           setCanEdit(project.status === 'intake' || project.status === 'onboarding')
           setProjectFound(true)
+          // Get Drive URL from project
+          setDriveUrl(project.googleDriveUrl || project.onboardingData?.driveFolderLink || '')
           
           // Initialize timeline
           import('../types/onboarding').then(({ getDefaultTimeline }) => {
@@ -878,12 +882,15 @@ export default function ClientOnboarding() {
     const nextSteps = [
       {
         icon: FolderOpen,
-        title: 'Drive link ontvangen',
-        description: 'Je ontvangt een e-mail met een Google Drive link waar je je logo, foto\'s en andere bestanden kunt uploaden.',
-        time: 'Binnen 24 uur',
+        title: 'Google Drive map',
+        description: driveUrl 
+          ? 'Je persoonlijke Google Drive map is klaar! Upload hier je logo, foto\'s en andere bestanden.'
+          : 'Je ontvangt een e-mail met een Google Drive link waar je je logo, foto\'s en andere bestanden kunt uploaden.',
+        time: driveUrl ? 'Nu beschikbaar' : 'In je mail',
         color: 'from-blue-500 to-blue-600',
         bgColor: 'bg-blue-50 dark:bg-blue-900/20',
         textColor: 'text-blue-600 dark:text-blue-400',
+        link: driveUrl || undefined,
       },
       {
         icon: Mail,
@@ -1020,6 +1027,18 @@ export default function ClientOnboarding() {
                       </span>
                     </div>
                     <p className="text-sm text-gray-600 dark:text-gray-400">{step.description}</p>
+                    {step.link && (
+                      <a
+                        href={step.link}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="inline-flex items-center gap-1.5 mt-2 text-sm font-medium text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 transition-colors"
+                      >
+                        <FolderOpen className="w-4 h-4" />
+                        Open Google Drive
+                        <ExternalLink className="w-3 h-3" />
+                      </a>
+                    )}
                   </div>
                 </motion.div>
               ))}
@@ -1035,13 +1054,36 @@ export default function ClientOnboarding() {
           >
             <div className="flex items-start gap-3">
               <FolderOpen className="w-5 h-5 text-blue-600 dark:text-blue-400 mt-0.5 flex-shrink-0" />
-              <div>
-                <p className="text-blue-800 dark:text-blue-300 font-medium text-sm mb-1">
-                  Over de Drive link
-                </p>
-                <p className="text-blue-700 dark:text-blue-400 text-sm">
-                  Wij sturen je een e-mail met daarin een persoonlijke Google Drive link. Hier kun je al je bestanden uploaden: logo, foto's, teksten, etc. Zodra je dit hebt gedaan, starten we met je ontwerp!
-                </p>
+              <div className="flex-1">
+                {driveUrl ? (
+                  <>
+                    <p className="text-blue-800 dark:text-blue-300 font-medium text-sm mb-2">
+                      📁 Je Google Drive map is klaar!
+                    </p>
+                    <p className="text-blue-700 dark:text-blue-400 text-sm mb-3">
+                      Upload hier je logo, foto's, teksten en andere bestanden. Zodra je dit hebt gedaan, starten we met je ontwerp!
+                    </p>
+                    <a
+                      href={driveUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="inline-flex items-center gap-2 px-4 py-2.5 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-medium text-sm transition-colors shadow-lg shadow-blue-600/25"
+                    >
+                      <FolderOpen className="w-4 h-4" />
+                      Open Google Drive map
+                      <ArrowRight className="w-4 h-4" />
+                    </a>
+                  </>
+                ) : (
+                  <>
+                    <p className="text-blue-800 dark:text-blue-300 font-medium text-sm mb-1">
+                      Over de Drive link
+                    </p>
+                    <p className="text-blue-700 dark:text-blue-400 text-sm">
+                      Je vindt de Google Drive link in je welkomst-email of op je project status pagina. Hier kun je al je bestanden uploaden: logo, foto's, teksten, etc. Zodra je dit hebt gedaan, starten we met je ontwerp!
+                    </p>
+                  </>
+                )}
               </div>
             </div>
           </motion.div>

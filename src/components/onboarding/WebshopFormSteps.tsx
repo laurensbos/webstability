@@ -1142,12 +1142,12 @@ export function WebshopSamenvattingStep({ data, packageId, onUpgrade, onGoToStep
           Klaar om te versturen!
         </div>
         <p className="text-sm text-green-600 dark:text-green-300 mt-2">
-          Na het indienen ontvang je binnen 24 uur:
+          Na het indienen:
         </p>
         <ul className="mt-2 space-y-1 text-sm text-green-600 dark:text-green-300">
           <li className="flex items-center gap-2">
             <span className="w-1.5 h-1.5 rounded-full bg-green-500" />
-            Een Google Drive link voor je bestanden
+            Je Google Drive link staat in je welkomst-email
           </li>
           <li className="flex items-center gap-2">
             <span className="w-1.5 h-1.5 rounded-full bg-green-500" />
