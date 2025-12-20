@@ -43,6 +43,7 @@ const MarketingDashboard = lazy(() => import('./pages/MarketingDashboard'))
 const Unauthorized = lazy(() => import('./pages/Unauthorized'))
 const ClientOnboarding = lazy(() => import('./pages/ClientOnboarding'))
 const EmailVerified = lazy(() => import('./pages/EmailVerified'))
+const MijnProjecten = lazy(() => import('./pages/MijnProjecten'))
 
 // Loading spinner component
 function PageLoader() {
@@ -127,6 +128,10 @@ createRoot(document.getElementById('root')!).render(
             {/* Email verification */}
             <Route path="/email-verified" element={<EmailVerified />} />
             <Route path="/email-bevestigd" element={<EmailVerified />} />
+            
+            {/* Mijn Projecten - klantendashboard voor meerdere projecten */}
+            <Route path="/mijn-projecten" element={<MijnProjecten />} />
+            <Route path="/my-projects" element={<Navigate to="/mijn-projecten" replace />} />
             
             {/* Developer dashboard - protected */}
             <Route 

@@ -2289,11 +2289,11 @@ export default function Dashboard() {
       {/* Payment Link Modal */}
       {paymentModalOpen && paymentSubmission && (
         <div className="fixed inset-0 z-50 flex items-center justify-center">
-          <div className="absolute inset-0 bg-black/50" onClick={closePaymentModal} />
+          <div className="absolute inset-0 bg-black/50 backdrop-blur-sm" onClick={closePaymentModal} />
           <motion.div 
             initial={{ opacity: 0, scale: 0.95 }}
             animate={{ opacity: 1, scale: 1 }}
-            className="relative bg-white rounded-2xl p-6 max-w-lg w-full mx-4 shadow-2xl"
+            className="relative bg-white dark:bg-gray-800 rounded-2xl p-6 max-w-lg w-full mx-4 shadow-2xl"
           >
             <div className="flex items-center justify-between mb-6">
               <h3 className="text-lg font-semibold text-gray-900 flex items-center gap-2">

@@ -39,9 +39,8 @@ const createTransporter = () => {
   })
 }
 
-const BASE_URL = process.env.VERCEL_URL 
-  ? `https://${process.env.VERCEL_URL}` 
-  : 'https://webstability.nl'
+// Always use production URL - VERCEL_URL contains deployment-specific URLs that shouldn't be in emails
+const BASE_URL = process.env.SITE_URL || 'https://webstability.nl'
 
 interface Project {
   id: string
@@ -198,59 +197,66 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="x-apple-disable-message-reformatting">
   <title>Bevestig je e-mailadres</title>
+  <!--[if mso]>
+  <style>
+    table { border-collapse: collapse; }
+    td { padding: 0; }
+  </style>
+  <![endif]-->
 </head>
-<body style="margin: 0; padding: 0; background-color: #f8fafc; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;">
+<body style="margin: 0; padding: 0; background-color: #f8fafc; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif; -webkit-font-smoothing: antialiased;">
   <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="background-color: #f8fafc;">
     <tr>
-      <td align="center" style="padding: 40px 20px;">
-        <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="max-width: 600px; background-color: #ffffff; border-radius: 16px; overflow: hidden; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);">
+      <td align="center" style="padding: 24px 16px;">
+        <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="max-width: 560px; background-color: #ffffff; border-radius: 16px; overflow: hidden; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);">
           
           <!-- Header -->
           <tr>
-            <td style="padding: 32px 40px; background: linear-gradient(135deg, #10b981 0%, #059669 100%); text-align: center;">
-              <span style="font-size: 28px; font-weight: 700; color: #ffffff; letter-spacing: -0.5px;">webstability</span>
+            <td style="padding: 28px 24px; background: linear-gradient(135deg, #10b981 0%, #059669 100%); text-align: center;">
+              <span style="font-size: 24px; font-weight: 700; color: #ffffff; letter-spacing: -0.5px;">webstability</span>
             </td>
           </tr>
           
           <!-- Content -->
           <tr>
-            <td style="padding: 40px;">
-              <h1 style="margin: 0 0 16px; font-size: 24px; font-weight: 700; color: #0f172a;">
+            <td style="padding: 32px 24px;">
+              <h1 style="margin: 0 0 16px; font-size: 22px; font-weight: 700; color: #0f172a; line-height: 1.3;">
                 Bevestig je e-mailadres ✉️
               </h1>
-              <p style="margin: 0 0 24px; font-size: 16px; color: #475569; line-height: 1.6;">
+              <p style="margin: 0 0 20px; font-size: 15px; color: #475569; line-height: 1.6;">
                 Hoi ${clientName},
               </p>
-              <p style="margin: 0 0 24px; font-size: 16px; color: #475569; line-height: 1.6;">
+              <p style="margin: 0 0 24px; font-size: 15px; color: #475569; line-height: 1.6;">
                 Voordat je toegang krijgt tot je project dashboard voor <strong>${businessName}</strong>, moeten we eerst je e-mailadres verifiëren.
               </p>
               
-              <!-- CTA Button -->
+              <!-- CTA Button - Mobile Friendly -->
               <table role="presentation" width="100%" cellspacing="0" cellpadding="0">
                 <tr>
                   <td align="center" style="padding: 8px 0 24px;">
-                    <a href="${verificationUrl}" style="display: inline-block; padding: 16px 32px; background: linear-gradient(135deg, #10b981 0%, #059669 100%); color: #ffffff; text-decoration: none; font-weight: 600; font-size: 16px; border-radius: 12px; box-shadow: 0 4px 12px rgba(16, 185, 129, 0.35);">
-                      Bevestig e-mailadres
+                    <a href="${verificationUrl}" style="display: inline-block; padding: 14px 28px; background: linear-gradient(135deg, #10b981 0%, #059669 100%); color: #ffffff; text-decoration: none; font-weight: 600; font-size: 15px; border-radius: 10px; box-shadow: 0 4px 12px rgba(16, 185, 129, 0.35); min-width: 200px; text-align: center;">
+                      Bevestig e-mailadres →
                     </a>
                   </td>
                 </tr>
               </table>
               
-              <p style="margin: 0 0 16px; font-size: 14px; color: #64748b; line-height: 1.6;">
+              <p style="margin: 0 0 12px; font-size: 13px; color: #64748b; line-height: 1.6;">
                 Of kopieer deze link naar je browser:
               </p>
-              <p style="margin: 0 0 24px; font-size: 12px; color: #94a3b8; word-break: break-all; background-color: #f1f5f9; padding: 12px; border-radius: 8px;">
+              <p style="margin: 0 0 24px; font-size: 11px; color: #94a3b8; word-break: break-all; background-color: #f1f5f9; padding: 12px; border-radius: 8px; line-height: 1.5;">
                 ${verificationUrl}
               </p>
               
-              <div style="background-color: #fef3c7; border-radius: 8px; padding: 16px; margin-bottom: 24px;">
-                <p style="margin: 0; font-size: 14px; color: #92400e;">
+              <div style="background-color: #fef3c7; border-radius: 8px; padding: 14px; margin-bottom: 20px;">
+                <p style="margin: 0; font-size: 13px; color: #92400e;">
                   ⏰ Deze link is 24 uur geldig.
                 </p>
               </div>
               
-              <p style="margin: 0; font-size: 14px; color: #64748b; line-height: 1.6;">
+              <p style="margin: 0; font-size: 13px; color: #64748b; line-height: 1.6;">
                 Heb je deze e-mail niet aangevraagd? Dan kun je deze e-mail negeren.
               </p>
             </td>
@@ -258,12 +264,12 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
           
           <!-- Footer -->
           <tr>
-            <td style="padding: 24px 40px; background-color: #f8fafc; border-top: 1px solid #e2e8f0; text-align: center;">
-              <p style="margin: 0 0 8px; font-size: 14px; color: #64748b;">
+            <td style="padding: 20px 24px; background-color: #f8fafc; border-top: 1px solid #e2e8f0; text-align: center;">
+              <p style="margin: 0 0 8px; font-size: 13px; color: #64748b;">
                 Met vriendelijke groet,<br>
                 <strong style="color: #334155;">Team Webstability</strong>
               </p>
-              <p style="margin: 12px 0 0; font-size: 12px; color: #94a3b8;">
+              <p style="margin: 12px 0 0; font-size: 11px; color: #94a3b8;">
                 <a href="https://webstability.nl" style="color: #10b981; text-decoration: none;">webstability.nl</a>
                 &nbsp;•&nbsp;
                 <a href="mailto:info@webstability.nl" style="color: #10b981; text-decoration: none;">info@webstability.nl</a>

@@ -12,6 +12,7 @@ import type { VercelRequest, VercelResponse } from '@vercel/node'
 import { Redis } from '@upstash/redis'
 import { createHash } from 'crypto'
 import { sendWelcomeEmail, sendProjectCreatedEmail, isSmtpConfigured } from './lib/smtp.js'
+import { logEmailSent } from './developer/email-log.js'
 
 // Simple password hashing (use bcrypt in production for better security)
 function hashPassword(password: string): string {
@@ -47,6 +48,7 @@ interface Project {
   }
   paymentStatus: 'pending' | 'paid' | 'failed'
   paymentId?: string
+  googleDriveUrl?: string
   onboardingData?: Record<string, unknown>
   tasks?: Array<{
     id: string
@@ -210,10 +212,46 @@ async function createProject(req: VercelRequest, res: VercelResponse) {
   
   console.log(`Project created: ${project.id} - ${project.type}`)
   
+  // Create Google Drive folder for project
+  let driveFolderLink: string | undefined
+  if (process.env.GOOGLE_SERVICE_ACCOUNT_EMAIL && process.env.GOOGLE_PRIVATE_KEY && process.env.GOOGLE_DRIVE_PARENT_FOLDER) {
+    try {
+      const driveResponse = await fetch(`${process.env.SITE_URL || 'https://webstability.nl'}/api/drive/create-folder`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          projectId: project.id,
+          projectName: project.customer.companyName || project.customer.name || '',
+          customerEmail: project.customer.email
+        })
+      })
+      
+      if (driveResponse.ok) {
+        const driveData = await driveResponse.json()
+        driveFolderLink = driveData.folderLink
+        // Update project with Drive folder link - use googleDriveUrl field
+        project.onboardingData = {
+          ...project.onboardingData,
+          driveFolderLink: driveData.folderLink,
+          driveFolderId: driveData.folderId
+        }
+        // Also store as top-level googleDriveUrl for easy access
+        project.googleDriveUrl = driveData.folderLink
+        await kv!.set(`project:${project.id}`, project)
+        console.log(`✅ Google Drive folder created: ${driveData.folderLink}`)
+      } else {
+        console.warn('Google Drive folder creation failed:', await driveResponse.text())
+      }
+    } catch (driveError) {
+      console.error('Google Drive folder creation error:', driveError)
+      // Don't fail the request if Drive folder creation fails
+    }
+  }
+  
   // Send confirmation emails and email verification
   if (isSmtpConfigured()) {
     try {
-      // Send welcome email to customer (include password if provided)
+      // Send welcome email to customer (include password and drive link if available)
       const welcomeResult = await sendWelcomeEmail({
         email: project.customer.email,
         name: project.customer.companyName || project.customer.name || 'daar',
@@ -221,12 +259,28 @@ async function createProject(req: VercelRequest, res: VercelResponse) {
         package: project.packageType,
         type: project.type,
         password: body.password, // Include plain password in welcome email
+        phase: 'onboarding', // Start phase for progress bar
+        driveLink: driveFolderLink, // Include Google Drive link if created
       })
       console.log(`Welcome email sent: ${welcomeResult.success ? 'OK' : welcomeResult.error}`)
       
+      // Log welcome email for developer dashboard
+      await logEmailSent({
+        projectId: project.id,
+        projectName: project.customer.companyName || project.customer.name || 'Nieuw project',
+        recipientEmail: project.customer.email,
+        recipientName: project.customer.name || project.customer.companyName || '',
+        type: 'welcome',
+        subject: 'Welkom bij Webstability - Je project is aangemaakt',
+        details: `Welkomstemail verstuurd - ${project.packageType} pakket`,
+        success: welcomeResult.success,
+        error: welcomeResult.error
+      })
+      
       // Send email verification request
       try {
-        const verifyResponse = await fetch(`${process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : 'https://webstability.nl'}/api/verify-email`, {
+        // Always use production URL for internal API calls
+        const verifyResponse = await fetch(`${process.env.SITE_URL || 'https://webstability.nl'}/api/verify-email`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ projectId: project.id })

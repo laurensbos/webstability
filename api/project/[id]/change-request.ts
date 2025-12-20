@@ -1,6 +1,5 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node'
 import { Redis } from '@upstash/redis'
-import { Resend } from 'resend'
 import nodemailer from 'nodemailer'
 
 // Initialize Redis
@@ -11,11 +10,7 @@ const kv = REDIS_URL && REDIS_TOKEN
   ? new Redis({ url: REDIS_URL, token: REDIS_TOKEN })
   : null
 
-// Initialize Resend for email notifications
-const RESEND_API_KEY = process.env.RESEND_API_KEY || ''
-const resend = RESEND_API_KEY ? new Resend(RESEND_API_KEY) : null
-
-// SMTP Configuration (fallback if Resend not available)
+// SMTP Configuration
 const SMTP_HOST = process.env.SMTP_HOST
 const SMTP_PORT = parseInt(process.env.SMTP_PORT || '465')
 const SMTP_USER = process.env.SMTP_USER
@@ -41,9 +36,8 @@ const createTransporter = () => {
 // Developer notification email
 const DEV_NOTIFICATION_EMAIL = process.env.DEV_NOTIFICATION_EMAIL || 'info@webstability.nl'
 
-const BASE_URL = process.env.VERCEL_URL 
-  ? `https://${process.env.VERCEL_URL}` 
-  : 'https://webstability.nl'
+// Always use production URL - VERCEL_URL contains deployment-specific URLs that shouldn't be in emails
+const BASE_URL = process.env.SITE_URL || 'https://webstability.nl'
 
 interface ChangeRequest {
   id: string
@@ -138,18 +132,7 @@ async function notifyDeveloper(
   `
 
   try {
-    // Try Resend first
-    if (resend) {
-      await resend.emails.send({
-        from: 'Webstability <noreply@webstability.nl>',
-        to: [DEV_NOTIFICATION_EMAIL],
-        subject,
-        html: htmlContent,
-      })
-      return true
-    }
-    
-    // Fallback to SMTP
+    // Send via SMTP
     const transporter = createTransporter()
     if (transporter) {
       await transporter.sendMail({
@@ -157,6 +140,7 @@ async function notifyDeveloper(
         to: DEV_NOTIFICATION_EMAIL,
         subject,
         html: htmlContent,
+        replyTo: 'info@webstability.nl'
       })
       return true
     }

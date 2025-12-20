@@ -6,6 +6,7 @@ export interface Package {
   name: string
   price: number
   priceExcl: number
+  setupFee: number
   tagline: string
   features: string[]
   popular?: boolean
@@ -18,6 +19,7 @@ export const packages: Package[] = [
     name: 'Starter',
     price: 99,
     priceExcl: 82,
+    setupFee: 99,
     tagline: 'Ideaal om te beginnen',
     features: [
       'Tot 5 pagina\'s',
@@ -33,6 +35,7 @@ export const packages: Package[] = [
     name: 'Professioneel',
     price: 199,
     priceExcl: 165,
+    setupFee: 179,
     tagline: 'Voor serieuze ondernemers',
     features: [
       'Tot 10 pagina\'s',
@@ -49,6 +52,7 @@ export const packages: Package[] = [
     name: 'Business',
     price: 349,
     priceExcl: 289,
+    setupFee: 239,
     tagline: 'Voor groeiende bedrijven',
     features: [
       'Tot 20 pagina\'s',
@@ -65,6 +69,7 @@ export const packages: Package[] = [
     name: 'Webshop',
     price: 349,
     priceExcl: 289,
+    setupFee: 299,
     tagline: 'Start met verkopen',
     features: [
       'Tot 50 producten',

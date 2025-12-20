@@ -78,7 +78,7 @@ export default function FloatingWhatsApp() {
                 initial={{ opacity: 0, x: 20, scale: 0.9 }}
                 animate={{ opacity: 1, x: 0, scale: 1 }}
                 exit={{ opacity: 0, x: 20, scale: 0.9 }}
-                className="bg-white dark:bg-gray-900 rounded-2xl shadow-2xl border border-gray-100 p-4 max-w-[280px]"
+                className="bg-white dark:bg-gray-800 rounded-2xl shadow-2xl border border-gray-100 dark:border-gray-700 p-4 max-w-[280px]"
               >
                 <div className="flex items-start justify-between gap-2 mb-2">
                   <div className="flex items-center gap-2">
@@ -86,8 +86,8 @@ export default function FloatingWhatsApp() {
                       <MessageCircle className="w-5 h-5 text-white" />
                     </div>
                     <div>
-                      <p className="font-semibold text-gray-900 text-sm">Webstability</p>
-                      <p className="text-green-600 text-xs flex items-center gap-1">
+                      <p className="font-semibold text-gray-900 dark:text-white text-sm">Webstability</p>
+                      <p className="text-green-600 dark:text-green-400 text-xs flex items-center gap-1">
                         <span className="w-2 h-2 bg-green-500 rounded-full animate-pulse" />
                         Online nu
                       </p>
@@ -98,12 +98,12 @@ export default function FloatingWhatsApp() {
                       setIsExpanded(false)
                       setShowTooltip(false)
                     }}
-                    className="p-1 hover:bg-gray-100 rounded-full transition"
+                    className="p-1 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-full transition"
                   >
-                    <X className="w-4 h-4 text-gray-400" />
+                    <X className="w-4 h-4 text-gray-400 dark:text-gray-500" />
                   </button>
                 </div>
-                <p className="text-gray-600 text-sm mb-3">
+                <p className="text-gray-600 dark:text-gray-300 text-sm mb-3">
                   👋 Hallo! Heb je een vraag? We reageren meestal binnen een paar minuten.
                 </p>
                 <a

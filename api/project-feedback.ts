@@ -23,13 +23,12 @@
 
 import type { VercelRequest, VercelResponse } from '@vercel/node'
 import { Redis } from '@upstash/redis'
-import { Resend } from 'resend'
+import nodemailer from 'nodemailer'
 
 const MOLLIE_API_URL = 'https://api.mollie.com/v2'
 const MOLLIE_API_KEY = process.env.MOLLIE_API_KEY || ''
-const BASE_URL = process.env.VERCEL_URL 
-  ? `https://${process.env.VERCEL_URL}` 
-  : 'https://webstability.nl'
+// Always use production URL - VERCEL_URL contains deployment-specific URLs that shouldn't be in emails
+const BASE_URL = process.env.SITE_URL || 'https://webstability.nl'
 
 // Redis for project data
 const REDIS_URL = process.env.UPSTASH_REDIS_REST_URL
@@ -38,9 +37,28 @@ const kv = REDIS_URL && REDIS_TOKEN
   ? new Redis({ url: REDIS_URL, token: REDIS_TOKEN })
   : null
 
-// Resend for email
-const RESEND_API_KEY = process.env.RESEND_API_KEY || ''
-const resend = RESEND_API_KEY ? new Resend(RESEND_API_KEY) : null
+// SMTP Configuration
+const SMTP_HOST = process.env.SMTP_HOST
+const SMTP_PORT = parseInt(process.env.SMTP_PORT || '465')
+const SMTP_USER = process.env.SMTP_USER
+const SMTP_PASS = process.env.SMTP_PASS
+const SMTP_FROM = process.env.SMTP_FROM || 'Webstability <info@webstability.nl>'
+
+const isSmtpConfigured = () => Boolean(SMTP_HOST && SMTP_USER && SMTP_PASS)
+
+const createTransporter = () => {
+  if (!isSmtpConfigured()) return null
+  
+  return nodemailer.createTransport({
+    host: SMTP_HOST,
+    port: SMTP_PORT,
+    secure: SMTP_PORT === 465,
+    auth: {
+      user: SMTP_USER,
+      pass: SMTP_PASS,
+    },
+  })
+}
 
 // Developer notification email
 const DEV_NOTIFICATION_EMAIL = process.env.DEV_NOTIFICATION_EMAIL || 'info@webstability.nl'
@@ -116,7 +134,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       // Update project met design approval
       projectData.designApprovedAt = designApprovedAt
       projectData.paymentStatus = 'awaiting_payment'
-      projectData.status = 'review' // Move to review phase
+      projectData.status = 'design_approved' // Move to design_approved phase - waiting for payment
       
       // Genereer betaallink als we customer info hebben
       if (projectData.contactEmail && projectData.package) {
@@ -268,8 +286,9 @@ async function createPaymentLink(projectData: ProjectData): Promise<string> {
 // ===========================================
 
 async function sendApprovalEmail(projectData: ProjectData, paymentUrl?: string): Promise<void> {
-  if (!resend) {
-    console.log('[Feedback] Resend not configured - skipping email')
+  const transporter = createTransporter()
+  if (!transporter) {
+    console.log('[Feedback] SMTP not configured - skipping email')
     return
   }
   
@@ -348,11 +367,12 @@ async function sendApprovalEmail(projectData: ProjectData, paymentUrl?: string):
   `
   
   try {
-    await resend.emails.send({
-      from: 'Webstability <noreply@webstability.nl>',
+    await transporter.sendMail({
+      from: SMTP_FROM,
       to: projectData.contactEmail,
       subject: `✅ Design goedgekeurd - ${projectData.businessName}`,
-      html
+      html,
+      replyTo: 'info@webstability.nl'
     })
     console.log(`[Feedback] Approval email sent to ${projectData.contactEmail}`)
   } catch (err) {
@@ -365,7 +385,8 @@ async function sendDeveloperNotification(
   action: 'approved' | 'feedback',
   feedback?: string
 ): Promise<void> {
-  if (!resend) return
+  const transporter = createTransporter()
+  if (!transporter) return
   
   const subject = action === 'approved' 
     ? `✅ Design goedgekeurd: ${projectData.businessName}`
@@ -400,12 +421,12 @@ async function sendDeveloperNotification(
   `
   
   try {
-    // Developer email notification
-    await resend.emails.send({
-      from: 'Webstability <noreply@webstability.nl>',
+    await transporter.sendMail({
+      from: SMTP_FROM,
       to: DEV_NOTIFICATION_EMAIL,
       subject,
-      html
+      html,
+      replyTo: 'info@webstability.nl'
     })
     console.log(`[Feedback] Developer notification sent to ${DEV_NOTIFICATION_EMAIL}`)
   } catch (err) {

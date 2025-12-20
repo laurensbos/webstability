@@ -7,6 +7,7 @@ import {
   Plane,
   PenTool,
   ArrowRight,
+  ArrowLeft,
   Check,
   Sparkles
 } from 'lucide-react'
@@ -16,6 +17,7 @@ import QuickStartForm from '../components/QuickStartForm'
 
 type ServiceType = 'website' | 'webshop' | 'drone' | 'logo'
 type SelectedServiceType = ServiceType | null
+type PackageType = 'starter' | 'professional' | 'business'
 
 interface ServiceOption {
   id: ServiceType
@@ -24,10 +26,100 @@ interface ServiceOption {
   icon: React.ElementType
   price: string
   priceNote: string
+  setupNote?: string
   color: string
   gradient: string
   features: string[]
   popular?: boolean
+}
+
+interface PackageOption {
+  id: PackageType
+  name: string
+  price: number
+  setupFee?: number
+  priceNote: string
+  features: string[]
+}
+
+// Packages per service type
+const packagesByService: Record<ServiceType, PackageOption[]> = {
+  website: [
+    {
+      id: 'starter',
+      name: 'Starter',
+      price: 99,
+      setupFee: 99,
+      priceNote: 'per maand incl. btw',
+      features: ['1-5 pagina\'s', 'Mobiel-vriendelijk', 'Contactformulier', 'SSL certificaat'],
+    },
+    {
+      id: 'professional',
+      name: 'Professioneel',
+      price: 149,
+      setupFee: 179,
+      priceNote: 'per maand incl. btw',
+      features: ['5-10 pagina\'s', 'Blog functie', 'Google Analytics', 'Maandelijkse updates'],
+    },
+    {
+      id: 'business',
+      name: 'Business',
+      price: 199,
+      setupFee: 239,
+      priceNote: 'per maand incl. btw',
+      features: ['Onbeperkt pagina\'s', 'CMS systeem', 'Prioriteit support', 'Geavanceerde SEO'],
+    },
+  ],
+  webshop: [
+    {
+      id: 'starter',
+      name: 'Starter',
+      price: 349,
+      setupFee: 249,
+      priceNote: 'per maand incl. btw',
+      features: ['Tot 100 producten', 'iDEAL betaling', 'Voorraadbeheer', 'Basis analytics'],
+    },
+    {
+      id: 'professional',
+      name: 'Professioneel',
+      price: 449,
+      setupFee: 349,
+      priceNote: 'per maand incl. btw',
+      features: ['Tot 500 producten', 'Alle betaalmethodes', 'Kortingscodes', 'Klantaccounts'],
+    },
+    {
+      id: 'business',
+      name: 'Business',
+      price: 599,
+      setupFee: 449,
+      priceNote: 'per maand incl. btw',
+      features: ['Onbeperkt producten', 'Multi-valuta', 'API koppelingen', 'Dedicated support'],
+    },
+  ],
+  drone: [
+    {
+      id: 'starter',
+      name: 'Basis',
+      price: 349,
+      priceNote: 'eenmalig incl. btw',
+      features: ['10 bewerkte foto\'s', '1 locatie', 'Digitale levering', 'Binnen 5 dagen'],
+    },
+    {
+      id: 'professional',
+      name: 'Professioneel',
+      price: 549,
+      priceNote: 'eenmalig incl. btw',
+      features: ['25 bewerkte foto\'s', '1-2 locaties', '1 min video', 'Binnen 3 dagen'],
+    },
+    {
+      id: 'business',
+      name: 'Premium',
+      price: 849,
+      priceNote: 'eenmalig incl. btw',
+      features: ['50+ foto\'s', 'Meerdere locaties', '3 min video', 'Spoedlevering'],
+    },
+  ],
+  logo: [],  // No packages for logo - single service
 }
 
 const services: ServiceOption[] = [
@@ -38,6 +130,7 @@ const services: ServiceOption[] = [
     icon: Globe,
     price: 'Vanaf €99',
     priceNote: 'per maand incl. btw',
+    setupNote: '+ eenmalige opstartkosten vanaf €99',
     color: 'primary',
     gradient: 'from-primary-500 to-blue-600',
     features: ['Mobiel-vriendelijk', 'SEO geoptimaliseerd', 'Contactformulier', 'Hosting inbegrepen'],
@@ -50,6 +143,7 @@ const services: ServiceOption[] = [
     icon: ShoppingBag,
     price: 'Vanaf €349',
     priceNote: 'per maand incl. btw',
+    setupNote: '+ eenmalige opstartkosten vanaf €249',
     color: 'emerald',
     gradient: 'from-emerald-500 to-green-600',
     features: ['Tot 500 producten', 'iDEAL & creditcard', 'Voorraadbeheer', 'Klantaccounts'],
@@ -138,15 +232,23 @@ function FloatingParticles({ activeService }: { activeService: ServiceType }) {
 export default function StartProject() {
   const [searchParams] = useSearchParams()
   const [selectedService, setSelectedService] = useState<SelectedServiceType>(null)
+  const [selectedPackage, setSelectedPackage] = useState<PackageType | null>(null)
 
-  // Check for pre-selected service from URL
+  // Check for pre-selected service and package from URL
   useEffect(() => {
     const dienst = searchParams.get('dienst') as ServiceType
     const service = searchParams.get('service') as ServiceType
     const preselected = dienst || service
+    const pakketParam = searchParams.get('pakket') as PackageType
     
     if (preselected && ['website', 'webshop', 'drone', 'logo'].includes(preselected)) {
       setSelectedService(preselected)
+      // If package is in URL, or service has no packages, skip package selection
+      if (pakketParam && ['starter', 'professional', 'business'].includes(pakketParam)) {
+        setSelectedPackage(pakketParam)
+      } else if (preselected === 'drone' || preselected === 'logo') {
+        setSelectedPackage('starter') // Default for services without packages
+      }
     }
   }, [searchParams])
 
@@ -155,28 +257,162 @@ export default function StartProject() {
 
   // Handle back to service selection
   const handleBack = () => {
-    setSelectedService(null)
+    if (selectedPackage && packagesByService[selectedService!]?.length > 0) {
+      setSelectedPackage(null)
+    } else {
+      setSelectedService(null)
+      setSelectedPackage(null)
+    }
   }
 
-  // If a service is selected, show the quick start form
-  if (selectedService) {
-    const gradientColors: Record<ServiceType, string> = {
-      website: 'from-gray-50 via-white to-primary-50/30 dark:from-gray-900 dark:via-gray-900 dark:to-gray-900',
-      webshop: 'from-gray-50 via-white to-emerald-50/30 dark:from-gray-900 dark:via-gray-900 dark:to-gray-900',
-      drone: 'from-gray-50 via-white to-orange-50/30 dark:from-gray-900 dark:via-gray-900 dark:to-gray-900',
-      logo: 'from-gray-50 via-white to-purple-50/30 dark:from-gray-900 dark:via-gray-900 dark:to-gray-900'
-    }
+  // Get packages for selected service
+  const availablePackages = selectedService ? packagesByService[selectedService] : []
+  const hasPackages = availablePackages.length > 0
 
+  // Gradient colors for each service
+  const gradientColors: Record<ServiceType, string> = {
+    website: 'from-gray-50 via-white to-primary-50/30 dark:from-gray-900 dark:via-gray-900 dark:to-gray-900',
+    webshop: 'from-gray-50 via-white to-emerald-50/30 dark:from-gray-900 dark:via-gray-900 dark:to-gray-900',
+    drone: 'from-gray-50 via-white to-orange-50/30 dark:from-gray-900 dark:via-gray-900 dark:to-gray-900',
+    logo: 'from-gray-50 via-white to-purple-50/30 dark:from-gray-900 dark:via-gray-900 dark:to-gray-900'
+  }
+
+  // If service selected and (package selected OR no packages available), show form
+  if (selectedService && (selectedPackage || !hasPackages)) {
     return (
       <div className={`min-h-screen bg-gradient-to-br ${gradientColors[selectedService]}`}>
         <Header />
         <main className="pt-20 pb-12">
           <QuickStartForm 
             serviceType={selectedService}
-            initialPackage={pakket || undefined}
+            initialPackage={selectedPackage || pakket || 'starter'}
             onBack={handleBack}
           />
         </main>
+        <Footer />
+      </div>
+    )
+  }
+
+  // If service selected but needs package selection
+  if (selectedService && hasPackages && !selectedPackage) {
+    const serviceInfo = services.find(s => s.id === selectedService)!
+    
+    return (
+      <div className={`min-h-screen bg-gradient-to-br ${gradientColors[selectedService]} relative overflow-hidden`}>
+        <FloatingParticles activeService={selectedService} />
+        <Header />
+        
+        <main className="relative z-10 pt-24 sm:pt-28 pb-12 sm:pb-16 lg:pb-20">
+          <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
+            {/* Back button */}
+            <motion.button
+              initial={{ opacity: 0, x: -20 }}
+              animate={{ opacity: 1, x: 0 }}
+              onClick={() => setSelectedService(null)}
+              className="flex items-center gap-2 text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white mb-6 transition-colors"
+            >
+              <ArrowLeft className="w-4 h-4" />
+              <span>Terug naar diensten</span>
+            </motion.button>
+
+            {/* Header */}
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="text-center mb-8 sm:mb-12"
+            >
+              <div className={`inline-flex items-center gap-2 px-4 py-2 rounded-full bg-gradient-to-r ${serviceInfo.gradient} text-white text-sm font-medium mb-4`}>
+                <serviceInfo.icon className="w-4 h-4" />
+                {serviceInfo.name}
+              </div>
+              <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-gray-900 dark:text-white mb-3">
+                Kies je pakket
+              </h1>
+              <p className="text-gray-600 dark:text-gray-400 max-w-xl mx-auto">
+                Selecteer het pakket dat het beste bij jouw wensen past
+              </p>
+            </motion.div>
+
+            {/* Gratis design banner */}
+            {(selectedService === 'website' || selectedService === 'webshop') && (
+              <motion.div
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="bg-gradient-to-r from-emerald-50 to-green-50 dark:from-emerald-900/20 dark:to-green-900/20 border border-emerald-200 dark:border-emerald-800 rounded-xl p-4 mb-6 text-center"
+              >
+                <p className="text-emerald-800 dark:text-emerald-300 font-medium text-sm sm:text-base">
+                  ✨ Geheel vrijblijvend gratis design — Betaal pas als je tevreden bent!
+                </p>
+              </motion.div>
+            )}
+
+            {/* Package cards - Horizontal scroll on mobile */}
+            <div className="relative -mx-4 px-4 sm:mx-0 sm:px-0">
+              {/* Swipe hint for mobile */}
+              <p className="text-center text-gray-400 dark:text-gray-500 text-xs mb-3 sm:hidden">
+                ← Swipe om alle pakketten te zien →
+              </p>
+              
+              <div className="flex gap-4 overflow-x-auto snap-x snap-mandatory pb-4 sm:pb-0 sm:grid sm:grid-cols-3 sm:gap-6 sm:overflow-visible scrollbar-hide">
+                {availablePackages.map((pkg, index) => (
+                  <motion.button
+                    key={pkg.id}
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: index * 0.1 }}
+                    onClick={() => setSelectedPackage(pkg.id)}
+                    className="flex-shrink-0 w-[280px] sm:w-auto snap-center first:ml-0 last:mr-0 relative p-6 rounded-2xl text-left transition-all bg-white dark:bg-gray-800 shadow-lg hover:shadow-xl hover:scale-[1.02] active:scale-[0.98]"
+                  >
+                    <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-2">
+                      {pkg.name}
+                    </h3>
+                    
+                    <div className="mb-4">
+                      <span className="text-3xl font-bold text-gray-900 dark:text-white">€{pkg.price}</span>
+                      <span className="text-gray-500 dark:text-gray-400 text-sm ml-1">
+                        {pkg.priceNote.includes('eenmalig') ? ' eenmalig' : '/maand'}
+                      </span>
+                      {pkg.setupFee && (
+                        <p className="text-xs text-gray-400 dark:text-gray-500 mt-1">
+                          + €{pkg.setupFee} eenmalige opstartkosten
+                        </p>
+                      )}
+                    </div>
+                    
+                    <ul className="space-y-2 mb-6">
+                      {pkg.features.map((feature, i) => (
+                        <li key={i} className="flex items-start gap-2 text-sm text-gray-600 dark:text-gray-400">
+                          <Check className="w-4 h-4 text-green-500 shrink-0 mt-0.5" />
+                          {feature}
+                        </li>
+                      ))}
+                    </ul>
+                    
+                    <div className="w-full py-3 rounded-xl font-semibold text-center transition-all bg-gradient-to-r from-primary-500 to-blue-600 text-white">
+                      Kies {pkg.name}
+                      <ArrowRight className="inline-block w-4 h-4 ml-2" />
+                    </div>
+                  </motion.button>
+                ))}
+              </div>
+            </div>
+
+            {/* Info text */}
+            <motion.p
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ delay: 0.4 }}
+              className="text-center text-gray-500 dark:text-gray-400 text-sm mt-8"
+            >
+              {selectedService === 'drone' 
+                ? 'Alle prijzen zijn inclusief BTW. Beelden worden digitaal geleverd.'
+                : 'Alle pakketten zijn maandelijks opzegbaar na 3 maanden. Inclusief hosting en onderhoud.'
+              }
+            </motion.p>
+          </div>
+        </main>
+        
         <Footer />
       </div>
     )
@@ -271,6 +507,9 @@ export default function StartProject() {
                         <span className="text-2xl font-bold text-gray-900 dark:text-white">{service.price}</span>
                         <br />
                         <span className="text-sm text-gray-500 dark:text-gray-400">{service.priceNote}</span>
+                        {service.setupNote && (
+                          <p className="text-xs text-gray-400 dark:text-gray-500 mt-1">{service.setupNote}</p>
+                        )}
                       </div>
                       
                       {/* Features - vertical list */}
@@ -336,6 +575,9 @@ export default function StartProject() {
                       <span className="text-2xl font-bold text-gray-900 dark:text-white">{service.price}</span>
                       <br />
                       <span className="text-sm text-gray-500 dark:text-gray-400">{service.priceNote}</span>
+                      {service.setupNote && (
+                        <p className="text-xs text-gray-400 dark:text-gray-500 mt-1">{service.setupNote}</p>
+                      )}
                     </div>
                     
                     {/* Features - vertical list */}

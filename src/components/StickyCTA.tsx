@@ -30,20 +30,20 @@ export default function StickyCTA() {
           animate={{ y: 0, opacity: 1 }}
           exit={{ y: 100, opacity: 0 }}
           transition={{ type: 'spring', stiffness: 300, damping: 30 }}
-          className="fixed bottom-0 left-0 right-0 z-40 bg-white border-t border-gray-100 shadow-2xl shadow-gray-200/50 safe-area-inset-bottom"
+          className="fixed bottom-0 left-0 right-0 z-40 bg-white dark:bg-gray-900 border-t border-gray-100 dark:border-gray-800 shadow-2xl shadow-gray-200/50 dark:shadow-black/50 safe-area-inset-bottom"
         >
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3 sm:py-4">
             <div className="flex flex-col sm:flex-row items-center justify-between gap-3 sm:gap-4">
               {/* Left side - offer text */}
               <div className="flex items-center gap-3">
-                <div className="hidden sm:flex items-center justify-center w-10 h-10 bg-primary-100 rounded-full">
-                  <Sparkles className="w-5 h-5 text-primary-600" />
+                <div className="hidden sm:flex items-center justify-center w-10 h-10 bg-primary-100 dark:bg-primary-900/50 rounded-full">
+                  <Sparkles className="w-5 h-5 text-primary-600 dark:text-primary-400" />
                 </div>
                 <div className="text-center sm:text-left">
-                  <p className="text-gray-900 font-semibold text-sm sm:text-base">
-                    Start nu vanaf <span className="text-primary-600">€99/maand</span> <span className="text-gray-400 text-xs">(incl. BTW)</span>
+                  <p className="text-gray-900 dark:text-white font-semibold text-sm sm:text-base">
+                    Start nu vanaf <span className="text-primary-600 dark:text-primary-400">€99/maand</span> <span className="text-gray-400 dark:text-gray-500 text-xs">(incl. BTW)</span>
                   </p>
-                  <p className="text-gray-500 text-xs sm:text-sm">
+                  <p className="text-gray-500 dark:text-gray-400 text-xs sm:text-sm">
                     Eenmalig €120 • Online binnen 7 dagen
                   </p>
                 </div>
@@ -60,7 +60,7 @@ export default function StickyCTA() {
                 </a>
                 <button
                   onClick={handleDismiss}
-                  className="p-2 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-lg transition-colors"
+                  className="p-2 text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition-colors"
                   aria-label="Sluiten"
                 >
                   <X className="w-5 h-5" />

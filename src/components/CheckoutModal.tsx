@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 import { motion } from 'framer-motion'
 
-// Pakket prijzen (moet overeenkomen met server)
+// Pakket prijzen (alleen ter informatie - betaling komt later)
 const PACKAGE_PRICES: Record<string, { monthly: number; setup: number }> = {
   starter: { monthly: 79, setup: 99 },
   professional: { monthly: 148, setup: 179 },
@@ -21,6 +21,8 @@ export default function CheckoutModal(){
   const [plan, setPlan] = useState<string | null>(null)
   const [name, setName] = useState('')
   const [email, setEmail] = useState('')
+  const [phone, setPhone] = useState('')
+  const [companyName, setCompanyName] = useState('')
   const [domain, setDomain] = useState('')
   const [couponCode, setCouponCode] = useState('')
   const [appliedDiscount, setAppliedDiscount] = useState<DiscountInfo | null>(null)
@@ -28,23 +30,12 @@ export default function CheckoutModal(){
   const [checkingCoupon, setCheckingCoupon] = useState(false)
   const [processing, setProcessing] = useState(false)
   const [isWebshop, setIsWebshop] = useState(false)
+  const [success, setSuccess] = useState(false)
+  const [projectId, setProjectId] = useState<string | null>(null)
 
   // Bereken prijzen op basis van pakket
   const packageKey = isWebshop ? 'webshop' : (plan?.toLowerCase() || 'starter')
   const prices = PACKAGE_PRICES[packageKey] || PACKAGE_PRICES.starter
-  
-  // Bereken korting
-  const calculateDiscount = () => {
-    if (!appliedDiscount) return 0
-    const basePrice = prices.monthly + prices.setup
-    if (appliedDiscount.type === 'percentage') {
-      return Math.round(basePrice * (appliedDiscount.value / 100) * 100) / 100
-    }
-    return Math.min(appliedDiscount.value, basePrice)
-  }
-  
-  const discount = calculateDiscount()
-  const totalFirstPayment = prices.monthly + prices.setup - discount
 
   useEffect(()=>{
     function handler(e: any){
@@ -116,18 +107,21 @@ export default function CheckoutModal(){
       const packageType = isWebshop ? 'webshop' : (plan?.toLowerCase() || 'starter')
       const productType = isWebshop ? 'Webshop' : 'Website'
       
-      // create payment session met eerste betaling (inclusief eenmalige kosten)
-      const resp = await fetch('/api/create-payment', {
+      // Maak project aan ZONDER betaling - betaling komt na design goedkeuring
+      const resp = await fetch('/api/projects', {
         method: 'POST',
         headers: { 'content-type': 'application/json' },
         body: JSON.stringify({ 
-          amount: totalFirstPayment.toFixed(2),
-          description: `Webstability ${productType} ${plan} - Eerste betaling`,
-          customerName: name,
-          customerEmail: email,
-          packageType,
-          isFirstPayment: true,
-          discountCode: appliedDiscount?.code, // Stuur kortingscode mee
+          contactName: name,
+          contactEmail: email,
+          contactPhone: phone,
+          companyName: companyName || name,
+          domain: domain,
+          package: packageType,
+          productType,
+          discountCode: appliedDiscount?.code,
+          phase: 'onboarding', // Start in onboarding fase
+          paymentStatus: 'pending', // Betaling nog niet gedaan
           metadata: { 
             plan, 
             domain, 
@@ -135,50 +129,117 @@ export default function CheckoutModal(){
             isWebshop,
             setupCost: prices.setup,
             monthlyCost: prices.monthly,
-            discountAmount: discount
           }
         })
       })
       const data = await resp.json()
       
-      if (data.paymentUrl) {
-        // Redirect naar Mollie betaalpagina
-        window.location.href = data.paymentUrl
-      } else if (data.url) {
-        // Fallback voor mock payment
-        const popup = window.open(data.url, 'mockpay', 'width=480,height=680')
-
-        function onMessage(ev: MessageEvent){
-          if(ev.data?.type === 'mock-payment' && ev.data?.id){
-            fetch(`/api/mock-pay/${ev.data.id}/complete`, { method: 'POST' }).catch(()=>{})
-            try{ (window as any).dataLayer = (window as any).dataLayer || []; (window as any).dataLayer.push({ event: 'purchase', plan, coupon: appliedDiscount?.code, amount: totalFirstPayment, paymentId: ev.data.id }) }catch(e){}
-            alert(`Betaling ontvangen — we beginnen met je ${plan} site. Dank!`)
-            window.removeEventListener('message', onMessage)
-            popup?.close()
-            setOpen(false)
-          }
-        }
-        window.addEventListener('message', onMessage)
+      if (data.success && data.project?.id) {
+        setProjectId(data.project.id)
+        setSuccess(true)
+        try{ 
+          (window as any).dataLayer = (window as any).dataLayer || []; 
+          (window as any).dataLayer.push({ 
+            event: 'project_request', 
+            plan, 
+            coupon: appliedDiscount?.code,
+            projectId: data.project.id 
+          }) 
+        }catch(e){}
+      } else {
+        alert(data.error || 'Er is iets misgegaan bij het aanmaken van je project')
       }
 
     }catch(e){
-      alert('Er is iets misgegaan bij het aanmaken van de betaling')
+      alert('Er is iets misgegaan bij het aanmaken van je project')
     }
 
     setProcessing(false)
   }
 
+  // Success scherm na aanvraag
+  if (success && projectId) {
+    return (
+      <div className="fixed inset-0 z-60 flex items-center justify-center">
+        <div className="absolute inset-0 bg-black/40" onClick={()=>{setOpen(false); setSuccess(false); setProjectId(null)}} />
+        <motion.div 
+          className="relative bg-white dark:bg-gray-800 rounded-2xl p-8 max-w-lg w-full shadow-card text-center" 
+          initial={{opacity:0,scale:0.98,y:8}} 
+          animate={{opacity:1,scale:1,y:0}} 
+          transition={{duration:0.18}}
+        >
+          <div className="w-16 h-16 bg-green-100 dark:bg-green-900/30 rounded-full flex items-center justify-center mx-auto mb-4">
+            <svg className="w-8 h-8 text-green-600 dark:text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7" />
+            </svg>
+          </div>
+          
+          <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">
+            Aanvraag ontvangen! 🎉
+          </h3>
+          
+          <p className="text-slate-600 dark:text-gray-300 mb-4">
+            Je {isWebshop ? 'webshop' : 'website'} aanvraag is succesvol ontvangen.
+          </p>
+          
+          <div className="bg-slate-50 dark:bg-gray-700 rounded-lg p-4 mb-6">
+            <p className="text-sm text-slate-600 dark:text-gray-400 mb-1">Je project ID:</p>
+            <p className="text-xl font-mono font-bold text-primary-600 dark:text-primary-400">{projectId}</p>
+            <p className="text-xs text-slate-500 dark:text-gray-500 mt-2">
+              Bewaar dit ID om je project te volgen
+            </p>
+          </div>
+          
+          {/* Direct action buttons */}
+          <div className="space-y-3 mb-6">
+            <a 
+              href={`/intake/${projectId}`}
+              className="btn-primary w-full flex items-center justify-center gap-2"
+            >
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" />
+              </svg>
+              Start met uploaden →
+            </a>
+            <p className="text-xs text-slate-500 dark:text-gray-500">
+              Upload je logo, foto's en andere bestanden zodat we direct kunnen starten
+            </p>
+          </div>
+          
+          <div className="bg-blue-50 dark:bg-blue-900/20 rounded-lg p-4 mb-6 text-left">
+            <h4 className="font-semibold text-blue-900 dark:text-blue-300 mb-2">📋 Wat gebeurt er nu?</h4>
+            <ol className="text-sm text-blue-800 dark:text-blue-300 space-y-1 list-decimal list-inside">
+              <li><strong>Nu:</strong> Vul de onboarding in & upload bestanden</li>
+              <li>Wij maken een design op maat (5-7 dagen)</li>
+              <li>Jij geeft feedback & keurt goed</li>
+              <li>Na goedkeuring → betaling & live!</li>
+            </ol>
+          </div>
+          
+          <button 
+            onClick={()=>{setOpen(false); setSuccess(false); setProjectId(null)}}
+            className="w-full py-2 text-slate-600 dark:text-gray-400 hover:text-slate-800 dark:hover:text-gray-200 text-sm"
+          >
+            Later doen
+          </button>
+        </motion.div>
+      </div>
+    )
+  }
+
   return (
     <div className="fixed inset-0 z-60 flex items-center justify-center">
       <div className="absolute inset-0 bg-black/40" onClick={()=>setOpen(false)} />
-      <motion.div className="relative bg-white dark:bg-gray-800 rounded-2xl p-6 max-w-lg w-full shadow-card" initial={{opacity:0,scale:0.98,y:8}} animate={{opacity:1,scale:1,y:0}} transition={{duration:0.18}}>
-        <h3 className="text-lg font-semibold text-gray-900 dark:text-white">Bestel: {isWebshop ? 'Webshop' : plan}</h3>
-        <p className="text-sm text-slate-600 dark:text-gray-300 mt-1">Vul je gegevens in om direct te starten.</p>
+      <motion.div className="relative bg-white dark:bg-gray-800 rounded-2xl p-6 max-w-lg w-full shadow-card max-h-[90vh] overflow-y-auto" initial={{opacity:0,scale:0.98,y:8}} animate={{opacity:1,scale:1,y:0}} transition={{duration:0.18}}>
+        <h3 className="text-lg font-semibold text-gray-900 dark:text-white">Gratis aanvragen: {isWebshop ? 'Webshop' : plan}</h3>
+        <p className="text-sm text-slate-600 dark:text-gray-300 mt-1">Vul je gegevens in. Betaling pas na design-goedkeuring.</p>
 
         <form onSubmit={submit} className="mt-4 space-y-3">
-          <input value={name} onChange={(e)=>setName(e.target.value)} placeholder="Volledige naam" className="w-full px-3 py-2 border dark:border-gray-600 rounded bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500" required />
-          <input value={email} onChange={(e)=>setEmail(e.target.value)} type="email" placeholder="E-mail" className="w-full px-3 py-2 border dark:border-gray-600 rounded bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500" required />
-          <input value={domain} onChange={(e)=>setDomain(e.target.value)} placeholder="Gewenst domein (optioneel)" className="w-full px-3 py-2 border dark:border-gray-600 rounded bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500" />
+          <input value={name} onChange={(e)=>setName(e.target.value)} placeholder="Je naam *" className="w-full px-3 py-2.5 text-base border dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500 focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-shadow" required />
+          <input value={companyName} onChange={(e)=>setCompanyName(e.target.value)} placeholder="Bedrijfsnaam" className="w-full px-3 py-2.5 text-base border dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500 focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-shadow" />
+          <input value={email} onChange={(e)=>setEmail(e.target.value)} type="email" placeholder="E-mailadres *" className="w-full px-3 py-2.5 text-base border dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500 focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-shadow" required />
+          <input value={phone} onChange={(e)=>setPhone(e.target.value)} type="tel" placeholder="Telefoonnummer" className="w-full px-3 py-2.5 text-base border dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500 focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-shadow" />
+          <input value={domain} onChange={(e)=>setDomain(e.target.value)} placeholder="Gewenst domein (optioneel)" className="w-full px-3 py-2.5 text-base border dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500 focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-shadow" />
 
           {/* Kortingscode sectie */}
           <div className="mt-2">
@@ -212,7 +273,7 @@ export default function CheckoutModal(){
                     setCouponError('')
                   }}
                   placeholder="Kortingscode"
-                  className="flex-1 px-3 py-2 border dark:border-gray-600 rounded bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500"
+                  className="flex-1 px-3 py-2.5 text-base border dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500 focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-shadow"
                 />
                 <button
                   type="button"
@@ -244,25 +305,27 @@ export default function CheckoutModal(){
               <div className="font-medium text-gray-900 dark:text-white">€{prices.setup}</div>
             </div>
             <div className="flex items-center justify-between mt-1">
-              <div className="text-sm text-slate-700 dark:text-gray-300">Eerste maand</div>
-              <div className="font-medium text-gray-900 dark:text-white">€{prices.monthly}</div>
+              <div className="text-sm text-slate-700 dark:text-gray-300">Maandelijks</div>
+              <div className="font-medium text-gray-900 dark:text-white">€{prices.monthly}/mnd</div>
             </div>
-            {appliedDiscount && discount > 0 && (
+            {appliedDiscount && (
               <div className="flex items-center justify-between mt-1">
                 <div className="text-sm text-green-600 dark:text-green-400">Korting ({appliedDiscount.code})</div>
-                <div className="font-medium text-green-600 dark:text-green-400">-€{discount.toFixed(2)}</div>
+                <div className="font-medium text-green-600 dark:text-green-400">
+                  -{appliedDiscount.type === 'percentage' ? `${appliedDiscount.value}%` : `€${appliedDiscount.value}`}
+                </div>
               </div>
             )}
-            <div className="flex items-center justify-between mt-3 pt-3 border-t border-slate-300 dark:border-gray-500">
-              <div className="text-sm font-semibold text-slate-900 dark:text-white">Totaal eerste betaling</div>
-              <div className="font-bold text-lg text-primary-600 dark:text-primary-400">€{totalFirstPayment.toFixed(2)}</div>
+            <div className="mt-3 pt-3 border-t border-slate-300 dark:border-gray-500">
+              <p className="text-xs text-slate-500 dark:text-gray-400">
+                💡 Betaling pas na goedkeuring van je design
+              </p>
             </div>
-            <p className="text-xs text-slate-500 dark:text-gray-400 mt-2">Daarna €{prices.monthly}/maand</p>
           </div>
 
           <div className="flex items-center justify-between pt-2">
             <button type="button" className="px-4 py-2 rounded border dark:border-gray-600 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700" onClick={()=>setOpen(false)}>Annuleer</button>
-            <button type="submit" className="btn-primary" disabled={processing}>{processing ? 'Verwerken…' : 'Naar betaling'}</button>
+            <button type="submit" className="btn-primary" disabled={processing}>{processing ? 'Verwerken…' : 'Gratis aanvragen'}</button>
           </div>
         </form>
       </motion.div>

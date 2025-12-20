@@ -12,12 +12,65 @@
  */
 
 import nodemailer from 'nodemailer'
+import { Redis } from '@upstash/redis'
+import { createHash, randomBytes } from 'crypto'
 
 const SMTP_HOST = process.env.SMTP_HOST
 const SMTP_PORT = parseInt(process.env.SMTP_PORT || '465')
 const SMTP_USER = process.env.SMTP_USER
 const SMTP_PASS = process.env.SMTP_PASS
 const SMTP_FROM = process.env.SMTP_FROM || 'Webstability <info@webstability.nl>'
+
+// Redis for magic link storage
+const REDIS_URL = process.env.UPSTASH_REDIS_REST_URL
+const REDIS_TOKEN = process.env.UPSTASH_REDIS_REST_TOKEN
+const kv = REDIS_URL && REDIS_TOKEN 
+  ? new Redis({ url: REDIS_URL, token: REDIS_TOKEN })
+  : null
+
+// Always use production URL
+const BASE_URL = process.env.SITE_URL || 'https://webstability.nl'
+const MAGIC_SECRET = process.env.MAGIC_LINK_SECRET || 'webstability-magic-link-secret-2024'
+
+// ===========================================
+// Magic Link Generation
+// ===========================================
+
+function generateMagicToken(): string {
+  return randomBytes(32).toString('hex')
+}
+
+function hashMagicToken(token: string): string {
+  return createHash('sha256').update(token + MAGIC_SECRET).digest('hex')
+}
+
+/**
+ * Generate a magic link for 1-click login from emails
+ * Returns the full URL with token, or a fallback URL if Redis is not available
+ */
+export async function generateMagicLinkUrl(projectId: string): Promise<string> {
+  const normalizedId = projectId.trim().toUpperCase()
+  const fallbackUrl = `${BASE_URL}/project/${normalizedId}`
+  
+  if (!kv) {
+    console.log('Redis not available, using fallback URL for magic link')
+    return fallbackUrl
+  }
+  
+  try {
+    const token = generateMagicToken()
+    const tokenHash = hashMagicToken(token)
+    
+    // Store token with 7 day expiry
+    await kv.set(`magic_token:${normalizedId}`, tokenHash, { ex: 604800 })
+    
+    console.log(`Magic link generated for project ${normalizedId}`)
+    return `${BASE_URL}/api/magic-login?token=${token}&projectId=${normalizedId}`
+  } catch (error) {
+    console.error('Error generating magic link:', error)
+    return fallbackUrl
+  }
+}
 
 export const isSmtpConfigured = (): boolean => {
   return Boolean(SMTP_HOST && SMTP_USER && SMTP_PASS)
@@ -79,61 +132,153 @@ export const sendEmail = async (options: SendEmailOptions): Promise<EmailResult>
 
 // ===========================================
 // Base Email Template - Webstability Design
+// Professional styling matching website design
 // ===========================================
 
-const baseTemplate = (content: string, accentColor: string = '#2563eb') => `
+// Trustpilot stars SVG for emails (inline, email-safe)
+const getTrustpilotStars = () => `
+  <table role="presentation" cellspacing="0" cellpadding="0" style="display: inline-table;">
+    <tr>
+      ${[1,2,3,4,5].map(() => `
+        <td style="padding: 0 1px;">
+          <div style="width: 16px; height: 16px; background-color: #00b67a; text-align: center; line-height: 16px;">
+            <span style="color: white; font-size: 10px;">★</span>
+          </div>
+        </td>
+      `).join('')}
+    </tr>
+  </table>
+`
+
+export const baseTemplate = (content: string, accentColor: string = '#2563eb') => `
 <!DOCTYPE html>
 <html lang="nl">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="color-scheme" content="light">
+  <meta name="supported-color-schemes" content="light">
   <title>Webstability</title>
+  <!--[if mso]>
+  <style type="text/css">
+    table { border-collapse: collapse; }
+    .button { padding: 12px 24px !important; }
+  </style>
+  <![endif]-->
 </head>
-<body style="margin: 0; padding: 0; background-color: #f8fafc; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;">
-  <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="background-color: #f8fafc;">
+<body style="margin: 0; padding: 0; background-color: #f1f5f9; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif; -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale;">
+  <!-- Preheader text (hidden) -->
+  <div style="display: none; max-height: 0; overflow: hidden; mso-hide: all;">
+    Webstability - Professionele websites voor ondernemers
+  </div>
+  
+  <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="background-color: #f1f5f9;">
     <tr>
-      <td align="center" style="padding: 40px 20px;">
-        <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="max-width: 600px; background-color: #ffffff; border-radius: 16px; overflow: hidden; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);">
+      <td align="center" style="padding: 32px 16px;">
+        
+        <!-- Main Container -->
+        <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="max-width: 600px;">
           
           <!-- Header with Logo -->
           <tr>
-            <td style="padding: 32px 40px; background: linear-gradient(135deg, ${accentColor} 0%, #1d4ed8 100%); text-align: center;">
+            <td style="padding: 24px 32px; background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%); border-radius: 16px 16px 0 0;">
               <table role="presentation" width="100%" cellspacing="0" cellpadding="0">
                 <tr>
-                  <td align="center">
-                    <span style="font-size: 28px; font-weight: 700; color: #ffffff; letter-spacing: -0.5px;">webstability</span>
+                  <td>
+                    <!-- Logo Text -->
+                    <span style="font-size: 24px; font-weight: 700; color: #ffffff; letter-spacing: -0.5px; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;">webstability</span>
+                  </td>
+                  <td align="right" style="vertical-align: middle;">
+                    <!-- Trustpilot Mini Badge -->
+                    <a href="https://nl.trustpilot.com/review/webstability.nl" style="text-decoration: none;">
+                      ${getTrustpilotStars()}
+                    </a>
                   </td>
                 </tr>
               </table>
             </td>
           </tr>
           
-          <!-- Content -->
+          <!-- Accent Bar -->
           <tr>
-            <td style="padding: 40px;">
+            <td style="height: 4px; background: linear-gradient(90deg, ${accentColor} 0%, #3b82f6 50%, #8b5cf6 100%);"></td>
+          </tr>
+          
+          <!-- Content Area -->
+          <tr>
+            <td style="padding: 40px 32px; background-color: #ffffff;">
               ${content}
             </td>
           </tr>
           
           <!-- Footer -->
           <tr>
-            <td style="padding: 24px 40px; background-color: #f8fafc; border-top: 1px solid #e2e8f0;">
+            <td style="padding: 32px; background-color: #f8fafc; border-radius: 0 0 16px 16px; border-top: 1px solid #e2e8f0;">
               <table role="presentation" width="100%" cellspacing="0" cellpadding="0">
+                <!-- Greeting -->
+                <tr>
+                  <td align="center" style="padding-bottom: 20px;">
+                    <p style="margin: 0; font-size: 15px; color: #64748b; line-height: 1.5;">
+                      Met vriendelijke groet,<br>
+                      <strong style="color: #0f172a;">Team Webstability</strong>
+                    </p>
+                  </td>
+                </tr>
+                
+                <!-- Divider -->
+                <tr>
+                  <td style="padding-bottom: 20px;">
+                    <div style="height: 1px; background: linear-gradient(90deg, transparent, #e2e8f0, transparent);"></div>
+                  </td>
+                </tr>
+                
+                <!-- Trustpilot Section -->
+                <tr>
+                  <td align="center" style="padding-bottom: 20px;">
+                    <a href="https://nl.trustpilot.com/review/webstability.nl" style="text-decoration: none;">
+                      <table role="presentation" cellspacing="0" cellpadding="0">
+                        <tr>
+                          <td style="padding-right: 8px;">
+                            <span style="color: #64748b; font-size: 13px;">Beoordeeld met</span>
+                          </td>
+                          <td>
+                            ${getTrustpilotStars()}
+                          </td>
+                          <td style="padding-left: 8px;">
+                            <span style="color: #64748b; font-size: 13px;">op Trustpilot</span>
+                          </td>
+                        </tr>
+                      </table>
+                    </a>
+                  </td>
+                </tr>
+                
+                <!-- Contact Links -->
+                <tr>
+                  <td align="center" style="padding-bottom: 16px;">
+                    <table role="presentation" cellspacing="0" cellpadding="0">
+                      <tr>
+                        <td style="padding: 0 12px;">
+                          <a href="https://webstability.nl" style="color: ${accentColor}; text-decoration: none; font-size: 13px; font-weight: 500;">🌐 webstability.nl</a>
+                        </td>
+                        <td style="color: #cbd5e1;">•</td>
+                        <td style="padding: 0 12px;">
+                          <a href="mailto:info@webstability.nl" style="color: ${accentColor}; text-decoration: none; font-size: 13px; font-weight: 500;">✉️ info@webstability.nl</a>
+                        </td>
+                        <td style="color: #cbd5e1;">•</td>
+                        <td style="padding: 0 12px;">
+                          <a href="tel:+31644712573" style="color: ${accentColor}; text-decoration: none; font-size: 13px; font-weight: 500;">📞 06-44712573</a>
+                        </td>
+                      </tr>
+                    </table>
+                  </td>
+                </tr>
+                
+                <!-- Legal -->
                 <tr>
                   <td align="center">
-                    <p style="margin: 0 0 8px; font-size: 14px; color: #64748b;">
-                      Met vriendelijke groet,<br>
-                      <strong style="color: #334155;">Team Webstability</strong>
-                    </p>
-                    <p style="margin: 16px 0 0; font-size: 12px; color: #94a3b8;">
-                      <a href="https://webstability.nl" style="color: ${accentColor}; text-decoration: none;">webstability.nl</a>
-                      &nbsp;•&nbsp;
-                      <a href="mailto:info@webstability.nl" style="color: ${accentColor}; text-decoration: none;">info@webstability.nl</a>
-                      &nbsp;•&nbsp;
-                      <a href="tel:+31644712573" style="color: ${accentColor}; text-decoration: none;">06-44712573</a>
-                    </p>
-                    <p style="margin: 16px 0 0; font-size: 11px; color: #cbd5e1;">
-                      KvK: 94081468 • BTW: NL004892818B28
+                    <p style="margin: 0; font-size: 11px; color: #94a3b8;">
+                      KvK: 91186307 • BTW: NL004875371B72
                     </p>
                   </td>
                 </tr>
@@ -143,17 +288,18 @@ const baseTemplate = (content: string, accentColor: string = '#2563eb') => `
           
         </table>
         
-        <!-- Bottom text -->
+        <!-- Bottom Disclaimer -->
         <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="max-width: 600px;">
           <tr>
-            <td align="center" style="padding: 24px 20px;">
-              <p style="margin: 0; font-size: 12px; color: #94a3b8; line-height: 1.5;">
+            <td align="center" style="padding: 24px 16px;">
+              <p style="margin: 0; font-size: 11px; color: #94a3b8; line-height: 1.5;">
                 Je ontvangt deze email omdat je een aanvraag hebt gedaan bij Webstability.<br>
                 © ${new Date().getFullYear()} Webstability. Alle rechten voorbehouden.
               </p>
             </td>
           </tr>
         </table>
+        
       </td>
     </tr>
   </table>
@@ -174,6 +320,108 @@ const serviceColors: Record<string, { primary: string; gradient: string }> = {
 }
 
 const getServiceColor = (type?: string) => serviceColors[type || 'website'] || serviceColors.website
+
+// ===========================================
+// Progress Bar Component for Emails
+// ===========================================
+
+type ProjectPhase = 'onboarding' | 'design' | 'design_approved' | 'development' | 'review' | 'live'
+
+const PHASE_CONFIG: { key: ProjectPhase; label: string; emoji: string }[] = [
+  { key: 'onboarding', label: 'Onboarding', emoji: '📝' },
+  { key: 'design', label: 'Design', emoji: '🎨' },
+  { key: 'design_approved', label: 'Goedgekeurd', emoji: '✅' },
+  { key: 'development', label: 'Ontwikkeling', emoji: '💻' },
+  { key: 'review', label: 'Review', emoji: '🔍' },
+  { key: 'live', label: 'Live', emoji: '🚀' },
+]
+
+const getProgressBar = (currentPhase: ProjectPhase, accentColor: string = '#2563eb'): string => {
+  const currentIndex = PHASE_CONFIG.findIndex(p => p.key === currentPhase)
+  
+  // Generate the step circles with connecting lines - mobile optimized
+  const steps = PHASE_CONFIG.map((phase, index) => {
+    const isCompleted = index < currentIndex
+    const isCurrent = index === currentIndex
+    
+    // Colors for each state
+    const circleColor = isCompleted || isCurrent ? accentColor : '#e2e8f0'
+    const textColor = isCompleted || isCurrent ? '#0f172a' : '#94a3b8'
+    const checkmark = isCompleted ? '✓' : phase.emoji
+    
+    // Shorter labels for mobile
+    const shortLabel = phase.label.length > 8 ? phase.label.slice(0, 7) + '.' : phase.label
+    
+    return `
+      <td style="text-align: center; vertical-align: top; width: ${100 / PHASE_CONFIG.length}%; padding: 0 2px;">
+        <div style="
+          width: 32px; 
+          height: 32px; 
+          border-radius: 50%; 
+          background: ${isCurrent ? accentColor : isCompleted ? '#dcfce7' : '#f1f5f9'}; 
+          border: 2px solid ${circleColor};
+          color: ${isCurrent ? '#ffffff' : isCompleted ? '#16a34a' : '#94a3b8'}; 
+          font-size: 12px; 
+          font-weight: 700; 
+          line-height: 28px; 
+          margin: 0 auto 6px;
+          ${isCurrent ? 'box-shadow: 0 0 0 3px ' + accentColor + '33;' : ''}
+        ">
+          ${checkmark}
+        </div>
+        <p style="margin: 0; font-size: 9px; color: ${textColor}; font-weight: ${isCurrent ? '700' : '500'}; line-height: 1.2;">
+          ${shortLabel}
+        </p>
+      </td>
+    `
+  }).join('')
+
+  // Create the connecting line behind the circles
+  const progressPercentage = Math.round((currentIndex / (PHASE_CONFIG.length - 1)) * 100)
+  
+  return `
+    <!-- Progress Bar Section - Mobile Optimized -->
+    <div style="background: #f8fafc; border-radius: 12px; padding: 16px 8px; margin-bottom: 24px;">
+      <p style="margin: 0 0 12px; font-size: 11px; font-weight: 600; color: #64748b; text-transform: uppercase; letter-spacing: 0.5px; text-align: center;">
+        📍 Voortgang (${currentIndex + 1}/${PHASE_CONFIG.length})
+      </p>
+      
+      <!-- Progress line background -->
+      <div style="position: relative; padding: 0 16px;">
+        <div style="position: absolute; top: 16px; left: 32px; right: 32px; height: 2px; background: #e2e8f0; border-radius: 2px;">
+          <div style="width: ${progressPercentage}%; height: 100%; background: ${accentColor}; border-radius: 2px;"></div>
+        </div>
+        
+        <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="position: relative;">
+          <tr>
+            ${steps}
+          </tr>
+        </table>
+      </div>
+    </div>
+  `
+}
+
+// ===========================================
+// Magic Link Button Component for Emails  
+// ===========================================
+
+/**
+ * Generate a prominent magic link button for 1-click login
+ */
+const getMagicLinkButton = (magicLink: string, buttonText: string = 'Bekijk je project →', accentColor: string = '#2563eb'): string => {
+  return `
+    <!-- Magic Link Button - 1-Click Login -->
+    <div style="text-align: center; margin: 24px 0;">
+      <a href="${magicLink}" style="display: inline-block; background: linear-gradient(135deg, ${accentColor} 0%, ${accentColor}dd 100%); color: #ffffff; padding: 16px 40px; border-radius: 12px; text-decoration: none; font-weight: 600; font-size: 16px; box-shadow: 0 4px 14px ${accentColor}40;">
+        ${buttonText}
+      </a>
+      <p style="margin: 12px 0 0; font-size: 12px; color: #94a3b8;">
+        🔐 1-klik login — geen wachtwoord nodig
+      </p>
+    </div>
+  `
+}
 
 // Developer notification - New project
 export const sendProjectCreatedEmail = async (project: {
@@ -261,6 +509,8 @@ export const sendWelcomeEmail = async (customer: {
   package: string
   type?: string
   password?: string
+  phase?: ProjectPhase
+  driveLink?: string
 }) => {
   const colors = getServiceColor(customer.type)
   const serviceLabel = {
@@ -270,6 +520,11 @@ export const sendWelcomeEmail = async (customer: {
     logo: 'logo ontwerp'
   }[customer.type || 'website'] || 'website'
 
+  const currentPhase = customer.phase || 'onboarding'
+  
+  // Generate magic link for 1-click login
+  const magicLink = await generateMagicLinkUrl(customer.projectId)
+
   const content = `
     <div style="text-align: center; margin-bottom: 32px;">
       <div style="width: 80px; height: 80px; background: ${colors.gradient}; border-radius: 50%; margin: 0 auto 20px; display: flex; align-items: center; justify-content: center;">
@@ -278,6 +533,8 @@ export const sendWelcomeEmail = async (customer: {
       <h1 style="margin: 0 0 8px; font-size: 28px; font-weight: 700; color: #0f172a;">Welkom bij Webstability!</h1>
       <p style="margin: 0; color: #64748b; font-size: 16px;">Je professionele ${serviceLabel} is onderweg</p>
     </div>
+    
+    ${getProgressBar(currentPhase, colors.primary)}
     
     <p style="color: #334155; font-size: 16px; line-height: 1.6; margin-bottom: 24px;">
       Hoi ${customer.name},<br><br>
@@ -350,8 +607,12 @@ export const sendWelcomeEmail = async (customer: {
                 <div style="width: 36px; height: 36px; background: ${colors.primary}; border-radius: 50%; color: white; font-weight: 700; font-size: 16px; text-align: center; line-height: 36px;">2</div>
               </td>
               <td style="vertical-align: top;">
-                <p style="margin: 0 0 4px; font-weight: 600; color: #0f172a;">Drive link ontvangen</p>
-                <p style="margin: 0; color: #64748b; font-size: 14px;">Binnen 24 uur sturen we je een Google Drive link voor je bestanden (logo, foto's, etc.)</p>
+                <p style="margin: 0 0 4px; font-weight: 600; color: #0f172a;">Bestanden uploaden</p>
+                <p style="margin: 0; color: #64748b; font-size: 14px;">
+                  ${customer.driveLink 
+                    ? `<a href="${customer.driveLink}" style="color: ${colors.primary}; font-weight: 600;">Open je Google Drive map →</a> en upload je logo, foto's en teksten.`
+                    : 'Je Google Drive map voor bestanden (logo, foto\'s, etc.) wordt klaargezet.'}
+                </p>
               </td>
             </tr>
           </table>
@@ -419,10 +680,127 @@ export const sendWelcomeEmail = async (customer: {
       </tr>
     </table>
     
-    <div style="text-align: center; margin-bottom: 24px;">
-      <a href="https://webstability.nl/intake/${customer.projectId}" style="display: inline-block; background: ${colors.gradient}; color: white; padding: 16px 40px; border-radius: 10px; text-decoration: none; font-weight: 600; font-size: 16px;">
-        Start Onboarding →
+    ${customer.driveLink ? `
+    <!-- Google Drive Upload Box -->
+    <div style="background: linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%); border: 2px solid #3b82f6; border-radius: 16px; padding: 24px; margin-bottom: 24px;">
+      <div style="text-align: center; margin-bottom: 20px;">
+        <div style="font-size: 40px; margin-bottom: 12px;">📁</div>
+        <p style="margin: 0 0 8px; color: #1e40af; font-size: 18px; font-weight: 700;">
+          Jouw Google Drive map is klaar!
+        </p>
+        <p style="margin: 0; color: #1e3a8a; font-size: 14px;">
+          We hebben 5 mappen voor je klaargezet. Hier is wat we nodig hebben:
+        </p>
+      </div>
+      
+      <!-- Folder explanation table -->
+      <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="margin-bottom: 20px;">
+        <tr>
+          <td style="padding: 10px; background: white; border-radius: 8px; margin-bottom: 8px;">
+            <table role="presentation" width="100%" cellspacing="0" cellpadding="0">
+              <tr>
+                <td style="width: 36px; vertical-align: top;">
+                  <span style="font-size: 20px;">🎨</span>
+                </td>
+                <td>
+                  <p style="margin: 0; font-weight: 600; color: #1e40af; font-size: 14px;">Ontwerp</p>
+                  <p style="margin: 4px 0 0; color: #64748b; font-size: 12px;">Logo bestanden, huisstijl handboek, kleurencodes</p>
+                </td>
+              </tr>
+            </table>
+          </td>
+        </tr>
+        <tr><td style="height: 8px;"></td></tr>
+        <tr>
+          <td style="padding: 10px; background: white; border-radius: 8px;">
+            <table role="presentation" width="100%" cellspacing="0" cellpadding="0">
+              <tr>
+                <td style="width: 36px; vertical-align: top;">
+                  <span style="font-size: 20px;">📝</span>
+                </td>
+                <td>
+                  <p style="margin: 0; font-weight: 600; color: #1e40af; font-size: 14px;">Content</p>
+                  <p style="margin: 4px 0 0; color: #64748b; font-size: 12px;">Teksten voor je website, bedrijfsomschrijving, USP's</p>
+                </td>
+              </tr>
+            </table>
+          </td>
+        </tr>
+        <tr><td style="height: 8px;"></td></tr>
+        <tr>
+          <td style="padding: 10px; background: white; border-radius: 8px;">
+            <table role="presentation" width="100%" cellspacing="0" cellpadding="0">
+              <tr>
+                <td style="width: 36px; vertical-align: top;">
+                  <span style="font-size: 20px;">📸</span>
+                </td>
+                <td>
+                  <p style="margin: 0; font-weight: 600; color: #1e40af; font-size: 14px;">Afbeeldingen</p>
+                  <p style="margin: 4px 0 0; color: #64748b; font-size: 12px;">Foto's van je producten, team, bedrijfspand (hoge kwaliteit)</p>
+                </td>
+              </tr>
+            </table>
+          </td>
+        </tr>
+        <tr><td style="height: 8px;"></td></tr>
+        <tr>
+          <td style="padding: 10px; background: white; border-radius: 8px;">
+            <table role="presentation" width="100%" cellspacing="0" cellpadding="0">
+              <tr>
+                <td style="width: 36px; vertical-align: top;">
+                  <span style="font-size: 20px;">📄</span>
+                </td>
+                <td>
+                  <p style="margin: 0; font-weight: 600; color: #1e40af; font-size: 14px;">Documenten</p>
+                  <p style="margin: 4px 0 0; color: #64748b; font-size: 12px;">Prijslijsten, brochures, certificaten, downloads voor bezoekers</p>
+                </td>
+              </tr>
+            </table>
+          </td>
+        </tr>
+        <tr><td style="height: 8px;"></td></tr>
+        <tr>
+          <td style="padding: 10px; background: white; border-radius: 8px;">
+            <table role="presentation" width="100%" cellspacing="0" cellpadding="0">
+              <tr>
+                <td style="width: 36px; vertical-align: top;">
+                  <span style="font-size: 20px;">💬</span>
+                </td>
+                <td>
+                  <p style="margin: 0; font-weight: 600; color: #1e40af; font-size: 14px;">Feedback</p>
+                  <p style="margin: 4px 0 0; color: #64748b; font-size: 12px;">Hier plaatsen wij previews en kun je feedback achterlaten</p>
+                </td>
+              </tr>
+            </table>
+          </td>
+        </tr>
+      </table>
+      
+      <div style="text-align: center;">
+        <a href="${customer.driveLink}" style="display: inline-block; background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%); color: white; padding: 14px 32px; border-radius: 10px; text-decoration: none; font-weight: 600; font-size: 16px; box-shadow: 0 4px 14px rgba(59, 130, 246, 0.35);">
+          📤 Open Google Drive →
+        </a>
+        <p style="margin: 16px 0 0; font-size: 13px; color: #64748b;">
+          Werkt ook op je telefoon! Sleep je bestanden naar de juiste map.
+        </p>
+      </div>
+    </div>
+    ` : ''}
+    
+    <!-- Prominent Upload CTA -->
+    <div style="background: linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%); border: 2px solid #10b981; border-radius: 16px; padding: 24px; margin-bottom: 24px; text-align: center;">
+      <p style="margin: 0 0 8px; color: #166534; font-size: 18px; font-weight: 700;">
+        🚀 Begin nu met je onboarding!
+      </p>
+      <p style="margin: 0 0 16px; color: #15803d; font-size: 14px;">
+        Hoe sneller je je info aanlevert, hoe sneller we kunnen starten
+      </p>
+      <a href="https://webstability.nl/intake/${customer.projectId}" style="display: inline-block; background: linear-gradient(135deg, #10b981 0%, #059669 100%); color: white; padding: 16px 40px; border-radius: 10px; text-decoration: none; font-weight: 600; font-size: 16px; box-shadow: 0 4px 14px rgba(16, 185, 129, 0.35);">
+        📝 Start Onboarding (2 min) →
       </a>
+      <p style="margin: 12px 0 0; font-size: 12px; color: #64748b;">
+        Of <a href="${magicLink}" style="color: ${colors.primary}; text-decoration: underline;">bekijk je project status</a>
+      </p>
     </div>
     
     <!-- Spam Notice -->
@@ -447,7 +825,13 @@ export const sendDesignReadyEmail = async (customer: {
   name: string
   projectId: string
   previewUrl: string
+  phase?: ProjectPhase
 }) => {
+  const currentPhase = customer.phase || 'design'
+  
+  // Generate magic link for 1-click login
+  const magicLink = await generateMagicLinkUrl(customer.projectId)
+  
   const content = `
     <div style="text-align: center; margin-bottom: 32px;">
       <div style="width: 80px; height: 80px; background: linear-gradient(135deg, #10b981 0%, #059669 100%); border-radius: 50%; margin: 0 auto 20px; display: flex; align-items: center; justify-content: center;">
@@ -456,6 +840,8 @@ export const sendDesignReadyEmail = async (customer: {
       <h1 style="margin: 0 0 8px; font-size: 28px; font-weight: 700; color: #0f172a;">Je design is klaar!</h1>
       <p style="margin: 0; color: #64748b; font-size: 16px;">Tijd om te bekijken wat we voor je hebben gemaakt</p>
     </div>
+    
+    ${getProgressBar(currentPhase, '#10b981')}
     
     <p style="color: #334155; font-size: 16px; line-height: 1.6; margin-bottom: 24px;">
       Hoi ${customer.name},<br><br>
@@ -476,11 +862,7 @@ export const sendDesignReadyEmail = async (customer: {
       Heb je aanpassingen? Geen probleem, je hebt <strong>3 revisies</strong> inbegrepen.
     </p>
     
-    <div style="text-align: center;">
-      <a href="https://webstability.nl/status/${customer.projectId}" style="display: inline-block; background: #f1f5f9; color: #334155; padding: 14px 32px; border-radius: 10px; text-decoration: none; font-weight: 600; font-size: 14px;">
-        Naar Dashboard
-      </a>
-    </div>
+    ${getMagicLinkButton(magicLink, 'Naar Dashboard →', '#10b981')}
   `
 
   return sendEmail({
@@ -498,7 +880,13 @@ export const sendPaymentConfirmationEmail = async (customer: {
   projectId: string
   amount: number
   invoiceUrl?: string
+  phase?: ProjectPhase
 }) => {
+  const currentPhase = customer.phase || 'development'
+  
+  // Generate magic link for 1-click login
+  const magicLink = await generateMagicLinkUrl(customer.projectId)
+  
   const content = `
     <div style="text-align: center; margin-bottom: 32px;">
       <div style="width: 80px; height: 80px; background: linear-gradient(135deg, #10b981 0%, #059669 100%); border-radius: 50%; margin: 0 auto 20px; display: flex; align-items: center; justify-content: center;">
@@ -507,6 +895,8 @@ export const sendPaymentConfirmationEmail = async (customer: {
       <h1 style="margin: 0 0 8px; font-size: 28px; font-weight: 700; color: #0f172a;">Betaling ontvangen!</h1>
       <p style="margin: 0; color: #64748b; font-size: 16px;">Bedankt voor je betaling</p>
     </div>
+    
+    ${getProgressBar(currentPhase, '#10b981')}
     
     <p style="color: #334155; font-size: 16px; line-height: 1.6; margin-bottom: 24px;">
       Hoi ${customer.name},<br><br>
@@ -533,11 +923,7 @@ export const sendPaymentConfirmationEmail = async (customer: {
     </div>
     ` : ''}
     
-    <div style="text-align: center;">
-      <a href="https://webstability.nl/status/${customer.projectId}" style="display: inline-block; background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%); color: white; padding: 16px 40px; border-radius: 10px; text-decoration: none; font-weight: 600; font-size: 16px;">
-        Bekijk Status →
-      </a>
-    </div>
+    ${getMagicLinkButton(magicLink, 'Bekijk Status →', '#2563eb')}
   `
 
   return sendEmail({
@@ -554,7 +940,10 @@ export const sendWebsiteLiveEmail = async (customer: {
   name: string
   domain: string
   liveUrl: string
+  phase?: ProjectPhase
 }) => {
+  const currentPhase = customer.phase || 'live'
+  
   const content = `
     <div style="text-align: center; margin-bottom: 32px;">
       <div style="width: 80px; height: 80px; background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%); border-radius: 50%; margin: 0 auto 20px; display: flex; align-items: center; justify-content: center;">
@@ -563,6 +952,8 @@ export const sendWebsiteLiveEmail = async (customer: {
       <h1 style="margin: 0 0 8px; font-size: 28px; font-weight: 700; color: #0f172a;">Je website is LIVE!</h1>
       <p style="margin: 0; color: #64748b; font-size: 16px;">Gefeliciteerd met je nieuwe website</p>
     </div>
+    
+    ${getProgressBar(currentPhase, '#8b5cf6')}
     
     <p style="color: #334155; font-size: 16px; line-height: 1.6; margin-bottom: 24px;">
       Hoi ${customer.name},<br><br>
@@ -707,7 +1098,10 @@ export const sendProjectUpdateEmail = async (customer: {
   projectId: string
   updateTitle: string
   updateMessage: string
+  phase?: ProjectPhase
 }) => {
+  const currentPhase = customer.phase || 'design'
+  
   const content = `
     <div style="text-align: center; margin-bottom: 32px;">
       <div style="width: 80px; height: 80px; background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%); border-radius: 50%; margin: 0 auto 20px; display: flex; align-items: center; justify-content: center;">
@@ -716,6 +1110,8 @@ export const sendProjectUpdateEmail = async (customer: {
       <h1 style="margin: 0 0 8px; font-size: 28px; font-weight: 700; color: #0f172a;">Update voor je project</h1>
       <p style="margin: 0; color: #64748b; font-size: 16px;">${customer.updateTitle}</p>
     </div>
+    
+    ${getProgressBar(currentPhase, '#2563eb')}
     
     <p style="color: #334155; font-size: 16px; line-height: 1.6; margin-bottom: 24px;">
       Hoi ${customer.name},<br><br>
@@ -750,11 +1146,14 @@ export const sendPaymentLinkEmail = async (customer: {
   amount: number
   paymentUrl: string
   packageName: string
+  phase?: ProjectPhase
 }) => {
   const formattedAmount = new Intl.NumberFormat('nl-NL', {
     style: 'currency',
     currency: 'EUR'
   }).format(customer.amount)
+
+  const currentPhase = customer.phase || 'design_approved'
 
   const content = `
     <div style="text-align: center; margin-bottom: 32px;">
@@ -765,9 +1164,11 @@ export const sendPaymentLinkEmail = async (customer: {
       <p style="margin: 0; color: #64748b; font-size: 16px;">Voltooi je betaling om verder te gaan</p>
     </div>
     
+    ${getProgressBar(currentPhase, '#22c55e')}
+    
     <p style="color: #334155; font-size: 16px; line-height: 1.6; margin-bottom: 24px;">
       Hoi ${customer.name},<br><br>
-      Je website is bijna klaar! Om verder te gaan met je project hebben we je eerste betaling nodig.
+      Je design is goedgekeurd! 🎉 Om door te gaan naar de ontwikkeling van je website hebben we je betaling nodig.
     </p>
     
     <div style="background: #f0fdf4; border-radius: 16px; padding: 24px; margin-bottom: 24px;">
@@ -813,6 +1214,126 @@ export const sendPaymentLinkEmail = async (customer: {
   })
 }
 
+// Deadline reminder email
+export const sendDeadlineReminderEmail = async (params: {
+  email: string
+  name: string
+  projectId: string
+  phase: 'onboarding' | 'design' | 'development' | 'review' | 'live'
+  type?: string
+  deadline: string
+  daysUntil: number
+  reminderType: 'upcoming' | 'urgent' | 'overdue'
+  action: string
+  driveLink?: string
+}) => {
+  const colors = getServiceColor(params.type)
+  
+  // Bepaal urgentie styling
+  const urgencyConfig = {
+    upcoming: {
+      emoji: '📅',
+      title: 'Deadline herinnering',
+      color: '#f59e0b',
+      bgColor: '#fef3c7',
+      borderColor: '#fbbf24',
+      urgencyText: `Nog ${params.daysUntil} ${params.daysUntil === 1 ? 'dag' : 'dagen'} te gaan`
+    },
+    urgent: {
+      emoji: '⚠️',
+      title: 'Deadline morgen!',
+      color: '#ea580c',
+      bgColor: '#ffedd5',
+      borderColor: '#fb923c',
+      urgencyText: params.daysUntil === 0 ? 'Deadline is vandaag!' : 'Deadline is morgen!'
+    },
+    overdue: {
+      emoji: '🚨',
+      title: 'Actie vereist',
+      color: '#dc2626',
+      bgColor: '#fee2e2',
+      borderColor: '#f87171',
+      urgencyText: `${Math.abs(params.daysUntil)} ${Math.abs(params.daysUntil) === 1 ? 'dag' : 'dagen'} over de deadline`
+    }
+  }
+  
+  const config = urgencyConfig[params.reminderType]
+  const deadlineDate = new Date(params.deadline)
+  const formattedDeadline = deadlineDate.toLocaleDateString('nl-NL', { 
+    weekday: 'long', 
+    day: 'numeric', 
+    month: 'long' 
+  })
+  
+  // Generate magic link for 1-click login
+  const magicLink = await generateMagicLinkUrl(params.projectId)
+  
+  const content = `
+    <div style="text-align: center; margin-bottom: 32px;">
+      <div style="width: 80px; height: 80px; background: linear-gradient(135deg, ${config.color} 0%, ${config.color}dd 100%); border-radius: 50%; margin: 0 auto 20px; display: flex; align-items: center; justify-content: center;">
+        <span style="font-size: 36px;">${config.emoji}</span>
+      </div>
+      <h1 style="margin: 0 0 8px; font-size: 28px; font-weight: 700; color: #0f172a;">${config.title}</h1>
+      <p style="margin: 0; color: ${config.color}; font-size: 16px; font-weight: 600;">${config.urgencyText}</p>
+    </div>
+    
+    ${getProgressBar(params.phase, colors.primary)}
+    
+    <p style="color: #334155; font-size: 16px; line-height: 1.6; margin-bottom: 24px;">
+      Hoi ${params.name},<br><br>
+      We willen je even herinneren aan je project. Om verder te kunnen met de volgende stap, vragen we je om ${params.action}.
+    </p>
+    
+    <!-- Deadline card -->
+    <div style="background: ${config.bgColor}; border-left: 4px solid ${config.borderColor}; border-radius: 0 12px 12px 0; padding: 20px 24px; margin-bottom: 24px;">
+      <table role="presentation" width="100%" cellspacing="0" cellpadding="0">
+        <tr>
+          <td>
+            <p style="margin: 0 0 4px; color: #64748b; font-size: 12px; text-transform: uppercase; letter-spacing: 0.5px;">Deadline</p>
+            <p style="margin: 0; color: #0f172a; font-size: 18px; font-weight: 600;">${formattedDeadline}</p>
+          </td>
+          <td align="right">
+            <div style="background: ${config.color}; color: white; padding: 8px 16px; border-radius: 20px; font-size: 14px; font-weight: 600;">
+              ${config.urgencyText}
+            </div>
+          </td>
+        </tr>
+      </table>
+    </div>
+    
+    ${params.driveLink ? `
+    <!-- Google Drive link -->
+    <div style="background: #f8fafc; border-radius: 12px; padding: 20px 24px; margin-bottom: 24px;">
+      <h3 style="margin: 0 0 12px; color: #0f172a; font-size: 16px; font-weight: 600;">📁 Je bestanden uploaden</h3>
+      <p style="margin: 0 0 16px; color: #64748b; font-size: 14px;">
+        Upload je content, logo's en afbeeldingen naar je persoonlijke Google Drive map:
+      </p>
+      <a href="${params.driveLink}" style="display: inline-block; background: #1a73e8; color: white; padding: 12px 24px; border-radius: 8px; text-decoration: none; font-weight: 600; font-size: 14px;">
+        📂 Open Google Drive →
+      </a>
+    </div>
+    ` : ''}
+    
+    ${getMagicLinkButton(magicLink, 'Bekijk Project Status →', colors.primary)}
+    
+    <div style="background: #f8fafc; border-radius: 12px; padding: 16px; margin-top: 24px;">
+      <p style="margin: 0; color: #64748b; font-size: 14px; text-align: center;">
+        <strong>Vragen of hulp nodig?</strong><br>
+        Neem gerust contact op via 
+        <a href="mailto:info@webstability.nl" style="color: ${colors.primary}; text-decoration: none;">info@webstability.nl</a> 
+        of bel <a href="tel:+31644712573" style="color: ${colors.primary}; text-decoration: none;">06-44712573</a>
+      </p>
+    </div>
+  `
+
+  return sendEmail({
+    to: params.email,
+    subject: `${config.emoji} ${config.title} - ${params.projectId}`,
+    html: baseTemplate(content, config.color),
+    replyTo: SMTP_USER || 'info@webstability.nl',
+  })
+}
+
 // Phase change notification
 export const sendPhaseChangeEmail = async (customer: {
   email: string
@@ -826,6 +1347,7 @@ export const sendPhaseChangeEmail = async (customer: {
   const phaseEmojis: Record<string, string> = {
     'onboarding': '📝',
     'design': '🎨',
+    'design_approved': '✅',
     'development': '💻',
     'review': '🔍',
     'live': '🚀',
@@ -835,6 +1357,7 @@ export const sendPhaseChangeEmail = async (customer: {
   const phaseColors: Record<string, string> = {
     'onboarding': '#f97316',
     'design': '#8b5cf6',
+    'design_approved': '#22c55e',
     'development': '#3b82f6',
     'review': '#eab308',
     'live': '#22c55e',
@@ -844,6 +1367,7 @@ export const sendPhaseChangeEmail = async (customer: {
   const phaseNames: Record<string, string> = {
     'onboarding': 'Onboarding',
     'design': 'Design Fase',
+    'design_approved': 'Design Goedgekeurd',
     'development': 'Ontwikkeling',
     'review': 'Review & Feedback',
     'live': 'Website Live!',
@@ -853,6 +1377,10 @@ export const sendPhaseChangeEmail = async (customer: {
   const emoji = phaseEmojis[customer.newPhase] || '📌'
   const color = phaseColors[customer.newPhase] || '#2563eb'
   const phaseName = phaseNames[customer.newPhase] || customer.newPhase
+  const currentPhase = (PHASE_CONFIG.some(p => p.key === customer.newPhase) ? customer.newPhase : 'onboarding') as ProjectPhase
+
+  // Generate magic link for 1-click login
+  const magicLink = await generateMagicLinkUrl(customer.projectId)
 
   const nextStepsList = customer.nextSteps.map(step => 
     `<li style="padding: 8px 0; color: #334155;">${step}</li>`
@@ -866,6 +1394,8 @@ export const sendPhaseChangeEmail = async (customer: {
       <h1 style="margin: 0 0 8px; font-size: 28px; font-weight: 700; color: #0f172a;">Nieuwe fase: ${phaseName}</h1>
       <p style="margin: 0; color: #64748b; font-size: 16px;">Je project gaat vooruit!</p>
     </div>
+    
+    ${getProgressBar(currentPhase, color)}
     
     <p style="color: #334155; font-size: 16px; line-height: 1.6; margin-bottom: 24px;">
       Hoi ${customer.name},<br><br>
@@ -891,11 +1421,7 @@ export const sendPhaseChangeEmail = async (customer: {
     </div>
     ` : ''}
     
-    <div style="text-align: center;">
-      <a href="https://webstability.nl/status/${customer.projectId}" style="display: inline-block; background: linear-gradient(135deg, ${color} 0%, ${color}dd 100%); color: white; padding: 16px 40px; border-radius: 10px; text-decoration: none; font-weight: 600; font-size: 16px;">
-        Bekijk Project Status →
-      </a>
-    </div>
+    ${getMagicLinkButton(magicLink, 'Bekijk Project Status →', color)}
   `
 
   return sendEmail({
@@ -909,6 +1435,7 @@ export const sendPhaseChangeEmail = async (customer: {
 export default {
   sendEmail,
   isSmtpConfigured,
+  generateMagicLinkUrl,
   sendProjectCreatedEmail,
   sendWelcomeEmail,
   sendDesignReadyEmail,
@@ -918,4 +1445,5 @@ export default {
   sendProjectUpdateEmail,
   sendPaymentLinkEmail,
   sendPhaseChangeEmail,
+  sendDeadlineReminderEmail,
 }

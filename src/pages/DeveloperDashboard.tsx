@@ -50,6 +50,8 @@ import {
   Copy,
   Trash2,
   AlertTriangle,
+  FolderOpen,
+  Layers,
 } from 'lucide-react'
 import Logo from '../components/Logo'
 // GrowthTools components available: ChurnAlert, UpsellBanner for future use
@@ -66,7 +68,7 @@ type DashboardView =
   | 'messages' 
   | 'payments'
 
-type ProjectPhase = 'onboarding' | 'design' | 'development' | 'review' | 'live'
+type ProjectPhase = 'onboarding' | 'design' | 'design_approved' | 'development' | 'review' | 'live'
 type PaymentStatus = 'pending' | 'awaiting_payment' | 'paid' | 'failed' | 'refunded'
 type ServiceType = 'drone' | 'logo' | 'foto' | 'tekst' | 'seo'
 
@@ -89,6 +91,7 @@ interface Project {
   liveUrl?: string
   designApproved?: boolean
   designApprovedAt?: string
+  googleDriveUrl?: string
   messages: ChatMessage[]
   onboardingData?: Record<string, any>
   discountCode?: string
@@ -139,6 +142,21 @@ interface Notification {
   createdAt: string
 }
 
+// Email log entry - for tracking sent emails in dashboard
+interface EmailLogEntry {
+  id: string
+  timestamp: string
+  projectId: string
+  projectName: string
+  recipientEmail: string
+  recipientName: string
+  type: 'phase_change' | 'upload_link' | 'design_link' | 'live_link' | 'payment_link' | 'welcome' | 'password_reset' | 'message' | 'other'
+  subject: string
+  details?: string
+  success: boolean
+  error?: string
+}
+
 // ===========================================
 // CONSTANTS
 // ===========================================
@@ -158,9 +176,188 @@ const PACKAGE_CONFIG = {
 const PHASE_CONFIG: Record<ProjectPhase, { label: string; color: string; bg: string; icon: typeof FileText }> = {
   onboarding: { label: 'Onboarding', color: 'text-emerald-600', bg: 'bg-emerald-100', icon: FileText },
   design: { label: 'Design', color: 'text-amber-600', bg: 'bg-amber-100', icon: Palette },
+  design_approved: { label: 'Goedgekeurd', color: 'text-blue-600', bg: 'bg-blue-100', icon: CreditCard },
   development: { label: 'Development', color: 'text-purple-600', bg: 'bg-purple-100', icon: Code },
   review: { label: 'Review', color: 'text-cyan-600', bg: 'bg-cyan-100', icon: Eye },
   live: { label: 'Live', color: 'text-green-600', bg: 'bg-green-100', icon: Rocket },
+}
+
+// Nederlandse vertalingen voor onboarding velden
+const ONBOARDING_FIELD_LABELS: Record<string, string> = {
+  // Basis info
+  businessName: 'Bedrijfsnaam',
+  companyName: 'Bedrijfsnaam',
+  contactName: 'Contactpersoon',
+  contactEmail: 'E-mailadres',
+  contactPhone: 'Telefoonnummer',
+  industry: 'Branche',
+  
+  // Over het bedrijf
+  aboutBusiness: 'Over het bedrijf',
+  aboutText: 'Over het bedrijf',
+  uniqueFeatures: 'Unieke kenmerken',
+  services: 'Diensten/Producten',
+  targetAudience: 'Doelgroep',
+  targetAudienceDetails: 'Doelgroep details',
+  
+  // Design voorkeuren
+  designStyle: 'Gewenste stijl',
+  brandColors: 'Huisstijl kleuren',
+  colorPreferences: 'Kleurvoorkeuren',
+  hasLogo: 'Logo beschikbaar',
+  logoDescription: 'Logo beschrijving',
+  inspirationUrls: 'Inspiratie websites',
+  designNotes: 'Design opmerkingen',
+  
+  // Website structuur
+  selectedPages: 'Geselecteerde pagina\'s',
+  pages: 'Pagina\'s',
+  customPages: 'Extra pagina\'s',
+  homePageDetails: 'Homepage details',
+  servicesDetails: 'Diensten pagina details',
+  aboutPageDetails: 'Over ons pagina details',
+  
+  // Doelen
+  goal: 'Hoofddoel',
+  mainGoal: 'Hoofddoel',
+  callToAction: 'Gewenste actie (CTA)',
+  conversionSpeed: 'Conversie snelheid',
+  contactMethods: 'Contactmethodes',
+  
+  // Content
+  hasContent: 'Teksten beschikbaar',
+  hasPhotos: 'Foto\'s beschikbaar',
+  wantsBlog: 'Blog gewenst',
+  contentNotes: 'Content opmerkingen',
+  
+  // Planning
+  deadline: 'Gewenste deadline',
+  specificDeadline: 'Specifieke deadline',
+  wantsMultilang: 'Meertalig',
+  languages: 'Talen',
+  
+  // Social media
+  socialFacebook: 'Facebook',
+  socialInstagram: 'Instagram',
+  socialLinkedIn: 'LinkedIn',
+  socialOther: 'Overige social media',
+  
+  // Extra
+  preferredDomain: 'Gewenste domeinnaam',
+  existingDomain: 'Bestaand domein',
+  needsBusinessEmail: 'Zakelijk e-mail nodig',
+  additionalNotes: 'Extra opmerkingen',
+  extraWishes: 'Extra wensen',
+  extraFeatures: 'Extra functionaliteiten',
+  competitors: 'Inspiratie/Concurrenten',
+  
+  // Status velden
+  completed: 'Volledig ingevuld',
+  isComplete: 'Volledig ingevuld',
+  completedAt: 'Ingevuld op',
+  package: 'Pakket',
+  packageType: 'Pakket type',
+}
+
+// Waarde vertalingen voor specifieke velden
+const ONBOARDING_VALUE_LABELS: Record<string, Record<string, string>> = {
+  hasLogo: {
+    yes: 'Ja, ik heb een logo',
+    no: 'Nee, nog niet',
+    need_refresh: 'Ja, maar wil nieuw logo',
+    true: 'Ja',
+    false: 'Nee',
+  },
+  hasContent: {
+    yes: 'Ja, ik lever teksten aan',
+    partial: 'Gedeeltelijk, hulp nodig',
+    no: 'Nee, gebruik AI-teksten',
+  },
+  hasPhotos: {
+    yes: 'Ja, ik heb goede foto\'s',
+    some: 'Een paar, niet genoeg',
+    no: 'Nee, gebruik stockfoto\'s',
+  },
+  wantsBlog: {
+    yes: 'Ja, ik wil een blog',
+    later: 'Misschien later',
+    no: 'Nee, geen blog',
+  },
+  deadline: {
+    asap: 'Zo snel mogelijk (1-2 weken)',
+    month: 'Binnen een maand',
+    quarter: 'Binnen 3 maanden',
+    flexible: 'Geen haast',
+    specific: 'Specifieke datum',
+  },
+  needsBusinessEmail: {
+    yes: 'Ja, nodig',
+    already: 'Heb ik al',
+    no: 'Niet nodig',
+  },
+  conversionSpeed: {
+    direct: 'Direct contact',
+    considered: 'Na informeren',
+    long: 'Langere oriëntatie',
+  },
+  wantsMultilang: {
+    no: 'Alleen Nederlands',
+    en: 'Nederlands + Engels',
+    multi: 'Meerdere talen',
+  },
+  designStyle: {
+    modern: 'Modern & Strak',
+    classic: 'Klassiek & Tijdloos',
+    playful: 'Speels & Creatief',
+    corporate: 'Zakelijk & Professioneel',
+    minimalist: 'Minimalistisch',
+  },
+}
+
+// Helper functie om onboarding velden te formatteren
+function formatOnboardingField(key: string, value: unknown): { label: string; displayValue: string } | null {
+  // Skip interne en lege velden
+  if (!value || key.startsWith('_') || key === 'type') return null
+  
+  // Haal Nederlandse label op of maak er een
+  const label = ONBOARDING_FIELD_LABELS[key] || key
+    .replace(/([A-Z])/g, ' $1')
+    .replace(/_/g, ' ')
+    .replace(/^./, str => str.toUpperCase())
+  
+  // Formatteer de waarde
+  let displayValue: string
+  
+  if (typeof value === 'boolean') {
+    displayValue = value ? 'Ja' : 'Nee'
+  } else if (Array.isArray(value)) {
+    // Check of het contactmethodes zijn
+    if (key === 'contactMethods') {
+      const methodLabels: Record<string, string> = {
+        form: 'Contactformulier',
+        email: 'E-mail',
+        phone: 'Telefoon',
+        whatsapp: 'WhatsApp',
+        booking: 'Online afspraken',
+        chat: 'Live chat',
+      }
+      displayValue = value.map(v => methodLabels[v] || v).join(', ')
+    } else {
+      displayValue = value.join(', ')
+    }
+  } else if (typeof value === 'object') {
+    displayValue = JSON.stringify(value, null, 2)
+  } else {
+    // Check voor specifieke waarde vertalingen
+    const stringValue = String(value)
+    if (ONBOARDING_VALUE_LABELS[key]?.[stringValue]) {
+      displayValue = ONBOARDING_VALUE_LABELS[key][stringValue]
+    } else {
+      displayValue = stringValue
+    }
+  }
+  
+  return { label, displayValue }
 }
 
 // ===========================================
@@ -573,6 +770,48 @@ function Sidebar({
                   <li>• <strong>Sneltoetsen:</strong> D = dark mode, Escape = sluit modals</li>
                   <li>• <strong>Auto-refresh:</strong> Data ververst elke 30 seconden</li>
                 </ul>
+              </div>
+
+              {/* Package-specific Guidance */}
+              <div className={`mt-4 p-4 rounded-xl border ${darkMode ? 'border-blue-500/30 bg-blue-900/20' : 'border-blue-200 bg-blue-50'}`}>
+                <h3 className={`font-semibold mb-3 ${darkMode ? 'text-blue-400' : 'text-blue-700'}`}>
+                  📦 Per pakket - wat je moet doen
+                </h3>
+                <div className="space-y-3">
+                  <div className={`text-sm ${darkMode ? 'text-blue-300' : 'text-blue-600'}`}>
+                    <strong className="text-blue-400">🌟 Starter (€99/m):</strong>
+                    <ul className="ml-4 mt-1 space-y-0.5 list-disc">
+                      <li>5 pagina's max</li>
+                      <li>Geen SEO optimalisatie</li>
+                      <li>Standaard contact formulier</li>
+                    </ul>
+                  </div>
+                  <div className={`text-sm ${darkMode ? 'text-purple-300' : 'text-purple-600'}`}>
+                    <strong className="text-purple-400">💼 Professioneel (€199/m):</strong>
+                    <ul className="ml-4 mt-1 space-y-0.5 list-disc">
+                      <li>10 pagina's max</li>
+                      <li>SEO meta tags + Google Analytics</li>
+                      <li>Geavanceerde formulieren</li>
+                    </ul>
+                  </div>
+                  <div className={`text-sm ${darkMode ? 'text-amber-300' : 'text-amber-600'}`}>
+                    <strong className="text-amber-400">🏢 Business (€349/m):</strong>
+                    <ul className="ml-4 mt-1 space-y-0.5 list-disc">
+                      <li>Onbeperkt pagina's</li>
+                      <li>Volledige SEO + Analytics</li>
+                      <li>Custom functionaliteiten</li>
+                    </ul>
+                  </div>
+                  <div className={`text-sm ${darkMode ? 'text-emerald-300' : 'text-emerald-600'}`}>
+                    <strong className="text-emerald-400">🛒 Webshop (€349/m):</strong>
+                    <ul className="ml-4 mt-1 space-y-0.5 list-disc">
+                      <li>Product import + voorraad</li>
+                      <li>Checkout + iDeal/Mollie</li>
+                      <li>Bestelbevestigingen</li>
+                      <li>⚠️ Test altijd met sandbox!</li>
+                    </ul>
+                  </div>
+                </div>
               </div>
 
               <button
@@ -1033,7 +1272,7 @@ type SmartAction = {
   id: string
   projectId: string
   projectName: string
-  type: 'reply_message' | 'send_drive_link' | 'go_live' | 'start_design' | 'start_development' | 'send_review_request' | 'awaiting_payment' | 'send_update' | 'churn_alert' | 'check_in'
+  type: 'reply_message' | 'send_drive_link' | 'go_live' | 'start_design' | 'start_development' | 'send_review_request' | 'awaiting_payment' | 'send_update' | 'churn_alert' | 'check_in' | 'send_payment_link' | 'start_development_paid'
   priority: 'high' | 'medium' | 'low'
   label: string
   description: string
@@ -1057,13 +1296,14 @@ interface OverviewViewProps {
   projects: Project[]
   clients: Client[]
   serviceRequests: ServiceRequest[]
+  emailLogs: EmailLogEntry[]
   setActiveView: (view: DashboardView) => void
   onSelectProject: (project: Project) => void
   onUpdateProject: (project: Project) => Promise<void>
   onSendMessage?: (projectId: string, message: string) => Promise<void>
 }
 
-function OverviewView({ darkMode, projects, setActiveView, onSelectProject, onUpdateProject, onSendMessage }: OverviewViewProps) {
+function OverviewView({ darkMode, projects, setActiveView, onSelectProject, onUpdateProject, onSendMessage, emailLogs }: OverviewViewProps) {
   const [loadingAction, setLoadingAction] = useState<string | null>(null)
   const [showTemplates, setShowTemplates] = useState<string | null>(null)
   const [customMessage, setCustomMessage] = useState('')
@@ -1155,6 +1395,38 @@ function OverviewView({ darkMode, projects, setActiveView, onSelectProject, onUp
         })
       }
       
+      // Design approved phase - waiting for payment
+      if (project.phase === 'design_approved' && project.paymentStatus !== 'paid') {
+        actions.push({
+          id: `payment_approved_${project.id}`,
+          projectId: project.id,
+          projectName: project.businessName,
+          type: 'send_payment_link',
+          priority: 'high',
+          label: 'Stuur betaallink',
+          description: 'Design goedgekeurd - wacht op betaling',
+          icon: <CreditCard className="w-4 h-4" />,
+          color: 'text-green-500',
+          bgColor: 'bg-green-500/10'
+        })
+      }
+      
+      // Design approved + paid - move to development
+      if (project.phase === 'design_approved' && project.paymentStatus === 'paid') {
+        actions.push({
+          id: `start_dev_paid_${project.id}`,
+          projectId: project.id,
+          projectName: project.businessName,
+          type: 'start_development_paid',
+          priority: 'high',
+          label: 'Start development!',
+          description: 'Betaald ✓ - Begin met bouwen',
+          icon: <Code className="w-4 h-4" />,
+          color: 'text-purple-500',
+          bgColor: 'bg-purple-500/10'
+        })
+      }
+      
       // Development done, send for review
       if (project.phase === 'development' && project.stagingUrl) {
         actions.push({
@@ -1235,6 +1507,16 @@ function OverviewView({ darkMode, projects, setActiveView, onSelectProject, onUp
         case 'start_development':
           await onUpdateProject({ ...project, phase: 'development' })
           setCompletedActions(prev => [...prev, action.id])
+          break
+        case 'start_development_paid':
+          // Design approved + paid -> move to development
+          await onUpdateProject({ ...project, phase: 'development' })
+          setCompletedActions(prev => [...prev, action.id])
+          break
+        case 'send_payment_link':
+          // Navigate to payments view to send payment link
+          onSelectProject(project)
+          setActiveView('payments')
           break
         case 'reply_message':
           // Show templates for this project
@@ -1432,6 +1714,10 @@ function OverviewView({ darkMode, projects, setActiveView, onSelectProject, onUp
                         ? 'bg-green-500 text-white hover:bg-green-600' 
                         : action.type === 'reply_message'
                         ? 'bg-emerald-500 text-white hover:bg-emerald-600'
+                        : action.type === 'send_payment_link'
+                        ? 'bg-green-500 text-white hover:bg-green-600'
+                        : action.type === 'start_development_paid'
+                        ? 'bg-purple-500 text-white hover:bg-purple-600'
                         : darkMode 
                         ? 'bg-gray-600 text-white hover:bg-gray-500' 
                         : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
@@ -1591,8 +1877,8 @@ function OverviewView({ darkMode, projects, setActiveView, onSelectProject, onUp
         <h3 className={`font-semibold mb-3 ${darkMode ? 'text-white' : 'text-gray-900'}`}>
           Projecten per fase
         </h3>
-        <div className="grid grid-cols-5 gap-2">
-          {(['onboarding', 'design', 'development', 'review', 'live'] as ProjectPhase[]).map(phase => {
+        <div className="grid grid-cols-6 gap-2">
+          {(['onboarding', 'design', 'design_approved', 'development', 'review', 'live'] as ProjectPhase[]).map(phase => {
             const count = projects.filter(p => p.phase === phase).length
             const config = PHASE_CONFIG[phase]
             const PhaseIcon = config.icon
@@ -1719,6 +2005,93 @@ function OverviewView({ darkMode, projects, setActiveView, onSelectProject, onUp
           </div>
         )
       })()}
+
+      {/* Email Log - Verstuurde emails */}
+      {emailLogs.length > 0 && (
+        <div className={`p-4 rounded-2xl ${darkMode ? 'bg-gray-800' : 'bg-white border border-gray-200'}`}>
+          <div className="flex items-center justify-between mb-3">
+            <h3 className={`font-semibold ${darkMode ? 'text-white' : 'text-gray-900'}`}>
+              Verstuurde emails
+            </h3>
+            <Mail className={`w-4 h-4 ${darkMode ? 'text-gray-500' : 'text-gray-400'}`} />
+          </div>
+          <div className="space-y-2">
+            {emailLogs.slice(0, 5).map((email) => {
+              const formatEmailTime = (dateStr: string) => {
+                const date = new Date(dateStr)
+                const now = new Date()
+                const diffMs = now.getTime() - date.getTime()
+                const diffMins = Math.floor(diffMs / 60000)
+                const diffHours = Math.floor(diffMs / 3600000)
+                const diffDays = Math.floor(diffMs / 86400000)
+                
+                if (diffMins < 1) return 'Zojuist'
+                if (diffMins < 60) return `${diffMins}m geleden`
+                if (diffHours < 24) return `${diffHours}u geleden`
+                if (diffDays < 7) return `${diffDays}d geleden`
+                return date.toLocaleDateString('nl-NL', { day: 'numeric', month: 'short' })
+              }
+
+              const getEmailIcon = (type: string) => {
+                switch (type) {
+                  case 'phase_change': return <RefreshCw className="w-4 h-4 text-purple-600 dark:text-purple-400" />
+                  case 'upload_link': return <Link2 className="w-4 h-4 text-blue-600 dark:text-blue-400" />
+                  case 'design_link': return <Palette className="w-4 h-4 text-amber-600 dark:text-amber-400" />
+                  case 'live_link': return <Rocket className="w-4 h-4 text-green-600 dark:text-green-400" />
+                  case 'payment_link': return <CreditCard className="w-4 h-4 text-emerald-600 dark:text-emerald-400" />
+                  case 'welcome': return <UserPlus className="w-4 h-4 text-blue-600 dark:text-blue-400" />
+                  case 'password_reset': return <Lock className="w-4 h-4 text-gray-600 dark:text-gray-400" />
+                  case 'message': return <MessageSquare className="w-4 h-4 text-blue-600 dark:text-blue-400" />
+                  default: return <Mail className="w-4 h-4 text-gray-600 dark:text-gray-400" />
+                }
+              }
+
+              const getEmailBg = (type: string) => {
+                switch (type) {
+                  case 'phase_change': return 'bg-purple-100 dark:bg-purple-900/30'
+                  case 'upload_link': return 'bg-blue-100 dark:bg-blue-900/30'
+                  case 'design_link': return 'bg-amber-100 dark:bg-amber-900/30'
+                  case 'live_link': return 'bg-green-100 dark:bg-green-900/30'
+                  case 'payment_link': return 'bg-emerald-100 dark:bg-emerald-900/30'
+                  case 'welcome': return 'bg-blue-100 dark:bg-blue-900/30'
+                  case 'password_reset': return 'bg-gray-100 dark:bg-gray-900/30'
+                  case 'message': return 'bg-blue-100 dark:bg-blue-900/30'
+                  default: return 'bg-gray-100 dark:bg-gray-900/30'
+                }
+              }
+
+              return (
+                <div
+                  key={email.id}
+                  className={`flex items-center gap-3 p-2 rounded-lg transition-colors ${
+                    darkMode ? 'hover:bg-gray-700' : 'hover:bg-gray-50'
+                  } ${!email.success ? 'opacity-60' : ''}`}
+                >
+                  <div className={`w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0 ${getEmailBg(email.type)}`}>
+                    {getEmailIcon(email.type)}
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-center gap-2">
+                      <p className={`text-sm font-medium truncate ${darkMode ? 'text-white' : 'text-gray-900'}`}>
+                        {email.projectName}
+                      </p>
+                      {!email.success && (
+                        <AlertCircle className="w-3 h-3 text-red-500 flex-shrink-0" />
+                      )}
+                    </div>
+                    <p className={`text-xs truncate ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>
+                      {email.subject} → {email.recipientEmail.split('@')[0]}@...
+                    </p>
+                  </div>
+                  <span className={`text-xs flex-shrink-0 ${darkMode ? 'text-gray-500' : 'text-gray-400'}`}>
+                    {formatEmailTime(email.timestamp)}
+                  </span>
+                </div>
+              )
+            })}
+          </div>
+        </div>
+      )}
     </div>
   )
 }
@@ -1737,7 +2110,7 @@ interface ProjectsViewProps {
   onNavigateToPayments?: () => void
 }
 
-function ProjectsView({ darkMode, projects, onUpdateProject, onDeleteProject: _onDeleteProject, onSelectProject, onNavigateToPayments: _onNavigateToPayments }: ProjectsViewProps) {
+function ProjectsView({ darkMode, projects, onUpdateProject, onDeleteProject: _onDeleteProject, onSelectProject, onNavigateToPayments }: ProjectsViewProps) {
   const [viewMode, setViewMode] = useState<'kanban' | 'list'>('kanban')
   const [filterPhase, setFilterPhase] = useState<ProjectPhase | 'all'>('all')
   const [filterPayment, setFilterPayment] = useState<PaymentStatus | 'all'>('all')
@@ -1753,41 +2126,128 @@ function ProjectsView({ darkMode, projects, onUpdateProject, onDeleteProject: _o
   const phases: { key: ProjectPhase; label: string; color: string; bgColor: string }[] = [
     { key: 'onboarding', label: 'Onboarding', color: 'bg-yellow-500', bgColor: darkMode ? 'bg-yellow-900/20' : 'bg-yellow-50' },
     { key: 'design', label: 'Design', color: 'bg-emerald-500', bgColor: darkMode ? 'bg-emerald-900/20' : 'bg-emerald-50' },
+    { key: 'design_approved', label: 'Goedgekeurd', color: 'bg-blue-500', bgColor: darkMode ? 'bg-blue-900/20' : 'bg-blue-50' },
     { key: 'development', label: 'Development', color: 'bg-purple-500', bgColor: darkMode ? 'bg-purple-900/20' : 'bg-purple-50' },
     { key: 'review', label: 'Review', color: 'bg-orange-500', bgColor: darkMode ? 'bg-orange-900/20' : 'bg-orange-50' },
     { key: 'live', label: 'Live', color: 'bg-green-500', bgColor: darkMode ? 'bg-green-900/20' : 'bg-green-50' },
   ]
 
-  // Phase-specific checklists for confirmation
-  const phaseChecklists: Record<ProjectPhase, { id: string; label: string }[]> = {
-    onboarding: [
-      { id: 'onb_form', label: 'Onboarding formulier ingevuld' },
-      { id: 'onb_logo', label: 'Logo ontvangen' },
-      { id: 'onb_content', label: 'Teksten/content ontvangen' },
-      { id: 'onb_colors', label: 'Huisstijl/kleuren bepaald' },
-    ],
-    design: [
-      { id: 'des_mockup', label: 'Design mockup gemaakt' },
-      { id: 'des_sent', label: 'Design naar klant gestuurd' },
-      { id: 'des_approved', label: 'Design goedgekeurd door klant' },
-    ],
-    development: [
-      { id: 'dev_pages', label: 'Alle pagina\'s gebouwd' },
-      { id: 'dev_forms', label: 'Formulieren werkend' },
-      { id: 'dev_responsive', label: 'Responsive getest' },
-    ],
-    review: [
-      { id: 'rev_test', label: 'Uitgebreid getest' },
-      { id: 'rev_client_test', label: 'Klant heeft getest' },
-      { id: 'rev_approval', label: 'Klant akkoord voor live' },
-    ],
-    live: [],
+  // Phase-specific checklists for confirmation - now package-aware
+  const getPhaseChecklists = (packageType: string): Record<ProjectPhase, { id: string; label: string }[]> => {
+    const isWebshop = packageType === 'webshop'
+    const isBusiness = packageType === 'business'
+    const isProfessional = packageType === 'professional'
+    
+    return {
+      onboarding: [
+        { id: 'onb_form', label: 'Onboarding formulier ingevuld' },
+        { id: 'onb_logo', label: 'Logo ontvangen' },
+        { id: 'onb_content', label: 'Teksten/content ontvangen' },
+        { id: 'onb_colors', label: 'Huisstijl/kleuren bepaald' },
+        ...(isWebshop ? [
+          { id: 'onb_products', label: 'Productlijst ontvangen' },
+          { id: 'onb_payment_provider', label: 'Betaalmethode besproken (iDeal/Mollie)' },
+        ] : []),
+        ...(isBusiness || isProfessional ? [
+          { id: 'onb_seo', label: 'SEO keywords besproken' },
+        ] : []),
+      ],
+      design: [
+        { id: 'des_mockup', label: 'Design mockup gemaakt' },
+        { id: 'des_sent', label: 'Design naar klant gestuurd' },
+        { id: 'des_approved', label: 'Design goedgekeurd door klant' },
+        ...(isWebshop ? [
+          { id: 'des_product_page', label: 'Productpagina design goedgekeurd' },
+          { id: 'des_checkout', label: 'Checkout flow besproken' },
+        ] : []),
+      ],
+      design_approved: [
+        { id: 'app_payment_sent', label: 'Betaallink verstuurd' },
+        { id: 'app_payment_received', label: 'Betaling ontvangen' },
+      ],
+      development: [
+        { id: 'dev_pages', label: 'Alle pagina\'s gebouwd' },
+        { id: 'dev_forms', label: 'Formulieren werkend' },
+        { id: 'dev_responsive', label: 'Responsive getest' },
+        ...(isWebshop ? [
+          { id: 'dev_products', label: 'Producten geïmporteerd' },
+          { id: 'dev_cart', label: 'Winkelwagen werkend' },
+          { id: 'dev_checkout', label: 'Checkout & betaling getest' },
+          { id: 'dev_inventory', label: 'Voorraad systeem ingesteld' },
+        ] : []),
+        ...(isBusiness || isProfessional ? [
+          { id: 'dev_seo', label: 'SEO meta tags ingesteld' },
+          { id: 'dev_analytics', label: 'Google Analytics gekoppeld' },
+        ] : []),
+      ],
+      review: [
+        { id: 'rev_test', label: 'Uitgebreid getest' },
+        { id: 'rev_client_test', label: 'Klant heeft getest' },
+        { id: 'rev_approval', label: 'Klant akkoord voor live' },
+        ...(isWebshop ? [
+          { id: 'rev_test_order', label: 'Testbestelling geplaatst' },
+          { id: 'rev_payment_test', label: 'Betaling getest (sandbox)' },
+        ] : []),
+      ],
+      live: [
+        { id: 'live_domain', label: 'Domein gekoppeld' },
+        { id: 'live_ssl', label: 'SSL certificaat actief' },
+        { id: 'live_email', label: 'Bevestigingsmail verstuurd naar klant' },
+        ...(isWebshop ? [
+          { id: 'live_payment_live', label: 'Betaalprovider op live mode' },
+        ] : []),
+      ],
+    }
+  }
+  
+  // Helper: Get the checklist for a specific project
+  const phaseChecklists = getPhaseChecklists(phaseChangeProject?.package || 'starter')
+  
+  // Helper: Get next action for a project - shows developer what to do
+  const getNextAction = (project: Project): { action: string; priority: 'high' | 'medium' | 'low'; icon: string } => {
+    const hasUnreadMessages = project.messages.some(m => !m.read && m.from === 'client')
+    
+    if (hasUnreadMessages) {
+      return { action: 'Beantwoord klantbericht', priority: 'high', icon: '💬' }
+    }
+    
+    switch (project.phase) {
+      case 'onboarding':
+        if (!project.onboardingData || Object.keys(project.onboardingData).length === 0) {
+          return { action: 'Wacht op onboarding klant', priority: 'low', icon: '⏳' }
+        }
+        return { action: 'Start met design maken', priority: 'high', icon: '🎨' }
+      
+      case 'design':
+        if (!project.designApproved) {
+          return { action: 'Stuur design naar klant voor goedkeuring', priority: 'high', icon: '📤' }
+        }
+        return { action: 'Wacht op design goedkeuring', priority: 'medium', icon: '⏳' }
+      
+      case 'design_approved':
+        if (project.paymentStatus !== 'paid') {
+          return { action: 'Stuur betaallink naar klant', priority: 'high', icon: '💳' }
+        }
+        return { action: 'Ga door naar development', priority: 'high', icon: '🚀' }
+      
+      case 'development':
+        return { action: 'Bouw de website en zet staging URL', priority: 'high', icon: '💻' }
+      
+      case 'review':
+        return { action: 'Verwerk feedback en vraag finale akkoord', priority: 'medium', icon: '✅' }
+      
+      case 'live':
+        return { action: 'Project afgerond! 🎉', priority: 'low', icon: '🏆' }
+      
+      default:
+        return { action: 'Bekijk project details', priority: 'low', icon: '👀' }
+    }
   }
 
   // Handle confirmed phase change
   const handleConfirmedPhaseChange = async (project: Project, direction: 'next' | 'previous') => {
     setPhaseChangeLoading(true)
-    const phaseOrder: ProjectPhase[] = ['onboarding', 'design', 'development', 'review', 'live']
+    const phaseOrder: ProjectPhase[] = ['onboarding', 'design', 'design_approved', 'development', 'review', 'live']
     const currentIndex = phaseOrder.indexOf(project.phase)
     const targetIndex = direction === 'next' ? currentIndex + 1 : currentIndex - 1
     
@@ -1908,7 +2368,8 @@ function ProjectsView({ darkMode, projects, onUpdateProject, onDeleteProject: _o
     const getNextPhaseLabel = () => {
       const phaseLabels: Record<ProjectPhase, string> = {
         onboarding: '→ Design',
-        design: '→ Development',
+        design: '→ Goedgekeurd',
+        design_approved: '→ Development',
         development: '→ Review',
         review: '→ Live',
         live: ''
@@ -2035,6 +2496,23 @@ function ProjectsView({ darkMode, projects, onUpdateProject, onDeleteProject: _o
           })()}
         </div>
 
+        {/* Next Action indicator - clear guidance for developer */}
+        {(() => {
+          const nextAction = getNextAction(project)
+          const priorityColors = {
+            high: darkMode ? 'bg-red-900/30 text-red-400 border-red-500/30' : 'bg-red-50 text-red-700 border-red-200',
+            medium: darkMode ? 'bg-amber-900/30 text-amber-400 border-amber-500/30' : 'bg-amber-50 text-amber-700 border-amber-200',
+            low: darkMode ? 'bg-gray-700/50 text-gray-400 border-gray-600' : 'bg-gray-50 text-gray-600 border-gray-200',
+          }
+          return (
+            <div className={`p-2 rounded-lg border text-xs mb-3 ${priorityColors[nextAction.priority]}`}>
+              <span className="mr-1.5">{nextAction.icon}</span>
+              <span className="font-medium">Volgende stap:</span>{' '}
+              <span>{nextAction.action}</span>
+            </div>
+          )
+        })()}
+
         {/* Quick Actions - visible on hover */}
         <div className={`flex items-center gap-1 pt-2 border-t ${darkMode ? 'border-gray-700' : 'border-gray-100'}`}>
           {/* Previous phase button */}
@@ -2086,6 +2564,66 @@ function ProjectsView({ darkMode, projects, onUpdateProject, onDeleteProject: _o
               title="Beantwoord bericht"
             >
               <MessageSquare className="w-3.5 h-3.5" />
+            </button>
+          )}
+          {/* Send deadline reminder button for client-action phases */}
+          {['onboarding', 'design', 'review'].includes(project.phase) && (
+            <button
+              onClick={async (e) => {
+                e.stopPropagation()
+                try {
+                  const token = sessionStorage.getItem('webstability_dev_token')
+                  const response = await fetch('/api/deadline-reminders', {
+                    method: 'POST',
+                    headers: {
+                      'Content-Type': 'application/json',
+                      'Authorization': `Bearer ${token}`
+                    },
+                    body: JSON.stringify({ projectId: project.projectId, force: true })
+                  })
+                  if (response.ok) {
+                    alert('✅ Herinnering verstuurd!')
+                  } else {
+                    const data = await response.json()
+                    alert(`❌ ${data.error || 'Fout bij versturen'}`)
+                  }
+                } catch (error) {
+                  console.error('Error sending reminder:', error)
+                  alert('❌ Er ging iets mis')
+                }
+              }}
+              className={`p-1.5 rounded-lg transition-colors ${
+                darkMode 
+                  ? 'bg-amber-600/20 text-amber-400 hover:bg-amber-600/30' 
+                  : 'bg-amber-50 text-amber-600 hover:bg-amber-100'
+              }`}
+              title="Stuur deadline herinnering"
+            >
+              <Clock className="w-3.5 h-3.5" />
+            </button>
+          )}
+          {/* Show payment button for design_approved phase */}
+          {project.phase === 'design_approved' && project.paymentStatus !== 'paid' && (
+            <button
+              onClick={(e) => {
+                e.stopPropagation()
+                if (onNavigateToPayments) {
+                  onNavigateToPayments()
+                  // Auto-select this project for payment
+                  setTimeout(() => {
+                    const event = new CustomEvent('select-project-for-payment', { detail: project })
+                    window.dispatchEvent(event)
+                  }, 100)
+                }
+              }}
+              className={`p-1.5 rounded-lg transition-colors ${
+                darkMode 
+                  ? 'bg-blue-600/20 text-blue-400 hover:bg-blue-600/30' 
+                  : 'bg-blue-50 text-blue-600 hover:bg-blue-100'
+              }`}
+              title="Stuur betaallink"
+            >
+              <CreditCard className="w-3.5 h-3.5" />
             </button>
           )}
           {project.stagingUrl && (
@@ -2450,6 +2988,7 @@ function ProjectsView({ darkMode, projects, onUpdateProject, onDeleteProject: _o
                         {(() => {
                           const hasUnreadMessages = unreadCount > 0
                           const needsOnboarding = project.phase === 'onboarding' && (!project.onboardingData || Object.keys(project.onboardingData).length === 0)
+                          const uploadsReady = project.onboardingData?.uploadsCompleted === true
                           const needsPayment = project.paymentStatus === 'pending' || project.paymentStatus === 'failed'
                           const awaitingApproval = project.phase === 'review'
                           
@@ -2458,6 +2997,14 @@ function ProjectsView({ darkMode, projects, onUpdateProject, onDeleteProject: _o
                               <span className="px-2 py-1 text-xs font-medium bg-red-500 text-white rounded-full flex items-center gap-1 w-fit">
                                 <MessageSquare className="w-3 h-3" />
                                 Jij: Beantwoord
+                              </span>
+                            )
+                          }
+                          if (uploadsReady && project.phase === 'onboarding') {
+                            return (
+                              <span className="px-2 py-1 text-xs font-medium bg-blue-500 text-white rounded-full flex items-center gap-1 w-fit">
+                                <FolderOpen className="w-3 h-3" />
+                                📤 Uploads klaar!
                               </span>
                             )
                           }
@@ -2576,7 +3123,7 @@ function ProjectsView({ darkMode, projects, onUpdateProject, onDeleteProject: _o
               } shadow-2xl`}
             >
               {(() => {
-                const phaseOrder: ProjectPhase[] = ['onboarding', 'design', 'development', 'review', 'live']
+                const phaseOrder: ProjectPhase[] = ['onboarding', 'design', 'design_approved', 'development', 'review', 'live']
                 const currentIndex = phaseOrder.indexOf(phaseChangeProject.phase)
                 const targetIndex = phaseChangeDirection === 'next' ? currentIndex + 1 : currentIndex - 1
                 const targetPhase = phaseOrder[targetIndex]
@@ -2758,6 +3305,11 @@ function ProjectDetailModal({ project, darkMode, onClose, onUpdate, phases }: Om
       { id: 'des_feedback', label: 'Feedback van klant ontvangen' },
       { id: 'des_approved', label: 'Design goedgekeurd door klant' },
     ],
+    design_approved: [
+      { id: 'app_payment_link', label: 'Betaallink verstuurd' },
+      { id: 'app_payment_received', label: 'Betaling ontvangen' },
+      { id: 'app_confirmed', label: 'Klant bevestigd voor development' },
+    ],
     development: [
       { id: 'dev_setup', label: 'Project setup voltooid' },
       { id: 'dev_pages', label: 'Alle pagina\'s gebouwd' },
@@ -2792,7 +3344,7 @@ function ProjectDetailModal({ project, darkMode, onClose, onUpdate, phases }: Om
   }
 
   const handleMoveToNextPhaseWithEmail = async () => {
-    const phaseOrder: ProjectPhase[] = ['onboarding', 'design', 'development', 'review', 'live']
+    const phaseOrder: ProjectPhase[] = ['onboarding', 'design', 'design_approved', 'development', 'review', 'live']
     const currentIndex = phaseOrder.indexOf(editPhase)
     if (currentIndex < phaseOrder.length - 1) {
       const nextPhase = phaseOrder[currentIndex + 1]
@@ -3607,22 +4159,7 @@ export function _OldClientsView({ darkMode, clients, projects, onSelectClient, o
         createdAt: new Date().toISOString()
       }
 
-      // Send welcome email via API
-      const emailResponse = await fetch('/api/client-welcome', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          name: newClient.name,
-          email: newClient.email,
-          company: newClient.company
-        })
-      })
-
-      if (!emailResponse.ok) {
-        console.warn('Email verzending gefaald, maar klant wordt toch toegevoegd')
-      }
-
-      // Add client
+      // Add client (welcome email is sent when project is created)
       onAddClient(client)
       
       setSubmitStatus('success')
@@ -5006,152 +5543,64 @@ export function _OnboardingView({
                 {/* Onboarding Data */}
                 {selectedOnboarding.onboardingData && Object.keys(selectedOnboarding.onboardingData).length > 0 ? (
                   <div>
-                    <h3 className={`font-semibold mb-3 flex items-center gap-2 ${darkMode ? 'text-white' : 'text-gray-900'}`}>
-                      <FileText className="w-4 h-4" />
-                      Ingevulde Gegevens
-                    </h3>
-                    <div className={`space-y-4 p-4 rounded-xl ${darkMode ? 'bg-gray-700/50' : 'bg-gray-50'}`}>
-                      {/* About Business */}
-                      {(selectedOnboarding.onboardingData.aboutBusiness || selectedOnboarding.onboardingData.aboutText) && (
-                        <div>
-                          <p className={`text-xs font-medium mb-1 ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>
-                            Over het bedrijf
-                          </p>
-                          <p className={`text-sm ${darkMode ? 'text-gray-200' : 'text-gray-700'}`}>
-                            {selectedOnboarding.onboardingData.aboutBusiness || selectedOnboarding.onboardingData.aboutText}
-                          </p>
-                        </div>
+                    <div className="flex items-center justify-between mb-3">
+                      <h3 className={`font-semibold flex items-center gap-2 ${darkMode ? 'text-white' : 'text-gray-900'}`}>
+                        <FileText className="w-4 h-4" />
+                        Ingevulde Gegevens
+                      </h3>
+                      {selectedOnboarding.onboardingData.completed && (
+                        <span className={`px-2 py-1 rounded-full text-xs font-medium ${darkMode ? 'bg-green-500/20 text-green-400' : 'bg-green-100 text-green-700'}`}>
+                          ✓ Volledig ingevuld
+                        </span>
                       )}
-                      
-                      {/* Services */}
-                      {selectedOnboarding.onboardingData.services && (
-                        <div>
-                          <p className={`text-xs font-medium mb-1 ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>
-                            Diensten/Producten
-                          </p>
-                          <p className={`text-sm ${darkMode ? 'text-gray-200' : 'text-gray-700'}`}>
-                            {selectedOnboarding.onboardingData.services}
-                          </p>
-                        </div>
-                      )}
-
-                      {/* Target Audience */}
-                      {selectedOnboarding.onboardingData.targetAudience && (
-                        <div>
-                          <p className={`text-xs font-medium mb-1 ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>
-                            Doelgroep
-                          </p>
-                          <p className={`text-sm ${darkMode ? 'text-gray-200' : 'text-gray-700'}`}>
-                            {selectedOnboarding.onboardingData.targetAudience}
-                          </p>
-                        </div>
-                      )}
-
-                      {/* Design Style */}
-                      {selectedOnboarding.onboardingData.designStyle && (
-                        <div>
-                          <p className={`text-xs font-medium mb-1 ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>
-                            Gewenste stijl
-                          </p>
-                          <p className={`text-sm ${darkMode ? 'text-gray-200' : 'text-gray-700'}`}>
-                            {selectedOnboarding.onboardingData.designStyle}
-                          </p>
-                        </div>
-                      )}
-
-                      {/* Brand Colors */}
-                      {selectedOnboarding.onboardingData.brandColors && (
-                        <div>
-                          <p className={`text-xs font-medium mb-1 ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>
-                            Kleuren
-                          </p>
-                          <div className="flex gap-2 flex-wrap">
-                            {(Array.isArray(selectedOnboarding.onboardingData.brandColors) 
-                              ? selectedOnboarding.onboardingData.brandColors 
-                              : [selectedOnboarding.onboardingData.brandColors]
-                            ).map((color: string, i: number) => (
-                              <span 
-                                key={i}
-                                className={`px-3 py-1 rounded-full text-xs ${darkMode ? 'bg-gray-600 text-gray-200' : 'bg-gray-200 text-gray-700'}`}
-                              >
-                                {color}
-                              </span>
-                            ))}
+                    </div>
+                    <div className={`space-y-3 p-4 rounded-xl max-h-80 overflow-y-auto ${darkMode ? 'bg-gray-700/50' : 'bg-gray-50'}`}>
+                      {Object.entries(selectedOnboarding.onboardingData).map(([key, value]) => {
+                        const formatted = formatOnboardingField(key, value)
+                        if (!formatted) return null
+                        
+                        // Check for arrays to display as tags
+                        const isArray = Array.isArray(value)
+                        const isColorArray = key === 'brandColors' || key === 'colorPreferences'
+                        
+                        return (
+                          <div key={key} className="pb-2 border-b border-gray-200/50 dark:border-gray-600/50 last:border-0 last:pb-0">
+                            <p className={`text-xs font-medium mb-1 ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>
+                              {formatted.label}
+                            </p>
+                            {isArray && !isColorArray ? (
+                              <div className="flex gap-2 flex-wrap">
+                                {(value as string[]).map((item: string, i: number) => (
+                                  <span 
+                                    key={i}
+                                    className={`px-3 py-1 rounded-full text-xs ${darkMode ? 'bg-emerald-500/20 text-emerald-400' : 'bg-emerald-100 text-emerald-700'}`}
+                                  >
+                                    {key === 'contactMethods' ? (
+                                      { form: 'Formulier', email: 'E-mail', phone: 'Telefoon', whatsapp: 'WhatsApp', booking: 'Afspraken', chat: 'Live chat' }[item] || item
+                                    ) : item}
+                                  </span>
+                                ))}
+                              </div>
+                            ) : isColorArray ? (
+                              <div className="flex gap-2 flex-wrap">
+                                {(value as string[]).map((color: string, i: number) => (
+                                  <span 
+                                    key={i}
+                                    className={`px-3 py-1 rounded-full text-xs flex items-center gap-2 ${darkMode ? 'bg-gray-600 text-gray-200' : 'bg-gray-200 text-gray-700'}`}
+                                  >
+                                    <span className="w-3 h-3 rounded-full" style={{ backgroundColor: color }} />
+                                    {color}
+                                  </span>
+                                ))}
+                              </div>
+                            ) : (
+                              <p className={`text-sm ${darkMode ? 'text-gray-200' : 'text-gray-700'}`}>
+                                {formatted.displayValue}
+                              </p>
+                            )}
                           </div>
-                        </div>
-                      )}
-
-                      {/* Pages */}
-                      {selectedOnboarding.onboardingData.selectedPages && (
-                        <div>
-                          <p className={`text-xs font-medium mb-1 ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>
-                            Gewenste pagina's
-                          </p>
-                          <div className="flex gap-2 flex-wrap">
-                            {(Array.isArray(selectedOnboarding.onboardingData.selectedPages) 
-                              ? selectedOnboarding.onboardingData.selectedPages 
-                              : []
-                            ).map((page: string, i: number) => (
-                              <span 
-                                key={i}
-                                className={`px-3 py-1 rounded-full text-xs ${darkMode ? 'bg-emerald-500/20 text-emerald-400' : 'bg-emerald-100 text-emerald-700'}`}
-                              >
-                                {page}
-                              </span>
-                            ))}
-                          </div>
-                        </div>
-                      )}
-
-                      {/* Unique Features */}
-                      {selectedOnboarding.onboardingData.uniqueFeatures && (
-                        <div>
-                          <p className={`text-xs font-medium mb-1 ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>
-                            Unieke kenmerken
-                          </p>
-                          <p className={`text-sm ${darkMode ? 'text-gray-200' : 'text-gray-700'}`}>
-                            {selectedOnboarding.onboardingData.uniqueFeatures}
-                          </p>
-                        </div>
-                      )}
-
-                      {/* Extra Wishes */}
-                      {selectedOnboarding.onboardingData.extraWishes && (
-                        <div>
-                          <p className={`text-xs font-medium mb-1 ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>
-                            Extra wensen
-                          </p>
-                          <p className={`text-sm ${darkMode ? 'text-gray-200' : 'text-gray-700'}`}>
-                            {selectedOnboarding.onboardingData.extraWishes}
-                          </p>
-                        </div>
-                      )}
-
-                      {/* Competitors */}
-                      {selectedOnboarding.onboardingData.competitors && (
-                        <div>
-                          <p className={`text-xs font-medium mb-1 ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>
-                            Inspiratie / Concurrenten
-                          </p>
-                          <p className={`text-sm ${darkMode ? 'text-gray-200' : 'text-gray-700'}`}>
-                            {selectedOnboarding.onboardingData.competitors}
-                          </p>
-                        </div>
-                      )}
-
-                      {/* Logo */}
-                      {selectedOnboarding.onboardingData.hasLogo && (
-                        <div>
-                          <p className={`text-xs font-medium mb-1 ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>
-                            Logo status
-                          </p>
-                          <p className={`text-sm ${darkMode ? 'text-gray-200' : 'text-gray-700'}`}>
-                            {selectedOnboarding.onboardingData.hasLogo === 'yes' || selectedOnboarding.onboardingData.hasLogo === true
-                              ? 'Heeft een logo' 
-                              : 'Heeft nog geen logo'}
-                          </p>
-                        </div>
-                      )}
+                        )
+                      })}
                     </div>
                   </div>
                 ) : (
@@ -5254,6 +5703,33 @@ function ClientsView({ darkMode, projects, onUpdateProject, onDeleteProject }: C
   const [deleteError, setDeleteError] = useState('')
   const [sortBy, setSortBy] = useState<'name' | 'date' | 'package'>('date')
   const [filterPackage, setFilterPackage] = useState<string>('all')
+  const [viewMode, setViewMode] = useState<'projects' | 'grouped'>('projects')
+
+  // Group projects by customer email to identify customers with multiple projects
+  const customerProjectsMap = projects.reduce((acc, project) => {
+    const email = project.contactEmail.toLowerCase()
+    if (!acc[email]) {
+      acc[email] = []
+    }
+    acc[email].push(project)
+    return acc
+  }, {} as Record<string, Project[]>)
+
+  // Count customers with multiple projects
+  const multiProjectCustomers = Object.entries(customerProjectsMap)
+    .filter(([, customerProjects]) => customerProjects.length > 1)
+    .map(([email, customerProjects]) => ({
+      email,
+      name: customerProjects[0].contactName,
+      businessName: customerProjects[0].businessName,
+      projectCount: customerProjects.length,
+      projects: customerProjects,
+      totalValue: customerProjects.reduce((sum, p) => {
+        const prices = { starter: 99, professional: 199, business: 349, webshop: 349 }
+        return sum + (prices[p.package] || 0)
+      }, 0)
+    }))
+    .sort((a, b) => b.projectCount - a.projectCount)
 
   // Filter and sort clients
   const filteredClients = projects
@@ -5448,28 +5924,109 @@ function ClientsView({ darkMode, projects, onUpdateProject, onDeleteProject }: C
           <option value="name">Op naam</option>
           <option value="package">Op pakket</option>
         </select>
+        
+        {/* View mode toggle */}
+        <div className={`flex rounded-xl border ${darkMode ? 'border-gray-700' : 'border-gray-200'} overflow-hidden`}>
+          <button
+            onClick={() => setViewMode('projects')}
+            className={`px-3 py-2.5 text-sm font-medium transition-colors ${
+              viewMode === 'projects'
+                ? 'bg-emerald-500 text-white'
+                : darkMode ? 'bg-gray-800 text-gray-400 hover:text-white' : 'bg-white text-gray-600 hover:text-gray-900'
+            }`}
+          >
+            Projecten
+          </button>
+          <button
+            onClick={() => setViewMode('grouped')}
+            className={`px-3 py-2.5 text-sm font-medium transition-colors flex items-center gap-2 ${
+              viewMode === 'grouped'
+                ? 'bg-emerald-500 text-white'
+                : darkMode ? 'bg-gray-800 text-gray-400 hover:text-white' : 'bg-white text-gray-600 hover:text-gray-900'
+            }`}
+          >
+            Klanten
+            {multiProjectCustomers.length > 0 && (
+              <span className={`text-xs px-1.5 py-0.5 rounded-full ${
+                viewMode === 'grouped'
+                  ? 'bg-white/20'
+                  : 'bg-purple-500 text-white'
+              }`}>
+                {multiProjectCustomers.length}
+              </span>
+            )}
+          </button>
+        </div>
       </div>
 
-      {/* Main content - split view on desktop */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        {/* Client list */}
-        <div className="space-y-3 max-h-[calc(100vh-280px)] overflow-y-auto pr-2">
-          {filteredClients.length === 0 ? (
-            <div className={`text-center py-12 ${darkMode ? 'text-gray-500' : 'text-gray-400'}`}>
-              <Users className="w-12 h-12 mx-auto mb-4 opacity-50" />
-              <p>Geen klanten gevonden</p>
-            </div>
-          ) : (
-            filteredClients.map(client => (
-              <ClientCard key={client.id} client={client} />
-            ))
-          )}
-        </div>
-
-        {/* Client detail panel */}
-        <div className={`rounded-2xl border p-4 lg:p-6 max-h-[calc(100vh-280px)] overflow-y-auto ${
-          darkMode ? 'bg-gray-800/30 border-gray-700' : 'bg-gray-50 border-gray-200'
+      {/* Multi-project customers alert */}
+      {viewMode === 'projects' && multiProjectCustomers.length > 0 && (
+        <div className={`p-4 rounded-xl border flex items-center gap-3 ${
+          darkMode 
+            ? 'bg-purple-900/20 border-purple-700/50' 
+            : 'bg-purple-50 border-purple-200'
         }`}>
+          <div className={`p-2 rounded-lg ${darkMode ? 'bg-purple-500/20' : 'bg-purple-100'}`}>
+            <Users className={`w-5 h-5 ${darkMode ? 'text-purple-400' : 'text-purple-600'}`} />
+          </div>
+          <div className="flex-1">
+            <p className={`font-medium ${darkMode ? 'text-purple-300' : 'text-purple-800'}`}>
+              {multiProjectCustomers.length} klant{multiProjectCustomers.length !== 1 ? 'en' : ''} met meerdere projecten
+            </p>
+            <p className={`text-sm ${darkMode ? 'text-purple-400' : 'text-purple-600'}`}>
+              {multiProjectCustomers.map(c => c.name).slice(0, 3).join(', ')}
+              {multiProjectCustomers.length > 3 ? ` en ${multiProjectCustomers.length - 3} anderen` : ''}
+            </p>
+          </div>
+          <button
+            onClick={() => setViewMode('grouped')}
+            className={`px-3 py-1.5 text-sm font-medium rounded-lg transition-colors ${
+              darkMode 
+                ? 'bg-purple-500/20 text-purple-300 hover:bg-purple-500/30' 
+                : 'bg-purple-100 text-purple-700 hover:bg-purple-200'
+            }`}
+          >
+            Bekijk →
+          </button>
+        </div>
+      )}
+
+      {/* Main content - split view on desktop */}
+      {viewMode === 'projects' ? (
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          {/* Client list */}
+          <div className="space-y-3 max-h-[calc(100vh-280px)] overflow-y-auto pr-2">
+            {filteredClients.length === 0 ? (
+              <div className={`text-center py-12 ${darkMode ? 'text-gray-500' : 'text-gray-400'}`}>
+                <Users className="w-12 h-12 mx-auto mb-4 opacity-50" />
+                <p>Geen klanten gevonden</p>
+              </div>
+            ) : (
+              filteredClients.map(client => {
+                const customerProjects = customerProjectsMap[client.contactEmail.toLowerCase()]
+                const hasMultipleProjects = customerProjects && customerProjects.length > 1
+                
+                return (
+                  <div key={client.id} className="relative">
+                    <ClientCard client={client} />
+                    {hasMultipleProjects && (
+                      <div className={`absolute -top-2 -right-2 flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium ${
+                        darkMode ? 'bg-purple-500 text-white' : 'bg-purple-500 text-white'
+                      }`}>
+                        <Layers className="w-3 h-3" />
+                        {customerProjects.length}
+                      </div>
+                    )}
+                  </div>
+                )
+              })
+            )}
+          </div>
+
+          {/* Client detail panel */}
+          <div className={`rounded-2xl border p-4 lg:p-6 max-h-[calc(100vh-280px)] overflow-y-auto ${
+            darkMode ? 'bg-gray-800/30 border-gray-700' : 'bg-gray-50 border-gray-200'
+          }`}>
           {selectedClient ? (
             <div className="space-y-4">
               {/* Client header */}
@@ -5558,38 +6115,29 @@ function ClientsView({ darkMode, projects, onUpdateProject, onDeleteProject }: C
               {/* Onboarding Data */}
               {selectedClient.onboardingData && Object.keys(selectedClient.onboardingData).length > 0 && (
                 <div className={`rounded-xl p-4 border ${darkMode ? 'bg-purple-900/20 border-purple-800' : 'bg-purple-50 border-purple-200'}`}>
-                  <div className="flex items-center gap-2 mb-3">
-                    <div className={`w-8 h-8 rounded-lg flex items-center justify-center ${darkMode ? 'bg-purple-900/30' : 'bg-purple-100'}`}>
-                      <FileText className={`w-4 h-4 ${darkMode ? 'text-purple-400' : 'text-purple-600'}`} />
+                  <div className="flex items-center justify-between gap-2 mb-3">
+                    <div className="flex items-center gap-2">
+                      <div className={`w-8 h-8 rounded-lg flex items-center justify-center ${darkMode ? 'bg-purple-900/30' : 'bg-purple-100'}`}>
+                        <FileText className={`w-4 h-4 ${darkMode ? 'text-purple-400' : 'text-purple-600'}`} />
+                      </div>
+                      <span className={`font-medium ${darkMode ? 'text-purple-300' : 'text-purple-700'}`}>Onboarding Gegevens</span>
                     </div>
-                    <span className={`font-medium ${darkMode ? 'text-purple-300' : 'text-purple-700'}`}>Onboarding Gegevens</span>
+                    {selectedClient.onboardingData.completed && (
+                      <span className={`px-2 py-1 rounded-full text-xs font-medium ${darkMode ? 'bg-green-500/20 text-green-400' : 'bg-green-100 text-green-700'}`}>
+                        ✓ Volledig ingevuld
+                      </span>
+                    )}
                   </div>
-                  <div className="space-y-1 max-h-64 overflow-y-auto">
+                  <div className="space-y-2 max-h-96 overflow-y-auto">
                     {Object.entries(selectedClient.onboardingData).map(([key, value]) => {
-                      // Skip empty values and internal fields
-                      if (!value || key.startsWith('_')) return null
-                      
-                      // Format the key for display
-                      const formattedKey = key
-                        .replace(/([A-Z])/g, ' $1')
-                        .replace(/_/g, ' ')
-                        .replace(/^./, str => str.toUpperCase())
-                      
-                      // Format the value
-                      let displayValue: string
-                      if (Array.isArray(value)) {
-                        displayValue = value.join(', ')
-                      } else if (typeof value === 'object') {
-                        displayValue = JSON.stringify(value, null, 2)
-                      } else {
-                        displayValue = String(value)
-                      }
+                      const formatted = formatOnboardingField(key, value)
+                      if (!formatted) return null
                       
                       return (
-                        <div key={key} className="flex flex-col sm:flex-row sm:justify-between gap-1 py-1">
-                          <span className={`text-sm ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>{formattedKey}:</span>
-                          <span className={`text-sm font-medium ${darkMode ? 'text-white' : 'text-gray-900'} break-words sm:text-right sm:max-w-[60%]`}>
-                            {displayValue}
+                        <div key={key} className="flex flex-col sm:flex-row sm:justify-between gap-1 py-1.5 border-b border-purple-200/30 dark:border-purple-700/30 last:border-0">
+                          <span className={`text-sm font-medium ${darkMode ? 'text-purple-300' : 'text-purple-600'}`}>{formatted.label}:</span>
+                          <span className={`text-sm ${darkMode ? 'text-white' : 'text-gray-900'} break-words sm:text-right sm:max-w-[60%]`}>
+                            {formatted.displayValue}
                           </span>
                         </div>
                       )
@@ -5654,6 +6202,92 @@ function ClientsView({ darkMode, projects, onUpdateProject, onDeleteProject }: C
           )}
         </div>
       </div>
+      ) : (
+        /* Grouped view - customers with multiple projects */
+        <div className="space-y-4">
+          {multiProjectCustomers.length === 0 ? (
+            <div className={`text-center py-12 ${darkMode ? 'text-gray-500' : 'text-gray-400'}`}>
+              <Users className="w-12 h-12 mx-auto mb-4 opacity-50" />
+              <p className="text-lg font-medium">Geen klanten met meerdere projecten</p>
+              <p className="text-sm">Alle klanten hebben momenteel één project</p>
+            </div>
+          ) : (
+            multiProjectCustomers.map(customer => (
+              <div
+                key={customer.email}
+                className={`p-4 rounded-xl border ${
+                  darkMode ? 'bg-gray-800/50 border-gray-700' : 'bg-white border-gray-200 shadow-sm'
+                }`}
+              >
+                <div className="flex items-start justify-between gap-4 mb-4">
+                  <div>
+                    <div className="flex items-center gap-2">
+                      <h3 className={`text-lg font-semibold ${darkMode ? 'text-white' : 'text-gray-900'}`}>
+                        {customer.name}
+                      </h3>
+                      <span className={`px-2 py-0.5 text-xs font-medium rounded-full ${
+                        darkMode ? 'bg-purple-500/20 text-purple-300' : 'bg-purple-100 text-purple-700'
+                      }`}>
+                        {customer.projectCount} projecten
+                      </span>
+                    </div>
+                    <p className={`text-sm ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>
+                      {customer.email} • {customer.businessName}
+                    </p>
+                  </div>
+                  <div className={`text-right ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>
+                    <p className="text-sm">Totale waarde</p>
+                    <p className={`text-lg font-bold ${darkMode ? 'text-emerald-400' : 'text-emerald-600'}`}>
+                      €{customer.totalValue}
+                    </p>
+                  </div>
+                </div>
+                
+                <div className="grid gap-2">
+                  {customer.projects.map(project => {
+                    const pkg = getPackageBadge(project.package)
+                    return (
+                      <div
+                        key={project.id}
+                        onClick={() => {
+                          setViewMode('projects')
+                          setSelectedClient(project)
+                        }}
+                        className={`flex items-center justify-between p-3 rounded-lg cursor-pointer transition-colors ${
+                          darkMode 
+                            ? 'bg-gray-700/50 hover:bg-gray-700' 
+                            : 'bg-gray-50 hover:bg-gray-100'
+                        }`}
+                      >
+                        <div className="flex items-center gap-3">
+                          <span className={`w-2 h-2 rounded-full ${
+                            project.phase === 'live' ? 'bg-emerald-500' : 
+                            project.phase === 'review' ? 'bg-blue-500' : 'bg-yellow-500'
+                          }`} />
+                          <div>
+                            <p className={`font-medium ${darkMode ? 'text-white' : 'text-gray-900'}`}>
+                              {project.businessName}
+                            </p>
+                            <p className={`text-xs ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>
+                              {project.projectId}
+                            </p>
+                          </div>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <span className={`px-2 py-0.5 text-xs font-medium text-white rounded-full ${pkg.color}`}>
+                            {pkg.label}
+                          </span>
+                          <ChevronRight className={`w-4 h-4 ${darkMode ? 'text-gray-500' : 'text-gray-400'}`} />
+                        </div>
+                      </div>
+                    )
+                  })}
+                </div>
+              </div>
+            ))
+          )}
+        </div>
+      )}
 
       {/* Delete Confirmation Modal */}
       <AnimatePresence>
@@ -7562,6 +8196,7 @@ export default function DeveloperDashboardNew() {
   const [clients, setClients] = useState<Client[]>([])
   const [serviceRequests, setServiceRequests] = useState<ServiceRequest[]>([])
   const [notifications, setNotifications] = useState<Notification[]>([])
+  const [emailLogs, setEmailLogs] = useState<EmailLogEntry[]>([])
   const [selectedProject, setSelectedProject] = useState<Project | null>(null)
   const [loading, setLoading] = useState(false)
   
@@ -7732,6 +8367,23 @@ export default function DeveloperDashboardNew() {
         console.log('Services endpoint not available')
       }
       
+      // Load email logs for dashboard notifications
+      try {
+        const emailLogResponse = await fetch('/api/developer/email-log?limit=50', {
+          headers: {
+            'Authorization': `Bearer ${sessionStorage.getItem(TOKEN_KEY)}`
+          }
+        })
+        if (emailLogResponse.ok) {
+          const emailLogData = await emailLogResponse.json()
+          if (emailLogData.emails) {
+            setEmailLogs(emailLogData.emails)
+          }
+        }
+      } catch {
+        console.log('Email log endpoint not available')
+      }
+      
       // Generate notifications from projects
       generateNotifications()
       
@@ -7785,6 +8437,7 @@ export default function DeveloperDashboardNew() {
     const newNotifications: Notification[] = []
     
     projects.forEach(p => {
+      // Ongelezen berichten van klanten
       p.messages.filter(m => !m.read && m.from === 'client').forEach(m => {
         newNotifications.push({
           id: `msg-${m.id}`,
@@ -7796,6 +8449,19 @@ export default function DeveloperDashboardNew() {
           createdAt: m.date,
         })
       })
+      
+      // Onboarding ingevuld - wacht op uploadlink
+      if (p.onboardingData && Object.keys(p.onboardingData).length > 0 && p.phase === 'onboarding') {
+        newNotifications.push({
+          id: `onboarding-${p.id}`,
+          type: 'onboarding',
+          title: 'Onboarding ingevuld',
+          message: `${p.contactName} heeft de onboarding ingevuld en wacht op de uploadlink`,
+          projectId: p.id,
+          read: false,
+          createdAt: p.onboardingData.submittedAt || p.createdAt || new Date().toISOString(),
+        })
+      }
     })
     
     setNotifications(newNotifications)
@@ -8046,6 +8712,7 @@ export default function DeveloperDashboardNew() {
                     projects={projects}
                     clients={clients}
                     serviceRequests={serviceRequests}
+                    emailLogs={emailLogs}
                     setActiveView={setActiveView}
                     onSelectProject={(project) => {
                       setSelectedProject(project)

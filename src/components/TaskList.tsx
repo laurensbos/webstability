@@ -12,7 +12,8 @@ import {
   Code,
   MessageSquare,
   AlertCircle,
-  Star
+  Star,
+  CreditCard
 } from 'lucide-react'
 import type { ProjectPhase } from '../types/project'
 
@@ -35,9 +36,10 @@ interface TaskListProps {
   onTaskComplete?: (taskId: string) => void
 }
 
-const PHASE_INFO = {
+const PHASE_INFO: Record<ProjectPhase, { icon: typeof FileText; label: string; color: string }> = {
   onboarding: { icon: FileText, label: 'Onboarding', color: 'blue' },
   design: { icon: Palette, label: 'Design', color: 'amber' },
+  design_approved: { icon: CreditCard, label: 'Goedgekeurd', color: 'indigo' },
   development: { icon: Code, label: 'Development', color: 'purple' },
   review: { icon: MessageSquare, label: 'Review', color: 'cyan' },
   live: { icon: Rocket, label: 'Live', color: 'green' },

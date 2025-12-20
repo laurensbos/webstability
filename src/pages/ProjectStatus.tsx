@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from 'react'
 import { useParams, Link, useNavigate, useSearchParams } from 'react-router-dom'
 import { motion, AnimatePresence } from 'framer-motion'
+import { ProjectStatusSkeleton } from '../components/LoadingSkeletons'
 import {
   CheckCircle2,
   Circle,
@@ -96,6 +97,7 @@ function FloatingParticles() {
 const STATUS_STEPS: { key: ProjectPhase; label: string; icon: typeof FileText; description: string }[] = [
   { key: 'onboarding', label: 'Onboarding', icon: FileText, description: 'We verzamelen je materialen' },
   { key: 'design', label: 'Design', icon: Palette, description: 'We werken aan het ontwerp' },
+  { key: 'design_approved', label: 'Goedgekeurd', icon: CreditCard, description: 'Design akkoord, wacht op betaling' },
   { key: 'development', label: 'Development', icon: Code, description: 'We bouwen je website' },
   { key: 'review', label: 'Review', icon: MessageSquare, description: 'Je bekijkt en geeft feedback' },
   { key: 'live', label: 'Live!', icon: Rocket, description: 'Je website is online' }
@@ -127,6 +129,14 @@ const getPhaseColor = (phase: ProjectPhase): {
         gradient: 'from-amber-500 via-orange-500 to-yellow-500',
         light: 'bg-amber-100',
         ring: 'ring-amber-100'
+      }
+    case 'design_approved':
+      return { 
+        bg: 'bg-blue-500', 
+        text: 'text-blue-600', 
+        gradient: 'from-blue-500 via-indigo-500 to-purple-500',
+        light: 'bg-blue-100',
+        ring: 'ring-blue-100'
       }
     case 'development':
       return { 
@@ -178,6 +188,13 @@ export default function ProjectStatus() {
   const [onboardingCompleted, setOnboardingCompleted] = useState(false)
   const [onboardingDate, setOnboardingDate] = useState<string | null>(null)
   
+  // Upload status
+  const [uploadsCompleted, setUploadsCompleted] = useState(false)
+  const [uploadsCompletedAt, setUploadsCompletedAt] = useState<string | null>(null)
+  const [uploadMessage, setUploadMessage] = useState('')
+  const [uploadLoading, setUploadLoading] = useState(false)
+  const [showUploadModal, setShowUploadModal] = useState(false)
+  
   // Password verification state
   const [isVerified, setIsVerified] = useState(false)
   const [passwordInput, setPasswordInput] = useState('')
@@ -227,6 +244,20 @@ export default function ProjectStatus() {
     const normalizedId = projectId.toUpperCase()
     const hasSession = sessionStorage.getItem(`project_auth_${normalizedId}`) === 'true'
     const pwd = searchParams.get('pwd')
+    const magicSession = searchParams.get('magic_session')
+    const magicError = searchParams.get('magic')
+    
+    // Handle magic link errors
+    if (magicError === 'expired') {
+      setVerifyError('Deze link is verlopen. Log in met je wachtwoord.')
+      setLoading(false)
+      return
+    }
+    if (magicError === 'invalid') {
+      setVerifyError('Ongeldige link. Log in met je wachtwoord.')
+      setLoading(false)
+      return
+    }
     
     if (hasSession) {
       // Already verified in this session
@@ -236,6 +267,9 @@ export default function ProjectStatus() {
       fetchOnboardingStatus(projectId)
       setLoading(false)
       setLastRefresh(new Date())
+    } else if (magicSession) {
+      // Magic link session token - verify it
+      verifyMagicSession(projectId, magicSession)
     } else if (pwd) {
       // Password in URL from Header modal
       verifyPassword(projectId, pwd)
@@ -258,6 +292,81 @@ export default function ProjectStatus() {
       }
     } catch {
       // No onboarding found
+    }
+  }
+
+  // Check upload status from project data
+  const checkUploadStatus = (projectData: Project) => {
+    const onboardingData = (projectData as any).onboardingData
+    if (onboardingData?.uploadsCompleted) {
+      setUploadsCompleted(true)
+      setUploadsCompletedAt(onboardingData.uploadsCompletedAt || null)
+    }
+  }
+
+  // Mark uploads as complete
+  const handleUploadsComplete = async () => {
+    if (!projectId) return
+    
+    setUploadLoading(true)
+    try {
+      const response = await fetch('/api/uploads-complete', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ 
+          projectId: projectId.toUpperCase(),
+          message: uploadMessage 
+        })
+      })
+      
+      const data = await response.json()
+      
+      if (data.success) {
+        setUploadsCompleted(true)
+        setUploadsCompletedAt(data.uploadsCompletedAt)
+        setShowUploadModal(false)
+        setUploadMessage('')
+      }
+    } catch (err) {
+      console.error('Error marking uploads complete:', err)
+    } finally {
+      setUploadLoading(false)
+    }
+  }
+
+  // Verify magic session token from magic link
+  const verifyMagicSession = async (id: string, sessionToken: string) => {
+    setVerifyLoading(true)
+    setVerifyError('')
+    
+    try {
+      const response = await fetch('/api/verify-magic-session', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ projectId: id, sessionToken })
+      })
+      
+      const data = await response.json()
+      
+      if (data.success) {
+        // Store session
+        sessionStorage.setItem(`project_auth_${id.toUpperCase()}`, 'true')
+        setIsVerified(true)
+        fetchProject(id)
+        fetchMessages(id)
+        fetchOnboardingStatus(id)
+        // Remove magic_session from URL for cleanliness
+        navigate(`/project/${id}`, { replace: true })
+      } else {
+        setVerifyError(data.message || 'Ongeldige of verlopen link. Log in met je wachtwoord.')
+        setIsVerified(false)
+      }
+    } catch (err) {
+      console.error('Magic session verify error:', err)
+      setVerifyError('Er ging iets mis. Probeer in te loggen met je wachtwoord.')
+    } finally {
+      setVerifyLoading(false)
+      setLoading(false)
     }
   }
 
@@ -343,6 +452,7 @@ export default function ProjectStatus() {
       if (response.ok) {
         const data = await response.json()
         setProject(data)
+        checkUploadStatus(data)
         setError('')
       } else {
         setProject({
@@ -389,10 +499,11 @@ export default function ProjectStatus() {
       const data = await response.json()
       setFeedbackSent(true)
       
-      // Als goedgekeurd: update project met designApprovedAt en paymentStatus
+      // Als goedgekeurd: update project met designApprovedAt, paymentStatus en status naar design_approved
       if (approved && project) {
         setProject({
           ...project,
+          status: 'design_approved', // Verander fase naar design_approved
           designApprovedAt: data.designApprovedAt || new Date().toISOString(),
           paymentStatus: 'awaiting_payment'
         })
@@ -663,19 +774,9 @@ export default function ProjectStatus() {
     )
   }
 
-  // Loading state
+  // Loading state with skeleton
   if (loading) {
-    return (
-      <div className="min-h-screen bg-gradient-to-b from-gray-50 to-white dark:from-gray-950 dark:to-gray-900 flex items-center justify-center">
-        <div className="text-center">
-          <div className="relative">
-            <div className="w-16 h-16 rounded-full bg-gradient-to-r from-blue-500 to-indigo-600 animate-pulse mx-auto mb-4" />
-            <Loader2 className="w-8 h-8 animate-spin text-white absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 mb-4" />
-          </div>
-          <p className="text-gray-600 dark:text-gray-400 font-medium">Project laden...</p>
-        </div>
-      </div>
-    )
+    return <ProjectStatusSkeleton />
   }
 
   // Password verification required
@@ -1112,6 +1213,61 @@ export default function ProjectStatus() {
           </motion.div>
         )}
 
+        {/* Wat te verwachten - Per fase uitleg voor de klant */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="mb-6 p-4 sm:p-5 bg-gradient-to-br from-blue-900/30 to-indigo-900/30 backdrop-blur-sm rounded-xl sm:rounded-2xl border border-blue-500/20"
+        >
+          <div className="flex items-start gap-3">
+            <div className="w-10 h-10 bg-blue-500/20 rounded-lg flex items-center justify-center flex-shrink-0">
+              <HelpCircle className="w-5 h-5 text-blue-400" />
+            </div>
+            <div className="flex-1">
+              <h3 className="text-white font-semibold mb-2 flex items-center gap-2">
+                Wat kun je nu verwachten?
+              </h3>
+              {(() => {
+                const phaseInfo: Record<ProjectPhase, { text: string; action?: string }> = {
+                  onboarding: {
+                    text: 'We verzamelen nu alle informatie over jouw bedrijf. Zodra je de onboarding hebt ingevuld, gaan we aan de slag met het design.',
+                    action: 'Vul de onboarding in als je dat nog niet gedaan hebt via de link in je e-mail.'
+                  },
+                  design: {
+                    text: 'We werken aan het design van jouw website. Je ontvangt binnenkort een preview om te bekijken. Geef feedback via de chat hieronder.',
+                    action: 'Houd je berichten in de gaten voor de design preview.'
+                  },
+                  design_approved: {
+                    text: 'Super! Je hebt het design goedgekeurd. Na ontvangst van de betaling starten we direct met het bouwen van je website.',
+                    action: 'Rond de betaling af via de link in je e-mail.'
+                  },
+                  development: {
+                    text: 'We zijn druk bezig met het bouwen van je website! Je ontvangt binnenkort een link om de staging versie te bekijken.',
+                    action: 'Nog even geduld - we houden je op de hoogte.'
+                  },
+                  review: {
+                    text: 'Je website is klaar om te bekijken! Test alle paginas en functies. Geef feedback via de chat of keur het goed om live te gaan.',
+                    action: 'Bekijk de preview en geef je feedback.'
+                  },
+                  live: {
+                    text: 'Gefeliciteerd! 🎉 Je website is live en bereikbaar voor de wereld. Bij vragen kun je altijd contact opnemen via de chat.',
+                    action: 'Bekijk je live website via de link hierboven.'
+                  },
+                }
+                const info = phaseInfo[project.status] || phaseInfo.onboarding
+                return (
+                  <>
+                    <p className="text-gray-300 text-sm mb-2">{info.text}</p>
+                    {info.action && (
+                      <p className="text-blue-400 text-sm font-medium">👉 {info.action}</p>
+                    )}
+                  </>
+                )
+              })()}
+            </div>
+          </div>
+        </motion.div>
+
         {/* Progress Steps Card */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -1378,25 +1534,141 @@ export default function ProjectStatus() {
 
           {/* Google Drive - Only if available */}
           {project.googleDriveUrl && (
-            <a
-              href={project.googleDriveUrl}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="bg-gray-800/60 backdrop-blur-sm rounded-xl p-4 sm:p-5 border border-gray-700/50 hover:border-amber-500/50 hover:bg-gray-800/80 transition group"
-            >
-              <div className="flex items-center gap-3 sm:gap-4">
-                <div className="w-10 h-10 sm:w-12 sm:h-12 bg-amber-500/20 rounded-lg sm:rounded-xl flex items-center justify-center group-hover:scale-110 transition">
-                  <FolderOpen className="w-5 h-5 sm:w-6 sm:h-6 text-amber-400" />
+            <div className="bg-gray-800/60 backdrop-blur-sm rounded-xl p-4 sm:p-5 border border-gray-700/50">
+              {/* Drive Link */}
+              <a
+                href={project.googleDriveUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="block hover:opacity-80 transition group"
+              >
+                <div className="flex items-center gap-3 sm:gap-4">
+                  <div className="w-10 h-10 sm:w-12 sm:h-12 bg-blue-500/20 rounded-lg sm:rounded-xl flex items-center justify-center group-hover:scale-110 transition">
+                    <FolderOpen className="w-5 h-5 sm:w-6 sm:h-6 text-blue-400" />
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <h3 className="font-semibold text-white text-sm sm:text-base group-hover:text-blue-400 transition">Bestanden uploaden</h3>
+                    <p className="text-xs sm:text-sm text-gray-500">Logo, foto's en teksten</p>
+                  </div>
+                  <ExternalLink className="w-4 h-4 text-gray-600 group-hover:text-blue-400 transition flex-shrink-0" />
                 </div>
-                <div className="flex-1 min-w-0">
-                  <h3 className="font-semibold text-white text-sm sm:text-base group-hover:text-amber-400 transition">Bestanden</h3>
-                  <p className="text-xs sm:text-sm text-gray-500">Bekijk gedeelde bestanden</p>
-                </div>
-                <ExternalLink className="w-4 h-4 text-gray-600 group-hover:text-amber-400 transition flex-shrink-0" />
+              </a>
+              
+              {/* Upload Complete Status / Button */}
+              <div className="mt-4 pt-4 border-t border-gray-700/50">
+                {uploadsCompleted ? (
+                  <div className="flex items-center gap-2 text-green-400">
+                    <CheckCircle2 className="w-5 h-5" />
+                    <span className="text-sm font-medium">Bestanden aangeleverd</span>
+                    {uploadsCompletedAt && (
+                      <span className="text-xs text-gray-500 ml-auto">
+                        {new Date(uploadsCompletedAt).toLocaleDateString('nl-NL')}
+                      </span>
+                    )}
+                  </div>
+                ) : (
+                  <>
+                    <p className="text-xs text-gray-500 mb-3">
+                      Upload je bestanden naar de juiste mappen en klik hieronder als je klaar bent.
+                    </p>
+                    <button
+                      onClick={() => setShowUploadModal(true)}
+                      className="w-full py-2.5 px-4 bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white text-sm font-medium rounded-lg transition flex items-center justify-center gap-2"
+                    >
+                      <CheckCircle2 className="w-4 h-4" />
+                      Uploads klaar melden
+                    </button>
+                  </>
+                )}
               </div>
-            </a>
+            </div>
           )}
         </motion.div>
+
+        {/* Upload Complete Modal */}
+        <AnimatePresence>
+          {showUploadModal && (
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              className="fixed inset-0 bg-black/70 backdrop-blur-sm z-50 flex items-center justify-center p-4"
+              onClick={() => setShowUploadModal(false)}
+            >
+              <motion.div
+                initial={{ scale: 0.95, opacity: 0 }}
+                animate={{ scale: 1, opacity: 1 }}
+                exit={{ scale: 0.95, opacity: 0 }}
+                onClick={(e) => e.stopPropagation()}
+                className="bg-gray-800 rounded-2xl p-6 w-full max-w-md border border-gray-700"
+              >
+                <div className="text-center mb-6">
+                  <div className="w-16 h-16 bg-blue-500/20 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <FolderOpen className="w-8 h-8 text-blue-400" />
+                  </div>
+                  <h3 className="text-xl font-bold text-white mb-2">Uploads klaar?</h3>
+                  <p className="text-gray-400 text-sm">
+                    Laat ons weten dat je bestanden klaar staan. We gaan dan direct voor je aan de slag!
+                  </p>
+                </div>
+
+                {/* Checklist */}
+                <div className="bg-gray-900/50 rounded-xl p-4 mb-6 space-y-2">
+                  <p className="text-xs text-gray-500 uppercase font-medium mb-3">Controleer of je hebt geüpload:</p>
+                  {[
+                    { icon: '🎨', label: 'Ontwerp', desc: 'Logo & huisstijl' },
+                    { icon: '📝', label: 'Content', desc: 'Teksten voor website' },
+                    { icon: '📸', label: 'Afbeeldingen', desc: "Foto's van je bedrijf" },
+                  ].map((item, i) => (
+                    <div key={i} className="flex items-center gap-3 text-sm">
+                      <span className="text-lg">{item.icon}</span>
+                      <span className="text-white font-medium">{item.label}</span>
+                      <span className="text-gray-500">• {item.desc}</span>
+                    </div>
+                  ))}
+                </div>
+
+                {/* Optional Message */}
+                <div className="mb-6">
+                  <label className="block text-sm text-gray-400 mb-2">
+                    Optioneel bericht <span className="text-gray-600">(bijv. wat je nog mist)</span>
+                  </label>
+                  <textarea
+                    value={uploadMessage}
+                    onChange={(e) => setUploadMessage(e.target.value)}
+                    placeholder="Bijv. 'De foto's van ons team volgen later'"
+                    className="w-full px-4 py-3 bg-gray-900 border border-gray-700 rounded-xl text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none"
+                    rows={3}
+                  />
+                </div>
+
+                {/* Buttons */}
+                <div className="flex gap-3">
+                  <button
+                    onClick={() => setShowUploadModal(false)}
+                    className="flex-1 py-3 px-4 bg-gray-700 hover:bg-gray-600 text-white font-medium rounded-xl transition"
+                  >
+                    Annuleren
+                  </button>
+                  <button
+                    onClick={handleUploadsComplete}
+                    disabled={uploadLoading}
+                    className="flex-1 py-3 px-4 bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white font-medium rounded-xl transition flex items-center justify-center gap-2 disabled:opacity-50"
+                  >
+                    {uploadLoading ? (
+                      <Loader2 className="w-5 h-5 animate-spin" />
+                    ) : (
+                      <>
+                        <CheckCircle2 className="w-5 h-5" />
+                        Bevestigen
+                      </>
+                    )}
+                  </button>
+                </div>
+              </motion.div>
+            </motion.div>
+          )}
+        </AnimatePresence>
 
         {/* Direct Chat Section */}
         <motion.div
@@ -1677,8 +1949,8 @@ export default function ProjectStatus() {
           </motion.div>
         )}
 
-        {/* Payment Section - Alleen tonen als developer de betaling heeft geactiveerd */}
-        {project.status === 'review' && project.paymentStatus && project.paymentStatus !== 'not_required' && project.paymentStatus !== 'paid' && (
+        {/* Payment Section - Alleen tonen in design_approved fase wanneer betaling nog niet gedaan is */}
+        {project.status === 'design_approved' && project.paymentStatus !== 'paid' && (
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}

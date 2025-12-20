@@ -2,10 +2,10 @@ import { motion } from 'framer-motion'
 import { CheckCircle, Lock, Zap, Shield, Clock, Award, Headphones } from 'lucide-react'
 
 const badges = [
-	{ icon: CheckCircle, label: '99.9% uptime', color: 'text-green-500', bg: 'bg-green-50' },
-	{ icon: Lock, label: 'SSL & backups', color: 'text-blue-500', bg: 'bg-blue-50' },
-	{ icon: Zap, label: 'Supersnel (CDN)', color: 'text-amber-500', bg: 'bg-amber-50' },
-	{ icon: Headphones, label: '24u support', color: 'text-purple-500', bg: 'bg-purple-50' },
+	{ icon: CheckCircle, label: '99.9% uptime', color: 'text-green-500', bg: 'bg-green-50 dark:bg-green-900/30' },
+	{ icon: Lock, label: 'SSL & backups', color: 'text-blue-500', bg: 'bg-blue-50 dark:bg-blue-900/30' },
+	{ icon: Zap, label: 'Supersnel (CDN)', color: 'text-amber-500', bg: 'bg-amber-50 dark:bg-amber-900/30' },
+	{ icon: Headphones, label: '24u support', color: 'text-purple-500', bg: 'bg-purple-50 dark:bg-purple-900/30' },
 ]
 
 const extendedBadges = [
@@ -22,9 +22,9 @@ interface TrustBadgesProps {
 }
 
 export default function TrustBadges({ compact = false, variant = 'light', showExtended = false }: TrustBadgesProps) {
-	const bgColor = variant === 'dark' ? 'bg-gray-900' : variant === 'transparent' ? '' : 'bg-gray-50'
-	const textColor = variant === 'dark' ? 'text-gray-300' : 'text-gray-600'
-	const iconBg = variant === 'dark' ? 'bg-gray-800' : 'bg-white'
+	const bgColor = variant === 'dark' ? 'bg-gray-900' : variant === 'transparent' ? '' : 'bg-gray-50 dark:bg-gray-800/50'
+	const textColor = variant === 'dark' ? 'text-gray-300' : 'text-gray-600 dark:text-gray-300'
+	const iconBg = variant === 'dark' ? 'bg-gray-800' : 'bg-white dark:bg-gray-800'
 
 	if (compact) {
 		return (
@@ -41,7 +41,7 @@ export default function TrustBadges({ compact = false, variant = 'light', showEx
 						<div className={`w-8 h-8 ${badge.bg} rounded-lg flex items-center justify-center`}>
 							<badge.icon className={`w-4 h-4 ${badge.color}`} />
 						</div>
-						<span className="text-sm font-medium text-gray-700">{badge.label}</span>
+						<span className="text-sm font-medium text-gray-700 dark:text-gray-300">{badge.label}</span>
 					</motion.div>
 				))}
 			</div>
@@ -60,13 +60,13 @@ export default function TrustBadges({ compact = false, variant = 'light', showEx
 								whileInView={{ opacity: 1, y: 0 }}
 								viewport={{ once: true }}
 								transition={{ delay: index * 0.1 }}
-								className={`${iconBg} p-6 rounded-2xl border border-gray-100 text-center shadow-sm hover:shadow-md transition-shadow`}
+								className={`${iconBg} p-6 rounded-2xl border border-gray-100 dark:border-gray-700 text-center shadow-sm hover:shadow-md transition-shadow`}
 							>
-								<div className="w-12 h-12 bg-primary-50 rounded-xl flex items-center justify-center mx-auto mb-4">
-									<badge.icon className="w-6 h-6 text-primary-600" />
+								<div className="w-12 h-12 bg-primary-50 dark:bg-primary-900/30 rounded-xl flex items-center justify-center mx-auto mb-4">
+									<badge.icon className="w-6 h-6 text-primary-600 dark:text-primary-400" />
 								</div>
-								<h4 className="font-semibold text-gray-900 mb-1">{badge.label}</h4>
-								<p className="text-sm text-gray-500">{badge.description}</p>
+								<h4 className="font-semibold text-gray-900 dark:text-white mb-1">{badge.label}</h4>
+								<p className="text-sm text-gray-500 dark:text-gray-400">{badge.description}</p>
 							</motion.div>
 						))}
 					</div>
@@ -88,7 +88,7 @@ export default function TrustBadges({ compact = false, variant = 'light', showEx
 							transition={{ delay: index * 0.1 }}
 							className="flex items-center gap-3"
 						>
-							<div className={`w-10 h-10 ${iconBg} rounded-xl flex items-center justify-center shadow-sm border border-gray-100`}>
+							<div className={`w-10 h-10 ${iconBg} rounded-xl flex items-center justify-center shadow-sm border border-gray-100 dark:border-gray-700`}>
 								<badge.icon className={`w-5 h-5 ${badge.color}`} />
 							</div>
 							<span className={`text-sm font-medium ${textColor}`}>{badge.label}</span>

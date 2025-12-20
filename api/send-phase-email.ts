@@ -13,6 +13,7 @@
 
 import type { VercelRequest, VercelResponse } from '@vercel/node'
 import { sendPhaseChangeEmail } from './lib/smtp.js'
+import { logEmailSent } from './developer/email-log.js'
 
 // Phase descriptions and next steps
 const phaseInfo: Record<string, { description: string; nextSteps: string[] }> = {
@@ -32,8 +33,16 @@ const phaseInfo: Record<string, { description: string; nextSteps: string[] }> = 
       'Wij verwerken je feedback in het finale design'
     ]
   },
+  'design_approved': {
+    description: 'Je hebt het design goedgekeurd! 🎨 Na ontvangst van je betaling starten we direct met de bouw van je website.',
+    nextSteps: [
+      'Voltooi de betaling via de betaallink',
+      'Na betaling starten we binnen 1 werkdag met bouwen',
+      'Je ontvangt een bevestiging zodra de bouw begint'
+    ]
+  },
   'development': {
-    description: 'Je design is goedgekeurd! Onze developers bouwen nu je website met alle functionaliteiten.',
+    description: 'Je betaling is ontvangen! Onze developers bouwen nu je website met alle functionaliteiten.',
     nextSteps: [
       'Je website wordt volledig gebouwd',
       'Alle pagina\'s worden gemaakt',
@@ -89,25 +98,53 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     
     console.log(`[PhaseEmail] Versturen naar ${customerEmail} voor fase: ${newPhase}`)
     
-    await sendPhaseChangeEmail({
-      email: customerEmail,
-      name: customerName,
+    let emailSuccess = true
+    let emailError: string | undefined
+    
+    try {
+      await sendPhaseChangeEmail({
+        email: customerEmail,
+        name: customerName,
+        projectId,
+        projectName: projectName || 'Je Website',
+        newPhase,
+        phaseDescription: info.description,
+        nextSteps: info.nextSteps
+      })
+      console.log(`[PhaseEmail] ✅ Email verstuurd`)
+    } catch (sendError) {
+      emailSuccess = false
+      emailError = sendError instanceof Error ? sendError.message : 'Onbekende fout'
+      console.error('[PhaseEmail] Email versturen mislukt:', sendError)
+    }
+    
+    // Log email for developer dashboard
+    const phaseLabels: Record<string, string> = {
+      onboarding: 'Onboarding',
+      design: 'Design',
+      design_approved: 'Design Goedgekeurd',
+      development: 'Development',
+      review: 'Review',
+      live: 'Live'
+    }
+    
+    await logEmailSent({
       projectId,
       projectName: projectName || 'Je Website',
-      newPhase,
-      phaseDescription: info.description,
-      nextSteps: info.nextSteps
+      recipientEmail: customerEmail,
+      recipientName: customerName,
+      type: 'phase_change',
+      subject: `Je project gaat naar ${phaseLabels[newPhase] || newPhase}`,
+      details: `Fase veranderd naar: ${phaseLabels[newPhase] || newPhase}`,
+      success: emailSuccess,
+      error: emailError
     })
-    
-    console.log(`[PhaseEmail] ✅ Email verstuurd`)
 
     // If phase is 'live', schedule Trustpilot review request for 7 days later
     if (newPhase === 'live') {
       try {
-        // We'll trigger the review request with delay flag
-        const baseUrl = process.env.VERCEL_URL 
-          ? `https://${process.env.VERCEL_URL}` 
-          : 'https://webstability.nl'
+        // Always use production URL for API calls
+        const baseUrl = process.env.SITE_URL || 'https://webstability.nl'
         
         await fetch(`${baseUrl}/api/review-request`, {
           method: 'POST',

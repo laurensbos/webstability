@@ -198,9 +198,8 @@ async function trackActivity(req: VercelRequest, res: VercelResponse) {
     if (satisfactionScore >= 4) {
       // Schedule review request via existing review-request API
       try {
-        const baseUrl = process.env.VERCEL_URL 
-          ? `https://${process.env.VERCEL_URL}` 
-          : 'https://webstability.nl'
+        // Always use production URL
+        const baseUrl = process.env.SITE_URL || 'https://webstability.nl'
         
         await fetch(`${baseUrl}/api/review-request`, {
           method: 'POST',

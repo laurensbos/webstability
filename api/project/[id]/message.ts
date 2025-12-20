@@ -1,7 +1,7 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node'
 import { Redis } from '@upstash/redis'
-import { Resend } from 'resend'
 import nodemailer from 'nodemailer'
+import { logEmailSent } from '../../developer/email-log.js'
 
 // Initialize Redis
 const REDIS_URL = process.env.UPSTASH_REDIS_REST_URL
@@ -11,11 +11,7 @@ const kv = REDIS_URL && REDIS_TOKEN
   ? new Redis({ url: REDIS_URL, token: REDIS_TOKEN })
   : null
 
-// Initialize Resend for email notifications
-const RESEND_API_KEY = process.env.RESEND_API_KEY || ''
-const resend = RESEND_API_KEY ? new Resend(RESEND_API_KEY) : null
-
-// SMTP Configuration (fallback if Resend not available)
+// SMTP Configuration
 const SMTP_HOST = process.env.SMTP_HOST
 const SMTP_PORT = parseInt(process.env.SMTP_PORT || '465')
 const SMTP_USER = process.env.SMTP_USER
@@ -41,9 +37,8 @@ const createTransporter = () => {
 // Developer notification email - where to send client messages
 const DEV_NOTIFICATION_EMAIL = process.env.DEV_NOTIFICATION_EMAIL || 'info@webstability.nl'
 
-const BASE_URL = process.env.VERCEL_URL 
-  ? `https://${process.env.VERCEL_URL}` 
-  : 'https://webstability.nl'
+// Always use production URL - VERCEL_URL contains deployment-specific URLs that shouldn't be in emails
+const BASE_URL = process.env.SITE_URL || 'https://webstability.nl'
 
 interface ChatMessage {
   id: string
@@ -127,26 +122,8 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
     console.log(`Message sent for project ${projectId} from ${from}`)
 
-    // Helper function to send email via Resend or SMTP
+    // Helper function to send email via SMTP
     const sendEmail = async (to: string, subject: string, html: string) => {
-      // Try Resend first
-      if (resend) {
-        try {
-          await resend.emails.send({
-            from: 'Webstability <noreply@webstability.nl>',
-            to,
-            subject,
-            html,
-            replyTo: 'info@webstability.nl'
-          })
-          console.log(`[Message] Email sent via Resend to ${to}`)
-          return true
-        } catch (err) {
-          console.error('[Message] Resend failed, trying SMTP:', err)
-        }
-      }
-      
-      // Fallback to SMTP
       const transporter = createTransporter()
       if (transporter) {
         try {
@@ -250,6 +227,18 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
           </html>
         `
         await sendEmail(project.contactEmail, `💬 Nieuw bericht over ${project.businessName || 'je project'}`, html)
+        
+        // Log email for developer dashboard
+        await logEmailSent({
+          projectId: projectId as string,
+          projectName: project.businessName || 'Project',
+          recipientEmail: project.contactEmail,
+          recipientName: project.contactName || '',
+          type: 'message',
+          subject: `Nieuw bericht over ${project.businessName || 'je project'}`,
+          details: message.length > 50 ? message.substring(0, 50) + '...' : message,
+          success: true
+        })
       }
     } catch (emailError) {
       console.error('[Message] Email notification error:', emailError)

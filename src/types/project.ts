@@ -2,7 +2,7 @@
  * Project status types voor het klantportaal
  */
 
-export type ProjectPhase = 'onboarding' | 'design' | 'development' | 'review' | 'live'
+export type ProjectPhase = 'onboarding' | 'design' | 'design_approved' | 'development' | 'review' | 'live'
 
 export type PackageType = 'starter' | 'professional' | 'premium' | 'webshop'
 
@@ -201,6 +201,21 @@ export const PHASE_CONFIGS: PhaseConfig[] = [
       { label: 'Design preview link ingesteld', forCustomer: false },
       { label: 'Design preview naar klant gestuurd', forCustomer: false },
     ],
+    nextPhaseAction: 'Design goedkeuren →'
+  },
+  {
+    key: 'design_approved',
+    label: 'Goedgekeurd',
+    color: 'text-blue-700',
+    bgColor: 'bg-blue-100',
+    borderColor: 'border-blue-300',
+    description: 'Design goedgekeurd, wacht op betaling',
+    customerMessage: 'Je hebt het design goedgekeurd! Na betaling starten we met de bouw van je website.',
+    checklist: [
+      { label: 'Design definitief goedgekeurd', forCustomer: true },
+      { label: 'Betaallink verstuurd', forCustomer: false },
+      { label: 'Betaling ontvangen', forCustomer: true },
+    ],
     nextPhaseAction: 'Start development →'
   },
   {
@@ -277,10 +292,11 @@ export const getNextPhase = (currentPhase: ProjectPhase): ProjectPhase | null =>
  */
 export const getProgressPercentage = (status: ProjectPhase): number => {
   const percentages: Record<ProjectPhase, number> = {
-    onboarding: 20,
-    design: 40,
-    development: 60,
-    review: 80,
+    onboarding: 15,
+    design: 35,
+    design_approved: 50,
+    development: 70,
+    review: 85,
     live: 100
   }
   return percentages[status] ?? 0
@@ -341,6 +357,12 @@ export const PHASE_FAQS: Record<ProjectPhase, PhaseFAQ[]> = {
     { question: 'Hoeveel revisies zijn inbegrepen?', answer: 'Afhankelijk van je pakket heb je 2-5 designrevisies inbegrepen. Extra revisies kunnen worden bijgeboekt.' },
     { question: 'Hoe kan ik feedback geven?', answer: 'Via de feedbacksectie op deze pagina kun je je opmerkingen doorgeven. Wees zo specifiek mogelijk over wat je anders wilt.' },
     { question: 'Hoe lang duurt de designfase?', answer: 'Gemiddeld 3-5 werkdagen, afhankelijk van de complexiteit en feedback.' }
+  ],
+  design_approved: [
+    { question: 'Wat betekent "Design goedgekeurd"?', answer: 'Je hebt het ontwerp goedgekeurd! Nu wachten we op je betaling voordat we verder gaan met de bouw van je website.' },
+    { question: 'Hoe kan ik betalen?', answer: 'Je ontvangt een betaallink via e-mail. Je kunt betalen via iDEAL, creditcard of andere betaalmethodes.' },
+    { question: 'Wat gebeurt er na betaling?', answer: 'Zodra we je betaling hebben ontvangen, starten we direct met het bouwen van je website!' },
+    { question: 'Kan ik nog wijzigingen doorgeven?', answer: 'Kleine wijzigingen zijn nog mogelijk tijdens de bouwfase. Grote ontwerpwijzigingen kunnen extra kosten met zich meebrengen.' }
   ],
   development: [
     { question: 'Wat gebeurt er nu?', answer: 'We bouwen je website op basis van het goedgekeurde ontwerp. Alles wordt responsive gemaakt voor mobiel, tablet en desktop.' },

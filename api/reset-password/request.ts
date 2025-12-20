@@ -7,11 +7,22 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node'
 import { Redis } from '@upstash/redis'
 import { createHash, randomBytes } from 'crypto'
+import nodemailer from 'nodemailer'
 
 const REDIS_URL = process.env.UPSTASH_REDIS_REST_URL
 const REDIS_TOKEN = process.env.UPSTASH_REDIS_REST_TOKEN
-const RESEND_API_KEY = process.env.RESEND_API_KEY
 const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL || 'https://webstability.nl'
+
+// SMTP Configuration
+const smtpConfig = {
+  host: process.env.SMTP_HOST || 'smtp.hostinger.com',
+  port: parseInt(process.env.SMTP_PORT || '465'),
+  secure: true,
+  auth: {
+    user: process.env.SMTP_USER || 'info@webstability.nl',
+    pass: process.env.SMTP_PASS
+  }
+}
 
 const kv = REDIS_URL && REDIS_TOKEN 
   ? new Redis({ url: REDIS_URL, token: REDIS_TOKEN })
@@ -28,69 +39,65 @@ interface Project {
 }
 
 async function sendResetEmail(email: string, resetUrl: string, projectId: string, businessName: string) {
-  if (!RESEND_API_KEY) {
-    console.log('Resend not configured, would send reset email to:', email)
+  if (!smtpConfig.auth.pass) {
+    console.log('SMTP not configured, would send reset email to:', email)
     return true
   }
 
   try {
-    const response = await fetch('https://api.resend.com/emails', {
-      method: 'POST',
-      headers: {
-        'Authorization': `Bearer ${RESEND_API_KEY}`,
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        from: 'Webstability <noreply@webstability.nl>',
-        to: email,
-        subject: `Wachtwoord resetten voor project ${projectId}`,
-        html: `
-          <!DOCTYPE html>
-          <html>
-          <head>
-            <meta charset="utf-8">
-            <meta name="viewport" content="width=device-width, initial-scale=1.0">
-          </head>
-          <body style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background-color: #f9fafb; padding: 40px 20px;">
-            <div style="max-width: 480px; margin: 0 auto; background: white; border-radius: 16px; padding: 40px; box-shadow: 0 4px 6px rgba(0,0,0,0.05);">
-              <div style="text-align: center; margin-bottom: 32px;">
-                <h1 style="color: #1f2937; font-size: 24px; margin: 0 0 8px 0;">Wachtwoord resetten</h1>
-                <p style="color: #6b7280; font-size: 14px; margin: 0;">Project: ${projectId}</p>
-              </div>
-              
-              <p style="color: #374151; font-size: 16px; line-height: 1.6; margin-bottom: 24px;">
-                Hallo${businessName ? ` ${businessName}` : ''},
-              </p>
-              
-              <p style="color: #374151; font-size: 16px; line-height: 1.6; margin-bottom: 24px;">
-                We hebben een verzoek ontvangen om het wachtwoord voor je project te resetten. 
-                Klik op de onderstaande knop om een nieuw wachtwoord in te stellen.
-              </p>
-              
-              <div style="text-align: center; margin: 32px 0;">
-                <a href="${resetUrl}" style="display: inline-block; background: linear-gradient(to right, #3b82f6, #6366f1); color: white; font-weight: 600; padding: 14px 32px; border-radius: 12px; text-decoration: none; font-size: 16px;">
-                  Nieuw wachtwoord instellen
-                </a>
-              </div>
-              
-              <p style="color: #6b7280; font-size: 14px; line-height: 1.6; margin-bottom: 24px;">
-                Deze link is 1 uur geldig. Heb je geen wachtwoord reset aangevraagd? 
-                Dan kun je deze email negeren.
-              </p>
-              
-              <hr style="border: none; border-top: 1px solid #e5e7eb; margin: 32px 0;">
-              
-              <p style="color: #9ca3af; font-size: 12px; text-align: center; margin: 0;">
-                © ${new Date().getFullYear()} Webstability. Alle rechten voorbehouden.
-              </p>
+    const transporter = nodemailer.createTransport(smtpConfig)
+    
+    await transporter.sendMail({
+      from: '"Webstability" <info@webstability.nl>',
+      to: email,
+      subject: `Wachtwoord resetten voor project ${projectId}`,
+      html: `
+        <!DOCTYPE html>
+        <html>
+        <head>
+          <meta charset="utf-8">
+          <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        </head>
+        <body style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background-color: #f9fafb; padding: 40px 20px;">
+          <div style="max-width: 480px; margin: 0 auto; background: white; border-radius: 16px; padding: 40px; box-shadow: 0 4px 6px rgba(0,0,0,0.05);">
+            <div style="text-align: center; margin-bottom: 32px;">
+              <h1 style="color: #1f2937; font-size: 24px; margin: 0 0 8px 0;">Wachtwoord resetten</h1>
+              <p style="color: #6b7280; font-size: 14px; margin: 0;">Project: ${projectId}</p>
             </div>
-          </body>
-          </html>
-        `,
-      }),
+            
+            <p style="color: #374151; font-size: 16px; line-height: 1.6; margin-bottom: 24px;">
+              Hallo${businessName ? ` ${businessName}` : ''},
+            </p>
+            
+            <p style="color: #374151; font-size: 16px; line-height: 1.6; margin-bottom: 24px;">
+              We hebben een verzoek ontvangen om het wachtwoord voor je project te resetten. 
+              Klik op de onderstaande knop om een nieuw wachtwoord in te stellen.
+            </p>
+            
+            <div style="text-align: center; margin: 32px 0;">
+              <a href="${resetUrl}" style="display: inline-block; background: linear-gradient(to right, #3b82f6, #6366f1); color: white; font-weight: 600; padding: 14px 32px; border-radius: 12px; text-decoration: none; font-size: 16px;">
+                Nieuw wachtwoord instellen
+              </a>
+            </div>
+            
+            <p style="color: #6b7280; font-size: 14px; line-height: 1.6; margin-bottom: 24px;">
+              Deze link is 1 uur geldig. Heb je geen wachtwoord reset aangevraagd? 
+              Dan kun je deze email negeren.
+            </p>
+            
+            <hr style="border: none; border-top: 1px solid #e5e7eb; margin: 32px 0;">
+            
+            <p style="color: #9ca3af; font-size: 12px; text-align: center; margin: 0;">
+              © ${new Date().getFullYear()} Webstability. Alle rechten voorbehouden.
+            </p>
+          </div>
+        </body>
+        </html>
+      `,
     })
 
-    return response.ok
+    console.log('✅ Password reset email sent to:', email)
+    return true
   } catch (error) {
     console.error('Error sending reset email:', error)
     return false

@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback, useRef } from 'react'
 import { useParams, useSearchParams } from 'react-router-dom'
 import { motion, AnimatePresence } from 'framer-motion'
+import { ClientOnboardingSkeleton } from '../components/LoadingSkeletons'
 import {
   Globe,
   ShoppingBag,
@@ -1105,16 +1106,9 @@ export default function ClientOnboarding() {
     )
   }
 
-  // Loading state
+  // Loading state with skeleton
   if (loading) {
-    return (
-      <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex items-center justify-center">
-        <div className="text-center">
-          <Loader2 className="w-8 h-8 animate-spin text-primary-500 mx-auto mb-4" />
-          <p className="text-gray-500 dark:text-gray-400">Project laden...</p>
-        </div>
-      </div>
-    )
+    return <ClientOnboardingSkeleton />
   }
 
   // Not found state

@@ -92,7 +92,8 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
     // Send reset email
     if (isSmtpConfigured()) {
-      const resetUrl = `${process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : 'https://webstability.nl'}/reset-wachtwoord?token=${token}`
+      // Always use production URL for emails
+      const resetUrl = `${process.env.SITE_URL || 'https://webstability.nl'}/reset-wachtwoord?token=${token}`
       
       await sendPasswordResetEmail({
         email: project.customer.email,

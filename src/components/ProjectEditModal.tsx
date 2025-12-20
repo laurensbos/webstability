@@ -19,7 +19,8 @@ import {
   Phone,
   Calendar,
   Link as LinkIcon,
-  AlertCircle
+  AlertCircle,
+  CreditCard
 } from 'lucide-react'
 import type { Project, ProjectPhase, ProjectUpdate } from '../types/project'
 import { PHASE_CONFIGS, getPhaseConfig, getNextPhase, getProgressPercentage } from '../types/project'
@@ -34,6 +35,7 @@ interface ProjectEditModalProps {
 const PHASE_ICONS: Record<ProjectPhase, typeof FileText> = {
   onboarding: FileText,
   design: Palette,
+  design_approved: CreditCard,
   development: Code,
   review: MessageSquare,
   live: Rocket

@@ -13,12 +13,35 @@
  */
 
 import type { VercelRequest, VercelResponse } from '@vercel/node'
+import nodemailer from 'nodemailer'
 
 const MOLLIE_API_URL = 'https://api.mollie.com/v2'
 
 // Environment variables
 const MOLLIE_API_KEY = process.env.MOLLIE_API_KEY || ''
-const RESEND_API_KEY = process.env.RESEND_API_KEY || ''
+
+// SMTP Configuration
+const SMTP_HOST = process.env.SMTP_HOST
+const SMTP_PORT = parseInt(process.env.SMTP_PORT || '465')
+const SMTP_USER = process.env.SMTP_USER
+const SMTP_PASS = process.env.SMTP_PASS
+const SMTP_FROM = process.env.SMTP_FROM || 'Webstability <info@webstability.nl>'
+
+const isSmtpConfigured = () => Boolean(SMTP_HOST && SMTP_USER && SMTP_PASS)
+
+const createTransporter = () => {
+  if (!isSmtpConfigured()) return null
+  
+  return nodemailer.createTransport({
+    host: SMTP_HOST,
+    port: SMTP_PORT,
+    secure: SMTP_PORT === 465,
+    auth: {
+      user: SMTP_USER,
+      pass: SMTP_PASS,
+    },
+  })
+}
 
 interface MolliePayment {
   id: string
@@ -166,7 +189,7 @@ async function createMollieSubscription(
         },
         interval: '1 month',
         description: `Webstability - ${packageType} (maandelijks)`,
-        webhookUrl: `${process.env.VERCEL_URL || 'https://webstability.nl'}/api/mollie-webhook`,
+        webhookUrl: `${process.env.SITE_URL || 'https://webstability.nl'}/api/mollie-webhook`,
         metadata: {
           projectId,
           packageType,
@@ -303,7 +326,7 @@ async function updateProjectPaymentStatus(
   // Update project in database via interne API
   try {
     const response = await fetch(
-      `${process.env.VERCEL_URL || 'https://webstability.nl'}/api/internal/update-project-payment`,
+      `${process.env.SITE_URL || 'https://webstability.nl'}/api/internal/update-project-payment`,
       {
         method: 'POST',
         headers: { 
@@ -355,37 +378,32 @@ async function updateInvoiceStatus(
 async function sendPaymentConfirmation(payment: MolliePayment): Promise<void> {
   console.log(`[Email] Stuur betalingsbevestiging voor ${payment.id}`)
   
-  if (!RESEND_API_KEY) {
-    console.warn('[Email] RESEND_API_KEY niet geconfigureerd')
+  const transporter = createTransporter()
+  if (!transporter) {
+    console.warn('[Email] SMTP niet geconfigureerd')
     return
   }
 
   try {
-    await fetch('https://api.resend.com/emails', {
-      method: 'POST',
-      headers: {
-        'Authorization': `Bearer ${RESEND_API_KEY}`,
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({
-        from: 'Webstability <noreply@webstability.nl>',
-        to: 'info@webstability.nl',
-        subject: `✅ Betaling ontvangen - €${payment.amount.value}`,
-        html: `
-          <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
-            <h1 style="color: #10b981;">💰 Betaling succesvol!</h1>
-            <p><strong>Bedrag:</strong> €${payment.amount.value}</p>
-            <p><strong>Payment ID:</strong> ${payment.id}</p>
-            <p><strong>Project ID:</strong> ${payment.metadata.projectId || 'N/A'}</p>
-            <p><strong>Pakket:</strong> ${payment.metadata.packageType || 'N/A'}</p>
-            <p><strong>Datum:</strong> ${new Date().toLocaleString('nl-NL')}</p>
-            <hr style="margin: 20px 0; border: none; border-top: 1px solid #e5e7eb;">
-            <p style="color: #6b7280; font-size: 14px;">
-              <a href="https://webstability.nl/developer" style="color: #10b981;">Open Developer Dashboard</a>
-            </p>
-          </div>
-        `
-      })
+    await transporter.sendMail({
+      from: SMTP_FROM,
+      to: 'info@webstability.nl',
+      subject: `✅ Betaling ontvangen - €${payment.amount.value}`,
+      html: `
+        <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+          <h1 style="color: #10b981;">💰 Betaling succesvol!</h1>
+          <p><strong>Bedrag:</strong> €${payment.amount.value}</p>
+          <p><strong>Payment ID:</strong> ${payment.id}</p>
+          <p><strong>Project ID:</strong> ${payment.metadata.projectId || 'N/A'}</p>
+          <p><strong>Pakket:</strong> ${payment.metadata.packageType || 'N/A'}</p>
+          <p><strong>Datum:</strong> ${new Date().toLocaleString('nl-NL')}</p>
+          <hr style="margin: 20px 0; border: none; border-top: 1px solid #e5e7eb;">
+          <p style="color: #6b7280; font-size: 14px;">
+            <a href="https://webstability.nl/developer" style="color: #10b981;">Open Developer Dashboard</a>
+          </p>
+        </div>
+      `,
+      replyTo: 'info@webstability.nl'
     })
     console.log(`[Email] ✅ Betalingsbevestiging verstuurd`)
   } catch (error) {
@@ -396,36 +414,31 @@ async function sendPaymentConfirmation(payment: MolliePayment): Promise<void> {
 async function sendPaymentFailedEmail(payment: MolliePayment): Promise<void> {
   console.log(`[Email] Stuur betalingsfout email voor ${payment.id}`)
   
-  if (!RESEND_API_KEY) {
-    console.warn('[Email] RESEND_API_KEY niet geconfigureerd')
+  const transporter = createTransporter()
+  if (!transporter) {
+    console.warn('[Email] SMTP niet geconfigureerd')
     return
   }
 
   try {
-    await fetch('https://api.resend.com/emails', {
-      method: 'POST',
-      headers: {
-        'Authorization': `Bearer ${RESEND_API_KEY}`,
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({
-        from: 'Webstability <noreply@webstability.nl>',
-        to: 'info@webstability.nl',
-        subject: `⚠️ Betaling mislukt - ${payment.id}`,
-        html: `
-          <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
-            <h1 style="color: #ef4444;">❌ Betaling mislukt</h1>
-            <p><strong>Bedrag:</strong> €${payment.amount.value}</p>
-            <p><strong>Payment ID:</strong> ${payment.id}</p>
-            <p><strong>Project ID:</strong> ${payment.metadata.projectId || 'N/A'}</p>
-            <p><strong>Datum:</strong> ${new Date().toLocaleString('nl-NL')}</p>
-            <hr style="margin: 20px 0; border: none; border-top: 1px solid #e5e7eb;">
-            <p style="color: #6b7280; font-size: 14px;">
-              Neem contact op met de klant om een nieuwe betaling aan te vragen.
-            </p>
-          </div>
-        `
-      })
+    await transporter.sendMail({
+      from: SMTP_FROM,
+      to: 'info@webstability.nl',
+      subject: `⚠️ Betaling mislukt - ${payment.id}`,
+      html: `
+        <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+          <h1 style="color: #ef4444;">❌ Betaling mislukt</h1>
+          <p><strong>Bedrag:</strong> €${payment.amount.value}</p>
+          <p><strong>Payment ID:</strong> ${payment.id}</p>
+          <p><strong>Project ID:</strong> ${payment.metadata.projectId || 'N/A'}</p>
+          <p><strong>Datum:</strong> ${new Date().toLocaleString('nl-NL')}</p>
+          <hr style="margin: 20px 0; border: none; border-top: 1px solid #e5e7eb;">
+          <p style="color: #6b7280; font-size: 14px;">
+            Neem contact op met de klant om een nieuwe betaling aan te vragen.
+          </p>
+        </div>
+      `,
+      replyTo: 'info@webstability.nl'
     })
     console.log(`[Email] ✅ Foutmelding email verstuurd`)
   } catch (error) {
@@ -439,8 +452,9 @@ async function sendDeveloperNotification(
 ): Promise<void> {
   console.log(`[Notification] Developer notificatie: ${type} voor project ${projectId}`)
   
-  if (!RESEND_API_KEY) {
-    console.warn('[Notification] RESEND_API_KEY niet geconfigureerd')
+  const transporter = createTransporter()
+  if (!transporter) {
+    console.warn('[Notification] SMTP niet geconfigureerd')
     return
   }
 
@@ -457,29 +471,23 @@ async function sendDeveloperNotification(
   }
   
   try {
-    await fetch('https://api.resend.com/emails', {
-      method: 'POST',
-      headers: {
-        'Authorization': `Bearer ${RESEND_API_KEY}`,
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({
-        from: 'Webstability <noreply@webstability.nl>',
-        to: 'info@webstability.nl',
-        subject: subjects[type],
-        html: `
-          <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
-            <h1>${messages[type]}</h1>
-            <p><strong>Project ID:</strong> ${projectId}</p>
-            <p><strong>Datum:</strong> ${new Date().toLocaleString('nl-NL')}</p>
-            <hr style="margin: 20px 0; border: none; border-top: 1px solid #e5e7eb;">
-            <a href="https://webstability.nl/developer" 
-               style="display: inline-block; padding: 12px 24px; background: #10b981; color: white; text-decoration: none; border-radius: 8px;">
-              Open Developer Dashboard
-            </a>
-          </div>
-        `
-      })
+    await transporter.sendMail({
+      from: SMTP_FROM,
+      to: 'info@webstability.nl',
+      subject: subjects[type],
+      html: `
+        <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+          <h1>${messages[type]}</h1>
+          <p><strong>Project ID:</strong> ${projectId}</p>
+          <p><strong>Datum:</strong> ${new Date().toLocaleString('nl-NL')}</p>
+          <hr style="margin: 20px 0; border: none; border-top: 1px solid #e5e7eb;">
+          <a href="https://webstability.nl/developer" 
+             style="display: inline-block; padding: 12px 24px; background: #10b981; color: white; text-decoration: none; border-radius: 8px;">
+            Open Developer Dashboard
+          </a>
+        </div>
+      `,
+      replyTo: 'info@webstability.nl'
     })
     
     console.log(`[Notification] ✅ Developer genotificeerd over ${type}`)

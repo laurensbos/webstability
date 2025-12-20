@@ -44,12 +44,12 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node'
 import { Redis } from '@upstash/redis'
 import { sendPaymentLinkEmail } from './lib/smtp.js'
+import { logEmailSent } from './developer/email-log.js'
 
 const MOLLIE_API_URL = 'https://api.mollie.com/v2'
 const MOLLIE_API_KEY = process.env.MOLLIE_API_KEY || ''
-const BASE_URL = process.env.VERCEL_URL 
-  ? `https://${process.env.VERCEL_URL}` 
-  : 'https://webstability.nl'
+// Always use production URL - VERCEL_URL contains deployment-specific URLs that shouldn't be in emails
+const BASE_URL = process.env.SITE_URL || 'https://webstability.nl'
 
 // Redis for discount codes
 const REDIS_URL = process.env.UPSTASH_REDIS_REST_URL
@@ -257,12 +257,37 @@ async function handleSimplePayment(
             projectName: body.description || 'Website Project',
             amount: amount,
             paymentUrl: paymentUrl,
-            packageName: body.packageName || 'Webstability Website'
+            packageName: body.packageName || 'Webstability Website',
+            phase: 'design_approved', // Payment happens after design approval
           })
           emailSent = true
           console.log(`[Payment] ✅ Email verstuurd naar ${body.customerEmail}`)
+          
+          // Log email for developer dashboard
+          await logEmailSent({
+            projectId: body.projectId || 'custom',
+            projectName: body.description || 'Website Project',
+            recipientEmail: body.customerEmail,
+            recipientName: body.customerName,
+            type: 'payment_link',
+            subject: `Betalingslink voor je website (€${amount.toFixed(2)})`,
+            details: `Betalingslink verstuurd - €${amount.toFixed(2)}`,
+            success: true
+          })
         } catch (emailError) {
           console.error('[Payment] Email fout:', emailError)
+          
+          // Log failed email
+          await logEmailSent({
+            projectId: body.projectId || 'custom',
+            projectName: body.description || 'Website Project',
+            recipientEmail: body.customerEmail,
+            recipientName: body.customerName,
+            type: 'payment_link',
+            subject: `Betalingslink voor je website (€${amount.toFixed(2)})`,
+            success: false,
+            error: emailError instanceof Error ? emailError.message : 'Onbekende fout'
+          })
         }
       }
       
@@ -318,12 +343,37 @@ async function handleSimplePayment(
           projectName: body.description || 'Website Project',
           amount: amount,
           paymentUrl: paymentUrl,
-          packageName: body.packageName || 'Webstability Website'
+          packageName: body.packageName || 'Webstability Website',
+          phase: 'design_approved', // Payment happens after design approval
         })
         emailSent = true
         console.log(`[Payment] ✅ Email verstuurd naar ${body.customerEmail}`)
+        
+        // Log email for developer dashboard
+        await logEmailSent({
+          projectId: body.projectId || 'custom',
+          projectName: body.description || 'Website Project',
+          recipientEmail: body.customerEmail,
+          recipientName: body.customerName,
+          type: 'payment_link',
+          subject: `Betalingslink voor je website (€${amount.toFixed(2)})`,
+          details: `Betalingslink verstuurd via Mollie - €${amount.toFixed(2)}`,
+          success: true
+        })
       } catch (emailError) {
         console.error('[Payment] Email fout:', emailError)
+        
+        // Log failed email
+        await logEmailSent({
+          projectId: body.projectId || 'custom',
+          projectName: body.description || 'Website Project',
+          recipientEmail: body.customerEmail,
+          recipientName: body.customerName,
+          type: 'payment_link',
+          subject: `Betalingslink voor je website (€${amount.toFixed(2)})`,
+          success: false,
+          error: emailError instanceof Error ? emailError.message : 'Onbekende fout'
+        })
       }
     }
     
