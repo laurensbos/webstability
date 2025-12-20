@@ -249,6 +249,11 @@ const validateStep = (service: ServiceType, stepId: string, data: Record<string,
 const AUTOSAVE_DELAY = 2000 // 2 seconds debounce
 const LOCAL_STORAGE_KEY = 'onboarding_draft'
 
+interface EmailInUseError {
+  existingProjectId: string
+  statusUrl: string
+}
+
 function useAutoSave(
   projectId: string | undefined,
   serviceType: ServiceType,
@@ -257,7 +262,8 @@ function useAutoSave(
   canEdit: boolean
 ) {
   const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null)
-  const [autoSaveStatus, setAutoSaveStatus] = useState<'idle' | 'saving' | 'saved' | 'error'>('idle')
+  const [autoSaveStatus, setAutoSaveStatus] = useState<'idle' | 'saving' | 'saved' | 'error' | 'email_in_use'>('idle')
+  const [emailInUseError, setEmailInUseError] = useState<EmailInUseError | null>(null)
   const lastSavedRef = useRef<string>('')
 
   // Save to localStorage immediately
@@ -283,6 +289,7 @@ function useAutoSave(
     if (dataHash === lastSavedRef.current) return // No changes
     
     setAutoSaveStatus('saving')
+    setEmailInUseError(null)
     try {
       const response = await fetch(`/api/client-onboarding?projectId=${projectId || 'new'}`, {
         method: 'POST',
@@ -299,6 +306,14 @@ function useAutoSave(
         lastSavedRef.current = dataHash
         setAutoSaveStatus('saved')
         setTimeout(() => setAutoSaveStatus('idle'), 2000)
+      } else if (response.status === 409) {
+        // Email already in use
+        const data = await response.json()
+        setEmailInUseError({
+          existingProjectId: data.existingProjectId,
+          statusUrl: data.statusUrl
+        })
+        setAutoSaveStatus('email_in_use')
       } else {
         setAutoSaveStatus('error')
       }
@@ -355,7 +370,7 @@ function useAutoSave(
     }
   }, [projectId, serviceType])
 
-  return { autoSaveStatus, loadFromLocal, clearLocalDraft }
+  return { autoSaveStatus, emailInUseError, loadFromLocal, clearLocalDraft }
 }
 
 // ===========================================
@@ -542,7 +557,7 @@ export default function ClientOnboarding() {
   const [driveUrl, setDriveUrl] = useState<string>('')
 
   // Auto-save hook
-  const { autoSaveStatus, loadFromLocal, clearLocalDraft } = useAutoSave(
+  const { autoSaveStatus, emailInUseError, loadFromLocal, clearLocalDraft } = useAutoSave(
     projectId,
     serviceType,
     formData,
@@ -1310,6 +1325,29 @@ export default function ClientOnboarding() {
                     </ul>
                   </motion.div>
                 )}
+
+                {/* Email already in use error */}
+                {emailInUseError && (
+                  <motion.div
+                    initial={{ opacity: 0, y: -10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    className="bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800 text-amber-700 dark:text-amber-400 px-4 py-3 rounded-xl"
+                  >
+                    <div className="flex items-center gap-2 font-medium mb-2">
+                      <AlertCircle className="w-5 h-5" />
+                      Dit e-mailadres is al in gebruik
+                    </div>
+                    <p className="text-sm mb-3">
+                      Er bestaat al een project met dit e-mailadres. Je kunt je bestaande project bekijken via onderstaande link.
+                    </p>
+                    <a
+                      href={emailInUseError.statusUrl}
+                      className="inline-flex items-center gap-2 text-sm font-medium text-amber-800 dark:text-amber-300 hover:underline"
+                    >
+                      Bekijk je bestaande project →
+                    </a>
+                  </motion.div>
+                )}
                 
                 {/* Auto-save status */}
                 <div className="flex items-center justify-between">
@@ -1332,6 +1370,12 @@ export default function ClientOnboarding() {
                         <span className="text-red-600 dark:text-red-400">Opslaan mislukt</span>
                       </>
                     )}
+                    {autoSaveStatus === 'email_in_use' && (
+                      <>
+                        <AlertCircle className="w-4 h-4 text-amber-500" />
+                        <span className="text-amber-600 dark:text-amber-400">E-mailadres al in gebruik</span>
+                      </>
+                    )}
                   </div>
                 </div>
                 
@@ -1349,7 +1393,7 @@ export default function ClientOnboarding() {
                   {currentStep === totalSteps ? (
                     <button
                       onClick={submitOnboarding}
-                      disabled={saving || !canEdit}
+                      disabled={saving || !canEdit || !!emailInUseError}
                       className={`flex items-center gap-2 px-6 py-3 bg-gradient-to-r ${serviceConfig.gradient} text-white rounded-xl font-medium hover:shadow-lg transition-all disabled:opacity-50`}
                     >
                       {saving ? <Loader2 className="w-5 h-5 animate-spin" /> : <CheckCircle2 className="w-5 h-5" />}
@@ -1358,7 +1402,8 @@ export default function ClientOnboarding() {
                   ) : (
                     <button
                       onClick={nextStep}
-                      className={`flex items-center gap-2 px-6 py-3 bg-gradient-to-r ${serviceConfig.gradient} text-white rounded-xl font-medium hover:shadow-lg transition-all`}
+                      disabled={!!emailInUseError}
+                      className={`flex items-center gap-2 px-6 py-3 bg-gradient-to-r ${serviceConfig.gradient} text-white rounded-xl font-medium hover:shadow-lg transition-all disabled:opacity-50`}
                     >
                       Volgende
                       <ChevronRight className="w-5 h-5" />

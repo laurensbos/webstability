@@ -1,5 +1,5 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node'
-import { getProject, setProject } from './lib/database.js'
+import { getProject, setProject, getAllProjects } from './lib/database.js'
 
 /**
  * API Endpoint: /api/client-onboarding
@@ -64,6 +64,24 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
       // Creating new project
       if (!projectId || projectId === 'new') {
+        // Check if email is already in use
+        const email = formData?.contactEmail
+        if (email) {
+          const allProjects = await getAllProjects()
+          const existingProject = allProjects.find(
+            (p: any) => p.customer?.email?.toLowerCase() === email.toLowerCase()
+          )
+          
+          if (existingProject) {
+            return res.status(409).json({
+              error: 'Dit e-mailadres is al in gebruik',
+              message: 'Er bestaat al een project met dit e-mailadres. Gebruik de bestaande projectlink om je project te bekijken.',
+              existingProjectId: existingProject.id,
+              statusUrl: `/status/${existingProject.id}`
+            })
+          }
+        }
+
         const newId = generateProjectId()
         
         const newProject = {
