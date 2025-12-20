@@ -135,14 +135,14 @@ export const sendEmail = async (options: SendEmailOptions): Promise<EmailResult>
 // Professional styling matching website design
 // ===========================================
 
-// Trustpilot stars SVG for emails (inline, email-safe)
+// Trustpilot stars SVG for emails (inline, email-safe) - Improved for mobile
 const getTrustpilotStars = () => `
-  <table role="presentation" cellspacing="0" cellpadding="0" style="display: inline-table;">
+  <table role="presentation" cellspacing="0" cellpadding="0" border="0" style="border-collapse: collapse;">
     <tr>
       ${[1,2,3,4,5].map(() => `
-        <td style="padding: 0 1px;">
-          <div style="width: 16px; height: 16px; background-color: #00b67a; text-align: center; line-height: 16px;">
-            <span style="color: white; font-size: 10px;">★</span>
+        <td style="padding: 0 2px;">
+          <div style="width: 20px; height: 20px; background-color: #00b67a; text-align: center; line-height: 20px; border-radius: 2px;">
+            <span style="color: white; font-size: 12px;">★</span>
           </div>
         </td>
       `).join('')}
@@ -234,17 +234,21 @@ export const baseTemplate = (content: string, accentColor: string = '#2563eb') =
                 
                 <!-- Trustpilot Section -->
                 <tr>
-                  <td align="center" style="padding-bottom: 20px;">
-                    <a href="https://nl.trustpilot.com/review/webstability.nl" style="text-decoration: none;">
-                      <table role="presentation" cellspacing="0" cellpadding="0">
+                  <td align="center" style="padding-bottom: 24px;">
+                    <a href="https://nl.trustpilot.com/review/webstability.nl" style="text-decoration: none; display: inline-block;">
+                      <table role="presentation" cellspacing="0" cellpadding="0" border="0" style="border-collapse: collapse;">
                         <tr>
-                          <td style="padding-right: 8px;">
+                          <td align="center" style="padding-bottom: 6px;">
                             <span style="color: #64748b; font-size: 13px;">Beoordeeld met</span>
                           </td>
-                          <td>
+                        </tr>
+                        <tr>
+                          <td align="center" style="padding-bottom: 6px;">
                             ${getTrustpilotStars()}
                           </td>
-                          <td style="padding-left: 8px;">
+                        </tr>
+                        <tr>
+                          <td align="center">
                             <span style="color: #64748b; font-size: 13px;">op Trustpilot</span>
                           </td>
                         </tr>
@@ -253,21 +257,23 @@ export const baseTemplate = (content: string, accentColor: string = '#2563eb') =
                   </td>
                 </tr>
                 
-                <!-- Contact Links -->
+                <!-- Contact Links - Stacked vertically for mobile -->
                 <tr>
-                  <td align="center" style="padding-bottom: 16px;">
-                    <table role="presentation" cellspacing="0" cellpadding="0">
+                  <td align="center" style="padding-bottom: 20px;">
+                    <table role="presentation" cellspacing="0" cellpadding="0" border="0" style="border-collapse: collapse;">
                       <tr>
-                        <td style="padding: 0 12px;">
-                          <a href="https://webstability.nl" style="color: ${accentColor}; text-decoration: none; font-size: 13px; font-weight: 500;">🌐 webstability.nl</a>
+                        <td align="center" style="padding-bottom: 8px;">
+                          <a href="https://webstability.nl" style="color: ${accentColor}; text-decoration: none; font-size: 14px; font-weight: 500;">🌐 webstability.nl</a>
                         </td>
-                        <td style="color: #cbd5e1;">•</td>
-                        <td style="padding: 0 12px;">
-                          <a href="mailto:info@webstability.nl" style="color: ${accentColor}; text-decoration: none; font-size: 13px; font-weight: 500;">✉️ info@webstability.nl</a>
+                      </tr>
+                      <tr>
+                        <td align="center" style="padding-bottom: 8px;">
+                          <a href="mailto:info@webstability.nl" style="color: ${accentColor}; text-decoration: none; font-size: 14px; font-weight: 500;">✉️ info@webstability.nl</a>
                         </td>
-                        <td style="color: #cbd5e1;">•</td>
-                        <td style="padding: 0 12px;">
-                          <a href="tel:+31644712573" style="color: ${accentColor}; text-decoration: none; font-size: 13px; font-weight: 500;">📞 06-44712573</a>
+                      </tr>
+                      <tr>
+                        <td align="center">
+                          <a href="tel:+31644712573" style="color: ${accentColor}; text-decoration: none; font-size: 14px; font-weight: 500;">📞 06-44712573</a>
                         </td>
                       </tr>
                     </table>
