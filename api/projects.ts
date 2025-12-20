@@ -31,6 +31,7 @@ const kv = REDIS_URL && REDIS_TOKEN
 interface Project {
   id: string
   status: 'onboarding' | 'intake' | 'design' | 'development' | 'review' | 'live'
+  phase?: string // Explicit phase for client portal
   type: 'website' | 'webshop' | 'drone' | 'logo'
   packageType: string
   customer: {
@@ -329,6 +330,8 @@ async function updateProject(req: VercelRequest, res: VercelResponse) {
   
   // Map phase to status if phase is provided (from developer dashboard)
   let status = existing.status
+  let phase = body.phase || (existing as unknown as { phase?: string }).phase
+  
   if (body.phase) {
     const phaseToStatusMap: Record<string, Project['status']> = {
       'onboarding': 'onboarding',
@@ -338,14 +341,21 @@ async function updateProject(req: VercelRequest, res: VercelResponse) {
       'live': 'live',
     }
     status = phaseToStatusMap[body.phase] || existing.status
+    phase = body.phase
   } else if (body.status) {
     status = body.status
+    // Also update phase to match status
+    phase = body.status
   }
   
-  const updated: Project = {
+  // Build update object, explicitly excluding status from body spread to prevent override
+  const { status: _bodyStatus, ...bodyWithoutStatus } = body
+  
+  const updated = {
     ...existing,
-    ...body,
+    ...bodyWithoutStatus,
     status, // Use mapped status
+    phase,  // Store phase explicitly for client portal
     id: existing.id, // ID mag niet veranderen
     createdAt: existing.createdAt, // createdAt mag niet veranderen
     updatedAt: new Date().toISOString()
@@ -353,7 +363,7 @@ async function updateProject(req: VercelRequest, res: VercelResponse) {
   
   await kv!.set(`project:${updated.id}`, updated)
   
-  console.log(`Project updated: ${updated.id}, status: ${updated.status}`)
+  console.log(`Project updated: ${updated.id}, status: ${updated.status}, phase: ${phase}`)
   
   return res.status(200).json({ success: true, project: updated })
 }

@@ -451,10 +451,13 @@ export default function ProjectStatus() {
       const response = await fetch(`/api/project/${id}`)
       if (response.ok) {
         const data = await response.json()
+        console.log('Project data received:', data)
         setProject(data)
         checkUploadStatus(data)
         setError('')
       } else {
+        const errorData = await response.json().catch(() => ({}))
+        console.error('Project fetch failed:', response.status, errorData)
         setProject({
           projectId: id,
           businessName: 'Je project',
@@ -466,17 +469,20 @@ export default function ProjectStatus() {
           createdAt: new Date().toISOString()
         })
       }
-    } catch {
+    } catch (err) {
+      console.error('Project fetch error:', err)
+      // Still try to show something - maybe project exists but there's a network issue
       setProject({
         projectId: id,
         businessName: 'Je project',
         package: '',
         status: 'onboarding',
-        statusMessage: 'Kon status niet ophalen. Neem contact met ons op.',
+        statusMessage: 'Even geduld, we laden je project...',
         estimatedCompletion: '',
         updates: [],
         createdAt: new Date().toISOString()
       })
+      setError('Kon project niet laden. Probeer de pagina te vernieuwen.')
     } finally {
       setLoading(false)
     }
@@ -1196,6 +1202,30 @@ export default function ProjectStatus() {
             packageType={project.package}
           />
         </motion.div>
+
+        {/* Error Message with retry */}
+        {error && (
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="mb-6 p-4 sm:p-5 bg-red-900/20 backdrop-blur-sm rounded-xl sm:rounded-2xl border border-red-500/30"
+          >
+            <div className="flex items-center justify-between gap-3">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 bg-red-500/20 rounded-lg flex items-center justify-center flex-shrink-0">
+                  <AlertCircle className="w-5 h-5 text-red-400" />
+                </div>
+                <p className="text-red-300">{error}</p>
+              </div>
+              <button 
+                onClick={() => projectId && fetchProject(projectId)}
+                className="px-4 py-2 bg-red-500/20 hover:bg-red-500/30 text-red-300 rounded-lg transition-colors text-sm font-medium"
+              >
+                Opnieuw proberen
+              </button>
+            </div>
+          </motion.div>
+        )}
 
         {/* Status Message */}
         {project.statusMessage && (
