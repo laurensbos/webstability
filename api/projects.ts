@@ -149,7 +149,8 @@ async function createProject(req: VercelRequest, res: VercelResponse) {
   
   // Support both formats: customer.email OR email at top level
   const customerEmail = body.customer?.email || body.email
-  const customerName = body.customer?.name || body.companyName || ''
+  // Prefer personal name over company name for more personal emails
+  const customerName = body.customer?.name || body.name || body.companyName || ''
   const customerPhone = body.customer?.phone || body.phone
   
   if (!body.type || !customerEmail) {

@@ -10,7 +10,8 @@ import {
   Mail,
   Building2,
   Phone,
-  Sparkles
+  Sparkles,
+  User
 } from 'lucide-react'
 import { useNavigate } from 'react-router-dom'
 
@@ -63,13 +64,15 @@ export default function QuickStartForm({
   const [error, setError] = useState('')
   
   const [formData, setFormData] = useState({
+    name: '',
     companyName: '',
     email: '',
     phone: '',
     password: '',
   })
 
-  const isValid = formData.companyName.trim() && 
+  const isValid = formData.name.trim() &&
+                  formData.companyName.trim() && 
                   formData.email.includes('@') && 
                   formData.password.length >= 4
 
@@ -90,6 +93,7 @@ export default function QuickStartForm({
           type: serviceType,
           package: packageId,
           packageType: packageId,
+          name: formData.name,
           companyName: formData.companyName,
           email: formData.email,
           phone: formData.phone,
@@ -141,6 +145,22 @@ export default function QuickStartForm({
           className="bg-white dark:bg-gray-800 rounded-2xl shadow-xl border border-gray-200 dark:border-gray-700 p-6 sm:p-8"
         >
           <form onSubmit={handleSubmit} className="space-y-5">
+            {/* Name */}
+            <div>
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                <User className="w-4 h-4 inline mr-2" />
+                Jouw naam *
+              </label>
+              <input
+                type="text"
+                value={formData.name}
+                onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                placeholder="Voornaam"
+                className="w-full px-4 py-3 rounded-xl border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-400 focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all text-base"
+                required
+              />
+            </div>
+
             {/* Company Name */}
             <div>
               <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
