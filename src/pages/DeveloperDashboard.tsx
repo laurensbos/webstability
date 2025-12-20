@@ -1862,6 +1862,21 @@ function ProjectsView({ darkMode, projects, onUpdateProject, onDeleteProject: _o
     const pkg = getPackageBadge(project.package)
     const unreadCount = project.messages.filter(m => !m.read && m.from === 'client').length
 
+    // Calculate project checklist/progress
+    const getProjectChecklist = () => {
+      const items = [
+        { key: 'payment', label: 'Betaling', done: project.paymentStatus === 'paid' },
+        { key: 'onboarding', label: 'Onboarding', done: project.onboardingData && Object.keys(project.onboardingData).length > 0 },
+        { key: 'design', label: 'Design', done: ['development', 'review', 'live'].includes(project.phase) },
+        { key: 'development', label: 'Ontwikkeling', done: ['review', 'live'].includes(project.phase) },
+        { key: 'review', label: 'Review', done: project.phase === 'live' },
+      ]
+      const completed = items.filter(i => i.done).length
+      return { items, completed, total: items.length, percentage: Math.round((completed / items.length) * 100) }
+    }
+
+    const checklist = getProjectChecklist()
+
     // Quick action handlers - now opens confirmation modal
     const handleMoveToNextPhase = (e: React.MouseEvent) => {
       e.stopPropagation()
@@ -1913,6 +1928,30 @@ function ProjectsView({ darkMode, projects, onUpdateProject, onDeleteProject: _o
             : 'bg-white border-gray-200 hover:border-emerald-300 shadow-sm hover:shadow-md'
         }`}
       >
+        {/* Progress bar at top */}
+        <div className="mb-3">
+          <div className="flex items-center justify-between mb-1">
+            <span className={`text-xs ${darkMode ? 'text-gray-500' : 'text-gray-400'}`}>
+              Voortgang
+            </span>
+            <span className={`text-xs font-medium ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>
+              {checklist.completed}/{checklist.total}
+            </span>
+          </div>
+          <div className={`h-1.5 rounded-full overflow-hidden ${darkMode ? 'bg-gray-700' : 'bg-gray-100'}`}>
+            <div 
+              className={`h-full rounded-full transition-all duration-500 ${
+                checklist.percentage === 100 
+                  ? 'bg-emerald-500' 
+                  : checklist.percentage >= 60 
+                    ? 'bg-blue-500' 
+                    : 'bg-amber-500'
+              }`}
+              style={{ width: `${checklist.percentage}%` }}
+            />
+          </div>
+        </div>
+
         <div className="flex items-start justify-between mb-3">
           <div className="flex-1 min-w-0">
             <h4 className={`font-semibold truncate ${darkMode ? 'text-white' : 'text-gray-900'}`}>
@@ -1927,6 +1966,26 @@ function ProjectsView({ darkMode, projects, onUpdateProject, onDeleteProject: _o
               {unreadCount}
             </span>
           )}
+        </div>
+
+        {/* Checklist items - compact */}
+        <div className="flex flex-wrap gap-1 mb-3">
+          {checklist.items.map(item => (
+            <span 
+              key={item.key}
+              className={`inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[10px] font-medium ${
+                item.done
+                  ? darkMode 
+                    ? 'bg-emerald-900/30 text-emerald-400' 
+                    : 'bg-emerald-50 text-emerald-600'
+                  : darkMode
+                    ? 'bg-gray-700 text-gray-500'
+                    : 'bg-gray-100 text-gray-400'
+              }`}
+            >
+              {item.done ? '✓' : '○'} {item.label}
+            </span>
+          ))}
         </div>
 
         <div className="flex flex-wrap gap-1.5 mb-3">
@@ -2131,13 +2190,15 @@ function ProjectsView({ darkMode, projects, onUpdateProject, onDeleteProject: _o
       >
         <div className="flex items-center justify-between mb-4">
           <div className="flex items-center gap-2">
-            <div className={`w-3 h-3 rounded-full ${phase.color}`} />
-            <h3 className={`font-semibold ${darkMode ? 'text-white' : 'text-gray-900'}`}>
+            <div className={`w-3 h-3 rounded-full ${phase.color} ${isDragOver ? 'animate-pulse scale-125' : ''} transition-all`} />
+            <h3 className={`font-semibold ${darkMode ? 'text-white' : 'text-gray-900'} ${isDragOver ? 'text-emerald-500' : ''} transition-colors`}>
               {phase.label}
             </h3>
           </div>
-          <span className={`px-2 py-0.5 text-sm font-medium rounded-full ${
-            darkMode ? 'bg-gray-700 text-gray-300' : 'bg-white text-gray-600'
+          <span className={`px-2 py-0.5 text-sm font-medium rounded-full transition-all ${
+            isDragOver 
+              ? 'bg-emerald-500 text-white' 
+              : darkMode ? 'bg-gray-700 text-gray-300' : 'bg-white text-gray-600'
           }`}>
             {phaseProjects.length}
           </span>
@@ -2148,9 +2209,19 @@ function ProjectsView({ darkMode, projects, onUpdateProject, onDeleteProject: _o
             {phaseProjects.map(project => (
               <div
                 key={project.id}
-                draggable
+                draggable="true"
                 onDragStart={(e) => {
+                  // Set drag image for smoother visual
+                  const dragImage = e.currentTarget.cloneNode(true) as HTMLElement
+                  dragImage.style.opacity = '0.8'
+                  dragImage.style.position = 'absolute'
+                  dragImage.style.top = '-1000px'
+                  document.body.appendChild(dragImage)
+                  e.dataTransfer.setDragImage(dragImage, 0, 0)
+                  setTimeout(() => document.body.removeChild(dragImage), 0)
+                  
                   e.dataTransfer.setData('text/plain', project.id.toString())
+                  e.dataTransfer.setData('application/json', JSON.stringify({ id: project.id, phase: project.phase }))
                   e.dataTransfer.effectAllowed = 'move'
                   setDraggedProject(project)
                 }}
@@ -2158,20 +2229,36 @@ function ProjectsView({ darkMode, projects, onUpdateProject, onDeleteProject: _o
                   setDraggedProject(null)
                   setDragOverPhase(null)
                 }}
-                className={`cursor-grab active:cursor-grabbing ${draggedProject?.id === project.id ? 'opacity-50' : ''}`}
+                style={{ touchAction: 'none' }}
+                className={`cursor-grab active:cursor-grabbing select-none transition-all duration-150 ${
+                  draggedProject?.id === project.id 
+                    ? 'opacity-40 scale-95 rotate-1' 
+                    : 'hover:scale-[1.02]'
+                }`}
               >
                 <ProjectCard project={project} />
               </div>
             ))}
           </AnimatePresence>
           
-          {phaseProjects.length === 0 && (
-            <div className={`p-4 text-center text-sm rounded-xl border-2 border-dashed transition-all ${
+          {/* Drop zone indicator - always visible when dragging */}
+          {draggedProject && draggedProject.phase !== phase.key && (
+            <div className={`p-3 text-center text-sm rounded-xl border-2 border-dashed transition-all ${
               isDragOver 
-                ? 'border-emerald-500 text-emerald-500 bg-emerald-500/10' 
-                : darkMode ? 'border-gray-700 text-gray-500' : 'border-gray-200 text-gray-400'
+                ? 'border-emerald-500 text-emerald-500 bg-emerald-500/10 scale-[1.02]' 
+                : darkMode 
+                  ? 'border-gray-600 text-gray-500 bg-gray-800/30' 
+                  : 'border-gray-300 text-gray-400 bg-gray-50'
             }`}>
-              {isDragOver ? 'Loslaten om hier te plaatsen' : 'Geen projecten'}
+              {isDragOver ? '🎯 Loslaten om te verplaatsen' : `↓ Sleep naar ${phase.label}`}
+            </div>
+          )}
+          
+          {phaseProjects.length === 0 && !draggedProject && (
+            <div className={`p-4 text-center text-sm rounded-xl border-2 border-dashed transition-all ${
+              darkMode ? 'border-gray-700 text-gray-500' : 'border-gray-200 text-gray-400'
+            }`}>
+              Geen projecten
             </div>
           )}
         </div>
