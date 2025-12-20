@@ -152,10 +152,10 @@ export default function LogoMaken() {
                   initial={{ opacity: 0, scale: 0.9 }}
                   animate={{ opacity: 1, scale: 1 }}
                   transition={{ delay: 0.1 }}
-                  className="inline-flex items-center gap-2 bg-gradient-to-r from-purple-50 to-violet-50 border border-purple-200/50 rounded-full px-4 py-2 mb-6"
+                  className="inline-flex items-center gap-2 bg-gradient-to-r from-purple-50 to-violet-50 dark:from-purple-900/30 dark:to-violet-900/30 border border-purple-200/50 dark:border-purple-700/50 rounded-full px-4 py-2 mb-6"
                 >
-                  <Palette className="w-4 h-4 text-purple-600" />
-                  <span className="text-sm font-medium text-purple-700">Logo laten maken</span>
+                  <Palette className="w-4 h-4 text-purple-600 dark:text-purple-400" />
+                  <span className="text-sm font-medium text-purple-700 dark:text-purple-300">Logo laten maken</span>
                 </motion.div>
 
                 <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold text-gray-900 dark:text-white mb-6 leading-tight">
@@ -193,7 +193,7 @@ export default function LogoMaken() {
         <section className="py-20 bg-white dark:bg-gray-900 relative overflow-hidden">
           {/* Background decorations */}
           <div className="absolute inset-0 overflow-hidden pointer-events-none">
-            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-gradient-to-r from-purple-50/50 via-violet-50/30 to-pink-50/50 rounded-full blur-3xl" />
+            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-gradient-to-r from-purple-50/50 via-violet-50/30 to-pink-50/50 dark:from-purple-900/20 dark:via-violet-900/10 dark:to-pink-900/20 rounded-full blur-3xl" />
           </div>
 
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
@@ -202,7 +202,7 @@ export default function LogoMaken() {
                 initial={{ opacity: 0, y: 20 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
-                className="inline-block text-purple-600 font-semibold text-sm tracking-wider uppercase mb-3"
+                className="inline-block text-purple-600 dark:text-purple-400 font-semibold text-sm tracking-wider uppercase mb-3"
               >
                 Mogelijkheden
               </motion.span>
@@ -368,7 +368,7 @@ export default function LogoMaken() {
                 initial={{ opacity: 0, y: 20 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
-                className="inline-block text-purple-600 font-semibold text-xs md:text-sm tracking-wider uppercase mb-2 md:mb-3"
+                className="inline-block text-purple-600 dark:text-purple-400 font-semibold text-xs md:text-sm tracking-wider uppercase mb-2 md:mb-3"
               >
                 Wat je krijgt
               </motion.span>
@@ -395,11 +395,11 @@ export default function LogoMaken() {
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
                 transition={{ delay: 0.15 }}
-                className="inline-flex flex-col sm:flex-row items-center gap-1 sm:gap-2 bg-emerald-50 border border-emerald-200 rounded-xl sm:rounded-full px-3 py-2 sm:px-4"
+                className="inline-flex flex-col sm:flex-row items-center gap-1 sm:gap-2 bg-emerald-50 dark:bg-emerald-900/30 border border-emerald-200 dark:border-emerald-700 rounded-xl sm:rounded-full px-3 py-2 sm:px-4"
               >
-                <span className="text-emerald-600 text-xs sm:text-sm font-medium">💼 Zakelijke investering</span>
-                <span className="hidden sm:inline text-emerald-600 text-sm">•</span>
-                <span className="text-emerald-600 text-xs sm:text-sm">BTW aftrekbaar</span>
+                <span className="text-emerald-600 dark:text-emerald-400 text-xs sm:text-sm font-medium">💼 Zakelijke investering</span>
+                <span className="hidden sm:inline text-emerald-600 dark:text-emerald-400 text-sm">•</span>
+                <span className="text-emerald-600 dark:text-emerald-400 text-xs sm:text-sm">BTW aftrekbaar</span>
               </motion.div>
             </div>
 
@@ -476,7 +476,7 @@ export default function LogoMaken() {
                 initial={{ opacity: 0, y: 20 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
-                className="inline-block text-purple-600 font-semibold text-sm tracking-wider uppercase mb-3"
+                className="inline-block text-purple-600 dark:text-purple-400 font-semibold text-sm tracking-wider uppercase mb-3"
               >
                 Ons proces
               </motion.span>
@@ -525,6 +525,43 @@ export default function LogoMaken() {
                 </motion.div>
               ))}
             </div>
+          </div>
+        </section>
+
+        {/* Final CTA */}
+        <section className="py-20 bg-white dark:bg-gray-900">
+          <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+            >
+              <div className="inline-flex items-center gap-2 bg-gradient-to-r from-purple-50 to-violet-50 dark:from-purple-900/30 dark:to-violet-900/30 border border-purple-200 dark:border-purple-700 rounded-full px-4 py-2 mb-6">
+                <Sparkles className="w-4 h-4 text-purple-600 dark:text-purple-400" />
+                <span className="text-sm font-medium text-purple-700 dark:text-purple-300">Klaar om te starten?</span>
+              </div>
+              
+              <h2 className="text-3xl sm:text-4xl font-bold text-gray-900 dark:text-white mb-4">
+                Laten we jouw{' '}
+                <span className="bg-gradient-to-r from-purple-600 to-violet-600 bg-clip-text text-transparent">
+                  perfecte logo
+                </span>{' '}
+                maken
+              </h2>
+              
+              <p className="text-gray-600 dark:text-gray-300 text-lg mb-8 max-w-2xl mx-auto">
+                Binnen 5 werkdagen de eerste concepten. 
+                2 revisierondes om tot het perfecte resultaat te komen.
+              </p>
+
+              <Link
+                to="/start?dienst=logo"
+                className="group inline-flex items-center gap-2 px-8 py-4 bg-gradient-to-r from-purple-500 to-purple-600 hover:from-purple-600 hover:to-purple-700 text-white font-semibold rounded-xl transition-all shadow-lg shadow-purple-500/25 hover:shadow-purple-500/40 hover:-translate-y-0.5"
+              >
+                Start je logo project
+                <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
+              </Link>
+            </motion.div>
           </div>
         </section>
       </main>

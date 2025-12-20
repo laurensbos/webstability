@@ -14,7 +14,8 @@ import {
   Users,
   Monitor,
   Smartphone,
-  Sparkles
+  Sparkles,
+  Check
 } from 'lucide-react'
 import { Link } from 'react-router-dom'
 import Header from '../components/Header'
@@ -274,6 +275,17 @@ export default function Websites() {
                     Bekijk pakketten
                   </a>
                 </div>
+
+                {/* Payment after design approval badge */}
+                <motion.div
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.4 }}
+                  className="inline-flex items-center gap-2 px-4 py-2 mt-6 bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400 rounded-full text-sm font-medium"
+                >
+                  <Check className="w-4 h-4" />
+                  Betaling pas na goedkeuring design
+                </motion.div>
               </motion.div>
             </div>
           </div>

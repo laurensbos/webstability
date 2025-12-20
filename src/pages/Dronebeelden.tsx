@@ -11,7 +11,8 @@ import {
   Play,
   Award,
   FileCheck,
-  BadgeCheck
+  BadgeCheck,
+  Sparkles
 } from 'lucide-react'
 import { Link } from 'react-router-dom'
 import Header from '../components/Header'
@@ -206,10 +207,10 @@ export default function Luchtvideografie() {
 
                 <div className="flex flex-col sm:flex-row gap-4 justify-center">
                   <Link
-                    to="/contact"
+                    to="/start?dienst=drone"
                     className="group inline-flex items-center justify-center gap-2 px-8 py-4 bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 text-white font-semibold rounded-xl transition-all shadow-lg shadow-orange-500/25 hover:shadow-orange-500/40 hover:-translate-y-0.5"
                   >
-                    Vraag luchtopnames aan
+                    Start je luchtfoto project
                     <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
                   </Link>
                   <a
@@ -250,7 +251,7 @@ export default function Luchtvideografie() {
                 initial={{ opacity: 0, y: 20 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
-                className="inline-block text-orange-600 font-semibold text-sm tracking-wider uppercase mb-3"
+                className="inline-block text-orange-600 dark:text-orange-400 font-semibold text-sm tracking-wider uppercase mb-3"
               >
                 Waarom luchtopnames
               </motion.span>
@@ -414,7 +415,7 @@ export default function Luchtvideografie() {
                 initial={{ opacity: 0, y: 20 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
-                className="inline-block text-orange-600 font-semibold text-sm tracking-wider uppercase mb-3"
+                className="inline-block text-orange-600 dark:text-orange-400 font-semibold text-sm tracking-wider uppercase mb-3"
               >
                 Toepassingen
               </motion.span>
@@ -556,7 +557,7 @@ export default function Luchtvideografie() {
                 initial={{ opacity: 0, y: 20 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
-                className="inline-block text-orange-600 font-semibold text-xs md:text-sm tracking-wider uppercase mb-2 md:mb-3"
+                className="inline-block text-orange-600 dark:text-orange-400 font-semibold text-xs md:text-sm tracking-wider uppercase mb-2 md:mb-3"
               >
                 Wat je krijgt
               </motion.span>
@@ -634,10 +635,10 @@ export default function Luchtvideografie() {
               className="text-center mt-6 md:mt-0"
             >
               <Link
-                to="/contact"
+                to="/start?dienst=drone"
                 className="group inline-flex items-center gap-2 px-6 py-3 md:px-8 md:py-4 bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 text-white font-semibold rounded-xl transition-all shadow-lg shadow-orange-500/25 hover:shadow-orange-500/40 hover:-translate-y-0.5 text-sm md:text-base"
               >
-                Plan je luchtopnames
+                Start je luchtfoto project
                 <ArrowRight className="w-4 h-4 md:w-5 md:h-5 group-hover:translate-x-1 transition-transform" />
               </Link>
               <p className="text-gray-500 dark:text-gray-400 text-xs md:text-sm mt-3 md:mt-4">
@@ -649,6 +650,42 @@ export default function Luchtvideografie() {
 
         {/* Trustpilot Reviews */}
         <TrustpilotReviews className="bg-gray-50 dark:bg-gray-800" />
+
+        {/* Final CTA */}
+        <section className="py-20 bg-white dark:bg-gray-900">
+          <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+            >
+              <div className="inline-flex items-center gap-2 bg-gradient-to-r from-orange-50 to-amber-50 dark:from-orange-900/30 dark:to-amber-900/30 border border-orange-200 dark:border-orange-700 rounded-full px-4 py-2 mb-6">
+                <Sparkles className="w-4 h-4 text-orange-600 dark:text-orange-400" />
+                <span className="text-sm font-medium text-orange-700 dark:text-orange-300">Klaar om te starten?</span>
+              </div>
+              
+              <h2 className="text-3xl sm:text-4xl font-bold text-gray-900 dark:text-white mb-4">
+                Til je content naar een{' '}
+                <span className="bg-gradient-to-r from-orange-600 to-amber-600 bg-clip-text text-transparent">
+                  hoger niveau
+                </span>
+              </h2>
+              
+              <p className="text-gray-600 dark:text-gray-300 text-lg mb-8 max-w-2xl mx-auto">
+                Professionele luchtfoto's en video's binnen 5 werkdagen. 
+                Inclusief voorbereiding, shoot en nabewerking.
+              </p>
+
+              <Link
+                to="/start?dienst=drone"
+                className="group inline-flex items-center gap-2 px-8 py-4 bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 text-white font-semibold rounded-xl transition-all shadow-lg shadow-orange-500/25 hover:shadow-orange-500/40 hover:-translate-y-0.5"
+              >
+                Start je luchtfoto project
+                <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
+              </Link>
+            </motion.div>
+          </div>
+        </section>
       </main>
 
       <Footer ctaVariant="drone" />
