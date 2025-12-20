@@ -8210,7 +8210,8 @@ export default function DeveloperDashboardNew() {
   // Check auth on mount
   useEffect(() => {
     const token = sessionStorage.getItem(TOKEN_KEY)
-    if (token) {
+    const protectedRouteAuth = sessionStorage.getItem('dev_authenticated')
+    if (token || protectedRouteAuth === 'true') {
       setIsAuthenticated(true)
     }
   }, [])
@@ -8512,6 +8513,10 @@ export default function DeveloperDashboardNew() {
   const handleLogout = () => {
     sessionStorage.removeItem(TOKEN_KEY)
     sessionStorage.removeItem(AUTH_KEY)
+    // Also clear ProtectedRoute auth
+    sessionStorage.removeItem('dev_authenticated')
+    sessionStorage.removeItem('dev_user_role')
+    sessionStorage.removeItem('dev_user_email')
     setIsAuthenticated(false)
     setProjects([])
     setClients([])
