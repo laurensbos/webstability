@@ -3277,6 +3277,7 @@ function ProjectDetailModal({ project, darkMode, onClose, onUpdate, phases }: Om
   const [activeTab, setActiveTab] = useState<'overview' | 'messages' | 'payment' | 'onboarding'>('overview')
   const [paymentLoading, setPaymentLoading] = useState(false)
   const [generatedPaymentUrl, setGeneratedPaymentUrl] = useState('')
+  const [paymentEmailSent, setPaymentEmailSent] = useState(false)
   const [paymentDescription, setPaymentDescription] = useState('')
   const [paymentAmount, setPaymentAmount] = useState('')
   const [editPhase, setEditPhase] = useState(project.phase)
@@ -3288,6 +3289,15 @@ function ProjectDetailModal({ project, darkMode, onClose, onUpdate, phases }: Om
   const [isSaving, setIsSaving] = useState(false)
   const [checklist, setChecklist] = useState<Record<string, boolean>>(project.phaseChecklist || {})
   const [isSendingPhaseEmail, setIsSendingPhaseEmail] = useState(false)
+
+  // Initialize eerste betaling bedrag (setup fee + eerste maand)
+  useEffect(() => {
+    if (!paymentAmount && project.package) {
+      const firstPayment = getFirstPaymentAmount(project.package)
+      setPaymentAmount(String(firstPayment))
+      setPaymentDescription(`Eerste betaling - ${project.businessName} (${project.package} pakket)`)
+    }
+  }, [project.package, project.businessName])
 
   // Phase-specific checklists
   const phaseChecklists: Record<ProjectPhase, { id: string; label: string }[]> = {
@@ -3414,6 +3424,16 @@ function ProjectDetailModal({ project, darkMode, onClose, onUpdate, phases }: Om
   const getPackagePrice = (pkg: Project['package']) => {
     const prices = { starter: 99, professional: 199, business: 349, webshop: 349 }
     return prices[pkg]
+  }
+
+  const getPackageSetupFee = (pkg: Project['package']) => {
+    const setupFees = { starter: 99, professional: 179, business: 239, webshop: 299 }
+    return setupFees[pkg]
+  }
+
+  // Eerste betaling = setup fee + eerste maand abonnement
+  const getFirstPaymentAmount = (pkg: Project['package']) => {
+    return getPackageSetupFee(pkg) + getPackagePrice(pkg)
   }
 
   const unreadCount = project.messages.filter(m => !m.read && m.from === 'client').length
@@ -3892,9 +3912,10 @@ function ProjectDetailModal({ project, darkMode, onClose, onUpdate, phases }: Om
                   <button
                     onClick={async () => {
                       setPaymentLoading(true)
+                      setPaymentEmailSent(false)
                       try {
-                        const amount = paymentAmount || String(getPackagePrice(project.package))
-                        const description = paymentDescription || `Website ${project.businessName} - ${project.package} pakket`
+                        const amount = paymentAmount || String(getFirstPaymentAmount(project.package))
+                        const description = paymentDescription || `Eerste betaling - ${project.businessName} (${project.package} pakket)`
                         
                         const response = await fetch('/api/create-payment', {
                           method: 'POST',
@@ -3904,13 +3925,16 @@ function ProjectDetailModal({ project, darkMode, onClose, onUpdate, phases }: Om
                             amount,
                             description,
                             customerEmail: project.contactEmail,
-                            customerName: project.contactName
+                            customerName: project.contactName || project.businessName,
+                            sendEmail: true,
+                            packageName: `${project.package.charAt(0).toUpperCase() + project.package.slice(1)} pakket`
                           })
                         })
                         
                         const data = await response.json()
                         if (data.paymentUrl) {
                           setGeneratedPaymentUrl(data.paymentUrl)
+                          setPaymentEmailSent(data.emailSent === true)
                         } else {
                           throw new Error(data.error || 'Kon betaallink niet maken')
                         }
@@ -3932,17 +3956,24 @@ function ProjectDetailModal({ project, darkMode, onClose, onUpdate, phases }: Om
                     ) : (
                       <>
                         <CreditCard className="w-5 h-5" />
-                        Betaallink genereren
+                        Betaallink genereren & versturen
                       </>
                     )}
                   </button>
 
                   {generatedPaymentUrl && (
                     <div className={`p-4 rounded-xl ${darkMode ? 'bg-green-900/20 border border-green-500/50' : 'bg-green-50 border border-green-200'}`}>
-                      <p className={`text-sm font-medium mb-2 ${darkMode ? 'text-green-400' : 'text-green-700'}`}>
-                        ✓ Betaallink gegenereerd!
-                      </p>
-                      <div className="flex gap-2">
+                      <div className="space-y-2">
+                        <p className={`text-sm font-medium ${darkMode ? 'text-green-400' : 'text-green-700'}`}>
+                          ✓ Betaallink gegenereerd!
+                        </p>
+                        {paymentEmailSent && (
+                          <p className={`text-sm ${darkMode ? 'text-green-500' : 'text-green-600'}`}>
+                            📧 Email verstuurd naar {project.contactEmail}
+                          </p>
+                        )}
+                      </div>
+                      <div className="flex gap-2 mt-3">
                         <input
                           type="text"
                           readOnly
@@ -3979,22 +4010,33 @@ function ProjectDetailModal({ project, darkMode, onClose, onUpdate, phases }: Om
                 <h3 className={`font-semibold mb-4 ${darkMode ? 'text-white' : 'text-gray-900'}`}>
                   ⚡ Snelle betaallink
                 </h3>
+                
+                {/* Uitleg eerste betaling */}
+                <div className={`p-3 rounded-lg mb-4 ${darkMode ? 'bg-gray-600/50' : 'bg-blue-50'}`}>
+                  <p className={`text-sm ${darkMode ? 'text-gray-300' : 'text-blue-700'}`}>
+                    💡 <strong>Eerste betaling:</strong> €{getPackageSetupFee(project.package)} opstartkosten + €{getPackagePrice(project.package)} eerste maand = <strong>€{getFirstPaymentAmount(project.package)}</strong>
+                  </p>
+                </div>
+                
                 <div className="grid grid-cols-2 gap-3">
                   {[
-                    { label: 'Eerste betaling', amount: getPackagePrice(project.package) },
-                    { label: 'Extra werk', amount: 50 },
-                    { label: 'Aanpassing', amount: 25 },
-                    { label: 'Custom', amount: 0 },
+                    { label: 'Eerste betaling', amount: getFirstPaymentAmount(project.package), desc: `Opstartkosten + 1e maand` },
+                    { label: 'Maandelijks', amount: getPackagePrice(project.package), desc: `Abonnement` },
+                    { label: 'Extra werk', amount: 50, desc: '' },
+                    { label: 'Custom', amount: 0, desc: 'Vul zelf in' },
                   ].map((preset) => (
                     <button
                       key={preset.label}
                       onClick={() => {
                         if (preset.amount === 0) {
                           setPaymentAmount('')
+                          setPaymentDescription('')
                         } else {
                           setPaymentAmount(String(preset.amount))
+                          setPaymentDescription(`${preset.label} - ${project.businessName} (${project.package} pakket)`)
                         }
-                        setPaymentDescription(`${preset.label} - ${project.businessName}`)
+                        setGeneratedPaymentUrl('')
+                        setPaymentEmailSent(false)
                       }}
                       className={`p-3 rounded-xl border text-left transition-colors ${
                         darkMode 
@@ -4006,7 +4048,7 @@ function ProjectDetailModal({ project, darkMode, onClose, onUpdate, phases }: Om
                         {preset.label}
                       </p>
                       <p className={`text-sm ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>
-                        {preset.amount === 0 ? 'Vul zelf in' : `€${preset.amount}`}
+                        {preset.amount === 0 ? preset.desc : `€${preset.amount}`}
                       </p>
                     </button>
                   ))}
