@@ -58,10 +58,11 @@ import Logo from '../components/Logo'
 // TYPES
 // ===========================================
 
-// Vereenvoudigd naar 4 hoofdsecties
+// Vereenvoudigd naar 5 hoofdsecties
 type DashboardView = 
   | 'overview' 
   | 'projects' 
+  | 'clients'
   | 'messages' 
   | 'payments'
 
@@ -321,6 +322,7 @@ function WelcomeTour({ darkMode, onComplete }: WelcomeTourProps) {
 const NAV_ITEMS: { id: DashboardView; label: string; icon: typeof LayoutDashboard; badge?: number }[] = [
   { id: 'overview', label: 'Dashboard', icon: LayoutDashboard },
   { id: 'projects', label: 'Projecten', icon: FolderKanban },
+  { id: 'clients', label: 'Klanten', icon: Users },
   { id: 'messages', label: 'Berichten', icon: MessageSquare },
   { id: 'payments', label: 'Betalingen', icon: CreditCard },
 ]
@@ -3554,10 +3556,10 @@ function ProjectDetailModal({ project, darkMode, onClose, onUpdate, phases }: Om
 }
 
 // ===========================================
-// CLIENTS VIEW
+// OLD CLIENTS VIEW (DEPRECATED - KEPT FOR REFERENCE)
 // ===========================================
 
-interface ClientsViewProps {
+interface _OldClientsViewProps {
   darkMode: boolean
   clients: Client[]
   projects: Project[]
@@ -3568,7 +3570,7 @@ interface ClientsViewProps {
 
 // Unused but kept for future use
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
-export function _ClientsView({ darkMode, clients, projects, onSelectClient, onAddClient, onDeleteClient }: ClientsViewProps) {
+export function _OldClientsView({ darkMode, clients, projects, onSelectClient, onAddClient, onDeleteClient }: _OldClientsViewProps) {
   const [searchQuery, setSearchQuery] = useState('')
   const [sortBy, setSortBy] = useState<'name' | 'projects' | 'spent' | 'date'>('date')
   const [_selectedClient, setSelectedClient] = useState<Client | null>(null)
@@ -5222,6 +5224,523 @@ export function _OnboardingView({
                     Starten met Design
                   </button>
                 )}
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </div>
+  )
+}
+
+// ===========================================
+// CLIENTS VIEW - Klantenbeheer met alle gegevens
+// ===========================================
+
+interface ClientsViewProps {
+  darkMode: boolean
+  projects: Project[]
+  onUpdateProject: (project: Project) => void
+  onDeleteProject: (projectId: string) => void
+}
+
+function ClientsView({ darkMode, projects, onUpdateProject, onDeleteProject }: ClientsViewProps) {
+  const [searchQuery, setSearchQuery] = useState('')
+  const [selectedClient, setSelectedClient] = useState<Project | null>(null)
+  const [editMode, setEditMode] = useState(false)
+  const [editData, setEditData] = useState<Partial<Project>>({})
+  const [showDeleteModal, setShowDeleteModal] = useState(false)
+  const [deletePassword, setDeletePassword] = useState('')
+  const [deleteError, setDeleteError] = useState('')
+  const [sortBy, setSortBy] = useState<'name' | 'date' | 'package'>('date')
+  const [filterPackage, setFilterPackage] = useState<string>('all')
+
+  // Filter and sort clients
+  const filteredClients = projects
+    .filter(p => {
+      const matchesSearch = 
+        p.businessName.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        p.contactName.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        p.contactEmail.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        p.projectId.toLowerCase().includes(searchQuery.toLowerCase())
+      const matchesPackage = filterPackage === 'all' || p.package === filterPackage
+      return matchesSearch && matchesPackage
+    })
+    .sort((a, b) => {
+      if (sortBy === 'name') return a.businessName.localeCompare(b.businessName)
+      if (sortBy === 'package') return a.package.localeCompare(b.package)
+      return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+    })
+
+  // Package badge helper
+  const getPackageBadge = (pkg: Project['package']) => {
+    const badges = {
+      starter: { label: 'Starter', color: 'bg-gray-500', price: '€99/m' },
+      professional: { label: 'Professional', color: 'bg-emerald-500', price: '€199/m' },
+      business: { label: 'Business', color: 'bg-purple-500', price: '€349/m' },
+      webshop: { label: 'Webshop', color: 'bg-orange-500', price: '€349/m' },
+    }
+    return badges[pkg]
+  }
+
+  // Handle edit save
+  const handleSaveEdit = () => {
+    if (!selectedClient) return
+    const updatedProject = { ...selectedClient, ...editData, updatedAt: new Date().toISOString() }
+    onUpdateProject(updatedProject)
+    setSelectedClient(updatedProject)
+    setEditMode(false)
+    setEditData({})
+  }
+
+  // Handle delete with password
+  const handleDelete = () => {
+    if (deletePassword !== 'N45eqtu2!jz8j0v') {
+      setDeleteError('Onjuist wachtwoord')
+      return
+    }
+    if (selectedClient) {
+      onDeleteProject(selectedClient.id)
+      setSelectedClient(null)
+      setShowDeleteModal(false)
+      setDeletePassword('')
+      setDeleteError('')
+    }
+  }
+
+  // Client card component
+  const ClientCard = ({ client }: { client: Project }) => {
+    const pkg = getPackageBadge(client.package)
+    const hasOnboardingData = client.onboardingData && Object.keys(client.onboardingData).length > 0
+    
+    return (
+      <motion.div
+        layout
+        initial={{ opacity: 0, y: 10 }}
+        animate={{ opacity: 1, y: 0 }}
+        onClick={() => {
+          setSelectedClient(client)
+          setEditMode(false)
+          setEditData({})
+        }}
+        className={`p-4 rounded-xl border cursor-pointer transition-all ${
+          selectedClient?.id === client.id
+            ? darkMode 
+              ? 'bg-emerald-900/20 border-emerald-500' 
+              : 'bg-emerald-50 border-emerald-300'
+            : darkMode 
+              ? 'bg-gray-800/50 border-gray-700 hover:border-gray-600' 
+              : 'bg-white border-gray-200 hover:border-gray-300 shadow-sm'
+        }`}
+      >
+        <div className="flex items-start justify-between gap-3">
+          <div className="flex-1 min-w-0">
+            <div className="flex items-center gap-2 mb-1">
+              <h4 className={`font-semibold truncate ${darkMode ? 'text-white' : 'text-gray-900'}`}>
+                {client.businessName}
+              </h4>
+              <span className={`px-2 py-0.5 text-xs font-medium text-white rounded-full ${pkg.color}`}>
+                {pkg.label}
+              </span>
+            </div>
+            <p className={`text-sm truncate ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>
+              {client.contactName} • {client.contactEmail}
+            </p>
+            <div className="flex items-center gap-2 mt-2">
+              <span className={`text-xs px-2 py-0.5 rounded ${darkMode ? 'bg-gray-700 text-gray-400' : 'bg-gray-100 text-gray-500'}`}>
+                {client.projectId}
+              </span>
+              {hasOnboardingData && (
+                <span className={`text-xs px-2 py-0.5 rounded ${darkMode ? 'bg-green-900/30 text-green-400' : 'bg-green-50 text-green-600'}`}>
+                  ✓ Onboarding
+                </span>
+              )}
+            </div>
+          </div>
+          <ChevronRight className={`w-5 h-5 flex-shrink-0 ${darkMode ? 'text-gray-600' : 'text-gray-300'}`} />
+        </div>
+      </motion.div>
+    )
+  }
+
+  // Info row component
+  const InfoRow = ({ label, value, editable, field }: { label: string; value?: string | null; editable?: boolean; field?: keyof Project }) => {
+    if (!value && !editMode) return null
+    
+    return (
+      <div className="flex flex-col sm:flex-row sm:justify-between gap-1 py-1">
+        <span className={`text-sm ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>{label}:</span>
+        {editMode && editable && field ? (
+          <input
+            type="text"
+            value={(editData[field] as string) ?? value ?? ''}
+            onChange={(e) => setEditData({ ...editData, [field]: e.target.value })}
+            className={`text-sm font-medium px-2 py-1 rounded border ${
+              darkMode 
+                ? 'bg-gray-700 border-gray-600 text-white' 
+                : 'bg-white border-gray-300 text-gray-900'
+            } focus:ring-2 focus:ring-emerald-500 sm:text-right sm:max-w-[60%]`}
+          />
+        ) : (
+          <span className={`text-sm font-medium ${darkMode ? 'text-white' : 'text-gray-900'} break-words sm:text-right sm:max-w-[60%]`}>
+            {value || '-'}
+          </span>
+        )}
+      </div>
+    )
+  }
+
+  return (
+    <div className="space-y-6">
+      {/* Header */}
+      <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
+        <div>
+          <h1 className={`text-2xl font-bold ${darkMode ? 'text-white' : 'text-gray-900'}`}>
+            Klanten
+          </h1>
+          <p className={`${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>
+            {filteredClients.length} klant{filteredClients.length !== 1 ? 'en' : ''} gevonden
+          </p>
+        </div>
+      </div>
+
+      {/* Search & Filters */}
+      <div className="flex flex-col sm:flex-row gap-3">
+        <div className="relative flex-1">
+          <Search className={`absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 ${darkMode ? 'text-gray-500' : 'text-gray-400'}`} />
+          <input
+            type="text"
+            placeholder="Zoek op naam, e-mail of project ID..."
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            className={`w-full pl-9 pr-4 py-2.5 rounded-xl border ${
+              darkMode 
+                ? 'bg-gray-800 border-gray-700 text-white placeholder-gray-500' 
+                : 'bg-white border-gray-200 text-gray-900 placeholder-gray-400'
+            } focus:outline-none focus:ring-2 focus:ring-emerald-500/50`}
+          />
+        </div>
+        <select
+          value={filterPackage}
+          onChange={(e) => setFilterPackage(e.target.value)}
+          className={`px-3 py-2.5 rounded-xl border ${
+            darkMode 
+              ? 'bg-gray-800 border-gray-700 text-white' 
+              : 'bg-white border-gray-200 text-gray-900'
+          } focus:outline-none focus:ring-2 focus:ring-emerald-500/50`}
+        >
+          <option value="all">Alle pakketten</option>
+          <option value="starter">Starter</option>
+          <option value="professional">Professional</option>
+          <option value="business">Business</option>
+          <option value="webshop">Webshop</option>
+        </select>
+        <select
+          value={sortBy}
+          onChange={(e) => setSortBy(e.target.value as typeof sortBy)}
+          className={`px-3 py-2.5 rounded-xl border ${
+            darkMode 
+              ? 'bg-gray-800 border-gray-700 text-white' 
+              : 'bg-white border-gray-200 text-gray-900'
+          } focus:outline-none focus:ring-2 focus:ring-emerald-500/50`}
+        >
+          <option value="date">Nieuwste eerst</option>
+          <option value="name">Op naam</option>
+          <option value="package">Op pakket</option>
+        </select>
+      </div>
+
+      {/* Main content - split view on desktop */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        {/* Client list */}
+        <div className="space-y-3 max-h-[calc(100vh-280px)] overflow-y-auto pr-2">
+          {filteredClients.length === 0 ? (
+            <div className={`text-center py-12 ${darkMode ? 'text-gray-500' : 'text-gray-400'}`}>
+              <Users className="w-12 h-12 mx-auto mb-4 opacity-50" />
+              <p>Geen klanten gevonden</p>
+            </div>
+          ) : (
+            filteredClients.map(client => (
+              <ClientCard key={client.id} client={client} />
+            ))
+          )}
+        </div>
+
+        {/* Client detail panel */}
+        <div className={`rounded-2xl border p-4 lg:p-6 max-h-[calc(100vh-280px)] overflow-y-auto ${
+          darkMode ? 'bg-gray-800/30 border-gray-700' : 'bg-gray-50 border-gray-200'
+        }`}>
+          {selectedClient ? (
+            <div className="space-y-4">
+              {/* Client header */}
+              <div className="flex items-start justify-between gap-4">
+                <div>
+                  <h2 className={`text-xl font-bold ${darkMode ? 'text-white' : 'text-gray-900'}`}>
+                    {selectedClient.businessName}
+                  </h2>
+                  <p className={`text-sm ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>
+                    Project ID: {selectedClient.projectId}
+                  </p>
+                </div>
+                <div className="flex items-center gap-2">
+                  {!editMode ? (
+                    <button
+                      onClick={() => setEditMode(true)}
+                      className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-colors ${
+                        darkMode 
+                          ? 'bg-gray-700 text-gray-300 hover:bg-gray-600' 
+                          : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                      }`}
+                    >
+                      Bewerken
+                    </button>
+                  ) : (
+                    <>
+                      <button
+                        onClick={() => {
+                          setEditMode(false)
+                          setEditData({})
+                        }}
+                        className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-colors ${
+                          darkMode 
+                            ? 'bg-gray-700 text-gray-300 hover:bg-gray-600' 
+                            : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                        }`}
+                      >
+                        Annuleren
+                      </button>
+                      <button
+                        onClick={handleSaveEdit}
+                        className="px-3 py-1.5 rounded-lg text-sm font-medium bg-emerald-500 text-white hover:bg-emerald-600 transition-colors"
+                      >
+                        Opslaan
+                      </button>
+                    </>
+                  )}
+                </div>
+              </div>
+
+              {/* Contact Information */}
+              <div className={`rounded-xl p-4 border ${darkMode ? 'bg-blue-900/20 border-blue-800' : 'bg-blue-50 border-blue-200'}`}>
+                <div className="flex items-center gap-2 mb-3">
+                  <div className={`w-8 h-8 rounded-lg flex items-center justify-center ${darkMode ? 'bg-blue-900/30' : 'bg-blue-100'}`}>
+                    <User className={`w-4 h-4 ${darkMode ? 'text-blue-400' : 'text-blue-600'}`} />
+                  </div>
+                  <span className={`font-medium ${darkMode ? 'text-blue-300' : 'text-blue-700'}`}>Contactgegevens</span>
+                </div>
+                <div className="space-y-1">
+                  <InfoRow label="Naam" value={selectedClient.contactName} editable field="contactName" />
+                  <InfoRow label="E-mail" value={selectedClient.contactEmail} editable field="contactEmail" />
+                  <InfoRow label="Telefoon" value={selectedClient.contactPhone} editable field="contactPhone" />
+                </div>
+              </div>
+
+              {/* Project Information */}
+              <div className={`rounded-xl p-4 border ${darkMode ? 'bg-emerald-900/20 border-emerald-800' : 'bg-emerald-50 border-emerald-200'}`}>
+                <div className="flex items-center gap-2 mb-3">
+                  <div className={`w-8 h-8 rounded-lg flex items-center justify-center ${darkMode ? 'bg-emerald-900/30' : 'bg-emerald-100'}`}>
+                    <Briefcase className={`w-4 h-4 ${darkMode ? 'text-emerald-400' : 'text-emerald-600'}`} />
+                  </div>
+                  <span className={`font-medium ${darkMode ? 'text-emerald-300' : 'text-emerald-700'}`}>Projectgegevens</span>
+                </div>
+                <div className="space-y-1">
+                  <InfoRow label="Bedrijfsnaam" value={selectedClient.businessName} editable field="businessName" />
+                  <InfoRow label="Pakket" value={getPackageBadge(selectedClient.package).label} />
+                  <InfoRow label="Fase" value={selectedClient.phase} />
+                  <InfoRow label="Betalingsstatus" value={selectedClient.paymentStatus} />
+                  <InfoRow label="Aangemeld op" value={new Date(selectedClient.createdAt).toLocaleDateString('nl-NL', { day: 'numeric', month: 'long', year: 'numeric' })} />
+                  {selectedClient.stagingUrl && <InfoRow label="Staging URL" value={selectedClient.stagingUrl} editable field="stagingUrl" />}
+                  {selectedClient.liveUrl && <InfoRow label="Live URL" value={selectedClient.liveUrl} editable field="liveUrl" />}
+                  {selectedClient.discountCode && <InfoRow label="Kortingscode" value={selectedClient.discountCode} />}
+                </div>
+              </div>
+
+              {/* Onboarding Data */}
+              {selectedClient.onboardingData && Object.keys(selectedClient.onboardingData).length > 0 && (
+                <div className={`rounded-xl p-4 border ${darkMode ? 'bg-purple-900/20 border-purple-800' : 'bg-purple-50 border-purple-200'}`}>
+                  <div className="flex items-center gap-2 mb-3">
+                    <div className={`w-8 h-8 rounded-lg flex items-center justify-center ${darkMode ? 'bg-purple-900/30' : 'bg-purple-100'}`}>
+                      <FileText className={`w-4 h-4 ${darkMode ? 'text-purple-400' : 'text-purple-600'}`} />
+                    </div>
+                    <span className={`font-medium ${darkMode ? 'text-purple-300' : 'text-purple-700'}`}>Onboarding Gegevens</span>
+                  </div>
+                  <div className="space-y-1 max-h-64 overflow-y-auto">
+                    {Object.entries(selectedClient.onboardingData).map(([key, value]) => {
+                      // Skip empty values and internal fields
+                      if (!value || key.startsWith('_')) return null
+                      
+                      // Format the key for display
+                      const formattedKey = key
+                        .replace(/([A-Z])/g, ' $1')
+                        .replace(/_/g, ' ')
+                        .replace(/^./, str => str.toUpperCase())
+                      
+                      // Format the value
+                      let displayValue: string
+                      if (Array.isArray(value)) {
+                        displayValue = value.join(', ')
+                      } else if (typeof value === 'object') {
+                        displayValue = JSON.stringify(value, null, 2)
+                      } else {
+                        displayValue = String(value)
+                      }
+                      
+                      return (
+                        <div key={key} className="flex flex-col sm:flex-row sm:justify-between gap-1 py-1">
+                          <span className={`text-sm ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>{formattedKey}:</span>
+                          <span className={`text-sm font-medium ${darkMode ? 'text-white' : 'text-gray-900'} break-words sm:text-right sm:max-w-[60%]`}>
+                            {displayValue}
+                          </span>
+                        </div>
+                      )
+                    })}
+                  </div>
+                </div>
+              )}
+
+              {/* Internal Notes */}
+              <div className={`rounded-xl p-4 border ${darkMode ? 'bg-amber-900/20 border-amber-800' : 'bg-amber-50 border-amber-200'}`}>
+                <div className="flex items-center gap-2 mb-3">
+                  <div className={`w-8 h-8 rounded-lg flex items-center justify-center ${darkMode ? 'bg-amber-900/30' : 'bg-amber-100'}`}>
+                    <FileText className={`w-4 h-4 ${darkMode ? 'text-amber-400' : 'text-amber-600'}`} />
+                  </div>
+                  <span className={`font-medium ${darkMode ? 'text-amber-300' : 'text-amber-700'}`}>Interne Notities</span>
+                </div>
+                {editMode ? (
+                  <textarea
+                    value={(editData.internalNotes as string) ?? selectedClient.internalNotes ?? ''}
+                    onChange={(e) => setEditData({ ...editData, internalNotes: e.target.value })}
+                    rows={3}
+                    placeholder="Voeg interne notities toe..."
+                    className={`w-full p-3 rounded-lg border ${
+                      darkMode 
+                        ? 'bg-gray-700 border-gray-600 text-white placeholder-gray-500' 
+                        : 'bg-white border-gray-300 text-gray-900 placeholder-gray-400'
+                    } focus:ring-2 focus:ring-amber-500 resize-none`}
+                  />
+                ) : (
+                  <p className={`text-sm ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>
+                    {selectedClient.internalNotes || 'Geen notities'}
+                  </p>
+                )}
+              </div>
+
+              {/* Danger Zone - Delete */}
+              <div className={`rounded-xl p-4 border ${darkMode ? 'bg-red-900/20 border-red-800' : 'bg-red-50 border-red-200'}`}>
+                <div className="flex items-center gap-2 mb-3">
+                  <div className={`w-8 h-8 rounded-lg flex items-center justify-center ${darkMode ? 'bg-red-900/30' : 'bg-red-100'}`}>
+                    <Trash2 className={`w-4 h-4 ${darkMode ? 'text-red-400' : 'text-red-600'}`} />
+                  </div>
+                  <span className={`font-medium ${darkMode ? 'text-red-300' : 'text-red-700'}`}>Gevaarzone</span>
+                </div>
+                <p className={`text-sm mb-3 ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>
+                  Het verwijderen van een klant is permanent en kan niet ongedaan worden gemaakt.
+                </p>
+                <button
+                  onClick={() => setShowDeleteModal(true)}
+                  className="px-4 py-2 rounded-lg text-sm font-medium bg-red-500 text-white hover:bg-red-600 transition-colors flex items-center gap-2"
+                >
+                  <Trash2 className="w-4 h-4" />
+                  Klant verwijderen
+                </button>
+              </div>
+            </div>
+          ) : (
+            <div className={`flex flex-col items-center justify-center py-12 ${darkMode ? 'text-gray-500' : 'text-gray-400'}`}>
+              <User className="w-16 h-16 mb-4 opacity-30" />
+              <p className="text-lg font-medium">Selecteer een klant</p>
+              <p className="text-sm">Klik op een klant om de details te bekijken</p>
+            </div>
+          )}
+        </div>
+      </div>
+
+      {/* Delete Confirmation Modal */}
+      <AnimatePresence>
+        {showDeleteModal && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4"
+            onClick={() => {
+              setShowDeleteModal(false)
+              setDeletePassword('')
+              setDeleteError('')
+            }}
+          >
+            <motion.div
+              initial={{ scale: 0.9, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.9, opacity: 0 }}
+              onClick={(e) => e.stopPropagation()}
+              className={`w-full max-w-md rounded-2xl p-6 ${darkMode ? 'bg-gray-800' : 'bg-white'} shadow-2xl`}
+            >
+              <div className="flex items-center gap-3 mb-4">
+                <div className="w-12 h-12 rounded-xl bg-red-100 dark:bg-red-900/30 flex items-center justify-center">
+                  <AlertTriangle className="w-6 h-6 text-red-600 dark:text-red-400" />
+                </div>
+                <div>
+                  <h3 className={`text-lg font-bold ${darkMode ? 'text-white' : 'text-gray-900'}`}>
+                    Klant verwijderen
+                  </h3>
+                  <p className={`text-sm ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>
+                    {selectedClient?.businessName}
+                  </p>
+                </div>
+              </div>
+
+              <p className={`text-sm mb-4 ${darkMode ? 'text-gray-300' : 'text-gray-600'}`}>
+                Dit zal alle gegevens van deze klant permanent verwijderen, inclusief projectdata, berichten en betalingsgeschiedenis.
+              </p>
+
+              <div className="mb-4">
+                <label className={`block text-sm font-medium mb-2 ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>
+                  Voer wachtwoord in om te bevestigen
+                </label>
+                <input
+                  type="password"
+                  value={deletePassword}
+                  onChange={(e) => {
+                    setDeletePassword(e.target.value)
+                    setDeleteError('')
+                  }}
+                  placeholder="••••••••"
+                  className={`w-full px-4 py-3 rounded-xl border ${
+                    deleteError 
+                      ? 'border-red-500 focus:ring-red-500' 
+                      : darkMode 
+                        ? 'bg-gray-700 border-gray-600 text-white' 
+                        : 'bg-white border-gray-300 text-gray-900'
+                  } focus:outline-none focus:ring-2`}
+                />
+                {deleteError && (
+                  <p className="text-red-500 text-sm mt-2">{deleteError}</p>
+                )}
+              </div>
+
+              <div className="flex gap-3">
+                <button
+                  onClick={() => {
+                    setShowDeleteModal(false)
+                    setDeletePassword('')
+                    setDeleteError('')
+                  }}
+                  className={`flex-1 px-4 py-3 rounded-xl font-medium transition-colors ${
+                    darkMode 
+                      ? 'bg-gray-700 text-gray-300 hover:bg-gray-600' 
+                      : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                  }`}
+                >
+                  Annuleren
+                </button>
+                <button
+                  onClick={handleDelete}
+                  disabled={!deletePassword}
+                  className="flex-1 px-4 py-3 rounded-xl font-medium bg-red-500 text-white hover:bg-red-600 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                >
+                  Verwijderen
+                </button>
               </div>
             </motion.div>
           </motion.div>
@@ -7544,6 +8063,14 @@ export default function DeveloperDashboardNew() {
                     onDeleteProject={handleDeleteProject}
                     onSelectProject={setSelectedProject}
                     onNavigateToPayments={() => setActiveView('payments')}
+                  />
+                )}
+                {activeView === 'clients' && (
+                  <ClientsView 
+                    darkMode={darkMode}
+                    projects={projects}
+                    onUpdateProject={handleUpdateProject}
+                    onDeleteProject={handleDeleteProject}
                   />
                 )}
                 {activeView === 'messages' && (
