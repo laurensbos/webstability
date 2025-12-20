@@ -39,6 +39,12 @@ interface Project {
   estimatedCompletion?: string
   statusMessage?: string
   mollieCustomerId?: string
+  googleDriveUrl?: string
+  onboardingData?: {
+    driveFolderLink?: string
+    driveFolderId?: string
+    [key: string]: unknown
+  }
   messages?: Array<{
     id: string
     from: string
@@ -159,6 +165,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       revisionsUsed: project.revisionsUsed || 0,
       revisionsTotal: project.revisionsTotal || 3,
       designApprovedAt: project.designApprovedAt,
+      googleDriveUrl: project.googleDriveUrl || project.onboardingData?.driveFolderLink || '',
       createdAt: project.createdAt || new Date().toISOString(),
       updatedAt: project.updatedAt,
       invoices: [] as Invoice[]
