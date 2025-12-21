@@ -39,7 +39,6 @@ export default function Header({ urgencyBannerVisible = false }: HeaderProps) {
   const [foundProjects, setFoundProjects] = useState<{id: string, name: string}[]>([])
   const [showProjectSelect, setShowProjectSelect] = useState(false)
   const [recoveryEmail, setRecoveryEmail] = useState('')
-  const [recoveryProjectId, setRecoveryProjectId] = useState('')
   const [isRecovering, setIsRecovering] = useState(false)
   const [recoverySuccess, setRecoverySuccess] = useState(false)
   const [recoveryError, setRecoveryError] = useState<string | null>(null)
@@ -134,10 +133,10 @@ export default function Header({ urgencyBannerVisible = false }: HeaderProps) {
 
     try {
       if (recoveryType === 'projectId') {
-        // Recovery project-ID via email
+        // Send login link via email
         if (!recoveryEmail.trim()) return
         
-        const response = await fetch('/api/recover-project', {
+        const response = await fetch('/api/send-login-link', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ email: recoveryEmail.trim() })
@@ -150,15 +149,14 @@ export default function Header({ urgencyBannerVisible = false }: HeaderProps) {
           setRecoveryError(data.message || 'Er is iets misgegaan. Probeer het opnieuw.')
         }
       } else {
-        // Recovery password via email + project ID
-        if (!recoveryEmail.trim() || !recoveryProjectId.trim()) return
+        // Recovery password via email only (no project ID needed)
+        if (!recoveryEmail.trim()) return
         
-        const response = await fetch('/api/reset-password', {
+        const response = await fetch('/api/reset-password/request', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ 
-            email: recoveryEmail.trim(),
-            projectId: recoveryProjectId.trim().toUpperCase()
+            email: recoveryEmail.trim()
           })
         })
 
@@ -181,7 +179,6 @@ export default function Header({ urgencyBannerVisible = false }: HeaderProps) {
     setShowRecoveryForm(false)
     setRecoveryType('projectId')
     setRecoveryEmail('')
-    setRecoveryProjectId('')
     setRecoverySuccess(false)
     setRecoveryError(null)
     setEmailInput('')
@@ -686,13 +683,13 @@ export default function Header({ urgencyBannerVisible = false }: HeaderProps) {
                           onClick={() => { setShowRecoveryForm(true); setRecoveryType('projectId'); }}
                           className="flex-1 py-2 px-3 text-sm bg-gray-50 dark:bg-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-300 rounded-lg transition-colors"
                         >
-                          Project-ID kwijt
+                          Inloglink versturen
                         </button>
                         <button 
                           onClick={() => { setShowRecoveryForm(true); setRecoveryType('password'); }}
                           className="flex-1 py-2 px-3 text-sm bg-gray-50 dark:bg-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-300 rounded-lg transition-colors"
                         >
-                          Wachtwoord kwijt
+                          Wachtwoord vergeten
                         </button>
                       </div>
                     </div>
@@ -707,8 +704,8 @@ export default function Header({ urgencyBannerVisible = false }: HeaderProps) {
                   <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-2">Check je inbox!</h3>
                   <p className="text-gray-600 dark:text-gray-400 mb-6">
                     {recoveryType === 'projectId' 
-                      ? 'Als er projecten zijn gekoppeld aan dit e-mailadres, ontvang je binnen enkele minuten een e-mail met je project-ID(s) en wachtwoord.'
-                      : 'Als dit e-mailadres gekoppeld is aan dit project, ontvang je een e-mail met een link om je wachtwoord opnieuw in te stellen.'
+                      ? 'Als er projecten zijn gekoppeld aan dit e-mailadres, ontvang je binnen enkele minuten een e-mail met inloglinks.'
+                      : 'Als dit e-mailadres gekoppeld is aan een project, ontvang je een e-mail met een link om je wachtwoord opnieuw in te stellen.'
                     }
                   </p>
                   <button
@@ -730,7 +727,7 @@ export default function Header({ urgencyBannerVisible = false }: HeaderProps) {
                           : 'bg-gray-50 dark:bg-gray-700 text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-600'
                       }`}
                     >
-                      Project-ID kwijt
+                      Inloglink versturen
                     </button>
                     <button
                       onClick={() => setRecoveryType('password')}
@@ -740,14 +737,14 @@ export default function Header({ urgencyBannerVisible = false }: HeaderProps) {
                           : 'bg-gray-50 dark:bg-gray-700 text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-600'
                       }`}
                     >
-                      Wachtwoord kwijt
+                      Wachtwoord vergeten
                     </button>
                   </div>
 
                   {recoveryType === 'projectId' ? (
                     <>
                       <p className="text-gray-600 dark:text-gray-400 mb-4">
-                        Voer het e-mailadres in waarmee je je project hebt aangemeld. We sturen je project-ID(s) naar dit adres.
+                        Voer je e-mailadres in en we sturen je een link om direct in te loggen.
                       </p>
 
                       <form onSubmit={handleRecoverySubmit}>
@@ -786,7 +783,7 @@ export default function Header({ urgencyBannerVisible = false }: HeaderProps) {
                           ) : (
                             <>
                               <Mail className="w-5 h-5" />
-                              Verstuur project-ID
+                              Verstuur inloglink
                             </>
                           )}
                         </button>
@@ -795,26 +792,10 @@ export default function Header({ urgencyBannerVisible = false }: HeaderProps) {
                   ) : (
                     <>
                       <p className="text-gray-600 dark:text-gray-400 mb-4">
-                        Voer je project-ID en het bijbehorende e-mailadres in. We sturen een link om je wachtwoord opnieuw in te stellen.
+                        Voer je e-mailadres in. We sturen een link om je wachtwoord opnieuw in te stellen.
                       </p>
 
                       <form onSubmit={handleRecoverySubmit}>
-                        <div className="mb-4">
-                          <label htmlFor="recoveryProjectId" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                            Project-ID
-                          </label>
-                          <input
-                            type="text"
-                            id="recoveryProjectId"
-                            value={recoveryProjectId}
-                            onChange={(e) => setRecoveryProjectId(e.target.value)}
-                            placeholder="Bijv. WS-ABC123"
-                            className="w-full px-4 py-3 border border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-all font-mono uppercase"
-                            autoFocus
-                            required
-                          />
-                        </div>
-
                         <div className="mb-4">
                           <label htmlFor="recoveryEmailPassword" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                             E-mailadres
@@ -826,6 +807,7 @@ export default function Header({ urgencyBannerVisible = false }: HeaderProps) {
                             onChange={(e) => setRecoveryEmail(e.target.value)}
                             placeholder="jouw@email.nl"
                             className="w-full px-4 py-3 border border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-all"
+                            autoFocus
                             required
                           />
                         </div>
@@ -838,7 +820,7 @@ export default function Header({ urgencyBannerVisible = false }: HeaderProps) {
 
                         <button
                           type="submit"
-                          disabled={!recoveryEmail.trim() || !recoveryProjectId.trim() || isRecovering}
+                          disabled={!recoveryEmail.trim() || isRecovering}
                           className="w-full flex items-center justify-center gap-2 px-6 py-3 bg-primary-500 hover:bg-primary-600 disabled:bg-gray-300 dark:disabled:bg-gray-600 disabled:cursor-not-allowed text-white font-semibold rounded-xl transition-all"
                         >
                           {isRecovering ? (
