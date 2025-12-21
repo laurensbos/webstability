@@ -1462,7 +1462,9 @@ export function WebsitePaginasStep({ data, onChange, disabled, packageId, onUpgr
   const customPages = data.customPages || []
   const pkg = getPackageConfig(packageId || data.package || data.packageType)
   
-  const totalPages = prefilledPages.length + customPages.length
+  // Calculate total including any selected pages
+  const allSelectedPages = data.selectedPages || data.pages || []
+  const totalPages = allSelectedPages.length + customPages.length
   const pagesRemaining = pkg.maxPages - totalPages
   const isAtLimit = pagesRemaining <= 0
 
@@ -1521,6 +1523,58 @@ export function WebsitePaginasStep({ data, onChange, disabled, packageId, onUpgr
         </div>
       </div>
 
+      {/* Page selection - show when no pages are pre-selected */}
+      {prefilledPages.length === 0 && (
+        <div className="space-y-3">
+          <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
+            Welke pagina's wil je op je website?
+          </span>
+          <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
+            {['Home', 'Over ons', 'Diensten', 'Contact', 'Portfolio', 'Blog', 'FAQ', 'Prijzen', 'Team'].map((page) => {
+              const selectedPages = data.selectedPages || []
+              const isSelected = selectedPages.includes(page)
+              const wouldExceedLimit = !isSelected && selectedPages.length >= pkg.maxPages
+              
+              return (
+                <button
+                  key={page}
+                  type="button"
+                  onClick={() => {
+                    if (disabled) return
+                    if (wouldExceedLimit) {
+                      if (onUpgrade && getNextPackage()) onUpgrade(getNextPackage()!)
+                      return
+                    }
+                    const newPages = isSelected 
+                      ? selectedPages.filter((p: string) => p !== page)
+                      : [...selectedPages, page]
+                    onChange('selectedPages', newPages)
+                    onChange('pages', newPages)
+                  }}
+                  disabled={disabled}
+                  className={`
+                    p-3 rounded-xl border text-left transition-all flex items-center gap-2
+                    ${isSelected 
+                      ? 'border-amber-500 bg-amber-500/10 text-amber-700 dark:text-amber-300' 
+                      : wouldExceedLimit
+                        ? 'border-gray-600 bg-gray-800/30 text-gray-500 cursor-not-allowed'
+                        : 'border-gray-700 bg-gray-800/30 text-gray-300 hover:border-gray-600'}
+                  `}
+                >
+                  <div className={`
+                    w-5 h-5 rounded border-2 flex items-center justify-center flex-shrink-0
+                    ${isSelected ? 'border-amber-500 bg-amber-500' : 'border-gray-500'}
+                  `}>
+                    {isSelected && <Check className="w-3 h-3 text-white" />}
+                  </div>
+                  <span className="text-sm font-medium">{page}</span>
+                </button>
+              )
+            })}
+          </div>
+        </div>
+      )}
+
       {/* Show pre-selected pages */}
       {prefilledPages.length > 0 && (
         <div className="bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800 rounded-xl p-4 mb-6">
@@ -1545,7 +1599,7 @@ export function WebsitePaginasStep({ data, onChange, disabled, packageId, onUpgr
         values={customPages}
         onChange={(name, values) => {
           // Check if adding would exceed limit
-          if (values.length > customPages.length && prefilledPages.length + values.length > pkg.maxPages) {
+          if (values.length > customPages.length && allSelectedPages.length + values.length > pkg.maxPages) {
             // Would exceed limit - show upgrade prompt instead
             if (onUpgrade && getNextPackage()) {
               onUpgrade(getNextPackage()!)
