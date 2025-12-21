@@ -66,6 +66,7 @@ export default function ProjectDetailModal({
   // Phase checklist modal state
   const [showPhaseChecklist, setShowPhaseChecklist] = useState(false)
   const [checklistItems, setChecklistItems] = useState<Record<string, boolean>>({})
+  const [targetPhase, setTargetPhase] = useState<ProjectPhase | null>(null)
 
   const packageInfo = PACKAGE_CONFIG[project.package]
   const phaseInfo = PHASE_CONFIG[project.phase]
@@ -130,22 +131,19 @@ export default function ProjectDetailModal({
   }
 
   const handlePhaseChange = (newPhase: ProjectPhase) => {
-    onUpdate({
-      ...project,
-      phase: newPhase,
-      updatedAt: new Date().toISOString()
-    })
-    setShowPhaseChecklist(false)
-    setChecklistItems({})
-  }
-
-  // Open phase checklist modal before advancing
-  const handleOpenPhaseChecklist = () => {
-    const nextPhase = phases[currentPhaseIndex + 1]
-    if (!nextPhase) return
+    // Don't do anything if clicking current phase
+    if (newPhase === project.phase) return
+    
+    // Set target phase and open checklist
+    setTargetPhase(newPhase)
+    
+    // Determine which checklist to show (current phase for forward, target for backward)
+    const targetIndex = phases.indexOf(newPhase)
+    const isMovingForward = targetIndex > currentPhaseIndex
+    const checklistPhase = isMovingForward ? project.phase : newPhase
     
     // Reset checklist items
-    const currentChecklist = PHASE_CHECKLIST[project.phase]
+    const currentChecklist = PHASE_CHECKLIST[checklistPhase]
     const initialItems: Record<string, boolean> = {}
     currentChecklist.tasks.forEach((_, index) => {
       initialItems[`task-${index}`] = false
@@ -154,10 +152,39 @@ export default function ProjectDetailModal({
     setShowPhaseChecklist(true)
   }
 
+  // Actually change the phase after checklist confirmation
+  const confirmPhaseChange = () => {
+    if (!targetPhase) return
+    onUpdate({
+      ...project,
+      phase: targetPhase,
+      updatedAt: new Date().toISOString()
+    })
+    setShowPhaseChecklist(false)
+    setChecklistItems({})
+    setTargetPhase(null)
+  }
+
+  // Open phase checklist modal before advancing to next phase
+  const handleOpenPhaseChecklist = () => {
+    const nextPhase = phases[currentPhaseIndex + 1]
+    if (!nextPhase) return
+    handlePhaseChange(nextPhase)
+  }
+
+  // Get the checklist phase (current for forward, target for backward)
+  const getChecklistPhase = (): ProjectPhase => {
+    if (!targetPhase) return project.phase
+    const targetIndex = phases.indexOf(targetPhase)
+    const isMovingForward = targetIndex > currentPhaseIndex
+    return isMovingForward ? project.phase : targetPhase
+  }
+
   // Check if all checklist items are checked
   const allChecklistItemsChecked = () => {
-    const currentChecklist = PHASE_CHECKLIST[project.phase]
-    return currentChecklist.tasks.every((_, index) => checklistItems[`task-${index}`])
+    const checklistPhase = getChecklistPhase()
+    const checklist = PHASE_CHECKLIST[checklistPhase]
+    return checklist.tasks.every((_, index) => checklistItems[`task-${index}`])
   }
 
   const handleSaveNotes = () => {
@@ -1412,13 +1439,13 @@ export default function ProjectDetailModal({
 
         {/* Phase Checklist Modal */}
         <AnimatePresence>
-          {showPhaseChecklist && (
+          {showPhaseChecklist && targetPhase && (
             <motion.div
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               className="absolute inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4 z-50"
-              onClick={() => setShowPhaseChecklist(false)}
+              onClick={() => { setShowPhaseChecklist(false); setTargetPhase(null) }}
             >
               <motion.div
                 initial={{ scale: 0.9, opacity: 0 }}
@@ -1437,15 +1464,15 @@ export default function ProjectDetailModal({
                       </div>
                       <div>
                         <h3 className="text-lg font-semibold text-white">
-                          Naar volgende fase
+                          Fase wijzigen
                         </h3>
                         <p className="text-sm text-gray-400">
-                          {PHASE_CONFIG[project.phase].label} → {phases[currentPhaseIndex + 1] && PHASE_CONFIG[phases[currentPhaseIndex + 1]].label}
+                          {PHASE_CONFIG[project.phase].label} → {PHASE_CONFIG[targetPhase].label}
                         </p>
                       </div>
                     </div>
                     <button
-                      onClick={() => setShowPhaseChecklist(false)}
+                      onClick={() => { setShowPhaseChecklist(false); setTargetPhase(null) }}
                       className="p-2 hover:bg-gray-700 rounded-lg transition"
                     >
                       <X className="w-5 h-5 text-gray-400" />
@@ -1459,17 +1486,17 @@ export default function ProjectDetailModal({
                     <AlertCircle className="w-5 h-5 text-amber-400 shrink-0 mt-0.5" />
                     <div>
                       <p className="text-sm text-amber-200 font-medium">
-                        {PHASE_CHECKLIST[project.phase].title}
+                        {PHASE_CHECKLIST[getChecklistPhase()].title}
                       </p>
                       <p className="text-xs text-amber-300/70 mt-1">
-                        {PHASE_CHECKLIST[project.phase].nextAction}
+                        {PHASE_CHECKLIST[getChecklistPhase()].nextAction}
                       </p>
                     </div>
                   </div>
 
                   <div className="space-y-3">
                     <p className="text-sm font-medium text-gray-300">Controleer de volgende punten:</p>
-                    {PHASE_CHECKLIST[project.phase].tasks.map((task, index) => (
+                    {PHASE_CHECKLIST[getChecklistPhase()].tasks.map((task, index) => (
                       <motion.label
                         key={index}
                         initial={{ opacity: 0, x: -10 }}
@@ -1523,7 +1550,7 @@ export default function ProjectDetailModal({
                     <div className="flex items-center justify-between text-xs text-gray-400 mb-2">
                       <span>Voortgang</span>
                       <span>
-                        {Object.values(checklistItems).filter(Boolean).length} / {PHASE_CHECKLIST[project.phase].tasks.length}
+                        {Object.values(checklistItems).filter(Boolean).length} / {PHASE_CHECKLIST[getChecklistPhase()].tasks.length}
                       </span>
                     </div>
                     <div className="h-2 bg-gray-700 rounded-full overflow-hidden">
@@ -1531,7 +1558,7 @@ export default function ProjectDetailModal({
                         className="h-full bg-gradient-to-r from-emerald-500 to-teal-500"
                         initial={{ width: 0 }}
                         animate={{ 
-                          width: `${(Object.values(checklistItems).filter(Boolean).length / PHASE_CHECKLIST[project.phase].tasks.length) * 100}%` 
+                          width: `${(Object.values(checklistItems).filter(Boolean).length / PHASE_CHECKLIST[getChecklistPhase()].tasks.length) * 100}%` 
                         }}
                         transition={{ type: 'spring', damping: 15 }}
                       />
@@ -1542,16 +1569,13 @@ export default function ProjectDetailModal({
                 {/* Footer */}
                 <div className="p-5 border-t border-gray-700 bg-gray-900/50 flex gap-3">
                   <button
-                    onClick={() => setShowPhaseChecklist(false)}
+                    onClick={() => { setShowPhaseChecklist(false); setTargetPhase(null) }}
                     className="flex-1 py-2.5 px-4 bg-gray-700 hover:bg-gray-600 text-white rounded-xl font-medium transition"
                   >
                     Annuleren
                   </button>
                   <button
-                    onClick={() => {
-                      const nextPhase = phases[currentPhaseIndex + 1]
-                      if (nextPhase) handlePhaseChange(nextPhase)
-                    }}
+                    onClick={confirmPhaseChange}
                     disabled={!allChecklistItemsChecked()}
                     className="flex-1 py-2.5 px-4 bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-400 hover:to-teal-400 disabled:from-gray-600 disabled:to-gray-600 disabled:cursor-not-allowed text-white rounded-xl font-medium transition flex items-center justify-center gap-2"
                   >
