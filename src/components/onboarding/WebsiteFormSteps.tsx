@@ -13,7 +13,7 @@ import {
   Sparkles,
   Lock
 } from 'lucide-react'
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 
 // ===========================================
 // PACKAGE CONFIGURATION
@@ -771,6 +771,37 @@ const DESIGN_STYLES = [
 export function WebsiteBrandingStep({ data, onChange, disabled }: FormStepProps) {
   const [activeColorPicker, setActiveColorPicker] = useState<number | null>(null)
   const [customColor, setCustomColor] = useState('')
+  const [fontsLoaded, setFontsLoaded] = useState(false)
+  
+  // Load Google Fonts for preview
+  useEffect(() => {
+    const fontFamilies = [
+      'Inter:wght@400;700',
+      'Playfair+Display:wght@400;700',
+      'Lato:wght@400;700',
+      'Montserrat:wght@400;700;900',
+      'Open+Sans:wght@400;700',
+      'Poppins:wght@400;700',
+      'Nunito:wght@400;700',
+      'Space+Grotesk:wght@400;700',
+      'DM+Sans:wght@400;700'
+    ]
+    
+    const link = document.createElement('link')
+    link.href = `https://fonts.googleapis.com/css2?${fontFamilies.map(f => `family=${f}`).join('&')}&display=swap`
+    link.rel = 'stylesheet'
+    link.onload = () => setFontsLoaded(true)
+    document.head.appendChild(link)
+    
+    return () => {
+      if (document.head.contains(link)) {
+        document.head.removeChild(link)
+      }
+    }
+  }, [])
+  
+  // Prevent unused variable warning
+  void fontsLoaded
   
   // Get selected colors (support both field names)
   const selectedColors: string[] = data.brandColors || data.colorPreferences || []
@@ -884,6 +915,13 @@ export function WebsiteBrandingStep({ data, onChange, disabled }: FormStepProps)
                     animate={{ opacity: 1, y: 0 }}
                     className="absolute top-14 left-0 z-10 bg-gray-800 border border-gray-700 rounded-xl p-3 shadow-xl"
                   >
+                    {/* Close button */}
+                    <button
+                      onClick={() => setActiveColorPicker(null)}
+                      className="absolute -top-2 -right-2 w-6 h-6 bg-gray-700 hover:bg-gray-600 rounded-full flex items-center justify-center transition-colors"
+                    >
+                      <X className="w-3 h-3 text-gray-300" />
+                    </button>
                     <input
                       type="color"
                       value={customColor || '#3B82F6'}
@@ -994,8 +1032,8 @@ export function WebsiteBrandingStep({ data, onChange, disabled }: FormStepProps)
                 
                 {/* Font preview */}
                 <div 
-                  className={`text-2xl text-white mb-1 ${font.style}`}
-                  style={{ fontFamily: font.heading }}
+                  className={`text-2xl text-white mb-1 ${font.id === 'bold' ? 'font-bold' : ''}`}
+                  style={{ fontFamily: `'${font.heading}', sans-serif` }}
                 >
                   {font.preview}
                 </div>
@@ -1131,8 +1169,8 @@ export function WebsiteBrandingStep({ data, onChange, disabled }: FormStepProps)
           disabled={disabled}
           options={[
             { value: 'yes', label: 'Ja, ik heb een logo', description: 'Upload via de Drive link die we klaarzetten' },
-            { value: 'no', label: 'Nee, nog niet', description: 'We kunnen een logo voor je ontwerpen (apart te bestellen)' },
-            { value: 'need_refresh', label: 'Ja, maar ik wil een nieuw logo', description: 'We bespreken de mogelijkheden' },
+            { value: 'no', label: 'Nee, nog niet', description: 'We kunnen een logo voor je ontwerpen' },
+            { value: 'need_refresh', label: 'Ja, maar ik wil een nieuw logo' },
           ]}
         />
 
@@ -1147,6 +1185,41 @@ export function WebsiteBrandingStep({ data, onChange, disabled }: FormStepProps)
             rows={2}
             hint="Upload je logobestanden via de Drive link die we voor je klaarzetten"
           />
+        )}
+
+        {/* Logo upsell for no logo or need refresh */}
+        {(data.hasLogo === 'no' || data.hasLogo === 'need_refresh') && (
+          <motion.div
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="bg-gradient-to-br from-purple-500/10 to-pink-500/10 border border-purple-500/30 rounded-xl p-4"
+          >
+            <div className="flex items-start gap-3">
+              <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center flex-shrink-0">
+                <Sparkles className="w-5 h-5 text-white" />
+              </div>
+              <div className="flex-1">
+                <h4 className="font-semibold text-white mb-1">
+                  {data.hasLogo === 'need_refresh' ? 'Nieuw logo nodig?' : 'Logo laten ontwerpen?'}
+                </h4>
+                <p className="text-sm text-gray-400 mb-3">
+                  Een professioneel logo is de basis van je merk. We ontwerpen een uniek logo dat perfect bij je bedrijf past.
+                </p>
+                <div className="flex items-center gap-3">
+                  <a 
+                    href="/diensten/logo" 
+                    target="_blank"
+                    className="inline-flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-purple-500 to-pink-500 text-white text-sm font-medium rounded-lg hover:from-purple-600 hover:to-pink-600 transition-all"
+                  >
+                    <Palette className="w-4 h-4" />
+                    Bekijk logo pakket
+                    <ArrowUpRight className="w-3 h-3" />
+                  </a>
+                  <span className="text-xs text-gray-500">Vanaf €149,-</span>
+                </div>
+              </div>
+            </div>
+          </motion.div>
         )}
       </div>
 

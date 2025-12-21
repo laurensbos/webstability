@@ -210,6 +210,9 @@ export default function ProjectStatusNew() {
   // Onboarding state
   const [onboardingCompleted, setOnboardingCompleted] = useState(false)
   
+  // Success banner for just completed onboarding
+  const [showOnboardingSuccess, setShowOnboardingSuccess] = useState(false)
+  
   // Timeline expansion
   const [showTimeline, setShowTimeline] = useState(false)
   
@@ -242,6 +245,19 @@ export default function ProjectStatusNew() {
       setLoading(false)
     }
   }, [projectId, searchParams])
+
+  // Check for onboarding complete query param
+  useEffect(() => {
+    if (searchParams.get('onboarding') === 'complete') {
+      setShowOnboardingSuccess(true)
+      // Remove the query param from URL without reload
+      const newUrl = window.location.pathname
+      window.history.replaceState({}, '', newUrl)
+      // Auto-hide after 10 seconds
+      const timer = setTimeout(() => setShowOnboardingSuccess(false), 10000)
+      return () => clearTimeout(timer)
+    }
+  }, [searchParams])
 
   // Polling for updates - every 5 seconds for fast chat
   useEffect(() => {
@@ -659,6 +675,39 @@ export default function ProjectStatusNew() {
       </header>
 
       <main className="max-w-3xl mx-auto px-4 py-6 space-y-4">
+        {/* Onboarding Success Banner */}
+        <AnimatePresence>
+          {showOnboardingSuccess && (
+            <motion.div
+              initial={{ opacity: 0, y: -20, scale: 0.95 }}
+              animate={{ opacity: 1, y: 0, scale: 1 }}
+              exit={{ opacity: 0, y: -20, scale: 0.95 }}
+              className="bg-gradient-to-r from-green-500/20 to-emerald-500/20 border border-green-500/30 rounded-2xl p-4 relative overflow-hidden"
+            >
+              <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_right,rgba(16,185,129,0.15),transparent_70%)]" />
+              <div className="relative flex items-start gap-3">
+                <div className="w-10 h-10 bg-green-500/20 rounded-xl flex items-center justify-center flex-shrink-0">
+                  <Sparkles className="w-5 h-5 text-green-400" />
+                </div>
+                <div className="flex-1 min-w-0">
+                  <h3 className="font-semibold text-green-400 mb-1">Onboarding voltooid! 🎉</h3>
+                  <p className="text-sm text-gray-300">
+                    Bedankt voor het invullen. We gaan direct voor je aan de slag. Je kunt je voortgang hier volgen.
+                  </p>
+                </div>
+                <button
+                  onClick={() => setShowOnboardingSuccess(false)}
+                  className="p-1 text-gray-400 hover:text-white transition rounded"
+                >
+                  <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                  </svg>
+                </button>
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
+
         {/* Hero Card - Current Status */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}

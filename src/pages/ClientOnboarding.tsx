@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback, useRef } from 'react'
-import { useParams, useSearchParams, Link } from 'react-router-dom'
+import { useParams, useSearchParams, Link, useNavigate } from 'react-router-dom'
 import { motion, AnimatePresence } from 'framer-motion'
 import { ClientOnboardingSkeleton } from '../components/LoadingSkeletons'
 import {
@@ -11,7 +11,6 @@ import {
   ChevronRight,
   Check,
   Clock,
-  Edit3,
   Lock,
   Loader2,
   AlertCircle,
@@ -22,14 +21,9 @@ import {
   FileText,
   Image,
   Settings,
-  Sparkles,
-  ExternalLink,
-  Shield,
-  FolderOpen,
   ArrowRight,
   ArrowLeft
 } from 'lucide-react'
-import Logo from '../components/Logo'
 import type { 
   ServiceType
 } from '../types/onboarding'
@@ -374,6 +368,7 @@ function useAutoSave(
 export default function ClientOnboarding() {
   const { projectId } = useParams<{ projectId: string }>()
   const [searchParams] = useSearchParams()
+  const navigate = useNavigate()
   
   // State
   const [serviceType, setServiceType] = useState<ServiceType>('website')
@@ -387,9 +382,12 @@ export default function ClientOnboarding() {
   const [projectFound, setProjectFound] = useState<boolean | null>(null)
   const [submitted, setSubmitted] = useState(false)
   const [validationErrors, setValidationErrors] = useState<string[]>([])
-  const [driveUrl, setDriveUrl] = useState<string>('')
   const [approvedForDesign, setApprovedForDesign] = useState(false)
   const [unreadCount, setUnreadCount] = useState(0)
+  
+  // Suppress unused variable warnings (used for future reference)
+  void submitted
+  void setSubmitted
 
   // Auto-save hook
   const { autoSaveStatus, emailInUseError, loadFromLocal, clearLocalDraft } = useAutoSave(
@@ -476,8 +474,6 @@ export default function ClientOnboarding() {
           setServiceType(project.type || 'website')
           setCanEdit(project.status === 'intake' || project.status === 'onboarding')
           setProjectFound(true)
-          // Get Drive URL from project
-          setDriveUrl(project.googleDriveUrl || project.onboardingData?.driveFolderLink || '')
           // Get unread messages count
           const unread = project.messages?.filter((m: { read: boolean; from: string }) => !m.read && m.from === 'developer')?.length || 0
           setUnreadCount(unread)
@@ -678,8 +674,8 @@ export default function ClientOnboarding() {
         await response.json()
         // Clear local draft
         clearLocalDraft()
-        // Set submitted to show success screen
-        setSubmitted(true)
+        // Redirect to client dashboard with success message
+        navigate(`/status/${projectId}?onboarding=complete`)
       } else {
         throw new Error('Failed to submit')
       }
@@ -688,281 +684,6 @@ export default function ClientOnboarding() {
     } finally {
       setSaving(false)
     }
-  }
-
-  // Get service-specific link for status page
-  const statusUrl = `/status/${projectId}`
-
-  // Submitted successfully - Enhanced thank you screen
-  if (submitted) {
-    const nextSteps = [
-      {
-        icon: Sparkles,
-        title: 'Design fase gestart! 🎨',
-        description: 'Je project is nu officieel in de design fase. Onze designer gaat direct aan de slag met jouw website.',
-        time: 'Nu actief',
-        color: 'from-emerald-500 to-teal-600',
-        bgColor: 'bg-emerald-50 dark:bg-emerald-900/20',
-        textColor: 'text-emerald-600 dark:text-emerald-400',
-        highlight: true,
-      },
-      {
-        icon: FolderOpen,
-        title: 'Media uploaden',
-        description: driveUrl 
-          ? 'Je Google Drive map is klaar! Upload hier je logo, foto\'s en andere bestanden.'
-          : 'Je ontvangt een e-mail met een Google Drive link waar je je media kunt uploaden.',
-        time: driveUrl ? 'Nu beschikbaar' : 'In je mail',
-        color: 'from-blue-500 to-blue-600',
-        bgColor: 'bg-blue-50 dark:bg-blue-900/20',
-        textColor: 'text-blue-600 dark:text-blue-400',
-        link: driveUrl || undefined,
-      },
-      {
-        icon: Palette,
-        title: 'Eerste ontwerp',
-        description: 'Binnen 5-7 werkdagen ontvang je het eerste ontwerp van je website ter review.',
-        time: '5-7 werkdagen',
-        color: 'from-amber-500 to-amber-600',
-        bgColor: 'bg-amber-50 dark:bg-amber-900/20',
-        textColor: 'text-amber-600 dark:text-amber-400',
-      },
-      {
-        icon: CheckCircle2,
-        title: 'Feedback & live!',
-        description: 'Na jouw goedkeuring maken we de laatste aanpassingen en gaat je website live.',
-        time: 'Na goedkeuring',
-        color: 'from-purple-500 to-purple-600',
-        bgColor: 'bg-purple-50 dark:bg-purple-900/20',
-        textColor: 'text-purple-600 dark:text-purple-400',
-      },
-    ]
-
-    const ServiceIcon = serviceConfig.icon
-
-    return (
-      <div className="min-h-screen bg-gradient-to-br from-gray-50 via-emerald-50/30 to-white dark:from-gray-900 dark:via-emerald-900/10 dark:to-gray-900">
-        <div className="absolute inset-0 overflow-hidden pointer-events-none">
-          <motion.div 
-            className="absolute top-0 right-0 w-[800px] h-[800px] bg-gradient-to-br from-emerald-200/60 via-green-100/40 to-teal-100/30 dark:from-emerald-900/30 dark:via-green-900/20 dark:to-teal-900/10 rounded-full blur-3xl -translate-y-1/3 translate-x-1/4"
-            animate={{ scale: [1, 1.05, 1] }}
-            transition={{ duration: 8, repeat: Infinity, ease: "easeInOut" }}
-          />
-          <motion.div 
-            className="absolute bottom-0 left-0 w-[600px] h-[600px] bg-gradient-to-tr from-blue-100/40 via-primary-100/30 to-transparent dark:from-blue-900/20 dark:via-primary-900/10 rounded-full blur-3xl translate-y-1/3 -translate-x-1/4"
-            animate={{ scale: [1, 1.08, 1] }}
-            transition={{ duration: 10, repeat: Infinity, ease: "easeInOut" }}
-          />
-        </div>
-
-        <header className="relative z-10 border-b bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm sticky top-0">
-          <div className="max-w-7xl mx-auto px-4 py-4 flex justify-between items-center">
-            <Logo />
-            <div className="flex items-center gap-2">
-              <div className={`w-8 h-8 rounded-lg bg-gradient-to-br ${serviceConfig.gradient} flex items-center justify-center`}>
-                <ServiceIcon className="w-4 h-4 text-white" />
-              </div>
-              <span className="text-sm text-gray-500 dark:text-gray-400 bg-gray-100 dark:bg-gray-700 px-3 py-1 rounded-full">
-                {projectId}
-              </span>
-            </div>
-          </div>
-        </header>
-
-        <main className="relative z-10 max-w-2xl mx-auto px-4 py-8 md:py-12">
-          {/* Success Header */}
-          <motion.div
-            initial={{ opacity: 0, scale: 0.95 }}
-            animate={{ opacity: 1, scale: 1 }}
-            className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-2xl shadow-xl border border-white/50 dark:border-gray-700 p-6 md:p-8 text-center mb-6"
-          >
-            <motion.div
-              initial={{ scale: 0 }}
-              animate={{ scale: 1 }}
-              transition={{ type: 'spring', stiffness: 200 }}
-              className="relative w-20 h-20 bg-gradient-to-br from-emerald-500 to-green-600 rounded-full flex items-center justify-center mx-auto mb-6 shadow-lg shadow-emerald-500/30"
-            >
-              <CheckCircle2 className="w-10 h-10 text-white" />
-              <motion.div
-                initial={{ scale: 0 }}
-                animate={{ scale: 1 }}
-                transition={{ delay: 0.3 }}
-                className="absolute -top-1 -right-1"
-              >
-                <Sparkles className="w-6 h-6 text-emerald-500" />
-              </motion.div>
-            </motion.div>
-            
-            <h1 className="text-2xl md:text-3xl font-bold text-gray-900 dark:text-white mb-3">
-              Bedankt voor het invullen! 🎉
-            </h1>
-            <p className="text-gray-600 dark:text-gray-400 text-sm md:text-base max-w-md mx-auto">
-              We hebben al je informatie ontvangen. Je ontvangt zo een bevestigingsmail met verdere instructies.
-            </p>
-          </motion.div>
-
-          {/* What to expect - Timeline */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.1 }}
-            className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-2xl shadow-xl border border-white/50 dark:border-gray-700 p-6 md:p-8 mb-6"
-          >
-            <h2 className="text-lg md:text-xl font-bold text-gray-900 dark:text-white mb-6 flex items-center gap-2">
-              <Clock className="w-5 h-5 text-primary-500" />
-              Wat kun je nu verwachten?
-            </h2>
-
-            <div className="space-y-4">
-              {nextSteps.map((step, index) => (
-                <motion.div
-                  key={step.title}
-                  initial={{ opacity: 0, x: -20 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  transition={{ delay: 0.2 + index * 0.1 }}
-                  className="relative flex gap-4"
-                >
-                  {/* Timeline line */}
-                  {index < nextSteps.length - 1 && (
-                    <div className="absolute left-5 top-12 w-0.5 h-[calc(100%-1rem)] bg-gradient-to-b from-gray-200 to-gray-100 dark:from-gray-700 dark:to-gray-800" />
-                  )}
-                  
-                  {/* Icon */}
-                  <div className={`relative flex-shrink-0 w-10 h-10 rounded-xl bg-gradient-to-br ${step.color} flex items-center justify-center shadow-lg`}>
-                    <step.icon className="w-5 h-5 text-white" />
-                    <span className="absolute -top-1 -left-1 w-5 h-5 bg-white dark:bg-gray-800 rounded-full flex items-center justify-center text-xs font-bold text-gray-600 dark:text-gray-300 shadow">
-                      {index + 1}
-                    </span>
-                  </div>
-                  
-                  {/* Content */}
-                  <div className="flex-1 pb-4">
-                    <div className="flex flex-wrap items-center gap-2 mb-1">
-                      <h3 className="font-semibold text-gray-900 dark:text-white">{step.title}</h3>
-                      <span className={`text-xs px-2 py-0.5 rounded-full ${step.bgColor} ${step.textColor} font-medium`}>
-                        {step.time}
-                      </span>
-                    </div>
-                    <p className="text-sm text-gray-600 dark:text-gray-400">{step.description}</p>
-                    {step.link && (
-                      <a
-                        href={step.link}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="inline-flex items-center gap-1.5 mt-2 text-sm font-medium text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 transition-colors"
-                      >
-                        <FolderOpen className="w-4 h-4" />
-                        Open Google Drive
-                        <ExternalLink className="w-3 h-3" />
-                      </a>
-                    )}
-                  </div>
-                </motion.div>
-              ))}
-            </div>
-          </motion.div>
-
-          {/* Drive link info box */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.3 }}
-            className="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-xl p-4 mb-6"
-          >
-            <div className="flex items-start gap-3">
-              <FolderOpen className="w-5 h-5 text-blue-600 dark:text-blue-400 mt-0.5 flex-shrink-0" />
-              <div className="flex-1">
-                {driveUrl ? (
-                  <>
-                    <p className="text-blue-800 dark:text-blue-300 font-medium text-sm mb-2">
-                      📁 Je Google Drive map is klaar!
-                    </p>
-                    <p className="text-blue-700 dark:text-blue-400 text-sm mb-3">
-                      Upload hier je logo, foto's, teksten en andere bestanden. Zodra je dit hebt gedaan, starten we met je ontwerp!
-                    </p>
-                    <a
-                      href={driveUrl}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="inline-flex items-center gap-2 px-4 py-2.5 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-medium text-sm transition-colors shadow-lg shadow-blue-600/25"
-                    >
-                      <FolderOpen className="w-4 h-4" />
-                      Open Google Drive map
-                      <ArrowRight className="w-4 h-4" />
-                    </a>
-                  </>
-                ) : (
-                  <>
-                    <p className="text-blue-800 dark:text-blue-300 font-medium text-sm mb-1">
-                      Over de Drive link
-                    </p>
-                    <p className="text-blue-700 dark:text-blue-400 text-sm">
-                      Je vindt de Google Drive link in je welkomst-email of op je project status pagina. Hier kun je al je bestanden uploaden: logo, foto's, teksten, etc. Zodra je dit hebt gedaan, starten we met je ontwerp!
-                    </p>
-                  </>
-                )}
-              </div>
-            </div>
-          </motion.div>
-
-          {/* Tip box */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.4 }}
-            className="bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800 rounded-xl p-4 mb-6"
-          >
-            <p className="text-amber-800 dark:text-amber-300 text-sm">
-              <strong>💡 Tip:</strong> Onze e-mails kunnen soms in je spam/ongewenste map terechtkomen. 
-              Voeg <span className="font-medium">info@webstability.nl</span> toe aan je contacten zodat je niks mist!
-            </p>
-          </motion.div>
-
-          {/* Actions */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.5 }}
-            className="flex flex-col sm:flex-row gap-3 justify-center"
-          >
-            <button
-              onClick={() => {
-                setSubmitted(false)
-                setCanEdit(true)
-                setCurrentStep(1)
-              }}
-              className="inline-flex items-center justify-center gap-2 px-6 py-3 border-2 border-primary-500 text-primary-600 dark:text-primary-400 rounded-xl font-semibold hover:bg-primary-50 dark:hover:bg-primary-900/20 transition"
-            >
-              <Edit3 className="w-5 h-5" />
-              Antwoorden bekijken/wijzigen
-            </button>
-            <a
-              href={statusUrl}
-              className="inline-flex items-center justify-center gap-2 bg-gradient-to-r from-primary-500 to-primary-600 text-white px-6 py-3 rounded-xl font-semibold hover:from-primary-600 hover:to-primary-700 transition shadow-lg shadow-primary-500/25"
-            >
-              Bekijk project dashboard <ExternalLink className="w-5 h-5" />
-            </a>
-          </motion.div>
-
-          {/* Trust indicators */}
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ delay: 0.6 }}
-            className="mt-8 flex flex-wrap justify-center gap-4 sm:gap-6 text-sm text-gray-500 dark:text-gray-400"
-          >
-            <div className="flex items-center gap-2">
-              <Shield className="w-4 h-4 text-emerald-500" />
-              <span>Gegevens veilig opgeslagen</span>
-            </div>
-            <div className="flex items-center gap-2">
-              <Clock className="w-4 h-4 text-primary-500" />
-              <span>Altijd te wijzigen</span>
-            </div>
-          </motion.div>
-        </main>
-      </div>
-    )
   }
 
   // Loading state with skeleton

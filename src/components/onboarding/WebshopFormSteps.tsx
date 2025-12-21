@@ -660,6 +660,13 @@ export function WebshopBrandingStep({ data, onChange, disabled }: FormStepProps)
                     animate={{ opacity: 1, y: 0 }}
                     className="absolute top-14 left-0 z-10 bg-gray-800 border border-gray-700 rounded-xl p-3 shadow-xl"
                   >
+                    {/* Close button */}
+                    <button
+                      onClick={() => setActiveColorPicker(null)}
+                      className="absolute -top-2 -right-2 w-6 h-6 bg-gray-700 hover:bg-gray-600 rounded-full flex items-center justify-center transition-colors"
+                    >
+                      <X className="w-3 h-3 text-gray-300" />
+                    </button>
                     <input
                       type="color"
                       value={customColor || '#10B981'}
@@ -793,6 +800,39 @@ export function WebshopBrandingStep({ data, onChange, disabled }: FormStepProps)
             { value: 'no', label: 'Nee, ik wil graag een logo laten maken' },
           ]}
         />
+
+        {/* Logo upsell */}
+        {data.hasLogo === 'no' && (
+          <motion.div
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="bg-gradient-to-br from-purple-500/10 to-pink-500/10 border border-purple-500/30 rounded-xl p-4"
+          >
+            <div className="flex items-start gap-3">
+              <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center flex-shrink-0">
+                <Sparkles className="w-5 h-5 text-white" />
+              </div>
+              <div className="flex-1">
+                <h4 className="font-semibold text-white mb-1">Logo laten ontwerpen?</h4>
+                <p className="text-sm text-gray-400 mb-3">
+                  Een professioneel logo is de basis van je merk. We ontwerpen een uniek logo dat perfect bij je webshop past.
+                </p>
+                <div className="flex items-center gap-3">
+                  <a 
+                    href="/diensten/logo" 
+                    target="_blank"
+                    className="inline-flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-purple-500 to-pink-500 text-white text-sm font-medium rounded-lg hover:from-purple-600 hover:to-pink-600 transition-all"
+                  >
+                    <Palette className="w-4 h-4" />
+                    Bekijk logo pakket
+                    <ArrowUpRight className="w-3 h-3" />
+                  </a>
+                  <span className="text-xs text-gray-500">Vanaf €149,-</span>
+                </div>
+              </div>
+            </div>
+          </motion.div>
+        )}
       </div>
 
       {/* ===== INSPIRATION ===== */}
