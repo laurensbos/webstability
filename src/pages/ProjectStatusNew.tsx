@@ -208,6 +208,8 @@ export default function ProjectStatusNew() {
   const [showChat, setShowChat] = useState(false)
   const [chatExpanded, setChatExpanded] = useState(false)
   const messagesEndRef = useRef<HTMLDivElement>(null)
+  const prevMessageCountRef = useRef<number>(0)
+  const audioRef = useRef<HTMLAudioElement | null>(null)
   
   // Onboarding state
   const [onboardingCompleted, setOnboardingCompleted] = useState(false)
@@ -401,10 +403,46 @@ export default function ProjectStatusNew() {
       const response = await fetch(`/api/project/${id}/messages`)
       if (response.ok) {
         const data = await response.json()
-        setMessages(data.success ? data.messages || [] : data || [])
+        const newMessages = data.success ? data.messages || [] : data || []
+        
+        // Check if there are new messages from developer
+        const developerMessages = newMessages.filter((m: ProjectMessage) => m.from === 'developer')
+        const prevDeveloperMessages = messages.filter(m => m.from === 'developer')
+        
+        if (developerMessages.length > prevDeveloperMessages.length && prevMessageCountRef.current > 0) {
+          // Play notification sound
+          playNotificationSound()
+          // Show browser notification if permitted
+          showBrowserNotification('Nieuw bericht', 'Je hebt een nieuw bericht ontvangen')
+        }
+        
+        prevMessageCountRef.current = newMessages.length
+        setMessages(newMessages)
       }
     } catch {
       // Ignore
+    }
+  }
+
+  // Play notification sound
+  const playNotificationSound = () => {
+    try {
+      if (!audioRef.current) {
+        audioRef.current = new Audio('data:audio/wav;base64,UklGRnoGAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQoGAACBhYqFbF1fdH2Onp6ZkH1xaHSAlp+fm5eMenBudoegnpyYjoF1b3eDl5+dnJWKf3Z2f4uZnpuYkYd9dniDjpqdmpeNg3x4fIaSnZqXlIqAfHl9iJSampeTiYF8enyGkZqZlpGIgH18fomTmpiUj4V/fH2Ak5mYlI+FgX5+gJKYl5OOhIF/f4GRl5aRjYSBgICDkJaVkIuDgoGChI+UlI6KgoKChYaOk5KNiYODhIaHjZGQjIiEhIaHiIyPjouHhYWHiImLjY2KhoaGiIqKi4yLiYaHh4mKioqLioiHh4iJiomKiomIiIiJiYmJiYmIiIiJiYmJiYmIiImJiYmJiYmJiYmJiYmJiYk=')
+      }
+      audioRef.current.volume = 0.5
+      audioRef.current.play().catch(() => {})
+    } catch {
+      // Audio not supported
+    }
+  }
+
+  // Show browser notification
+  const showBrowserNotification = (title: string, body: string) => {
+    if ('Notification' in window && Notification.permission === 'granted') {
+      new Notification(title, { body, icon: '/favicon.svg' })
+    } else if ('Notification' in window && Notification.permission !== 'denied') {
+      Notification.requestPermission()
     }
   }
 

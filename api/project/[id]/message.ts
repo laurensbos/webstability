@@ -57,6 +57,7 @@ interface Project {
   messages?: ChatMessage[]
   updatedAt?: string
   developerNotifiedOfFirstMessage?: boolean
+  lastClientMessageAt?: string
   [key: string]: unknown
 }
 
@@ -115,20 +116,31 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     const messages = project.messages || []
     messages.push(newMessage)
 
-    // Check if this is the first client message (for developer notification)
+    // Check if we should notify developer about this client message
+    // Notify if: first message OR client was inactive for 10+ minutes
+    const TEN_MINUTES = 10 * 60 * 1000
+    const now = Date.now()
+    const lastClientMessageTime = project.lastClientMessageAt ? new Date(project.lastClientMessageAt).getTime() : 0
+    const timeSinceLastClientMessage = now - lastClientMessageTime
+    
     const isFirstClientMessage = from === 'client' && !project.developerNotifiedOfFirstMessage
+    const clientReturnedAfterInactivity = from === 'client' && timeSinceLastClientMessage > TEN_MINUTES && lastClientMessageTime > 0
 
+    // Update last client message timestamp
     const updatedProject = {
       ...project,
       messages,
       updatedAt: new Date().toISOString(),
+      // Update last client message time if from client
+      ...(from === 'client' && { lastClientMessageAt: new Date().toISOString() }),
       // Mark as notified if this is first client message
       ...(isFirstClientMessage && { developerNotifiedOfFirstMessage: true }),
     }
 
     await kv.set(`project:${projectId}`, updatedProject)
 
-    console.log(`Message sent for project ${projectId} from ${from}${isFirstClientMessage ? ' (first client message)' : ''}`)
+    const shouldNotifyDeveloper = isFirstClientMessage || clientReturnedAfterInactivity
+    console.log(`Message sent for project ${projectId} from ${from}${isFirstClientMessage ? ' (first client message)' : ''}${clientReturnedAfterInactivity ? ' (client returned after inactivity)' : ''}`)
 
     // Helper function to send email via SMTP
     const sendEmail = async (to: string, subject: string, html: string) => {
@@ -155,8 +167,9 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
     // Send email notification
     try {
-      if (from === 'client' && isFirstClientMessage) {
-        // Only notify developer about FIRST client message
+      if (from === 'client' && shouldNotifyDeveloper) {
+        // Notify developer about client message (first message or after 10min inactivity)
+        const notificationReason = isFirstClientMessage ? 'Eerste bericht' : 'Klant is terug na inactiviteit'
         const html = `
           <!DOCTYPE html>
           <html>
@@ -164,10 +177,11 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
             <div style="max-width: 600px; margin: 0 auto; background: white; border-radius: 16px; overflow: hidden; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);">
               <div style="background: linear-gradient(135deg, #10b981 0%, #059669 100%); padding: 32px; text-align: center;">
                 <h1 style="color: white; margin: 0; font-size: 24px;">💬 Nieuw Bericht van Klant</h1>
+                <p style="color: rgba(255,255,255,0.8); margin: 8px 0 0 0; font-size: 14px;">${notificationReason}</p>
               </div>
               <div style="padding: 24px;">
                 <p><strong>Project:</strong> ${project.businessName || projectId}</p>
-                <p><strong>Van:</strong> ${project.contactName || project.contactEmail || 'Klant'}</p>
+                <p><strong>Van:</strong> ${newMessage.senderName || project.contactName || project.contactEmail || 'Klant'}</p>
                 <div style="background: #f0fdf4; border-left: 4px solid #10b981; border-radius: 8px; padding: 16px; margin: 16px 0;">
                   <p style="margin: 0; color: #334155; white-space: pre-wrap;">${message}</p>
                 </div>
@@ -194,7 +208,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
           </body>
           </html>
         `
-        await sendEmail(DEV_NOTIFICATION_EMAIL, `💬 Nieuw bericht: ${project.businessName || 'Project'}`, html)
+        await sendEmail(DEV_NOTIFICATION_EMAIL, `💬 ${notificationReason}: ${project.businessName || 'Project'}`, html)
       } else if (from === 'developer' && project.contactEmail) {
         // Notify client about developer response
         const html = `
