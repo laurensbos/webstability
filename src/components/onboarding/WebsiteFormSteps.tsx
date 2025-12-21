@@ -780,7 +780,7 @@ const DESIGN_STYLES = [
   { 
     id: 'minimalist',
     name: 'Minimalistisch',
-    description: 'Veel witruimte, focus op inhoud',
+    description: 'Veel witruimte, clean & rustig',
     visual: '▢ ▢ ▢',
     gradient: 'from-gray-100 to-white',
     accent: 'border-gray-300'
@@ -788,7 +788,7 @@ const DESIGN_STYLES = [
   { 
     id: 'modern',
     name: 'Modern & Strak',
-    description: 'Scherpe lijnen, gestroomlijnd',
+    description: 'Scherpe lijnen, professioneel',
     visual: '◢ ◣',
     gradient: 'from-blue-50 to-indigo-50',
     accent: 'border-blue-400'
@@ -796,47 +796,23 @@ const DESIGN_STYLES = [
   { 
     id: 'creative',
     name: 'Creatief & Speels',
-    description: 'Gedurfd, kleurrijk, uniek',
+    description: 'Kleurrijk, gedurfd, uniek',
     visual: '◯ △ ◇',
     gradient: 'from-purple-50 to-pink-50',
     accent: 'border-purple-400'
   },
   { 
-    id: 'professional',
-    name: 'Corporate & Zakelijk',
-    description: 'Betrouwbaar, serieus',
-    visual: '▣ ▣ ▣',
-    gradient: 'from-slate-50 to-gray-100',
-    accent: 'border-slate-400'
-  },
-  { 
     id: 'warm',
-    name: 'Warm & Uitnodigend',
-    description: 'Gezellig, persoonlijk',
+    name: 'Warm & Persoonlijk',
+    description: 'Uitnodigend, vriendelijk',
     visual: '◠ ◡ ◠',
     gradient: 'from-orange-50 to-amber-50',
     accent: 'border-orange-400'
   },
   { 
-    id: 'bold',
-    name: 'Bold & Gedurfd',
-    description: 'Grote statements, impact',
-    visual: '■ ■',
-    gradient: 'from-red-50 to-rose-50',
-    accent: 'border-red-400'
-  },
-  { 
-    id: 'organic',
-    name: 'Organisch & Natuurlijk',
-    description: 'Zachte vormen, aards',
-    visual: '◠ ⌒ ◠',
-    gradient: 'from-green-50 to-emerald-50',
-    accent: 'border-green-400'
-  },
-  { 
     id: 'luxury',
     name: 'Luxe & Elegant',
-    description: 'Premium uitstraling, verfijnd',
+    description: 'Premium, verfijnd, exclusief',
     visual: '◇ ◆ ◇',
     gradient: 'from-amber-50 to-yellow-50',
     accent: 'border-amber-400'
