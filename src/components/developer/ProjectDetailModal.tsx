@@ -19,7 +19,13 @@ import {
   AlertCircle,
   Clock,
   Mail,
-  Phone
+  Phone,
+  User,
+  Trash2,
+  Lock,
+  Eye,
+  EyeOff,
+  Loader2
 } from 'lucide-react'
 import type { Project, ProjectPhase, ChatMessage } from './types'
 import { PHASE_CONFIG, PACKAGE_CONFIG, SERVICE_CONFIG } from './types'
@@ -29,19 +35,28 @@ interface ProjectDetailModalProps {
   onClose: () => void
   onUpdate: (project: Project) => void
   onSendPaymentLink: (project: Project) => void
+  onDelete?: (projectId: string) => Promise<boolean>
 }
 
 export default function ProjectDetailModal({ 
   project, 
   onClose, 
   onUpdate,
-  onSendPaymentLink
+  onSendPaymentLink,
+  onDelete
 }: ProjectDetailModalProps) {
-  const [activeTab, setActiveTab] = useState<'info' | 'messages' | 'feedback'>('info')
+  const [activeTab, setActiveTab] = useState<'info' | 'messages' | 'feedback' | 'customer'>('info')
   const [newMessage, setNewMessage] = useState('')
   const [copied, setCopied] = useState(false)
   const [internalNotes, setInternalNotes] = useState(project.internalNotes || '')
   const messagesEndRef = useRef<HTMLDivElement>(null)
+  
+  // Delete confirmation state
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false)
+  const [deletePassword, setDeletePassword] = useState('')
+  const [showPassword, setShowPassword] = useState(false)
+  const [deleteLoading, setDeleteLoading] = useState(false)
+  const [deleteError, setDeleteError] = useState('')
 
   const packageInfo = PACKAGE_CONFIG[project.package]
   const phaseInfo = PHASE_CONFIG[project.phase]
@@ -112,6 +127,46 @@ export default function ProjectDetailModal({
       f.id === feedbackId ? { ...f, status: 'resolved' as const } : f
     ) || []
     onUpdate({ ...project, feedbackHistory: updatedHistory })
+  }
+
+  // Handle project deletion with password verification
+  const handleDeleteProject = async () => {
+    if (!deletePassword.trim()) {
+      setDeleteError('Voer je wachtwoord in')
+      return
+    }
+    
+    setDeleteLoading(true)
+    setDeleteError('')
+    
+    try {
+      // Verify password via developer login endpoint
+      const verifyResponse = await fetch('/api/developer/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ password: deletePassword })
+      })
+      
+      if (!verifyResponse.ok) {
+        setDeleteError('Onjuist wachtwoord')
+        setDeleteLoading(false)
+        return
+      }
+      
+      // Password correct, proceed with deletion
+      if (onDelete) {
+        const success = await onDelete(project.projectId)
+        if (success) {
+          onClose()
+        } else {
+          setDeleteError('Kon project niet verwijderen')
+        }
+      }
+    } catch (err) {
+      setDeleteError('Er ging iets mis')
+    } finally {
+      setDeleteLoading(false)
+    }
   }
 
   const phases: ProjectPhase[] = ['onboarding', 'design', 'design_approved', 'development', 'review', 'live']
@@ -185,6 +240,7 @@ export default function ProjectDetailModal({
               { id: 'info', label: 'Info', icon: FileText },
               { id: 'messages', label: 'Berichten', icon: MessageSquare, badge: unreadMessages },
               { id: 'feedback', label: 'Feedback', icon: AlertCircle, badge: pendingFeedback.length },
+              { id: 'customer', label: 'Klant', icon: User },
             ].map(tab => (
               <button
                 key={tab.id}
@@ -507,6 +563,338 @@ export default function ProjectDetailModal({
                     </div>
                   ))
                 )}
+              </motion.div>
+            )}
+
+            {/* Customer Tab */}
+            {activeTab === 'customer' && (
+              <motion.div
+                key="customer"
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -10 }}
+                className="space-y-4"
+              >
+                {/* Customer Contact Info - Compact Grid */}
+                <div className="bg-gradient-to-br from-emerald-500/10 to-teal-500/10 border border-emerald-500/20 rounded-xl p-4">
+                  <h4 className="text-sm font-semibold text-emerald-400 mb-3 flex items-center gap-2">
+                    <User className="w-4 h-4" />
+                    Contactgegevens
+                  </h4>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    <div className="bg-gray-900/50 rounded-lg p-3">
+                      <p className="text-[10px] uppercase tracking-wider text-gray-500 mb-1">Bedrijf</p>
+                      <p className="text-white font-medium text-sm truncate">{project.businessName || '-'}</p>
+                    </div>
+                    <div className="bg-gray-900/50 rounded-lg p-3">
+                      <p className="text-[10px] uppercase tracking-wider text-gray-500 mb-1">Contact</p>
+                      <p className="text-white font-medium text-sm truncate">{project.contactName || '-'}</p>
+                    </div>
+                    <div className="bg-gray-900/50 rounded-lg p-3">
+                      <p className="text-[10px] uppercase tracking-wider text-gray-500 mb-1">E-mail</p>
+                      <a href={`mailto:${project.contactEmail}`} className="text-emerald-400 hover:underline text-sm truncate block">
+                        {project.contactEmail || '-'}
+                      </a>
+                    </div>
+                    <div className="bg-gray-900/50 rounded-lg p-3">
+                      <p className="text-[10px] uppercase tracking-wider text-gray-500 mb-1">Telefoon</p>
+                      {project.contactPhone ? (
+                        <a href={`tel:${project.contactPhone}`} className="text-emerald-400 hover:underline text-sm">
+                          {project.contactPhone}
+                        </a>
+                      ) : (
+                        <p className="text-gray-500 text-sm">-</p>
+                      )}
+                    </div>
+                  </div>
+                </div>
+
+                {/* Full Onboarding Data - All Fields */}
+                {project.onboardingData && Object.keys(project.onboardingData).length > 0 && (() => {
+                  const data = project.onboardingData as Record<string, unknown>
+                  
+                  // Categorize fields
+                  const fieldCategories = {
+                    bedrijf: {
+                      title: '🏢 Bedrijfsinformatie',
+                      color: 'from-blue-500/10 to-indigo-500/10',
+                      borderColor: 'border-blue-500/20',
+                      titleColor: 'text-blue-400',
+                      fields: ['businessName', 'aboutBusiness', 'uniqueFeatures', 'services', 'targetAudience', 'competitors', 'usp']
+                    },
+                    branding: {
+                      title: '🎨 Branding & Design',
+                      color: 'from-purple-500/10 to-pink-500/10',
+                      borderColor: 'border-purple-500/20',
+                      titleColor: 'text-purple-400',
+                      fields: ['brandColors', 'colorPreferences', 'designStyle', 'designPreferences', 'logoDescription', 'fontPreferences', 'moodboard', 'referenceWebsites', 'inspiration']
+                    },
+                    doelen: {
+                      title: '🎯 Doelen & Strategie',
+                      color: 'from-amber-500/10 to-orange-500/10',
+                      borderColor: 'border-amber-500/20',
+                      titleColor: 'text-amber-400',
+                      fields: ['mainGoal', 'goal', 'websiteGoals', 'callToAction', 'conversionGoals', 'kpis']
+                    },
+                    paginas: {
+                      title: '📄 Pagina\'s & Content',
+                      color: 'from-green-500/10 to-emerald-500/10',
+                      borderColor: 'border-green-500/20',
+                      titleColor: 'text-green-400',
+                      fields: ['selectedPages', 'pages', 'pageContent', 'contentReady', 'copywriting', 'blogNeeded', 'hasContent']
+                    },
+                    features: {
+                      title: '⚙️ Functionaliteiten',
+                      color: 'from-cyan-500/10 to-blue-500/10',
+                      borderColor: 'border-cyan-500/20',
+                      titleColor: 'text-cyan-400',
+                      fields: ['selectedFeatures', 'features', 'integrations', 'contactForm', 'newsletter', 'socialMedia', 'analytics', 'seo', 'multilingual', 'languages']
+                    },
+                    planning: {
+                      title: '📅 Planning & Deadline',
+                      color: 'from-rose-500/10 to-red-500/10',
+                      borderColor: 'border-rose-500/20',
+                      titleColor: 'text-rose-400',
+                      fields: ['deadline', 'preferredDate', 'launchDate', 'timeline', 'urgency', 'budget', 'additionalNotes', 'extraInfo']
+                    }
+                  }
+                  
+                  // Field labels in Dutch
+                  const fieldLabels: Record<string, string> = {
+                    businessName: 'Bedrijfsnaam',
+                    aboutBusiness: 'Over het bedrijf',
+                    uniqueFeatures: 'Unieke kenmerken',
+                    services: 'Diensten/Producten',
+                    targetAudience: 'Doelgroep',
+                    competitors: 'Concurrenten',
+                    usp: 'USP',
+                    brandColors: 'Merkleuren',
+                    colorPreferences: 'Kleurvoorkeuren',
+                    designStyle: 'Designstijl',
+                    designPreferences: 'Design voorkeuren',
+                    logoDescription: 'Logo omschrijving',
+                    fontPreferences: 'Lettertype voorkeuren',
+                    moodboard: 'Moodboard',
+                    referenceWebsites: 'Referentie websites',
+                    inspiration: 'Inspiratie',
+                    mainGoal: 'Hoofddoel',
+                    goal: 'Doel',
+                    websiteGoals: 'Website doelen',
+                    callToAction: 'Call-to-action',
+                    conversionGoals: 'Conversiedoelen',
+                    kpis: 'KPIs',
+                    selectedPages: 'Geselecteerde pagina\'s',
+                    pages: 'Pagina\'s',
+                    pageContent: 'Pagina content',
+                    contentReady: 'Content gereed',
+                    copywriting: 'Copywriting nodig',
+                    blogNeeded: 'Blog gewenst',
+                    hasContent: 'Heeft content',
+                    selectedFeatures: 'Geselecteerde features',
+                    features: 'Features',
+                    integrations: 'Integraties',
+                    contactForm: 'Contactformulier',
+                    newsletter: 'Nieuwsbrief',
+                    socialMedia: 'Social media',
+                    analytics: 'Analytics',
+                    seo: 'SEO',
+                    multilingual: 'Meertalig',
+                    languages: 'Talen',
+                    deadline: 'Deadline',
+                    preferredDate: 'Gewenste datum',
+                    launchDate: 'Lanceerdatum',
+                    timeline: 'Tijdlijn',
+                    urgency: 'Urgentie',
+                    budget: 'Budget',
+                    additionalNotes: 'Extra opmerkingen',
+                    extraInfo: 'Extra informatie',
+                    package: 'Pakket',
+                    packageType: 'Pakket type'
+                  }
+                  
+                  // Render value based on type
+                  const renderValue = (value: unknown): React.ReactNode => {
+                    if (value === null || value === undefined || value === '') return null
+                    if (typeof value === 'boolean') return value ? '✓ Ja' : '✗ Nee'
+                    if (Array.isArray(value)) {
+                      if (value.length === 0) return null
+                      return (
+                        <div className="flex flex-wrap gap-1.5">
+                          {value.map((item, i) => (
+                            <span key={i} className="px-2 py-1 bg-gray-700/50 rounded text-xs text-gray-300">
+                              {String(item)}
+                            </span>
+                          ))}
+                        </div>
+                      )
+                    }
+                    if (typeof value === 'object') return JSON.stringify(value, null, 2)
+                    return String(value)
+                  }
+                  
+                  // Get fields that have data for each category
+                  const categoriesWithData = Object.entries(fieldCategories).map(([key, cat]) => {
+                    const fieldsWithData = cat.fields.filter(field => {
+                      const val = data[field]
+                      return val !== null && val !== undefined && val !== '' && 
+                             !(Array.isArray(val) && val.length === 0)
+                    })
+                    return { key, ...cat, fieldsWithData }
+                  }).filter(cat => cat.fieldsWithData.length > 0)
+                  
+                  // Also collect uncategorized fields
+                  const allCategorizedFields = Object.values(fieldCategories).flatMap(cat => cat.fields)
+                  const uncategorizedFields = Object.keys(data).filter(key => 
+                    !allCategorizedFields.includes(key) && 
+                    data[key] !== null && 
+                    data[key] !== undefined && 
+                    data[key] !== '' &&
+                    !(Array.isArray(data[key]) && (data[key] as unknown[]).length === 0)
+                  )
+                  
+                  return (
+                    <div className="space-y-3">
+                      {categoriesWithData.map(cat => (
+                        <div key={cat.key} className={`bg-gradient-to-br ${cat.color} border ${cat.borderColor} rounded-xl p-4`}>
+                          <h4 className={`text-sm font-semibold ${cat.titleColor} mb-3`}>
+                            {cat.title}
+                          </h4>
+                          <div className="space-y-2">
+                            {cat.fieldsWithData.map(field => {
+                              const value = renderValue(data[field])
+                              if (!value) return null
+                              return (
+                                <div key={field} className="bg-gray-900/50 rounded-lg p-3">
+                                  <p className="text-[10px] uppercase tracking-wider text-gray-500 mb-1">
+                                    {fieldLabels[field] || field}
+                                  </p>
+                                  <div className="text-gray-200 text-sm whitespace-pre-wrap break-words">
+                                    {value}
+                                  </div>
+                                </div>
+                              )
+                            })}
+                          </div>
+                        </div>
+                      ))}
+                      
+                      {/* Uncategorized fields */}
+                      {uncategorizedFields.length > 0 && (
+                        <div className="bg-gradient-to-br from-gray-500/10 to-slate-500/10 border border-gray-500/20 rounded-xl p-4">
+                          <h4 className="text-sm font-semibold text-gray-400 mb-3">
+                            📋 Overige gegevens
+                          </h4>
+                          <div className="space-y-2">
+                            {uncategorizedFields.map(field => {
+                              const value = renderValue(data[field])
+                              if (!value) return null
+                              return (
+                                <div key={field} className="bg-gray-900/50 rounded-lg p-3">
+                                  <p className="text-[10px] uppercase tracking-wider text-gray-500 mb-1">
+                                    {fieldLabels[field] || field.replace(/([A-Z])/g, ' $1').replace(/^./, str => str.toUpperCase())}
+                                  </p>
+                                  <div className="text-gray-200 text-sm whitespace-pre-wrap break-words">
+                                    {value}
+                                  </div>
+                                </div>
+                              )
+                            })}
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  )
+                })()}
+
+                {/* No onboarding data message */}
+                {(!project.onboardingData || Object.keys(project.onboardingData).length === 0) && (
+                  <div className="bg-gray-800/50 rounded-xl p-6 text-center">
+                    <FileText className="w-10 h-10 text-gray-600 mx-auto mb-3" />
+                    <p className="text-gray-400 text-sm">Nog geen onboarding gegevens ingevuld</p>
+                    <p className="text-gray-500 text-xs mt-1">De klant heeft de onboarding nog niet voltooid</p>
+                  </div>
+                )}
+
+                {/* Danger Zone - Delete Project */}
+                <div className="bg-red-500/10 border border-red-500/30 rounded-xl p-4">
+                  <h4 className="text-sm font-medium text-red-400 mb-2 flex items-center gap-2">
+                    <Trash2 className="w-4 h-4" />
+                    Gevarenzone
+                  </h4>
+                  <p className="text-xs text-red-300/70 mb-4">
+                    Het verwijderen van een project is permanent en kan niet ongedaan worden gemaakt.
+                  </p>
+                  
+                  {!showDeleteConfirm ? (
+                    <button
+                      onClick={() => setShowDeleteConfirm(true)}
+                      className="flex items-center gap-2 px-4 py-2 bg-red-500/20 hover:bg-red-500/30 border border-red-500/30 rounded-lg text-sm text-red-400 transition"
+                    >
+                      <Trash2 className="w-4 h-4" />
+                      Project verwijderen
+                    </button>
+                  ) : (
+                    <div className="space-y-3">
+                      <p className="text-sm text-red-300">
+                        Voer je developer wachtwoord in om te bevestigen:
+                      </p>
+                      <div className="relative">
+                        <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-500" />
+                        <input
+                          type={showPassword ? 'text' : 'password'}
+                          value={deletePassword}
+                          onChange={e => {
+                            setDeletePassword(e.target.value)
+                            setDeleteError('')
+                          }}
+                          placeholder="Wachtwoord"
+                          className="w-full pl-10 pr-10 py-2.5 bg-gray-900 border border-gray-700 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:border-red-500"
+                        />
+                        <button
+                          type="button"
+                          onClick={() => setShowPassword(!showPassword)}
+                          className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-400"
+                        >
+                          {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                        </button>
+                      </div>
+                      
+                      {deleteError && (
+                        <p className="text-sm text-red-400 flex items-center gap-1.5">
+                          <AlertCircle className="w-4 h-4" />
+                          {deleteError}
+                        </p>
+                      )}
+                      
+                      <div className="flex gap-2">
+                        <button
+                          onClick={() => {
+                            setShowDeleteConfirm(false)
+                            setDeletePassword('')
+                            setDeleteError('')
+                          }}
+                          className="flex-1 px-4 py-2 bg-gray-700 hover:bg-gray-600 rounded-lg text-sm text-gray-300 transition"
+                        >
+                          Annuleren
+                        </button>
+                        <button
+                          onClick={handleDeleteProject}
+                          disabled={deleteLoading || !deletePassword.trim()}
+                          className="flex-1 flex items-center justify-center gap-2 px-4 py-2 bg-red-500 hover:bg-red-600 disabled:bg-gray-700 disabled:text-gray-500 rounded-lg text-sm text-white font-medium transition"
+                        >
+                          {deleteLoading ? (
+                            <Loader2 className="w-4 h-4 animate-spin" />
+                          ) : (
+                            <>
+                              <Trash2 className="w-4 h-4" />
+                              Definitief verwijderen
+                            </>
+                          )}
+                        </button>
+                      </div>
+                    </div>
+                  )}
+                </div>
               </motion.div>
             )}
           </AnimatePresence>

@@ -132,6 +132,31 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       return res.status(200).json({ success: true, project: updatedProject })
     }
     
+    if (req.method === 'DELETE') {
+      // Delete project
+      const projectId = req.query.projectId as string
+      
+      if (!projectId) {
+        return res.status(400).json({ success: false, message: 'Project ID verplicht' })
+      }
+      
+      const existing = await kv.get<Project>(`project:${projectId}`)
+      
+      if (!existing) {
+        return res.status(404).json({ success: false, message: 'Project niet gevonden' })
+      }
+      
+      // Remove project from Redis
+      await kv.del(`project:${projectId}`)
+      
+      // Remove from projects set
+      await kv.srem('projects', projectId)
+      
+      console.log(`Project ${projectId} deleted by developer`)
+      
+      return res.status(200).json({ success: true, message: 'Project verwijderd' })
+    }
+    
     return res.status(405).json({ success: false, message: 'Method not allowed' })
 
   } catch (error) {

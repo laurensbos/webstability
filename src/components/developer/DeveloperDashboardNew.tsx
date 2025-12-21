@@ -185,6 +185,30 @@ export default function DeveloperDashboard() {
     return prices[pkg] || 128
   }
 
+  // Delete project
+  const handleDeleteProject = async (projectId: string): Promise<boolean> => {
+    try {
+      const token = sessionStorage.getItem(TOKEN_KEY)
+      const response = await fetch(`${API_BASE}/developer/projects?projectId=${projectId}`, {
+        method: 'DELETE',
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      })
+      
+      if (response.ok) {
+        // Remove from local state
+        setProjects(prev => prev.filter(p => p.projectId !== projectId))
+        setSelectedProject(null)
+        return true
+      }
+      return false
+    } catch (error) {
+      console.error('Failed to delete project:', error)
+      return false
+    }
+  }
+
   // Filter projects by search
   const filteredProjects = projects.filter(p => 
     p.businessName.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -557,6 +581,7 @@ export default function DeveloperDashboard() {
             onClose={() => setSelectedProject(null)}
             onUpdate={handleUpdateProject}
             onSendPaymentLink={handleSendPaymentLink}
+            onDelete={handleDeleteProject}
           />
         )}
       </AnimatePresence>
