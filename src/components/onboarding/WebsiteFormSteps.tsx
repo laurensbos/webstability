@@ -1130,27 +1130,27 @@ export function WebsiteBrandingStep({ data, onChange, disabled }: FormStepProps)
             return (
               <motion.button
                 key={style.id}
-                initial={{ opacity: 0, scale: 0.9 }}
-                animate={{ opacity: 1, scale: 1 }}
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: i * 0.05 }}
                 onClick={() => !disabled && onChange('designStyle', style.id)}
                 disabled={disabled}
                 className={`
-                  relative text-left p-4 rounded-xl border-2 transition-all overflow-hidden
+                  relative text-left p-4 rounded-xl border transition-all group
                   ${isSelected 
-                    ? `border-primary-500 bg-gradient-to-br ${style.gradient}` 
-                    : 'border-gray-700 bg-gray-800/50 hover:border-gray-500'}
+                    ? 'border-primary-500 bg-primary-500/10 ring-1 ring-primary-500/30' 
+                    : 'border-gray-700 bg-gray-800/30 hover:border-gray-600 hover:bg-gray-800/50'}
                 `}
               >
-                {/* Visual indicator */}
-                <div className={`text-3xl mb-2 ${isSelected ? 'text-gray-800' : 'text-gray-500'}`}>
+                {/* Visual indicator - smaller and cleaner */}
+                <div className={`text-xl mb-3 transition-colors ${isSelected ? 'text-primary-400' : 'text-gray-500 group-hover:text-gray-400'}`}>
                   {style.visual}
                 </div>
                 
-                <div className={`font-semibold ${isSelected ? 'text-gray-900' : 'text-white'}`}>
+                <div className={`font-medium text-sm ${isSelected ? 'text-white' : 'text-gray-300'}`}>
                   {style.name}
                 </div>
-                <div className={`text-xs mt-0.5 ${isSelected ? 'text-gray-700' : 'text-gray-500'}`}>
+                <div className={`text-xs mt-0.5 ${isSelected ? 'text-gray-400' : 'text-gray-500'}`}>
                   {style.description}
                 </div>
                 
@@ -1158,9 +1158,9 @@ export function WebsiteBrandingStep({ data, onChange, disabled }: FormStepProps)
                   <motion.div
                     initial={{ scale: 0 }}
                     animate={{ scale: 1 }}
-                    className="absolute top-2 right-2 w-6 h-6 rounded-full bg-primary-500 flex items-center justify-center"
+                    className="absolute top-2 right-2 w-5 h-5 rounded-full bg-primary-500 flex items-center justify-center"
                   >
-                    <Check className="w-4 h-4 text-white" />
+                    <Check className="w-3 h-3 text-white" />
                   </motion.div>
                 )}
               </motion.button>
