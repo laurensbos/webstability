@@ -7,6 +7,7 @@
 
 import type { VercelRequest, VercelResponse } from '@vercel/node'
 import { Redis } from '@upstash/redis'
+import { sendOnboardingCompleteEmail, sendDeveloperNotificationEmail, isSmtpConfigured } from '../../lib/smtp.js'
 
 const REDIS_URL = process.env.UPSTASH_REDIS_REST_URL
 const REDIS_TOKEN = process.env.UPSTASH_REDIS_REST_TOKEN
@@ -20,6 +21,14 @@ interface Project {
   status: string
   readyForDesign?: boolean
   readyForDesignAt?: string
+  contactEmail?: string
+  contactName?: string
+  businessName?: string
+  customer?: {
+    email?: string
+    name?: string
+    companyName?: string
+  }
   [key: string]: unknown
 }
 
@@ -85,8 +94,39 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     // Add to project's activity list
     await kv.lpush(`project:${projectId}:activity`, activityId)
 
-    // Send notification to developer (optional - could trigger email/slack)
-    // For now, the developer portal will show this status
+    // Send onboarding complete email to client
+    const customerEmail = project.customer?.email || project.contactEmail
+    const customerName = project.customer?.name || project.contactName || 'Klant'
+    const businessName = project.customer?.companyName || project.businessName
+    
+    if (customerEmail && isSmtpConfigured()) {
+      try {
+        await sendOnboardingCompleteEmail({
+          name: customerName,
+          email: customerEmail,
+          projectId: projectId,
+          businessName: businessName
+        })
+        console.log(`Onboarding complete email sent to ${customerEmail}`)
+      } catch (emailError) {
+        console.error('Failed to send onboarding complete email:', emailError)
+      }
+
+      // Notify developer
+      try {
+        await sendDeveloperNotificationEmail({
+          type: 'new_design_request',
+          projectId: projectId,
+          businessName: businessName || 'Nieuw project',
+          customerName: customerName,
+          customerEmail: customerEmail,
+          message: `${customerName} heeft aangegeven klaar te zijn voor de design fase. Alle bestanden zijn geüpload.`
+        })
+        console.log('Developer notification email sent')
+      } catch (emailError) {
+        console.error('Failed to send developer notification:', emailError)
+      }
+    }
 
     return res.status(200).json({ 
       success: true, 

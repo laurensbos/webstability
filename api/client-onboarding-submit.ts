@@ -1,6 +1,6 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node'
 import { getProject, setProject } from './lib/database.js'
-import { sendOnboardingCompleteEmail, sendDeveloperNotificationEmail, isSmtpConfigured } from './lib/smtp.js'
+import { sendDeveloperNotificationEmail, isSmtpConfigured } from './lib/smtp.js'
 
 /**
  * API Endpoint: /api/client-onboarding-submit
@@ -74,18 +74,8 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
     await setProject(updatedProject)
 
-    // Send confirmation email to client
-    try {
-      await sendOnboardingCompleteEmail({
-        name: formData?.contactName || project.customer?.name || 'Klant',
-        email: formData?.contactEmail || project.customer?.email,
-        projectId: projectId as string,
-        businessName: formData?.businessName || project.customer?.companyName
-      })
-      console.log(`Onboarding complete email sent to ${formData?.contactEmail || project.customer?.email}`)
-    } catch (emailError) {
-      console.error('Failed to send onboarding complete email:', emailError)
-    }
+    // Note: Onboarding complete email is sent when client clicks "Start Design" in the dashboard
+    // This is handled in /api/project/[id]/ready-for-design
 
     // If approved for design, notify the developer
     if (approvedForDesign && isSmtpConfigured()) {
