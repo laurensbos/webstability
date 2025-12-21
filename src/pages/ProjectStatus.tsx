@@ -29,11 +29,18 @@ import {
   ArrowRight,
   Sparkles,
   Timer,
-  CreditCard
+  CreditCard,
+  ThumbsUp,
+  Upload,
+  Image,
+  File
 } from 'lucide-react'
 import Logo from '../components/Logo'
 import type { Project, ProjectPhase, ProjectMessage } from '../types/project'
 import { getProgressPercentage } from '../types/project'
+
+// WhatsApp number for support
+const WHATSAPP_NUMBER = '31644712573'
 
 // Phase configuration
 const PHASES: { key: ProjectPhase; label: string; icon: typeof FileText }[] = [
@@ -238,8 +245,6 @@ const useDeadlineCountdown = (deadline?: string) => {
   return countdown
 }
 
-const WHATSAPP_NUMBER = '31612345678'
-
 export default function ProjectStatusNew() {
   const { projectId } = useParams<{ projectId: string }>()
   const navigate = useNavigate()
@@ -278,6 +283,10 @@ export default function ProjectStatusNew() {
   
   // Timeline expansion
   const [showTimeline, setShowTimeline] = useState(false)
+  
+  // Design approval state
+  const [approvingDesign, setApprovingDesign] = useState(false)
+  const [showApprovalConfirm, setShowApprovalConfirm] = useState(false)
   
   const phaseColors = project ? getPhaseColors(project.status) : getPhaseColors('onboarding')
   
@@ -549,6 +558,46 @@ export default function ProjectStatusNew() {
       // Ignore
     }
     setMessageLoading(false)
+  }
+
+  // Approve design - updates project status to design_approved
+  const approveDesign = async () => {
+    if (!projectId || !project) return
+    setApprovingDesign(true)
+    try {
+      const response = await fetch(`/api/projects?id=${projectId}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          status: 'design_approved',
+          designApprovedAt: new Date().toISOString()
+        })
+      })
+      if (response.ok) {
+        setProject(prev => prev ? { ...prev, status: 'design_approved', designApprovedAt: new Date().toISOString() } : null)
+        setShowApprovalConfirm(false)
+        // Add success notification
+        setNotifications(prev => [...prev, {
+          id: 'design-approved-' + Date.now(),
+          type: 'success',
+          title: '✅ Design goedgekeurd!',
+          message: 'Super! We sturen je binnenkort de betaallink.',
+          date: new Date().toISOString()
+        }])
+        setShowNotifications(true)
+      }
+    } catch (err) {
+      console.error('Failed to approve design:', err)
+    }
+    setApprovingDesign(false)
+  }
+
+  // Open WhatsApp chat
+  const openWhatsApp = () => {
+    const message = encodeURIComponent(
+      `Hoi! Ik heb een vraag over mijn project ${projectId} (${project?.businessName || 'mijn website'}).`
+    )
+    window.open(`https://wa.me/${WHATSAPP_NUMBER}?text=${message}`, '_blank')
   }
 
   // Get phase status
@@ -870,13 +919,41 @@ export default function ProjectStatusNew() {
               <p className="text-sm text-white/80">{getPhaseInfo(project.status, project.serviceType)?.description}</p>
             </div>
 
-            {/* Countdown timer */}
+            {/* Enhanced Countdown timer with urgency */}
             {countdown && project.status !== 'live' && (
-              <div className="mt-4 flex items-center gap-2">
-                <Timer className="w-4 h-4 text-white/70" />
-                <span className="text-sm text-white/70">
-                  Geschatte deadline: <span className="font-medium text-white">{countdown.days}d {countdown.hours}u</span>
-                </span>
+              <div className={`mt-4 p-3 rounded-lg ${
+                countdown.days <= 1 ? 'bg-red-500/20 border border-red-500/30' :
+                countdown.days <= 3 ? 'bg-amber-500/20 border border-amber-500/30' :
+                'bg-white/10'
+              }`}>
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-2">
+                    <Timer className={`w-4 h-4 ${
+                      countdown.days <= 1 ? 'text-red-400' :
+                      countdown.days <= 3 ? 'text-amber-400' :
+                      'text-white/70'
+                    }`} />
+                    <span className={`text-sm font-medium ${
+                      countdown.days <= 1 ? 'text-red-400' :
+                      countdown.days <= 3 ? 'text-amber-400' :
+                      'text-white'
+                    }`}>
+                      {countdown.days <= 1 ? 'Bijna klaar! 🎉' :
+                       countdown.days <= 3 ? 'Nog even geduld...' :
+                       'Geschatte oplevering'}
+                    </span>
+                  </div>
+                  <div className="flex items-center gap-3">
+                    <div className="text-center">
+                      <span className="text-xl font-bold text-white">{countdown.days}</span>
+                      <span className="text-xs text-white/60 ml-1">dagen</span>
+                    </div>
+                    <div className="text-center">
+                      <span className="text-xl font-bold text-white">{countdown.hours}</span>
+                      <span className="text-xs text-white/60 ml-1">uren</span>
+                    </div>
+                  </div>
+                </div>
               </div>
             )}
           </div>
@@ -976,6 +1053,64 @@ export default function ProjectStatusNew() {
           </motion.a>
         )}
 
+        {/* Design Approval Card - Show when design is ready for approval */}
+        {project.status === 'design' && project.designPreviewUrl && (
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.22 }}
+            className="p-5 rounded-xl bg-gradient-to-br from-emerald-500/20 to-green-500/10 border border-emerald-500/30"
+          >
+            <div className="flex items-start gap-4">
+              <div className="w-12 h-12 rounded-xl bg-emerald-500/20 flex items-center justify-center flex-shrink-0">
+                <ThumbsUp className="w-6 h-6 text-emerald-400" />
+              </div>
+              <div className="flex-1">
+                <h3 className="font-semibold text-white mb-1">Design goedkeuren</h3>
+                <p className="text-sm text-gray-400 mb-4">
+                  Tevreden met het design? Keur het goed om door te gaan naar de volgende fase.
+                </p>
+                
+                {!showApprovalConfirm ? (
+                  <button
+                    onClick={() => setShowApprovalConfirm(true)}
+                    className="inline-flex items-center gap-2 px-5 py-2.5 bg-gradient-to-r from-emerald-500 to-green-500 text-white font-medium rounded-lg hover:from-emerald-400 hover:to-green-400 transition shadow-lg shadow-emerald-500/25"
+                  >
+                    <ThumbsUp className="w-4 h-4" />
+                    Design goedkeuren
+                  </button>
+                ) : (
+                  <div className="space-y-3">
+                    <p className="text-amber-400 text-sm font-medium">
+                      ⚠️ Let op: Na goedkeuring ontvang je de betaallink
+                    </p>
+                    <div className="flex gap-2">
+                      <button
+                        onClick={approveDesign}
+                        disabled={approvingDesign}
+                        className="inline-flex items-center gap-2 px-5 py-2.5 bg-emerald-500 text-white font-medium rounded-lg hover:bg-emerald-400 transition disabled:opacity-50"
+                      >
+                        {approvingDesign ? (
+                          <Loader2 className="w-4 h-4 animate-spin" />
+                        ) : (
+                          <CheckCircle2 className="w-4 h-4" />
+                        )}
+                        Ja, goedkeuren
+                      </button>
+                      <button
+                        onClick={() => setShowApprovalConfirm(false)}
+                        className="px-4 py-2.5 text-gray-400 hover:text-white transition"
+                      >
+                        Annuleren
+                      </button>
+                    </div>
+                  </div>
+                )}
+              </div>
+            </div>
+          </motion.div>
+        )}
+
         {/* Live website link */}
         {project.status === 'live' && project.liveUrl && (
           <motion.a
@@ -1000,29 +1135,77 @@ export default function ProjectStatusNew() {
           </motion.a>
         )}
 
-        {/* Google Drive - Project Files */}
+        {/* Google Drive - Project Files with Upload Indicator */}
         {project.googleDriveUrl && (
-          <motion.a
+          <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.22 }}
-            href={project.googleDriveUrl}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="block p-4 rounded-xl bg-blue-500/10 border border-blue-500/30 hover:border-blue-500/50 transition group"
+            className="rounded-xl bg-blue-500/10 border border-blue-500/30 overflow-hidden"
           >
-            <div className="flex items-center gap-4">
-              <div className="w-10 h-10 rounded-lg bg-blue-500/20 flex items-center justify-center">
-                <FolderOpen className="w-5 h-5 text-blue-400" />
+            <a
+              href={project.googleDriveUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="block p-4 hover:bg-blue-500/5 transition group"
+            >
+              <div className="flex items-center gap-4">
+                <div className="w-10 h-10 rounded-lg bg-blue-500/20 flex items-center justify-center">
+                  <FolderOpen className="w-5 h-5 text-blue-400" />
+                </div>
+                <div className="flex-1">
+                  <p className="font-medium text-white">Projectbestanden</p>
+                  <p className="text-sm text-gray-500">Upload hier je logo, foto's en teksten</p>
+                </div>
+                <ExternalLink className="w-5 h-5 text-blue-400 group-hover:translate-x-1 transition" />
               </div>
-              <div className="flex-1">
-                <p className="font-medium text-white">Projectbestanden</p>
-                <p className="text-sm text-gray-500">Google Drive map met alle bestanden</p>
+            </a>
+            
+            {/* Upload checklist */}
+            {project.status === 'onboarding' && (
+              <div className="border-t border-blue-500/20 p-4 bg-blue-500/5">
+                <p className="text-xs text-blue-400 font-medium mb-3 flex items-center gap-2">
+                  <Upload className="w-3.5 h-3.5" />
+                  Wat moet je uploaden?
+                </p>
+                <div className="grid grid-cols-2 gap-2">
+                  {[
+                    { icon: Image, label: 'Logo (PNG/SVG)', key: 'logo' },
+                    { icon: Image, label: "Foto's", key: 'photos' },
+                    { icon: File, label: 'Teksten', key: 'texts' },
+                    { icon: File, label: 'Huisstijl', key: 'branding' }
+                  ].map((item) => (
+                    <div
+                      key={item.key}
+                      className="flex items-center gap-2 text-xs text-gray-400 bg-gray-800/50 rounded-lg px-2.5 py-2"
+                    >
+                      <item.icon className="w-3.5 h-3.5 text-blue-400" />
+                      {item.label}
+                    </div>
+                  ))}
+                </div>
               </div>
-              <ExternalLink className="w-5 h-5 text-blue-400 group-hover:translate-x-1 transition" />
-            </div>
-          </motion.a>
+            )}
+          </motion.div>
         )}
+
+        {/* WhatsApp Support Button */}
+        <motion.button
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.24 }}
+          onClick={openWhatsApp}
+          className="w-full p-4 rounded-xl bg-green-600/20 border border-green-500/30 hover:border-green-500/50 transition group flex items-center gap-4"
+        >
+          <div className="w-10 h-10 rounded-lg bg-green-500/30 flex items-center justify-center">
+            <Phone className="w-5 h-5 text-green-400" />
+          </div>
+          <div className="flex-1 text-left">
+            <p className="font-medium text-white">Direct contact via WhatsApp</p>
+            <p className="text-sm text-gray-500">Stel je vraag via WhatsApp</p>
+          </div>
+          <ArrowRight className="w-5 h-5 text-green-400 group-hover:translate-x-1 transition" />
+        </motion.button>
 
         {/* Payment Section */}
         {project.status === 'design_approved' && project.paymentStatus !== 'paid' && (
