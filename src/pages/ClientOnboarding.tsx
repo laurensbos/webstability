@@ -467,6 +467,8 @@ export default function ClientOnboarding() {
             brandColors: project.onboardingData?.colorPreferences || [],
             designStyle: project.onboardingData?.designStyle || '',
             mainGoal: project.onboardingData?.goal || '',
+            // Keep pages as both 'pages' and 'selectedPages' for compatibility
+            pages: project.onboardingData?.pages || [],
             selectedPages: project.onboardingData?.pages || [],
           }
           

@@ -2162,15 +2162,15 @@ export function WebsiteSamenvattingStep({ data, packageId, onUpgrade, onGoToStep
         <ul className="mb-4 space-y-1 text-sm text-green-600 dark:text-green-300">
           <li className="flex items-center gap-2">
             <span className="w-1.5 h-1.5 rounded-full bg-green-500" />
-            Je project gaat naar de design fase
+            We maken een Google Drive map voor je aan
           </li>
           <li className="flex items-center gap-2">
             <span className="w-1.5 h-1.5 rounded-full bg-green-500" />
-            De designers gaan aan de slag met jouw website
+            Upload daar je logo, foto's en content
           </li>
           <li className="flex items-center gap-2">
             <span className="w-1.5 h-1.5 rounded-full bg-green-500" />
-            Je ontvangt binnenkort het eerste ontwerp
+            Daarna gaan de designers aan de slag
           </li>
         </ul>
 
@@ -2190,10 +2190,10 @@ export function WebsiteSamenvattingStep({ data, packageId, onUpgrade, onGoToStep
             </div>
             <div>
               <span className="font-medium text-green-700 dark:text-green-300 group-hover:text-green-800 dark:group-hover:text-green-200 transition-colors">
-                Ik geef akkoord om te starten met het design
+                Ik bevestig dat deze gegevens correct zijn
               </span>
               <p className="text-xs text-green-600 dark:text-green-400 mt-1">
-                Door akkoord te geven, bevestig je dat de ingevulde gegevens correct zijn en we kunnen starten met het ontwerp van je website.
+                Na het insturen ontvang je een Google Drive link waar je je bestanden kunt uploaden.
               </p>
             </div>
           </label>
