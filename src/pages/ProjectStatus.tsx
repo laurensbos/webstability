@@ -106,7 +106,7 @@ const PHASE_ACTIONS: Record<ProjectPhase, {
   live: []
 }
 
-// Phase expectations text
+// Phase expectations text - base for websites
 const PHASE_INFO: Record<ProjectPhase, { title: string; description: string }> = {
   onboarding: {
     title: 'We verzamelen je informatie',
@@ -132,6 +132,68 @@ const PHASE_INFO: Record<ProjectPhase, { title: string; description: string }> =
     title: 'Gefeliciteerd! 🎉',
     description: 'Je website is live en bereikbaar voor de wereld. Welkom!'
   }
+}
+
+// Service-specific phase info overrides
+const SERVICE_PHASE_INFO: Record<string, Partial<Record<ProjectPhase, { title: string; description: string }>>> = {
+  webshop: {
+    onboarding: {
+      title: 'We verzamelen je webshop informatie',
+      description: 'Vul de onboarding in met je producten, categorieën en betaalinstellingen.'
+    },
+    development: {
+      title: 'Je webshop wordt gebouwd',
+      description: 'We bouwen je webshop met alle producten, betaalmethodes en verzendopties.'
+    },
+    live: {
+      title: 'Je webshop is live! 🛒',
+      description: 'Klanten kunnen nu bestellen. Succes met verkopen!'
+    }
+  },
+  logo: {
+    onboarding: {
+      title: 'We verzamelen je huisstijl wensen',
+      description: 'Deel je voorkeuren voor kleuren, stijl en wat je logo moet uitstralen.'
+    },
+    design: {
+      title: 'Je logo wordt ontworpen',
+      description: 'We maken meerdere logo concepten. Je ontvangt binnenkort de eerste ontwerpen.'
+    },
+    review: {
+      title: 'Logo concepten klaar',
+      description: 'Bekijk de ontwerpen en geef feedback. We passen aan tot je 100% tevreden bent.'
+    },
+    live: {
+      title: 'Je logo is klaar! 🎨',
+      description: 'Download je logo in alle formaten (PNG, SVG, PDF).'
+    }
+  },
+  drone: {
+    onboarding: {
+      title: 'We plannen je opname',
+      description: 'Geef aan waar en wanneer de drone-opnames moeten plaatsvinden.'
+    },
+    design: {
+      title: 'Opnames worden gepland',
+      description: 'We checken het weer en vluchtregels. Je ontvangt binnenkort de opnamedatum.'
+    },
+    development: {
+      title: 'Beelden worden bewerkt',
+      description: 'We editen de beelden met kleurcorrectie, stabilisatie en muziek.'
+    },
+    live: {
+      title: 'Je dronebeelden zijn klaar! 🚁',
+      description: 'Download je beelden in 4K kwaliteit.'
+    }
+  }
+}
+
+// Get phase info based on service type
+const getPhaseInfo = (phase: ProjectPhase, serviceType?: string) => {
+  if (serviceType && SERVICE_PHASE_INFO[serviceType]?.[phase]) {
+    return SERVICE_PHASE_INFO[serviceType][phase]!
+  }
+  return PHASE_INFO[phase]
 }
 
 // Get phase color scheme
@@ -201,6 +263,16 @@ export default function ProjectStatusNew() {
   const [showChat, setShowChat] = useState(false)
   const messagesEndRef = useRef<HTMLDivElement>(null)
   
+  // Notifications state
+  const [notifications, setNotifications] = useState<Array<{
+    id: string
+    type: 'info' | 'success' | 'warning'
+    title: string
+    message: string
+    date: string
+  }>>([])
+  const [showNotifications, setShowNotifications] = useState(false)
+  
   // Onboarding state
   const [onboardingCompleted, setOnboardingCompleted] = useState(false)
   
@@ -237,13 +309,13 @@ export default function ProjectStatusNew() {
     }
   }, [projectId, searchParams])
 
-  // Polling for updates
+  // Polling for updates - elke 10 seconden
   useEffect(() => {
     if (!isVerified || !projectId) return
     const interval = setInterval(() => {
       fetchProject(projectId)
       fetchMessages(projectId)
-    }, 30000)
+    }, 10000)
     return () => clearInterval(interval)
   }, [isVerified, projectId])
 
@@ -347,8 +419,13 @@ export default function ProjectStatusNew() {
       const response = await fetch(`/api/projects?id=${encodeURIComponent(id)}`)
       if (response.ok) {
         const data = await response.json()
-        setProject(data.project || data)
+        const proj = data.project || data
+        setProject(proj)
         setError('')
+        // Generate notifications on first load
+        if (!project) {
+          setTimeout(() => generateNotifications(proj), 500)
+        }
       } else {
         setProject({
           projectId: id,
@@ -390,6 +467,67 @@ export default function ProjectStatusNew() {
     } catch {
       // Ignore
     }
+  }
+
+  // Generate notifications based on project state
+  const generateNotifications = (proj: Project) => {
+    const notifs: typeof notifications = []
+    
+    // Unread messages notification
+    const unreadCount = messages.filter(m => !m.read && m.from === 'developer').length
+    if (unreadCount > 0) {
+      notifs.push({
+        id: 'unread-messages',
+        type: 'info',
+        title: `${unreadCount} nieuwe bericht${unreadCount > 1 ? 'en' : ''}`,
+        message: 'Je hebt ongelezen berichten van het team',
+        date: new Date().toISOString()
+      })
+    }
+    
+    // Phase-specific notifications
+    if (proj.status === 'design' && proj.designPreviewUrl) {
+      notifs.push({
+        id: 'design-ready',
+        type: 'success',
+        title: 'Design klaar voor review',
+        message: 'Bekijk je design en geef feedback',
+        date: new Date().toISOString()
+      })
+    }
+    
+    if (proj.status === 'design_approved' && proj.paymentStatus !== 'paid') {
+      notifs.push({
+        id: 'payment-pending',
+        type: 'warning',
+        title: 'Betaling openstaat',
+        message: 'Rond je betaling af om door te gaan',
+        date: new Date().toISOString()
+      })
+    }
+    
+    if (proj.status === 'review' && proj.designPreviewUrl) {
+      notifs.push({
+        id: 'review-ready',
+        type: 'success',
+        title: 'Website klaar voor review',
+        message: 'Test je website en geef feedback',
+        date: new Date().toISOString()
+      })
+    }
+    
+    if (proj.status === 'live') {
+      notifs.push({
+        id: 'website-live',
+        type: 'success',
+        title: '🎉 Je website is live!',
+        message: proj.liveUrl || 'Bekijk je live website',
+        date: proj.liveDate || new Date().toISOString()
+      })
+    }
+    
+    setNotifications(notifs)
+    if (notifs.length > 0) setShowNotifications(true)
   }
 
   const sendMessage = async () => {
@@ -615,6 +753,55 @@ export default function ProjectStatusNew() {
       </header>
 
       <main className="max-w-3xl mx-auto px-4 py-6 space-y-4">
+        {/* Notifications Banner */}
+        <AnimatePresence>
+          {showNotifications && notifications.length > 0 && (
+            <motion.div
+              initial={{ opacity: 0, y: -20 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -20 }}
+              className="space-y-2"
+            >
+              {notifications.map((notif) => (
+                <div
+                  key={notif.id}
+                  className={`p-4 rounded-xl border flex items-start justify-between gap-3 ${
+                    notif.type === 'success' ? 'bg-green-500/10 border-green-500/30' :
+                    notif.type === 'warning' ? 'bg-amber-500/10 border-amber-500/30' :
+                    'bg-blue-500/10 border-blue-500/30'
+                  }`}
+                >
+                  <div className="flex items-start gap-3">
+                    <div className={`w-8 h-8 rounded-lg flex items-center justify-center ${
+                      notif.type === 'success' ? 'bg-green-500/20' :
+                      notif.type === 'warning' ? 'bg-amber-500/20' :
+                      'bg-blue-500/20'
+                    }`}>
+                      {notif.type === 'success' ? <CheckCircle2 className="w-4 h-4 text-green-400" /> :
+                       notif.type === 'warning' ? <AlertCircle className="w-4 h-4 text-amber-400" /> :
+                       <Sparkles className="w-4 h-4 text-blue-400" />}
+                    </div>
+                    <div>
+                      <p className={`font-medium text-sm ${
+                        notif.type === 'success' ? 'text-green-400' :
+                        notif.type === 'warning' ? 'text-amber-400' :
+                        'text-blue-400'
+                      }`}>{notif.title}</p>
+                      <p className="text-xs text-gray-400">{notif.message}</p>
+                    </div>
+                  </div>
+                  <button
+                    onClick={() => setNotifications(prev => prev.filter(n => n.id !== notif.id))}
+                    className="text-gray-500 hover:text-white transition p-1"
+                  >
+                    <ChevronDown className="w-4 h-4 rotate-45" />
+                  </button>
+                </div>
+              ))}
+            </motion.div>
+          )}
+        </AnimatePresence>
+
         {/* Hero Card - Current Status */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -630,7 +817,28 @@ export default function ProjectStatusNew() {
             <div className="flex items-start justify-between mb-4">
               <div>
                 <h1 className="text-xl font-bold mb-1">{project.businessName}</h1>
-                <div className="flex items-center gap-2">
+                <div className="flex flex-wrap items-center gap-2">
+                  {/* Service Type Badge */}
+                  {(project as any).type && (
+                    <span className="px-2.5 py-1 bg-white/30 backdrop-blur-sm rounded-full text-xs font-medium capitalize">
+                      {(project as any).type === 'website' ? '🌐 Website' :
+                       (project as any).type === 'webshop' ? '🛒 Webshop' :
+                       (project as any).type === 'logo' ? '🎨 Logo' :
+                       (project as any).type === 'drone' ? '🚁 Drone' :
+                       (project as any).type}
+                    </span>
+                  )}
+                  {/* Package Badge */}
+                  {project.package && (
+                    <span className="px-2.5 py-1 bg-white/20 backdrop-blur-sm rounded-full text-xs font-medium capitalize">
+                      {project.package === 'starter' ? '⭐ Starter' :
+                       project.package === 'professional' ? '💎 Professional' :
+                       project.package === 'premium' || project.package === 'business' ? '🚀 Business' :
+                       project.package === 'webshop' ? '🛒 Webshop' :
+                       project.package}
+                    </span>
+                  )}
+                  {/* Phase Badge */}
                   <span className="px-2.5 py-1 bg-white/20 backdrop-blur-sm rounded-full text-xs font-medium">
                     {PHASES.find(p => p.key === project.status || (project.status === 'design_approved' && p.key === 'design'))?.label || project.status}
                   </span>
@@ -658,8 +866,8 @@ export default function ProjectStatusNew() {
 
             {/* Phase info */}
             <div className="bg-black/20 backdrop-blur-sm rounded-xl p-4">
-              <p className="font-semibold mb-1">{PHASE_INFO[project.status]?.title}</p>
-              <p className="text-sm text-white/80">{PHASE_INFO[project.status]?.description}</p>
+              <p className="font-semibold mb-1">{getPhaseInfo(project.status, project.serviceType)?.title}</p>
+              <p className="text-sm text-white/80">{getPhaseInfo(project.status, project.serviceType)?.description}</p>
             </div>
 
             {/* Countdown timer */}
@@ -792,6 +1000,30 @@ export default function ProjectStatusNew() {
           </motion.a>
         )}
 
+        {/* Google Drive - Project Files */}
+        {project.googleDriveUrl && (
+          <motion.a
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.22 }}
+            href={project.googleDriveUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="block p-4 rounded-xl bg-blue-500/10 border border-blue-500/30 hover:border-blue-500/50 transition group"
+          >
+            <div className="flex items-center gap-4">
+              <div className="w-10 h-10 rounded-lg bg-blue-500/20 flex items-center justify-center">
+                <FolderOpen className="w-5 h-5 text-blue-400" />
+              </div>
+              <div className="flex-1">
+                <p className="font-medium text-white">Projectbestanden</p>
+                <p className="text-sm text-gray-500">Google Drive map met alle bestanden</p>
+              </div>
+              <ExternalLink className="w-5 h-5 text-blue-400 group-hover:translate-x-1 transition" />
+            </div>
+          </motion.a>
+        )}
+
         {/* Payment Section */}
         {project.status === 'design_approved' && project.paymentStatus !== 'paid' && (
           <motion.div
@@ -821,6 +1053,96 @@ export default function ProjectStatusNew() {
                   <p className="text-sm text-indigo-400">Betaallink wordt binnenkort verzonden</p>
                 )}
               </div>
+            </div>
+          </motion.div>
+        )}
+
+        {/* Payment Status Card - Show when paid */}
+        {project.paymentStatus === 'paid' && project.paymentCompletedAt && (
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.25 }}
+            className="p-4 rounded-xl bg-green-500/10 border border-green-500/30"
+          >
+            <div className="flex items-center gap-4">
+              <div className="w-10 h-10 rounded-lg bg-green-500/20 flex items-center justify-center">
+                <CheckCircle2 className="w-5 h-5 text-green-400" />
+              </div>
+              <div className="flex-1">
+                <p className="font-medium text-green-400">Betaling ontvangen</p>
+                <p className="text-xs text-gray-500">
+                  {new Date(project.paymentCompletedAt).toLocaleDateString('nl-NL', { 
+                    day: 'numeric', month: 'long', year: 'numeric' 
+                  })}
+                </p>
+              </div>
+            </div>
+          </motion.div>
+        )}
+
+        {/* Invoices Section */}
+        {project.invoices && project.invoices.length > 0 && (
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.27 }}
+            className="bg-gray-900 rounded-xl border border-gray-800 overflow-hidden"
+          >
+            <div className="p-4 border-b border-gray-800">
+              <div className="flex items-center gap-3">
+                <CreditCard className="w-5 h-5 text-gray-400" />
+                <h3 className="font-medium text-white">Facturen</h3>
+              </div>
+            </div>
+            <div className="divide-y divide-gray-800">
+              {project.invoices.map((invoice) => (
+                <div key={invoice.id} className="p-4 flex items-center justify-between">
+                  <div className="flex items-center gap-3">
+                    <div className={`w-8 h-8 rounded-lg flex items-center justify-center ${
+                      invoice.status === 'paid' ? 'bg-green-500/20' :
+                      invoice.status === 'overdue' ? 'bg-red-500/20' :
+                      'bg-gray-800'
+                    }`}>
+                      {invoice.status === 'paid' ? (
+                        <CheckCircle2 className="w-4 h-4 text-green-400" />
+                      ) : invoice.status === 'overdue' ? (
+                        <AlertCircle className="w-4 h-4 text-red-400" />
+                      ) : (
+                        <Clock className="w-4 h-4 text-gray-400" />
+                      )}
+                    </div>
+                    <div>
+                      <p className="text-sm font-medium text-white">{invoice.description}</p>
+                      <p className="text-xs text-gray-500">
+                        {new Date(invoice.date).toLocaleDateString('nl-NL', { day: 'numeric', month: 'short' })}
+                      </p>
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-3">
+                    <div className="text-right">
+                      <p className="font-semibold text-white">€{invoice.amount.toFixed(2)}</p>
+                      <p className={`text-xs ${
+                        invoice.status === 'paid' ? 'text-green-400' :
+                        invoice.status === 'overdue' ? 'text-red-400' :
+                        'text-gray-500'
+                      }`}>
+                        {invoice.status === 'paid' ? 'Betaald' :
+                         invoice.status === 'overdue' ? 'Te laat' :
+                         invoice.status === 'sent' ? 'Openstaand' : 'Concept'}
+                      </p>
+                    </div>
+                    {invoice.paymentUrl && invoice.status !== 'paid' && (
+                      <a
+                        href={invoice.paymentUrl}
+                        className="px-3 py-1.5 bg-blue-500 text-white text-xs font-medium rounded-lg hover:bg-blue-400 transition"
+                      >
+                        Betalen
+                      </a>
+                    )}
+                  </div>
+                </div>
+              ))}
             </div>
           </motion.div>
         )}

@@ -66,12 +66,15 @@ export interface Invoice {
   paymentUrl?: string
 }
 
+export type ServiceType = 'website' | 'webshop' | 'logo' | 'drone'
+
 export interface Project {
   projectId: string
   businessName: string
   contactName?: string
   contactEmail?: string
   contactPhone?: string
+  serviceType?: ServiceType        // Type dienst: website, webshop, logo, drone
   package: PackageType | string
   status: ProjectPhase
   statusMessage: string
