@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback, useRef } from 'react'
-import { useParams, useSearchParams } from 'react-router-dom'
+import { useParams, useSearchParams, Link } from 'react-router-dom'
 import { motion, AnimatePresence } from 'framer-motion'
 import { ClientOnboardingSkeleton } from '../components/LoadingSkeletons'
 import {
@@ -29,8 +29,8 @@ import {
   Shield,
   Mail,
   FolderOpen,
-  Save,
-  ArrowRight
+  ArrowRight,
+  ArrowLeft
 } from 'lucide-react'
 import Logo from '../components/Logo'
 import type { 
@@ -1188,273 +1188,255 @@ export default function ClientOnboarding() {
   const ServiceIcon = serviceConfig.icon
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
-      {/* Header */}
-      <header className="bg-white dark:bg-gray-800 border-b dark:border-gray-700 sticky top-0 z-50">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center justify-between h-16">
-            <Logo />
+    <div className="min-h-screen bg-gray-900">
+      {/* Simplified Header with back link */}
+      <header className="bg-gray-800 border-b border-gray-700 sticky top-0 z-50">
+        <div className="max-w-3xl mx-auto px-4">
+          <div className="flex items-center justify-between h-14">
+            {/* Back to dashboard */}
+            <Link 
+              to={projectId ? `/status/${projectId}` : '/'}
+              className="flex items-center gap-2 text-gray-400 hover:text-white transition-colors"
+            >
+              <ArrowLeft className="w-4 h-4" />
+              <span className="text-sm">Terug naar dashboard</span>
+            </Link>
             
-            <div className="flex items-center gap-4">
-              {/* Edit indicator */}
-              {!canEdit && (
-                <div className="flex items-center gap-2 text-amber-600 dark:text-amber-400 text-sm">
-                  <Lock className="w-4 h-4" />
-                  <span className="hidden sm:inline">Design fase gestart</span>
+            <div className="flex items-center gap-3">
+              {/* Auto-save indicator */}
+              {autoSaveStatus === 'saving' && (
+                <div className="flex items-center gap-1.5 text-gray-500 text-xs">
+                  <Loader2 className="w-3 h-3 animate-spin" />
+                  <span>Opslaan...</span>
+                </div>
+              )}
+              {autoSaveStatus === 'saved' && (
+                <div className="flex items-center gap-1.5 text-green-500 text-xs">
+                  <Check className="w-3 h-3" />
+                  <span>Opgeslagen</span>
                 </div>
               )}
               
-              {/* Save button */}
-              {canEdit && (
-                <button
-                  onClick={saveProgress}
-                  disabled={saving}
-                  className="flex items-center gap-2 px-4 py-2 text-sm bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors"
-                >
-                  {saving ? <Loader2 className="w-4 h-4 animate-spin" /> : <Edit3 className="w-4 h-4" />}
-                  Opslaan
-                </button>
+              {/* Edit status */}
+              {!canEdit && (
+                <div className="flex items-center gap-1.5 text-amber-500 text-xs bg-amber-500/10 px-2 py-1 rounded">
+                  <Lock className="w-3 h-3" />
+                  <span>Alleen lezen</span>
+                </div>
               )}
             </div>
           </div>
         </div>
       </header>
 
-      {/* Service type badge */}
-      <div className="bg-gradient-to-r from-gray-900 to-gray-800 dark:from-gray-800 dark:to-gray-900 py-4">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      {/* Simple title bar */}
+      <div className="bg-gray-800/50 border-b border-gray-700/50 py-4">
+        <div className="max-w-3xl mx-auto px-4">
           <div className="flex items-center gap-3">
-            <div className={`w-10 h-10 rounded-xl bg-gradient-to-br ${serviceConfig.gradient} flex items-center justify-center`}>
+            <div className={`w-10 h-10 rounded-xl bg-gradient-to-br ${serviceConfig.gradient} flex items-center justify-center shadow-lg`}>
               <ServiceIcon className="w-5 h-5 text-white" />
             </div>
             <div>
               <h1 className="text-lg font-semibold text-white">{serviceConfig.name} Onboarding</h1>
-              <p className="text-sm text-gray-400">Vul alle informatie in voor je project</p>
+              <p className="text-xs text-gray-500">Vul alle informatie in voor je project</p>
             </div>
+            {projectId && (
+              <span className="ml-auto text-xs text-gray-600 bg-gray-800 px-2 py-1 rounded font-mono">
+                {projectId}
+              </span>
+            )}
           </div>
         </div>
       </div>
 
-      {/* Main content */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-          {/* Left: Form */}
-          <div className="lg:col-span-2 space-y-6">
-            {/* Step indicator */}
-            <div className="bg-white dark:bg-gray-800 rounded-2xl p-6 shadow-lg border border-gray-100 dark:border-gray-700">
-              <div className="flex items-center justify-between mb-6">
-                <div>
-                  <p className="text-sm text-gray-500 dark:text-gray-400">
-                    Stap {currentStep} van {totalSteps}
-                  </p>
-                  <h2 className="text-xl font-bold text-gray-900 dark:text-white">
-                    {currentStepConfig?.title}
-                  </h2>
-                </div>
-                
-                {canEdit && (
-                  <span className="text-xs bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400 px-3 py-1 rounded-full">
-                    Bewerkbaar
-                  </span>
-                )}
-              </div>
-
-              {/* Step dots */}
-              <div className="flex items-center gap-2 mb-8 overflow-x-auto pb-2">
-                {steps.map((step, index) => {
-                  const StepIcon = step.icon
-                  const isActive = index + 1 === currentStep
-                  const isCompleted = index + 1 < currentStep
-                  
-                  return (
-                    <button
-                      key={step.id}
-                      onClick={() => goToStep(index + 1)}
-                      disabled={!canEdit}
-                      className={`
-                        flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-medium transition-all
-                        ${isActive 
-                          ? `bg-gradient-to-r ${serviceConfig.gradient} text-white shadow-lg` 
-                          : isCompleted
-                            ? 'bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400'
-                            : 'bg-gray-100 dark:bg-gray-700 text-gray-500 dark:text-gray-400'}
-                        ${canEdit ? 'hover:scale-105 cursor-pointer' : 'cursor-default'}
-                      `}
-                    >
-                      {isCompleted ? (
-                        <Check className="w-4 h-4" />
-                      ) : (
-                        <StepIcon className="w-4 h-4" />
-                      )}
-                      <span className="hidden sm:inline">{step.title}</span>
-                    </button>
-                  )
-                })}
-              </div>
-
-              {/* Form content */}
-              <AnimatePresence mode="wait">
-                <motion.div
-                  key={currentStep}
-                  initial={{ opacity: 0, x: 20 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  exit={{ opacity: 0, x: -20 }}
-                  className="min-h-[300px]"
-                >
-                  {renderFormStep()}
-                </motion.div>
-              </AnimatePresence>
-
-              {/* Navigation buttons */}
-              <div className="flex flex-col gap-4 pt-6 border-t dark:border-gray-700">
-                {/* Validation errors */}
-                {validationErrors.length > 0 && (
-                  <motion.div
-                    initial={{ opacity: 0, y: -10 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 text-red-700 dark:text-red-400 px-4 py-3 rounded-xl"
-                  >
-                    <div className="flex items-center gap-2 font-medium mb-2">
-                      <AlertCircle className="w-5 h-5" />
-                      Vul de verplichte velden in:
-                    </div>
-                    <ul className="list-disc list-inside text-sm space-y-1">
-                      {validationErrors.map((error, i) => (
-                        <li key={i}>{error}</li>
-                      ))}
-                    </ul>
-                  </motion.div>
-                )}
-
-                {/* Email already in use error */}
-                {emailInUseError && (
-                  <motion.div
-                    initial={{ opacity: 0, y: -10 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    className="bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800 text-amber-700 dark:text-amber-400 px-4 py-3 rounded-xl"
-                  >
-                    <div className="flex items-center gap-2 font-medium mb-2">
-                      <AlertCircle className="w-5 h-5" />
-                      Dit e-mailadres is al in gebruik
-                    </div>
-                    <p className="text-sm mb-3">
-                      Er bestaat al een project met dit e-mailadres. Je kunt je bestaande project bekijken via onderstaande link.
-                    </p>
-                    <a
-                      href={emailInUseError.statusUrl}
-                      className="inline-flex items-center gap-2 text-sm font-medium text-amber-800 dark:text-amber-300 hover:underline"
-                    >
-                      Bekijk je bestaande project →
-                    </a>
-                  </motion.div>
-                )}
-                
-                {/* Auto-save status */}
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-2 text-sm text-gray-500 dark:text-gray-400">
-                    {autoSaveStatus === 'saving' && (
-                      <>
-                        <Loader2 className="w-4 h-4 animate-spin" />
-                        <span>Opslaan...</span>
-                      </>
-                    )}
-                    {autoSaveStatus === 'saved' && (
-                      <>
-                        <Save className="w-4 h-4 text-green-500" />
-                        <span className="text-green-600 dark:text-green-400">Opgeslagen</span>
-                      </>
-                    )}
-                    {autoSaveStatus === 'error' && (
-                      <>
-                        <AlertCircle className="w-4 h-4 text-red-500" />
-                        <span className="text-red-600 dark:text-red-400">Opslaan mislukt</span>
-                      </>
-                    )}
-                    {autoSaveStatus === 'email_in_use' && (
-                      <>
-                        <AlertCircle className="w-4 h-4 text-amber-500" />
-                        <span className="text-amber-600 dark:text-amber-400">E-mailadres al in gebruik</span>
-                      </>
-                    )}
-                  </div>
-                </div>
-                
-                {/* Navigation */}
-                <div className="flex items-center justify-between">
-                  <button
-                    onClick={prevStep}
-                    disabled={currentStep === 1}
-                    className="flex items-center gap-2 px-4 py-2 text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
-                  >
-                    <ChevronLeft className="w-5 h-5" />
-                    Vorige
-                  </button>
-
-                  {currentStep === totalSteps ? (
-                    <button
-                      onClick={submitOnboarding}
-                      disabled={saving || !canEdit || !!emailInUseError}
-                      className={`flex items-center gap-2 px-6 py-3 bg-gradient-to-r ${serviceConfig.gradient} text-white rounded-xl font-medium hover:shadow-lg transition-all disabled:opacity-50`}
-                    >
-                      {saving ? <Loader2 className="w-5 h-5 animate-spin" /> : <CheckCircle2 className="w-5 h-5" />}
-                      Indienen
-                    </button>
-                  ) : (
-                    <button
-                      onClick={nextStep}
-                      disabled={!!emailInUseError}
-                      className={`flex items-center gap-2 px-6 py-3 bg-gradient-to-r ${serviceConfig.gradient} text-white rounded-xl font-medium hover:shadow-lg transition-all disabled:opacity-50`}
-                    >
-                      Volgende
-                      <ChevronRight className="w-5 h-5" />
-                    </button>
-                  )}
-                </div>
-              </div>
-            </div>
-
-            {/* Success/Error messages */}
-            <AnimatePresence>
-              {success && (
-                <motion.div
-                  initial={{ opacity: 0, y: -10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0 }}
-                  className="bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 text-green-700 dark:text-green-400 px-4 py-3 rounded-xl flex items-center gap-2"
-                >
-                  <CheckCircle2 className="w-5 h-5" />
-                  {success}
-                </motion.div>
-              )}
-              
-              {error && (
-                <motion.div
-                  initial={{ opacity: 0, y: -10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0 }}
-                  className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 text-red-700 dark:text-red-400 px-4 py-3 rounded-xl flex items-center gap-2"
-                >
-                  <AlertCircle className="w-5 h-5" />
-                  {error}
-                </motion.div>
-              )}
-            </AnimatePresence>
+      {/* Main content - Single column, mobile-first */}
+      <main className="max-w-3xl mx-auto px-4 py-6 pb-32">
+        {/* Progress bar */}
+        <div className="mb-6">
+          <div className="flex items-center justify-between text-sm text-gray-500 mb-2">
+            <span>Stap {currentStep} van {totalSteps}</span>
+            <span>{Math.round((currentStep / totalSteps) * 100)}%</span>
           </div>
-
-          {/* Right sidebar */}
-          <div className="space-y-6">
-            {/* Timeline */}
-            {timeline.length > 0 && (
-              <ProjectTimeline steps={timeline} currentPhase={currentPhase} />
-            )}
-
-            {/* Chat */}
-            <ChatSection 
-              messages={messages}
-              onSendMessage={sendMessage}
-              loading={saving}
+          <div className="h-1.5 bg-gray-800 rounded-full overflow-hidden">
+            <motion.div
+              initial={{ width: 0 }}
+              animate={{ width: `${(currentStep / totalSteps) * 100}%` }}
+              className={`h-full bg-gradient-to-r ${serviceConfig.gradient} rounded-full`}
             />
           </div>
+        </div>
+
+        {/* Step tabs - horizontal scroll on mobile */}
+        <div className="flex gap-1.5 mb-6 overflow-x-auto pb-2 -mx-4 px-4 scrollbar-hide">
+          {steps.map((step, index) => {
+            const StepIcon = step.icon
+            const isActive = index + 1 === currentStep
+            const isCompleted = index + 1 < currentStep
+            
+            return (
+              <button
+                key={step.id}
+                onClick={() => goToStep(index + 1)}
+                disabled={!canEdit}
+                className={`
+                  flex items-center gap-1.5 px-3 py-2 rounded-lg text-sm font-medium transition-all whitespace-nowrap flex-shrink-0
+                  ${isActive 
+                    ? 'bg-white text-gray-900' 
+                    : isCompleted
+                      ? 'bg-green-500/20 text-green-400'
+                      : 'bg-gray-800 text-gray-500 hover:bg-gray-700'}
+                  ${canEdit ? 'cursor-pointer' : 'cursor-default'}
+                `}
+              >
+                {isCompleted ? (
+                  <CheckCircle2 className="w-4 h-4" />
+                ) : (
+                  <StepIcon className="w-4 h-4" />
+                )}
+                {step.title}
+              </button>
+            )
+          })}
+        </div>
+
+        {/* Current step title */}
+        <div className="mb-6">
+          <h2 className="text-2xl font-bold text-white">{currentStepConfig?.title}</h2>
+        </div>
+
+        {/* Form content */}
+        <div className="bg-gray-800 rounded-2xl border border-gray-700 overflow-hidden">
+          <AnimatePresence mode="wait">
+            <motion.div
+              key={currentStep}
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -10 }}
+              className="p-5"
+            >
+              {renderFormStep()}
+            </motion.div>
+          </AnimatePresence>
+
+          {/* Validation errors */}
+          {validationErrors.length > 0 && (
+            <motion.div
+              initial={{ opacity: 0, height: 0 }}
+              animate={{ opacity: 1, height: 'auto' }}
+              className="border-t border-gray-700 bg-red-500/10 px-5 py-4"
+            >
+              <div className="flex items-center gap-2 text-red-400 font-medium text-sm mb-2">
+                <AlertCircle className="w-4 h-4" />
+                Vul de verplichte velden in:
+              </div>
+              <ul className="text-red-400/80 text-sm space-y-1 ml-6">
+                {validationErrors.map((error, i) => (
+                  <li key={i}>• {error}</li>
+                ))}
+              </ul>
+            </motion.div>
+          )}
+
+          {/* Email already in use error */}
+          {emailInUseError && (
+            <motion.div
+              initial={{ opacity: 0, height: 0 }}
+              animate={{ opacity: 1, height: 'auto' }}
+              className="border-t border-gray-700 bg-amber-500/10 px-5 py-4"
+            >
+              <div className="flex items-center gap-2 text-amber-400 font-medium text-sm mb-2">
+                <AlertCircle className="w-4 h-4" />
+                Dit e-mailadres is al in gebruik
+              </div>
+              <p className="text-amber-400/80 text-sm mb-3">
+                Er bestaat al een project met dit e-mailadres.
+              </p>
+              <a
+                href={emailInUseError.statusUrl}
+                className="inline-flex items-center gap-2 text-sm font-medium text-amber-400 hover:text-amber-300"
+              >
+                Bekijk je bestaande project
+                <ArrowRight className="w-4 h-4" />
+              </a>
+            </motion.div>
+          )}
+        </div>
+
+        {/* Success/Error toasts */}
+        <AnimatePresence>
+          {success && (
+            <motion.div
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0 }}
+              className="mt-4 bg-green-500/20 border border-green-500/30 text-green-400 px-4 py-3 rounded-xl flex items-center gap-2"
+            >
+              <CheckCircle2 className="w-5 h-5" />
+              {success}
+            </motion.div>
+          )}
+          
+          {error && (
+            <motion.div
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0 }}
+              className="mt-4 bg-red-500/20 border border-red-500/30 text-red-400 px-4 py-3 rounded-xl flex items-center gap-2"
+            >
+              <AlertCircle className="w-5 h-5" />
+              {error}
+            </motion.div>
+          )}
+        </AnimatePresence>
+
+        {/* Timeline - Collapsible on mobile */}
+        {timeline.length > 0 && (
+          <div className="mt-8">
+            <ProjectTimeline steps={timeline} currentPhase={currentPhase} />
+          </div>
+        )}
+
+        {/* Chat section - collapsible */}
+        <div className="mt-8">
+          <ChatSection 
+            messages={messages}
+            onSendMessage={sendMessage}
+            loading={saving}
+          />
+        </div>
+      </main>
+
+      {/* Fixed bottom navigation */}
+      <div className="fixed bottom-0 left-0 right-0 bg-gray-900/95 backdrop-blur border-t border-gray-800 p-4 z-40">
+        <div className="max-w-3xl mx-auto flex items-center justify-between gap-4">
+          <button
+            onClick={prevStep}
+            disabled={currentStep === 1}
+            className="flex items-center gap-2 px-4 py-3 text-gray-400 hover:text-white disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
+          >
+            <ChevronLeft className="w-5 h-5" />
+            <span className="hidden sm:inline">Vorige</span>
+          </button>
+
+          {currentStep === totalSteps ? (
+            <button
+              onClick={submitOnboarding}
+              disabled={saving || !canEdit || !!emailInUseError}
+              className={`flex-1 sm:flex-none flex items-center justify-center gap-2 px-8 py-3 bg-gradient-to-r ${serviceConfig.gradient} text-white rounded-xl font-semibold hover:shadow-lg hover:shadow-primary-500/25 transition-all disabled:opacity-50`}
+            >
+              {saving ? <Loader2 className="w-5 h-5 animate-spin" /> : <CheckCircle2 className="w-5 h-5" />}
+              Indienen
+            </button>
+          ) : (
+            <button
+              onClick={nextStep}
+              disabled={!!emailInUseError}
+              className={`flex-1 sm:flex-none flex items-center justify-center gap-2 px-8 py-3 bg-gradient-to-r ${serviceConfig.gradient} text-white rounded-xl font-semibold hover:shadow-lg transition-all disabled:opacity-50`}
+            >
+              Volgende
+              <ChevronRight className="w-5 h-5" />
+            </button>
+          )}
         </div>
       </div>
     </div>
