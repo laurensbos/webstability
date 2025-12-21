@@ -10,6 +10,7 @@
  */
 
 import { useState, useEffect, useCallback } from 'react'
+import { useNavigate } from 'react-router-dom'
 import { motion, AnimatePresence } from 'framer-motion'
 import { 
   FolderKanban, 
@@ -30,18 +31,13 @@ import type { Project, DashboardView, ProjectPhase } from './types'
 import { PHASE_CONFIG } from './types'
 
 // Constants
-const AUTH_KEY = 'webstability_dev_auth'
 const TOKEN_KEY = 'webstability_dev_token'
-const DEV_PASSWORD = 'N45eqtu2!jz8j0v'
 
 // API URL
 const API_BASE = '/api'
 
 export default function DeveloperDashboard() {
-  // Auth state
-  const [isAuthenticated, setIsAuthenticated] = useState(false)
-  const [password, setPassword] = useState('')
-  const [authError, setAuthError] = useState('')
+  const navigate = useNavigate()
   
   // Dashboard state
   const [activeView, setActiveView] = useState<DashboardView>('projects')
@@ -50,19 +46,17 @@ export default function DeveloperDashboard() {
   const [selectedProject, setSelectedProject] = useState<Project | null>(null)
   const [sidebarOpen, setSidebarOpen] = useState(false)
   const [searchQuery, setSearchQuery] = useState('')
-  
-  // Check auth on mount
-  useEffect(() => {
-    const auth = sessionStorage.getItem(AUTH_KEY)
-    if (auth === 'true') {
-      setIsAuthenticated(true)
-    }
-  }, [])
+
+  // Handle logout - clear session and redirect
+  const handleLogout = () => {
+    sessionStorage.removeItem(TOKEN_KEY)
+    sessionStorage.removeItem('fallback_auth')
+    sessionStorage.removeItem('fallback_role')
+    navigate('/')
+  }
 
   // Fetch projects
   const fetchProjects = useCallback(async () => {
-    if (!isAuthenticated) return
-    
     try {
       const token = sessionStorage.getItem(TOKEN_KEY)
       const response = await fetch(`${API_BASE}/developer/projects`, {
@@ -82,36 +76,14 @@ export default function DeveloperDashboard() {
     } finally {
       setLoading(false)
     }
-  }, [isAuthenticated])
+  }, [])
 
   // Fetch on mount and poll
   useEffect(() => {
-    if (isAuthenticated) {
-      fetchProjects()
-      const interval = setInterval(fetchProjects, 30000) // Poll every 30s
-      return () => clearInterval(interval)
-    }
-  }, [isAuthenticated, fetchProjects])
-
-  // Handle login
-  const handleLogin = () => {
-    if (password === DEV_PASSWORD) {
-      sessionStorage.setItem(AUTH_KEY, 'true')
-      sessionStorage.setItem(TOKEN_KEY, btoa(password))
-      setIsAuthenticated(true)
-      setAuthError('')
-    } else {
-      setAuthError('Onjuist wachtwoord')
-    }
-  }
-
-  // Handle logout
-  const handleLogout = () => {
-    sessionStorage.removeItem(AUTH_KEY)
-    sessionStorage.removeItem(TOKEN_KEY)
-    setIsAuthenticated(false)
-    setProjects([])
-  }
+    fetchProjects()
+    const interval = setInterval(fetchProjects, 30000) // Poll every 30s
+    return () => clearInterval(interval)
+  }, [fetchProjects])
 
   // Update project
   const handleUpdateProject = async (updatedProject: Project) => {
@@ -228,46 +200,6 @@ export default function DeveloperDashboard() {
   const unreadCount = projects.reduce((sum, p) => 
     sum + p.messages.filter(m => !m.read && m.from === 'client').length, 0
   )
-
-  // Login screen
-  if (!isAuthenticated) {
-    return (
-      <div className="min-h-screen bg-gray-950 flex items-center justify-center p-4">
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="w-full max-w-sm"
-        >
-          <div className="text-center mb-8">
-            <Logo variant="white" />
-            <p className="text-gray-400 mt-2">Developer Dashboard</p>
-          </div>
-          
-          <div className="bg-gray-900 rounded-2xl p-6 border border-gray-800">
-            <input
-              type="password"
-              value={password}
-              onChange={e => setPassword(e.target.value)}
-              onKeyDown={e => e.key === 'Enter' && handleLogin()}
-              placeholder="Wachtwoord"
-              className="w-full bg-gray-800 border border-gray-700 rounded-xl px-4 py-3 text-white placeholder-gray-500 focus:outline-none focus:border-emerald-500 mb-4"
-            />
-            
-            {authError && (
-              <p className="text-red-400 text-sm mb-4">{authError}</p>
-            )}
-            
-            <button
-              onClick={handleLogin}
-              className="w-full py-3 bg-gradient-to-r from-emerald-500 to-teal-500 text-white font-medium rounded-xl hover:from-emerald-400 hover:to-teal-400 transition"
-            >
-              Inloggen
-            </button>
-          </div>
-        </motion.div>
-      </div>
-    )
-  }
 
   // Loading state
   if (loading) {
