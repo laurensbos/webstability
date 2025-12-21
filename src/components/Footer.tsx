@@ -78,7 +78,7 @@ const ctaConfigs: Record<Exclude<CTAVariant, 'none'>, CTAConfig> = {
     badge: 'Binnen 7 dagen online',
     title: 'Laat je website bouwen door',
     highlight: 'experts',
-    description: '50+ ondernemers gingen je voor. Professioneel design, razendsnelle hosting en persoonlijke support. Vanaf €120 (incl. BTW).',
+    description: '50+ ondernemers gingen je voor. Professioneel design, razendsnelle hosting en persoonlijke support. Vanaf €99 (incl. BTW).',
     buttonText: 'Start je project',
     buttonLink: '/start',
     gradient: {

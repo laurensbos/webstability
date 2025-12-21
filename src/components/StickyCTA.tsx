@@ -44,7 +44,7 @@ export default function StickyCTA() {
                     Start nu vanaf <span className="text-primary-600 dark:text-primary-400">€99/maand</span> <span className="text-gray-400 dark:text-gray-500 text-xs">(incl. BTW)</span>
                   </p>
                   <p className="text-gray-500 dark:text-gray-400 text-xs sm:text-sm">
-                    Eenmalig €120 • Online binnen 7 dagen
+                    Eenmalig €99 • Online binnen 7 dagen
                   </p>
                 </div>
               </div>

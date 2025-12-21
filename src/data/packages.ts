@@ -33,8 +33,8 @@ export const packages: Package[] = [
   {
     id: 'professional',
     name: 'Professioneel',
-    price: 199,
-    priceExcl: 165,
+    price: 149,
+    priceExcl: 123,
     setupFee: 179,
     tagline: 'Voor serieuze ondernemers',
     features: [
@@ -50,8 +50,8 @@ export const packages: Package[] = [
   {
     id: 'business',
     name: 'Business',
-    price: 349,
-    priceExcl: 289,
+    price: 199,
+    priceExcl: 165,
     setupFee: 239,
     tagline: 'Voor groeiende bedrijven',
     features: [
@@ -69,7 +69,7 @@ export const packages: Package[] = [
     name: 'Webshop',
     price: 349,
     priceExcl: 289,
-    setupFee: 299,
+    setupFee: 249,
     tagline: 'Start met verkopen',
     features: [
       'Tot 50 producten',

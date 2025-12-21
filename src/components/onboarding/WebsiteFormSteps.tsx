@@ -58,7 +58,7 @@ export const PACKAGE_CONFIGS: Record<PackageId, PackageConfig> = {
   professional: {
     id: 'professional',
     name: 'Professioneel',
-    price: '€199/maand',
+    price: '€149/maand',
     maxPages: 10,
     features: {
       blog: true,
@@ -74,7 +74,7 @@ export const PACKAGE_CONFIGS: Record<PackageId, PackageConfig> = {
   business: {
     id: 'business',
     name: 'Business',
-    price: '€349/maand',
+    price: '€199/maand',
     maxPages: 999, // Unlimited
     features: {
       blog: true,

@@ -112,6 +112,9 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         return res.redirect(302, `${BASE_URL}/email-verified?projectId=${normalizedId}&verified=false&error=project_not_found`)
       }
 
+      // Get email for redirect
+      const userEmail = project.customer?.email || ''
+
       // Mark email as verified
       const updatedProject = {
         ...project,
@@ -127,8 +130,9 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
       console.log(`Email verified for project ${normalizedId}`)
 
-      // Redirect to email verified page with success
-      return res.redirect(302, `${BASE_URL}/email-verified?projectId=${normalizedId}&verified=true`)
+      // Redirect to email verified page with success (include email for easy login)
+      const emailParam = userEmail ? `&email=${encodeURIComponent(userEmail)}` : ''
+      return res.redirect(302, `${BASE_URL}/email-verified?projectId=${normalizedId}&verified=true${emailParam}`)
     }
 
     // POST: Send verification email

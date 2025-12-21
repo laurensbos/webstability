@@ -42,7 +42,7 @@ De modernste en voordeligste manier om een professionele website te krijgen is v
 - **Support** - hulp wanneer je het nodig hebt
 - **SEO basis** - goed vindbaar in Google
 
-Bij Webstability betaal je bijvoorbeeld **€99/maand** voor een complete website, met eenmalige opstartkosten vanaf €120 (alle prijzen incl. BTW). Als ondernemer kun je de 21% BTW terugvragen bij je belastingaangifte.
+Bij Webstability betaal je bijvoorbeeld **€99/maand** voor een complete website, met eenmalige opstartkosten vanaf €99 (alle prijzen incl. BTW). Als ondernemer kun je de 21% BTW terugvragen bij je belastingaangifte.
 
 ### Waarom een abonnement voordeliger is
 
@@ -232,7 +232,7 @@ Met goede SEO word je gevonden door mensen die zoeken naar jouw diensten.
 
 ### Hoeveel kost een ZZP-website?
 
-Bij Webstability krijg je een complete, professionele website voor **€99/maand** met eenmalige opstartkosten vanaf €120 (incl. BTW). Als ondernemer kun je de 21% BTW terugvragen bij je belastingaangifte. Ideaal voor ZZP'ers die een professionele uitstraling willen zonder gedoe.
+Bij Webstability krijg je een complete, professionele website voor **€99/maand** met eenmalige opstartkosten vanaf €99 (incl. BTW). Als ondernemer kun je de 21% BTW terugvragen bij je belastingaangifte. Ideaal voor ZZP'ers die een professionele uitstraling willen zonder gedoe.
 
 **Wat zit er allemaal in?**
 - Professioneel op maat gemaakt ontwerp

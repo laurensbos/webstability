@@ -787,7 +787,7 @@ function Sidebar({
                     </ul>
                   </div>
                   <div className={`text-sm ${darkMode ? 'text-purple-300' : 'text-purple-600'}`}>
-                    <strong className="text-purple-400">💼 Professioneel (€199/m):</strong>
+                    <strong className="text-purple-400">💼 Professioneel (€149/m):</strong>
                     <ul className="ml-4 mt-1 space-y-0.5 list-disc">
                       <li>10 pagina's max</li>
                       <li>SEO meta tags + Google Analytics</li>
@@ -795,7 +795,7 @@ function Sidebar({
                     </ul>
                   </div>
                   <div className={`text-sm ${darkMode ? 'text-amber-300' : 'text-amber-600'}`}>
-                    <strong className="text-amber-400">🏢 Business (€349/m):</strong>
+                    <strong className="text-amber-400">🏢 Business (€199/m):</strong>
                     <ul className="ml-4 mt-1 space-y-0.5 list-disc">
                       <li>Onbeperkt pagina's</li>
                       <li>Volledige SEO + Analytics</li>
@@ -2312,8 +2312,8 @@ function ProjectsView({ darkMode, projects, onUpdateProject, onDeleteProject: _o
   const getPackageBadge = (pkg: Project['package']) => {
     const badges = {
       starter: { label: 'Starter', color: 'bg-gray-500', price: '€99/m' },
-      professional: { label: 'Professional', color: 'bg-emerald-500', price: '€199/m' },
-      business: { label: 'Business', color: 'bg-purple-500', price: '€349/m' },
+      professional: { label: 'Professional', color: 'bg-emerald-500', price: '€149/m' },
+      business: { label: 'Business', color: 'bg-purple-500', price: '€199/m' },
       webshop: { label: 'Webshop', color: 'bg-orange-500', price: '€349/m' },
     }
     return badges[pkg]
@@ -3429,7 +3429,7 @@ function ProjectDetailModal({ project, darkMode, onClose, onUpdate, phases }: Om
   }
 
   const getPackageSetupFee = (pkg: Project['package']) => {
-    const setupFees = { starter: 99, professional: 179, business: 239, webshop: 299 }
+    const setupFees = { starter: 99, professional: 179, business: 239, webshop: 249 }
     return setupFees[pkg]
   }
 
@@ -5796,8 +5796,8 @@ function ClientsView({ darkMode, projects, onUpdateProject, onDeleteProject }: C
   const getPackageBadge = (pkg: Project['package']) => {
     const badges = {
       starter: { label: 'Starter', color: 'bg-gray-500', price: '€99/m' },
-      professional: { label: 'Professional', color: 'bg-emerald-500', price: '€199/m' },
-      business: { label: 'Business', color: 'bg-purple-500', price: '€349/m' },
+      professional: { label: 'Professional', color: 'bg-emerald-500', price: '€149/m' },
+      business: { label: 'Business', color: 'bg-purple-500', price: '€199/m' },
       webshop: { label: 'Webshop', color: 'bg-orange-500', price: '€349/m' },
     }
     return badges[pkg]

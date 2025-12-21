@@ -2,7 +2,7 @@
  * Email Verified Page
  * 
  * Getoond na succesvolle email verificatie
- * Mobiel-geoptimaliseerd met login mogelijkheid
+ * Mobiel-geoptimaliseerd met login mogelijkheid via email + wachtwoord
  */
 
 import { useState, useEffect } from 'react'
@@ -27,12 +27,13 @@ export default function EmailVerified() {
   
   // URL params
   const projectId = searchParams.get('projectId') || searchParams.get('id') || ''
+  const emailParam = searchParams.get('email') || ''
   const verified = searchParams.get('verified') === 'true'
   const error = searchParams.get('error')
   
-  // Login state
+  // Login state - now uses email instead of project ID
   const [showLogin, setShowLogin] = useState(false)
-  const [loginProjectId, setLoginProjectId] = useState(projectId)
+  const [email, setEmail] = useState(emailParam)
   const [password, setPassword] = useState('')
   const [showPassword, setShowPassword] = useState(false)
   const [loading, setLoading] = useState(false)
@@ -40,42 +41,46 @@ export default function EmailVerified() {
 
   // Auto-show login if verified successfully
   useEffect(() => {
-    if (verified && projectId) {
+    if (verified) {
       // Short delay before showing login
       const timer = setTimeout(() => setShowLogin(true), 2000)
       return () => clearTimeout(timer)
     }
-  }, [verified, projectId])
+  }, [verified])
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault()
-    if (!loginProjectId.trim() || !password.trim()) return
+    if (!email.trim() || !password.trim()) return
     
     setLoading(true)
     setLoginError('')
 
     try {
-      const response = await fetch('/api/verify-project', {
+      // Login with email + password
+      const response = await fetch('/api/login-project', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          projectId: loginProjectId.trim().toUpperCase(),
+          email: email.trim().toLowerCase(),
           password: password
         })
       })
 
       const data = await response.json()
 
-      if (data.success) {
+      if (data.success && data.projects && data.projects.length > 0) {
+        // Get the first (or only) project
+        const project = data.projects[0]
+        
         // Store auth and redirect
         sessionStorage.setItem('projectAuth', JSON.stringify({
-          projectId: loginProjectId.trim().toUpperCase(),
+          projectId: project.projectId,
           authenticated: true,
           timestamp: Date.now()
         }))
-        navigate(`/project/${loginProjectId.trim().toUpperCase()}`)
+        navigate(`/project/${project.projectId}`)
       } else {
-        setLoginError(data.message || 'Ongeldige gegevens')
+        setLoginError(data.error || 'Ongeldige gegevens')
       }
     } catch {
       setLoginError('Er ging iets mis. Probeer het opnieuw.')
@@ -177,17 +182,17 @@ export default function EmailVerified() {
                     </div>
 
                     <form onSubmit={handleLogin} className="space-y-4">
-                      {/* Project ID */}
+                      {/* Email */}
                       <div>
                         <label className="block text-sm font-medium text-gray-400 mb-1.5">
-                          Project ID
+                          E-mailadres
                         </label>
                         <input
-                          type="text"
-                          value={loginProjectId}
-                          onChange={(e) => setLoginProjectId(e.target.value.toUpperCase())}
-                          placeholder="WSB-XXXXX"
-                          className="w-full px-4 py-3 bg-gray-800 border border-gray-600 rounded-xl text-white placeholder-gray-500 focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all font-mono text-center text-lg tracking-wider"
+                          type="email"
+                          value={email}
+                          onChange={(e) => setEmail(e.target.value)}
+                          placeholder="je@email.nl"
+                          className="w-full px-4 py-3 bg-gray-800 border border-gray-600 rounded-xl text-white placeholder-gray-500 focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all"
                         />
                       </div>
 
@@ -229,7 +234,7 @@ export default function EmailVerified() {
                       {/* Submit button */}
                       <button
                         type="submit"
-                        disabled={loading || !loginProjectId.trim() || !password.trim()}
+                        disabled={loading || !email.trim() || !password.trim()}
                         className="w-full flex items-center justify-center gap-2 px-6 py-3.5 bg-gradient-to-r from-primary-500 to-blue-500 hover:from-primary-600 hover:to-blue-600 text-white font-semibold rounded-xl transition-all disabled:opacity-50 disabled:cursor-not-allowed shadow-lg shadow-primary-500/25"
                       >
                         {loading ? (

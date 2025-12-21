@@ -12,7 +12,8 @@ import {
   Package,
   Star,
   Zap,
-  Users
+  Users,
+  HeartHandshake
 } from 'lucide-react'
 import { Link } from 'react-router-dom'
 import Header from '../components/Header'
@@ -109,8 +110,8 @@ const packages = [
     name: 'Starter',
     price: 349,
     priceExcl: 289,
-    setupFee: 349,
-    setupFeeExcl: 289,
+    setupFee: 249,
+    setupFeeExcl: 206,
     tagline: 'Perfect om te beginnen',
     popular: false,
     description: 'Perfect om te beginnen met online verkopen',
@@ -127,10 +128,10 @@ const packages = [
   {
     id: 'professional',
     name: 'Professioneel',
-    price: 599,
-    priceExcl: 495,
-    setupFee: 499,
-    setupFeeExcl: 413,
+    price: 449,
+    priceExcl: 371,
+    setupFee: 349,
+    setupFeeExcl: 289,
     popular: true,
     description: 'Voor serieuze webshops die willen groeien',
     features: [
@@ -142,6 +143,25 @@ const packages = [
       'Klantaccounts',
     ],
     icon: Users,
+  },
+  {
+    id: 'business',
+    name: 'Business',
+    price: 599,
+    priceExcl: 495,
+    setupFee: 449,
+    setupFeeExcl: 371,
+    popular: false,
+    description: 'Complete e-commerce oplossing',
+    features: [
+      'Onbeperkt producten',
+      'Alle betaalmethodes',
+      'Multi-carrier verzending',
+      'Geavanceerde rapportages',
+      'B2B functionaliteiten',
+      'Prioriteit support',
+    ],
+    icon: HeartHandshake,
   },
 ]
 

@@ -100,7 +100,7 @@ const PACKAGES: PackageType[] = [
     name: 'Starter',
     price: '€99',
     priceLabel: '/maand incl. BTW',
-    setupFee: 149,
+    setupFee: 99,
     monthlyFee: 99,
     tagline: 'Ideaal om te beginnen',
     description: 'Perfect voor ZZP\'ers en kleine ondernemers die een professionele online aanwezigheid willen.',
@@ -115,10 +115,10 @@ const PACKAGES: PackageType[] = [
   {
     id: 'professional',
     name: 'Professioneel',
-    price: '€199',
+    price: '€149',
     priceLabel: '/maand incl. BTW',
-    setupFee: 249,
-    monthlyFee: 199,
+    setupFee: 179,
+    monthlyFee: 149,
     tagline: 'Voor serieuze ondernemers',
     description: 'Voor ondernemers die meer willen dan een visitekaartje. Met blog en analytics.',
     features: [
@@ -134,10 +134,10 @@ const PACKAGES: PackageType[] = [
   {
     id: 'business',
     name: 'Business',
-    price: '€349',
+    price: '€199',
     priceLabel: '/maand incl. BTW',
-    setupFee: 399,
-    monthlyFee: 349,
+    setupFee: 239,
+    monthlyFee: 199,
     tagline: 'Voor groeiende bedrijven',
     description: 'Alle tools om je bedrijf online te laten groeien met boekingssysteem en meer.',
     features: [

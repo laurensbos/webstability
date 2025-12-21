@@ -112,8 +112,8 @@ const packages = [
     name: 'Starter',
     price: 99,
     priceExcl: 82,
-    setupFee: 149,
-    setupFeeExcl: 123,
+    setupFee: 99,
+    setupFeeExcl: 82,
     tagline: 'Perfect om te beginnen',
     description: 'Ideaal voor starters en kleine ondernemers',
     features: [
@@ -129,10 +129,10 @@ const packages = [
   {
     id: 'professional',
     name: 'Professioneel',
-    price: 199,
-    priceExcl: 165,
-    setupFee: 249,
-    setupFeeExcl: 206,
+    price: 149,
+    priceExcl: 123,
+    setupFee: 179,
+    setupFeeExcl: 148,
     tagline: 'Meest gekozen',
     description: 'Voor groeiende bedrijven',
     features: [
@@ -149,10 +149,10 @@ const packages = [
   {
     id: 'business',
     name: 'Business',
-    price: 349,
-    priceExcl: 289,
-    setupFee: 399,
-    setupFeeExcl: 330,
+    price: 199,
+    priceExcl: 165,
+    setupFee: 239,
+    setupFeeExcl: 198,
     tagline: 'Alles wat je nodig hebt',
     description: 'Complete oplossing voor gevestigde bedrijven',
     features: [
