@@ -1069,114 +1069,55 @@ export function WebsiteBrandingStep({ data, onChange, disabled }: FormStepProps)
         </div>
       </div>
 
-      {/* ===== LIVE PREVIEW ===== */}
+      {/* ===== SELECTION SUMMARY ===== */}
       {(selectedColors.length > 0 || selectedFont || selectedStyle) && (
         <motion.div
-          initial={{ opacity: 0, y: 20 }}
+          initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
-          className="space-y-3"
+          className="bg-gradient-to-br from-gray-800/80 to-gray-900/80 rounded-xl p-4 border border-gray-700"
         >
-          <h4 className="font-semibold text-white flex items-center gap-2">
-            <ArrowUpRight className="w-5 h-5 text-emerald-400" />
-            Preview
-          </h4>
+          <div className="flex items-center gap-2 mb-3">
+            <Sparkles className="w-4 h-4 text-emerald-400" />
+            <span className="text-sm font-medium text-white">Jouw selectie</span>
+          </div>
           
-          <div 
-            className="rounded-xl overflow-hidden border border-gray-700 shadow-2xl"
-            style={{ backgroundColor: selectedColors[3] || '#F8FAFC' }}
-          >
-            {/* Browser chrome */}
-            <div className="bg-gray-800 px-4 py-2 flex items-center gap-2">
-              <div className="flex gap-1.5">
-                <div className="w-3 h-3 rounded-full bg-red-500" />
-                <div className="w-3 h-3 rounded-full bg-yellow-500" />
-                <div className="w-3 h-3 rounded-full bg-green-500" />
-              </div>
-              <div className="flex-1 mx-4">
-                <div className="bg-gray-700 rounded-full px-3 py-1 text-xs text-gray-400 flex items-center gap-2">
-                  <span>🔒</span>
-                  <span>{data.businessName || 'jouwbedrijf'}.nl</span>
-                </div>
-              </div>
-            </div>
-            
-            {/* Website mockup */}
-            <div className="p-6" style={{ backgroundColor: selectedColors[3] || '#FFFFFF' }}>
-              {/* Header */}
-              <div className="flex items-center justify-between mb-6">
-                <div 
-                  className="text-xl font-bold"
-                  style={{ color: selectedColors[0] || '#1E293B' }}
-                >
-                  {data.businessName || 'Jouw Bedrijf'}
-                </div>
-                <div className="flex gap-4">
-                  {['Home', 'Over', 'Contact'].map(item => (
-                    <span 
-                      key={item}
-                      className="text-sm"
-                      style={{ color: selectedColors[1] || '#475569' }}
-                    >
-                      {item}
-                    </span>
+          <div className="grid grid-cols-3 gap-3">
+            {/* Colors */}
+            {selectedColors.length > 0 && (
+              <div className="space-y-1.5">
+                <span className="text-xs text-gray-500">Kleuren</span>
+                <div className="flex gap-1">
+                  {selectedColors.map((color: string) => (
+                    <div 
+                      key={color}
+                      className="w-6 h-6 rounded-md border border-white/20"
+                      style={{ backgroundColor: color }}
+                    />
                   ))}
                 </div>
               </div>
-              
-              {/* Hero */}
-              <div className="text-center py-8">
-                <h1 
-                  className={`text-3xl font-bold mb-2 ${
-                    selectedFont === 'elegant' ? 'font-serif' : 
-                    selectedFont === 'bold' ? 'uppercase tracking-wider' : ''
-                  }`}
-                  style={{ color: selectedColors[0] || '#1E293B' }}
-                >
-                  Welkom bij {data.businessName || 'Jouw Bedrijf'}
-                </h1>
-                <p 
-                  className="text-sm mb-4"
-                  style={{ color: selectedColors[1] || '#64748B' }}
-                >
-                  Uw partner voor succes
-                </p>
-                <button
-                  className="px-6 py-2 rounded-lg text-white text-sm font-medium"
-                  style={{ backgroundColor: selectedColors[0] || '#3B82F6' }}
-                >
-                  Neem contact op
-                </button>
+            )}
+            
+            {/* Font */}
+            {selectedFont && (
+              <div className="space-y-1.5">
+                <span className="text-xs text-gray-500">Lettertype</span>
+                <span className="text-sm text-white font-medium">
+                  {FONT_COMBINATIONS.find(f => f.id === selectedFont)?.name || selectedFont}
+                </span>
               </div>
-              
-              {/* Feature blocks */}
-              <div className="grid grid-cols-3 gap-3 mt-4">
-                {[1, 2, 3].map(i => (
-                  <div 
-                    key={i}
-                    className="rounded-lg p-3"
-                    style={{ backgroundColor: `${selectedColors[0]}15` || '#F1F5F9' }}
-                  >
-                    <div 
-                      className="w-8 h-8 rounded-lg mb-2"
-                      style={{ backgroundColor: selectedColors[2] || selectedColors[0] || '#3B82F6' }}
-                    />
-                    <div 
-                      className="h-2 rounded w-3/4 mb-1"
-                      style={{ backgroundColor: selectedColors[1] || '#94A3B8' }}
-                    />
-                    <div 
-                      className="h-2 rounded w-1/2"
-                      style={{ backgroundColor: `${selectedColors[1]}60` || '#CBD5E1' }}
-                    />
-                  </div>
-                ))}
+            )}
+            
+            {/* Style */}
+            {selectedStyle && (
+              <div className="space-y-1.5">
+                <span className="text-xs text-gray-500">Stijl</span>
+                <span className="text-sm text-white font-medium">
+                  {DESIGN_STYLES.find(s => s.id === selectedStyle)?.name || selectedStyle}
+                </span>
               </div>
-            </div>
+            )}
           </div>
-          
-          <p className="text-xs text-gray-500 text-center">
-            Dit is een indicatie. Het uiteindelijke design wordt op maat gemaakt.
-          </p>
         </motion.div>
       )}
 
