@@ -2458,7 +2458,8 @@ function ProjectsView({ darkMode, projects, onUpdateProject, onDeleteProject: _o
           {/* Action indicator */}
           {(() => {
             const needsOnboarding = project.phase === 'onboarding' && (!project.onboardingData || Object.keys(project.onboardingData).length === 0)
-            const needsPayment = project.paymentStatus === 'pending' || project.paymentStatus === 'failed'
+            const needsPayment = (project.paymentStatus === 'pending' || project.paymentStatus === 'failed') && 
+                                 (project.phase === 'design_approved' || project.designApprovedAt)
             
             if (unreadCount > 0) {
               return (
@@ -2989,7 +2990,8 @@ function ProjectsView({ darkMode, projects, onUpdateProject, onDeleteProject: _o
                           const hasUnreadMessages = unreadCount > 0
                           const needsOnboarding = project.phase === 'onboarding' && (!project.onboardingData || Object.keys(project.onboardingData).length === 0)
                           const uploadsReady = project.onboardingData?.uploadsCompleted === true
-                          const needsPayment = project.paymentStatus === 'pending' || project.paymentStatus === 'failed'
+                          const needsPayment = (project.paymentStatus === 'pending' || project.paymentStatus === 'failed') &&
+                                               (project.phase === 'design_approved' || project.designApprovedAt)
                           const awaitingApproval = project.phase === 'review'
                           
                           if (hasUnreadMessages) {

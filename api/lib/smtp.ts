@@ -132,8 +132,38 @@ export const sendEmail = async (options: SendEmailOptions): Promise<EmailResult>
 
 // ===========================================
 // Base Email Template - Webstability Design
-// Professional styling matching website design
+// Professional dark mode styling matching website design
 // ===========================================
+
+// Consistent brand colors - using emerald/teal as primary (matching website)
+const BRAND_COLORS = {
+  // Dark mode backgrounds
+  bgDark: '#0f172a',       // slate-900
+  bgCard: '#1e293b',       // slate-800
+  bgCardHover: '#334155',  // slate-700
+  
+  // Primary accent - emerald (consistent with website)
+  primary: '#10b981',      // emerald-500
+  primaryDark: '#059669',  // emerald-600
+  primaryLight: '#34d399', // emerald-400
+  primaryBg: '#064e3b',    // emerald-900
+  
+  // Text colors
+  textWhite: '#ffffff',
+  textLight: '#f1f5f9',    // slate-100
+  textMuted: '#94a3b8',    // slate-400
+  textDark: '#0f172a',     // slate-900
+  
+  // Accent colors for different states
+  success: '#10b981',      // emerald
+  warning: '#f59e0b',      // amber
+  error: '#ef4444',        // red
+  info: '#3b82f6',         // blue
+  
+  // Borders
+  border: '#334155',       // slate-700
+  borderLight: '#475569',  // slate-600
+}
 
 // Trustpilot stars SVG for emails (inline, email-safe) - Improved for mobile
 const getTrustpilotStars = () => `
@@ -150,14 +180,14 @@ const getTrustpilotStars = () => `
   </table>
 `
 
-export const baseTemplate = (content: string, accentColor: string = '#2563eb') => `
+export const baseTemplate = (content: string, _accentColor: string = '#10b981') => `
 <!DOCTYPE html>
 <html lang="nl">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="color-scheme" content="light">
-  <meta name="supported-color-schemes" content="light">
+  <meta name="color-scheme" content="dark light">
+  <meta name="supported-color-schemes" content="dark light">
   <title>Webstability</title>
   <!--[if mso]>
   <style type="text/css">
@@ -166,13 +196,13 @@ export const baseTemplate = (content: string, accentColor: string = '#2563eb') =
   </style>
   <![endif]-->
 </head>
-<body style="margin: 0; padding: 0; background-color: #f1f5f9; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif; -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale;">
+<body style="margin: 0; padding: 0; background-color: ${BRAND_COLORS.bgDark}; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif; -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale;">
   <!-- Preheader text (hidden) -->
   <div style="display: none; max-height: 0; overflow: hidden; mso-hide: all;">
     Webstability - Professionele websites voor ondernemers
   </div>
   
-  <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="background-color: #f1f5f9;">
+  <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="background-color: ${BRAND_COLORS.bgDark};">
     <tr>
       <td align="center" style="padding: 32px 16px;">
         
@@ -181,7 +211,7 @@ export const baseTemplate = (content: string, accentColor: string = '#2563eb') =
           
           <!-- Header with Logo -->
           <tr>
-            <td style="padding: 24px 32px; background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%); border-radius: 16px 16px 0 0;">
+            <td style="padding: 24px 32px; background: linear-gradient(135deg, ${BRAND_COLORS.primary} 0%, ${BRAND_COLORS.primaryDark} 100%); border-radius: 16px 16px 0 0;">
               <table role="presentation" width="100%" cellspacing="0" cellpadding="0">
                 <tr>
                   <td>
@@ -199,28 +229,23 @@ export const baseTemplate = (content: string, accentColor: string = '#2563eb') =
             </td>
           </tr>
           
-          <!-- Accent Bar -->
+          <!-- Content Area - Dark background -->
           <tr>
-            <td style="height: 4px; background: linear-gradient(90deg, ${accentColor} 0%, #3b82f6 50%, #8b5cf6 100%);"></td>
-          </tr>
-          
-          <!-- Content Area -->
-          <tr>
-            <td style="padding: 40px 32px; background-color: #ffffff;">
+            <td style="padding: 40px 32px; background-color: ${BRAND_COLORS.bgCard};">
               ${content}
             </td>
           </tr>
           
           <!-- Footer -->
           <tr>
-            <td style="padding: 32px; background-color: #f8fafc; border-radius: 0 0 16px 16px; border-top: 1px solid #e2e8f0;">
+            <td style="padding: 32px; background-color: ${BRAND_COLORS.bgDark}; border-radius: 0 0 16px 16px; border-top: 1px solid ${BRAND_COLORS.border};">
               <table role="presentation" width="100%" cellspacing="0" cellpadding="0">
                 <!-- Greeting -->
                 <tr>
                   <td align="center" style="padding-bottom: 20px;">
-                    <p style="margin: 0; font-size: 15px; color: #64748b; line-height: 1.5;">
+                    <p style="margin: 0; font-size: 15px; color: ${BRAND_COLORS.textMuted}; line-height: 1.5;">
                       Met vriendelijke groet,<br>
-                      <strong style="color: #0f172a;">Team Webstability</strong>
+                      <strong style="color: ${BRAND_COLORS.textWhite};">Team Webstability</strong>
                     </p>
                   </td>
                 </tr>
@@ -228,7 +253,7 @@ export const baseTemplate = (content: string, accentColor: string = '#2563eb') =
                 <!-- Divider -->
                 <tr>
                   <td style="padding-bottom: 20px;">
-                    <div style="height: 1px; background: linear-gradient(90deg, transparent, #e2e8f0, transparent);"></div>
+                    <div style="height: 1px; background: linear-gradient(90deg, transparent, ${BRAND_COLORS.border}, transparent);"></div>
                   </td>
                 </tr>
                 
@@ -239,7 +264,7 @@ export const baseTemplate = (content: string, accentColor: string = '#2563eb') =
                       <table role="presentation" cellspacing="0" cellpadding="0" border="0" style="border-collapse: collapse;">
                         <tr>
                           <td align="center" style="padding-bottom: 6px;">
-                            <span style="color: #64748b; font-size: 13px;">Beoordeeld met</span>
+                            <span style="color: ${BRAND_COLORS.textMuted}; font-size: 13px;">Beoordeeld met</span>
                           </td>
                         </tr>
                         <tr>
@@ -249,7 +274,7 @@ export const baseTemplate = (content: string, accentColor: string = '#2563eb') =
                         </tr>
                         <tr>
                           <td align="center">
-                            <span style="color: #64748b; font-size: 13px;">op Trustpilot</span>
+                            <span style="color: ${BRAND_COLORS.textMuted}; font-size: 13px;">op Trustpilot</span>
                           </td>
                         </tr>
                       </table>
@@ -263,17 +288,17 @@ export const baseTemplate = (content: string, accentColor: string = '#2563eb') =
                     <table role="presentation" cellspacing="0" cellpadding="0" border="0" style="border-collapse: collapse;">
                       <tr>
                         <td align="center" style="padding-bottom: 8px;">
-                          <a href="https://webstability.nl" style="color: ${accentColor}; text-decoration: none; font-size: 14px; font-weight: 500;">🌐 webstability.nl</a>
+                          <a href="https://webstability.nl" style="color: ${BRAND_COLORS.primaryLight}; text-decoration: none; font-size: 14px; font-weight: 500;">🌐 webstability.nl</a>
                         </td>
                       </tr>
                       <tr>
                         <td align="center" style="padding-bottom: 8px;">
-                          <a href="mailto:info@webstability.nl" style="color: ${accentColor}; text-decoration: none; font-size: 14px; font-weight: 500;">✉️ info@webstability.nl</a>
+                          <a href="mailto:info@webstability.nl" style="color: ${BRAND_COLORS.primaryLight}; text-decoration: none; font-size: 14px; font-weight: 500;">✉️ info@webstability.nl</a>
                         </td>
                       </tr>
                       <tr>
                         <td align="center">
-                          <a href="tel:+31644712573" style="color: ${accentColor}; text-decoration: none; font-size: 14px; font-weight: 500;">📞 06-44712573</a>
+                          <a href="tel:+31644712573" style="color: ${BRAND_COLORS.primaryLight}; text-decoration: none; font-size: 14px; font-weight: 500;">📞 06-44712573</a>
                         </td>
                       </tr>
                     </table>
@@ -283,7 +308,7 @@ export const baseTemplate = (content: string, accentColor: string = '#2563eb') =
                 <!-- Legal -->
                 <tr>
                   <td align="center">
-                    <p style="margin: 0; font-size: 11px; color: #94a3b8;">
+                    <p style="margin: 0; font-size: 11px; color: ${BRAND_COLORS.textMuted};">
                       KvK: 91186307 • BTW: NL004875371B72
                     </p>
                   </td>
@@ -298,7 +323,7 @@ export const baseTemplate = (content: string, accentColor: string = '#2563eb') =
         <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="max-width: 600px;">
           <tr>
             <td align="center" style="padding: 24px 16px;">
-              <p style="margin: 0; font-size: 11px; color: #94a3b8; line-height: 1.5;">
+              <p style="margin: 0; font-size: 11px; color: ${BRAND_COLORS.textMuted}; line-height: 1.5;">
                 Je ontvangt deze email omdat je een aanvraag hebt gedaan bij Webstability.<br>
                 © ${new Date().getFullYear()} Webstability. Alle rechten voorbehouden.
               </p>
@@ -317,18 +342,14 @@ export const baseTemplate = (content: string, accentColor: string = '#2563eb') =
 // Email Templates - Professional Webstability Design
 // ===========================================
 
-// Service type colors
-const serviceColors: Record<string, { primary: string; gradient: string }> = {
-  website: { primary: '#2563eb', gradient: 'linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%)' },
-  webshop: { primary: '#10b981', gradient: 'linear-gradient(135deg, #10b981 0%, #059669 100%)' },
-  drone: { primary: '#f97316', gradient: 'linear-gradient(135deg, #f97316 0%, #ea580c 100%)' },
-  logo: { primary: '#8b5cf6', gradient: 'linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%)' },
-}
-
-const getServiceColor = (type?: string) => serviceColors[type || 'website'] || serviceColors.website
+// All service types now use consistent emerald branding
+const getServiceColor = (_type?: string) => ({
+  primary: BRAND_COLORS.primary,
+  gradient: `linear-gradient(135deg, ${BRAND_COLORS.primary} 0%, ${BRAND_COLORS.primaryDark} 100%)`
+})
 
 // ===========================================
-// Progress Bar Component for Emails
+// Progress Bar Component for Emails - Dark Mode
 // ===========================================
 
 type ProjectPhase = 'onboarding' | 'design' | 'design_approved' | 'development' | 'review' | 'live'
@@ -342,17 +363,17 @@ const PHASE_CONFIG: { key: ProjectPhase; label: string; emoji: string }[] = [
   { key: 'live', label: 'Live', emoji: '🚀' },
 ]
 
-const getProgressBar = (currentPhase: ProjectPhase, accentColor: string = '#2563eb'): string => {
+const getProgressBar = (currentPhase: ProjectPhase, _accentColor: string = '#10b981'): string => {
   const currentIndex = PHASE_CONFIG.findIndex(p => p.key === currentPhase)
   
-  // Generate the step circles with connecting lines - mobile optimized
+  // Generate the step circles with connecting lines - mobile optimized, dark mode
   const steps = PHASE_CONFIG.map((phase, index) => {
     const isCompleted = index < currentIndex
     const isCurrent = index === currentIndex
     
-    // Colors for each state
-    const circleColor = isCompleted || isCurrent ? accentColor : '#e2e8f0'
-    const textColor = isCompleted || isCurrent ? '#0f172a' : '#94a3b8'
+    // Dark mode colors
+    const circleColor = isCompleted || isCurrent ? BRAND_COLORS.primary : BRAND_COLORS.border
+    const textColor = isCompleted || isCurrent ? BRAND_COLORS.textLight : BRAND_COLORS.textMuted
     const checkmark = isCompleted ? '✓' : phase.emoji
     
     // Shorter labels for mobile
@@ -364,14 +385,14 @@ const getProgressBar = (currentPhase: ProjectPhase, accentColor: string = '#2563
           width: 32px; 
           height: 32px; 
           border-radius: 50%; 
-          background: ${isCurrent ? accentColor : isCompleted ? '#dcfce7' : '#f1f5f9'}; 
+          background: ${isCurrent ? BRAND_COLORS.primary : isCompleted ? BRAND_COLORS.primaryBg : BRAND_COLORS.bgDark}; 
           border: 2px solid ${circleColor};
-          color: ${isCurrent ? '#ffffff' : isCompleted ? '#16a34a' : '#94a3b8'}; 
+          color: ${isCurrent ? '#ffffff' : isCompleted ? BRAND_COLORS.primaryLight : BRAND_COLORS.textMuted}; 
           font-size: 12px; 
           font-weight: 700; 
           line-height: 28px; 
           margin: 0 auto 6px;
-          ${isCurrent ? 'box-shadow: 0 0 0 3px ' + accentColor + '33;' : ''}
+          ${isCurrent ? 'box-shadow: 0 0 0 3px ' + BRAND_COLORS.primary + '40;' : ''}
         ">
           ${checkmark}
         </div>
@@ -386,16 +407,16 @@ const getProgressBar = (currentPhase: ProjectPhase, accentColor: string = '#2563
   const progressPercentage = Math.round((currentIndex / (PHASE_CONFIG.length - 1)) * 100)
   
   return `
-    <!-- Progress Bar Section - Mobile Optimized -->
-    <div style="background: #f8fafc; border-radius: 12px; padding: 16px 8px; margin-bottom: 24px;">
-      <p style="margin: 0 0 12px; font-size: 11px; font-weight: 600; color: #64748b; text-transform: uppercase; letter-spacing: 0.5px; text-align: center;">
+    <!-- Progress Bar Section - Dark Mode -->
+    <div style="background: ${BRAND_COLORS.bgDark}; border-radius: 12px; padding: 16px 8px; margin-bottom: 24px; border: 1px solid ${BRAND_COLORS.border};">
+      <p style="margin: 0 0 12px; font-size: 11px; font-weight: 600; color: ${BRAND_COLORS.textMuted}; text-transform: uppercase; letter-spacing: 0.5px; text-align: center;">
         📍 Voortgang (${currentIndex + 1}/${PHASE_CONFIG.length})
       </p>
       
       <!-- Progress line background -->
       <div style="position: relative; padding: 0 16px;">
-        <div style="position: absolute; top: 16px; left: 32px; right: 32px; height: 2px; background: #e2e8f0; border-radius: 2px;">
-          <div style="width: ${progressPercentage}%; height: 100%; background: ${accentColor}; border-radius: 2px;"></div>
+        <div style="position: absolute; top: 16px; left: 32px; right: 32px; height: 2px; background: ${BRAND_COLORS.border}; border-radius: 2px;">
+          <div style="width: ${progressPercentage}%; height: 100%; background: ${BRAND_COLORS.primary}; border-radius: 2px;"></div>
         </div>
         
         <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="position: relative;">
@@ -413,16 +434,16 @@ const getProgressBar = (currentPhase: ProjectPhase, accentColor: string = '#2563
 // ===========================================
 
 /**
- * Generate a prominent magic link button for 1-click login
+ * Generate a prominent magic link button for 1-click login - Dark mode
  */
-const getMagicLinkButton = (magicLink: string, buttonText: string = 'Bekijk je project →', accentColor: string = '#2563eb'): string => {
+const getMagicLinkButton = (magicLink: string, buttonText: string = 'Bekijk je project →', _accentColor: string = '#10b981'): string => {
   return `
     <!-- Magic Link Button - 1-Click Login -->
     <div style="text-align: center; margin: 24px 0;">
-      <a href="${magicLink}" style="display: inline-block; background: linear-gradient(135deg, ${accentColor} 0%, ${accentColor}dd 100%); color: #ffffff; padding: 16px 40px; border-radius: 12px; text-decoration: none; font-weight: 600; font-size: 16px; box-shadow: 0 4px 14px ${accentColor}40;">
+      <a href="${magicLink}" style="display: inline-block; background: linear-gradient(135deg, ${BRAND_COLORS.primary} 0%, ${BRAND_COLORS.primaryDark} 100%); color: #ffffff; padding: 16px 40px; border-radius: 12px; text-decoration: none; font-weight: 600; font-size: 16px; box-shadow: 0 4px 14px ${BRAND_COLORS.primary}40;">
         ${buttonText}
       </a>
-      <p style="margin: 12px 0 0; font-size: 12px; color: #94a3b8;">
+      <p style="margin: 12px 0 0; font-size: 12px; color: ${BRAND_COLORS.textMuted};">
         🔐 1-klik login — geen wachtwoord nodig
       </p>
     </div>
@@ -451,43 +472,43 @@ export const sendProjectCreatedEmail = async (project: {
       <div style="width: 80px; height: 80px; background: ${colors.gradient}; border-radius: 50%; margin: 0 auto 20px; display: flex; align-items: center; justify-content: center;">
         <span style="font-size: 36px;">🎉</span>
       </div>
-      <h1 style="margin: 0 0 8px; font-size: 28px; font-weight: 700; color: #0f172a;">Nieuw Project!</h1>
+      <h1 style="margin: 0 0 8px; font-size: 28px; font-weight: 700; color: ${BRAND_COLORS.textWhite};">Nieuw Project!</h1>
       <span style="display: inline-block; background: ${colors.primary}; color: white; padding: 6px 16px; border-radius: 20px; font-size: 14px; font-weight: 600;">${serviceLabel} • ${project.package.toUpperCase()}</span>
     </div>
     
-    <div style="background: #f8fafc; border-radius: 12px; padding: 24px; margin-bottom: 24px;">
-      <h2 style="margin: 0 0 16px; font-size: 16px; font-weight: 600; color: #334155; text-transform: uppercase; letter-spacing: 0.5px;">Klantgegevens</h2>
+    <div style="background: ${BRAND_COLORS.bgDark}; border: 1px solid ${BRAND_COLORS.border}; border-radius: 12px; padding: 24px; margin-bottom: 24px;">
+      <h2 style="margin: 0 0 16px; font-size: 16px; font-weight: 600; color: ${BRAND_COLORS.textMuted}; text-transform: uppercase; letter-spacing: 0.5px;">Klantgegevens</h2>
       <table role="presentation" width="100%" cellspacing="0" cellpadding="0">
         <tr>
-          <td style="padding: 8px 0; border-bottom: 1px solid #e2e8f0;">
-            <span style="color: #64748b; font-size: 14px;">Project ID</span>
+          <td style="padding: 8px 0; border-bottom: 1px solid ${BRAND_COLORS.border};">
+            <span style="color: ${BRAND_COLORS.textMuted}; font-size: 14px;">Project ID</span>
           </td>
-          <td style="padding: 8px 0; border-bottom: 1px solid #e2e8f0; text-align: right;">
-            <span style="color: #0f172a; font-weight: 600; font-family: monospace;">${project.id}</span>
-          </td>
-        </tr>
-        <tr>
-          <td style="padding: 8px 0; border-bottom: 1px solid #e2e8f0;">
-            <span style="color: #64748b; font-size: 14px;">Bedrijf</span>
-          </td>
-          <td style="padding: 8px 0; border-bottom: 1px solid #e2e8f0; text-align: right;">
-            <span style="color: #0f172a; font-weight: 600;">${project.businessName}</span>
+          <td style="padding: 8px 0; border-bottom: 1px solid ${BRAND_COLORS.border}; text-align: right;">
+            <span style="color: ${BRAND_COLORS.textWhite}; font-weight: 600; font-family: monospace;">${project.id}</span>
           </td>
         </tr>
         <tr>
-          <td style="padding: 8px 0; border-bottom: 1px solid #e2e8f0;">
-            <span style="color: #64748b; font-size: 14px;">Email</span>
+          <td style="padding: 8px 0; border-bottom: 1px solid ${BRAND_COLORS.border};">
+            <span style="color: ${BRAND_COLORS.textMuted}; font-size: 14px;">Bedrijf</span>
           </td>
-          <td style="padding: 8px 0; border-bottom: 1px solid #e2e8f0; text-align: right;">
-            <a href="mailto:${project.email}" style="color: ${colors.primary}; text-decoration: none;">${project.email}</a>
+          <td style="padding: 8px 0; border-bottom: 1px solid ${BRAND_COLORS.border}; text-align: right;">
+            <span style="color: ${BRAND_COLORS.textWhite}; font-weight: 600;">${project.businessName}</span>
+          </td>
+        </tr>
+        <tr>
+          <td style="padding: 8px 0; border-bottom: 1px solid ${BRAND_COLORS.border};">
+            <span style="color: ${BRAND_COLORS.textMuted}; font-size: 14px;">Email</span>
+          </td>
+          <td style="padding: 8px 0; border-bottom: 1px solid ${BRAND_COLORS.border}; text-align: right;">
+            <a href="mailto:${project.email}" style="color: ${BRAND_COLORS.primaryLight}; text-decoration: none;">${project.email}</a>
           </td>
         </tr>
         <tr>
           <td style="padding: 8px 0;">
-            <span style="color: #64748b; font-size: 14px;">Telefoon</span>
+            <span style="color: ${BRAND_COLORS.textMuted}; font-size: 14px;">Telefoon</span>
           </td>
           <td style="padding: 8px 0; text-align: right;">
-            ${project.phone ? `<a href="tel:${project.phone}" style="color: ${colors.primary}; text-decoration: none;">${project.phone}</a>` : '<span style="color: #94a3b8;">Niet opgegeven</span>'}
+            ${project.phone ? `<a href="tel:${project.phone}" style="color: ${BRAND_COLORS.primaryLight}; text-decoration: none;">${project.phone}</a>` : `<span style="color: ${BRAND_COLORS.textMuted};">Niet opgegeven</span>`}
           </td>
         </tr>
       </table>
@@ -536,87 +557,88 @@ export const sendWelcomeEmail = async (customer: {
       <div style="width: 80px; height: 80px; background: ${colors.gradient}; border-radius: 50%; margin: 0 auto 20px; display: flex; align-items: center; justify-content: center;">
         <span style="font-size: 36px;">🚀</span>
       </div>
-      <h1 style="margin: 0 0 8px; font-size: 28px; font-weight: 700; color: #0f172a;">Welkom bij Webstability!</h1>
-      <p style="margin: 0; color: #64748b; font-size: 16px;">Je professionele ${serviceLabel} is onderweg</p>
+      <h1 style="margin: 0 0 8px; font-size: 28px; font-weight: 700; color: ${BRAND_COLORS.textWhite};">Welkom bij Webstability!</h1>
+      <p style="margin: 0; color: ${BRAND_COLORS.textMuted}; font-size: 16px;">Je professionele ${serviceLabel} is onderweg</p>
     </div>
     
     ${getProgressBar(currentPhase, colors.primary)}
     
-    <p style="color: #334155; font-size: 16px; line-height: 1.6; margin-bottom: 24px;">
+    <p style="color: ${BRAND_COLORS.textLight}; font-size: 16px; line-height: 1.6; margin-bottom: 24px;">
       Hoi ${customer.name},<br><br>
       Super dat je voor Webstability hebt gekozen! We gaan direct voor je aan de slag.
     </p>
     
     ${customer.password ? `
-    <!-- Login Credentials Card - prominently displayed when password is set -->
-    <div style="background: linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%); border: 2px solid #10b981; border-radius: 12px; padding: 24px; margin-bottom: 24px;">
-      <h3 style="margin: 0 0 8px; font-size: 18px; font-weight: 700; color: #166534;">🔐 Je inloggegevens</h3>
-      <p style="margin: 0 0 16px; color: #15803d; font-size: 14px;">Gebruik deze gegevens om de status van je project te volgen</p>
-      <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="background: white; border-radius: 8px; overflow: hidden;">
+    <!-- Login Credentials Card - Dark mode -->
+    <div style="background: ${BRAND_COLORS.primaryBg}; border: 2px solid ${BRAND_COLORS.primary}; border-radius: 12px; padding: 24px; margin-bottom: 24px;">
+      <h3 style="margin: 0 0 8px; font-size: 18px; font-weight: 700; color: ${BRAND_COLORS.primaryLight};">🔐 Je inloggegevens</h3>
+      <p style="margin: 0 0 16px; color: ${BRAND_COLORS.primary}; font-size: 14px;">Gebruik deze gegevens om de status van je project te volgen</p>
+      <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="background: ${BRAND_COLORS.bgCard}; border-radius: 8px; overflow: hidden;">
         <tr>
-          <td style="padding: 16px; border-bottom: 1px solid #e2e8f0;">
-            <p style="margin: 0; color: #64748b; font-size: 12px; text-transform: uppercase; letter-spacing: 0.5px;">Project ID (gebruikersnaam)</p>
-            <p style="margin: 6px 0 0; color: #0f172a; font-size: 20px; font-weight: 700; font-family: monospace; letter-spacing: 1px;">${customer.projectId}</p>
+          <td style="padding: 16px; border-bottom: 1px solid ${BRAND_COLORS.border};">
+            <p style="margin: 0; color: ${BRAND_COLORS.textMuted}; font-size: 12px; text-transform: uppercase; letter-spacing: 0.5px;">E-mailadres</p>
+            <p style="margin: 6px 0 0; color: ${BRAND_COLORS.textWhite}; font-size: 18px; font-weight: 600;">${customer.email}</p>
           </td>
         </tr>
         <tr>
           <td style="padding: 16px;">
-            <p style="margin: 0; color: #64748b; font-size: 12px; text-transform: uppercase; letter-spacing: 0.5px;">Wachtwoord</p>
-            <p style="margin: 6px 0 0; color: #0f172a; font-size: 20px; font-weight: 700; font-family: monospace;">${customer.password}</p>
+            <p style="margin: 0; color: ${BRAND_COLORS.textMuted}; font-size: 12px; text-transform: uppercase; letter-spacing: 0.5px;">Wachtwoord</p>
+            <p style="margin: 6px 0 0; color: ${BRAND_COLORS.textWhite}; font-size: 20px; font-weight: 700; font-family: monospace;">${customer.password}</p>
           </td>
         </tr>
       </table>
-      <div style="margin-top: 16px; padding: 12px; background: white; border-radius: 8px;">
-        <p style="margin: 0; color: #166534; font-size: 13px; line-height: 1.5;">
+      <div style="margin-top: 16px; padding: 12px; background: ${BRAND_COLORS.bgCard}; border-radius: 8px;">
+        <p style="margin: 0; color: ${BRAND_COLORS.primaryLight}; font-size: 13px; line-height: 1.5;">
           <strong>💡 Zo log je in:</strong><br>
-          1. Ga naar <a href="https://webstability.nl/status" style="color: #10b981; font-weight: 600;">webstability.nl/status</a><br>
-          2. Vul je Project ID in als gebruikersnaam<br>
+          1. Ga naar <a href="https://webstability.nl/status" style="color: ${BRAND_COLORS.primary}; font-weight: 600;">webstability.nl/status</a><br>
+          2. Vul je e-mailadres in<br>
           3. Vul je wachtwoord in en klik op inloggen
         </p>
       </div>
     </div>
     ` : `
-    <!-- Project ID Card - when no password is set yet -->
+    <!-- Email verification when no password is set yet -->
     <div style="background: ${colors.gradient}; border-radius: 12px; padding: 24px; margin-bottom: 24px; text-align: center;">
-      <p style="margin: 0 0 8px; color: rgba(255,255,255,0.8); font-size: 14px;">Je project ID</p>
-      <p style="margin: 0; color: white; font-size: 24px; font-weight: 700; font-family: monospace; letter-spacing: 2px;">${customer.projectId}</p>
-      <p style="margin: 16px 0 0; color: rgba(255,255,255,0.9); font-size: 13px;">
-        Bewaar dit ID goed - je hebt het nodig om je project te volgen
+      <p style="margin: 0 0 16px; color: rgba(255,255,255,0.9); font-size: 16px;">
+        Verifieer je e-mailadres om toegang te krijgen tot je project
       </p>
+      <a href="${magicLink}" style="display: inline-block; background: white; color: ${colors.primary}; padding: 14px 32px; border-radius: 10px; text-decoration: none; font-weight: 600; font-size: 16px; box-shadow: 0 4px 14px rgba(0, 0, 0, 0.15);">
+        ✉️ Verifieer e-mail →
+      </a>
     </div>
     `}
     
-    <!-- Steps -->
-    <h2 style="margin: 0 0 20px; font-size: 18px; font-weight: 600; color: #0f172a;">Zo werkt het:</h2>
+    <!-- Steps - Dark Mode -->
+    <h2 style="margin: 0 0 20px; font-size: 18px; font-weight: 600; color: ${BRAND_COLORS.textWhite};">Zo werkt het:</h2>
     
     <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="margin-bottom: 32px;">
       <tr>
-        <td style="padding: 16px 0; border-bottom: 1px solid #f1f5f9;">
+        <td style="padding: 16px 0; border-bottom: 1px solid ${BRAND_COLORS.border};">
           <table role="presentation" cellspacing="0" cellpadding="0">
             <tr>
               <td style="width: 48px; vertical-align: top;">
-                <div style="width: 36px; height: 36px; background: ${colors.primary}; border-radius: 50%; color: white; font-weight: 700; font-size: 16px; text-align: center; line-height: 36px;">1</div>
+                <div style="width: 36px; height: 36px; background: ${BRAND_COLORS.primary}; border-radius: 50%; color: white; font-weight: 700; font-size: 16px; text-align: center; line-height: 36px;">1</div>
               </td>
               <td style="vertical-align: top;">
-                <p style="margin: 0 0 4px; font-weight: 600; color: #0f172a;">Onboarding invullen</p>
-                <p style="margin: 0; color: #64748b; font-size: 14px;">Vertel ons meer over je bedrijf, kleuren en stijl.</p>
+                <p style="margin: 0 0 4px; font-weight: 600; color: ${BRAND_COLORS.textWhite};">Onboarding invullen</p>
+                <p style="margin: 0; color: ${BRAND_COLORS.textMuted}; font-size: 14px;">Vertel ons meer over je bedrijf, kleuren en stijl.</p>
               </td>
             </tr>
           </table>
         </td>
       </tr>
       <tr>
-        <td style="padding: 16px 0; border-bottom: 1px solid #f1f5f9;">
+        <td style="padding: 16px 0; border-bottom: 1px solid ${BRAND_COLORS.border};">
           <table role="presentation" cellspacing="0" cellpadding="0">
             <tr>
               <td style="width: 48px; vertical-align: top;">
-                <div style="width: 36px; height: 36px; background: ${colors.primary}; border-radius: 50%; color: white; font-weight: 700; font-size: 16px; text-align: center; line-height: 36px;">2</div>
+                <div style="width: 36px; height: 36px; background: ${BRAND_COLORS.primary}; border-radius: 50%; color: white; font-weight: 700; font-size: 16px; text-align: center; line-height: 36px;">2</div>
               </td>
               <td style="vertical-align: top;">
-                <p style="margin: 0 0 4px; font-weight: 600; color: #0f172a;">Bestanden uploaden</p>
-                <p style="margin: 0; color: #64748b; font-size: 14px;">
+                <p style="margin: 0 0 4px; font-weight: 600; color: ${BRAND_COLORS.textWhite};">Bestanden uploaden</p>
+                <p style="margin: 0; color: ${BRAND_COLORS.textMuted}; font-size: 14px;">
                   ${customer.driveLink 
-                    ? `<a href="${customer.driveLink}" style="color: ${colors.primary}; font-weight: 600;">Open je Google Drive map →</a> en upload je logo, foto's en teksten.`
+                    ? `<a href="${customer.driveLink}" style="color: ${BRAND_COLORS.primaryLight}; font-weight: 600;">Open je Google Drive map →</a> en upload je logo, foto's en teksten.`
                     : 'Je Google Drive map voor bestanden (logo, foto\'s, etc.) wordt klaargezet.'}
                 </p>
               </td>
@@ -625,45 +647,45 @@ export const sendWelcomeEmail = async (customer: {
         </td>
       </tr>
       <tr>
-        <td style="padding: 16px 0; border-bottom: 1px solid #f1f5f9;">
+        <td style="padding: 16px 0; border-bottom: 1px solid ${BRAND_COLORS.border};">
           <table role="presentation" cellspacing="0" cellpadding="0">
             <tr>
               <td style="width: 48px; vertical-align: top;">
-                <div style="width: 36px; height: 36px; background: ${colors.primary}; border-radius: 50%; color: white; font-weight: 700; font-size: 16px; text-align: center; line-height: 36px;">3</div>
+                <div style="width: 36px; height: 36px; background: ${BRAND_COLORS.primary}; border-radius: 50%; color: white; font-weight: 700; font-size: 16px; text-align: center; line-height: 36px;">3</div>
               </td>
               <td style="vertical-align: top;">
-                <p style="margin: 0 0 4px; font-weight: 600; color: #0f172a;">Wij ontwerpen</p>
-                <p style="margin: 0; color: #64748b; font-size: 14px;">Binnen 5-7 dagen ontvang je het eerste design.</p>
+                <p style="margin: 0 0 4px; font-weight: 600; color: ${BRAND_COLORS.textWhite};">Wij ontwerpen</p>
+                <p style="margin: 0; color: ${BRAND_COLORS.textMuted}; font-size: 14px;">Binnen 5-7 dagen ontvang je het eerste design.</p>
               </td>
             </tr>
           </table>
         </td>
       </tr>
       <tr>
-        <td style="padding: 16px 0; border-bottom: 1px solid #f1f5f9;">
+        <td style="padding: 16px 0; border-bottom: 1px solid ${BRAND_COLORS.border};">
           <table role="presentation" cellspacing="0" cellpadding="0">
             <tr>
               <td style="width: 48px; vertical-align: top;">
-                <div style="width: 36px; height: 36px; background: ${colors.primary}; border-radius: 50%; color: white; font-weight: 700; font-size: 16px; text-align: center; line-height: 36px;">4</div>
+                <div style="width: 36px; height: 36px; background: ${BRAND_COLORS.primary}; border-radius: 50%; color: white; font-weight: 700; font-size: 16px; text-align: center; line-height: 36px;">4</div>
               </td>
               <td style="vertical-align: top;">
-                <p style="margin: 0 0 4px; font-weight: 600; color: #0f172a;">Feedback & goedkeuren</p>
-                <p style="margin: 0; color: #64748b; font-size: 14px;">Bekijk het design en geef feedback. Tot 3 revisies inbegrepen!</p>
+                <p style="margin: 0 0 4px; font-weight: 600; color: ${BRAND_COLORS.textWhite};">Feedback & goedkeuren</p>
+                <p style="margin: 0; color: ${BRAND_COLORS.textMuted}; font-size: 14px;">Bekijk het design en geef feedback. Tot 3 revisies inbegrepen!</p>
               </td>
             </tr>
           </table>
         </td>
       </tr>
       <tr>
-        <td style="padding: 16px 0; border-bottom: 1px solid #f1f5f9;">
+        <td style="padding: 16px 0; border-bottom: 1px solid ${BRAND_COLORS.border};">
           <table role="presentation" cellspacing="0" cellpadding="0">
             <tr>
               <td style="width: 48px; vertical-align: top;">
-                <div style="width: 36px; height: 36px; background: #f59e0b; border-radius: 50%; color: white; font-weight: 700; font-size: 16px; text-align: center; line-height: 36px;">5</div>
+                <div style="width: 36px; height: 36px; background: ${BRAND_COLORS.warning}; border-radius: 50%; color: white; font-weight: 700; font-size: 16px; text-align: center; line-height: 36px;">5</div>
               </td>
               <td style="vertical-align: top;">
-                <p style="margin: 0 0 4px; font-weight: 600; color: #0f172a;">Betaling</p>
-                <p style="margin: 0; color: #64748b; font-size: 14px;"><strong style="color: #10b981;">Pas na goedkeuring van het design</strong> — vrijblijvend starten!</p>
+                <p style="margin: 0 0 4px; font-weight: 600; color: ${BRAND_COLORS.textWhite};">Betaling</p>
+                <p style="margin: 0; color: ${BRAND_COLORS.textMuted}; font-size: 14px;"><strong style="color: ${BRAND_COLORS.primary};">Pas na goedkeuring van het design</strong> — vrijblijvend starten!</p>
               </td>
             </tr>
           </table>
@@ -674,11 +696,11 @@ export const sendWelcomeEmail = async (customer: {
           <table role="presentation" cellspacing="0" cellpadding="0">
             <tr>
               <td style="width: 48px; vertical-align: top;">
-                <div style="width: 36px; height: 36px; background: #10b981; border-radius: 50%; color: white; font-weight: 700; font-size: 16px; text-align: center; line-height: 36px;">✓</div>
+                <div style="width: 36px; height: 36px; background: ${BRAND_COLORS.success}; border-radius: 50%; color: white; font-weight: 700; font-size: 16px; text-align: center; line-height: 36px;">✓</div>
               </td>
               <td style="vertical-align: top;">
-                <p style="margin: 0 0 4px; font-weight: 600; color: #0f172a;">Live!</p>
-                <p style="margin: 0; color: #64748b; font-size: 14px;">Na betaling gaat je ${serviceLabel} direct live.</p>
+                <p style="margin: 0 0 4px; font-weight: 600; color: ${BRAND_COLORS.textWhite};">Live!</p>
+                <p style="margin: 0; color: ${BRAND_COLORS.textMuted}; font-size: 14px;">Na betaling gaat je ${serviceLabel} direct live.</p>
               </td>
             </tr>
           </table>
@@ -687,14 +709,14 @@ export const sendWelcomeEmail = async (customer: {
     </table>
     
     ${customer.driveLink ? `
-    <!-- Google Drive Upload Box -->
-    <div style="background: linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%); border: 2px solid #3b82f6; border-radius: 16px; padding: 24px; margin-bottom: 24px;">
+    <!-- Google Drive Upload Box - Dark Mode -->
+    <div style="background: ${BRAND_COLORS.bgDark}; border: 2px solid ${BRAND_COLORS.info}; border-radius: 16px; padding: 24px; margin-bottom: 24px;">
       <div style="text-align: center; margin-bottom: 20px;">
         <div style="font-size: 40px; margin-bottom: 12px;">📁</div>
-        <p style="margin: 0 0 8px; color: #1e40af; font-size: 18px; font-weight: 700;">
+        <p style="margin: 0 0 8px; color: ${BRAND_COLORS.textWhite}; font-size: 18px; font-weight: 700;">
           Jouw Google Drive map is klaar!
         </p>
-        <p style="margin: 0; color: #1e3a8a; font-size: 14px;">
+        <p style="margin: 0; color: ${BRAND_COLORS.textMuted}; font-size: 14px;">
           We hebben 5 mappen voor je klaargezet. Hier is wat we nodig hebben:
         </p>
       </div>
@@ -702,15 +724,15 @@ export const sendWelcomeEmail = async (customer: {
       <!-- Folder explanation table -->
       <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="margin-bottom: 20px;">
         <tr>
-          <td style="padding: 10px; background: white; border-radius: 8px; margin-bottom: 8px;">
+          <td style="padding: 10px; background: ${BRAND_COLORS.bgCard}; border-radius: 8px; margin-bottom: 8px;">
             <table role="presentation" width="100%" cellspacing="0" cellpadding="0">
               <tr>
                 <td style="width: 36px; vertical-align: top;">
                   <span style="font-size: 20px;">🎨</span>
                 </td>
                 <td>
-                  <p style="margin: 0; font-weight: 600; color: #1e40af; font-size: 14px;">Ontwerp</p>
-                  <p style="margin: 4px 0 0; color: #64748b; font-size: 12px;">Logo bestanden, huisstijl handboek, kleurencodes</p>
+                  <p style="margin: 0; font-weight: 600; color: ${BRAND_COLORS.textWhite}; font-size: 14px;">Ontwerp</p>
+                  <p style="margin: 4px 0 0; color: ${BRAND_COLORS.textMuted}; font-size: 12px;">Logo bestanden, huisstijl handboek, kleurencodes</p>
                 </td>
               </tr>
             </table>
@@ -718,15 +740,15 @@ export const sendWelcomeEmail = async (customer: {
         </tr>
         <tr><td style="height: 8px;"></td></tr>
         <tr>
-          <td style="padding: 10px; background: white; border-radius: 8px;">
+          <td style="padding: 10px; background: ${BRAND_COLORS.bgCard}; border-radius: 8px;">
             <table role="presentation" width="100%" cellspacing="0" cellpadding="0">
               <tr>
                 <td style="width: 36px; vertical-align: top;">
                   <span style="font-size: 20px;">📝</span>
                 </td>
                 <td>
-                  <p style="margin: 0; font-weight: 600; color: #1e40af; font-size: 14px;">Content</p>
-                  <p style="margin: 4px 0 0; color: #64748b; font-size: 12px;">Teksten voor je website, bedrijfsomschrijving, USP's</p>
+                  <p style="margin: 0; font-weight: 600; color: ${BRAND_COLORS.textWhite}; font-size: 14px;">Content</p>
+                  <p style="margin: 4px 0 0; color: ${BRAND_COLORS.textMuted}; font-size: 12px;">Teksten voor je website, bedrijfsomschrijving, USP's</p>
                 </td>
               </tr>
             </table>
@@ -734,15 +756,15 @@ export const sendWelcomeEmail = async (customer: {
         </tr>
         <tr><td style="height: 8px;"></td></tr>
         <tr>
-          <td style="padding: 10px; background: white; border-radius: 8px;">
+          <td style="padding: 10px; background: ${BRAND_COLORS.bgCard}; border-radius: 8px;">
             <table role="presentation" width="100%" cellspacing="0" cellpadding="0">
               <tr>
                 <td style="width: 36px; vertical-align: top;">
                   <span style="font-size: 20px;">📸</span>
                 </td>
                 <td>
-                  <p style="margin: 0; font-weight: 600; color: #1e40af; font-size: 14px;">Afbeeldingen</p>
-                  <p style="margin: 4px 0 0; color: #64748b; font-size: 12px;">Foto's van je producten, team, bedrijfspand (hoge kwaliteit)</p>
+                  <p style="margin: 0; font-weight: 600; color: ${BRAND_COLORS.textWhite}; font-size: 14px;">Afbeeldingen</p>
+                  <p style="margin: 4px 0 0; color: ${BRAND_COLORS.textMuted}; font-size: 12px;">Foto's van je producten, team, bedrijfspand (hoge kwaliteit)</p>
                 </td>
               </tr>
             </table>
@@ -750,15 +772,15 @@ export const sendWelcomeEmail = async (customer: {
         </tr>
         <tr><td style="height: 8px;"></td></tr>
         <tr>
-          <td style="padding: 10px; background: white; border-radius: 8px;">
+          <td style="padding: 10px; background: ${BRAND_COLORS.bgCard}; border-radius: 8px;">
             <table role="presentation" width="100%" cellspacing="0" cellpadding="0">
               <tr>
                 <td style="width: 36px; vertical-align: top;">
                   <span style="font-size: 20px;">📄</span>
                 </td>
                 <td>
-                  <p style="margin: 0; font-weight: 600; color: #1e40af; font-size: 14px;">Documenten</p>
-                  <p style="margin: 4px 0 0; color: #64748b; font-size: 12px;">Prijslijsten, brochures, certificaten, downloads voor bezoekers</p>
+                  <p style="margin: 0; font-weight: 600; color: ${BRAND_COLORS.textWhite}; font-size: 14px;">Documenten</p>
+                  <p style="margin: 4px 0 0; color: ${BRAND_COLORS.textMuted}; font-size: 12px;">Prijslijsten, brochures, certificaten, downloads voor bezoekers</p>
                 </td>
               </tr>
             </table>
@@ -766,15 +788,15 @@ export const sendWelcomeEmail = async (customer: {
         </tr>
         <tr><td style="height: 8px;"></td></tr>
         <tr>
-          <td style="padding: 10px; background: white; border-radius: 8px;">
+          <td style="padding: 10px; background: ${BRAND_COLORS.bgCard}; border-radius: 8px;">
             <table role="presentation" width="100%" cellspacing="0" cellpadding="0">
               <tr>
                 <td style="width: 36px; vertical-align: top;">
                   <span style="font-size: 20px;">💬</span>
                 </td>
                 <td>
-                  <p style="margin: 0; font-weight: 600; color: #1e40af; font-size: 14px;">Feedback</p>
-                  <p style="margin: 4px 0 0; color: #64748b; font-size: 12px;">Hier plaatsen wij previews en kun je feedback achterlaten</p>
+                  <p style="margin: 0; font-weight: 600; color: ${BRAND_COLORS.textWhite}; font-size: 14px;">Feedback</p>
+                  <p style="margin: 4px 0 0; color: ${BRAND_COLORS.textMuted}; font-size: 12px;">Hier plaatsen wij previews en kun je feedback achterlaten</p>
                 </td>
               </tr>
             </table>
@@ -783,36 +805,36 @@ export const sendWelcomeEmail = async (customer: {
       </table>
       
       <div style="text-align: center;">
-        <a href="${customer.driveLink}" style="display: inline-block; background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%); color: white; padding: 14px 32px; border-radius: 10px; text-decoration: none; font-weight: 600; font-size: 16px; box-shadow: 0 4px 14px rgba(59, 130, 246, 0.35);">
+        <a href="${customer.driveLink}" style="display: inline-block; background: linear-gradient(135deg, ${BRAND_COLORS.info} 0%, #2563eb 100%); color: white; padding: 14px 32px; border-radius: 10px; text-decoration: none; font-weight: 600; font-size: 16px; box-shadow: 0 4px 14px rgba(59, 130, 246, 0.35);">
           📤 Open Google Drive →
         </a>
-        <p style="margin: 16px 0 0; font-size: 13px; color: #64748b;">
+        <p style="margin: 16px 0 0; font-size: 13px; color: ${BRAND_COLORS.textMuted};">
           Werkt ook op je telefoon! Sleep je bestanden naar de juiste map.
         </p>
       </div>
     </div>
     ` : ''}
     
-    <!-- Prominent Upload CTA -->
-    <div style="background: linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%); border: 2px solid #10b981; border-radius: 16px; padding: 24px; margin-bottom: 24px; text-align: center;">
-      <p style="margin: 0 0 8px; color: #166534; font-size: 18px; font-weight: 700;">
+    <!-- Prominent Upload CTA - Dark Mode -->
+    <div style="background: ${BRAND_COLORS.primaryBg}; border: 2px solid ${BRAND_COLORS.primary}; border-radius: 16px; padding: 24px; margin-bottom: 24px; text-align: center;">
+      <p style="margin: 0 0 8px; color: ${BRAND_COLORS.textWhite}; font-size: 18px; font-weight: 700;">
         🚀 Begin nu met je onboarding!
       </p>
-      <p style="margin: 0 0 16px; color: #15803d; font-size: 14px;">
+      <p style="margin: 0 0 16px; color: ${BRAND_COLORS.primaryLight}; font-size: 14px;">
         Hoe sneller je je info aanlevert, hoe sneller we kunnen starten
       </p>
-      <a href="https://webstability.nl/intake/${customer.projectId}" style="display: inline-block; background: linear-gradient(135deg, #10b981 0%, #059669 100%); color: white; padding: 16px 40px; border-radius: 10px; text-decoration: none; font-weight: 600; font-size: 16px; box-shadow: 0 4px 14px rgba(16, 185, 129, 0.35);">
+      <a href="https://webstability.nl/intake/${customer.projectId}" style="display: inline-block; background: linear-gradient(135deg, ${BRAND_COLORS.primary} 0%, ${BRAND_COLORS.primaryDark} 100%); color: white; padding: 16px 40px; border-radius: 10px; text-decoration: none; font-weight: 600; font-size: 16px; box-shadow: 0 4px 14px rgba(16, 185, 129, 0.35);">
         📝 Start Onboarding (2 min) →
       </a>
-      <p style="margin: 12px 0 0; font-size: 12px; color: #64748b;">
-        Of <a href="${magicLink}" style="color: ${colors.primary}; text-decoration: underline;">bekijk je project status</a>
+      <p style="margin: 12px 0 0; font-size: 12px; color: ${BRAND_COLORS.textMuted};">
+        Of <a href="${magicLink}" style="color: ${BRAND_COLORS.primaryLight}; text-decoration: underline;">bekijk je project status</a>
       </p>
     </div>
     
-    <!-- Spam Notice -->
-    <div style="background: #fef3c7; border-radius: 10px; padding: 16px; margin-top: 24px;">
-      <p style="margin: 0; color: #92400e; font-size: 14px;">
-        <strong>💡 Tip:</strong> Onze e-mails kunnen soms in je spam folder terechtkomen. Voeg <strong>info@webstability.nl</strong> toe aan je contacten om dit te voorkomen.
+    <!-- Spam Notice - Dark Mode -->
+    <div style="background: #422006; border: 1px solid ${BRAND_COLORS.warning}; border-radius: 10px; padding: 16px; margin-top: 24px;">
+      <p style="margin: 0; color: #fbbf24; font-size: 14px;">
+        <strong>💡 Tip:</strong> Onze e-mails kunnen soms in je spam folder terechtkomen. Voeg <strong style="color: ${BRAND_COLORS.textWhite};">info@webstability.nl</strong> toe aan je contacten om dit te voorkomen.
       </p>
     </div>
   `
@@ -840,41 +862,41 @@ export const sendDesignReadyEmail = async (customer: {
   
   const content = `
     <div style="text-align: center; margin-bottom: 32px;">
-      <div style="width: 80px; height: 80px; background: linear-gradient(135deg, #10b981 0%, #059669 100%); border-radius: 50%; margin: 0 auto 20px; display: flex; align-items: center; justify-content: center;">
+      <div style="width: 80px; height: 80px; background: linear-gradient(135deg, ${BRAND_COLORS.primary} 0%, ${BRAND_COLORS.primaryDark} 100%); border-radius: 50%; margin: 0 auto 20px; display: flex; align-items: center; justify-content: center;">
         <span style="font-size: 36px;">🎨</span>
       </div>
-      <h1 style="margin: 0 0 8px; font-size: 28px; font-weight: 700; color: #0f172a;">Je design is klaar!</h1>
-      <p style="margin: 0; color: #64748b; font-size: 16px;">Tijd om te bekijken wat we voor je hebben gemaakt</p>
+      <h1 style="margin: 0 0 8px; font-size: 28px; font-weight: 700; color: ${BRAND_COLORS.textWhite};">Je design is klaar!</h1>
+      <p style="margin: 0; color: ${BRAND_COLORS.textMuted}; font-size: 16px;">Tijd om te bekijken wat we voor je hebben gemaakt</p>
     </div>
     
-    ${getProgressBar(currentPhase, '#10b981')}
+    ${getProgressBar(currentPhase, BRAND_COLORS.primary)}
     
-    <p style="color: #334155; font-size: 16px; line-height: 1.6; margin-bottom: 24px;">
+    <p style="color: ${BRAND_COLORS.textLight}; font-size: 16px; line-height: 1.6; margin-bottom: 24px;">
       Hoi ${customer.name},<br><br>
       Goed nieuws! Het design voor je website is af en klaar voor review. We zijn benieuwd wat je ervan vindt!
     </p>
     
-    <!-- Preview Card -->
-    <div style="background: linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%); border: 2px solid #10b981; border-radius: 16px; padding: 32px; margin-bottom: 24px; text-align: center;">
-      <p style="margin: 0 0 8px; color: #166534; font-size: 14px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px;">👀 Preview klaar</p>
-      <p style="margin: 0 0 20px; color: #15803d; font-size: 16px;">Neem rustig de tijd om alles te bekijken.</p>
-      <a href="${customer.previewUrl}" style="display: inline-block; background: linear-gradient(135deg, #10b981 0%, #059669 100%); color: white; padding: 16px 40px; border-radius: 10px; text-decoration: none; font-weight: 600; font-size: 16px;">
+    <!-- Preview Card - Dark Mode -->
+    <div style="background: ${BRAND_COLORS.primaryBg}; border: 2px solid ${BRAND_COLORS.primary}; border-radius: 16px; padding: 32px; margin-bottom: 24px; text-align: center;">
+      <p style="margin: 0 0 8px; color: ${BRAND_COLORS.primaryLight}; font-size: 14px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px;">👀 Preview klaar</p>
+      <p style="margin: 0 0 20px; color: ${BRAND_COLORS.textLight}; font-size: 16px;">Neem rustig de tijd om alles te bekijken.</p>
+      <a href="${customer.previewUrl}" style="display: inline-block; background: linear-gradient(135deg, ${BRAND_COLORS.primary} 0%, ${BRAND_COLORS.primaryDark} 100%); color: white; padding: 16px 40px; border-radius: 10px; text-decoration: none; font-weight: 600; font-size: 16px;">
         Preview Bekijken →
       </a>
     </div>
     
-    <p style="color: #334155; font-size: 16px; line-height: 1.6; margin-bottom: 24px;">
+    <p style="color: ${BRAND_COLORS.textLight}; font-size: 16px; line-height: 1.6; margin-bottom: 24px;">
       Ben je tevreden? Top! Keur het design goed in je dashboard.<br>
-      Heb je aanpassingen? Geen probleem, je hebt <strong>3 revisies</strong> inbegrepen.
+      Heb je aanpassingen? Geen probleem, je hebt <strong style="color: ${BRAND_COLORS.primary};">3 revisies</strong> inbegrepen.
     </p>
     
-    ${getMagicLinkButton(magicLink, 'Naar Dashboard →', '#10b981')}
+    ${getMagicLinkButton(magicLink, 'Naar Dashboard →', BRAND_COLORS.primary)}
   `
 
   return sendEmail({
     to: customer.email,
     subject: `🎨 Je website design is klaar voor review!`,
-    html: baseTemplate(content, '#10b981'),
+    html: baseTemplate(content, BRAND_COLORS.primary),
     replyTo: SMTP_USER || 'info@webstability.nl',
   })
 }
@@ -895,47 +917,47 @@ export const sendPaymentConfirmationEmail = async (customer: {
   
   const content = `
     <div style="text-align: center; margin-bottom: 32px;">
-      <div style="width: 80px; height: 80px; background: linear-gradient(135deg, #10b981 0%, #059669 100%); border-radius: 50%; margin: 0 auto 20px; display: flex; align-items: center; justify-content: center;">
+      <div style="width: 80px; height: 80px; background: linear-gradient(135deg, ${BRAND_COLORS.primary} 0%, ${BRAND_COLORS.primaryDark} 100%); border-radius: 50%; margin: 0 auto 20px; display: flex; align-items: center; justify-content: center;">
         <span style="font-size: 36px;">✅</span>
       </div>
-      <h1 style="margin: 0 0 8px; font-size: 28px; font-weight: 700; color: #0f172a;">Betaling ontvangen!</h1>
-      <p style="margin: 0; color: #64748b; font-size: 16px;">Bedankt voor je betaling</p>
+      <h1 style="margin: 0 0 8px; font-size: 28px; font-weight: 700; color: ${BRAND_COLORS.textWhite};">Betaling ontvangen!</h1>
+      <p style="margin: 0; color: ${BRAND_COLORS.textMuted}; font-size: 16px;">Bedankt voor je betaling</p>
     </div>
     
-    ${getProgressBar(currentPhase, '#10b981')}
+    ${getProgressBar(currentPhase, BRAND_COLORS.primary)}
     
-    <p style="color: #334155; font-size: 16px; line-height: 1.6; margin-bottom: 24px;">
+    <p style="color: ${BRAND_COLORS.textLight}; font-size: 16px; line-height: 1.6; margin-bottom: 24px;">
       Hoi ${customer.name},<br><br>
       Bedankt voor je betaling! We hebben deze succesvol ontvangen.
     </p>
     
-    <!-- Amount Card -->
-    <div style="background: linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%); border: 2px solid #10b981; border-radius: 16px; padding: 32px; margin-bottom: 24px; text-align: center;">
-      <p style="margin: 0 0 8px; color: #166534; font-size: 14px;">Betaald bedrag</p>
-      <p style="margin: 0 0 8px; color: #10b981; font-size: 48px; font-weight: 700;">€${customer.amount.toFixed(2)}</p>
-      <p style="margin: 0; color: #15803d; font-size: 16px; font-weight: 600;">✓ Betaling geslaagd</p>
+    <!-- Amount Card - Dark Mode -->
+    <div style="background: ${BRAND_COLORS.primaryBg}; border: 2px solid ${BRAND_COLORS.primary}; border-radius: 16px; padding: 32px; margin-bottom: 24px; text-align: center;">
+      <p style="margin: 0 0 8px; color: ${BRAND_COLORS.primaryLight}; font-size: 14px;">Betaald bedrag</p>
+      <p style="margin: 0 0 8px; color: ${BRAND_COLORS.primary}; font-size: 48px; font-weight: 700;">€${customer.amount.toFixed(2)}</p>
+      <p style="margin: 0; color: ${BRAND_COLORS.textLight}; font-size: 16px; font-weight: 600;">✓ Betaling geslaagd</p>
     </div>
     
-    <h2 style="margin: 0 0 12px; font-size: 18px; font-weight: 600; color: #0f172a;">Wat nu?</h2>
-    <p style="color: #334155; font-size: 16px; line-height: 1.6; margin-bottom: 24px;">
+    <h2 style="margin: 0 0 12px; font-size: 18px; font-weight: 600; color: ${BRAND_COLORS.textWhite};">Wat nu?</h2>
+    <p style="color: ${BRAND_COLORS.textLight}; font-size: 16px; line-height: 1.6; margin-bottom: 24px;">
       Je website wordt nu live gezet! Dit gebeurt meestal binnen 24 uur. Je ontvangt een email zodra alles online staat.
     </p>
     
     ${customer.invoiceUrl ? `
-    <div style="background: #f8fafc; border-radius: 10px; padding: 16px; margin-bottom: 24px;">
-      <a href="${customer.invoiceUrl}" style="color: #2563eb; text-decoration: none; font-weight: 600;">
+    <div style="background: ${BRAND_COLORS.bgDark}; border: 1px solid ${BRAND_COLORS.border}; border-radius: 10px; padding: 16px; margin-bottom: 24px;">
+      <a href="${customer.invoiceUrl}" style="color: ${BRAND_COLORS.primaryLight}; text-decoration: none; font-weight: 600;">
         📄 Download je factuur (PDF)
       </a>
     </div>
     ` : ''}
     
-    ${getMagicLinkButton(magicLink, 'Bekijk Status →', '#2563eb')}
+    ${getMagicLinkButton(magicLink, 'Bekijk Status →', BRAND_COLORS.info)}
   `
 
   return sendEmail({
     to: customer.email,
     subject: `✅ Betaling ontvangen - €${customer.amount.toFixed(2)}`,
-    html: baseTemplate(content, '#10b981'),
+    html: baseTemplate(content, BRAND_COLORS.primary),
     replyTo: SMTP_USER || 'info@webstability.nl',
   })
 }
@@ -952,69 +974,69 @@ export const sendWebsiteLiveEmail = async (customer: {
   
   const content = `
     <div style="text-align: center; margin-bottom: 32px;">
-      <div style="width: 80px; height: 80px; background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%); border-radius: 50%; margin: 0 auto 20px; display: flex; align-items: center; justify-content: center;">
+      <div style="width: 80px; height: 80px; background: linear-gradient(135deg, ${BRAND_COLORS.primary} 0%, ${BRAND_COLORS.primaryDark} 100%); border-radius: 50%; margin: 0 auto 20px; display: flex; align-items: center; justify-content: center;">
         <span style="font-size: 36px;">🎉</span>
       </div>
-      <h1 style="margin: 0 0 8px; font-size: 28px; font-weight: 700; color: #0f172a;">Je website is LIVE!</h1>
-      <p style="margin: 0; color: #64748b; font-size: 16px;">Gefeliciteerd met je nieuwe website</p>
+      <h1 style="margin: 0 0 8px; font-size: 28px; font-weight: 700; color: ${BRAND_COLORS.textWhite};">Je website is LIVE!</h1>
+      <p style="margin: 0; color: ${BRAND_COLORS.textMuted}; font-size: 16px;">Gefeliciteerd met je nieuwe website</p>
     </div>
     
-    ${getProgressBar(currentPhase, '#8b5cf6')}
+    ${getProgressBar(currentPhase, BRAND_COLORS.primary)}
     
-    <p style="color: #334155; font-size: 16px; line-height: 1.6; margin-bottom: 24px;">
+    <p style="color: ${BRAND_COLORS.textLight}; font-size: 16px; line-height: 1.6; margin-bottom: 24px;">
       Hoi ${customer.name},<br><br>
       Het moment is daar! Je nieuwe website staat online en is bereikbaar voor de hele wereld. 🌍
     </p>
     
-    <!-- Live Website Card -->
-    <div style="background: linear-gradient(135deg, #f3e8ff 0%, #ede9fe 100%); border: 2px solid #8b5cf6; border-radius: 16px; padding: 32px; margin-bottom: 24px; text-align: center;">
-      <p style="margin: 0 0 8px; color: #6d28d9; font-size: 14px; font-weight: 600;">Je website</p>
-      <p style="margin: 0 0 20px; color: #5b21b6; font-size: 28px; font-weight: 700;">${customer.domain}</p>
-      <a href="${customer.liveUrl}" style="display: inline-block; background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%); color: white; padding: 16px 40px; border-radius: 10px; text-decoration: none; font-weight: 600; font-size: 16px;">
+    <!-- Live Website Card - Dark Mode -->
+    <div style="background: ${BRAND_COLORS.primaryBg}; border: 2px solid ${BRAND_COLORS.primary}; border-radius: 16px; padding: 32px; margin-bottom: 24px; text-align: center;">
+      <p style="margin: 0 0 8px; color: ${BRAND_COLORS.primaryLight}; font-size: 14px; font-weight: 600;">Je website</p>
+      <p style="margin: 0 0 20px; color: ${BRAND_COLORS.textWhite}; font-size: 28px; font-weight: 700;">${customer.domain}</p>
+      <a href="${customer.liveUrl}" style="display: inline-block; background: linear-gradient(135deg, ${BRAND_COLORS.primary} 0%, ${BRAND_COLORS.primaryDark} 100%); color: white; padding: 16px 40px; border-radius: 10px; text-decoration: none; font-weight: 600; font-size: 16px;">
         🌐 Bezoek je website
       </a>
     </div>
     
-    <h2 style="margin: 0 0 16px; font-size: 18px; font-weight: 600; color: #0f172a;">Wat kun je nu doen?</h2>
+    <h2 style="margin: 0 0 16px; font-size: 18px; font-weight: 600; color: ${BRAND_COLORS.textWhite};">Wat kun je nu doen?</h2>
     
     <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="margin-bottom: 24px;">
       <tr>
-        <td style="padding: 12px 0; border-bottom: 1px solid #f1f5f9;">
+        <td style="padding: 12px 0; border-bottom: 1px solid ${BRAND_COLORS.border};">
           <table role="presentation" cellspacing="0" cellpadding="0">
             <tr>
               <td style="width: 36px; vertical-align: middle;">
                 <span style="font-size: 20px;">📣</span>
               </td>
               <td style="vertical-align: middle;">
-                <p style="margin: 0; color: #334155;">Deel je nieuwe website met je netwerk</p>
+                <p style="margin: 0; color: ${BRAND_COLORS.textLight};">Deel je nieuwe website met je netwerk</p>
               </td>
             </tr>
           </table>
         </td>
       </tr>
       <tr>
-        <td style="padding: 12px 0; border-bottom: 1px solid #f1f5f9;">
+        <td style="padding: 12px 0; border-bottom: 1px solid ${BRAND_COLORS.border};">
           <table role="presentation" cellspacing="0" cellpadding="0">
             <tr>
               <td style="width: 36px; vertical-align: middle;">
                 <span style="font-size: 20px;">📱</span>
               </td>
               <td style="vertical-align: middle;">
-                <p style="margin: 0; color: #334155;">Voeg de link toe aan je social media profielen</p>
+                <p style="margin: 0; color: ${BRAND_COLORS.textLight};">Voeg de link toe aan je social media profielen</p>
               </td>
             </tr>
           </table>
         </td>
       </tr>
       <tr>
-        <td style="padding: 12px 0; border-bottom: 1px solid #f1f5f9;">
+        <td style="padding: 12px 0; border-bottom: 1px solid ${BRAND_COLORS.border};">
           <table role="presentation" cellspacing="0" cellpadding="0">
             <tr>
               <td style="width: 36px; vertical-align: middle;">
                 <span style="font-size: 20px;">💼</span>
               </td>
               <td style="vertical-align: middle;">
-                <p style="margin: 0; color: #334155;">Update je visitekaartjes en briefpapier</p>
+                <p style="margin: 0; color: ${BRAND_COLORS.textLight};">Update je visitekaartjes en briefpapier</p>
               </td>
             </tr>
           </table>
@@ -1028,7 +1050,7 @@ export const sendWebsiteLiveEmail = async (customer: {
                 <span style="font-size: 20px;">📍</span>
               </td>
               <td style="vertical-align: middle;">
-                <p style="margin: 0; color: #334155;">Claim je Google Mijn Bedrijf profiel</p>
+                <p style="margin: 0; color: ${BRAND_COLORS.textLight};">Claim je Google Mijn Bedrijf profiel</p>
               </td>
             </tr>
           </table>
@@ -1036,8 +1058,8 @@ export const sendWebsiteLiveEmail = async (customer: {
       </tr>
     </table>
     
-    <div style="background: #fef3c7; border-radius: 10px; padding: 16px;">
-      <p style="margin: 0; color: #92400e; font-size: 14px;">
+    <div style="background: #422006; border: 1px solid ${BRAND_COLORS.warning}; border-radius: 10px; padding: 16px;">
+      <p style="margin: 0; color: #fbbf24; font-size: 14px;">
         <strong>💡 Tip:</strong> Heb je vragen of wil je wijzigingen? Je kunt altijd contact met ons opnemen via je dashboard of reply direct op deze email.
       </p>
     </div>
@@ -1046,7 +1068,7 @@ export const sendWebsiteLiveEmail = async (customer: {
   return sendEmail({
     to: customer.email,
     subject: `🎉 Je website ${customer.domain} is LIVE!`,
-    html: baseTemplate(content, '#8b5cf6'),
+    html: baseTemplate(content, BRAND_COLORS.primary),
     replyTo: SMTP_USER || 'info@webstability.nl',
   })
 }
@@ -1059,40 +1081,40 @@ export const sendPasswordResetEmail = async (customer: {
 }) => {
   const content = `
     <div style="text-align: center; margin-bottom: 32px;">
-      <div style="width: 80px; height: 80px; background: linear-gradient(135deg, #f97316 0%, #ea580c 100%); border-radius: 50%; margin: 0 auto 20px; display: flex; align-items: center; justify-content: center;">
+      <div style="width: 80px; height: 80px; background: linear-gradient(135deg, ${BRAND_COLORS.warning} 0%, #ea580c 100%); border-radius: 50%; margin: 0 auto 20px; display: flex; align-items: center; justify-content: center;">
         <span style="font-size: 36px;">🔐</span>
       </div>
-      <h1 style="margin: 0 0 8px; font-size: 28px; font-weight: 700; color: #0f172a;">Wachtwoord resetten</h1>
-      <p style="margin: 0; color: #64748b; font-size: 16px;">Je hebt een reset aangevraagd</p>
+      <h1 style="margin: 0 0 8px; font-size: 28px; font-weight: 700; color: ${BRAND_COLORS.textWhite};">Wachtwoord resetten</h1>
+      <p style="margin: 0; color: ${BRAND_COLORS.textMuted}; font-size: 16px;">Je hebt een reset aangevraagd</p>
     </div>
     
-    <p style="color: #334155; font-size: 16px; line-height: 1.6; margin-bottom: 24px;">
+    <p style="color: ${BRAND_COLORS.textLight}; font-size: 16px; line-height: 1.6; margin-bottom: 24px;">
       Hoi ${customer.name},<br><br>
       Je hebt aangegeven dat je je wachtwoord wilt resetten. Klik op de onderstaande knop om een nieuw wachtwoord in te stellen.
     </p>
     
     <div style="text-align: center; margin-bottom: 24px;">
-      <a href="${customer.resetUrl}" style="display: inline-block; background: linear-gradient(135deg, #f97316 0%, #ea580c 100%); color: white; padding: 16px 40px; border-radius: 10px; text-decoration: none; font-weight: 600; font-size: 16px;">
+      <a href="${customer.resetUrl}" style="display: inline-block; background: linear-gradient(135deg, ${BRAND_COLORS.warning} 0%, #ea580c 100%); color: white; padding: 16px 40px; border-radius: 10px; text-decoration: none; font-weight: 600; font-size: 16px;">
         Wachtwoord resetten →
       </a>
     </div>
     
-    <div style="background: #fef3c7; border-radius: 10px; padding: 16px; margin-bottom: 24px;">
-      <p style="margin: 0; color: #92400e; font-size: 14px;">
+    <div style="background: #422006; border: 1px solid ${BRAND_COLORS.warning}; border-radius: 10px; padding: 16px; margin-bottom: 24px;">
+      <p style="margin: 0; color: #fbbf24; font-size: 14px;">
         <strong>⏰ Let op:</strong> Deze link is 1 uur geldig. Heb je niet om een reset gevraagd? Dan kun je deze email negeren.
       </p>
     </div>
     
-    <p style="color: #64748b; font-size: 14px; line-height: 1.6;">
+    <p style="color: ${BRAND_COLORS.textMuted}; font-size: 14px; line-height: 1.6;">
       Werkt de knop niet? Kopieer dan deze link in je browser:<br>
-      <span style="color: #2563eb; word-break: break-all;">${customer.resetUrl}</span>
+      <span style="color: ${BRAND_COLORS.primaryLight}; word-break: break-all;">${customer.resetUrl}</span>
     </p>
   `
 
   return sendEmail({
     to: customer.email,
     subject: `🔐 Wachtwoord resetten voor Webstability`,
-    html: baseTemplate(content, '#f97316'),
+    html: baseTemplate(content, BRAND_COLORS.warning),
     replyTo: SMTP_USER || 'info@webstability.nl',
   })
 }
@@ -1110,26 +1132,26 @@ export const sendProjectUpdateEmail = async (customer: {
   
   const content = `
     <div style="text-align: center; margin-bottom: 32px;">
-      <div style="width: 80px; height: 80px; background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%); border-radius: 50%; margin: 0 auto 20px; display: flex; align-items: center; justify-content: center;">
+      <div style="width: 80px; height: 80px; background: linear-gradient(135deg, ${BRAND_COLORS.info} 0%, #1d4ed8 100%); border-radius: 50%; margin: 0 auto 20px; display: flex; align-items: center; justify-content: center;">
         <span style="font-size: 36px;">📢</span>
       </div>
-      <h1 style="margin: 0 0 8px; font-size: 28px; font-weight: 700; color: #0f172a;">Update voor je project</h1>
-      <p style="margin: 0; color: #64748b; font-size: 16px;">${customer.updateTitle}</p>
+      <h1 style="margin: 0 0 8px; font-size: 28px; font-weight: 700; color: ${BRAND_COLORS.textWhite};">Update voor je project</h1>
+      <p style="margin: 0; color: ${BRAND_COLORS.textMuted}; font-size: 16px;">${customer.updateTitle}</p>
     </div>
     
-    ${getProgressBar(currentPhase, '#2563eb')}
+    ${getProgressBar(currentPhase, BRAND_COLORS.info)}
     
-    <p style="color: #334155; font-size: 16px; line-height: 1.6; margin-bottom: 24px;">
+    <p style="color: ${BRAND_COLORS.textLight}; font-size: 16px; line-height: 1.6; margin-bottom: 24px;">
       Hoi ${customer.name},<br><br>
       Er is een update voor je project!
     </p>
     
-    <div style="background: #f8fafc; border-left: 4px solid #2563eb; border-radius: 0 12px 12px 0; padding: 20px 24px; margin-bottom: 24px;">
-      <p style="margin: 0; color: #334155; font-size: 16px; line-height: 1.6; white-space: pre-line;">${customer.updateMessage}</p>
+    <div style="background: ${BRAND_COLORS.bgDark}; border-left: 4px solid ${BRAND_COLORS.info}; border-radius: 0 12px 12px 0; padding: 20px 24px; margin-bottom: 24px;">
+      <p style="margin: 0; color: ${BRAND_COLORS.textLight}; font-size: 16px; line-height: 1.6; white-space: pre-line;">${customer.updateMessage}</p>
     </div>
     
     <div style="text-align: center;">
-      <a href="https://webstability.nl/status/${customer.projectId}" style="display: inline-block; background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%); color: white; padding: 16px 40px; border-radius: 10px; text-decoration: none; font-weight: 600; font-size: 16px;">
+      <a href="https://webstability.nl/status/${customer.projectId}" style="display: inline-block; background: linear-gradient(135deg, ${BRAND_COLORS.info} 0%, #1d4ed8 100%); color: white; padding: 16px 40px; border-radius: 10px; text-decoration: none; font-weight: 600; font-size: 16px;">
         Bekijk Project Status →
       </a>
     </div>
@@ -1138,7 +1160,7 @@ export const sendProjectUpdateEmail = async (customer: {
   return sendEmail({
     to: customer.email,
     subject: `📢 Update: ${customer.updateTitle}`,
-    html: baseTemplate(content, '#2563eb'),
+    html: baseTemplate(content, BRAND_COLORS.info),
     replyTo: SMTP_USER || 'info@webstability.nl',
   })
 }
@@ -1163,50 +1185,50 @@ export const sendPaymentLinkEmail = async (customer: {
 
   const content = `
     <div style="text-align: center; margin-bottom: 32px;">
-      <div style="width: 80px; height: 80px; background: linear-gradient(135deg, #22c55e 0%, #16a34a 100%); border-radius: 50%; margin: 0 auto 20px; display: flex; align-items: center; justify-content: center;">
+      <div style="width: 80px; height: 80px; background: linear-gradient(135deg, ${BRAND_COLORS.primary} 0%, ${BRAND_COLORS.primaryDark} 100%); border-radius: 50%; margin: 0 auto 20px; display: flex; align-items: center; justify-content: center;">
         <span style="font-size: 36px;">💳</span>
       </div>
-      <h1 style="margin: 0 0 8px; font-size: 28px; font-weight: 700; color: #0f172a;">Je betaallink is klaar!</h1>
-      <p style="margin: 0; color: #64748b; font-size: 16px;">Voltooi je betaling om verder te gaan</p>
+      <h1 style="margin: 0 0 8px; font-size: 28px; font-weight: 700; color: ${BRAND_COLORS.textWhite};">Je betaallink is klaar!</h1>
+      <p style="margin: 0; color: ${BRAND_COLORS.textMuted}; font-size: 16px;">Voltooi je betaling om verder te gaan</p>
     </div>
     
-    ${getProgressBar(currentPhase, '#22c55e')}
+    ${getProgressBar(currentPhase, BRAND_COLORS.primary)}
     
-    <p style="color: #334155; font-size: 16px; line-height: 1.6; margin-bottom: 24px;">
+    <p style="color: ${BRAND_COLORS.textLight}; font-size: 16px; line-height: 1.6; margin-bottom: 24px;">
       Hoi ${customer.name},<br><br>
       Je design is goedgekeurd! 🎉 Om door te gaan naar de ontwikkeling van je website hebben we je betaling nodig.
     </p>
     
-    <div style="background: #f0fdf4; border-radius: 16px; padding: 24px; margin-bottom: 24px;">
-      <h3 style="margin: 0 0 16px; color: #166534; font-size: 18px; font-weight: 600;">📋 Betalingsoverzicht</h3>
+    <div style="background: ${BRAND_COLORS.primaryBg}; border: 1px solid ${BRAND_COLORS.primary}; border-radius: 16px; padding: 24px; margin-bottom: 24px;">
+      <h3 style="margin: 0 0 16px; color: ${BRAND_COLORS.primaryLight}; font-size: 18px; font-weight: 600;">📋 Betalingsoverzicht</h3>
       <table style="width: 100%; border-collapse: collapse;">
         <tr>
-          <td style="padding: 8px 0; color: #64748b;">Project</td>
-          <td style="padding: 8px 0; text-align: right; color: #0f172a; font-weight: 500;">${customer.projectName}</td>
+          <td style="padding: 8px 0; color: ${BRAND_COLORS.textMuted};">Project</td>
+          <td style="padding: 8px 0; text-align: right; color: ${BRAND_COLORS.textWhite}; font-weight: 500;">${customer.projectName}</td>
         </tr>
         <tr>
-          <td style="padding: 8px 0; color: #64748b;">Pakket</td>
-          <td style="padding: 8px 0; text-align: right; color: #0f172a; font-weight: 500;">${customer.packageName}</td>
+          <td style="padding: 8px 0; color: ${BRAND_COLORS.textMuted};">Pakket</td>
+          <td style="padding: 8px 0; text-align: right; color: ${BRAND_COLORS.textWhite}; font-weight: 500;">${customer.packageName}</td>
         </tr>
-        <tr style="border-top: 2px solid #dcfce7;">
-          <td style="padding: 16px 0 8px; color: #166534; font-weight: 600; font-size: 18px;">Totaal</td>
-          <td style="padding: 16px 0 8px; text-align: right; color: #166534; font-weight: 700; font-size: 20px;">${formattedAmount}</td>
+        <tr style="border-top: 2px solid ${BRAND_COLORS.primary};">
+          <td style="padding: 16px 0 8px; color: ${BRAND_COLORS.primary}; font-weight: 600; font-size: 18px;">Totaal</td>
+          <td style="padding: 16px 0 8px; text-align: right; color: ${BRAND_COLORS.primary}; font-weight: 700; font-size: 20px;">${formattedAmount}</td>
         </tr>
       </table>
     </div>
     
     <div style="text-align: center; margin-bottom: 24px;">
-      <a href="${customer.paymentUrl}" style="display: inline-block; background: linear-gradient(135deg, #22c55e 0%, #16a34a 100%); color: white; padding: 18px 48px; border-radius: 12px; text-decoration: none; font-weight: 600; font-size: 18px; box-shadow: 0 4px 14px rgba(34, 197, 94, 0.4);">
+      <a href="${customer.paymentUrl}" style="display: inline-block; background: linear-gradient(135deg, ${BRAND_COLORS.primary} 0%, ${BRAND_COLORS.primaryDark} 100%); color: white; padding: 18px 48px; border-radius: 12px; text-decoration: none; font-weight: 600; font-size: 18px; box-shadow: 0 4px 14px rgba(16, 185, 129, 0.4);">
         💳 Betaal nu ${formattedAmount} →
       </a>
     </div>
     
-    <p style="color: #64748b; font-size: 14px; text-align: center; margin-bottom: 24px;">
+    <p style="color: ${BRAND_COLORS.textMuted}; font-size: 14px; text-align: center; margin-bottom: 24px;">
       De betaallink is 15 minuten geldig. Na betaling gaan we direct verder met je website!
     </p>
     
-    <div style="background: #fefce8; border-radius: 12px; padding: 16px; border: 1px solid #fef08a;">
-      <p style="margin: 0; color: #854d0e; font-size: 14px;">
+    <div style="background: #422006; border: 1px solid ${BRAND_COLORS.warning}; border-radius: 12px; padding: 16px;">
+      <p style="margin: 0; color: #fbbf24; font-size: 14px;">
         <strong>💡 Tip:</strong> Na je betaling ontvang je automatisch een bevestiging en gaan we direct verder met de volgende stap van je project.
       </p>
     </div>
@@ -1215,7 +1237,7 @@ export const sendPaymentLinkEmail = async (customer: {
   return sendEmail({
     to: customer.email,
     subject: `💳 Betaallink voor ${customer.projectName} - ${formattedAmount}`,
-    html: baseTemplate(content, '#22c55e'),
+    html: baseTemplate(content, BRAND_COLORS.primary),
     replyTo: SMTP_USER || 'info@webstability.nl',
   })
 }
@@ -1235,13 +1257,13 @@ export const sendDeadlineReminderEmail = async (params: {
 }) => {
   const colors = getServiceColor(params.type)
   
-  // Bepaal urgentie styling
+  // Bepaal urgentie styling - Dark Mode
   const urgencyConfig = {
     upcoming: {
       emoji: '📅',
       title: 'Deadline herinnering',
-      color: '#f59e0b',
-      bgColor: '#fef3c7',
+      color: BRAND_COLORS.warning,
+      bgColor: '#422006',
       borderColor: '#fbbf24',
       urgencyText: `Nog ${params.daysUntil} ${params.daysUntil === 1 ? 'dag' : 'dagen'} te gaan`
     },
@@ -1249,15 +1271,15 @@ export const sendDeadlineReminderEmail = async (params: {
       emoji: '⚠️',
       title: 'Deadline morgen!',
       color: '#ea580c',
-      bgColor: '#ffedd5',
+      bgColor: '#431407',
       borderColor: '#fb923c',
       urgencyText: params.daysUntil === 0 ? 'Deadline is vandaag!' : 'Deadline is morgen!'
     },
     overdue: {
       emoji: '🚨',
       title: 'Actie vereist',
-      color: '#dc2626',
-      bgColor: '#fee2e2',
+      color: BRAND_COLORS.error,
+      bgColor: '#450a0a',
       borderColor: '#f87171',
       urgencyText: `${Math.abs(params.daysUntil)} ${Math.abs(params.daysUntil) === 1 ? 'dag' : 'dagen'} over de deadline`
     }
@@ -1279,24 +1301,24 @@ export const sendDeadlineReminderEmail = async (params: {
       <div style="width: 80px; height: 80px; background: linear-gradient(135deg, ${config.color} 0%, ${config.color}dd 100%); border-radius: 50%; margin: 0 auto 20px; display: flex; align-items: center; justify-content: center;">
         <span style="font-size: 36px;">${config.emoji}</span>
       </div>
-      <h1 style="margin: 0 0 8px; font-size: 28px; font-weight: 700; color: #0f172a;">${config.title}</h1>
+      <h1 style="margin: 0 0 8px; font-size: 28px; font-weight: 700; color: ${BRAND_COLORS.textWhite};">${config.title}</h1>
       <p style="margin: 0; color: ${config.color}; font-size: 16px; font-weight: 600;">${config.urgencyText}</p>
     </div>
     
     ${getProgressBar(params.phase, colors.primary)}
     
-    <p style="color: #334155; font-size: 16px; line-height: 1.6; margin-bottom: 24px;">
+    <p style="color: ${BRAND_COLORS.textLight}; font-size: 16px; line-height: 1.6; margin-bottom: 24px;">
       Hoi ${params.name},<br><br>
       We willen je even herinneren aan je project. Om verder te kunnen met de volgende stap, vragen we je om ${params.action}.
     </p>
     
-    <!-- Deadline card -->
+    <!-- Deadline card - Dark Mode -->
     <div style="background: ${config.bgColor}; border-left: 4px solid ${config.borderColor}; border-radius: 0 12px 12px 0; padding: 20px 24px; margin-bottom: 24px;">
       <table role="presentation" width="100%" cellspacing="0" cellpadding="0">
         <tr>
           <td>
-            <p style="margin: 0 0 4px; color: #64748b; font-size: 12px; text-transform: uppercase; letter-spacing: 0.5px;">Deadline</p>
-            <p style="margin: 0; color: #0f172a; font-size: 18px; font-weight: 600;">${formattedDeadline}</p>
+            <p style="margin: 0 0 4px; color: ${BRAND_COLORS.textMuted}; font-size: 12px; text-transform: uppercase; letter-spacing: 0.5px;">Deadline</p>
+            <p style="margin: 0; color: ${BRAND_COLORS.textWhite}; font-size: 18px; font-weight: 600;">${formattedDeadline}</p>
           </td>
           <td align="right">
             <div style="background: ${config.color}; color: white; padding: 8px 16px; border-radius: 20px; font-size: 14px; font-weight: 600;">
@@ -1308,13 +1330,13 @@ export const sendDeadlineReminderEmail = async (params: {
     </div>
     
     ${params.driveLink ? `
-    <!-- Google Drive link -->
-    <div style="background: #f8fafc; border-radius: 12px; padding: 20px 24px; margin-bottom: 24px;">
-      <h3 style="margin: 0 0 12px; color: #0f172a; font-size: 16px; font-weight: 600;">📁 Je bestanden uploaden</h3>
-      <p style="margin: 0 0 16px; color: #64748b; font-size: 14px;">
+    <!-- Google Drive link - Dark Mode -->
+    <div style="background: ${BRAND_COLORS.bgDark}; border: 1px solid ${BRAND_COLORS.border}; border-radius: 12px; padding: 20px 24px; margin-bottom: 24px;">
+      <h3 style="margin: 0 0 12px; color: ${BRAND_COLORS.textWhite}; font-size: 16px; font-weight: 600;">📁 Je bestanden uploaden</h3>
+      <p style="margin: 0 0 16px; color: ${BRAND_COLORS.textMuted}; font-size: 14px;">
         Upload je content, logo's en afbeeldingen naar je persoonlijke Google Drive map:
       </p>
-      <a href="${params.driveLink}" style="display: inline-block; background: #1a73e8; color: white; padding: 12px 24px; border-radius: 8px; text-decoration: none; font-weight: 600; font-size: 14px;">
+      <a href="${params.driveLink}" style="display: inline-block; background: ${BRAND_COLORS.info}; color: white; padding: 12px 24px; border-radius: 8px; text-decoration: none; font-weight: 600; font-size: 14px;">
         📂 Open Google Drive →
       </a>
     </div>
@@ -1322,12 +1344,12 @@ export const sendDeadlineReminderEmail = async (params: {
     
     ${getMagicLinkButton(magicLink, 'Bekijk Project Status →', colors.primary)}
     
-    <div style="background: #f8fafc; border-radius: 12px; padding: 16px; margin-top: 24px;">
-      <p style="margin: 0; color: #64748b; font-size: 14px; text-align: center;">
-        <strong>Vragen of hulp nodig?</strong><br>
+    <div style="background: ${BRAND_COLORS.bgDark}; border: 1px solid ${BRAND_COLORS.border}; border-radius: 12px; padding: 16px; margin-top: 24px;">
+      <p style="margin: 0; color: ${BRAND_COLORS.textMuted}; font-size: 14px; text-align: center;">
+        <strong style="color: ${BRAND_COLORS.textWhite};">Vragen of hulp nodig?</strong><br>
         Neem gerust contact op via 
-        <a href="mailto:info@webstability.nl" style="color: ${colors.primary}; text-decoration: none;">info@webstability.nl</a> 
-        of bel <a href="tel:+31644712573" style="color: ${colors.primary}; text-decoration: none;">06-44712573</a>
+        <a href="mailto:info@webstability.nl" style="color: ${BRAND_COLORS.primaryLight}; text-decoration: none;">info@webstability.nl</a> 
+        of bel <a href="tel:+31644712573" style="color: ${BRAND_COLORS.primaryLight}; text-decoration: none;">06-44712573</a>
       </p>
     </div>
   `
@@ -1361,13 +1383,13 @@ export const sendPhaseChangeEmail = async (customer: {
   }
   
   const phaseColors: Record<string, string> = {
-    'onboarding': '#f97316',
-    'design': '#8b5cf6',
-    'design_approved': '#22c55e',
-    'development': '#3b82f6',
-    'review': '#eab308',
-    'live': '#22c55e',
-    'completed': '#10b981'
+    'onboarding': BRAND_COLORS.warning,
+    'design': BRAND_COLORS.primary,
+    'design_approved': BRAND_COLORS.success,
+    'development': BRAND_COLORS.info,
+    'review': BRAND_COLORS.warning,
+    'live': BRAND_COLORS.success,
+    'completed': BRAND_COLORS.primary
   }
   
   const phaseNames: Record<string, string> = {
@@ -1381,7 +1403,7 @@ export const sendPhaseChangeEmail = async (customer: {
   }
 
   const emoji = phaseEmojis[customer.newPhase] || '📌'
-  const color = phaseColors[customer.newPhase] || '#2563eb'
+  const color = phaseColors[customer.newPhase] || BRAND_COLORS.info
   const phaseName = phaseNames[customer.newPhase] || customer.newPhase
   const currentPhase = (PHASE_CONFIG.some(p => p.key === customer.newPhase) ? customer.newPhase : 'onboarding') as ProjectPhase
 
@@ -1389,7 +1411,7 @@ export const sendPhaseChangeEmail = async (customer: {
   const magicLink = await generateMagicLinkUrl(customer.projectId)
 
   const nextStepsList = customer.nextSteps.map(step => 
-    `<li style="padding: 8px 0; color: #334155;">${step}</li>`
+    `<li style="padding: 8px 0; color: ${BRAND_COLORS.textLight};">${step}</li>`
   ).join('')
 
   const content = `
@@ -1397,28 +1419,28 @@ export const sendPhaseChangeEmail = async (customer: {
       <div style="width: 80px; height: 80px; background: linear-gradient(135deg, ${color} 0%, ${color}dd 100%); border-radius: 50%; margin: 0 auto 20px; display: flex; align-items: center; justify-content: center;">
         <span style="font-size: 36px;">${emoji}</span>
       </div>
-      <h1 style="margin: 0 0 8px; font-size: 28px; font-weight: 700; color: #0f172a;">Nieuwe fase: ${phaseName}</h1>
-      <p style="margin: 0; color: #64748b; font-size: 16px;">Je project gaat vooruit!</p>
+      <h1 style="margin: 0 0 8px; font-size: 28px; font-weight: 700; color: ${BRAND_COLORS.textWhite};">Nieuwe fase: ${phaseName}</h1>
+      <p style="margin: 0; color: ${BRAND_COLORS.textMuted}; font-size: 16px;">Je project gaat vooruit!</p>
     </div>
     
     ${getProgressBar(currentPhase, color)}
     
-    <p style="color: #334155; font-size: 16px; line-height: 1.6; margin-bottom: 24px;">
+    <p style="color: ${BRAND_COLORS.textLight}; font-size: 16px; line-height: 1.6; margin-bottom: 24px;">
       Hoi ${customer.name},<br><br>
-      Goed nieuws! Je project <strong>${customer.projectName}</strong> is naar een nieuwe fase gegaan.
+      Goed nieuws! Je project <strong style="color: ${BRAND_COLORS.textWhite};">${customer.projectName}</strong> is naar een nieuwe fase gegaan.
     </p>
     
-    <div style="background: ${color}10; border-left: 4px solid ${color}; border-radius: 0 12px 12px 0; padding: 20px 24px; margin-bottom: 24px;">
+    <div style="background: ${BRAND_COLORS.bgDark}; border-left: 4px solid ${color}; border-radius: 0 12px 12px 0; padding: 20px 24px; margin-bottom: 24px;">
       <h3 style="margin: 0 0 8px; color: ${color}; font-size: 18px; font-weight: 600;">${emoji} ${phaseName}</h3>
-      <p style="margin: 0; color: #334155; font-size: 15px; line-height: 1.6;">${customer.phaseDescription}</p>
+      <p style="margin: 0; color: ${BRAND_COLORS.textLight}; font-size: 15px; line-height: 1.6;">${customer.phaseDescription}</p>
     </div>
     
     ${customer.nextSteps.length > 0 ? `
-    <div style="background: #f8fafc; border-radius: 12px; padding: 20px 24px; margin-bottom: 24px;">
-      <h3 style="margin: 0 0 12px; color: #0f172a; font-size: 16px; font-weight: 600;">📋 Volgende stappen:</h3>
+    <div style="background: ${BRAND_COLORS.bgDark}; border: 1px solid ${BRAND_COLORS.border}; border-radius: 12px; padding: 20px 24px; margin-bottom: 24px;">
+      <h3 style="margin: 0 0 12px; color: ${BRAND_COLORS.textWhite}; font-size: 16px; font-weight: 600;">📋 Volgende stappen:</h3>
       <ul style="margin: 0; padding-left: 20px; list-style-type: none;">
         ${customer.nextSteps.map(step => `
-          <li style="padding: 6px 0; color: #334155; position: relative; padding-left: 24px;">
+          <li style="padding: 6px 0; color: ${BRAND_COLORS.textLight}; position: relative; padding-left: 24px;">
             <span style="position: absolute; left: 0; color: ${color};">✓</span>
             ${step}
           </li>

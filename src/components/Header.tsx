@@ -30,12 +30,14 @@ export default function Header({ urgencyBannerVisible = false }: HeaderProps) {
   const [activeDropdown, setActiveDropdown] = useState<string | null>(null)
   const [mobileExpanded, setMobileExpanded] = useState<string | null>(null)
   const [showProjectModal, setShowProjectModal] = useState(false)
-  const [projectIdInput, setProjectIdInput] = useState('')
+  const [emailInput, setEmailInput] = useState('')
   const [projectPasswordInput, setProjectPasswordInput] = useState('')
   const [loginError, setLoginError] = useState<string | null>(null)
   const [isLoggingIn, setIsLoggingIn] = useState(false)
   const [showRecoveryForm, setShowRecoveryForm] = useState(false)
   const [recoveryType, setRecoveryType] = useState<'projectId' | 'password'>('projectId')
+  const [foundProjects, setFoundProjects] = useState<{id: string, name: string}[]>([])
+  const [showProjectSelect, setShowProjectSelect] = useState(false)
   const [recoveryEmail, setRecoveryEmail] = useState('')
   const [recoveryProjectId, setRecoveryProjectId] = useState('')
   const [isRecovering, setIsRecovering] = useState(false)
@@ -68,18 +70,18 @@ export default function Header({ urgencyBannerVisible = false }: HeaderProps) {
 
   const handleProjectSearch = async (e: React.FormEvent) => {
     e.preventDefault()
-    if (!projectIdInput.trim() || !projectPasswordInput.trim()) return
+    if (!emailInput.trim() || !projectPasswordInput.trim()) return
 
     setIsLoggingIn(true)
     setLoginError(null)
 
     try {
-      // Verify project credentials
-      const response = await fetch('/api/verify-project', {
+      // Login with email + password
+      const response = await fetch('/api/login-project', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ 
-          projectId: projectIdInput.trim().toUpperCase(),
+          email: emailInput.trim().toLowerCase(),
           password: projectPasswordInput.trim()
         })
       })
@@ -87,21 +89,42 @@ export default function Header({ urgencyBannerVisible = false }: HeaderProps) {
       const data = await response.json()
 
       if (response.ok && data.success) {
-        // Store session for this project
-        sessionStorage.setItem(`project_auth_${projectIdInput.trim().toUpperCase()}`, 'true')
-        setShowProjectModal(false)
-        // Navigate with password in URL for initial verification
-        navigate(`/project/${projectIdInput.trim().toUpperCase()}?pwd=${encodeURIComponent(projectPasswordInput)}`)
-        setProjectIdInput('')
-        setProjectPasswordInput('')
+        if (data.projects && data.projects.length > 1) {
+          // Multiple projects found - show selection
+          // Map API response to expected format
+          const mappedProjects = data.projects.map((p: { projectId: string; businessName: string }) => ({
+            id: p.projectId,
+            name: p.businessName
+          }))
+          setFoundProjects(mappedProjects)
+          setShowProjectSelect(true)
+        } else {
+          // Single project - navigate directly
+          const projectId = data.projects?.[0]?.projectId || data.projectId
+          sessionStorage.setItem(`project_auth_${projectId}`, 'true')
+          setShowProjectModal(false)
+          navigate(`/project/${projectId}?pwd=${encodeURIComponent(projectPasswordInput)}`)
+          setEmailInput('')
+          setProjectPasswordInput('')
+        }
       } else {
-        setLoginError(data.message || 'Ongeldige project-ID of wachtwoord')
+        setLoginError(data.message || data.error || 'Ongeldige email of wachtwoord')
       }
     } catch {
       setLoginError('Er is iets misgegaan. Probeer het opnieuw.')
     } finally {
       setIsLoggingIn(false)
     }
+  }
+
+  const handleProjectSelect = (projectId: string) => {
+    sessionStorage.setItem(`project_auth_${projectId}`, 'true')
+    setShowProjectModal(false)
+    navigate(`/project/${projectId}?pwd=${encodeURIComponent(projectPasswordInput)}`)
+    setEmailInput('')
+    setProjectPasswordInput('')
+    setFoundProjects([])
+    setShowProjectSelect(false)
   }
 
   const handleRecoverySubmit = async (e: React.FormEvent) => {
@@ -161,9 +184,11 @@ export default function Header({ urgencyBannerVisible = false }: HeaderProps) {
     setRecoveryProjectId('')
     setRecoverySuccess(false)
     setRecoveryError(null)
-    setProjectIdInput('')
+    setEmailInput('')
     setProjectPasswordInput('')
     setLoginError(null)
+    setFoundProjects([])
+    setShowProjectSelect(false)
   }
 
   return (
@@ -536,14 +561,14 @@ export default function Header({ urgencyBannerVisible = false }: HeaderProps) {
               animate={{ opacity: 1, scale: 1, y: 0 }}
               exit={{ opacity: 0, scale: 0.95, y: 20 }}
               onClick={(e) => e.stopPropagation()}
-              className="bg-white dark:bg-gray-800 rounded-2xl shadow-2xl max-w-md w-full p-6"
+              className="bg-white dark:bg-gray-800 rounded-2xl shadow-2xl max-w-md w-full p-5 sm:p-6 max-h-[90vh] overflow-y-auto"
             >
-              <div className="flex items-center justify-between mb-6">
-                <div className="flex items-center gap-3">
+              <div className="flex items-center justify-between mb-5 sm:mb-6">
+                <div className="flex items-center gap-2 sm:gap-3">
                   <div className="p-2 bg-primary-100 dark:bg-primary-900/30 rounded-lg">
                     <Search className="w-5 h-5 text-primary-600 dark:text-primary-400" />
                   </div>
-                  <h2 className="text-xl font-bold text-gray-900 dark:text-white">
+                  <h2 className="text-lg sm:text-xl font-bold text-gray-900 dark:text-white">
                     {showRecoveryForm ? 'Project-ID opvragen' : 'Check mijn project'}
                   </h2>
                 </div>
@@ -556,89 +581,123 @@ export default function Header({ urgencyBannerVisible = false }: HeaderProps) {
               </div>
 
               {!showRecoveryForm ? (
-                // Project ID input form
-                <>
-                  <p className="text-gray-600 dark:text-gray-400 mb-4">
-                    Voer je project-ID en wachtwoord in om je project status te bekijken.
-                  </p>
-
-                  <form onSubmit={handleProjectSearch} autoComplete="off">
-                    <div className="mb-4">
-                      <label htmlFor="projectId" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                        Project-ID
-                      </label>
-                      <input
-                        type="text"
-                        id="projectId"
-                        name="project-id-field"
-                        value={projectIdInput}
-                        onChange={(e) => setProjectIdInput(e.target.value)}
-                        placeholder="Bijv. WS-ABC123"
-                        className="w-full px-4 py-3 border border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-all text-lg font-mono uppercase"
-                        autoFocus
-                        autoComplete="new-password"
-                        autoCorrect="off"
-                        autoCapitalize="off"
-                        spellCheck="false"
-                        data-form-type="other"
-                      />
+                // Email + password login form
+                showProjectSelect && foundProjects.length > 1 ? (
+                  // Multiple projects selection
+                  <>
+                    <p className="text-gray-600 dark:text-gray-400 mb-4">
+                      Er zijn meerdere projecten gevonden. Kies het project dat je wilt bekijken:
+                    </p>
+                    <div className="space-y-2">
+                      {foundProjects.map((project) => (
+                        <button
+                          key={project.id}
+                          onClick={() => handleProjectSelect(project.id)}
+                          className="w-full flex items-center justify-between p-4 bg-gray-50 dark:bg-gray-700 hover:bg-primary-50 dark:hover:bg-primary-900/30 border border-gray-200 dark:border-gray-600 hover:border-primary-300 dark:hover:border-primary-600 rounded-xl transition-all group"
+                        >
+                          <div className="text-left">
+                            <div className="font-semibold text-gray-900 dark:text-white group-hover:text-primary-600 dark:group-hover:text-primary-400">
+                              {project.name || 'Mijn project'}
+                            </div>
+                            <div className="text-sm text-gray-500 dark:text-gray-400 font-mono">
+                              {project.id}
+                            </div>
+                          </div>
+                          <ArrowRight className="w-5 h-5 text-gray-400 group-hover:text-primary-600 dark:group-hover:text-primary-400 group-hover:translate-x-0.5 transition-all" />
+                        </button>
+                      ))}
                     </div>
-
-                    <div className="mb-4">
-                      <label htmlFor="projectPassword" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                        Wachtwoord
-                      </label>
-                      <input
-                        type="password"
-                        id="projectPassword"
-                        name="project-password-field"
-                        value={projectPasswordInput}
-                        onChange={(e) => setProjectPasswordInput(e.target.value)}
-                        placeholder="Je project wachtwoord"
-                        className="w-full px-4 py-3 border border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-all"
-                        autoComplete="new-password"
-                        data-form-type="other"
-                      />
-                    </div>
-
-                    {loginError && (
-                      <div className="mb-4 p-3 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-xl text-red-600 dark:text-red-400 text-sm">
-                        {loginError}
-                      </div>
-                    )}
-
                     <button
-                      type="submit"
-                      disabled={!projectIdInput.trim() || !projectPasswordInput.trim() || isLoggingIn}
-                      className="w-full flex items-center justify-center gap-2 px-6 py-3 bg-primary-500 hover:bg-primary-600 disabled:bg-gray-300 dark:disabled:bg-gray-600 disabled:cursor-not-allowed text-white font-semibold rounded-xl transition-all"
+                      onClick={() => { setShowProjectSelect(false); setFoundProjects([]); }}
+                      className="w-full mt-4 py-3 bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-300 font-medium rounded-xl transition-all"
                     >
-                      {isLoggingIn ? (
-                        <span className="animate-spin w-5 h-5 border-2 border-white border-t-transparent rounded-full" />
-                      ) : (
-                        <Search className="w-5 h-5" />
-                      )}
-                      {isLoggingIn ? 'Inloggen...' : 'Bekijk project status'}
+                      Terug naar login
                     </button>
-                  </form>
+                  </>
+                ) : (
+                  <>
+                    <p className="text-gray-600 dark:text-gray-400 mb-4">
+                      Voer je e-mailadres en wachtwoord in om je project status te bekijken.
+                    </p>
 
-                  <div className="mt-6 pt-4 border-t border-gray-100 dark:border-gray-700">
-                    <p className="text-sm text-gray-500 dark:text-gray-400 text-center mb-3">Iets vergeten?</p>
-                    <div className="flex gap-2">
-                      <button 
-                        onClick={() => { setShowRecoveryForm(true); setRecoveryType('projectId'); }}
-                        className="flex-1 py-2 px-3 text-sm bg-gray-50 dark:bg-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-300 rounded-lg transition-colors"
+                    <form onSubmit={handleProjectSearch} autoComplete="off">
+                      <div className="mb-4">
+                        <label htmlFor="loginEmail" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                          E-mailadres
+                        </label>
+                        <input
+                          type="email"
+                          id="loginEmail"
+                          name="login-email-field"
+                          value={emailInput}
+                          onChange={(e) => setEmailInput(e.target.value)}
+                          placeholder="jouw@email.nl"
+                          className="w-full px-4 py-3 border border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-all"
+                          autoFocus
+                          autoComplete="email"
+                          autoCorrect="off"
+                          autoCapitalize="off"
+                          spellCheck="false"
+                          data-form-type="other"
+                        />
+                      </div>
+
+                      <div className="mb-4">
+                        <label htmlFor="projectPassword" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                          Wachtwoord
+                        </label>
+                        <input
+                          type="password"
+                          id="projectPassword"
+                          name="project-password-field"
+                          value={projectPasswordInput}
+                          onChange={(e) => setProjectPasswordInput(e.target.value)}
+                          placeholder="Je project wachtwoord"
+                          className="w-full px-4 py-3 border border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-all"
+                          autoComplete="current-password"
+                          data-form-type="other"
+                        />
+                      </div>
+
+                      {loginError && (
+                        <div className="mb-4 p-3 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-xl text-red-600 dark:text-red-400 text-sm">
+                          {loginError}
+                        </div>
+                      )}
+
+                      <button
+                        type="submit"
+                        disabled={!emailInput.trim() || !projectPasswordInput.trim() || isLoggingIn}
+                        className="w-full flex items-center justify-center gap-2 px-6 py-3 bg-primary-500 hover:bg-primary-600 disabled:bg-gray-300 dark:disabled:bg-gray-600 disabled:cursor-not-allowed text-white font-semibold rounded-xl transition-all"
                       >
-                        Project-ID kwijt
+                        {isLoggingIn ? (
+                          <span className="animate-spin w-5 h-5 border-2 border-white border-t-transparent rounded-full" />
+                        ) : (
+                          <Search className="w-5 h-5" />
+                        )}
+                        {isLoggingIn ? 'Inloggen...' : 'Bekijk project status'}
                       </button>
-                      <button 
-                        onClick={() => { setShowRecoveryForm(true); setRecoveryType('password'); }}
-                        className="flex-1 py-2 px-3 text-sm bg-gray-50 dark:bg-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-300 rounded-lg transition-colors"
-                      >
-                        Wachtwoord kwijt
-                      </button>
+                    </form>
+
+                    <div className="mt-6 pt-4 border-t border-gray-100 dark:border-gray-700">
+                      <p className="text-sm text-gray-500 dark:text-gray-400 text-center mb-3">Iets vergeten?</p>
+                      <div className="flex gap-2">
+                        <button 
+                          onClick={() => { setShowRecoveryForm(true); setRecoveryType('projectId'); }}
+                          className="flex-1 py-2 px-3 text-sm bg-gray-50 dark:bg-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-300 rounded-lg transition-colors"
+                        >
+                          Project-ID kwijt
+                        </button>
+                        <button 
+                          onClick={() => { setShowRecoveryForm(true); setRecoveryType('password'); }}
+                          className="flex-1 py-2 px-3 text-sm bg-gray-50 dark:bg-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-300 rounded-lg transition-colors"
+                        >
+                          Wachtwoord kwijt
+                        </button>
+                      </div>
                     </div>
-                  </div>
-                </>
+                  </>
+                )
               ) : recoverySuccess ? (
                 // Success state
                 <div className="text-center py-4">

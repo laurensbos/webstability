@@ -197,6 +197,7 @@ export default function ProjectStatus() {
   
   // Password verification state
   const [isVerified, setIsVerified] = useState(false)
+  const [emailInput, setEmailInput] = useState('')
   const [passwordInput, setPasswordInput] = useState('')
   const [showPassword, setShowPassword] = useState(false)
   const [verifyLoading, setVerifyLoading] = useState(false)
@@ -439,10 +440,52 @@ export default function ProjectStatus() {
     }
   }
 
+  // Login with email + password (when no project ID or invalid project ID)
+  const loginWithEmailPassword = async (email: string, password: string) => {
+    setVerifyLoading(true)
+    setVerifyError('')
+    setLookupResults([])
+    
+    try {
+      const response = await fetch('/api/login-project', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, password })
+      })
+      
+      const data = await response.json()
+      
+      if (data.success && data.projects?.length > 0) {
+        if (data.projects.length === 1) {
+          // Single project - redirect directly and mark as verified
+          const proj = data.projects[0]
+          sessionStorage.setItem(`project_auth_${proj.projectId.toUpperCase()}`, 'true')
+          navigate(`/status/${proj.projectId}`, { replace: true })
+        } else {
+          // Multiple projects - show selection
+          setLookupResults(data.projects)
+        }
+      } else {
+        setVerifyError(data.error || 'Inloggen mislukt. Controleer je gegevens.')
+      }
+    } catch (err) {
+      console.error('Login error:', err)
+      setVerifyError('Er ging iets mis. Probeer het opnieuw.')
+    } finally {
+      setVerifyLoading(false)
+    }
+  }
+
   const handlePasswordSubmit = (e: React.FormEvent) => {
     e.preventDefault()
-    if (projectId && passwordInput.trim()) {
+    
+    // If we have a valid project ID, use project-specific login
+    if (projectId && projectId !== ':projectId' && passwordInput.trim()) {
       verifyPassword(projectId, passwordInput)
+    } 
+    // Otherwise use email + password login
+    else if (emailInput.trim() && passwordInput.trim()) {
+      loginWithEmailPassword(emailInput, passwordInput)
     }
   }
 
@@ -861,7 +904,7 @@ export default function ProjectStatus() {
               </h1>
               
               <p className="text-sm sm:text-base text-gray-400 max-w-sm mx-auto">
-                Voer je wachtwoord in om de status van je project te bekijken.
+                Voer je e-mailadres en wachtwoord in om de status van je project te bekijken.
               </p>
             </motion.div>
 
@@ -872,16 +915,39 @@ export default function ProjectStatus() {
               transition={{ delay: 0.2 }}
               className="bg-gray-800/60 backdrop-blur-xl rounded-2xl sm:rounded-3xl border border-gray-700/50 p-5 sm:p-8 shadow-2xl"
             >
-              {/* Project ID Badge */}
-              <div className="flex items-center justify-center mb-6">
-                <div className="inline-flex items-center gap-2 px-4 py-2 bg-gray-900/60 rounded-xl border border-gray-700/50">
-                  <FolderOpen className="w-4 h-4 text-indigo-400" />
-                  <span className="text-sm text-gray-300">Project: </span>
-                  <span className="text-sm font-semibold text-white">{projectId}</span>
+              {/* Project ID Badge - only show if valid */}
+              {projectId && projectId !== ':projectId' && (
+                <div className="flex items-center justify-center mb-6">
+                  <div className="inline-flex items-center gap-2 px-4 py-2 bg-gray-900/60 rounded-xl border border-gray-700/50">
+                    <FolderOpen className="w-4 h-4 text-indigo-400" />
+                    <span className="text-sm text-gray-300">Project: </span>
+                    <span className="text-sm font-semibold text-white">{projectId}</span>
+                  </div>
                 </div>
-              </div>
+              )}
 
               <form onSubmit={handlePasswordSubmit} className="space-y-5">
+                {/* Email Input - show if no valid project ID */}
+                {(!projectId || projectId === ':projectId') && (
+                  <div>
+                    <label className="block text-sm font-medium text-gray-300 mb-2">
+                      E-mailadres
+                    </label>
+                    <div className="relative">
+                      <Mail className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-500" />
+                      <input
+                        type="email"
+                        value={emailInput}
+                        onChange={(e) => setEmailInput(e.target.value)}
+                        placeholder="jouw@email.nl"
+                        className="w-full pl-12 pr-4 py-3.5 sm:py-4 bg-gray-900/60 border-2 border-gray-700/50 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500/50 transition text-white placeholder-gray-500 text-sm sm:text-base"
+                        required
+                        autoFocus
+                      />
+                    </div>
+                  </div>
+                )}
+
                 {/* Password Input */}
                 <div>
                   <label className="block text-sm font-medium text-gray-300 mb-2">
@@ -896,7 +962,7 @@ export default function ProjectStatus() {
                       placeholder="Je project wachtwoord"
                       className="w-full pl-12 pr-12 py-3.5 sm:py-4 bg-gray-900/60 border-2 border-gray-700/50 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500/50 transition text-white placeholder-gray-500 text-sm sm:text-base"
                       required
-                      autoFocus
+                      autoFocus={!!projectId && projectId !== ':projectId'}
                     />
                     <button
                       type="button"
@@ -980,7 +1046,7 @@ export default function ProjectStatus() {
                 {/* Submit Button */}
                 <motion.button
                   type="submit"
-                  disabled={verifyLoading || !passwordInput.trim()}
+                  disabled={verifyLoading || !passwordInput.trim() || ((!projectId || projectId === ':projectId') && !emailInput.trim())}
                   whileHover={{ scale: 1.02 }}
                   whileTap={{ scale: 0.98 }}
                   className="w-full py-3.5 sm:py-4 bg-gradient-to-r from-blue-600 to-indigo-600 text-white font-semibold rounded-xl hover:from-blue-500 hover:to-indigo-500 transition shadow-lg shadow-blue-600/25 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 text-sm sm:text-base"
@@ -988,15 +1054,60 @@ export default function ProjectStatus() {
                   {verifyLoading ? (
                     <>
                       <Loader2 className="w-5 h-5 animate-spin" />
-                      <span>Verifiëren...</span>
+                      <span>Inloggen...</span>
                     </>
                   ) : (
                     <>
                       <ChevronRight className="w-5 h-5" />
-                      <span>Bekijk project</span>
+                      <span>Inloggen</span>
                     </>
                   )}
                 </motion.button>
+
+                {/* Multiple Projects Found */}
+                {lookupResults.length > 0 && (
+                  <motion.div
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    className="mt-4 border-t border-gray-700/50 pt-4"
+                  >
+                    <h3 className="text-sm font-medium text-gray-300 mb-3">
+                      Kies je project ({lookupResults.length} gevonden)
+                    </h3>
+                    <div className="space-y-2 max-h-60 overflow-y-auto">
+                      {lookupResults.map((p: any) => (
+                        <button
+                          key={p.projectId}
+                          type="button"
+                          onClick={() => {
+                            sessionStorage.setItem(`project_auth_${p.projectId.toUpperCase()}`, 'true')
+                            navigate(`/status/${p.projectId}`, { replace: true })
+                          }}
+                          className="w-full p-4 bg-gray-900/50 hover:bg-gray-700/50 rounded-xl border border-gray-700 hover:border-blue-500/50 transition text-left group"
+                        >
+                          <div className="flex items-center justify-between">
+                            <div>
+                              <p className="font-semibold text-white group-hover:text-blue-400 transition">{p.businessName}</p>
+                              <p className="text-xs text-gray-500">{p.projectId}</p>
+                            </div>
+                            <div className="flex items-center gap-2">
+                              <span className={`px-3 py-1 rounded-full text-xs font-medium ${
+                                p.status === 'live' ? 'bg-green-500/20 text-green-400' :
+                                p.status === 'review' ? 'bg-cyan-500/20 text-cyan-400' :
+                                p.status === 'development' ? 'bg-purple-500/20 text-purple-400' :
+                                p.status === 'design' ? 'bg-amber-500/20 text-amber-400' :
+                                'bg-blue-500/20 text-blue-400'
+                              }`}>
+                                {p.status}
+                              </span>
+                              <ChevronRight className="w-4 h-4 text-gray-600 group-hover:text-blue-400 transition" />
+                            </div>
+                          </div>
+                        </button>
+                      ))}
+                    </div>
+                  </motion.div>
+                )}
               </form>
 
               {/* Forgot Password */}
