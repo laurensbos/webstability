@@ -160,6 +160,27 @@ async function createProject(req: VercelRequest, res: VercelResponse) {
     })
   }
   
+  // Check if email is already in use by another project
+  const normalizedEmail = customerEmail.trim().toLowerCase()
+  const existingIds = await kv!.smembers('projects') as string[]
+  
+  if (existingIds && existingIds.length > 0) {
+    const existingProjects = await Promise.all(
+      existingIds.map(id => kv!.get<Project>(`project:${id}`))
+    )
+    
+    const emailInUse = existingProjects.some(p => 
+      p && (p.customer?.email || '').toLowerCase() === normalizedEmail
+    )
+    
+    if (emailInUse) {
+      return res.status(400).json({ 
+        error: 'Dit e-mailadres is al in gebruik bij een ander project. Log in om je bestaande project te bekijken.',
+        code: 'EMAIL_IN_USE'
+      })
+    }
+  }
+  
   const id = body.id || body.projectId || `PRJ-${Date.now()}`
   
   const project: Project = {

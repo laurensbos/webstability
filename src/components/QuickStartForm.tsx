@@ -103,8 +103,15 @@ export default function QuickStartForm({
         }),
       })
 
+      const data = await response.json()
+
       if (!response.ok) {
-        throw new Error('Failed to create project')
+        if (data.code === 'EMAIL_IN_USE') {
+          setError('Dit e-mailadres is al in gebruik. Log in met je bestaande project of gebruik een ander e-mailadres.')
+        } else {
+          setError(data.error || 'Er ging iets mis. Probeer het opnieuw.')
+        }
+        return
       }
 
       navigate(`/bedankt?project=${projectId}&dienst=${serviceType}&email=${encodeURIComponent(formData.email)}`)

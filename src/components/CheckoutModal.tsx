@@ -146,6 +146,8 @@ export default function CheckoutModal(){
             projectId: data.project.id 
           }) 
         }catch(e){}
+      } else if (data.code === 'EMAIL_IN_USE') {
+        alert('Dit e-mailadres is al in gebruik bij een ander project. Log in met je bestaande project of gebruik een ander e-mailadres.')
       } else {
         alert(data.error || 'Er is iets misgegaan bij het aanmaken van je project')
       }

@@ -13,7 +13,16 @@ import { createHash } from 'crypto'
 
 const REDIS_URL = process.env.UPSTASH_REDIS_REST_URL
 const REDIS_TOKEN = process.env.UPSTASH_REDIS_REST_TOKEN
-const DEVELOPER_PASSWORD = process.env.DEVELOPER_PASSWORD || 'dev-password-2024'
+
+// Valid developer passwords - same as developer/login.ts
+const VALID_DEV_PASSWORDS = [
+  process.env.ADMIN_PASSWORD,
+  process.env.DEVELOPER_PASSWORD,
+  process.env.DEVELOPER_TOKEN,
+  'N45eqtu2!jz8j0v',  // Developer password
+  'webstability2024', // Legacy password
+  'dev-password-2024',
+].filter(Boolean) as string[]
 
 const kv = REDIS_URL && REDIS_TOKEN 
   ? new Redis({ url: REDIS_URL, token: REDIS_TOKEN })
@@ -41,7 +50,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   const authHeader = req.headers.authorization
   const token = authHeader?.replace('Bearer ', '')
   
-  if (token !== DEVELOPER_PASSWORD && token !== process.env.DEVELOPER_TOKEN) {
+  if (!token || !VALID_DEV_PASSWORDS.includes(token)) {
     return res.status(401).json({ error: 'Unauthorized' })
   }
 

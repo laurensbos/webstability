@@ -437,8 +437,15 @@ export default function WebsiteOnboarding({
         }),
       })
 
+      const data = await response.json()
+
       if (!response.ok) {
-        throw new Error('Failed to create project')
+        if (data.code === 'EMAIL_IN_USE') {
+          alert('Dit e-mailadres is al in gebruik. Log in met je bestaande project of gebruik een ander e-mailadres.')
+        } else {
+          alert(data.error || 'Er ging iets mis. Probeer het opnieuw.')
+        }
+        return
       }
 
       navigate(`/bedankt?project=${projectId}&dienst=website&email=${encodeURIComponent(formData.email)}`)
