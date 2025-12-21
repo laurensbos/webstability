@@ -136,8 +136,13 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     if (!project) {
       project = await kv.get<Project>(`project:${projectId.trim()}`)
     }
+    
+    if (!project) {
+      project = await kv.get<Project>(`project:${projectId.trim().toLowerCase()}`)
+    }
 
     if (!project) {
+      console.log(`[project/[id]] Project not found: ${normalizedId}`)
       return res.status(404).json({ 
         success: false, 
         message: 'Project niet gevonden' 

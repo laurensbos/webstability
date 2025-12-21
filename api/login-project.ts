@@ -93,7 +93,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     if (matchingProjects.length === 0) {
       return res.status(200).json({ 
         success: false, 
-        error: 'Geen project gevonden met dit e-mailadres'
+        error: 'Er is geen project gevonden met dit e-mailadres. Controleer je e-mailadres of neem contact met ons op.'
       })
     }
 

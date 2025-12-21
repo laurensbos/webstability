@@ -72,50 +72,62 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
     // Normalize project ID (uppercase, trimmed)
     const normalizedId = projectId.trim().toUpperCase()
+    console.log(`[verify-project] Checking project: ${normalizedId}`)
 
-    // Check if project exists
+    // Check if project exists - try multiple key formats
     let project = await kv.get<Project>(`project:${normalizedId}`)
+    let foundKey = normalizedId
     
     if (!project) {
-      // Also try without uppercase normalization
+      // Try without uppercase
       project = await kv.get<Project>(`project:${projectId.trim()}`)
-      if (!project) {
-        return res.status(401).json({ 
-          success: false, 
-          message: 'Project niet gevonden'
-        })
-      }
+      foundKey = projectId.trim()
     }
-
-    // Check if email is verified
-    if (!project.emailVerified) {
-      return res.status(403).json({
-        success: false,
-        message: 'Je e-mailadres is nog niet geverifieerd. Check je inbox voor de verificatie-email.',
-        requiresEmailVerification: true,
-        email: project.customer?.email ? 
-          project.customer.email.replace(/(.{2})(.*)(@.*)/, '$1***$3') : 
-          undefined
+    
+    if (!project) {
+      // Try lowercase
+      project = await kv.get<Project>(`project:${projectId.trim().toLowerCase()}`)
+      foundKey = projectId.trim().toLowerCase()
+    }
+    
+    if (!project) {
+      console.log(`[verify-project] Project not found: ${normalizedId}`)
+      return res.status(401).json({ 
+        success: false, 
+        message: 'Er is geen project gevonden met dit e-mailadres. Controleer je gegevens of neem contact met ons op.'
       })
     }
-
-    // Get stored password hash
-    let storedHash = await kv.get<string>(`project:${normalizedId}:password`)
     
-    // Try alternative key format if not found
+    console.log(`[verify-project] Project found with key: ${foundKey}`)
+
+    // Note: Email verification is no longer required for login
+    // If password is correct, allow access regardless of email verification status
+    // This enables seamless login from Header modal
+
+    // Get stored password hash - try same key that found the project
+    let storedHash = await kv.get<string>(`project:${foundKey}:password`)
+    
+    // Try alternative key formats if not found
+    if (!storedHash && foundKey !== normalizedId) {
+      storedHash = await kv.get<string>(`project:${normalizedId}:password`)
+    }
     if (!storedHash) {
       storedHash = await kv.get<string>(`project:${projectId.trim()}:password`)
+    }
+    if (!storedHash) {
+      storedHash = await kv.get<string>(`project:${projectId.trim().toLowerCase()}:password`)
     }
 
     if (!storedHash) {
       // No password set for this project - allow access with any password for legacy projects
-      // Or you can return an error if all projects should have passwords
-      console.log(`No password hash found for project: ${normalizedId}`)
+      console.log(`[verify-project] No password hash found for project: ${foundKey}, allowing access`)
       return res.status(200).json({ 
         success: true,
         message: 'Verificatie succesvol'
       })
     }
+
+    console.log(`[verify-project] Password hash found, comparing...`)
 
     // Compare password hashes
     const inputHash = hashPassword(password)

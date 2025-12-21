@@ -1183,7 +1183,7 @@ export default function ProjectStatus() {
             </motion.div>
             <h1 className="text-2xl sm:text-3xl font-bold text-white mb-3">Project niet gevonden</h1>
             <p className="text-gray-400">
-              We konden geen project vinden met ID: <code className="text-red-400 bg-red-500/10 px-2 py-1 rounded">{projectId}</code>
+              We konden geen project vinden. Controleer je e-mailadres en probeer opnieuw in te loggen.
             </p>
           </div>
         </div>
@@ -1193,12 +1193,12 @@ export default function ProjectStatus() {
             animate={{ opacity: 1, y: 0 }}
             className="bg-gray-800/80 backdrop-blur-xl rounded-2xl shadow-2xl border border-gray-700/50 p-6 sm:p-8 text-center"
           >
-            <p className="text-gray-400 mb-6">Controleer of je Project ID correct is of neem contact met ons op.</p>
+            <p className="text-gray-400 mb-6">Controleer of je e-mailadres correct is of neem contact met ons op.</p>
             <Link
               to="/status"
               className="inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-blue-600 to-indigo-600 text-white rounded-xl font-semibold hover:from-blue-500 hover:to-indigo-500 transition shadow-lg"
             >
-              Probeer een ander Project ID
+              Terug naar inloggen
             </Link>
           </motion.div>
         </main>
