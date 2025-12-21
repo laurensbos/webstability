@@ -905,7 +905,7 @@ export default function WebsiteOnboarding({
                   </p>
                 </div>
 
-                <div className="max-w-lg mx-auto">
+                <div className="max-w-lg mx-auto px-1">
                   {/* Upgrade prompt modal */}
                   <AnimatePresence>
                     {showUpgradePrompt && (
@@ -976,7 +976,7 @@ export default function WebsiteOnboarding({
                     )}
                   </AnimatePresence>
 
-                  <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 mb-6">
+                  <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 sm:gap-3 mb-6">
                     {PAGE_OPTIONS.map((page) => {
                       const isSelected = formData.pages.includes(page)
                       const isDisabled = !isSelected && formData.pages.length >= getPageLimit()
@@ -984,7 +984,7 @@ export default function WebsiteOnboarding({
                         <button
                           key={page}
                           onClick={() => togglePage(page)}
-                          className={`p-3 rounded-xl border-2 text-center transition-all ${
+                          className={`p-3 sm:p-3 rounded-xl border-2 text-center transition-all min-h-[48px] ${
                             isSelected
                               ? `border-primary-500 bg-primary-50 dark:bg-primary-900/20`
                               : isDisabled
