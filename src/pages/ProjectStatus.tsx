@@ -353,7 +353,9 @@ export default function ProjectStatus() {
         // Store session
         sessionStorage.setItem(`project_auth_${id.toUpperCase()}`, 'true')
         setIsVerified(true)
-        fetchProject(id)
+        // Keep loading true - fetchProject will set it to false when done
+        setLoading(true)
+        await fetchProject(id)
         fetchMessages(id)
         fetchOnboardingStatus(id)
         // Remove magic_session from URL for cleanliness
@@ -361,13 +363,14 @@ export default function ProjectStatus() {
       } else {
         setVerifyError(data.message || 'Ongeldige of verlopen link. Log in met je wachtwoord.')
         setIsVerified(false)
+        setLoading(false)
       }
     } catch (err) {
       console.error('Magic session verify error:', err)
       setVerifyError('Er ging iets mis. Probeer in te loggen met je wachtwoord.')
+      setLoading(false)
     } finally {
       setVerifyLoading(false)
-      setLoading(false)
     }
   }
 
@@ -390,7 +393,10 @@ export default function ProjectStatus() {
         // Store session
         sessionStorage.setItem(`project_auth_${id.toUpperCase()}`, 'true')
         setIsVerified(true)
-        fetchProject(id)
+        // Keep loading true - fetchProject will set it to false when done
+        setLoading(true)
+        // Fetch project data - this will set loading to false when complete
+        await fetchProject(id)
         fetchMessages(id)
         fetchOnboardingStatus(id)
         // Remove password from URL for security
