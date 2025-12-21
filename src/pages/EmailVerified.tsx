@@ -71,14 +71,12 @@ export default function EmailVerified() {
       if (data.success && data.projects && data.projects.length > 0) {
         // Get the first (or only) project
         const project = data.projects[0]
+        const projectIdUpper = project.projectId.toUpperCase()
         
-        // Store auth and redirect
-        sessionStorage.setItem('projectAuth', JSON.stringify({
-          projectId: project.projectId,
-          authenticated: true,
-          timestamp: Date.now()
-        }))
-        navigate(`/project/${project.projectId}`)
+        // Store auth with the correct key format that ProjectStatus expects
+        sessionStorage.setItem(`project_auth_${projectIdUpper}`, 'true')
+        
+        navigate(`/project/${projectIdUpper}`)
       } else {
         setLoginError(data.error || 'Ongeldige gegevens')
       }
