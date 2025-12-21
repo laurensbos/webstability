@@ -29,7 +29,8 @@ import {
   ArrowRight,
   Sparkles,
   Timer,
-  CreditCard
+  CreditCard,
+  X
 } from 'lucide-react'
 import Logo from '../components/Logo'
 import type { Project, ProjectPhase, ProjectMessage } from '../types/project'
@@ -205,6 +206,7 @@ export default function ProjectStatusNew() {
   const [newMessage, setNewMessage] = useState('')
   const [messageLoading, setMessageLoading] = useState(false)
   const [showChat, setShowChat] = useState(false)
+  const [chatExpanded, setChatExpanded] = useState(false)
   const messagesEndRef = useRef<HTMLDivElement>(null)
   
   // Onboarding state
@@ -1185,7 +1187,7 @@ export default function ProjectStatusNew() {
         </div>
       </main>
 
-      {/* Floating Chat */}
+      {/* Floating Chat - Right Side Panel */}
       <AnimatePresence>
         {showChat && (
           <>
@@ -1198,16 +1200,19 @@ export default function ProjectStatusNew() {
               className="fixed inset-0 bg-black/50 z-40"
             />
             
-            {/* Chat Panel */}
+            {/* Chat Panel - Right Side */}
             <motion.div
-              initial={{ opacity: 0, y: 20, scale: 0.95 }}
-              animate={{ opacity: 1, y: 0, scale: 1 }}
-              exit={{ opacity: 0, y: 20, scale: 0.95 }}
-              className="fixed bottom-0 left-0 right-0 z-50 max-w-lg mx-auto"
+              initial={{ opacity: 0, x: 100 }}
+              animate={{ opacity: 1, x: 0 }}
+              exit={{ opacity: 0, x: 100 }}
+              transition={{ type: 'spring', damping: 25, stiffness: 300 }}
+              className={`fixed top-0 right-0 h-full z-50 flex flex-col ${
+                chatExpanded ? 'w-full md:w-[600px]' : 'w-full md:w-[400px]'
+              } transition-all duration-300`}
             >
-              <div className="bg-gray-900 rounded-t-2xl border-t border-x border-gray-800 shadow-2xl">
+              <div className="flex flex-col h-full bg-gray-900 border-l border-gray-800 shadow-2xl">
                 {/* Chat header */}
-                <div className={`bg-gradient-to-r ${phaseColors.gradient} p-4 rounded-t-2xl`}>
+                <div className={`bg-gradient-to-r ${phaseColors.gradient} p-4 flex-shrink-0`}>
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-3">
                       <div className="w-10 h-10 bg-white/20 rounded-full flex items-center justify-center">
@@ -1218,21 +1223,41 @@ export default function ProjectStatusNew() {
                         <p className="text-xs text-white/70">Reactie binnen 4 uur</p>
                       </div>
                     </div>
-                    <button
-                      onClick={() => setShowChat(false)}
-                      className="p-2 hover:bg-white/10 rounded-lg transition"
-                    >
-                      <ChevronDown className="w-5 h-5 text-white" />
-                    </button>
+                    <div className="flex items-center gap-2">
+                      {/* Expand/Collapse button - only on desktop */}
+                      <button
+                        onClick={() => setChatExpanded(!chatExpanded)}
+                        className="hidden md:flex p-2 hover:bg-white/10 rounded-lg transition items-center justify-center"
+                        title={chatExpanded ? 'Kleiner maken' : 'Groter maken'}
+                      >
+                        {chatExpanded ? (
+                          <svg className="w-5 h-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 9V4.5M9 9H4.5M9 9L3.75 3.75M9 15v4.5M9 15H4.5M9 15l-5.25 5.25M15 9h4.5M15 9V4.5M15 9l5.25-5.25M15 15h4.5M15 15v4.5m0-4.5l5.25 5.25" />
+                          </svg>
+                        ) : (
+                          <svg className="w-5 h-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3.75 3.75v4.5m0-4.5h4.5m-4.5 0L9 9M3.75 20.25v-4.5m0 4.5h4.5m-4.5 0L9 15M20.25 3.75h-4.5m4.5 0v4.5m0-4.5L15 9m5.25 11.25h-4.5m4.5 0v-4.5m0 4.5L15 15" />
+                          </svg>
+                        )}
+                      </button>
+                      {/* Close button */}
+                      <button
+                        onClick={() => setShowChat(false)}
+                        className="p-2 hover:bg-white/10 rounded-lg transition"
+                      >
+                        <X className="w-5 h-5 text-white" />
+                      </button>
+                    </div>
                   </div>
                 </div>
 
                 {/* Messages */}
-                <div className="h-64 overflow-y-auto p-4 space-y-3 bg-gray-950">
+                <div className="flex-1 overflow-y-auto p-4 space-y-3 bg-gray-950">
                   {messages.length === 0 ? (
                     <div className="h-full flex flex-col items-center justify-center text-gray-500">
                       <MessageSquare className="w-10 h-10 mb-2 opacity-50" />
                       <p className="text-sm">Nog geen berichten</p>
+                      <p className="text-xs mt-1 text-gray-600">Start een gesprek met ons</p>
                     </div>
                   ) : (
                     messages.map((msg) => (
@@ -1263,7 +1288,7 @@ export default function ProjectStatusNew() {
                 </div>
 
                 {/* Input */}
-                <div className="p-4 border-t border-gray-800">
+                <div className="p-4 border-t border-gray-800 flex-shrink-0 bg-gray-900">
                   <div className="flex gap-2">
                     <input
                       type="text"
