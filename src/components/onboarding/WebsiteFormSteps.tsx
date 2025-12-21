@@ -721,6 +721,51 @@ const FONT_COMBINATIONS = [
     description: 'Creatief en uniek',
     preview: 'Welkom bij uw bedrijf'
   },
+  { 
+    id: 'funky',
+    name: 'Funky & Bold',
+    heading: 'Bebas Neue',
+    body: 'Quicksand',
+    style: 'font-sans',
+    description: 'Opvallend en speels',
+    preview: 'WELKOM BIJ UW BEDRIJF'
+  },
+  { 
+    id: 'retro',
+    name: 'Retro Vibes',
+    heading: 'Righteous',
+    body: 'Josefin Sans',
+    style: 'font-sans',
+    description: 'Vintage met een twist',
+    preview: 'Welkom bij uw bedrijf'
+  },
+  { 
+    id: 'tech',
+    name: 'Tech & Startup',
+    heading: 'Outfit',
+    body: 'IBM Plex Sans',
+    style: 'font-sans',
+    description: 'Modern en technisch',
+    preview: 'Welkom bij uw bedrijf'
+  },
+  { 
+    id: 'luxury',
+    name: 'Luxury & Premium',
+    heading: 'Cormorant Garamond',
+    body: 'Raleway',
+    style: 'font-serif',
+    description: 'Exclusief en verfijnd',
+    preview: 'Welkom bij uw bedrijf'
+  },
+  { 
+    id: 'playful',
+    name: 'Playful & Fun',
+    heading: 'Fredoka',
+    body: 'Nunito Sans',
+    style: 'font-sans',
+    description: 'Vrolijk en energiek',
+    preview: 'Welkom bij uw bedrijf'
+  },
 ]
 
 // Design styles with visual examples
@@ -765,6 +810,30 @@ const DESIGN_STYLES = [
     gradient: 'from-orange-50 to-amber-50',
     accent: 'border-orange-400'
   },
+  { 
+    id: 'bold',
+    name: 'Bold & Gedurfd',
+    description: 'Grote statements, impact',
+    visual: '■ ■',
+    gradient: 'from-red-50 to-rose-50',
+    accent: 'border-red-400'
+  },
+  { 
+    id: 'organic',
+    name: 'Organisch & Natuurlijk',
+    description: 'Zachte vormen, aards',
+    visual: '◠ ⌒ ◠',
+    gradient: 'from-green-50 to-emerald-50',
+    accent: 'border-green-400'
+  },
+  { 
+    id: 'luxury',
+    name: 'Luxe & Elegant',
+    description: 'Premium uitstraling, verfijnd',
+    visual: '◇ ◆ ◇',
+    gradient: 'from-amber-50 to-yellow-50',
+    accent: 'border-amber-400'
+  },
 ]
 
 // Step 2: Logo & Huisstijl - Enhanced with visual pickers
@@ -784,7 +853,17 @@ export function WebsiteBrandingStep({ data, onChange, disabled }: FormStepProps)
       'Poppins:wght@400;700',
       'Nunito:wght@400;700',
       'Space+Grotesk:wght@400;700',
-      'DM+Sans:wght@400;700'
+      'DM+Sans:wght@400;700',
+      'Bebas+Neue:wght@400',
+      'Quicksand:wght@400;700',
+      'Righteous:wght@400',
+      'Josefin+Sans:wght@400;700',
+      'Outfit:wght@400;700',
+      'IBM+Plex+Sans:wght@400;700',
+      'Cormorant+Garamond:wght@400;700',
+      'Raleway:wght@400;700',
+      'Fredoka:wght@400;700',
+      'Nunito+Sans:wght@400;700'
     ]
     
     const link = document.createElement('link')

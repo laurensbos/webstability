@@ -213,6 +213,10 @@ export default function ProjectStatusNew() {
   // Success banner for just completed onboarding
   const [showOnboardingSuccess, setShowOnboardingSuccess] = useState(false)
   
+  // Ready for design confirmation
+  const [confirmingReadyForDesign, setConfirmingReadyForDesign] = useState(false)
+  const [readyForDesignLoading, setReadyForDesignLoading] = useState(false)
+  
   // Timeline expansion
   const [showTimeline, setShowTimeline] = useState(false)
   
@@ -437,6 +441,27 @@ export default function ProjectStatusNew() {
       // Ignore
     }
     setMessageLoading(false)
+  }
+
+  // Mark project as ready for design phase
+  const confirmReadyForDesign = async () => {
+    if (!projectId) return
+    setReadyForDesignLoading(true)
+    try {
+      const response = await fetch(`/api/project/${projectId}/ready-for-design`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' }
+      })
+      const data = await response.json()
+      if (data.success) {
+        // Refresh project data
+        fetchProject(projectId)
+        setConfirmingReadyForDesign(false)
+      }
+    } catch {
+      // Ignore
+    }
+    setReadyForDesignLoading(false)
   }
 
   // Get phase status
@@ -886,6 +911,71 @@ export default function ProjectStatusNew() {
                 </div>
               </div>
             ))}
+          </motion.div>
+        )}
+
+        {/* Ready for Design CTA - Only show when onboarding is complete but still in onboarding phase */}
+        {project.status === 'onboarding' && onboardingCompleted && (
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.2 }}
+            className="bg-gradient-to-br from-blue-500/20 to-indigo-500/20 border border-blue-500/30 rounded-2xl p-5 relative overflow-hidden"
+          >
+            <div className="absolute inset-0 bg-[radial-gradient(circle_at_bottom_left,rgba(59,130,246,0.15),transparent_70%)]" />
+            <div className="relative">
+              <div className="flex items-start gap-4 mb-4">
+                <div className="w-12 h-12 bg-blue-500/20 rounded-xl flex items-center justify-center flex-shrink-0">
+                  <Rocket className="w-6 h-6 text-blue-400" />
+                </div>
+                <div>
+                  <h3 className="font-semibold text-white text-lg mb-1">Klaar om te starten?</h3>
+                  <p className="text-sm text-gray-300">
+                    Heb je alle bestanden geüpload en ben je klaar? Klik dan op de knop hieronder om de design fase te starten.
+                  </p>
+                </div>
+              </div>
+
+              {!confirmingReadyForDesign ? (
+                <button
+                  onClick={() => setConfirmingReadyForDesign(true)}
+                  className="w-full py-3 bg-gradient-to-r from-blue-500 to-indigo-500 hover:from-blue-600 hover:to-indigo-600 text-white font-semibold rounded-xl transition flex items-center justify-center gap-2"
+                >
+                  <Sparkles className="w-5 h-5" />
+                  Start met design
+                </button>
+              ) : (
+                <div className="space-y-3">
+                  <div className="p-3 bg-amber-500/10 border border-amber-500/30 rounded-xl">
+                    <p className="text-sm text-amber-300">
+                      <strong>Let op:</strong> Na bevestiging kunnen we direct beginnen met het ontwerp. Zorg dat al je bestanden (logo, foto's, teksten) zijn geüpload naar Google Drive.
+                    </p>
+                  </div>
+                  <div className="flex gap-3">
+                    <button
+                      onClick={() => setConfirmingReadyForDesign(false)}
+                      className="flex-1 py-3 bg-gray-800 hover:bg-gray-700 text-white font-medium rounded-xl transition"
+                    >
+                      Annuleren
+                    </button>
+                    <button
+                      onClick={confirmReadyForDesign}
+                      disabled={readyForDesignLoading}
+                      className="flex-1 py-3 bg-gradient-to-r from-green-500 to-emerald-500 hover:from-green-600 hover:to-emerald-600 text-white font-semibold rounded-xl transition flex items-center justify-center gap-2 disabled:opacity-50"
+                    >
+                      {readyForDesignLoading ? (
+                        <Loader2 className="w-5 h-5 animate-spin" />
+                      ) : (
+                        <>
+                          <CheckCircle2 className="w-5 h-5" />
+                          Ja, start design
+                        </>
+                      )}
+                    </button>
+                  </div>
+                </div>
+              )}
+            </div>
           </motion.div>
         )}
 

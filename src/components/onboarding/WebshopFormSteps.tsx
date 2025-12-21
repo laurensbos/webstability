@@ -573,6 +573,27 @@ export function WebshopBrandingStep({ data, onChange, disabled }: FormStepProps)
       visual: '▣ ▣ ▣',
       gradient: 'from-slate-50 to-gray-100'
     },
+    { 
+      id: 'organic',
+      name: 'Organisch & Natuurlijk',
+      description: 'Zachte vormen, aards, duurzaam',
+      visual: '◠ ⌒ ◠',
+      gradient: 'from-green-50 to-emerald-50'
+    },
+    { 
+      id: 'modern',
+      name: 'Modern & Tech',
+      description: 'Innovatief, scherp, futuristisch',
+      visual: '⬡ ⬢',
+      gradient: 'from-cyan-50 to-blue-50'
+    },
+    { 
+      id: 'warm',
+      name: 'Warm & Gezellig',
+      description: 'Uitnodigend, persoonlijk, huiselijk',
+      visual: '◠ ◡ ◠',
+      gradient: 'from-orange-50 to-amber-50'
+    },
   ]
 
   return (
