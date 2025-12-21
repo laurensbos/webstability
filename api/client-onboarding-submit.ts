@@ -1,12 +1,13 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node'
 import { getProject, setProject } from './lib/database.js'
-import { sendOnboardingCompleteEmail } from './lib/smtp.js'
+import { sendOnboardingCompleteEmail, sendDeveloperNotificationEmail, isSmtpConfigured } from './lib/smtp.js'
 
 /**
  * API Endpoint: /api/client-onboarding-submit
  * 
  * Handles final submission of client onboarding
- * Changes project status from intake to design
+ * When client gives approval, project moves to 'design' phase
+ * Developer receives email notification
  */
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
@@ -25,7 +26,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
   try {
     const { projectId } = req.query
-    const { serviceType, formData } = req.body
+    const { serviceType, formData, approvedForDesign } = req.body
 
     if (!projectId || projectId === 'new') {
       return res.status(400).json({ error: 'Project ID required for submission' })
@@ -45,11 +46,14 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       })
     }
 
-    // Update project with final data - status stays onboarding until developer reviews
-    // The developer will move it to design phase after reviewing
+    // Determine next status based on approval
+    // If client approved for design, move directly to 'design' phase
+    const nextStatus = approvedForDesign ? 'design' : 'onboarding'
+
+    // Update project with final data
     const updatedProject = {
       ...project,
-      status: 'onboarding' as const, // Keep as onboarding until developer reviews
+      status: nextStatus as any,
       type: serviceType || project.type,
       customer: {
         name: formData?.contactName || project.customer.name,
@@ -61,14 +65,16 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         ...project.onboardingData,
         ...formData,
         submittedAt: new Date().toISOString(),
-        isComplete: true
+        isComplete: true,
+        approvedForDesign: approvedForDesign || false,
+        approvedAt: approvedForDesign ? new Date().toISOString() : undefined
       },
       updatedAt: new Date().toISOString()
     }
 
     await setProject(updatedProject)
 
-    // Send confirmation email to client with dashboard link
+    // Send confirmation email to client
     try {
       await sendOnboardingCompleteEmail({
         name: formData?.contactName || project.customer?.name || 'Klant',
@@ -79,15 +85,34 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       console.log(`Onboarding complete email sent to ${formData?.contactEmail || project.customer?.email}`)
     } catch (emailError) {
       console.error('Failed to send onboarding complete email:', emailError)
-      // Don't fail the request if email fails
+    }
+
+    // If approved for design, notify the developer
+    if (approvedForDesign && isSmtpConfigured()) {
+      try {
+        await sendDeveloperNotificationEmail({
+          type: 'new_design_request',
+          projectId: projectId as string,
+          businessName: formData?.businessName || project.customer?.companyName || 'Nieuw project',
+          customerName: formData?.contactName || project.customer?.name || 'Klant',
+          customerEmail: formData?.contactEmail || project.customer?.email,
+          message: `${formData?.contactName || 'Een klant'} heeft de onboarding voltooid en akkoord gegeven. Het project staat nu klaar in de design fase.`
+        })
+        console.log('Developer notification email sent')
+      } catch (emailError) {
+        console.error('Failed to send developer notification:', emailError)
+      }
     }
 
     return res.status(200).json({
       success: true,
       projectId: projectId,
-      message: 'Onboarding succesvol ingediend! We reviewen je gegevens en nemen contact op.',
-      nextPhase: 'onboarding', // Developer will move to design after review
-      canEdit: false
+      message: approvedForDesign 
+        ? 'Akkoord gegeven! Je project gaat nu naar de design fase.'
+        : 'Onboarding succesvol ingediend!',
+      nextPhase: nextStatus,
+      canEdit: false,
+      movedToDesign: approvedForDesign
     })
   } catch (error) {
     console.error('Submit onboarding error:', error)

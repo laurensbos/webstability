@@ -20,6 +20,7 @@ export interface ProjectMessage {
   from: 'client' | 'developer'
   message: string
   read: boolean
+  senderName?: string
 }
 
 export interface ChangeRequest {

@@ -107,6 +107,7 @@ interface ChatMessage {
   from: 'client' | 'developer'
   message: string
   read: boolean
+  senderName?: string
 }
 
 interface Client {
@@ -3874,6 +3875,14 @@ function ProjectDetailModal({ project, darkMode, onClose, onUpdate, phases }: Om
                             ? 'bg-emerald-500 text-white'
                             : darkMode ? 'bg-gray-600 text-white' : 'bg-white text-gray-900 shadow-sm'
                         }`}>
+                          {/* Sender name */}
+                          <p className={`text-xs font-medium mb-1 ${
+                            msg.from === 'developer'
+                              ? 'text-emerald-100'
+                              : darkMode ? 'text-blue-400' : 'text-blue-600'
+                          }`}>
+                            {msg.senderName || (msg.from === 'developer' ? 'Laurens' : project.contactName || 'Klant')}
+                          </p>
                           <p className="text-sm">{msg.message}</p>
                           <p className={`text-xs mt-1 ${
                             msg.from === 'developer' ? 'text-emerald-200' : darkMode ? 'text-gray-400' : 'text-gray-500'
@@ -5287,6 +5296,14 @@ function MessagesView({ darkMode, projects, onUpdateProject }: MessagesViewProps
                                   : 'bg-white text-gray-900 rounded-2xl rounded-bl-md shadow-sm'
                             } px-4 py-3`}
                           >
+                            {/* Sender name */}
+                            <p className={`text-xs font-medium mb-1 ${
+                              msg.from === 'developer'
+                                ? 'text-emerald-100'
+                                : darkMode ? 'text-blue-400' : 'text-blue-600'
+                            }`}>
+                              {msg.senderName || (msg.from === 'developer' ? 'Laurens' : selectedProject.contactName || 'Klant')}
+                            </p>
                             <p className="text-sm whitespace-pre-wrap">{msg.message}</p>
                             <p className={`text-xs mt-1 ${
                               msg.from === 'developer' 
@@ -8366,7 +8383,7 @@ export default function DeveloperDashboardNew() {
     }
   }, [isAuthenticated])
 
-  // Auto-refresh data every 30 seconds for real-time updates
+  // Auto-refresh data every 5 seconds for real-time chat updates
   // Skip refresh when user is actively interacting (modal open, form focused, etc.)
   useEffect(() => {
     if (!isAuthenticated) return
@@ -8382,7 +8399,7 @@ export default function DeveloperDashboardNew() {
       if (!hasOpenModal && !hasFocusedInput) {
         loadData()
       }
-    }, 30000) // 30 seconds
+    }, 5000) // 5 seconds for fast chat
     
     return () => clearInterval(refreshInterval)
   }, [isAuthenticated])

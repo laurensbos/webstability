@@ -38,7 +38,9 @@ import {
   ArrowRight,
   Sparkles,
   Zap,
-  Eye
+  Eye,
+  Send,
+  XCircle
 } from 'lucide-react'
 import Logo from '../Logo'
 import QuickStats from './QuickStats'
@@ -106,6 +108,17 @@ export default function DeveloperDashboard() {
   const [searchQuery, setSearchQuery] = useState('')
   const [showLiveProjects, setShowLiveProjects] = useState(false)
   const [viewMode, setViewMode] = useState<'kanban' | 'list'>('kanban')
+  
+  // Payment modal state
+  const [paymentModal, setPaymentModal] = useState<{
+    open: boolean
+    project: Project | null
+    loading: boolean
+    success: boolean
+    error: string
+  }>({ open: false, project: null, loading: false, success: false, error: '' })
+  const [paymentAmount, setPaymentAmount] = useState('')
+  const [paymentDescription, setPaymentDescription] = useState('')
 
   // Handle logout - clear session and redirect
   const handleLogout = () => {
@@ -172,9 +185,14 @@ export default function DeveloperDashboard() {
   }
 
   // Send payment link
-  const handleSendPaymentLink = async (project: Project) => {
+  const handleSendPaymentLink = async (project: Project, customAmount?: number, customDescription?: string) => {
+    setPaymentModal(prev => ({ ...prev, loading: true, error: '', success: false }))
+    
     try {
       const token = sessionStorage.getItem(TOKEN_KEY)
+      const amount = customAmount || getFirstPayment(project.package)
+      const description = customDescription || `Eerste betaling - ${project.businessName}`
+      
       const response = await fetch(`${API_BASE}/create-payment`, {
         method: 'POST',
         headers: {
@@ -183,8 +201,8 @@ export default function DeveloperDashboard() {
         },
         body: JSON.stringify({
           projectId: project.projectId,
-          amount: getFirstPayment(project.package),
-          description: `Eerste betaling - ${project.businessName}`,
+          amount: amount.toString(),
+          description: description,
           customerEmail: project.contactEmail,
           customerName: project.contactName,
           packageName: project.package,
@@ -194,17 +212,55 @@ export default function DeveloperDashboard() {
       
       if (response.ok) {
         const data = await response.json()
-        if (data.checkoutUrl) {
+        if (data.checkoutUrl || data.paymentUrl) {
           handleUpdateProject({
             ...project,
-            paymentUrl: data.checkoutUrl,
+            paymentUrl: data.checkoutUrl || data.paymentUrl,
             paymentStatus: 'awaiting_payment'
           })
+          setPaymentModal(prev => ({ ...prev, loading: false, success: true }))
+          
+          // Close modal after 2 seconds
+          setTimeout(() => {
+            closePaymentModal()
+          }, 2000)
+        } else {
+          throw new Error('Geen betaallink ontvangen')
         }
+      } else {
+        const errorData = await response.json().catch(() => ({}))
+        throw new Error(errorData.error || 'Kon betaallink niet aanmaken')
       }
     } catch (error) {
       console.error('Failed to create payment:', error)
+      setPaymentModal(prev => ({ 
+        ...prev, 
+        loading: false, 
+        error: error instanceof Error ? error.message : 'Er ging iets mis' 
+      }))
     }
+  }
+
+  // Open payment modal
+  const openPaymentModal = (project: Project) => {
+    // Get default amount based on package
+    const defaultAmount = getFirstPayment(project.package || 'professional')
+    setPaymentAmount(defaultAmount.toString())
+    setPaymentDescription(`Betaling voor ${project.businessName} - ${PACKAGE_CONFIG[project.package]?.name || 'Website'}`)
+    setPaymentModal({
+      open: true,
+      project,
+      loading: false,
+      success: false,
+      error: ''
+    })
+  }
+  
+  // Close payment modal
+  const closePaymentModal = () => {
+    setPaymentModal({ open: false, project: null, loading: false, success: false, error: '' })
+    setPaymentAmount('')
+    setPaymentDescription('')
   }
 
   const getFirstPayment = (pkg: string) => {
@@ -940,14 +996,38 @@ export default function DeveloperDashboard() {
                 <div className="absolute inset-0 bg-black/10" />
                 <div className="absolute -top-20 -right-20 w-40 h-40 bg-white/10 rounded-full blur-3xl" />
                 
-                <div className="relative">
-                  <h1 className="text-xl font-bold text-white mb-1 flex items-center gap-2">
-                    <CreditCard className="w-5 h-5" />
-                    Betalingen
-                  </h1>
-                  <p className="text-white/80 text-sm">
-                    Beheer facturen en bekijk inkomsten
-                  </p>
+                <div className="relative flex items-center justify-between">
+                  <div>
+                    <h1 className="text-xl font-bold text-white mb-1 flex items-center gap-2">
+                      <CreditCard className="w-5 h-5" />
+                      Betalingen
+                    </h1>
+                    <p className="text-white/80 text-sm">
+                      Beheer facturen en bekijk inkomsten
+                    </p>
+                  </div>
+                  
+                  {/* Quick Action: Create payment for any project */}
+                  {projects.length > 0 && (
+                    <div className="relative">
+                      <select 
+                        onChange={(e) => {
+                          const project = projects.find(p => p.projectId === e.target.value)
+                          if (project) openPaymentModal(project)
+                          e.target.value = ''
+                        }}
+                        className="appearance-none bg-white/20 hover:bg-white/30 text-white font-medium py-2.5 pl-4 pr-10 rounded-xl transition cursor-pointer border border-white/20"
+                      >
+                        <option value="" className="bg-gray-800 text-white">+ Nieuwe betaling</option>
+                        {projects.map(project => (
+                          <option key={project.projectId} value={project.projectId} className="bg-gray-800 text-white">
+                            {project.businessName} - {PACKAGE_CONFIG[project.package]?.name || 'Website'}
+                          </option>
+                        ))}
+                      </select>
+                      <CreditCard className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-white/60 pointer-events-none" />
+                    </div>
+                  )}
                 </div>
               </div>
               
@@ -1063,7 +1143,7 @@ export default function DeveloperDashboard() {
                               </a>
                             ) : (
                               <button
-                                onClick={() => handleSendPaymentLink(project)}
+                                onClick={() => openPaymentModal(project)}
                                 className="flex items-center gap-2 px-4 py-2.5 bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-400 hover:to-orange-400 text-white text-sm font-medium rounded-xl transition shadow-lg shadow-amber-500/20"
                               >
                                 <Mail className="w-4 h-4" />
@@ -1270,9 +1350,162 @@ export default function DeveloperDashboard() {
             project={selectedProject}
             onClose={() => setSelectedProject(null)}
             onUpdate={handleUpdateProject}
-            onSendPaymentLink={handleSendPaymentLink}
+            onSendPaymentLink={openPaymentModal}
             onDelete={handleDeleteProject}
           />
+        )}
+      </AnimatePresence>
+
+      {/* Payment Modal */}
+      <AnimatePresence>
+        {paymentModal.open && paymentModal.project && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-50 flex items-center justify-center p-4"
+            onClick={closePaymentModal}
+          >
+            {/* Backdrop */}
+            <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" />
+            
+            {/* Modal */}
+            <motion.div
+              initial={{ scale: 0.95, opacity: 0, y: 20 }}
+              animate={{ scale: 1, opacity: 1, y: 0 }}
+              exit={{ scale: 0.95, opacity: 0, y: 20 }}
+              onClick={(e) => e.stopPropagation()}
+              className="relative bg-gradient-to-b from-gray-900 to-gray-950 border border-white/10 rounded-2xl shadow-2xl max-w-md w-full overflow-hidden"
+            >
+              {/* Header */}
+              <div className="relative p-6 pb-4 bg-gradient-to-r from-emerald-500/10 via-teal-500/10 to-cyan-500/10 border-b border-white/10">
+                <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-emerald-500 via-teal-500 to-cyan-500" />
+                <button
+                  onClick={closePaymentModal}
+                  className="absolute top-4 right-4 p-2 text-gray-400 hover:text-white hover:bg-white/10 rounded-lg transition"
+                >
+                  <X className="w-5 h-5" />
+                </button>
+                <div className="flex items-center gap-3">
+                  <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-emerald-500 to-teal-600 flex items-center justify-center shadow-lg shadow-emerald-500/25">
+                    <Euro className="w-6 h-6 text-white" />
+                  </div>
+                  <div>
+                    <h2 className="text-xl font-bold text-white">Betaallink versturen</h2>
+                    <p className="text-sm text-gray-400">Via Mollie naar {paymentModal.project.contactEmail}</p>
+                  </div>
+                </div>
+              </div>
+
+              {/* Content */}
+              <div className="p-6 space-y-5">
+                {/* Success State */}
+                {paymentModal.success && (
+                  <motion.div
+                    initial={{ scale: 0.8, opacity: 0 }}
+                    animate={{ scale: 1, opacity: 1 }}
+                    className="text-center py-8"
+                  >
+                    <div className="w-20 h-20 mx-auto mb-4 rounded-full bg-gradient-to-br from-emerald-500 to-teal-600 flex items-center justify-center shadow-lg shadow-emerald-500/30">
+                      <CheckCircle2 className="w-10 h-10 text-white" />
+                    </div>
+                    <h3 className="text-xl font-bold text-white mb-2">Betaallink verstuurd! ✨</h3>
+                    <p className="text-gray-400">De klant ontvangt de link per e-mail</p>
+                  </motion.div>
+                )}
+
+                {/* Error State */}
+                {paymentModal.error && (
+                  <div className="flex items-start gap-3 p-4 bg-red-500/10 border border-red-500/20 rounded-xl">
+                    <XCircle className="w-5 h-5 text-red-400 flex-shrink-0 mt-0.5" />
+                    <div>
+                      <p className="text-sm font-medium text-red-400">Er ging iets mis</p>
+                      <p className="text-sm text-red-300/70">{paymentModal.error}</p>
+                    </div>
+                  </div>
+                )}
+
+                {/* Form - Only show when not success */}
+                {!paymentModal.success && (
+                  <>
+                    {/* Project Info */}
+                    <div className="p-4 bg-white/5 border border-white/10 rounded-xl">
+                      <div className="flex items-center gap-3">
+                        <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center">
+                          <Globe className="w-5 h-5 text-white" />
+                        </div>
+                        <div>
+                          <p className="font-medium text-white">{paymentModal.project.businessName}</p>
+                          <p className="text-sm text-gray-400">{PACKAGE_CONFIG[paymentModal.project.package]?.name || 'Website'} pakket</p>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Amount Input */}
+                    <div>
+                      <label className="block text-sm font-medium text-gray-300 mb-2">
+                        Bedrag (€)
+                      </label>
+                      <div className="relative">
+                        <Euro className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-500" />
+                        <input
+                          type="number"
+                          value={paymentAmount}
+                          onChange={(e) => setPaymentAmount(e.target.value)}
+                          className="w-full pl-12 pr-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white placeholder-gray-500 focus:border-emerald-500/50 focus:ring-2 focus:ring-emerald-500/20 transition text-lg font-medium"
+                          placeholder="0.00"
+                          min="1"
+                          step="0.01"
+                        />
+                      </div>
+                    </div>
+
+                    {/* Description Input */}
+                    <div>
+                      <label className="block text-sm font-medium text-gray-300 mb-2">
+                        Omschrijving
+                      </label>
+                      <input
+                        type="text"
+                        value={paymentDescription}
+                        onChange={(e) => setPaymentDescription(e.target.value)}
+                        className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white placeholder-gray-500 focus:border-emerald-500/50 focus:ring-2 focus:ring-emerald-500/20 transition"
+                        placeholder="Omschrijving voor de klant..."
+                      />
+                    </div>
+
+                    {/* Send Button */}
+                    <button
+                      onClick={() => handleSendPaymentLink(
+                        paymentModal.project!,
+                        parseFloat(paymentAmount) || undefined,
+                        paymentDescription || undefined
+                      )}
+                      disabled={paymentModal.loading || !paymentAmount || parseFloat(paymentAmount) < 1}
+                      className="w-full py-4 bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-600 hover:to-teal-700 text-white font-semibold rounded-xl flex items-center justify-center gap-3 transition shadow-lg shadow-emerald-500/25 disabled:opacity-50 disabled:cursor-not-allowed"
+                    >
+                      {paymentModal.loading ? (
+                        <>
+                          <Loader2 className="w-5 h-5 animate-spin" />
+                          <span>Betaallink aanmaken...</span>
+                        </>
+                      ) : (
+                        <>
+                          <Send className="w-5 h-5" />
+                          <span>Verstuur betaallink</span>
+                        </>
+                      )}
+                    </button>
+
+                    {/* Info text */}
+                    <p className="text-xs text-center text-gray-500">
+                      De klant ontvangt een e-mail met een beveiligde Mollie betaallink
+                    </p>
+                  </>
+                )}
+              </div>
+            </motion.div>
+          </motion.div>
         )}
       </AnimatePresence>
     </div>

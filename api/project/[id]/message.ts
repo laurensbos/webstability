@@ -46,6 +46,7 @@ interface ChatMessage {
   from: 'client' | 'developer'
   message: string
   read: boolean
+  senderName?: string
 }
 
 interface Project {
@@ -55,6 +56,7 @@ interface Project {
   contactEmail?: string
   messages?: ChatMessage[]
   updatedAt?: string
+  developerNotifiedOfFirstMessage?: boolean
   [key: string]: unknown
 }
 
@@ -87,7 +89,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   }
 
   try {
-    const { message, from } = req.body
+    const { message, from, senderName } = req.body
 
     if (!message) {
       return res.status(400).json({ success: false, message: 'Bericht is verplicht' })
@@ -99,28 +101,34 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       return res.status(404).json({ success: false, message: 'Project niet gevonden' })
     }
 
-    // Create new message
+    // Create new message with sender name
     const newMessage: ChatMessage = {
       id: `msg-${Date.now()}`,
       date: new Date().toISOString(),
       from: from === 'developer' ? 'developer' : 'client',
       message: message,
       read: from === 'developer', // Client messages are unread, developer messages are read
+      senderName: from === 'developer' ? 'Laurens' : (senderName || project.contactName || 'Klant'),
     }
 
     // Add to project messages
     const messages = project.messages || []
     messages.push(newMessage)
 
+    // Check if this is the first client message (for developer notification)
+    const isFirstClientMessage = from === 'client' && !project.developerNotifiedOfFirstMessage
+
     const updatedProject = {
       ...project,
       messages,
       updatedAt: new Date().toISOString(),
+      // Mark as notified if this is first client message
+      ...(isFirstClientMessage && { developerNotifiedOfFirstMessage: true }),
     }
 
     await kv.set(`project:${projectId}`, updatedProject)
 
-    console.log(`Message sent for project ${projectId} from ${from}`)
+    console.log(`Message sent for project ${projectId} from ${from}${isFirstClientMessage ? ' (first client message)' : ''}`)
 
     // Helper function to send email via SMTP
     const sendEmail = async (to: string, subject: string, html: string) => {
@@ -147,8 +155,8 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
     // Send email notification
     try {
-      if (from === 'client') {
-        // Notify developer about new client message
+      if (from === 'client' && isFirstClientMessage) {
+        // Only notify developer about FIRST client message
         const html = `
           <!DOCTYPE html>
           <html>

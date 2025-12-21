@@ -12,6 +12,7 @@ import Portfolio from './components/Portfolio'
 import ExtraServices from './components/ExtraServices'
 import DashboardPreview from './components/DashboardPreview'
 import StickyCTA from './components/StickyCTA'
+import FloatingChat from './components/FloatingChat'
 import './index.css'
 
 export default function App() {
@@ -33,6 +34,7 @@ export default function App() {
       </main>
       <Footer />
       <StickyCTA />
+      <FloatingChat variant="homepage" />
     </div>
   )
 }

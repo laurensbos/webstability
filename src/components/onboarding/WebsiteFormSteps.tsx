@@ -555,6 +555,8 @@ interface FormStepProps {
   disabled?: boolean
   packageId?: PackageId // Current package from /start
   onUpgrade?: (packageId: PackageId) => void // Callback for upgrade
+  approvedForDesign?: boolean // For samenvatting step
+  onApprovalChange?: (approved: boolean) => void // For samenvatting step
 }
 
 // Helper to get package config safely
@@ -1318,7 +1320,7 @@ interface SamenvattingStepProps extends FormStepProps {
   onGoToStep?: (stepIndex: number) => void
 }
 
-export function WebsiteSamenvattingStep({ data, packageId, onUpgrade, onGoToStep }: SamenvattingStepProps) {
+export function WebsiteSamenvattingStep({ data, packageId, onUpgrade, onGoToStep, approvedForDesign, onApprovalChange }: SamenvattingStepProps) {
   const pkg = getPackageConfig(packageId || data.package || data.packageType)
   const prefilledPages = data.pages || data.selectedPages || []
   const customPages = data.customPages || []
@@ -1563,29 +1565,54 @@ export function WebsiteSamenvattingStep({ data, packageId, onUpgrade, onGoToStep
         </div>
       </div>
 
-      {/* Confirmation */}
+      {/* Confirmation with Approval Checkbox */}
       <div className="bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-xl p-4">
-        <div className="flex items-center gap-2 text-green-700 dark:text-green-400 font-medium">
+        <div className="flex items-center gap-2 text-green-700 dark:text-green-400 font-medium mb-3">
           <Check className="w-5 h-5" />
           Klaar om te versturen!
         </div>
-        <p className="text-sm text-green-600 dark:text-green-300 mt-2">
+        <p className="text-sm text-green-600 dark:text-green-300 mb-4">
           Na het indienen:
         </p>
-        <ul className="mt-2 space-y-1 text-sm text-green-600 dark:text-green-300">
+        <ul className="mb-4 space-y-1 text-sm text-green-600 dark:text-green-300">
           <li className="flex items-center gap-2">
             <span className="w-1.5 h-1.5 rounded-full bg-green-500" />
-            Je Google Drive link staat in je welkomst-email
+            Je project gaat naar de design fase
           </li>
           <li className="flex items-center gap-2">
             <span className="w-1.5 h-1.5 rounded-full bg-green-500" />
-            Bevestiging van je ontwerp-afspraak
+            De designer gaat aan de slag met jouw website
           </li>
           <li className="flex items-center gap-2">
             <span className="w-1.5 h-1.5 rounded-full bg-green-500" />
-            Toegang tot je persoonlijke klantportaal
+            Je ontvangt binnenkort het eerste ontwerp
           </li>
         </ul>
+
+        {/* Approval Checkbox */}
+        <div className="border-t border-green-200 dark:border-green-700 pt-4 mt-4">
+          <label className="flex items-start gap-3 cursor-pointer group">
+            <div className="relative mt-0.5">
+              <input
+                type="checkbox"
+                checked={approvedForDesign || false}
+                onChange={(e) => onApprovalChange?.(e.target.checked)}
+                className="sr-only peer"
+              />
+              <div className="w-6 h-6 border-2 border-green-400 rounded-lg peer-checked:bg-green-500 peer-checked:border-green-500 transition-all flex items-center justify-center">
+                {approvedForDesign && <Check className="w-4 h-4 text-white" />}
+              </div>
+            </div>
+            <div>
+              <span className="font-medium text-green-700 dark:text-green-300 group-hover:text-green-800 dark:group-hover:text-green-200 transition-colors">
+                Ik geef akkoord om te starten met het design
+              </span>
+              <p className="text-xs text-green-600 dark:text-green-400 mt-1">
+                Door akkoord te geven, bevestig je dat de ingevulde gegevens correct zijn en we kunnen starten met het ontwerp van je website.
+              </p>
+            </div>
+          </label>
+        </div>
       </div>
     </motion.div>
   )

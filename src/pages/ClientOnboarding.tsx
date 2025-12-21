@@ -556,6 +556,7 @@ export default function ClientOnboarding() {
   const [submitted, setSubmitted] = useState(false)
   const [validationErrors, setValidationErrors] = useState<string[]>([])
   const [driveUrl, setDriveUrl] = useState<string>('')
+  const [approvedForDesign, setApprovedForDesign] = useState(false)
 
   // Auto-save hook
   const { autoSaveStatus, emailInUseError, loadFromLocal, clearLocalDraft } = useAutoSave(
@@ -837,7 +838,9 @@ export default function ClientOnboarding() {
       disabled: !canEdit,
       packageId: currentPackage,
       onUpgrade: handleUpgradeRequest,
-      onGoToStep: goToStep
+      onGoToStep: goToStep,
+      approvedForDesign: approvedForDesign,
+      onApprovalChange: setApprovedForDesign
     }
 
     // Get the step component based on service type
@@ -865,6 +868,11 @@ export default function ClientOnboarding() {
 
   // Submit final
   const submitOnboarding = async () => {
+    if (!approvedForDesign) {
+      setError('Je moet akkoord geven voordat je kunt insturen')
+      return
+    }
+    
     setSaving(true)
     setError('')
     try {
@@ -873,13 +881,17 @@ export default function ClientOnboarding() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           serviceType,
-          formData
+          formData,
+          approvedForDesign: true // Client explicitly approved
         })
       })
       
       if (response.ok) {
-        // Navigate back to dashboard with success message
-        navigate(`/status/${projectId}?onboarding=complete`)
+        await response.json()
+        // Clear local draft
+        clearLocalDraft()
+        // Set submitted to show success screen
+        setSubmitted(true)
       } else {
         throw new Error('Failed to submit')
       }
@@ -897,11 +909,21 @@ export default function ClientOnboarding() {
   if (submitted) {
     const nextSteps = [
       {
+        icon: Sparkles,
+        title: 'Design fase gestart! 🎨',
+        description: 'Je project is nu officieel in de design fase. Onze designer gaat direct aan de slag met jouw website.',
+        time: 'Nu actief',
+        color: 'from-emerald-500 to-teal-600',
+        bgColor: 'bg-emerald-50 dark:bg-emerald-900/20',
+        textColor: 'text-emerald-600 dark:text-emerald-400',
+        highlight: true,
+      },
+      {
         icon: FolderOpen,
-        title: 'Google Drive map',
+        title: 'Media uploaden',
         description: driveUrl 
-          ? 'Je persoonlijke Google Drive map is klaar! Upload hier je logo, foto\'s en andere bestanden.'
-          : 'Je ontvangt een e-mail met een Google Drive link waar je je logo, foto\'s en andere bestanden kunt uploaden.',
+          ? 'Je Google Drive map is klaar! Upload hier je logo, foto\'s en andere bestanden.'
+          : 'Je ontvangt een e-mail met een Google Drive link waar je je media kunt uploaden.',
         time: driveUrl ? 'Nu beschikbaar' : 'In je mail',
         color: 'from-blue-500 to-blue-600',
         bgColor: 'bg-blue-50 dark:bg-blue-900/20',
@@ -909,18 +931,9 @@ export default function ClientOnboarding() {
         link: driveUrl || undefined,
       },
       {
-        icon: Mail,
-        title: 'Bevestiging via e-mail',
-        description: 'Je krijgt een bevestigingsmail met alle informatie en een link naar je project dashboard.',
-        time: 'Direct',
-        color: 'from-purple-500 to-purple-600',
-        bgColor: 'bg-purple-50 dark:bg-purple-900/20',
-        textColor: 'text-purple-600 dark:text-purple-400',
-      },
-      {
         icon: Palette,
         title: 'Eerste ontwerp',
-        description: 'Zodra je bestanden zijn geüpload, gaan we aan de slag. Binnen 5-7 werkdagen ontvang je het eerste ontwerp.',
+        description: 'Binnen 5-7 werkdagen ontvang je het eerste ontwerp van je website ter review.',
         time: '5-7 werkdagen',
         color: 'from-amber-500 to-amber-600',
         bgColor: 'bg-amber-50 dark:bg-amber-900/20',
@@ -929,11 +942,11 @@ export default function ClientOnboarding() {
       {
         icon: CheckCircle2,
         title: 'Feedback & live!',
-        description: 'Na jouw goedkeuring maken we de laatste aanpassingen en gaat je website live. Alles volg je in je project dashboard.',
+        description: 'Na jouw goedkeuring maken we de laatste aanpassingen en gaat je website live.',
         time: 'Na goedkeuring',
-        color: 'from-emerald-500 to-emerald-600',
-        bgColor: 'bg-emerald-50 dark:bg-emerald-900/20',
-        textColor: 'text-emerald-600 dark:text-emerald-400',
+        color: 'from-purple-500 to-purple-600',
+        bgColor: 'bg-purple-50 dark:bg-purple-900/20',
+        textColor: 'text-purple-600 dark:text-purple-400',
       },
     ]
 
@@ -1424,11 +1437,15 @@ export default function ClientOnboarding() {
           {currentStep === totalSteps ? (
             <button
               onClick={submitOnboarding}
-              disabled={saving || !canEdit || !!emailInUseError}
-              className={`flex-1 sm:flex-none flex items-center justify-center gap-2 px-8 py-3.5 bg-gradient-to-r ${serviceConfig.gradient} text-white rounded-xl font-semibold shadow-lg hover:shadow-xl transition-all disabled:opacity-50`}
+              disabled={saving || !canEdit || !!emailInUseError || !approvedForDesign}
+              className={`flex-1 sm:flex-none flex items-center justify-center gap-2 px-8 py-3.5 ${
+                approvedForDesign 
+                  ? `bg-gradient-to-r ${serviceConfig.gradient}` 
+                  : 'bg-gray-600'
+              } text-white rounded-xl font-semibold shadow-lg hover:shadow-xl transition-all disabled:opacity-50 disabled:cursor-not-allowed`}
             >
               {saving ? <Loader2 className="w-5 h-5 animate-spin" /> : <CheckCircle2 className="w-5 h-5" />}
-              Indienen
+              {approvedForDesign ? 'Akkoord & Insturen' : 'Geef eerst akkoord ↑'}
             </button>
           ) : (
             <button

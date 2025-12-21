@@ -1570,6 +1570,110 @@ Team Webstability`
   })
 }
 
+// ===========================================
+// Developer Notification Email
+// ===========================================
+
+export const sendDeveloperNotificationEmail = async (data: {
+  type: 'new_design_request' | 'feedback_received' | 'payment_received' | 'new_message'
+  projectId: string
+  businessName: string
+  customerName: string
+  customerEmail: string
+  message?: string
+}): Promise<EmailResult> => {
+  const DEVELOPER_EMAIL = process.env.DEVELOPER_EMAIL || 'laurens@webstability.nl'
+  const BASE_URL = process.env.SITE_URL || 'https://webstability.nl'
+  const dashboardUrl = `${BASE_URL}/developer`
+
+  const typeConfig: Record<string, { emoji: string; title: string; color: string }> = {
+    'new_design_request': { emoji: '🎨', title: 'Nieuw Design Verzoek', color: BRAND_COLORS.primary },
+    'feedback_received': { emoji: '💬', title: 'Feedback Ontvangen', color: BRAND_COLORS.info },
+    'payment_received': { emoji: '💰', title: 'Betaling Ontvangen', color: BRAND_COLORS.success },
+    'new_message': { emoji: '📩', title: 'Nieuw Bericht', color: BRAND_COLORS.warning }
+  }
+
+  const config = typeConfig[data.type] || typeConfig['new_design_request']
+
+  const html = baseTemplate(`
+    <!-- Header -->
+    <div style="text-align: center; margin-bottom: 32px;">
+      <div style="width: 80px; height: 80px; background: linear-gradient(135deg, ${config.color} 0%, ${BRAND_COLORS.primaryDark} 100%); border-radius: 50%; margin: 0 auto 24px; display: flex; align-items: center; justify-content: center;">
+        <span style="font-size: 36px; line-height: 1;">${config.emoji}</span>
+      </div>
+      <h1 style="color: ${BRAND_COLORS.textWhite}; font-size: 28px; margin: 0 0 8px; font-weight: 700;">
+        ${config.title}
+      </h1>
+      <p style="color: ${BRAND_COLORS.textMuted}; font-size: 16px; margin: 0;">
+        Project: ${data.businessName}
+      </p>
+    </div>
+
+    <!-- Main content card -->
+    <div style="background-color: ${BRAND_COLORS.bgCard}; border-radius: 16px; padding: 32px; margin-bottom: 24px; border: 1px solid ${BRAND_COLORS.border};">
+      <div style="margin-bottom: 24px;">
+        <table style="width: 100%; border-collapse: collapse;">
+          <tr>
+            <td style="padding: 12px 0; border-bottom: 1px solid ${BRAND_COLORS.border};">
+              <span style="color: ${BRAND_COLORS.textMuted}; font-size: 14px;">Project ID</span>
+            </td>
+            <td style="padding: 12px 0; border-bottom: 1px solid ${BRAND_COLORS.border}; text-align: right;">
+              <span style="color: ${BRAND_COLORS.textWhite}; font-size: 14px; font-weight: 600; font-family: monospace;">${data.projectId}</span>
+            </td>
+          </tr>
+          <tr>
+            <td style="padding: 12px 0; border-bottom: 1px solid ${BRAND_COLORS.border};">
+              <span style="color: ${BRAND_COLORS.textMuted}; font-size: 14px;">Klant</span>
+            </td>
+            <td style="padding: 12px 0; border-bottom: 1px solid ${BRAND_COLORS.border}; text-align: right;">
+              <span style="color: ${BRAND_COLORS.textWhite}; font-size: 14px; font-weight: 600;">${data.customerName}</span>
+            </td>
+          </tr>
+          <tr>
+            <td style="padding: 12px 0;">
+              <span style="color: ${BRAND_COLORS.textMuted}; font-size: 14px;">Email</span>
+            </td>
+            <td style="padding: 12px 0; text-align: right;">
+              <a href="mailto:${data.customerEmail}" style="color: ${BRAND_COLORS.primary}; font-size: 14px; text-decoration: none;">${data.customerEmail}</a>
+            </td>
+          </tr>
+        </table>
+      </div>
+
+      ${data.message ? `
+      <div style="background: linear-gradient(135deg, ${BRAND_COLORS.primaryBg} 0%, #064e3b 100%); border-radius: 12px; padding: 20px; margin-bottom: 24px; border-left: 4px solid ${config.color};">
+        <p style="color: ${BRAND_COLORS.textLight}; font-size: 14px; margin: 0; line-height: 1.6;">
+          ${data.message}
+        </p>
+      </div>
+      ` : ''}
+
+      <!-- CTA Button -->
+      <div style="text-align: center; margin: 32px 0 0;">
+        <a href="${dashboardUrl}" style="display: inline-block; background: linear-gradient(135deg, ${BRAND_COLORS.primary} 0%, ${BRAND_COLORS.primaryDark} 100%); color: white; padding: 16px 40px; border-radius: 10px; text-decoration: none; font-weight: 600; font-size: 16px; box-shadow: 0 4px 14px rgba(16, 185, 129, 0.35);">
+          Open Developer Dashboard →
+        </a>
+      </div>
+    </div>
+  `)
+
+  return sendEmail({
+    to: DEVELOPER_EMAIL,
+    subject: `${config.emoji} ${config.title} - ${data.businessName} (${data.projectId})`,
+    html,
+    text: `${config.title}
+
+Project: ${data.businessName}
+Project ID: ${data.projectId}
+Klant: ${data.customerName}
+Email: ${data.customerEmail}
+
+${data.message || ''}
+
+Open je dashboard: ${dashboardUrl}`
+  })
+}
+
 export default {
   sendEmail,
   isSmtpConfigured,
@@ -1585,5 +1689,6 @@ export default {
   sendPhaseChangeEmail,
   sendDeadlineReminderEmail,
   sendOnboardingCompleteEmail,
+  sendDeveloperNotificationEmail,
 }
 
