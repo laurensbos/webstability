@@ -3731,6 +3731,95 @@ function ProjectDetailModal({ project, darkMode, onClose, onUpdate, phases }: Om
                 </div>
               )}
 
+              {/* Feedback History - Shows client design feedback */}
+              {(project as any).feedbackHistory && (project as any).feedbackHistory.length > 0 && (
+                <div className={`p-4 rounded-xl border-2 ${darkMode ? 'bg-amber-900/20 border-amber-500/50' : 'bg-amber-50 border-amber-200'}`}>
+                  <h3 className={`font-semibold mb-3 flex items-center gap-2 ${darkMode ? 'text-amber-300' : 'text-amber-800'}`}>
+                    💬 Klant Feedback ({(project as any).feedbackHistory.length})
+                  </h3>
+                  <div className="space-y-3">
+                    {(project as any).feedbackHistory.map((fb: any, idx: number) => (
+                      <div 
+                        key={fb.id || idx}
+                        className={`p-4 rounded-xl ${
+                          fb.status === 'resolved' 
+                            ? darkMode ? 'bg-green-900/30 border border-green-500/30' : 'bg-green-50 border border-green-200'
+                            : darkMode ? 'bg-gray-800 border border-amber-500/30' : 'bg-white border border-amber-200'
+                        }`}
+                      >
+                        <div className="flex items-start justify-between mb-2">
+                          <div className="flex items-center gap-2">
+                            <span className={`px-2 py-0.5 rounded text-xs font-medium ${
+                              fb.status === 'resolved'
+                                ? 'bg-green-500/20 text-green-400'
+                                : 'bg-amber-500/20 text-amber-400'
+                            }`}>
+                              {fb.status === 'resolved' ? '✓ Verwerkt' : '⏳ Open'}
+                            </span>
+                            <span className={`text-xs ${darkMode ? 'text-gray-500' : 'text-gray-400'}`}>
+                              {fb.type === 'design' ? '🎨 Design' : '✅ Review'}
+                            </span>
+                          </div>
+                          <span className={`text-xs ${darkMode ? 'text-gray-500' : 'text-gray-400'}`}>
+                            {new Date(fb.date).toLocaleDateString('nl-NL', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' })}
+                          </span>
+                        </div>
+                        
+                        {/* Show structured feedback items if available */}
+                        {fb.feedbackItems && fb.feedbackItems.length > 0 ? (
+                          <div className="space-y-2">
+                            {fb.feedbackItems.filter((item: any) => item.rating === 'negative').map((item: any, i: number) => (
+                              <div key={i} className={`p-2 rounded-lg ${darkMode ? 'bg-red-900/30' : 'bg-red-50'}`}>
+                                <div className="flex items-center justify-between mb-1">
+                                  <span className={`font-medium text-sm ${darkMode ? 'text-red-300' : 'text-red-700'}`}>
+                                    ⚠️ {item.category}
+                                  </span>
+                                  <span className={`text-xs px-2 py-0.5 rounded ${
+                                    item.priority === 'urgent' ? 'bg-red-500 text-white' :
+                                    item.priority === 'normal' ? 'bg-amber-500 text-white' : 'bg-gray-500 text-white'
+                                  }`}>
+                                    {item.priority === 'urgent' ? '🔴 Urgent' : item.priority === 'normal' ? '🟡 Normaal' : '🟢 Laag'}
+                                  </span>
+                                </div>
+                                <p className={`text-sm ${darkMode ? 'text-red-200' : 'text-red-600'}`}>{item.feedback}</p>
+                              </div>
+                            ))}
+                            {fb.feedbackItems.filter((item: any) => item.rating === 'positive').length > 0 && (
+                              <div className={`p-2 rounded-lg ${darkMode ? 'bg-green-900/30' : 'bg-green-50'}`}>
+                                <p className={`text-sm font-medium ${darkMode ? 'text-green-300' : 'text-green-700'}`}>
+                                  ✅ Goedgekeurd: {fb.feedbackItems.filter((item: any) => item.rating === 'positive').map((item: any) => item.category).join(', ')}
+                                </p>
+                              </div>
+                            )}
+                          </div>
+                        ) : fb.feedback ? (
+                          <p className={`text-sm whitespace-pre-line ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>{fb.feedback}</p>
+                        ) : null}
+                        
+                        {/* Mark as resolved button */}
+                        {fb.status !== 'resolved' && (
+                          <button
+                            onClick={() => {
+                              const updatedHistory = (project as any).feedbackHistory.map((f: any) => 
+                                f.id === fb.id ? { ...f, status: 'resolved' } : f
+                              )
+                              onUpdate({ ...project, feedbackHistory: updatedHistory } as any)
+                            }}
+                            className={`mt-3 px-3 py-1.5 text-xs font-medium rounded-lg transition ${
+                              darkMode 
+                                ? 'bg-green-500/20 text-green-400 hover:bg-green-500/30' 
+                                : 'bg-green-100 text-green-700 hover:bg-green-200'
+                            }`}
+                          >
+                            ✓ Markeer als verwerkt
+                          </button>
+                        )}
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+
               {/* Internal Notes */}
               <div>
                 <h3 className={`font-semibold mb-3 ${darkMode ? 'text-white' : 'text-gray-900'}`}>

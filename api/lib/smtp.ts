@@ -1460,6 +1460,116 @@ export const sendPhaseChangeEmail = async (customer: {
   })
 }
 
+// ===========================================
+// Onboarding Complete Confirmation Email
+// ===========================================
+
+export const sendOnboardingCompleteEmail = async (customer: {
+  name: string
+  email: string
+  projectId: string
+  businessName?: string
+  package?: string
+}): Promise<EmailResult> => {
+  const BASE_URL = process.env.SITE_URL || 'https://webstability.nl'
+  const dashboardUrl = `${BASE_URL}/status/${customer.projectId}`
+  
+  // Generate magic link for 1-click access
+  const magicLinkUrl = await generateMagicLinkUrl(customer.projectId)
+
+  const html = baseTemplate(`
+    <!-- Header with success checkmark -->
+    <div style="text-align: center; margin-bottom: 32px;">
+      <div style="width: 80px; height: 80px; background: linear-gradient(135deg, ${BRAND_COLORS.success} 0%, #059669 100%); border-radius: 50%; margin: 0 auto 24px; display: flex; align-items: center; justify-content: center;">
+        <span style="font-size: 36px; line-height: 1;">✓</span>
+      </div>
+      <h1 style="color: ${BRAND_COLORS.textWhite}; font-size: 28px; margin: 0 0 8px; font-weight: 700;">
+        Onboarding voltooid! 🎉
+      </h1>
+      <p style="color: ${BRAND_COLORS.textMuted}; font-size: 16px; margin: 0;">
+        Bedankt voor het invullen, ${customer.name}!
+      </p>
+    </div>
+
+    <!-- Main content card -->
+    <div style="background-color: ${BRAND_COLORS.bgCard}; border-radius: 16px; padding: 32px; margin-bottom: 24px; border: 1px solid ${BRAND_COLORS.border};">
+      <p style="color: ${BRAND_COLORS.textLight}; font-size: 16px; line-height: 1.6; margin: 0 0 24px;">
+        We hebben al je informatie ontvangen voor <strong style="color: ${BRAND_COLORS.primary};">${customer.businessName || 'je project'}</strong>. 
+        Ons team gaat nu aan de slag met het ontwerp van je website.
+      </p>
+
+      <div style="background: linear-gradient(135deg, ${BRAND_COLORS.primaryBg} 0%, #064e3b 100%); border-radius: 12px; padding: 20px; margin-bottom: 24px; border-left: 4px solid ${BRAND_COLORS.primary};">
+        <p style="color: ${BRAND_COLORS.textLight}; font-size: 14px; margin: 0;">
+          <strong style="color: ${BRAND_COLORS.primary};">💡 Wat kun je verwachten?</strong><br><br>
+          Binnen <strong>5-7 werkdagen</strong> ontvang je het eerste ontwerp van je website. 
+          Je kunt de voortgang volgen in je persoonlijke dashboard.
+        </p>
+      </div>
+
+      <!-- CTA Button - Dashboard -->
+      <div style="text-align: center; margin: 32px 0;">
+        <a href="${magicLinkUrl}" style="display: inline-block; background: linear-gradient(135deg, ${BRAND_COLORS.primary} 0%, ${BRAND_COLORS.primaryDark} 100%); color: white; padding: 16px 40px; border-radius: 10px; text-decoration: none; font-weight: 600; font-size: 16px; box-shadow: 0 4px 14px rgba(16, 185, 129, 0.35);">
+          📊 Bekijk je Dashboard →
+        </a>
+      </div>
+      
+      <p style="color: ${BRAND_COLORS.textMuted}; font-size: 12px; text-align: center; margin: 0;">
+        Of kopieer deze link: <a href="${dashboardUrl}" style="color: ${BRAND_COLORS.primary};">${dashboardUrl}</a>
+      </p>
+    </div>
+
+    <!-- Next steps -->
+    <div style="background-color: ${BRAND_COLORS.bgCard}; border-radius: 16px; padding: 24px; border: 1px solid ${BRAND_COLORS.border};">
+      <h3 style="color: ${BRAND_COLORS.textWhite}; font-size: 18px; margin: 0 0 20px; font-weight: 600;">
+        📋 Volgende stappen
+      </h3>
+      
+      <div style="margin-bottom: 16px; padding-left: 16px; border-left: 3px solid ${BRAND_COLORS.success};">
+        <p style="color: ${BRAND_COLORS.success}; font-size: 14px; margin: 0 0 4px; font-weight: 600;">✓ Onboarding voltooid</p>
+        <p style="color: ${BRAND_COLORS.textMuted}; font-size: 13px; margin: 0;">Je informatie is ontvangen</p>
+      </div>
+      
+      <div style="margin-bottom: 16px; padding-left: 16px; border-left: 3px solid ${BRAND_COLORS.warning};">
+        <p style="color: ${BRAND_COLORS.warning}; font-size: 14px; margin: 0 0 4px; font-weight: 600;">⏳ Design wordt gemaakt</p>
+        <p style="color: ${BRAND_COLORS.textMuted}; font-size: 13px; margin: 0;">We maken je eerste ontwerp (5-7 werkdagen)</p>
+      </div>
+      
+      <div style="padding-left: 16px; border-left: 3px solid ${BRAND_COLORS.border};">
+        <p style="color: ${BRAND_COLORS.textMuted}; font-size: 14px; margin: 0 0 4px; font-weight: 600;">Design review</p>
+        <p style="color: ${BRAND_COLORS.textMuted}; font-size: 13px; margin: 0;">Je ontvangt een mail zodra je design klaar is</p>
+      </div>
+    </div>
+
+    <!-- Contact info -->
+    <div style="text-align: center; margin-top: 32px; padding: 20px; background-color: rgba(16, 185, 129, 0.1); border-radius: 12px;">
+      <p style="color: ${BRAND_COLORS.textLight}; font-size: 14px; margin: 0;">
+        Vragen? Stuur een bericht via je dashboard of mail naar<br>
+        <a href="mailto:info@webstability.nl" style="color: ${BRAND_COLORS.primary}; text-decoration: none; font-weight: 500;">info@webstability.nl</a>
+      </p>
+    </div>
+  `)
+
+  return sendEmail({
+    to: customer.email,
+    subject: `✅ Onboarding voltooid - ${customer.businessName || customer.projectId}`,
+    html,
+    text: `Hoi ${customer.name},
+
+Bedankt voor het invullen van de onboarding voor ${customer.businessName || 'je project'}!
+
+We hebben al je informatie ontvangen en gaan aan de slag met het ontwerp van je website.
+
+Binnen 5-7 werkdagen ontvang je het eerste ontwerp.
+
+Bekijk je dashboard: ${dashboardUrl}
+
+Vragen? Mail naar info@webstability.nl
+
+Met vriendelijke groet,
+Team Webstability`
+  })
+}
+
 export default {
   sendEmail,
   isSmtpConfigured,
@@ -1474,4 +1584,6 @@ export default {
   sendPaymentLinkEmail,
   sendPhaseChangeEmail,
   sendDeadlineReminderEmail,
+  sendOnboardingCompleteEmail,
 }
+

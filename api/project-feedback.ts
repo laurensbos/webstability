@@ -86,10 +86,18 @@ interface ProjectData {
   [key: string]: unknown
 }
 
+interface FeedbackItem {
+  category: string
+  rating: 'positive' | 'negative' | 'neutral'
+  feedback: string
+  priority: 'low' | 'normal' | 'urgent'
+}
+
 interface FeedbackRequest {
   projectId: string
   approved: boolean
   feedback?: string
+  feedbackItems?: FeedbackItem[]
   type: 'design' | 'review'
 }
 
@@ -109,7 +117,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   
   try {
     const body = req.body as FeedbackRequest
-    const { projectId, approved, feedback, type } = body
+    const { projectId, approved, feedback, feedbackItems, type } = body
     
     if (!projectId) {
       return res.status(400).json({ success: false, error: 'Project ID is vereist' })
@@ -163,15 +171,38 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       
     } else {
       // Feedback ontvangen - stuur naar developer
-      console.log(`[Feedback] Changes requested for ${projectId}:`, feedback)
+      console.log(`[Feedback] Changes requested for ${projectId}:`, feedback, feedbackItems)
       
       // Voeg feedback toe aan project
       const existingFeedback = (projectData as any).feedbackHistory || []
+      
+      // Bouw feedback samenvatting op basis van gestructureerde items
+      let feedbackSummary = feedback || ''
+      if (feedbackItems && feedbackItems.length > 0) {
+        const itemsNeedingChange = feedbackItems.filter(f => f.rating === 'negative')
+        if (itemsNeedingChange.length > 0) {
+          feedbackSummary += '\n\n📋 Wijzigingen nodig:\n'
+          itemsNeedingChange.forEach(item => {
+            const priorityEmoji = item.priority === 'urgent' ? '🔴' : item.priority === 'normal' ? '🟡' : '🟢'
+            feedbackSummary += `${priorityEmoji} ${item.category}: ${item.feedback}\n`
+          })
+        }
+        
+        const positiveItems = feedbackItems.filter(f => f.rating === 'positive')
+        if (positiveItems.length > 0) {
+          feedbackSummary += '\n\n✅ Goedgekeurd:\n'
+          positiveItems.forEach(item => {
+            feedbackSummary += `• ${item.category}${item.feedback ? `: ${item.feedback}` : ''}\n`
+          })
+        }
+      }
+      
       existingFeedback.push({
         id: Date.now().toString(),
         date: new Date().toISOString(),
         type,
-        feedback,
+        feedback: feedbackSummary.trim(),
+        feedbackItems: feedbackItems || [],
         status: 'pending'
       })
       ;(projectData as any).feedbackHistory = existingFeedback
@@ -181,8 +212,8 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         await kv.set(`project:${projectId}`, projectData)
       }
       
-      // Stuur notificatie naar developer
-      await sendDeveloperNotification(projectData, 'feedback', feedback)
+      // Stuur notificatie naar developer met gestructureerde feedback
+      await sendDeveloperNotification(projectData, 'feedback', feedbackSummary.trim(), feedbackItems)
     }
     
     return res.status(200).json({
@@ -383,7 +414,8 @@ async function sendApprovalEmail(projectData: ProjectData, paymentUrl?: string):
 async function sendDeveloperNotification(
   projectData: ProjectData, 
   action: 'approved' | 'feedback',
-  feedback?: string
+  feedback?: string,
+  feedbackItems?: FeedbackItem[]
 ): Promise<void> {
   const transporter = createTransporter()
   if (!transporter) return
@@ -391,6 +423,62 @@ async function sendDeveloperNotification(
   const subject = action === 'approved' 
     ? `✅ Design goedgekeurd: ${projectData.businessName}`
     : `💬 Feedback ontvangen: ${projectData.businessName}`
+  
+  // Build structured feedback HTML for email
+  let feedbackHtml = ''
+  if (feedbackItems && feedbackItems.length > 0) {
+    const needsChange = feedbackItems.filter(f => f.rating === 'negative')
+    const positives = feedbackItems.filter(f => f.rating === 'positive')
+    const neutrals = feedbackItems.filter(f => f.rating === 'neutral')
+    
+    if (needsChange.length > 0) {
+      feedbackHtml += `
+        <div style="background: #7f1d1d; border-radius: 8px; padding: 16px; margin-top: 16px;">
+          <p style="margin: 0 0 12px 0; font-weight: 600; color: #fca5a5;">⚠️ Wijzigingen nodig (${needsChange.length})</p>
+          ${needsChange.map(item => `
+            <div style="background: #450a0a; border-radius: 6px; padding: 12px; margin-bottom: 8px;">
+              <div style="display: flex; justify-content: space-between; margin-bottom: 4px;">
+                <strong style="color: #fecaca;">${item.category}</strong>
+                <span style="color: ${item.priority === 'urgent' ? '#f87171' : item.priority === 'normal' ? '#fbbf24' : '#4ade80'}; font-size: 12px;">
+                  ${item.priority === 'urgent' ? '🔴 Urgent' : item.priority === 'normal' ? '🟡 Normaal' : '� Laag'}
+                </span>
+              </div>
+              <p style="margin: 0; color: #fecaca;">${item.feedback}</p>
+            </div>
+          `).join('')}
+        </div>
+      `
+    }
+    
+    if (positives.length > 0) {
+      feedbackHtml += `
+        <div style="background: #14532d; border-radius: 8px; padding: 16px; margin-top: 16px;">
+          <p style="margin: 0 0 12px 0; font-weight: 600; color: #86efac;">✅ Goedgekeurd (${positives.length})</p>
+          ${positives.map(item => `
+            <div style="color: #bbf7d0; margin-bottom: 4px;">• ${item.category}${item.feedback ? `: ${item.feedback}` : ''}</div>
+          `).join('')}
+        </div>
+      `
+    }
+    
+    if (neutrals.length > 0) {
+      feedbackHtml += `
+        <div style="background: #1e3a5f; border-radius: 8px; padding: 16px; margin-top: 16px;">
+          <p style="margin: 0 0 12px 0; font-weight: 600; color: #93c5fd;">💬 Opmerkingen (${neutrals.length})</p>
+          ${neutrals.map(item => `
+            <div style="color: #bfdbfe; margin-bottom: 4px;">• ${item.category}: ${item.feedback}</div>
+          `).join('')}
+        </div>
+      `
+    }
+  } else if (feedback) {
+    feedbackHtml = `
+      <div style="background: #0f172a; border-radius: 8px; padding: 16px; margin-top: 16px;">
+        <p style="margin: 0 0 8px 0; font-weight: 600;">Feedback:</p>
+        <p style="margin: 0; color: #94a3b8; white-space: pre-line;">${feedback}</p>
+      </div>
+    `
+  }
   
   const html = `
     <!DOCTYPE html>
@@ -403,15 +491,10 @@ async function sendDeveloperNotification(
         <p><strong>Pakket:</strong> ${projectData.package}</p>
         <p><strong>Klant:</strong> ${projectData.contactEmail}</p>
         
-        ${feedback ? `
-          <div style="background: #0f172a; border-radius: 8px; padding: 16px; margin-top: 16px;">
-            <p style="margin: 0 0 8px 0; font-weight: 600;">Feedback:</p>
-            <p style="margin: 0; color: #94a3b8;">${feedback}</p>
-          </div>
-        ` : ''}
+        ${feedbackHtml}
         
         <p style="margin-top: 24px;">
-          <a href="${BASE_URL}/developer" style="background: #6366f1; color: white; padding: 12px 24px; border-radius: 8px; text-decoration: none;">
+          <a href="${BASE_URL}/developer" style="background: #6366f1; color: white; padding: 12px 24px; border-radius: 8px; text-decoration: none; display: inline-block;">
             Open Developer Dashboard →
           </a>
         </p>

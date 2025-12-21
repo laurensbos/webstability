@@ -36,6 +36,7 @@ import {
   File
 } from 'lucide-react'
 import Logo from '../components/Logo'
+import DesignFeedback from '../components/DesignFeedback'
 import type { Project, ProjectPhase, ProjectMessage } from '../types/project'
 import { getProgressPercentage } from '../types/project'
 
@@ -328,6 +329,31 @@ export default function ProjectStatusNew() {
     return () => clearInterval(interval)
   }, [isVerified, projectId])
 
+  // Check for onboarding completion redirect
+  useEffect(() => {
+    const onboardingParam = searchParams.get('onboarding')
+    if (onboardingParam === 'complete' && isVerified) {
+      // Set onboarding as completed
+      setOnboardingCompleted(true)
+      
+      // Show success notification
+      setNotifications(prev => {
+        // Don't add if already exists
+        if (prev.some(n => n.id === 'onboarding-complete')) return prev
+        return [{
+          id: 'onboarding-complete',
+          type: 'success' as const,
+          title: '✅ Onboarding voltooid!',
+          message: 'Bedankt! We gaan aan de slag met je project.',
+          date: new Date().toISOString()
+        }, ...prev]
+      })
+      
+      // Remove the query param from URL
+      navigate(`/status/${projectId}`, { replace: true })
+    }
+  }, [searchParams, isVerified, projectId, navigate])
+
   const verifyMagicSession = async (id: string, sessionToken: string) => {
     setVerifyLoading(true)
     try {
@@ -471,7 +497,7 @@ export default function ProjectStatusNew() {
       const response = await fetch(`/api/onboarding/${id}`)
       if (response.ok) {
         const data = await response.json()
-        if (data?.submittedAt) setOnboardingCompleted(true)
+        if (data?.submittedAt || data?.isComplete) setOnboardingCompleted(true)
       }
     } catch {
       // Ignore
@@ -509,8 +535,19 @@ export default function ProjectStatusNew() {
       notifs.push({
         id: 'payment-pending',
         type: 'warning',
-        title: 'Betaling openstaat',
-        message: 'Rond je betaling af om door te gaan',
+        title: proj.paymentUrl ? '💳 Betaallink klaar!' : 'Betaling openstaat',
+        message: proj.paymentUrl ? 'Klik hier om je betaling af te ronden' : 'Betaallink wordt voorbereid...',
+        date: new Date().toISOString()
+      })
+    }
+    
+    // Payment ready notification - show prominently when payment URL is available
+    if (proj.paymentUrl && proj.paymentStatus !== 'paid' && proj.status !== 'design_approved') {
+      notifs.push({
+        id: 'payment-ready',
+        type: 'warning',
+        title: '💳 Betaling klaargezet',
+        message: 'Er staat een betaling voor je klaar',
         date: new Date().toISOString()
       })
     }
@@ -1111,6 +1148,29 @@ export default function ProjectStatusNew() {
           </motion.div>
         )}
 
+        {/* Design Feedback Component - For structured feedback during design phase */}
+        {project.status === 'design' && project.designPreviewUrl && (
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.24 }}
+          >
+            <DesignFeedback
+              projectId={project.projectId}
+              serviceType={project.serviceType || 'website'}
+              designPreviewUrl={project.designPreviewUrl}
+              onSubmit={async (_feedbackItems, approved) => {
+                if (approved) {
+                  await approveDesign()
+                } else {
+                  // Refresh project data to show updated feedback
+                  fetchProject(project.projectId)
+                }
+              }}
+            />
+          </motion.div>
+        )}
+
         {/* Live website link */}
         {project.status === 'live' && project.liveUrl && (
           <motion.a
@@ -1207,34 +1267,71 @@ export default function ProjectStatusNew() {
           <ArrowRight className="w-5 h-5 text-green-400 group-hover:translate-x-1 transition" />
         </motion.button>
 
-        {/* Payment Section */}
-        {project.status === 'design_approved' && project.paymentStatus !== 'paid' && (
+        {/* Payment Section - Show when payment is pending or awaiting */}
+        {project.paymentUrl && project.paymentStatus !== 'paid' && (
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.25 }}
-            className="p-5 rounded-xl bg-indigo-500/10 border border-indigo-500/30"
+            className="p-5 rounded-xl bg-gradient-to-br from-indigo-500/20 to-purple-500/10 border-2 border-indigo-500/50"
+          >
+            <div className="flex items-start gap-4">
+              <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-indigo-500 to-purple-500 flex items-center justify-center shadow-lg shadow-indigo-500/30">
+                <CreditCard className="w-7 h-7 text-white" />
+              </div>
+              <div className="flex-1">
+                <div className="flex items-center gap-2 mb-1">
+                  <h3 className="font-bold text-lg text-white">Betaling klaargezet</h3>
+                  <span className="px-2 py-0.5 bg-amber-500/20 text-amber-400 text-xs font-medium rounded-full animate-pulse">
+                    Actie nodig
+                  </span>
+                </div>
+                <p className="text-sm text-gray-400 mb-4">
+                  {project.status === 'design_approved' 
+                    ? 'Je design is goedgekeurd! Rond de betaling af om door te gaan naar development.'
+                    : 'Er staat een betaling voor je klaar. Rond deze af om verder te gaan.'}
+                </p>
+                
+                {/* Payment details */}
+                {project.package && (
+                  <div className="bg-gray-800/50 rounded-lg p-3 mb-4">
+                    <div className="flex items-center justify-between text-sm">
+                      <span className="text-gray-400">Pakket:</span>
+                      <span className="text-white font-medium capitalize">{project.package}</span>
+                    </div>
+                  </div>
+                )}
+                
+                <a
+                  href={project.paymentUrl}
+                  className="inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-indigo-500 to-purple-500 text-white font-semibold rounded-xl hover:from-indigo-400 hover:to-purple-400 transition shadow-lg shadow-indigo-500/25 group"
+                >
+                  <CreditCard className="w-5 h-5" />
+                  Nu betalen
+                  <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition" />
+                </a>
+              </div>
+            </div>
+          </motion.div>
+        )}
+
+        {/* Awaiting Payment Link - Show when design approved but no link yet */}
+        {project.status === 'design_approved' && !project.paymentUrl && project.paymentStatus !== 'paid' && (
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.25 }}
+            className="p-5 rounded-xl bg-gray-800/50 border border-gray-700"
           >
             <div className="flex items-start gap-4">
               <div className="w-12 h-12 rounded-xl bg-indigo-500/20 flex items-center justify-center">
-                <CreditCard className="w-6 h-6 text-indigo-400" />
+                <Clock className="w-6 h-6 text-indigo-400" />
               </div>
               <div className="flex-1">
-                <h3 className="font-semibold text-white mb-1">Betaling afronden</h3>
-                <p className="text-sm text-gray-400 mb-4">
-                  Je design is goedgekeurd! Rond de betaling af zodat we je website kunnen bouwen.
+                <h3 className="font-semibold text-white mb-1">Betaallink wordt voorbereid</h3>
+                <p className="text-sm text-gray-400">
+                  Je design is goedgekeurd! We sturen je binnenkort een betaallink om door te gaan.
                 </p>
-                {project.paymentUrl ? (
-                  <a
-                    href={project.paymentUrl}
-                    className="inline-flex items-center gap-2 px-4 py-2.5 bg-gradient-to-r from-indigo-500 to-purple-500 text-white font-medium rounded-lg hover:from-indigo-400 hover:to-purple-400 transition"
-                  >
-                    <CreditCard className="w-4 h-4" />
-                    Naar betaling
-                  </a>
-                ) : (
-                  <p className="text-sm text-indigo-400">Betaallink wordt binnenkort verzonden</p>
-                )}
               </div>
             </div>
           </motion.div>

@@ -1,5 +1,6 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node'
 import { getProject, setProject } from './lib/database.js'
+import { sendOnboardingCompleteEmail } from './lib/smtp.js'
 
 /**
  * API Endpoint: /api/client-onboarding-submit
@@ -67,8 +68,19 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
     await setProject(updatedProject)
 
-    // TODO: Send notification email to developer
-    // TODO: Send confirmation email to client
+    // Send confirmation email to client with dashboard link
+    try {
+      await sendOnboardingCompleteEmail({
+        name: formData?.contactName || project.customer?.name || 'Klant',
+        email: formData?.contactEmail || project.customer?.email,
+        projectId: projectId as string,
+        businessName: formData?.businessName || project.customer?.companyName
+      })
+      console.log(`Onboarding complete email sent to ${formData?.contactEmail || project.customer?.email}`)
+    } catch (emailError) {
+      console.error('Failed to send onboarding complete email:', emailError)
+      // Don't fail the request if email fails
+    }
 
     return res.status(200).json({
       success: true,

@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback, useRef } from 'react'
-import { useParams, useSearchParams, Link } from 'react-router-dom'
+import { useParams, useSearchParams, Link, useNavigate } from 'react-router-dom'
 import { motion, AnimatePresence } from 'framer-motion'
 import { ClientOnboardingSkeleton } from '../components/LoadingSkeletons'
 import {
@@ -538,6 +538,7 @@ function ChatSection({
 export default function ClientOnboarding() {
   const { projectId } = useParams<{ projectId: string }>()
   const [searchParams] = useSearchParams()
+  const navigate = useNavigate()
   
   // State
   const [serviceType, setServiceType] = useState<ServiceType>('website')
@@ -877,8 +878,8 @@ export default function ClientOnboarding() {
       })
       
       if (response.ok) {
-        setSubmitted(true)
-        setCanEdit(false)
+        // Navigate back to dashboard with success message
+        navigate(`/status/${projectId}?onboarding=complete`)
       } else {
         throw new Error('Failed to submit')
       }
@@ -1188,84 +1189,85 @@ export default function ClientOnboarding() {
   const ServiceIcon = serviceConfig.icon
 
   return (
-    <div className="min-h-screen bg-gray-900">
-      {/* Simplified Header with back link */}
-      <header className="bg-gray-800 border-b border-gray-700 sticky top-0 z-50">
-        <div className="max-w-3xl mx-auto px-4">
-          <div className="flex items-center justify-between h-14">
-            {/* Back to dashboard */}
-            <Link 
-              to={projectId ? `/status/${projectId}` : '/'}
-              className="flex items-center gap-2 text-gray-400 hover:text-white transition-colors"
-            >
-              <ArrowLeft className="w-4 h-4" />
-              <span className="text-sm">Terug naar dashboard</span>
-            </Link>
-            
-            <div className="flex items-center gap-3">
-              {/* Auto-save indicator */}
-              {autoSaveStatus === 'saving' && (
-                <div className="flex items-center gap-1.5 text-gray-500 text-xs">
-                  <Loader2 className="w-3 h-3 animate-spin" />
-                  <span>Opslaan...</span>
-                </div>
-              )}
-              {autoSaveStatus === 'saved' && (
-                <div className="flex items-center gap-1.5 text-green-500 text-xs">
-                  <Check className="w-3 h-3" />
-                  <span>Opgeslagen</span>
-                </div>
-              )}
-              
-              {/* Edit status */}
-              {!canEdit && (
-                <div className="flex items-center gap-1.5 text-amber-500 text-xs bg-amber-500/10 px-2 py-1 rounded">
-                  <Lock className="w-3 h-3" />
-                  <span>Alleen lezen</span>
-                </div>
-              )}
-            </div>
-          </div>
-        </div>
-      </header>
-
-      {/* Simple title bar */}
-      <div className="bg-gray-800/50 border-b border-gray-700/50 py-4">
-        <div className="max-w-3xl mx-auto px-4">
+    <div className="min-h-screen bg-gray-950">
+      {/* Header - matching dashboard style */}
+      <header className="sticky top-0 z-50 border-b border-white/10 bg-gray-950/80 backdrop-blur-xl">
+        <div className="max-w-3xl mx-auto px-4 py-3 flex items-center justify-between">
+          <Link 
+            to={projectId ? `/status/${projectId}` : '/'}
+            className="flex items-center gap-2 text-gray-400 hover:text-white transition-colors group"
+          >
+            <ArrowLeft className="w-4 h-4 group-hover:-translate-x-1 transition-transform" />
+            <span className="text-sm font-medium">Dashboard</span>
+          </Link>
+          
           <div className="flex items-center gap-3">
-            <div className={`w-10 h-10 rounded-xl bg-gradient-to-br ${serviceConfig.gradient} flex items-center justify-center shadow-lg`}>
-              <ServiceIcon className="w-5 h-5 text-white" />
-            </div>
-            <div>
-              <h1 className="text-lg font-semibold text-white">{serviceConfig.name} Onboarding</h1>
-              <p className="text-xs text-gray-500">Vul alle informatie in voor je project</p>
-            </div>
+            {/* Auto-save indicator */}
+            {autoSaveStatus === 'saving' && (
+              <div className="flex items-center gap-1.5 text-gray-500 text-xs">
+                <Loader2 className="w-3 h-3 animate-spin" />
+                <span>Opslaan...</span>
+              </div>
+            )}
+            {autoSaveStatus === 'saved' && (
+              <div className="flex items-center gap-1.5 text-emerald-500 text-xs">
+                <Check className="w-3 h-3" />
+                <span>Opgeslagen</span>
+              </div>
+            )}
+            
+            {/* Edit status */}
+            {!canEdit && (
+              <div className="flex items-center gap-1.5 text-amber-500 text-xs bg-amber-500/10 px-2 py-1 rounded">
+                <Lock className="w-3 h-3" />
+                <span>Alleen lezen</span>
+              </div>
+            )}
+            
             {projectId && (
-              <span className="ml-auto text-xs text-gray-600 bg-gray-800 px-2 py-1 rounded font-mono">
+              <span className="px-2.5 py-1 bg-gray-800 rounded-lg text-xs font-mono text-gray-400">
                 {projectId}
               </span>
             )}
           </div>
         </div>
-      </div>
+      </header>
 
-      {/* Main content - Single column, mobile-first */}
-      <main className="max-w-3xl mx-auto px-4 py-6 pb-32">
-        {/* Progress bar */}
-        <div className="mb-6">
-          <div className="flex items-center justify-between text-sm text-gray-500 mb-2">
-            <span>Stap {currentStep} van {totalSteps}</span>
-            <span>{Math.round((currentStep / totalSteps) * 100)}%</span>
+      {/* Hero section with service info */}
+      <div className={`bg-gradient-to-br ${serviceConfig.gradient} relative overflow-hidden`}>
+        <div className="absolute inset-0 bg-black/20" />
+        <div className="absolute top-0 right-0 w-64 h-64 bg-white/10 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2" />
+        
+        <div className="relative max-w-3xl mx-auto px-4 py-6">
+          <div className="flex items-center gap-4">
+            <div className="w-14 h-14 rounded-2xl bg-white/20 backdrop-blur-sm flex items-center justify-center shadow-xl">
+              <ServiceIcon className="w-7 h-7 text-white" />
+            </div>
+            <div>
+              <h1 className="text-xl font-bold text-white">{serviceConfig.name} Onboarding</h1>
+              <p className="text-white/80 text-sm">Vul alle informatie in voor je project</p>
+            </div>
           </div>
-          <div className="h-1.5 bg-gray-800 rounded-full overflow-hidden">
-            <motion.div
-              initial={{ width: 0 }}
-              animate={{ width: `${(currentStep / totalSteps) * 100}%` }}
-              className={`h-full bg-gradient-to-r ${serviceConfig.gradient} rounded-full`}
-            />
+          
+          {/* Progress bar in hero */}
+          <div className="mt-5">
+            <div className="flex items-center justify-between text-white/80 text-sm mb-2">
+              <span className="font-medium">Stap {currentStep} van {totalSteps}</span>
+              <span>{Math.round((currentStep / totalSteps) * 100)}%</span>
+            </div>
+            <div className="h-2 bg-white/20 rounded-full overflow-hidden backdrop-blur-sm">
+              <motion.div
+                initial={{ width: 0 }}
+                animate={{ width: `${(currentStep / totalSteps) * 100}%` }}
+                className="h-full bg-white rounded-full shadow-lg"
+              />
+            </div>
           </div>
         </div>
+      </div>
 
+      {/* Main content */}
+      <main className="max-w-3xl mx-auto px-4 py-6 pb-32">
         {/* Step tabs - horizontal scroll on mobile */}
         <div className="flex gap-1.5 mb-6 overflow-x-auto pb-2 -mx-4 px-4 scrollbar-hide">
           {steps.map((step, index) => {
@@ -1281,10 +1283,10 @@ export default function ClientOnboarding() {
                 className={`
                   flex items-center gap-1.5 px-3 py-2 rounded-lg text-sm font-medium transition-all whitespace-nowrap flex-shrink-0
                   ${isActive 
-                    ? 'bg-white text-gray-900' 
+                    ? 'bg-white text-gray-900 shadow-lg' 
                     : isCompleted
-                      ? 'bg-green-500/20 text-green-400'
-                      : 'bg-gray-800 text-gray-500 hover:bg-gray-700'}
+                      ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30'
+                      : 'bg-gray-800/50 text-gray-500 hover:bg-gray-800 border border-gray-700/50'}
                   ${canEdit ? 'cursor-pointer' : 'cursor-default'}
                 `}
               >
@@ -1300,12 +1302,13 @@ export default function ClientOnboarding() {
         </div>
 
         {/* Current step title */}
-        <div className="mb-6">
-          <h2 className="text-2xl font-bold text-white">{currentStepConfig?.title}</h2>
+        <div className="mb-5">
+          <h2 className="text-xl font-bold text-white">{currentStepConfig?.title}</h2>
+          <p className="text-gray-500 text-sm mt-1">Vul de onderstaande velden in</p>
         </div>
 
         {/* Form content */}
-        <div className="bg-gray-800 rounded-2xl border border-gray-700 overflow-hidden">
+        <div className="bg-gray-800/50 rounded-2xl border border-gray-700/50 overflow-hidden backdrop-blur-sm">
           <AnimatePresence mode="wait">
             <motion.div
               key={currentStep}
@@ -1406,13 +1409,13 @@ export default function ClientOnboarding() {
         </div>
       </main>
 
-      {/* Fixed bottom navigation */}
-      <div className="fixed bottom-0 left-0 right-0 bg-gray-900/95 backdrop-blur border-t border-gray-800 p-4 z-40">
+      {/* Fixed bottom navigation - improved styling */}
+      <div className="fixed bottom-0 left-0 right-0 bg-gray-950/95 backdrop-blur-xl border-t border-white/10 p-4 z-40">
         <div className="max-w-3xl mx-auto flex items-center justify-between gap-4">
           <button
             onClick={prevStep}
             disabled={currentStep === 1}
-            className="flex items-center gap-2 px-4 py-3 text-gray-400 hover:text-white disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
+            className="flex items-center gap-2 px-4 py-3 text-gray-400 hover:text-white disabled:opacity-30 disabled:cursor-not-allowed transition-colors rounded-xl hover:bg-gray-800"
           >
             <ChevronLeft className="w-5 h-5" />
             <span className="hidden sm:inline">Vorige</span>
@@ -1422,7 +1425,7 @@ export default function ClientOnboarding() {
             <button
               onClick={submitOnboarding}
               disabled={saving || !canEdit || !!emailInUseError}
-              className={`flex-1 sm:flex-none flex items-center justify-center gap-2 px-8 py-3 bg-gradient-to-r ${serviceConfig.gradient} text-white rounded-xl font-semibold hover:shadow-lg hover:shadow-primary-500/25 transition-all disabled:opacity-50`}
+              className={`flex-1 sm:flex-none flex items-center justify-center gap-2 px-8 py-3.5 bg-gradient-to-r ${serviceConfig.gradient} text-white rounded-xl font-semibold shadow-lg hover:shadow-xl transition-all disabled:opacity-50`}
             >
               {saving ? <Loader2 className="w-5 h-5 animate-spin" /> : <CheckCircle2 className="w-5 h-5" />}
               Indienen
@@ -1431,7 +1434,7 @@ export default function ClientOnboarding() {
             <button
               onClick={nextStep}
               disabled={!!emailInUseError}
-              className={`flex-1 sm:flex-none flex items-center justify-center gap-2 px-8 py-3 bg-gradient-to-r ${serviceConfig.gradient} text-white rounded-xl font-semibold hover:shadow-lg transition-all disabled:opacity-50`}
+              className={`flex-1 sm:flex-none flex items-center justify-center gap-2 px-8 py-3.5 bg-gradient-to-r ${serviceConfig.gradient} text-white rounded-xl font-semibold shadow-lg hover:shadow-xl transition-all disabled:opacity-50`}
             >
               Volgende
               <ChevronRight className="w-5 h-5" />
