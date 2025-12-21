@@ -45,6 +45,66 @@ export interface FeedbackItem {
   status: 'pending' | 'in_progress' | 'completed'
 }
 
+// ===========================================
+// LOGO PROJECT TYPES
+// ===========================================
+
+export type LogoPhase = 'onboarding' | 'concepts' | 'revision' | 'final' | 'delivered'
+
+export interface LogoConcept {
+  id: string
+  name: string                    // "Concept A", "Concept B", etc.
+  description?: string            // Designer's notes about this concept
+  previewUrl: string              // Image URL for preview
+  createdAt: string
+  isSelected?: boolean            // Client selected this one
+  selectedAt?: string
+}
+
+export interface LogoRevision {
+  id: string
+  round: number                   // 1, 2, 3
+  conceptId: string               // Which concept this revision is for
+  feedback: string                // Client feedback
+  feedbackAt: string
+  revisedPreviewUrl?: string      // Updated preview after revision
+  revisedAt?: string
+  status: 'pending' | 'in_progress' | 'completed'
+}
+
+export interface LogoDeliverable {
+  id: string
+  name: string                    // "Logo Primary", "Logo Icon", etc.
+  format: string                  // "PNG", "SVG", "PDF", etc.
+  downloadUrl: string
+  size?: string                   // "1024x1024", "Vector", etc.
+  variant?: 'primary' | 'secondary' | 'icon' | 'dark' | 'light' | 'monochrome'
+}
+
+export interface LogoProject {
+  // Phase tracking
+  logoPhase: LogoPhase
+  
+  // Concepts phase
+  concepts?: LogoConcept[]
+  selectedConceptId?: string
+  conceptSelectedAt?: string
+  
+  // Revision tracking
+  revisions?: LogoRevision[]
+  currentRevisionRound?: number
+  maxRevisionRounds: number       // Based on package: 2, 3, or 5
+  
+  // Final deliverables
+  deliverables?: LogoDeliverable[]
+  finalApproved?: boolean
+  finalApprovedAt?: string
+  
+  // Downloads
+  downloadedAt?: string
+  allFilesDownloaded?: boolean
+}
+
 export interface ProjectTask {
   id: string
   title: string

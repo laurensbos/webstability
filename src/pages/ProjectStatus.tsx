@@ -38,7 +38,8 @@ import {
 import Logo from '../components/Logo'
 import DesignFeedback from '../components/DesignFeedback'
 import LiveApprovalSection from '../components/LiveApprovalSection'
-import type { Project, ProjectPhase, ProjectMessage, ChangeRequest } from '../types/project'
+import LogoProjectSection from '../components/LogoProjectSection'
+import type { Project, ProjectPhase, ProjectMessage, ChangeRequest, LogoProject, LogoDeliverable } from '../types/project'
 import { getProgressPercentage } from '../types/project'
 
 // WhatsApp number for support
@@ -290,6 +291,9 @@ export default function ProjectStatusNew() {
   const [approvingDesign, setApprovingDesign] = useState(false)
   const [showApprovalConfirm, setShowApprovalConfirm] = useState(false)
   
+  // Logo project data
+  const [logoData, setLogoData] = useState<LogoProject | null>(null)
+  
   // Review approval handlers
   const handleReviewApprove = async () => {
     if (!projectId || !project) return
@@ -356,6 +360,76 @@ export default function ProjectStatusNew() {
       console.error('Failed to submit change request:', err)
     }
   }
+
+  // Logo project handlers
+  const fetchLogoData = async (id: string) => {
+    try {
+      const response = await fetch(`/api/project/${id}/logo`)
+      if (response.ok) {
+        const data = await response.json()
+        setLogoData(data.logoData)
+      }
+    } catch (err) {
+      console.error('Failed to fetch logo data:', err)
+    }
+  }
+
+  const handleLogoSelectConcept = async (conceptId: string) => {
+    if (!projectId) return
+    try {
+      await fetch(`/api/project/${projectId}/logo`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ action: 'select_concept', conceptId })
+      })
+      fetchLogoData(projectId)
+    } catch (err) {
+      console.error('Failed to select concept:', err)
+    }
+  }
+
+  const handleLogoSubmitFeedback = async (revision: { conceptId: string; feedback: string; round: number }) => {
+    if (!projectId) return
+    try {
+      await fetch(`/api/project/${projectId}/logo`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ action: 'submit_feedback', ...revision })
+      })
+      fetchLogoData(projectId)
+    } catch (err) {
+      console.error('Failed to submit feedback:', err)
+    }
+  }
+
+  const handleLogoApproveFinal = async () => {
+    if (!projectId) return
+    try {
+      await fetch(`/api/project/${projectId}/logo`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ action: 'approve_final' })
+      })
+      fetchLogoData(projectId)
+      fetchProject(projectId)
+    } catch (err) {
+      console.error('Failed to approve final:', err)
+    }
+  }
+
+  const handleLogoDownloadFile = async (deliverable: LogoDeliverable) => {
+    // Open download URL in new tab
+    window.open(deliverable.downloadUrl, '_blank')
+  }
+
+  const handleLogoDownloadAll = async () => {
+    if (!projectId || !logoData?.deliverables) return
+    // Create a zip download URL or open Drive folder
+    const driveUrl = project?.googleDriveUrl
+    if (driveUrl) {
+      window.open(driveUrl, '_blank')
+    }
+  }
   
   const phaseColors = project ? getPhaseColors(project.status) : getPhaseColors('onboarding')
   
@@ -396,6 +470,14 @@ export default function ProjectStatusNew() {
     }, 10000)
     return () => clearInterval(interval)
   }, [isVerified, projectId])
+
+  // Fetch logo data for logo projects
+  useEffect(() => {
+    if (!isVerified || !projectId || !project) return
+    if (project.serviceType === 'logo') {
+      fetchLogoData(projectId)
+    }
+  }, [isVerified, projectId, project?.serviceType])
 
   // Check for onboarding completion redirect
   useEffect(() => {
@@ -1259,6 +1341,25 @@ export default function ProjectStatusNew() {
               onApprove={handleReviewApprove}
               onFeedback={handleReviewFeedback}
               onRequestChange={handleChangeRequest}
+            />
+          </motion.div>
+        )}
+
+        {/* Logo Project Section - For logo design projects */}
+        {project.serviceType === 'logo' && logoData && (
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.24 }}
+          >
+            <LogoProjectSection
+              logoData={logoData}
+              packageType={typeof project.package === 'string' ? project.package : 'professional'}
+              onSelectConcept={handleLogoSelectConcept}
+              onSubmitFeedback={handleLogoSubmitFeedback}
+              onApproveFinal={handleLogoApproveFinal}
+              onDownloadFile={handleLogoDownloadFile}
+              onDownloadAll={handleLogoDownloadAll}
             />
           </motion.div>
         )}
