@@ -400,13 +400,16 @@ export default function ProjectStatus() {
         setRequiresEmailVerification(true)
         setMaskedEmail(data.email || '')
         setVerifyError(data.message || 'Je e-mailadres is nog niet geverifieerd.')
+        setLoading(false)
       } else {
         setVerifyError(data.message || 'Onjuist wachtwoord.')
         setIsVerified(false)
+        setLoading(false)
       }
     } catch (err) {
       console.error('Verify error:', err)
       setVerifyError('Er ging iets mis. Probeer het opnieuw.')
+      setLoading(false)
     } finally {
       setVerifyLoading(false)
     }

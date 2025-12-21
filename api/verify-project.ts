@@ -94,7 +94,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       console.log(`[verify-project] Project not found: ${normalizedId}`)
       return res.status(401).json({ 
         success: false, 
-        message: 'Er is geen project gevonden met dit e-mailadres. Controleer je gegevens of neem contact met ons op.'
+        message: 'Project niet gevonden. Controleer je gegevens of neem contact met ons op.'
       })
     }
     
