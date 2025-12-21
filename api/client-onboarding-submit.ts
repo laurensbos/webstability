@@ -6,7 +6,7 @@ import { sendDeveloperNotificationEmail, isSmtpConfigured } from './lib/smtp.js'
  * API Endpoint: /api/client-onboarding-submit
  * 
  * Handles final submission of client onboarding
- * When client gives approval, project moves to 'design' phase
+ * Project stays in 'onboarding' phase - client must click "Start Design" after uploading to Drive
  * Developer receives email notification
  */
 
@@ -46,9 +46,8 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       })
     }
 
-    // Determine next status based on approval
-    // If client approved for design, move directly to 'design' phase
-    const nextStatus = approvedForDesign ? 'design' : 'onboarding'
+    // Project stays in onboarding - client must click "Start Design" after uploading files to Drive
+    const nextStatus = 'onboarding'
 
     // Update project with final data
     const updatedProject = {
@@ -77,8 +76,8 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     // Note: Onboarding complete email is sent when client clicks "Start Design" in the dashboard
     // This is handled in /api/project/[id]/ready-for-design
 
-    // If approved for design, notify the developer
-    if (approvedForDesign && isSmtpConfigured()) {
+    // Notify developer that onboarding form is completed (but not yet ready for design)
+    if (isSmtpConfigured()) {
       try {
         await sendDeveloperNotificationEmail({
           type: 'new_design_request',
@@ -86,7 +85,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
           businessName: formData?.businessName || project.customer?.companyName || 'Nieuw project',
           customerName: formData?.contactName || project.customer?.name || 'Klant',
           customerEmail: formData?.contactEmail || project.customer?.email,
-          message: `${formData?.contactName || 'Een klant'} heeft de onboarding voltooid en akkoord gegeven. Het project staat nu klaar in de design fase.`
+          message: `${formData?.contactName || 'Een klant'} heeft de onboarding vragen ingevuld. Wacht op bevestiging dat bestanden zijn geüpload.`
         })
         console.log('Developer notification email sent')
       } catch (emailError) {
@@ -97,12 +96,10 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     return res.status(200).json({
       success: true,
       projectId: projectId,
-      message: approvedForDesign 
-        ? 'Akkoord gegeven! Je project gaat nu naar de design fase.'
-        : 'Onboarding succesvol ingediend!',
+      message: 'Onboarding succesvol ingediend! Upload nu je bestanden naar Google Drive.',
       nextPhase: nextStatus,
       canEdit: false,
-      movedToDesign: approvedForDesign
+      onboardingComplete: true
     })
   } catch (error) {
     console.error('Submit onboarding error:', error)
