@@ -231,10 +231,10 @@ export const PHASE_CHECKLIST: Record<ProjectPhase, {
     title: 'Wachten op klant',
     tasks: [
       'Klant moet onboarding formulier invullen',
-      'Content en logo verzamelen',
-      'Klant betaalt eerste factuur',
+      'Content en logo verzamelen in Google Drive',
+      'Controleer of alle gegevens compleet zijn',
     ],
-    nextAction: 'Wacht tot alle gegevens binnen zijn → Start design',
+    nextAction: 'Alle gegevens binnen → Start design',
   },
   design: {
     title: 'Ontwerp maken',
