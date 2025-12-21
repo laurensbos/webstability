@@ -500,12 +500,15 @@ export default function ProjectStatus() {
 
   const fetchProject = async (id: string) => {
     try {
-      const response = await fetch(`/api/project/${id}`)
+      // Use query parameter format which works better with Vercel routing
+      const response = await fetch(`/api/projects?id=${encodeURIComponent(id)}`)
       if (response.ok) {
         const data = await response.json()
         console.log('Project data received:', data)
-        setProject(data)
-        checkUploadStatus(data)
+        // API returns { project: {...} } format
+        const projectData = data.project || data
+        setProject(projectData)
+        checkUploadStatus(projectData)
         setError('')
       } else {
         const errorData = await response.json().catch(() => ({}))
