@@ -72,6 +72,10 @@ export default function ProjectDetailModal({
   const serviceInfo = project.serviceType ? SERVICE_CONFIG[project.serviceType] : null
   const unreadMessages = project.messages.filter(m => !m.read && m.from === 'client').length
   const pendingFeedback = project.feedbackHistory?.filter(f => f.status === 'pending') || []
+  
+  // Phase navigation
+  const phases: ProjectPhase[] = ['onboarding', 'design', 'design_approved', 'development', 'review', 'live']
+  const currentPhaseIndex = phases.indexOf(project.phase)
 
   // Helper to safely get onboarding data values
   const getData = (key: string): string | undefined => {
@@ -216,9 +220,6 @@ export default function ProjectDetailModal({
       setDeleteLoading(false)
     }
   }
-
-  const phases: ProjectPhase[] = ['onboarding', 'design', 'design_approved', 'development', 'review', 'live']
-  const currentPhaseIndex = phases.indexOf(project.phase)
 
   return (
     <motion.div
