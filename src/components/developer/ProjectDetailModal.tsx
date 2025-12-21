@@ -11,6 +11,7 @@ import {
   ExternalLink, 
   Copy, 
   Check,
+  CheckCircle2,
   ChevronRight,
   MessageSquare,
   CreditCard,
