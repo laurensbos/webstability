@@ -3,7 +3,7 @@
  * Shared types for all developer dashboard components
  */
 
-export type DashboardView = 'projects' | 'messages' | 'payments'
+export type DashboardView = 'projects' | 'messages' | 'payments' | 'customers'
 
 export type ProjectPhase = 'onboarding' | 'design' | 'design_approved' | 'development' | 'review' | 'live'
 export type PaymentStatus = 'pending' | 'awaiting_payment' | 'paid' | 'failed' | 'refunded'
