@@ -271,7 +271,7 @@ function ConceptsPhase({
           Concepten worden gemaakt
         </h3>
         <p className="text-gray-500 dark:text-gray-400 max-w-md mx-auto">
-          Onze designer werkt aan je logo concepten. Je ontvangt een notificatie zodra ze klaar zijn om te bekijken.
+          Onze designers werken aan je logo concepten. Je ontvangt een notificatie zodra ze klaar zijn om te bekijken.
         </p>
         <div className="mt-6 flex items-center justify-center gap-2 text-sm text-purple-600 dark:text-purple-400">
           <Clock className="w-4 h-4" />
@@ -448,7 +448,7 @@ function RevisionPhase({
             <Loader2 className="w-5 h-5 text-amber-500 animate-spin" />
             <div>
               <p className="font-medium text-amber-900 dark:text-amber-100">
-                Designer werkt aan je aanpassingen
+                Designers werken aan je aanpassingen
               </p>
               <p className="text-sm text-amber-700 dark:text-amber-300">
                 Je ontvangt een notificatie zodra de nieuwe versie klaar is.
@@ -497,7 +497,7 @@ function RevisionPhase({
             <textarea
               value={feedback}
               onChange={(e) => setFeedback(e.target.value)}
-              placeholder="Beschrijf hier je feedback voor de designer..."
+              placeholder="Beschrijf hier je feedback voor de designers..."
               rows={4}
               className="w-full px-4 py-3 rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-white placeholder-gray-400 focus:ring-2 focus:ring-purple-500 focus:border-transparent"
             />

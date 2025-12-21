@@ -1312,7 +1312,7 @@ export default function ProjectStatusNew() {
                           <p className={`text-xs font-medium mb-1 ${
                             msg.from === 'client' ? 'text-white/70' : 'text-blue-400'
                           }`}>
-                            {msg.senderName || (msg.from === 'developer' ? 'Laurens' : project?.contactName || 'Jij')}
+                            {msg.senderName || (msg.from === 'developer' ? 'Webstability Team' : project?.contactName || 'Jij')}
                           </p>
                           <p className="text-sm">{msg.message}</p>
                           <p className={`text-xs mt-1 ${msg.from === 'client' ? 'text-white/60' : 'text-gray-500'}`}>

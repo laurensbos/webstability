@@ -62,6 +62,10 @@ export default function ProjectDetailModal({
   const [showPassword, setShowPassword] = useState(false)
   const [deleteLoading, setDeleteLoading] = useState(false)
   const [deleteError, setDeleteError] = useState('')
+  
+  // Phase checklist modal state
+  const [showPhaseChecklist, setShowPhaseChecklist] = useState(false)
+  const [checklistItems, setChecklistItems] = useState<Record<string, boolean>>({})
 
   const packageInfo = PACKAGE_CONFIG[project.package]
   const phaseInfo = PHASE_CONFIG[project.phase]
@@ -127,6 +131,29 @@ export default function ProjectDetailModal({
       phase: newPhase,
       updatedAt: new Date().toISOString()
     })
+    setShowPhaseChecklist(false)
+    setChecklistItems({})
+  }
+
+  // Open phase checklist modal before advancing
+  const handleOpenPhaseChecklist = () => {
+    const nextPhase = phases[currentPhaseIndex + 1]
+    if (!nextPhase) return
+    
+    // Reset checklist items
+    const currentChecklist = PHASE_CHECKLIST[project.phase]
+    const initialItems: Record<string, boolean> = {}
+    currentChecklist.tasks.forEach((_, index) => {
+      initialItems[`task-${index}`] = false
+    })
+    setChecklistItems(initialItems)
+    setShowPhaseChecklist(true)
+  }
+
+  // Check if all checklist items are checked
+  const allChecklistItemsChecked = () => {
+    const currentChecklist = PHASE_CHECKLIST[project.phase]
+    return currentChecklist.tasks.every((_, index) => checklistItems[`task-${index}`])
   }
 
   const handleSaveNotes = () => {
@@ -260,8 +287,8 @@ export default function ProjectDetailModal({
             {[
               { id: 'info', label: 'Info', icon: FileText },
               { id: 'onboarding', label: 'Onboarding', icon: ClipboardList },
-              { id: 'messages', label: 'Berichten', icon: MessageSquare, badge: unreadMessages },
-              { id: 'feedback', label: 'Feedback', icon: AlertCircle, badge: pendingFeedback.length },
+              { id: 'messages', label: 'Berichten', icon: MessageSquare, badge: unreadMessages > 0 ? unreadMessages : undefined },
+              { id: 'feedback', label: 'Feedback', icon: AlertCircle, badge: pendingFeedback.length > 0 ? pendingFeedback.length : undefined },
               { id: 'customer', label: 'Klant', icon: User },
             ].map(tab => (
               <button
@@ -1371,18 +1398,170 @@ export default function ProjectDetailModal({
         {project.phase !== 'live' && (
           <div className="p-4 border-t border-gray-800 bg-gray-900/50">
             <button
-              onClick={() => {
-                const nextPhase = phases[currentPhaseIndex + 1]
-                if (nextPhase) handlePhaseChange(nextPhase)
-              }}
+              onClick={handleOpenPhaseChecklist}
               disabled={currentPhaseIndex >= phases.length - 1}
               className="w-full py-3 bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-400 hover:to-teal-400 disabled:from-gray-700 disabled:to-gray-700 text-white font-medium rounded-xl transition flex items-center justify-center gap-2"
             >
+              <ListChecks className="w-4 h-4" />
               Naar volgende fase
               <ChevronRight className="w-4 h-4" />
             </button>
           </div>
         )}
+
+        {/* Phase Checklist Modal */}
+        <AnimatePresence>
+          {showPhaseChecklist && (
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              className="absolute inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4 z-50"
+              onClick={() => setShowPhaseChecklist(false)}
+            >
+              <motion.div
+                initial={{ scale: 0.9, opacity: 0 }}
+                animate={{ scale: 1, opacity: 1 }}
+                exit={{ scale: 0.9, opacity: 0 }}
+                transition={{ type: 'spring', damping: 20, stiffness: 300 }}
+                onClick={(e) => e.stopPropagation()}
+                className="bg-gradient-to-b from-gray-800 to-gray-900 rounded-2xl border border-gray-700 w-full max-w-md overflow-hidden shadow-2xl"
+              >
+                {/* Header */}
+                <div className="p-5 border-b border-gray-700 bg-gradient-to-r from-emerald-500/10 to-teal-500/10">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-3">
+                      <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-emerald-500 to-teal-500 flex items-center justify-center">
+                        <ListChecks className="w-5 h-5 text-white" />
+                      </div>
+                      <div>
+                        <h3 className="text-lg font-semibold text-white">
+                          Naar volgende fase
+                        </h3>
+                        <p className="text-sm text-gray-400">
+                          {PHASE_CONFIG[project.phase].label} → {phases[currentPhaseIndex + 1] && PHASE_CONFIG[phases[currentPhaseIndex + 1]].label}
+                        </p>
+                      </div>
+                    </div>
+                    <button
+                      onClick={() => setShowPhaseChecklist(false)}
+                      className="p-2 hover:bg-gray-700 rounded-lg transition"
+                    >
+                      <X className="w-5 h-5 text-gray-400" />
+                    </button>
+                  </div>
+                </div>
+
+                {/* Checklist Content */}
+                <div className="p-5 space-y-4 max-h-[60vh] overflow-y-auto">
+                  <div className="bg-amber-500/10 border border-amber-500/30 rounded-xl p-4 flex items-start gap-3">
+                    <AlertCircle className="w-5 h-5 text-amber-400 shrink-0 mt-0.5" />
+                    <div>
+                      <p className="text-sm text-amber-200 font-medium">
+                        {PHASE_CHECKLIST[project.phase].title}
+                      </p>
+                      <p className="text-xs text-amber-300/70 mt-1">
+                        {PHASE_CHECKLIST[project.phase].nextAction}
+                      </p>
+                    </div>
+                  </div>
+
+                  <div className="space-y-3">
+                    <p className="text-sm font-medium text-gray-300">Controleer de volgende punten:</p>
+                    {PHASE_CHECKLIST[project.phase].tasks.map((task, index) => (
+                      <motion.label
+                        key={index}
+                        initial={{ opacity: 0, x: -10 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        transition={{ delay: index * 0.05 }}
+                        className={`flex items-start gap-3 p-3 rounded-xl border cursor-pointer transition-all ${
+                          checklistItems[`task-${index}`]
+                            ? 'bg-emerald-500/10 border-emerald-500/30'
+                            : 'bg-gray-800/50 border-gray-700 hover:border-gray-600'
+                        }`}
+                      >
+                        <div className="relative shrink-0 mt-0.5">
+                          <input
+                            type="checkbox"
+                            checked={checklistItems[`task-${index}`] || false}
+                            onChange={(e) => setChecklistItems(prev => ({
+                              ...prev,
+                              [`task-${index}`]: e.target.checked
+                            }))}
+                            className="sr-only"
+                          />
+                          <div className={`w-5 h-5 rounded-md border-2 flex items-center justify-center transition-all ${
+                            checklistItems[`task-${index}`]
+                              ? 'bg-emerald-500 border-emerald-500'
+                              : 'border-gray-500 hover:border-gray-400'
+                          }`}>
+                            <AnimatePresence>
+                              {checklistItems[`task-${index}`] && (
+                                <motion.div
+                                  initial={{ scale: 0 }}
+                                  animate={{ scale: 1 }}
+                                  exit={{ scale: 0 }}
+                                >
+                                  <Check className="w-3 h-3 text-white" />
+                                </motion.div>
+                              )}
+                            </AnimatePresence>
+                          </div>
+                        </div>
+                        <span className={`text-sm transition-colors ${
+                          checklistItems[`task-${index}`] ? 'text-emerald-300' : 'text-gray-300'
+                        }`}>
+                          {task}
+                        </span>
+                      </motion.label>
+                    ))}
+                  </div>
+
+                  {/* Progress indicator */}
+                  <div className="mt-4">
+                    <div className="flex items-center justify-between text-xs text-gray-400 mb-2">
+                      <span>Voortgang</span>
+                      <span>
+                        {Object.values(checklistItems).filter(Boolean).length} / {PHASE_CHECKLIST[project.phase].tasks.length}
+                      </span>
+                    </div>
+                    <div className="h-2 bg-gray-700 rounded-full overflow-hidden">
+                      <motion.div
+                        className="h-full bg-gradient-to-r from-emerald-500 to-teal-500"
+                        initial={{ width: 0 }}
+                        animate={{ 
+                          width: `${(Object.values(checklistItems).filter(Boolean).length / PHASE_CHECKLIST[project.phase].tasks.length) * 100}%` 
+                        }}
+                        transition={{ type: 'spring', damping: 15 }}
+                      />
+                    </div>
+                  </div>
+                </div>
+
+                {/* Footer */}
+                <div className="p-5 border-t border-gray-700 bg-gray-900/50 flex gap-3">
+                  <button
+                    onClick={() => setShowPhaseChecklist(false)}
+                    className="flex-1 py-2.5 px-4 bg-gray-700 hover:bg-gray-600 text-white rounded-xl font-medium transition"
+                  >
+                    Annuleren
+                  </button>
+                  <button
+                    onClick={() => {
+                      const nextPhase = phases[currentPhaseIndex + 1]
+                      if (nextPhase) handlePhaseChange(nextPhase)
+                    }}
+                    disabled={!allChecklistItemsChecked()}
+                    className="flex-1 py-2.5 px-4 bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-400 hover:to-teal-400 disabled:from-gray-600 disabled:to-gray-600 disabled:cursor-not-allowed text-white rounded-xl font-medium transition flex items-center justify-center gap-2"
+                  >
+                    <CheckCircle2 className="w-4 h-4" />
+                    Doorgaan
+                  </button>
+                </div>
+              </motion.div>
+            </motion.div>
+          )}
+        </AnimatePresence>
       </motion.div>
     </motion.div>
   )

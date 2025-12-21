@@ -2159,7 +2159,7 @@ export function WebsiteSamenvattingStep({ data, packageId, onUpgrade, onGoToStep
           </li>
           <li className="flex items-center gap-2">
             <span className="w-1.5 h-1.5 rounded-full bg-green-500" />
-            De designer gaat aan de slag met jouw website
+            De designers gaan aan de slag met jouw website
           </li>
           <li className="flex items-center gap-2">
             <span className="w-1.5 h-1.5 rounded-full bg-green-500" />

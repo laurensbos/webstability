@@ -1582,7 +1582,7 @@ export const sendDeveloperNotificationEmail = async (data: {
   customerEmail: string
   message?: string
 }): Promise<EmailResult> => {
-  const DEVELOPER_EMAIL = process.env.DEVELOPER_EMAIL || 'laurens@webstability.nl'
+  const DEVELOPER_EMAIL = process.env.DEVELOPER_EMAIL || 'info@webstability.nl'
   const BASE_URL = process.env.SITE_URL || 'https://webstability.nl'
   const dashboardUrl = `${BASE_URL}/developer`
 
