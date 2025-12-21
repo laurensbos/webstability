@@ -2,7 +2,7 @@ import { StrictMode, lazy, Suspense } from 'react'
 import { createRoot } from 'react-dom/client'
 import './index.css'
 import App from './App'
-import { BrowserRouter, Routes, Route, Navigate, useParams } from 'react-router-dom'
+import { BrowserRouter, Routes, Route, Navigate, useParams, useSearchParams } from 'react-router-dom'
 import ScrollToTop from './components/ScrollToTop'
 import CookieConsent from './components/CookieConsent'
 import { AuthProvider } from './contexts/AuthContext'
@@ -16,12 +16,18 @@ initSentry()
 // Redirect components that preserve URL parameters
 function RedirectToOnboarding() {
   const { projectId } = useParams()
-  return <Navigate to={projectId ? `/onboarding/${projectId}` : '/onboarding'} replace />
+  const [searchParams] = useSearchParams()
+  const queryString = searchParams.toString()
+  const url = projectId ? `/onboarding/${projectId}` : '/onboarding'
+  return <Navigate to={queryString ? `${url}?${queryString}` : url} replace />
 }
 
 function RedirectToStatus() {
   const { projectId } = useParams()
-  return <Navigate to={projectId ? `/status/${projectId}` : '/status'} replace />
+  const [searchParams] = useSearchParams()
+  const queryString = searchParams.toString()
+  const url = projectId ? `/status/${projectId}` : '/status'
+  return <Navigate to={queryString ? `${url}?${queryString}` : url} replace />
 }
 
 // Lazy load pagina's voor betere performance
