@@ -9,8 +9,31 @@ import { google } from 'googleapis'
 
 // Google Drive configuration from environment variables
 const GOOGLE_SERVICE_ACCOUNT_EMAIL = process.env.GOOGLE_SERVICE_ACCOUNT_EMAIL
-const GOOGLE_PRIVATE_KEY = process.env.GOOGLE_PRIVATE_KEY?.replace(/\\n/g, '\n')
 const GOOGLE_DRIVE_PARENT_FOLDER = process.env.GOOGLE_DRIVE_PARENT_FOLDER
+
+// Process the private key to handle various formats
+function getPrivateKey(): string | undefined {
+  const rawKey = process.env.GOOGLE_PRIVATE_KEY
+  if (!rawKey) return undefined
+  
+  // Handle different escaping scenarios:
+  // 1. If stored with literal \n (common in Vercel), replace with actual newlines
+  // 2. If stored with escaped \\n, replace those too
+  // 3. If already has real newlines, keep them
+  let key = rawKey
+    .replace(/\\\\n/g, '\n')  // Handle double-escaped \\n
+    .replace(/\\n/g, '\n')     // Handle single-escaped \n
+  
+  // Ensure proper PEM format
+  if (!key.includes('-----BEGIN')) {
+    // Try to reconstruct PEM format if markers are missing
+    key = `-----BEGIN PRIVATE KEY-----\n${key}\n-----END PRIVATE KEY-----`
+  }
+  
+  return key
+}
+
+const GOOGLE_PRIVATE_KEY = getPrivateKey()
 
 // Subfolder structure for each project
 const PROJECT_SUBFOLDERS = [
@@ -86,12 +109,28 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
   // Check configuration
   if (!GOOGLE_SERVICE_ACCOUNT_EMAIL || !GOOGLE_PRIVATE_KEY || !GOOGLE_DRIVE_PARENT_FOLDER) {
-    console.error('Missing Google Drive configuration')
+    console.error('Missing Google Drive configuration:', {
+      hasEmail: !!GOOGLE_SERVICE_ACCOUNT_EMAIL,
+      hasKey: !!GOOGLE_PRIVATE_KEY,
+      hasParentFolder: !!GOOGLE_DRIVE_PARENT_FOLDER
+    })
     return res.status(500).json({ 
       success: false, 
       error: 'Google Drive niet geconfigureerd' 
     })
   }
+
+  // Debug: Log key format (first/last chars only for security)
+  const keyStart = GOOGLE_PRIVATE_KEY.substring(0, 50)
+  const keyEnd = GOOGLE_PRIVATE_KEY.substring(GOOGLE_PRIVATE_KEY.length - 30)
+  console.log('Private key format check:', {
+    startsWithBegin: GOOGLE_PRIVATE_KEY.includes('-----BEGIN'),
+    endsWithEnd: GOOGLE_PRIVATE_KEY.includes('-----END'),
+    hasNewlines: GOOGLE_PRIVATE_KEY.includes('\n'),
+    keyStart: keyStart,
+    keyEnd: keyEnd,
+    totalLength: GOOGLE_PRIVATE_KEY.length
+  })
 
   try {
     const { projectId, projectName, customerEmail } = req.body
@@ -103,16 +142,17 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       })
     }
 
-    // Initialize Google Drive API
-    const auth = new google.auth.GoogleAuth({
-      credentials: {
-        client_email: GOOGLE_SERVICE_ACCOUNT_EMAIL,
-        private_key: GOOGLE_PRIVATE_KEY
-      },
+    // Initialize Google Drive API with JWT client (more reliable)
+    const jwtClient = new google.auth.JWT({
+      email: GOOGLE_SERVICE_ACCOUNT_EMAIL,
+      key: GOOGLE_PRIVATE_KEY,
       scopes: ['https://www.googleapis.com/auth/drive']
     })
 
-    const drive = google.drive({ version: 'v3', auth })
+    // Authorize the client
+    await jwtClient.authorize()
+
+    const drive = google.drive({ version: 'v3', auth: jwtClient })
 
     // Create main project folder
     const folderName = projectName 
@@ -156,9 +196,23 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
   } catch (error) {
     console.error('Error creating Drive folder:', error)
+    
+    // Provide more specific error messages
+    const errorMessage = error instanceof Error ? error.message : 'Unknown error'
+    const isKeyError = errorMessage.includes('OSSL') || errorMessage.includes('key') || errorMessage.includes('sign')
+    
+    if (isKeyError) {
+      console.error('Private key error - check GOOGLE_PRIVATE_KEY format in Vercel environment variables')
+      console.error('The key should be the full PEM including -----BEGIN PRIVATE KEY----- and -----END PRIVATE KEY-----')
+      console.error('In Vercel, paste the key with \\n for newlines OR paste the raw multi-line key')
+    }
+    
     return res.status(500).json({
       success: false,
-      error: 'Kon geen Google Drive map aanmaken'
+      error: isKeyError 
+        ? 'Google Drive authenticatie mislukt - controleer de private key configuratie'
+        : 'Kon geen Google Drive map aanmaken',
+      details: process.env.NODE_ENV === 'development' ? errorMessage : undefined
     })
   }
 }
