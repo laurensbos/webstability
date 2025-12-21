@@ -73,6 +73,40 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
     await setProject(updatedProject)
 
+    // Create Google Drive folder if it doesn't exist yet
+    let driveLink = (updatedProject as any).googleDriveUrl || updatedProject.onboardingData?.driveFolderLink
+    if (!driveLink && process.env.GOOGLE_SERVICE_ACCOUNT_EMAIL && process.env.GOOGLE_PRIVATE_KEY && process.env.GOOGLE_DRIVE_PARENT_FOLDER) {
+      try {
+        const driveResponse = await fetch(`${process.env.SITE_URL || 'https://webstability.nl'}/api/drive/create-folder`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            projectId: projectId,
+            projectName: formData?.businessName || updatedProject.customer?.companyName || updatedProject.customer?.name || '',
+            customerEmail: formData?.contactEmail || updatedProject.customer?.email
+          })
+        })
+        
+        if (driveResponse.ok) {
+          const driveData = await driveResponse.json()
+          driveLink = driveData.folderLink
+          // Update project with Drive folder link
+          ;(updatedProject as any).googleDriveUrl = driveData.folderLink
+          updatedProject.onboardingData = {
+            ...updatedProject.onboardingData,
+            driveFolderLink: driveData.folderLink,
+            driveFolderId: driveData.folderId
+          }
+          await setProject(updatedProject)
+          console.log(`✅ Google Drive folder created for ${projectId}: ${driveData.folderLink}`)
+        } else {
+          console.warn('Google Drive folder creation failed:', await driveResponse.text())
+        }
+      } catch (driveError) {
+        console.error('Google Drive folder creation error:', driveError)
+      }
+    }
+
     // Note: Onboarding complete email is sent when client clicks "Start Design" in the dashboard
     // This is handled in /api/project/[id]/ready-for-design
 
@@ -99,7 +133,8 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       message: 'Onboarding succesvol ingediend! Upload nu je bestanden naar Google Drive.',
       nextPhase: nextStatus,
       canEdit: false,
-      onboardingComplete: true
+      onboardingComplete: true,
+      googleDriveUrl: driveLink || null
     })
   } catch (error) {
     console.error('Submit onboarding error:', error)
