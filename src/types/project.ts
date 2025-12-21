@@ -23,12 +23,16 @@ export interface ProjectMessage {
 }
 
 export interface ChangeRequest {
-  id: string
-  date: string
-  request: string
+  id?: string
+  date?: string
+  description: string
+  request?: string              // Legacy field, use description instead
   priority: 'low' | 'normal' | 'urgent'
-  status: 'pending' | 'in_progress' | 'completed'
+  category: 'text' | 'design' | 'functionality' | 'other'
+  status?: 'pending' | 'in_progress' | 'completed'
   response?: string
+  createdAt?: string
+  attachments?: string[]
 }
 
 export interface FeedbackItem {
@@ -113,6 +117,12 @@ export interface Project {
   referralDiscount?: number      // Korting in € door referral
   referralsCount?: number        // Aantal doorverwijzingen
   referralRewards?: number       // Verdiende beloningen in €
+  // Review goedkeuring
+  reviewApproved?: boolean       // Is review goedgekeurd
+  reviewApprovedAt?: string      // Wanneer goedgekeurd
+  // Change requests tracking
+  changesThisMonth?: number      // Aantal aanpassingen deze maand
+  changesResetAt?: string        // Wanneer teller reset
   // Review status
   reviewRequested?: boolean      // Is review gevraagd?
   reviewRequestedAt?: string     // Wanneer gevraagd

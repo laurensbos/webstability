@@ -609,6 +609,146 @@ export default function ProjectDetailModal({
                   </div>
                 </div>
 
+                {/* Domain & Email Status - Show if project has liveGoingData or domainInfo */}
+                {(project.domainInfo || project.emailInfo || project.liveGoingData) && (
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    {/* Domain Status */}
+                    <div className="bg-gradient-to-br from-blue-500/10 to-cyan-500/10 border border-blue-500/20 rounded-xl p-4">
+                      <h4 className="text-sm font-semibold text-blue-400 mb-3 flex items-center gap-2">
+                        <Globe className="w-4 h-4" />
+                        Domein
+                      </h4>
+                      {(() => {
+                        const domain = project.liveGoingData?.domainInfo || project.domainInfo
+                        if (!domain) return <p className="text-gray-500 text-xs">Niet ingevuld</p>
+                        
+                        const statusColors = {
+                          not_started: 'bg-gray-500/20 text-gray-400',
+                          instructions_sent: 'bg-amber-500/20 text-amber-400',
+                          pending: 'bg-amber-500/20 text-amber-400',
+                          in_progress: 'bg-blue-500/20 text-blue-400',
+                          completed: 'bg-green-500/20 text-green-400',
+                          not_needed: 'bg-gray-500/20 text-gray-400'
+                        }
+                        const statusLabels = {
+                          not_started: 'Niet gestart',
+                          instructions_sent: 'Instructies verstuurd',
+                          pending: 'In afwachting',
+                          in_progress: 'Bezig',
+                          completed: 'Voltooid',
+                          not_needed: 'Niet nodig'
+                        }
+                        
+                        return (
+                          <div className="space-y-2">
+                            <div className="bg-gray-900/50 rounded-lg p-2">
+                              <p className="text-[10px] uppercase tracking-wider text-gray-500">Status</p>
+                              <span className={`inline-block mt-1 px-2 py-0.5 rounded text-xs ${statusColors[domain.transferStatus]}`}>
+                                {statusLabels[domain.transferStatus]}
+                              </span>
+                            </div>
+                            {domain.domainName && (
+                              <div className="bg-gray-900/50 rounded-lg p-2">
+                                <p className="text-[10px] uppercase tracking-wider text-gray-500">Domein</p>
+                                <p className="text-white text-sm font-mono">{domain.domainName}</p>
+                              </div>
+                            )}
+                            {domain.registrar && (
+                              <div className="bg-gray-900/50 rounded-lg p-2">
+                                <p className="text-[10px] uppercase tracking-wider text-gray-500">Registrar</p>
+                                <p className="text-gray-300 text-sm">{domain.registrar}</p>
+                              </div>
+                            )}
+                            {domain.dnsVerified !== undefined && (
+                              <div className="flex items-center gap-2 text-xs">
+                                {domain.dnsVerified ? (
+                                  <span className="flex items-center gap-1 text-green-400">
+                                    <CheckCircle2 className="w-3 h-3" />
+                                    DNS geverifieerd
+                                  </span>
+                                ) : (
+                                  <span className="flex items-center gap-1 text-amber-400">
+                                    <Clock className="w-3 h-3" />
+                                    DNS niet geverifieerd
+                                  </span>
+                                )}
+                              </div>
+                            )}
+                          </div>
+                        )
+                      })()}
+                    </div>
+                    
+                    {/* Email Status */}
+                    <div className="bg-gradient-to-br from-purple-500/10 to-pink-500/10 border border-purple-500/20 rounded-xl p-4">
+                      <h4 className="text-sm font-semibold text-purple-400 mb-3 flex items-center gap-2">
+                        <Mail className="w-4 h-4" />
+                        Zakelijke E-mail
+                      </h4>
+                      {(() => {
+                        const email = project.liveGoingData?.emailInfo || project.emailInfo
+                        if (!email) return <p className="text-gray-500 text-xs">Niet ingevuld</p>
+                        
+                        const statusColors = {
+                          not_started: 'bg-gray-500/20 text-gray-400',
+                          pending: 'bg-amber-500/20 text-amber-400',
+                          in_progress: 'bg-blue-500/20 text-blue-400',
+                          completed: 'bg-green-500/20 text-green-400',
+                          not_needed: 'bg-gray-500/20 text-gray-400'
+                        }
+                        const statusLabels = {
+                          not_started: 'Niet gestart',
+                          pending: 'In afwachting',
+                          in_progress: 'Bezig',
+                          completed: 'Voltooid',
+                          not_needed: 'Niet nodig'
+                        }
+                        
+                        return (
+                          <div className="space-y-2">
+                            <div className="bg-gray-900/50 rounded-lg p-2">
+                              <p className="text-[10px] uppercase tracking-wider text-gray-500">Status</p>
+                              <span className={`inline-block mt-1 px-2 py-0.5 rounded text-xs ${statusColors[email.emailSetupStatus]}`}>
+                                {statusLabels[email.emailSetupStatus]}
+                              </span>
+                            </div>
+                            <div className="bg-gray-900/50 rounded-lg p-2">
+                              <p className="text-[10px] uppercase tracking-wider text-gray-500">Huidige situatie</p>
+                              <p className="text-gray-300 text-sm">
+                                {email.hasBusinessEmail ? 'Heeft al zakelijke email' : 'Nog geen zakelijke email'}
+                              </p>
+                            </div>
+                            {email.currentProvider && (
+                              <div className="bg-gray-900/50 rounded-lg p-2">
+                                <p className="text-[10px] uppercase tracking-wider text-gray-500">Provider</p>
+                                <p className="text-gray-300 text-sm">{email.currentProvider}</p>
+                              </div>
+                            )}
+                            {email.wantsWebstabilityEmail && (
+                              <div className="flex items-center gap-2 text-xs text-purple-400">
+                                <CheckCircle2 className="w-3 h-3" />
+                                Wil Webstability email
+                              </div>
+                            )}
+                            {email.emailAddresses && email.emailAddresses.length > 0 && (
+                              <div className="bg-gray-900/50 rounded-lg p-2">
+                                <p className="text-[10px] uppercase tracking-wider text-gray-500">E-mailadressen</p>
+                                <div className="flex flex-wrap gap-1 mt-1">
+                                  {email.emailAddresses.map((addr, i) => (
+                                    <span key={i} className="px-2 py-0.5 bg-gray-700/50 rounded text-xs text-gray-300 font-mono">
+                                      {addr}
+                                    </span>
+                                  ))}
+                                </div>
+                              </div>
+                            )}
+                          </div>
+                        )
+                      })()}
+                    </div>
+                  </div>
+                )}
+
                 {/* Full Onboarding Data - All Fields */}
                 {project.onboardingData && Object.keys(project.onboardingData).length > 0 && (() => {
                   const data = project.onboardingData as Record<string, unknown>

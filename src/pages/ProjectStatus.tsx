@@ -37,7 +37,8 @@ import {
 } from 'lucide-react'
 import Logo from '../components/Logo'
 import DesignFeedback from '../components/DesignFeedback'
-import type { Project, ProjectPhase, ProjectMessage } from '../types/project'
+import LiveApprovalSection from '../components/LiveApprovalSection'
+import type { Project, ProjectPhase, ProjectMessage, ChangeRequest } from '../types/project'
 import { getProgressPercentage } from '../types/project'
 
 // WhatsApp number for support
@@ -288,6 +289,73 @@ export default function ProjectStatusNew() {
   // Design approval state
   const [approvingDesign, setApprovingDesign] = useState(false)
   const [showApprovalConfirm, setShowApprovalConfirm] = useState(false)
+  
+  // Review approval handlers
+  const handleReviewApprove = async () => {
+    if (!projectId || !project) return
+    try {
+      const response = await fetch(`/api/projects?id=${projectId}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          status: 'live',
+          reviewApproved: true,
+          reviewApprovedAt: new Date().toISOString()
+        })
+      })
+      if (response.ok) {
+        setProject(prev => prev ? { 
+          ...prev, 
+          status: 'live',
+          reviewApproved: true,
+          reviewApprovedAt: new Date().toISOString()
+        } : null)
+      }
+    } catch (err) {
+      console.error('Failed to approve review:', err)
+    }
+  }
+
+  const handleReviewFeedback = async (feedback: string) => {
+    if (!projectId || !project) return
+    try {
+      await fetch(`/api/project-feedback?projectId=${projectId}`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          type: 'review',
+          feedback,
+          date: new Date().toISOString()
+        })
+      })
+      // Notify success
+      setNotifications(prev => [...prev, {
+        id: 'feedback-sent-' + Date.now(),
+        type: 'success',
+        title: 'Feedback verstuurd',
+        message: 'We gaan aan de slag met je aanpassingen.',
+        date: new Date().toISOString()
+      }])
+      setShowNotifications(true)
+    } catch (err) {
+      console.error('Failed to send feedback:', err)
+    }
+  }
+
+  const handleChangeRequest = async (request: ChangeRequest) => {
+    if (!projectId || !project) return
+    try {
+      await fetch(`/api/project/${projectId}/change-request`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(request)
+      })
+      // Refresh project to get updated changes
+      fetchProject(projectId)
+    } catch (err) {
+      console.error('Failed to submit change request:', err)
+    }
+  }
   
   const phaseColors = project ? getPhaseColors(project.status) : getPhaseColors('onboarding')
   
@@ -1171,28 +1239,28 @@ export default function ProjectStatusNew() {
           </motion.div>
         )}
 
-        {/* Live website link */}
-        {project.status === 'live' && project.liveUrl && (
-          <motion.a
+        {/* Review & Live Approval Section - includes feedback, approval, and change requests */}
+        {(project.status === 'review' || project.status === 'live') && (
+          <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.2 }}
-            href={project.liveUrl}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="block p-4 rounded-xl bg-green-500/10 border border-green-500/30 hover:border-green-500/50 transition group"
+            transition={{ delay: 0.24 }}
           >
-            <div className="flex items-center gap-4">
-              <div className="w-10 h-10 rounded-lg bg-green-500/20 flex items-center justify-center">
-                <Rocket className="w-5 h-5 text-green-400" />
-              </div>
-              <div className="flex-1">
-                <p className="font-medium text-white">Je live website</p>
-                <p className="text-sm text-green-400">{project.liveUrl}</p>
-              </div>
-              <ExternalLink className="w-5 h-5 text-green-400 group-hover:translate-x-1 transition" />
-            </div>
-          </motion.a>
+            <LiveApprovalSection
+              projectPackage={project.package}
+              status={project.status as 'review' | 'live'}
+              stagingUrl={project.designPreviewUrl}
+              liveUrl={project.liveUrl}
+              googleDriveUrl={project.googleDriveUrl}
+              reviewApproved={project.reviewApproved}
+              reviewApprovedAt={project.reviewApprovedAt}
+              pendingChanges={project.changeRequests}
+              changesThisMonth={project.changesThisMonth || 0}
+              onApprove={handleReviewApprove}
+              onFeedback={handleReviewFeedback}
+              onRequestChange={handleChangeRequest}
+            />
+          </motion.div>
         )}
 
         {/* Google Drive - Project Files with Upload Indicator */}

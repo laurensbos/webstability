@@ -42,10 +42,14 @@ const BASE_URL = process.env.SITE_URL || 'https://webstability.nl'
 interface ChangeRequest {
   id: string
   date: string
-  request: string
+  description: string           // Primary field for request text
+  request?: string              // Legacy field, kept for compatibility
   priority: 'low' | 'normal' | 'urgent'
+  category: 'text' | 'design' | 'functionality' | 'other'
   status: 'pending' | 'in_progress' | 'completed'
   response?: string
+  createdAt?: string
+  attachments?: string[]
 }
 
 interface Project {
@@ -111,7 +115,7 @@ async function notifyDeveloper(
       
       <div style="background:#1f1f1f;border-radius:12px;padding:20px;margin-bottom:20px;">
         <p style="color:#888;font-size:14px;margin:0 0 10px;">Aanvraag</p>
-        <p style="color:#e5e5e5;font-size:16px;line-height:1.6;margin:0;white-space:pre-wrap;">${changeRequest.request}</p>
+        <p style="color:#e5e5e5;font-size:16px;line-height:1.6;margin:0;white-space:pre-wrap;">${changeRequest.description || changeRequest.request}</p>
       </div>
       
       <div style="text-align:center;margin:30px 0;">
@@ -175,9 +179,12 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     return res.status(400).json({ success: false, message: 'Project ID is required' })
   }
 
-  const { request, priority = 'normal' } = req.body
+  const { request, description, priority = 'normal', category = 'other' } = req.body
 
-  if (!request || !request.trim()) {
+  // Support both legacy 'request' field and new 'description' field
+  const requestText = description || request
+
+  if (!requestText || !requestText.trim()) {
     return res.status(400).json({ success: false, message: 'Aanvraag tekst is verplicht' })
   }
 
@@ -212,9 +219,12 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     const newChangeRequest: ChangeRequest = {
       id: `cr_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
       date: new Date().toISOString(),
-      request: request.trim(),
+      description: requestText.trim(),
+      request: requestText.trim(), // Keep for backwards compatibility
       priority: ['low', 'normal', 'urgent'].includes(priority) ? priority : 'normal',
-      status: 'pending'
+      category: ['text', 'design', 'functionality', 'other'].includes(category) ? category : 'other',
+      status: 'pending',
+      createdAt: new Date().toISOString()
     }
 
     // Update project

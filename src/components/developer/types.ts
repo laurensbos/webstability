@@ -39,6 +39,10 @@ export interface Project {
   lastActivityAt?: string
   liveDate?: string
   feedbackHistory?: FeedbackEntry[]
+  // Domain & Email for live going
+  domainInfo?: DomainInfo
+  emailInfo?: EmailInfo
+  liveGoingData?: LiveGoingData
 }
 
 export interface ChatMessage {
@@ -64,6 +68,83 @@ export interface FeedbackItem {
   feedback: string
   priority: 'low' | 'normal' | 'urgent'
 }
+
+// Domain & Email configuration for going live
+export interface DomainInfo {
+  hasDomain: boolean
+  domainName?: string
+  registrar?: string // TransIP, Hostnet, Strato, GoDaddy, etc.
+  wantsNewDomain?: boolean
+  preferredDomain?: string
+  dnsVerified?: boolean
+  dnsRecords?: DnsRecord[]
+  transferStatus: 'not_started' | 'instructions_sent' | 'pending' | 'in_progress' | 'completed' | 'not_needed'
+  transferStartedAt?: string
+  transferCompletedAt?: string
+  notes?: string
+}
+
+export interface DnsRecord {
+  type: 'A' | 'AAAA' | 'CNAME' | 'MX' | 'TXT' | 'NS'
+  name: string
+  value: string
+  verified: boolean
+  verifiedAt?: string
+}
+
+export interface EmailInfo {
+  hasBusinessEmail: boolean
+  currentProvider?: string // Google Workspace, Microsoft 365, Hostnet, eigen server
+  emailAddresses?: string[]
+  wantsWebstabilityEmail: boolean
+  wantsEmailForwarding?: boolean
+  forwardingAddress?: string
+  emailSetupStatus: 'not_started' | 'pending' | 'in_progress' | 'completed' | 'not_needed'
+  mxRecordsConfigured?: boolean
+  notes?: string
+}
+
+export interface LiveGoingData {
+  domainInfo: DomainInfo
+  emailInfo: EmailInfo
+  checklist: {
+    contentApproved: boolean
+    domainConfigured: boolean
+    dnsVerified: boolean
+    sslInstalled: boolean
+    emailConfigured: boolean
+    finalReview: boolean
+    clientApproved: boolean
+  }
+  scheduledLiveDate?: string
+  actualLiveDate?: string
+  notes?: string
+}
+
+// Popular domain registrars in NL
+export const DOMAIN_REGISTRARS = [
+  { value: 'transip', label: 'TransIP' },
+  { value: 'hostnet', label: 'Hostnet' },
+  { value: 'strato', label: 'Strato' },
+  { value: 'versio', label: 'Versio' },
+  { value: 'mijndomein', label: 'Mijn Domein' },
+  { value: 'godaddy', label: 'GoDaddy' },
+  { value: 'namecheap', label: 'Namecheap' },
+  { value: 'cloudflare', label: 'Cloudflare' },
+  { value: 'other', label: 'Anders' },
+  { value: 'unknown', label: 'Weet ik niet' },
+]
+
+// Popular email providers
+export const EMAIL_PROVIDERS = [
+  { value: 'google', label: 'Google Workspace (Gmail)' },
+  { value: 'microsoft', label: 'Microsoft 365 (Outlook)' },
+  { value: 'hostnet', label: 'Hostnet Email' },
+  { value: 'transip', label: 'TransIP Email' },
+  { value: 'own_server', label: 'Eigen mailserver' },
+  { value: 'other', label: 'Anders' },
+  { value: 'none', label: 'Geen zakelijke email' },
+]
 
 export interface EmailLogEntry {
   id: string
