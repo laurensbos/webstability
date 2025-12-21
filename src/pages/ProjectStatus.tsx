@@ -84,12 +84,7 @@ const PHASE_ACTIONS: Record<ProjectPhase, {
       buttonText: 'Uploaden',
       type: 'link'
     },
-    { 
-      title: 'Direct contact via WhatsApp', 
-      description: 'Stel je vraag via WhatsApp',
-      buttonText: 'WhatsApp',
-      type: 'whatsapp'
-    }
+
   ],
   design: [
     { 
@@ -791,14 +786,6 @@ export default function ProjectStatusNew() {
     setApprovingDesign(false)
   }
 
-  // Open WhatsApp chat
-  const openWhatsApp = () => {
-    const message = encodeURIComponent(
-      `Hoi! Ik heb een vraag over mijn project ${projectId} (${project?.businessName || 'mijn website'}).`
-    )
-    window.open(`https://wa.me/${WHATSAPP_NUMBER}?text=${message}`, '_blank')
-  }
-
   // Get phase status
   const getPhaseStatus = (phaseKey: ProjectPhase) => {
     if (!project) return 'pending'
@@ -1430,23 +1417,7 @@ export default function ProjectStatusNew() {
           </motion.div>
         )}
 
-        {/* WhatsApp Support Button */}
-        <motion.button
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.24 }}
-          onClick={openWhatsApp}
-          className="w-full p-4 rounded-xl bg-green-600/20 border border-green-500/30 hover:border-green-500/50 transition group flex items-center gap-4"
-        >
-          <div className="w-10 h-10 rounded-lg bg-green-500/30 flex items-center justify-center">
-            <Phone className="w-5 h-5 text-green-400" />
-          </div>
-          <div className="flex-1 text-left">
-            <p className="font-medium text-white">Direct contact via WhatsApp</p>
-            <p className="text-sm text-gray-500">Stel je vraag via WhatsApp</p>
-          </div>
-          <ArrowRight className="w-5 h-5 text-green-400 group-hover:translate-x-1 transition" />
-        </motion.button>
+
 
         {/* Payment Section - Show when payment is pending or awaiting */}
         {project.paymentUrl && project.paymentStatus !== 'paid' && (
