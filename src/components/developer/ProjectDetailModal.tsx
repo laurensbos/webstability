@@ -26,10 +26,12 @@ import {
   Lock,
   Eye,
   EyeOff,
-  Loader2
+  Loader2,
+  ClipboardList,
+  ListChecks
 } from 'lucide-react'
 import type { Project, ProjectPhase, ChatMessage } from './types'
-import { PHASE_CONFIG, PACKAGE_CONFIG, SERVICE_CONFIG } from './types'
+import { PHASE_CONFIG, PACKAGE_CONFIG, SERVICE_CONFIG, PHASE_CHECKLIST } from './types'
 
 interface ProjectDetailModalProps {
   project: Project
@@ -46,7 +48,7 @@ export default function ProjectDetailModal({
   onSendPaymentLink,
   onDelete
 }: ProjectDetailModalProps) {
-  const [activeTab, setActiveTab] = useState<'info' | 'messages' | 'feedback' | 'customer'>('info')
+  const [activeTab, setActiveTab] = useState<'info' | 'onboarding' | 'messages' | 'feedback' | 'customer'>('info')
   const [newMessage, setNewMessage] = useState('')
   const [copied, setCopied] = useState(false)
   const [internalNotes, setInternalNotes] = useState(project.internalNotes || '')
@@ -64,6 +66,22 @@ export default function ProjectDetailModal({
   const serviceInfo = project.serviceType ? SERVICE_CONFIG[project.serviceType] : null
   const unreadMessages = project.messages.filter(m => !m.read && m.from === 'client').length
   const pendingFeedback = project.feedbackHistory?.filter(f => f.status === 'pending') || []
+
+  // Helper to safely get onboarding data values
+  const getData = (key: string): string | undefined => {
+    const value = project.onboardingData?.[key]
+    return typeof value === 'string' ? value : undefined
+  }
+  
+  const getArrayData = (key: string): string[] => {
+    const value = project.onboardingData?.[key]
+    return Array.isArray(value) ? value.filter((v): v is string => typeof v === 'string') : []
+  }
+  
+  const getBoolData = (key: string): boolean | undefined => {
+    const value = project.onboardingData?.[key]
+    return typeof value === 'boolean' ? value : undefined
+  }
 
   // Scroll to bottom of messages
   useEffect(() => {
@@ -236,9 +254,10 @@ export default function ProjectDetailModal({
           </div>
 
           {/* Tabs */}
-          <div className="flex gap-1 mt-4">
+          <div className="flex gap-1 mt-4 overflow-x-auto">
             {[
               { id: 'info', label: 'Info', icon: FileText },
+              { id: 'onboarding', label: 'Onboarding', icon: ClipboardList },
               { id: 'messages', label: 'Berichten', icon: MessageSquare, badge: unreadMessages },
               { id: 'feedback', label: 'Feedback', icon: AlertCircle, badge: pendingFeedback.length },
               { id: 'customer', label: 'Klant', icon: User },
@@ -377,6 +396,30 @@ export default function ProjectDetailModal({
                   </div>
                 </div>
 
+                {/* Developer Checklist - Wat moet je doen? */}
+                <div className="bg-gradient-to-br from-emerald-500/10 to-emerald-500/5 border border-emerald-500/20 rounded-xl p-4">
+                  <div className="flex items-center gap-2 mb-3">
+                    <ListChecks className="w-5 h-5 text-emerald-400" />
+                    <h4 className="text-sm font-medium text-emerald-400">
+                      {PHASE_CHECKLIST[project.phase].title}
+                    </h4>
+                  </div>
+                  <ul className="space-y-2 mb-3">
+                    {PHASE_CHECKLIST[project.phase].tasks.map((task, index) => (
+                      <li key={index} className="flex items-start gap-2 text-sm text-gray-300">
+                        <span className="mt-0.5 w-1.5 h-1.5 rounded-full bg-emerald-400 flex-shrink-0" />
+                        {task}
+                      </li>
+                    ))}
+                  </ul>
+                  <div className="flex items-center gap-2 pt-3 border-t border-emerald-500/20">
+                    <ChevronRight className="w-4 h-4 text-emerald-400" />
+                    <p className="text-sm text-emerald-400 font-medium">
+                      {PHASE_CHECKLIST[project.phase].nextAction}
+                    </p>
+                  </div>
+                </div>
+
                 {/* Internal Notes */}
                 <div className="bg-gray-800/50 rounded-xl p-4">
                   <h4 className="text-sm font-medium text-gray-400 mb-3">Interne notities</h4>
@@ -401,6 +444,177 @@ export default function ProjectDetailModal({
                     Laatste update: {new Date(project.updatedAt).toLocaleDateString('nl-NL')}
                   </div>
                 </div>
+              </motion.div>
+            )}
+
+            {/* Onboarding Tab - All client submitted data */}
+            {activeTab === 'onboarding' && (
+              <motion.div
+                key="onboarding"
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -10 }}
+                className="space-y-4"
+              >
+                {project.onboardingData ? (
+                  <>
+                    {/* Business Info */}
+                    <div className="bg-gray-800/50 rounded-xl p-4">
+                      <h4 className="text-sm font-semibold text-white mb-3 flex items-center gap-2">
+                        <span className="w-6 h-6 bg-emerald-500/20 rounded-full flex items-center justify-center text-xs">1</span>
+                        Bedrijfsgegevens
+                      </h4>
+                      <div className="grid grid-cols-2 gap-3 text-sm">
+                        {getData('businessName') && (
+                          <div>
+                            <p className="text-gray-500 text-xs">Bedrijfsnaam</p>
+                            <p className="text-gray-200">{getData('businessName')}</p>
+                          </div>
+                        )}
+                        {getData('industry') && (
+                          <div>
+                            <p className="text-gray-500 text-xs">Branche</p>
+                            <p className="text-gray-200">{getData('industry')}</p>
+                          </div>
+                        )}
+                        {getData('targetAudience') && (
+                          <div className="col-span-2">
+                            <p className="text-gray-500 text-xs">Doelgroep</p>
+                            <p className="text-gray-200">{getData('targetAudience')}</p>
+                          </div>
+                        )}
+                      </div>
+                    </div>
+
+                    {/* Website Requirements */}
+                    <div className="bg-gray-800/50 rounded-xl p-4">
+                      <h4 className="text-sm font-semibold text-white mb-3 flex items-center gap-2">
+                        <span className="w-6 h-6 bg-emerald-500/20 rounded-full flex items-center justify-center text-xs">2</span>
+                        Website wensen
+                      </h4>
+                      <div className="space-y-3 text-sm">
+                        {getArrayData('pages').length > 0 && (
+                          <div>
+                            <p className="text-gray-500 text-xs mb-1">Gewenste pagina's</p>
+                            <div className="flex flex-wrap gap-1">
+                              {getArrayData('pages').map((page, i) => (
+                                <span key={i} className="px-2 py-0.5 bg-gray-700 text-gray-300 rounded text-xs">
+                                  {page}
+                                </span>
+                              ))}
+                            </div>
+                          </div>
+                        )}
+                        {getArrayData('features').length > 0 && (
+                          <div>
+                            <p className="text-gray-500 text-xs mb-1">Gewenste functies</p>
+                            <div className="flex flex-wrap gap-1">
+                              {getArrayData('features').map((feature, i) => (
+                                <span key={i} className="px-2 py-0.5 bg-purple-500/20 text-purple-300 rounded text-xs">
+                                  {feature}
+                                </span>
+                              ))}
+                            </div>
+                          </div>
+                        )}
+                        {getData('stylePreference') && (
+                          <div>
+                            <p className="text-gray-500 text-xs">Stijlvoorkeur</p>
+                            <p className="text-gray-200">{getData('stylePreference')}</p>
+                          </div>
+                        )}
+                        {getData('colorPreference') && (
+                          <div>
+                            <p className="text-gray-500 text-xs">Kleurvoorkeur</p>
+                            <p className="text-gray-200">{getData('colorPreference')}</p>
+                          </div>
+                        )}
+                        {getData('exampleWebsites') && (
+                          <div>
+                            <p className="text-gray-500 text-xs">Voorbeeld websites</p>
+                            <p className="text-gray-200 break-all">{getData('exampleWebsites')}</p>
+                          </div>
+                        )}
+                      </div>
+                    </div>
+
+                    {/* Content */}
+                    <div className="bg-gray-800/50 rounded-xl p-4">
+                      <h4 className="text-sm font-semibold text-white mb-3 flex items-center gap-2">
+                        <span className="w-6 h-6 bg-emerald-500/20 rounded-full flex items-center justify-center text-xs">3</span>
+                        Content
+                      </h4>
+                      <div className="space-y-3 text-sm">
+                        {getData('aboutText') && (
+                          <div>
+                            <p className="text-gray-500 text-xs">Over ons tekst</p>
+                            <p className="text-gray-200 whitespace-pre-wrap">{getData('aboutText')}</p>
+                          </div>
+                        )}
+                        {getData('services') && (
+                          <div>
+                            <p className="text-gray-500 text-xs">Diensten / Producten</p>
+                            <p className="text-gray-200 whitespace-pre-wrap">{getData('services')}</p>
+                          </div>
+                        )}
+                        {getBoolData('hasLogo') !== undefined && (
+                          <div>
+                            <p className="text-gray-500 text-xs">Heeft logo</p>
+                            <p className="text-gray-200">{getBoolData('hasLogo') ? 'Ja' : 'Nee (moet gemaakt worden)'}</p>
+                          </div>
+                        )}
+                        {getBoolData('hasPhotos') !== undefined && (
+                          <div>
+                            <p className="text-gray-500 text-xs">Heeft foto's</p>
+                            <p className="text-gray-200">{getBoolData('hasPhotos') ? 'Ja' : 'Nee'}</p>
+                          </div>
+                        )}
+                      </div>
+                    </div>
+
+                    {/* Additional Info */}
+                    {(getData('additionalNotes') || getData('deadline')) && (
+                      <div className="bg-gray-800/50 rounded-xl p-4">
+                        <h4 className="text-sm font-semibold text-white mb-3 flex items-center gap-2">
+                          <span className="w-6 h-6 bg-emerald-500/20 rounded-full flex items-center justify-center text-xs">4</span>
+                          Extra informatie
+                        </h4>
+                        <div className="space-y-3 text-sm">
+                          {getData('deadline') && (
+                            <div>
+                              <p className="text-gray-500 text-xs">Gewenste deadline</p>
+                              <p className="text-gray-200">{getData('deadline')}</p>
+                            </div>
+                          )}
+                          {getData('additionalNotes') && (
+                            <div>
+                              <p className="text-gray-500 text-xs">Extra opmerkingen</p>
+                              <p className="text-gray-200 whitespace-pre-wrap">{getData('additionalNotes')}</p>
+                            </div>
+                          )}
+                        </div>
+                      </div>
+                    )}
+
+                    {/* Raw data for debugging / completeness */}
+                    <details className="bg-gray-800/30 rounded-xl p-3">
+                      <summary className="text-xs text-gray-500 cursor-pointer hover:text-gray-400">
+                        Bekijk alle ruwe data
+                      </summary>
+                      <pre className="mt-2 text-xs text-gray-400 overflow-x-auto whitespace-pre-wrap">
+                        {JSON.stringify(project.onboardingData, null, 2)}
+                      </pre>
+                    </details>
+                  </>
+                ) : (
+                  <div className="flex items-center justify-center h-[300px] text-gray-500">
+                    <div className="text-center">
+                      <ClipboardList className="w-12 h-12 mx-auto mb-2 opacity-50" />
+                      <p>Geen onboarding data beschikbaar</p>
+                      <p className="text-xs text-gray-600 mt-1">Klant heeft formulier nog niet ingevuld</p>
+                    </div>
+                  </div>
+                )}
               </motion.div>
             )}
 

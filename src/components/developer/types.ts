@@ -205,12 +205,12 @@ export const PHASE_CONFIG: Record<ProjectPhase, {
   },
 }
 
-// Package configuration
+// Package configuration - prijzen incl. BTW
 export const PACKAGE_CONFIG = {
-  starter: { name: 'Starter', price: 29, setupFee: 99, color: 'blue', emoji: '⭐' },
-  professional: { name: 'Professional', price: 49, setupFee: 179, color: 'purple', emoji: '💎' },
-  business: { name: 'Business', price: 79, setupFee: 239, color: 'amber', emoji: '🚀' },
-  webshop: { name: 'Webshop', price: 99, setupFee: 249, color: 'emerald', emoji: '🛒' },
+  starter: { name: 'Starter', price: 99, setupFee: 99, color: 'blue', emoji: '⭐', pages: 5 },
+  professional: { name: 'Professioneel', price: 149, setupFee: 179, color: 'purple', emoji: '💎', pages: 10 },
+  business: { name: 'Business', price: 199, setupFee: 239, color: 'amber', emoji: '🚀', pages: 20 },
+  webshop: { name: 'Webshop', price: 349, setupFee: 249, color: 'emerald', emoji: '🛒', pages: 50 },
 }
 
 // Service type configuration
@@ -219,4 +219,73 @@ export const SERVICE_CONFIG: Record<ServiceType, { label: string; emoji: string 
   webshop: { label: 'Webshop', emoji: '🛒' },
   logo: { label: 'Logo', emoji: '🎨' },
   drone: { label: 'Drone', emoji: '🚁' },
+}
+
+// Developer checklist per phase - wat moet de developer doen?
+export const PHASE_CHECKLIST: Record<ProjectPhase, {
+  title: string
+  tasks: string[]
+  nextAction: string
+}> = {
+  onboarding: {
+    title: 'Wachten op klant',
+    tasks: [
+      'Klant moet onboarding formulier invullen',
+      'Content en logo verzamelen',
+      'Klant betaalt eerste factuur',
+    ],
+    nextAction: 'Wacht tot alle gegevens binnen zijn → Start design',
+  },
+  design: {
+    title: 'Ontwerp maken',
+    tasks: [
+      'Bekijk onboarding data en requirements',
+      'Maak homepage design in Figma',
+      'Maak subpagina designs',
+      'Upload design preview naar project',
+      'Verstuur design ter goedkeuring',
+    ],
+    nextAction: 'Design klaar → Stuur ter goedkeuring',
+  },
+  design_approved: {
+    title: 'Wachten op betaling',
+    tasks: [
+      'Klant heeft design goedgekeurd ✓',
+      'Wacht op eerste betaling',
+      'Check of betaling is ontvangen',
+    ],
+    nextAction: 'Betaling binnen → Start development',
+  },
+  development: {
+    title: 'Website bouwen',
+    tasks: [
+      'Zet project op in code editor',
+      'Bouw alle paginas volgens design',
+      'Voeg content en afbeeldingen toe',
+      'Test responsive design (mobile/tablet/desktop)',
+      'Test formulieren en functionaliteit',
+      'Optimaliseer performance en SEO',
+    ],
+    nextAction: 'Website klaar → Verstuur review link',
+  },
+  review: {
+    title: 'Feedback verwerken',
+    tasks: [
+      'Klant bekijkt preview website',
+      'Verwerk feedback punten',
+      'Finale check doen',
+      'Vraag klant om akkoord voor live gaan',
+    ],
+    nextAction: 'Klant akkoord → Zet website live',
+  },
+  live: {
+    title: 'Website is live',
+    tasks: [
+      'DNS instellingen geconfigureerd',
+      'SSL certificaat actief',
+      'Website is bereikbaar',
+      'Monitoring actief',
+    ],
+    nextAction: 'Onderhoud en maandelijkse aanpassingen',
+  },
 }

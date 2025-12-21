@@ -46,6 +46,7 @@ export default function DeveloperDashboard() {
   const [selectedProject, setSelectedProject] = useState<Project | null>(null)
   const [sidebarOpen, setSidebarOpen] = useState(false)
   const [searchQuery, setSearchQuery] = useState('')
+  const [showLiveProjects, setShowLiveProjects] = useState(false)
 
   // Handle logout - clear session and redirect
   const handleLogout = () => {
@@ -210,7 +211,9 @@ export default function DeveloperDashboard() {
     )
   }
 
-  const phases: ProjectPhase[] = ['onboarding', 'design', 'design_approved', 'development', 'review', 'live']
+  const phases: ProjectPhase[] = ['onboarding', 'design', 'design_approved', 'development', 'review']
+  const liveProjects = filteredProjects.filter(p => p.phase === 'live')
+  const activeProjects = filteredProjects.filter(p => p.phase !== 'live')
   const grouped = projectsByPhase(phases)
 
   return (
@@ -324,13 +327,14 @@ export default function DeveloperDashboard() {
           {/* Projects View - Kanban */}
           {activeView === 'projects' && (
             <div className="mt-6">
+              {/* Active Projects Header */}
               <div className="flex items-center justify-between mb-4">
-                <h2 className="text-lg font-semibold">Projecten</h2>
-                <span className="text-sm text-gray-500">{filteredProjects.length} projecten</span>
+                <h2 className="text-lg font-semibold">Actieve projecten</h2>
+                <span className="text-sm text-gray-500">{activeProjects.length} actief</span>
               </div>
 
-              {/* Kanban Board */}
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-4">
+              {/* Kanban Board - Active Phases Only */}
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-4">
                 {phases.map(phase => {
                   const phaseInfo = PHASE_CONFIG[phase]
                   const phaseProjects = grouped[phase] || []
@@ -349,7 +353,7 @@ export default function DeveloperDashboard() {
                         </span>
                       </div>
 
-                      <div className="space-y-2 min-h-[100px]">
+                      <div className="space-y-2 min-h-[100px] max-h-[400px] overflow-y-auto">
                         {phaseProjects.map(project => (
                           <ProjectCard
                             key={project.id}
@@ -368,6 +372,50 @@ export default function DeveloperDashboard() {
                   )
                 })}
               </div>
+
+              {/* Live Projects Section - Collapsible */}
+              {liveProjects.length > 0 && (
+                <div className="mt-8">
+                  <button
+                    onClick={() => setShowLiveProjects(!showLiveProjects)}
+                    className="w-full flex items-center justify-between p-4 bg-green-500/10 border border-green-500/20 rounded-xl hover:bg-green-500/15 transition"
+                  >
+                    <div className="flex items-center gap-3">
+                      <span className="text-xl">🚀</span>
+                      <div className="text-left">
+                        <h3 className="font-semibold text-green-400">Live websites</h3>
+                        <p className="text-sm text-gray-400">{liveProjects.length} websites online</p>
+                      </div>
+                    </div>
+                    <div className={`transition-transform ${showLiveProjects ? 'rotate-180' : ''}`}>
+                      <svg className="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                      </svg>
+                    </div>
+                  </button>
+                  
+                  <AnimatePresence>
+                    {showLiveProjects && (
+                      <motion.div
+                        initial={{ opacity: 0, height: 0 }}
+                        animate={{ opacity: 1, height: 'auto' }}
+                        exit={{ opacity: 0, height: 0 }}
+                        className="overflow-hidden"
+                      >
+                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3 mt-4">
+                          {liveProjects.map(project => (
+                            <ProjectCard
+                              key={project.id}
+                              project={project}
+                              onClick={() => setSelectedProject(project)}
+                            />
+                          ))}
+                        </div>
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
+                </div>
+              )}
             </div>
           )}
 
