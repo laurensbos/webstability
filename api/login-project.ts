@@ -109,7 +109,9 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     for (const project of matchingProjects) {
       const storedHash = await kv.get<string>(`project:${project.id}:password`)
       
-      if (storedHash === passwordHash) {
+      // If no password is set (legacy/test project), allow access
+      // OR if password matches
+      if (!storedHash || storedHash === passwordHash) {
         authenticatedProjects.push({
           projectId: project.id,
           businessName: project.customer?.companyName || project.customer?.name || 'Project',
