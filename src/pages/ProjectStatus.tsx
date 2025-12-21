@@ -617,20 +617,26 @@ export default function ProjectStatusNew() {
         if (!project) {
           setTimeout(() => generateNotifications(proj), 500)
         }
-      } else {
+      } else if (response.status === 404) {
+        // Project bestaat niet - toon geen error
         setProject({
           projectId: id,
           businessName: 'Je project',
           package: '',
           status: 'onboarding',
-          statusMessage: 'Project laden...',
+          statusMessage: 'Project wordt geladen...',
           estimatedCompletion: '',
           updates: [],
           createdAt: new Date().toISOString()
         })
+        setError('')
+      } else {
+        console.error('Project fetch failed:', response.status)
+        setError('')
       }
-    } catch {
-      setError('Kon project niet laden.')
+    } catch (err) {
+      // Network error - alleen loggen
+      console.error('Network error fetching project:', err)
     } finally {
       setLoading(false)
     }

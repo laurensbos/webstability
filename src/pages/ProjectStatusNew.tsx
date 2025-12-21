@@ -379,20 +379,28 @@ export default function ProjectStatusNew() {
         const data = await response.json()
         setProject(data.project || data)
         setError('')
-      } else {
+      } else if (response.status === 404) {
+        // Project bestaat niet - toon geen error, gewoon placeholder
         setProject({
           projectId: id,
           businessName: 'Je project',
           package: '',
           status: 'onboarding',
-          statusMessage: 'Project laden...',
+          statusMessage: 'Project wordt geladen...',
           estimatedCompletion: '',
           updates: [],
           createdAt: new Date().toISOString()
         })
+        setError('')
+      } else {
+        // Andere server errors
+        console.error('Project fetch failed:', response.status)
+        setError('')
       }
-    } catch {
-      setError('Kon project niet laden.')
+    } catch (err) {
+      // Network error - alleen loggen, geen error tonen aan gebruiker
+      console.error('Network error fetching project:', err)
+      // Geen error state zetten, polling zal het opnieuw proberen
     } finally {
       setLoading(false)
     }
