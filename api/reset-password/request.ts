@@ -50,47 +50,95 @@ async function sendResetEmail(email: string, resetUrl: string, projectId: string
     await transporter.sendMail({
       from: '"Webstability" <info@webstability.nl>',
       to: email,
-      subject: `Wachtwoord resetten voor project ${projectId}`,
+      subject: `🔐 Wachtwoord resetten - ${projectId}`,
       html: `
         <!DOCTYPE html>
-        <html>
+        <html lang="nl">
         <head>
           <meta charset="utf-8">
           <meta name="viewport" content="width=device-width, initial-scale=1.0">
+          <meta name="color-scheme" content="dark light">
+          <title>Wachtwoord resetten</title>
         </head>
-        <body style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background-color: #f9fafb; padding: 40px 20px;">
-          <div style="max-width: 480px; margin: 0 auto; background: white; border-radius: 16px; padding: 40px; box-shadow: 0 4px 6px rgba(0,0,0,0.05);">
-            <div style="text-align: center; margin-bottom: 32px;">
-              <h1 style="color: #1f2937; font-size: 24px; margin: 0 0 8px 0;">Wachtwoord resetten</h1>
-              <p style="color: #6b7280; font-size: 14px; margin: 0;">Project: ${projectId}</p>
-            </div>
-            
-            <p style="color: #374151; font-size: 16px; line-height: 1.6; margin-bottom: 24px;">
-              Hallo${businessName ? ` ${businessName}` : ''},
-            </p>
-            
-            <p style="color: #374151; font-size: 16px; line-height: 1.6; margin-bottom: 24px;">
-              We hebben een verzoek ontvangen om het wachtwoord voor je project te resetten. 
-              Klik op de onderstaande knop om een nieuw wachtwoord in te stellen.
-            </p>
-            
-            <div style="text-align: center; margin: 32px 0;">
-              <a href="${resetUrl}" style="display: inline-block; background: linear-gradient(to right, #3b82f6, #6366f1); color: white; font-weight: 600; padding: 14px 32px; border-radius: 12px; text-decoration: none; font-size: 16px;">
-                Nieuw wachtwoord instellen
-              </a>
-            </div>
-            
-            <p style="color: #6b7280; font-size: 14px; line-height: 1.6; margin-bottom: 24px;">
-              Deze link is 1 uur geldig. Heb je geen wachtwoord reset aangevraagd? 
-              Dan kun je deze email negeren.
-            </p>
-            
-            <hr style="border: none; border-top: 1px solid #e5e7eb; margin: 32px 0;">
-            
-            <p style="color: #9ca3af; font-size: 12px; text-align: center; margin: 0;">
-              © ${new Date().getFullYear()} Webstability. Alle rechten voorbehouden.
-            </p>
-          </div>
+        <body style="margin: 0; padding: 0; background-color: #0f172a; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;">
+          <!-- Container -->
+          <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0" style="background-color: #0f172a;">
+            <tr>
+              <td align="center" style="padding: 40px 20px;">
+                <!-- Main Card -->
+                <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0" style="max-width: 520px; background-color: #1e293b; border-radius: 16px; overflow: hidden;">
+                  <!-- Header with Logo -->
+                  <tr>
+                    <td style="padding: 32px 32px 24px; text-align: center; border-bottom: 1px solid #334155;">
+                      <div style="display: inline-block; background: linear-gradient(135deg, #10b981 0%, #059669 100%); padding: 12px 24px; border-radius: 12px; margin-bottom: 16px;">
+                        <span style="color: #ffffff; font-size: 20px; font-weight: 700; letter-spacing: -0.5px;">webstability</span>
+                      </div>
+                    </td>
+                  </tr>
+                  
+                  <!-- Icon -->
+                  <tr>
+                    <td style="padding: 32px 32px 0; text-align: center;">
+                      <div style="width: 64px; height: 64px; background: linear-gradient(135deg, #10b981 0%, #059669 100%); border-radius: 16px; margin: 0 auto 24px; display: flex; align-items: center; justify-content: center;">
+                        <span style="font-size: 32px; line-height: 64px;">🔐</span>
+                      </div>
+                      <h1 style="margin: 0 0 8px; font-size: 24px; font-weight: 700; color: #ffffff;">Wachtwoord resetten</h1>
+                      <p style="margin: 0; color: #94a3b8; font-size: 14px;">Project: <span style="color: #10b981; font-family: monospace;">${projectId}</span></p>
+                    </td>
+                  </tr>
+                  
+                  <!-- Content -->
+                  <tr>
+                    <td style="padding: 24px 32px;">
+                      <p style="color: #f1f5f9; font-size: 16px; line-height: 1.6; margin: 0 0 16px;">
+                        Hallo${businessName ? ` <strong>${businessName}</strong>` : ''},
+                      </p>
+                      <p style="color: #94a3b8; font-size: 16px; line-height: 1.6; margin: 0 0 24px;">
+                        We hebben een verzoek ontvangen om het wachtwoord voor je project te resetten. Klik op onderstaande knop om een nieuw wachtwoord in te stellen.
+                      </p>
+                      
+                      <!-- CTA Button -->
+                      <div style="text-align: center; margin: 32px 0;">
+                        <a href="${resetUrl}" style="display: inline-block; background: linear-gradient(135deg, #10b981 0%, #059669 100%); color: #ffffff; padding: 16px 40px; border-radius: 12px; text-decoration: none; font-weight: 600; font-size: 16px; box-shadow: 0 4px 14px rgba(16, 185, 129, 0.4);">
+                          Nieuw wachtwoord instellen
+                        </a>
+                      </div>
+                      
+                      <!-- Timer note -->
+                      <div style="background-color: #0f172a; border-radius: 12px; padding: 16px; text-align: center; margin-top: 24px;">
+                        <p style="color: #94a3b8; font-size: 14px; margin: 0;">
+                          ⏱️ Deze link is <strong style="color: #f59e0b;">1 uur</strong> geldig
+                        </p>
+                      </div>
+                    </td>
+                  </tr>
+                  
+                  <!-- Security notice -->
+                  <tr>
+                    <td style="padding: 0 32px 24px;">
+                      <div style="background-color: #1e3a5f; border-radius: 12px; padding: 16px; border-left: 4px solid #3b82f6;">
+                        <p style="color: #93c5fd; font-size: 14px; margin: 0; line-height: 1.5;">
+                          💡 Heb je geen wachtwoord reset aangevraagd? Dan kun je deze email veilig negeren.
+                        </p>
+                      </div>
+                    </td>
+                  </tr>
+                  
+                  <!-- Footer -->
+                  <tr>
+                    <td style="padding: 24px 32px; background-color: #0f172a; border-top: 1px solid #334155; text-align: center;">
+                      <p style="color: #64748b; font-size: 12px; margin: 0;">
+                        © ${new Date().getFullYear()} Webstability — Professionele websites voor ondernemers
+                      </p>
+                      <p style="color: #475569; font-size: 11px; margin: 8px 0 0;">
+                        Deze e-mail is verzonden naar ${email}
+                      </p>
+                    </td>
+                  </tr>
+                </table>
+              </td>
+            </tr>
+          </table>
         </body>
         </html>
       `,

@@ -92,14 +92,14 @@ export default function Header({ urgencyBannerVisible = false }: HeaderProps) {
           // Multiple projects found - show selection
           // Map API response to expected format
           const mappedProjects = data.projects.map((p: { projectId: string; businessName: string }) => ({
-            id: p.projectId,
+            id: p.projectId.toUpperCase(),
             name: p.businessName
           }))
           setFoundProjects(mappedProjects)
           setShowProjectSelect(true)
         } else {
           // Single project - navigate directly
-          const projectId = data.projects?.[0]?.projectId || data.projectId
+          const projectId = (data.projects?.[0]?.projectId || data.projectId || '').toUpperCase()
           sessionStorage.setItem(`project_auth_${projectId}`, 'true')
           setShowProjectModal(false)
           navigate(`/project/${projectId}?pwd=${encodeURIComponent(projectPasswordInput)}`)
@@ -117,9 +117,10 @@ export default function Header({ urgencyBannerVisible = false }: HeaderProps) {
   }
 
   const handleProjectSelect = (projectId: string) => {
-    sessionStorage.setItem(`project_auth_${projectId}`, 'true')
+    const normalizedId = projectId.toUpperCase()
+    sessionStorage.setItem(`project_auth_${normalizedId}`, 'true')
     setShowProjectModal(false)
-    navigate(`/project/${projectId}?pwd=${encodeURIComponent(projectPasswordInput)}`)
+    navigate(`/project/${normalizedId}?pwd=${encodeURIComponent(projectPasswordInput)}`)
     setEmailInput('')
     setProjectPasswordInput('')
     setFoundProjects([])
