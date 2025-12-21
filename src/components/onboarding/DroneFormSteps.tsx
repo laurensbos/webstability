@@ -103,11 +103,18 @@ function CheckboxGroup({ label, name, values, onChange, options, disabled, hint,
     onChange(name, newValues)
   }
 
+  // Responsive grid - 1 column on mobile, requested columns on desktop
+  const gridClass = columns === 3 
+    ? 'grid-cols-1 sm:grid-cols-2 md:grid-cols-3'
+    : columns === 4
+    ? 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-4'
+    : 'grid-cols-1 sm:grid-cols-2'
+
   return (
     <div>
       <span className="text-sm font-medium text-gray-700 dark:text-gray-300">{label}</span>
       {hint && <p className="text-xs text-gray-500 dark:text-gray-400 mt-0.5">{hint}</p>}
-      <div className="mt-3 grid gap-3" style={{ gridTemplateColumns: `repeat(${columns}, 1fr)` }}>
+      <div className={`mt-3 grid ${gridClass} gap-3`}>
         {options.map(opt => {
           const isSelected = values.includes(opt.value)
           const Icon = opt.icon
