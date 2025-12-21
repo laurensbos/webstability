@@ -39,6 +39,7 @@ interface ProjectDetailModalProps {
   onUpdate: (project: Project) => void
   onSendPaymentLink: (project: Project) => void
   onDelete?: (projectId: string) => Promise<boolean>
+  initialTab?: 'info' | 'onboarding' | 'messages' | 'feedback' | 'customer'
 }
 
 export default function ProjectDetailModal({ 
@@ -46,9 +47,10 @@ export default function ProjectDetailModal({
   onClose, 
   onUpdate,
   onSendPaymentLink,
-  onDelete
+  onDelete,
+  initialTab = 'info'
 }: ProjectDetailModalProps) {
-  const [activeTab, setActiveTab] = useState<'info' | 'onboarding' | 'messages' | 'feedback' | 'customer'>('info')
+  const [activeTab, setActiveTab] = useState<'info' | 'onboarding' | 'messages' | 'feedback' | 'customer'>(initialTab)
   const [newMessage, setNewMessage] = useState('')
   const [copied, setCopied] = useState(false)
   const [internalNotes, setInternalNotes] = useState(project.internalNotes || '')

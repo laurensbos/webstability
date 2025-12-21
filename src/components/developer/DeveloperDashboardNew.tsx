@@ -104,6 +104,7 @@ export default function DeveloperDashboard() {
   const [projects, setProjects] = useState<Project[]>([])
   const [loading, setLoading] = useState(true)
   const [selectedProject, setSelectedProject] = useState<Project | null>(null)
+  const [selectedProjectTab, setSelectedProjectTab] = useState<'info' | 'onboarding' | 'messages' | 'feedback' | 'customer'>('info')
   const [sidebarOpen, setSidebarOpen] = useState(false)
   const [searchQuery, setSearchQuery] = useState('')
   const [showLiveProjects, setShowLiveProjects] = useState(false)
@@ -239,6 +240,12 @@ export default function DeveloperDashboard() {
         error: error instanceof Error ? error.message : 'Er ging iets mis' 
       }))
     }
+  }
+
+  // Select a project with optional initial tab
+  const selectProject = (project: Project, tab: 'info' | 'onboarding' | 'messages' | 'feedback' | 'customer' = 'info') => {
+    setSelectedProjectTab(tab)
+    setSelectedProject(project)
   }
 
   // Open payment modal
@@ -927,7 +934,7 @@ export default function DeveloperDashboard() {
                     return (
                       <motion.div
                         key={project.id}
-                        onClick={() => setSelectedProject(project)}
+                        onClick={() => selectProject(project, 'messages')}
                         className={`relative overflow-hidden p-4 rounded-xl cursor-pointer transition group ${
                           unread > 0 
                             ? 'bg-blue-500/10 border-2 border-blue-500/40' 
@@ -1348,10 +1355,14 @@ export default function DeveloperDashboard() {
         {selectedProject && (
           <ProjectDetailModal
             project={selectedProject}
-            onClose={() => setSelectedProject(null)}
+            onClose={() => {
+              setSelectedProject(null)
+              setSelectedProjectTab('info') // Reset tab when closing
+            }}
             onUpdate={handleUpdateProject}
             onSendPaymentLink={openPaymentModal}
             onDelete={handleDeleteProject}
+            initialTab={selectedProjectTab}
           />
         )}
       </AnimatePresence>
