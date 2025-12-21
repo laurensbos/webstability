@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback, useRef } from 'react'
-import { useParams, useSearchParams, Link, useNavigate } from 'react-router-dom'
+import { useParams, useSearchParams, Link } from 'react-router-dom'
 import { motion, AnimatePresence } from 'framer-motion'
 import { ClientOnboardingSkeleton } from '../components/LoadingSkeletons'
 import {
@@ -10,11 +10,9 @@ import {
   ChevronLeft,
   ChevronRight,
   Check,
-  MessageSquare,
   Clock,
   Edit3,
   Lock,
-  Send,
   Loader2,
   AlertCircle,
   CheckCircle2,
@@ -27,17 +25,13 @@ import {
   Sparkles,
   ExternalLink,
   Shield,
-  Mail,
   FolderOpen,
   ArrowRight,
   ArrowLeft
 } from 'lucide-react'
 import Logo from '../components/Logo'
 import type { 
-  ServiceType, 
-  OnboardingPhase,
-  OnboardingMessage,
-  TimelineStep
+  ServiceType
 } from '../types/onboarding'
 
 // Import form steps for each service
@@ -374,179 +368,17 @@ function useAutoSave(
 }
 
 // ===========================================
-// TIMELINE COMPONENT
-// ===========================================
-
-function ProjectTimeline({ 
-  steps, 
-  currentPhase 
-}: { 
-  steps: TimelineStep[]
-  currentPhase: OnboardingPhase 
-}) {
-  return (
-    <div className="bg-white dark:bg-gray-800 rounded-2xl p-6 shadow-lg border border-gray-100 dark:border-gray-700">
-      <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4 flex items-center gap-2">
-        <Clock className="w-5 h-5 text-primary-500" />
-        Project Timeline
-      </h3>
-      
-      <div className="space-y-4">
-        {steps.map((step, index) => {
-          const isActive = step.id === currentPhase
-          const isCompleted = step.status === 'completed'
-          
-          return (
-            <div key={step.id} className="flex items-start gap-3">
-              {/* Connector line */}
-              <div className="flex flex-col items-center">
-                <div className={`
-                  w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold
-                  ${isCompleted 
-                    ? 'bg-green-500 text-white' 
-                    : isActive 
-                      ? 'bg-primary-500 text-white animate-pulse' 
-                      : 'bg-gray-200 dark:bg-gray-700 text-gray-500 dark:text-gray-400'}
-                `}>
-                  {isCompleted ? <Check className="w-4 h-4" /> : index + 1}
-                </div>
-                {index < steps.length - 1 && (
-                  <div className={`w-0.5 h-8 ${isCompleted ? 'bg-green-500' : 'bg-gray-200 dark:bg-gray-700'}`} />
-                )}
-              </div>
-              
-              {/* Step content */}
-              <div className="flex-1 pb-4">
-                <div className={`font-medium ${isActive ? 'text-primary-600 dark:text-primary-400' : 'text-gray-900 dark:text-white'}`}>
-                  {step.title}
-                </div>
-                <div className="text-sm text-gray-500 dark:text-gray-400">
-                  {step.description}
-                </div>
-                {isActive && (
-                  <div className="mt-1 text-xs text-primary-500 font-medium">
-                    ⏱ Geschat: {step.estimatedDays} {step.estimatedDays === 1 ? 'dag' : 'dagen'}
-                  </div>
-                )}
-                {step.completedAt && (
-                  <div className="mt-1 text-xs text-green-500">
-                    ✓ Voltooid op {new Date(step.completedAt).toLocaleDateString('nl-NL')}
-                  </div>
-                )}
-              </div>
-            </div>
-          )
-        })}
-      </div>
-    </div>
-  )
-}
-
-// ===========================================
-// CHAT COMPONENT  
-// ===========================================
-
-function ChatSection({
-  messages,
-  onSendMessage,
-  loading
-}: {
-  messages: OnboardingMessage[]
-  onSendMessage: (msg: string) => Promise<void>
-  loading: boolean
-}) {
-  const [newMessage, setNewMessage] = useState('')
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
-    if (!newMessage.trim() || loading) return
-    
-    await onSendMessage(newMessage.trim())
-    setNewMessage('')
-  }
-
-  return (
-    <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-gray-100 dark:border-gray-700 overflow-hidden">
-      <div className="bg-gradient-to-r from-primary-500 to-blue-600 p-4 text-white">
-        <div className="flex items-center gap-3">
-          <div className="w-10 h-10 bg-white/20 rounded-xl flex items-center justify-center">
-            <MessageSquare className="w-5 h-5" />
-          </div>
-          <div>
-            <h3 className="font-semibold">Chat met Developer</h3>
-            <p className="text-sm text-white/80">Stel je vragen direct</p>
-          </div>
-        </div>
-      </div>
-      
-      {/* Messages */}
-      <div className="h-64 overflow-y-auto p-4 space-y-3 bg-gray-50 dark:bg-gray-900">
-        {messages.length === 0 ? (
-          <div className="h-full flex flex-col items-center justify-center text-gray-400">
-            <MessageSquare className="w-8 h-8 mb-2" />
-            <p className="text-sm">Nog geen berichten</p>
-          </div>
-        ) : (
-          messages.map((msg) => (
-            <div
-              key={msg.id}
-              className={`flex ${msg.from === 'client' ? 'justify-end' : 'justify-start'}`}
-            >
-              <div className={`
-                max-w-[80%] rounded-2xl px-4 py-2 text-sm
-                ${msg.from === 'client' 
-                  ? 'bg-primary-500 text-white rounded-br-sm' 
-                  : 'bg-white dark:bg-gray-800 text-gray-900 dark:text-white rounded-bl-sm shadow'}
-              `}>
-                {msg.message}
-                <div className={`text-xs mt-1 ${msg.from === 'client' ? 'text-white/70' : 'text-gray-400'}`}>
-                  {new Date(msg.date).toLocaleTimeString('nl-NL', { hour: '2-digit', minute: '2-digit' })}
-                </div>
-              </div>
-            </div>
-          ))
-        )}
-      </div>
-      
-      {/* Input */}
-      <form onSubmit={handleSubmit} className="p-4 border-t dark:border-gray-700">
-        <div className="flex gap-2">
-          <input
-            type="text"
-            value={newMessage}
-            onChange={(e) => setNewMessage(e.target.value)}
-            placeholder="Typ je bericht..."
-            className="flex-1 px-4 py-2 rounded-xl border dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-400 focus:ring-2 focus:ring-primary-500 focus:border-transparent"
-          />
-          <button
-            type="submit"
-            disabled={loading || !newMessage.trim()}
-            className="px-4 py-2 bg-primary-500 text-white rounded-xl hover:bg-primary-600 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
-          >
-            {loading ? <Loader2 className="w-5 h-5 animate-spin" /> : <Send className="w-5 h-5" />}
-          </button>
-        </div>
-      </form>
-    </div>
-  )
-}
-
-// ===========================================
 // MAIN COMPONENT
 // ===========================================
 
 export default function ClientOnboarding() {
   const { projectId } = useParams<{ projectId: string }>()
   const [searchParams] = useSearchParams()
-  const navigate = useNavigate()
   
   // State
   const [serviceType, setServiceType] = useState<ServiceType>('website')
   const [currentStep, setCurrentStep] = useState(1)
   const [formData, setFormData] = useState<Record<string, any>>({})
-  const [messages, setMessages] = useState<OnboardingMessage[]>([])
-  const [timeline, setTimeline] = useState<TimelineStep[]>([])
-  const [currentPhase, setCurrentPhase] = useState<OnboardingPhase>('intake')
   const [canEdit, setCanEdit] = useState(true)
   const [loading, setLoading] = useState(false)
   const [saving, setSaving] = useState(false)
@@ -557,6 +389,7 @@ export default function ClientOnboarding() {
   const [validationErrors, setValidationErrors] = useState<string[]>([])
   const [driveUrl, setDriveUrl] = useState<string>('')
   const [approvedForDesign, setApprovedForDesign] = useState(false)
+  const [unreadCount, setUnreadCount] = useState(0)
 
   // Auto-save hook
   const { autoSaveStatus, emailInUseError, loadFromLocal, clearLocalDraft } = useAutoSave(
@@ -605,11 +438,6 @@ export default function ClientOnboarding() {
 
     if (projectId) {
       loadProjectData(projectId)
-    } else {
-      // Initialize empty timeline
-      import('../types/onboarding').then(({ getDefaultTimeline }) => {
-        setTimeline(getDefaultTimeline(serviceType))
-      })
     }
   }, [projectId, searchParams])
 
@@ -646,27 +474,13 @@ export default function ClientOnboarding() {
           
           setFormData(mappedData)
           setServiceType(project.type || 'website')
-          setCurrentPhase(project.status || 'intake')
           setCanEdit(project.status === 'intake' || project.status === 'onboarding')
           setProjectFound(true)
           // Get Drive URL from project
           setDriveUrl(project.googleDriveUrl || project.onboardingData?.driveFolderLink || '')
-          
-          // Initialize timeline
-          import('../types/onboarding').then(({ getDefaultTimeline }) => {
-            const defaultTimeline = getDefaultTimeline(project.type || 'website')
-            // Mark intake as active or completed based on status
-            const updatedTimeline = defaultTimeline.map(step => {
-              if (step.id === 'intake') {
-                return { ...step, status: project.status === 'intake' ? 'active' as const : 'completed' as const }
-              }
-              if (step.id === 'design' && (project.status === 'design' || project.status === 'development')) {
-                return { ...step, status: 'active' as const }
-              }
-              return step
-            })
-            setTimeline(updatedTimeline)
-          })
+          // Get unread messages count
+          const unread = project.messages?.filter((m: { read: boolean; from: string }) => !m.read && m.from === 'developer')?.length || 0
+          setUnreadCount(unread)
           
           setLoading(false)
           return
@@ -678,12 +492,12 @@ export default function ClientOnboarding() {
       if (response.ok) {
         const data = await response.json()
         setFormData(data.formData || {})
-        setMessages(data.messages || [])
-        setTimeline(data.timeline || [])
-        setCurrentPhase(data.currentPhase || 'intake')
         setCanEdit(data.canEdit ?? true)
         setServiceType(data.serviceType || 'website')
         setProjectFound(true)
+        // Get unread messages count
+        const unread = data.messages?.filter((m: { read: boolean; from: string }) => !m.read && m.from === 'developer')?.length || 0
+        setUnreadCount(unread)
       } else {
         setProjectFound(false)
       }
@@ -712,8 +526,7 @@ export default function ClientOnboarding() {
         body: JSON.stringify({
           serviceType,
           formData,
-          currentStep,
-          currentPhase
+          currentStep
         })
       })
       
@@ -734,31 +547,6 @@ export default function ClientOnboarding() {
       setError(message)
     } finally {
       setSaving(false)
-    }
-  }
-
-  // Send message
-  const sendMessage = async (message: string) => {
-    const newMsg: OnboardingMessage = {
-      id: Date.now().toString(),
-      projectId: projectId || 'new',
-      date: new Date().toISOString(),
-      from: 'client',
-      message,
-      read: false
-    }
-    
-    setMessages(prev => [...prev, newMsg])
-    
-    // Save to API
-    try {
-      await fetch(`/api/onboarding/${projectId}/message`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ message })
-      })
-    } catch (err) {
-      console.error('Failed to send message:', err)
     }
   }
 
@@ -1178,11 +966,12 @@ export default function ClientOnboarding() {
   }
 
   // Loading state with skeleton
-  if (loading) {
+  // Also show skeleton when we have a projectId but haven't determined if it exists yet
+  if (loading || (projectId && projectFound === null)) {
     return <ClientOnboardingSkeleton />
   }
 
-  // Not found state
+  // Not found state - only show when we've actually checked and confirmed not found
   if (projectFound === false) {
     return (
       <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex items-center justify-center">
@@ -1208,10 +997,15 @@ export default function ClientOnboarding() {
         <div className="max-w-3xl mx-auto px-4 py-3 flex items-center justify-between">
           <Link 
             to={projectId ? `/status/${projectId}` : '/'}
-            className="flex items-center gap-2 text-gray-400 hover:text-white transition-colors group"
+            className="relative flex items-center gap-2 text-gray-400 hover:text-white transition-colors group"
           >
             <ArrowLeft className="w-4 h-4 group-hover:-translate-x-1 transition-transform" />
             <span className="text-sm font-medium">Dashboard</span>
+            {unreadCount > 0 && (
+              <span className="absolute -top-1 -right-2 w-4 h-4 bg-red-500 text-white text-[10px] rounded-full flex items-center justify-center font-bold">
+                {unreadCount > 9 ? '9+' : unreadCount}
+              </span>
+            )}
           </Link>
           
           <div className="flex items-center gap-3">
@@ -1219,13 +1013,13 @@ export default function ClientOnboarding() {
             {autoSaveStatus === 'saving' && (
               <div className="flex items-center gap-1.5 text-gray-500 text-xs">
                 <Loader2 className="w-3 h-3 animate-spin" />
-                <span>Opslaan...</span>
+                <span className="hidden sm:inline">Opslaan...</span>
               </div>
             )}
             {autoSaveStatus === 'saved' && (
               <div className="flex items-center gap-1.5 text-emerald-500 text-xs">
                 <Check className="w-3 h-3" />
-                <span>Opgeslagen</span>
+                <span className="hidden sm:inline">Opgeslagen</span>
               </div>
             )}
             
@@ -1233,7 +1027,7 @@ export default function ClientOnboarding() {
             {!canEdit && (
               <div className="flex items-center gap-1.5 text-amber-500 text-xs bg-amber-500/10 px-2 py-1 rounded">
                 <Lock className="w-3 h-3" />
-                <span>Alleen lezen</span>
+                <span className="hidden sm:inline">Alleen lezen</span>
               </div>
             )}
             
@@ -1246,78 +1040,96 @@ export default function ClientOnboarding() {
         </div>
       </header>
 
-      {/* Hero section with service info */}
+      {/* Hero section with service info and horizontal progress */}
       <div className={`bg-gradient-to-br ${serviceConfig.gradient} relative overflow-hidden`}>
         <div className="absolute inset-0 bg-black/20" />
         <div className="absolute top-0 right-0 w-64 h-64 bg-white/10 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2" />
         
-        <div className="relative max-w-3xl mx-auto px-4 py-6">
-          <div className="flex items-center gap-4">
-            <div className="w-14 h-14 rounded-2xl bg-white/20 backdrop-blur-sm flex items-center justify-center shadow-xl">
-              <ServiceIcon className="w-7 h-7 text-white" />
+        <div className="relative max-w-3xl mx-auto px-4 py-5">
+          {/* Title row */}
+          <div className="flex items-center justify-between mb-4">
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 rounded-xl bg-white/20 backdrop-blur-sm flex items-center justify-center">
+                <ServiceIcon className="w-5 h-5 text-white" />
+              </div>
+              <div>
+                <h1 className="text-lg font-bold text-white">{serviceConfig.name} Onboarding</h1>
+                <p className="text-white/70 text-xs">Stap {currentStep} van {totalSteps}</p>
+              </div>
             </div>
-            <div>
-              <h1 className="text-xl font-bold text-white">{serviceConfig.name} Onboarding</h1>
-              <p className="text-white/80 text-sm">Vul alle informatie in voor je project</p>
+            <div className="text-right">
+              <div className="text-2xl font-bold text-white">{Math.round((currentStep / totalSteps) * 100)}%</div>
+              <div className="text-white/60 text-xs">Voltooid</div>
             </div>
           </div>
           
-          {/* Progress bar in hero */}
-          <div className="mt-5">
-            <div className="flex items-center justify-between text-white/80 text-sm mb-2">
-              <span className="font-medium">Stap {currentStep} van {totalSteps}</span>
-              <span>{Math.round((currentStep / totalSteps) * 100)}%</span>
-            </div>
-            <div className="h-2 bg-white/20 rounded-full overflow-hidden backdrop-blur-sm">
-              <motion.div
-                initial={{ width: 0 }}
-                animate={{ width: `${(currentStep / totalSteps) * 100}%` }}
-                className="h-full bg-white rounded-full shadow-lg"
-              />
-            </div>
+          {/* Horizontal step indicator */}
+          <div className="flex items-center gap-1">
+            {steps.map((step, index) => {
+              const isActive = index + 1 === currentStep
+              const isCompleted = index + 1 < currentStep
+              
+              return (
+                <div key={step.id} className="flex-1 flex items-center">
+                  {/* Step dot/bar */}
+                  <button
+                    onClick={() => goToStep(index + 1)}
+                    disabled={!canEdit}
+                    className={`
+                      relative flex-1 h-2 rounded-full transition-all duration-300
+                      ${isCompleted 
+                        ? 'bg-white' 
+                        : isActive 
+                          ? 'bg-white/80' 
+                          : 'bg-white/30'}
+                      ${canEdit ? 'cursor-pointer hover:bg-white/90' : 'cursor-default'}
+                    `}
+                  >
+                    {isActive && (
+                      <motion.div
+                        layoutId="activeStep"
+                        className="absolute inset-0 bg-white rounded-full shadow-lg shadow-white/50"
+                        transition={{ type: "spring", stiffness: 300, damping: 30 }}
+                      />
+                    )}
+                  </button>
+                </div>
+              )
+            })}
+          </div>
+          
+          {/* Step labels - visible on larger screens */}
+          <div className="hidden sm:flex items-center gap-1 mt-2">
+            {steps.map((step, index) => {
+              const isActive = index + 1 === currentStep
+              const isCompleted = index + 1 < currentStep
+              
+              return (
+                <div key={`label-${step.id}`} className="flex-1 text-center">
+                  <span className={`text-xs ${isActive ? 'text-white font-medium' : isCompleted ? 'text-white/80' : 'text-white/50'}`}>
+                    {step.title}
+                  </span>
+                </div>
+              )
+            })}
           </div>
         </div>
       </div>
 
       {/* Main content */}
       <main className="max-w-3xl mx-auto px-4 py-6 pb-32">
-        {/* Step tabs - horizontal scroll on mobile */}
-        <div className="flex gap-1.5 mb-6 overflow-x-auto pb-2 -mx-4 px-4 scrollbar-hide">
-          {steps.map((step, index) => {
-            const StepIcon = step.icon
-            const isActive = index + 1 === currentStep
-            const isCompleted = index + 1 < currentStep
-            
-            return (
-              <button
-                key={step.id}
-                onClick={() => goToStep(index + 1)}
-                disabled={!canEdit}
-                className={`
-                  flex items-center gap-1.5 px-3 py-2 rounded-lg text-sm font-medium transition-all whitespace-nowrap flex-shrink-0
-                  ${isActive 
-                    ? 'bg-white text-gray-900 shadow-lg' 
-                    : isCompleted
-                      ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30'
-                      : 'bg-gray-800/50 text-gray-500 hover:bg-gray-800 border border-gray-700/50'}
-                  ${canEdit ? 'cursor-pointer' : 'cursor-default'}
-                `}
-              >
-                {isCompleted ? (
-                  <CheckCircle2 className="w-4 h-4" />
-                ) : (
-                  <StepIcon className="w-4 h-4" />
-                )}
-                {step.title}
-              </button>
-            )
-          })}
-        </div>
-
-        {/* Current step title */}
-        <div className="mb-5">
-          <h2 className="text-xl font-bold text-white">{currentStepConfig?.title}</h2>
-          <p className="text-gray-500 text-sm mt-1">Vul de onderstaande velden in</p>
+        {/* Current step title with icon */}
+        <div className="flex items-center gap-3 mb-5">
+          <div className={`w-10 h-10 rounded-xl bg-gradient-to-br ${serviceConfig.gradient} flex items-center justify-center shadow-lg`}>
+            {currentStepConfig && (() => {
+              const StepIcon = currentStepConfig.icon
+              return <StepIcon className="w-5 h-5 text-white" />
+            })()}
+          </div>
+          <div>
+            <h2 className="text-xl font-bold text-white">{currentStepConfig?.title}</h2>
+            <p className="text-gray-500 text-sm">Vul de onderstaande velden in</p>
+          </div>
         </div>
 
         {/* Form content */}
@@ -1405,21 +1217,6 @@ export default function ClientOnboarding() {
           )}
         </AnimatePresence>
 
-        {/* Timeline - Collapsible on mobile */}
-        {timeline.length > 0 && (
-          <div className="mt-8">
-            <ProjectTimeline steps={timeline} currentPhase={currentPhase} />
-          </div>
-        )}
-
-        {/* Chat section - collapsible */}
-        <div className="mt-8">
-          <ChatSection 
-            messages={messages}
-            onSendMessage={sendMessage}
-            loading={saving}
-          />
-        </div>
       </main>
 
       {/* Fixed bottom navigation - improved styling */}

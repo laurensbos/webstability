@@ -658,94 +658,579 @@ export function WebsiteBedrijfStep({ data, onChange, disabled }: FormStepProps) 
   )
 }
 
-// Step 2: Logo & Huisstijl - alleen aanvullende vragen
+// ===========================================
+// BRANDING CONSTANTS
+// ===========================================
+
+// Curated color palettes for easy selection
+const COLOR_PALETTES = [
+  { name: 'Modern Blue', colors: ['#3B82F6', '#1E40AF', '#60A5FA', '#DBEAFE'] },
+  { name: 'Fresh Green', colors: ['#10B981', '#047857', '#34D399', '#D1FAE5'] },
+  { name: 'Warm Orange', colors: ['#F97316', '#C2410C', '#FB923C', '#FFEDD5'] },
+  { name: 'Royal Purple', colors: ['#8B5CF6', '#5B21B6', '#A78BFA', '#EDE9FE'] },
+  { name: 'Elegant Rose', colors: ['#EC4899', '#BE185D', '#F472B6', '#FCE7F3'] },
+  { name: 'Ocean Teal', colors: ['#14B8A6', '#0F766E', '#2DD4BF', '#CCFBF1'] },
+  { name: 'Sunset Coral', colors: ['#F43F5E', '#BE123C', '#FB7185', '#FFE4E6'] },
+  { name: 'Business Gray', colors: ['#475569', '#1E293B', '#64748B', '#F1F5F9'] },
+]
+
+// Font combinations with real previews
+const FONT_COMBINATIONS = [
+  { 
+    id: 'modern',
+    name: 'Modern & Clean',
+    heading: 'Inter',
+    body: 'Inter',
+    style: 'font-sans',
+    description: 'Strak en professioneel',
+    preview: 'Welkom bij uw bedrijf'
+  },
+  { 
+    id: 'elegant',
+    name: 'Elegant & Classy',
+    heading: 'Playfair Display',
+    body: 'Lato',
+    style: 'font-serif',
+    description: 'Tijdloos en luxueus',
+    preview: 'Welkom bij uw bedrijf'
+  },
+  { 
+    id: 'bold',
+    name: 'Bold & Impactful',
+    heading: 'Montserrat',
+    body: 'Open Sans',
+    style: 'font-sans font-bold',
+    description: 'Sterk en opvallend',
+    preview: 'WELKOM BIJ UW BEDRIJF'
+  },
+  { 
+    id: 'friendly',
+    name: 'Friendly & Warm',
+    heading: 'Poppins',
+    body: 'Nunito',
+    style: 'font-sans',
+    description: 'Toegankelijk en warm',
+    preview: 'Welkom bij uw bedrijf'
+  },
+  { 
+    id: 'creative',
+    name: 'Creative & Unique',
+    heading: 'Space Grotesk',
+    body: 'DM Sans',
+    style: 'font-sans',
+    description: 'Creatief en uniek',
+    preview: 'Welkom bij uw bedrijf'
+  },
+]
+
+// Design styles with visual examples
+const DESIGN_STYLES = [
+  { 
+    id: 'minimalist',
+    name: 'Minimalistisch',
+    description: 'Veel witruimte, focus op inhoud',
+    visual: '▢ ▢ ▢',
+    gradient: 'from-gray-100 to-white',
+    accent: 'border-gray-300'
+  },
+  { 
+    id: 'modern',
+    name: 'Modern & Strak',
+    description: 'Scherpe lijnen, gestroomlijnd',
+    visual: '◢ ◣',
+    gradient: 'from-blue-50 to-indigo-50',
+    accent: 'border-blue-400'
+  },
+  { 
+    id: 'creative',
+    name: 'Creatief & Speels',
+    description: 'Gedurfd, kleurrijk, uniek',
+    visual: '◯ △ ◇',
+    gradient: 'from-purple-50 to-pink-50',
+    accent: 'border-purple-400'
+  },
+  { 
+    id: 'professional',
+    name: 'Corporate & Zakelijk',
+    description: 'Betrouwbaar, serieus',
+    visual: '▣ ▣ ▣',
+    gradient: 'from-slate-50 to-gray-100',
+    accent: 'border-slate-400'
+  },
+  { 
+    id: 'warm',
+    name: 'Warm & Uitnodigend',
+    description: 'Gezellig, persoonlijk',
+    visual: '◠ ◡ ◠',
+    gradient: 'from-orange-50 to-amber-50',
+    accent: 'border-orange-400'
+  },
+]
+
+// Step 2: Logo & Huisstijl - Enhanced with visual pickers
 export function WebsiteBrandingStep({ data, onChange, disabled }: FormStepProps) {
-  // Show pre-filled design preferences
-  const hasPrefilledDesign = data.designStyle || (data.brandColors && data.brandColors.length > 0) || (data.colorPreferences && data.colorPreferences.length > 0)
+  const [activeColorPicker, setActiveColorPicker] = useState<number | null>(null)
+  const [customColor, setCustomColor] = useState('')
+  
+  // Get selected colors (support both field names)
+  const selectedColors: string[] = data.brandColors || data.colorPreferences || []
+  const selectedFont = data.fontStyle || ''
+  const selectedStyle = data.designStyle || ''
+  
+  // Add a color to selection
+  const addColor = (color: string) => {
+    if (selectedColors.length >= 4) return
+    if (!selectedColors.includes(color)) {
+      onChange('brandColors', [...selectedColors, color])
+    }
+  }
+  
+  // Remove a color
+  const removeColor = (color: string) => {
+    onChange('brandColors', selectedColors.filter(c => c !== color))
+  }
+  
+  // Add custom color
+  const addCustomColor = () => {
+    if (customColor && /^#[0-9A-Fa-f]{6}$/.test(customColor)) {
+      addColor(customColor)
+      setCustomColor('')
+    }
+  }
 
   return (
     <motion.div
       initial={{ opacity: 0, y: 10 }}
       animate={{ opacity: 1, y: 0 }}
-      className="space-y-6"
+      className="space-y-8"
     >
-      <div className="flex items-center gap-3 mb-6">
-        <div className="w-10 h-10 rounded-xl bg-purple-100 dark:bg-purple-900/30 flex items-center justify-center">
-          <Palette className="w-5 h-5 text-purple-600 dark:text-purple-400" />
-        </div>
+      {/* Header */}
+      <div className="flex items-center gap-3">
+        <motion.div 
+          className="w-12 h-12 rounded-xl bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center shadow-lg"
+          animate={{ rotate: [0, 5, -5, 0] }}
+          transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
+        >
+          <Palette className="w-6 h-6 text-white" />
+        </motion.div>
         <div>
-          <h3 className="font-semibold text-gray-900 dark:text-white">Logo & Huisstijl</h3>
-          <p className="text-sm text-gray-500 dark:text-gray-400">Details over je branding</p>
+          <h3 className="font-bold text-lg text-white">Branding & Huisstijl</h3>
+          <p className="text-sm text-gray-400">Maak je website uniek</p>
         </div>
       </div>
 
-      {/* Show pre-filled summary */}
-      {hasPrefilledDesign && (
-        <div className="bg-purple-50 dark:bg-purple-900/20 border border-purple-200 dark:border-purple-800 rounded-xl p-4 mb-6">
-          <div className="flex items-center gap-2 text-purple-700 dark:text-purple-400 font-medium mb-2">
-            <Check className="w-4 h-4" />
-            Gekozen voorkeuren
+      {/* ===== COLOR SELECTION ===== */}
+      <div className="space-y-4">
+        <div className="flex items-center justify-between">
+          <div>
+            <h4 className="font-semibold text-white flex items-center gap-2">
+              <span className="w-5 h-5 rounded-full bg-gradient-to-r from-red-500 via-yellow-500 to-blue-500" />
+              Kleuren
+            </h4>
+            <p className="text-xs text-gray-500 mt-0.5">Kies tot 4 kleuren voor je website</p>
           </div>
-          <div className="flex flex-wrap gap-3 text-sm text-purple-600 dark:text-purple-300">
-            {data.designStyle && (
-              <span className="px-2 py-1 bg-purple-100 dark:bg-purple-900/30 rounded">Stijl: {data.designStyle}</span>
+          <span className="text-xs text-gray-500 bg-gray-800 px-2 py-1 rounded-full">
+            {selectedColors.length}/4 gekozen
+          </span>
+        </div>
+
+        {/* Selected colors preview */}
+        <div className="bg-gray-800/50 rounded-xl p-4 border border-gray-700">
+          <div className="flex items-center gap-3 mb-3">
+            <span className="text-sm text-gray-400">Jouw kleuren:</span>
+            {selectedColors.length === 0 && (
+              <span className="text-xs text-gray-500 italic">Klik op een kleur hieronder</span>
             )}
-            {(data.brandColors || data.colorPreferences)?.map((color: string) => (
-              <span key={color} className="flex items-center gap-1 px-2 py-1 bg-purple-100 dark:bg-purple-900/30 rounded">
-                <span className="w-3 h-3 rounded-full" style={{ backgroundColor: color }} />
-                {color}
-              </span>
+          </div>
+          
+          <div className="flex items-center gap-2 flex-wrap min-h-[48px]">
+            {selectedColors.map((color) => (
+              <motion.button
+                key={color}
+                initial={{ scale: 0 }}
+                animate={{ scale: 1 }}
+                exit={{ scale: 0 }}
+                onClick={() => !disabled && removeColor(color)}
+                className="relative group"
+                disabled={disabled}
+              >
+                <div 
+                  className="w-12 h-12 rounded-xl shadow-lg border-2 border-white/20 transition-transform hover:scale-110"
+                  style={{ backgroundColor: color }}
+                />
+                <div className="absolute inset-0 rounded-xl bg-black/50 opacity-0 group-hover:opacity-100 flex items-center justify-center transition-opacity">
+                  <X className="w-4 h-4 text-white" />
+                </div>
+                <span className="absolute -bottom-5 left-1/2 -translate-x-1/2 text-[10px] text-gray-500 font-mono">
+                  {color}
+                </span>
+              </motion.button>
             ))}
+            
+            {selectedColors.length < 4 && (
+              <div className="relative">
+                <button
+                  onClick={() => setActiveColorPicker(activeColorPicker === -1 ? null : -1)}
+                  disabled={disabled}
+                  className="w-12 h-12 rounded-xl border-2 border-dashed border-gray-600 hover:border-gray-400 flex items-center justify-center transition-colors"
+                >
+                  <Plus className="w-5 h-5 text-gray-500" />
+                </button>
+                
+                {/* Custom color picker */}
+                {activeColorPicker === -1 && (
+                  <motion.div
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    className="absolute top-14 left-0 z-10 bg-gray-800 border border-gray-700 rounded-xl p-3 shadow-xl"
+                  >
+                    <input
+                      type="color"
+                      value={customColor || '#3B82F6'}
+                      onChange={(e) => setCustomColor(e.target.value)}
+                      className="w-24 h-24 rounded-lg cursor-pointer"
+                    />
+                    <div className="flex gap-2 mt-2">
+                      <input
+                        type="text"
+                        value={customColor}
+                        onChange={(e) => setCustomColor(e.target.value)}
+                        placeholder="#000000"
+                        className="flex-1 px-2 py-1 bg-gray-700 border border-gray-600 rounded text-xs text-white font-mono"
+                      />
+                      <button
+                        onClick={addCustomColor}
+                        className="px-2 py-1 bg-primary-500 text-white rounded text-xs"
+                      >
+                        <Check className="w-4 h-4" />
+                      </button>
+                    </div>
+                  </motion.div>
+                )}
+              </div>
+            )}
           </div>
         </div>
+
+        {/* Color palettes */}
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+          {COLOR_PALETTES.map((palette, i) => (
+            <motion.button
+              key={palette.name}
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: i * 0.05 }}
+              onClick={() => {
+                if (disabled) return
+                // Add the primary color of this palette
+                addColor(palette.colors[0])
+              }}
+              disabled={disabled}
+              className="group relative bg-gray-800/50 border border-gray-700 rounded-xl p-3 hover:border-gray-500 transition-all hover:scale-[1.02]"
+            >
+              <div className="flex gap-1 mb-2">
+                {palette.colors.map((color, j) => (
+                  <motion.div
+                    key={j}
+                    className="flex-1 h-8 rounded-md first:rounded-l-lg last:rounded-r-lg"
+                    style={{ backgroundColor: color }}
+                    whileHover={{ scale: 1.1, zIndex: 10 }}
+                    onClick={(e) => {
+                      e.stopPropagation()
+                      if (!disabled) addColor(color)
+                    }}
+                  />
+                ))}
+              </div>
+              <span className="text-xs text-gray-400 group-hover:text-white transition-colors">
+                {palette.name}
+              </span>
+            </motion.button>
+          ))}
+        </div>
+      </div>
+
+      {/* ===== FONT SELECTION ===== */}
+      <div className="space-y-4">
+        <div>
+          <h4 className="font-semibold text-white flex items-center gap-2">
+            <span className="text-xl">Aa</span>
+            Lettertype
+          </h4>
+          <p className="text-xs text-gray-500 mt-0.5">Kies een stijl die bij je past</p>
+        </div>
+
+        <div className="grid gap-3">
+          {FONT_COMBINATIONS.map((font, i) => {
+            const isSelected = selectedFont === font.id
+            
+            return (
+              <motion.button
+                key={font.id}
+                initial={{ opacity: 0, x: -20 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ delay: i * 0.05 }}
+                onClick={() => !disabled && onChange('fontStyle', font.id)}
+                disabled={disabled}
+                className={`
+                  relative text-left p-4 rounded-xl border-2 transition-all
+                  ${isSelected 
+                    ? 'border-primary-500 bg-primary-500/10' 
+                    : 'border-gray-700 bg-gray-800/50 hover:border-gray-500'}
+                `}
+              >
+                <div className="flex items-center justify-between mb-2">
+                  <span className="font-semibold text-white">{font.name}</span>
+                  {isSelected && (
+                    <motion.div
+                      initial={{ scale: 0 }}
+                      animate={{ scale: 1 }}
+                      className="w-6 h-6 rounded-full bg-primary-500 flex items-center justify-center"
+                    >
+                      <Check className="w-4 h-4 text-white" />
+                    </motion.div>
+                  )}
+                </div>
+                
+                {/* Font preview */}
+                <div 
+                  className={`text-2xl text-white mb-1 ${font.style}`}
+                  style={{ fontFamily: font.heading }}
+                >
+                  {font.preview}
+                </div>
+                
+                <div className="flex items-center gap-2 text-xs text-gray-500">
+                  <span>{font.heading}</span>
+                  <span>+</span>
+                  <span>{font.body}</span>
+                  <span className="text-gray-600">•</span>
+                  <span>{font.description}</span>
+                </div>
+              </motion.button>
+            )
+          })}
+        </div>
+      </div>
+
+      {/* ===== DESIGN STYLE ===== */}
+      <div className="space-y-4">
+        <div>
+          <h4 className="font-semibold text-white flex items-center gap-2">
+            <Sparkles className="w-5 h-5 text-amber-400" />
+            Design Stijl
+          </h4>
+          <p className="text-xs text-gray-500 mt-0.5">Welke sfeer past bij jou?</p>
+        </div>
+
+        <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+          {DESIGN_STYLES.map((style, i) => {
+            const isSelected = selectedStyle === style.id
+            
+            return (
+              <motion.button
+                key={style.id}
+                initial={{ opacity: 0, scale: 0.9 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{ delay: i * 0.05 }}
+                onClick={() => !disabled && onChange('designStyle', style.id)}
+                disabled={disabled}
+                className={`
+                  relative text-left p-4 rounded-xl border-2 transition-all overflow-hidden
+                  ${isSelected 
+                    ? `border-primary-500 bg-gradient-to-br ${style.gradient}` 
+                    : 'border-gray-700 bg-gray-800/50 hover:border-gray-500'}
+                `}
+              >
+                {/* Visual indicator */}
+                <div className={`text-3xl mb-2 ${isSelected ? 'text-gray-800' : 'text-gray-500'}`}>
+                  {style.visual}
+                </div>
+                
+                <div className={`font-semibold ${isSelected ? 'text-gray-900' : 'text-white'}`}>
+                  {style.name}
+                </div>
+                <div className={`text-xs mt-0.5 ${isSelected ? 'text-gray-700' : 'text-gray-500'}`}>
+                  {style.description}
+                </div>
+                
+                {isSelected && (
+                  <motion.div
+                    initial={{ scale: 0 }}
+                    animate={{ scale: 1 }}
+                    className="absolute top-2 right-2 w-6 h-6 rounded-full bg-primary-500 flex items-center justify-center"
+                  >
+                    <Check className="w-4 h-4 text-white" />
+                  </motion.div>
+                )}
+              </motion.button>
+            )
+          })}
+        </div>
+      </div>
+
+      {/* ===== LIVE PREVIEW ===== */}
+      {(selectedColors.length > 0 || selectedFont || selectedStyle) && (
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="space-y-3"
+        >
+          <h4 className="font-semibold text-white flex items-center gap-2">
+            <ArrowUpRight className="w-5 h-5 text-emerald-400" />
+            Preview
+          </h4>
+          
+          <div 
+            className="rounded-xl overflow-hidden border border-gray-700 shadow-2xl"
+            style={{ backgroundColor: selectedColors[3] || '#F8FAFC' }}
+          >
+            {/* Browser chrome */}
+            <div className="bg-gray-800 px-4 py-2 flex items-center gap-2">
+              <div className="flex gap-1.5">
+                <div className="w-3 h-3 rounded-full bg-red-500" />
+                <div className="w-3 h-3 rounded-full bg-yellow-500" />
+                <div className="w-3 h-3 rounded-full bg-green-500" />
+              </div>
+              <div className="flex-1 mx-4">
+                <div className="bg-gray-700 rounded-full px-3 py-1 text-xs text-gray-400 flex items-center gap-2">
+                  <span>🔒</span>
+                  <span>{data.businessName || 'jouwbedrijf'}.nl</span>
+                </div>
+              </div>
+            </div>
+            
+            {/* Website mockup */}
+            <div className="p-6" style={{ backgroundColor: selectedColors[3] || '#FFFFFF' }}>
+              {/* Header */}
+              <div className="flex items-center justify-between mb-6">
+                <div 
+                  className="text-xl font-bold"
+                  style={{ color: selectedColors[0] || '#1E293B' }}
+                >
+                  {data.businessName || 'Jouw Bedrijf'}
+                </div>
+                <div className="flex gap-4">
+                  {['Home', 'Over', 'Contact'].map(item => (
+                    <span 
+                      key={item}
+                      className="text-sm"
+                      style={{ color: selectedColors[1] || '#475569' }}
+                    >
+                      {item}
+                    </span>
+                  ))}
+                </div>
+              </div>
+              
+              {/* Hero */}
+              <div className="text-center py-8">
+                <h1 
+                  className={`text-3xl font-bold mb-2 ${
+                    selectedFont === 'elegant' ? 'font-serif' : 
+                    selectedFont === 'bold' ? 'uppercase tracking-wider' : ''
+                  }`}
+                  style={{ color: selectedColors[0] || '#1E293B' }}
+                >
+                  Welkom bij {data.businessName || 'Jouw Bedrijf'}
+                </h1>
+                <p 
+                  className="text-sm mb-4"
+                  style={{ color: selectedColors[1] || '#64748B' }}
+                >
+                  Uw partner voor succes
+                </p>
+                <button
+                  className="px-6 py-2 rounded-lg text-white text-sm font-medium"
+                  style={{ backgroundColor: selectedColors[0] || '#3B82F6' }}
+                >
+                  Neem contact op
+                </button>
+              </div>
+              
+              {/* Feature blocks */}
+              <div className="grid grid-cols-3 gap-3 mt-4">
+                {[1, 2, 3].map(i => (
+                  <div 
+                    key={i}
+                    className="rounded-lg p-3"
+                    style={{ backgroundColor: `${selectedColors[0]}15` || '#F1F5F9' }}
+                  >
+                    <div 
+                      className="w-8 h-8 rounded-lg mb-2"
+                      style={{ backgroundColor: selectedColors[2] || selectedColors[0] || '#3B82F6' }}
+                    />
+                    <div 
+                      className="h-2 rounded w-3/4 mb-1"
+                      style={{ backgroundColor: selectedColors[1] || '#94A3B8' }}
+                    />
+                    <div 
+                      className="h-2 rounded w-1/2"
+                      style={{ backgroundColor: `${selectedColors[1]}60` || '#CBD5E1' }}
+                    />
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+          
+          <p className="text-xs text-gray-500 text-center">
+            Dit is een indicatie. Het uiteindelijke design wordt op maat gemaakt.
+          </p>
+        </motion.div>
       )}
 
-      {/* Logo specifieke vragen */}
-      <RadioGroup
-        label="Heb je al een logo?"
-        name="hasLogo"
-        value={data.hasLogo || ''}
-        onChange={onChange}
-        disabled={disabled}
-        options={[
-          { value: 'yes', label: 'Ja, ik heb een logo', description: 'Upload via de Drive link die we klaarzetten' },
-          { value: 'no', label: 'Nee, nog niet', description: 'We kunnen een logo voor je ontwerpen (apart te bestellen)' },
-          { value: 'need_refresh', label: 'Ja, maar ik wil een nieuw logo', description: 'We bespreken de mogelijkheden' },
-        ]}
-      />
-
-      {data.hasLogo === 'yes' && (
-        <TextArea
-          label="Beschrijf je logo"
-          name="logoDescription"
-          value={data.logoDescription || ''}
+      {/* ===== LOGO SECTION ===== */}
+      <div className="space-y-4 pt-4 border-t border-gray-800">
+        <RadioGroup
+          label="Heb je al een logo?"
+          name="hasLogo"
+          value={data.hasLogo || ''}
           onChange={onChange}
-          placeholder="Beschrijf je logo kort (kleuren, vorm, stijl)"
           disabled={disabled}
-          rows={2}
-          hint="Upload je logobestanden via de Drive link die we voor je klaarzetten"
+          options={[
+            { value: 'yes', label: 'Ja, ik heb een logo', description: 'Upload via de Drive link die we klaarzetten' },
+            { value: 'no', label: 'Nee, nog niet', description: 'We kunnen een logo voor je ontwerpen (apart te bestellen)' },
+            { value: 'need_refresh', label: 'Ja, maar ik wil een nieuw logo', description: 'We bespreken de mogelijkheden' },
+          ]}
         />
-      )}
 
-      <TagInput
-        label="Inspiratie websites"
-        name="inspirationUrls"
-        values={data.inspirationUrls || []}
-        onChange={onChange}
-        placeholder="https://..."
-        disabled={disabled}
-        hint="Websites die je mooi vindt qua design (druk Enter)"
-      />
+        {data.hasLogo === 'yes' && (
+          <TextArea
+            label="Beschrijf je logo"
+            name="logoDescription"
+            value={data.logoDescription || ''}
+            onChange={onChange}
+            placeholder="Beschrijf je logo kort (kleuren, vorm, stijl)"
+            disabled={disabled}
+            rows={2}
+            hint="Upload je logobestanden via de Drive link die we voor je klaarzetten"
+          />
+        )}
+      </div>
 
-      <TextArea
-        label="Extra wensen voor het design"
-        name="designNotes"
-        value={data.designNotes || ''}
-        onChange={onChange}
-        placeholder="Zijn er specifieke elementen die je wilt? Of juist dingen die je wilt vermijden?"
-        disabled={disabled}
-        rows={3}
-      />
+      {/* ===== INSPIRATION ===== */}
+      <div className="space-y-4">
+        <TagInput
+          label="Inspiratie websites"
+          name="inspirationUrls"
+          values={data.inspirationUrls || []}
+          onChange={onChange}
+          placeholder="https://..."
+          disabled={disabled}
+          hint="Websites die je mooi vindt qua design (druk Enter)"
+        />
+
+        <TextArea
+          label="Extra wensen voor het design"
+          name="designNotes"
+          value={data.designNotes || ''}
+          onChange={onChange}
+          placeholder="Zijn er specifieke elementen die je wilt? Of juist dingen die je wilt vermijden?"
+          disabled={disabled}
+          rows={3}
+        />
+      </div>
     </motion.div>
   )
 }

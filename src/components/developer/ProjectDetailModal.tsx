@@ -984,7 +984,7 @@ export default function ProjectDetailModal({
                       color: 'from-purple-500/10 to-pink-500/10',
                       borderColor: 'border-purple-500/20',
                       titleColor: 'text-purple-400',
-                      fields: ['brandColors', 'colorPreferences', 'designStyle', 'designPreferences', 'logoDescription', 'fontPreferences', 'moodboard', 'referenceWebsites', 'inspiration']
+                      fields: ['brandColors', 'colorPreferences', 'fontStyle', 'fontPreferences', 'designStyle', 'webshopStyle', 'designPreferences', 'hasLogo', 'logoDescription', 'inspirationUrls', 'exampleShops', 'referenceWebsites', 'inspiration', 'designNotes', 'moodboard']
                     },
                     doelen: {
                       title: '🎯 Doelen & Strategie',
@@ -1027,10 +1027,16 @@ export default function ProjectDetailModal({
                     usp: 'USP',
                     brandColors: 'Merkleuren',
                     colorPreferences: 'Kleurvoorkeuren',
-                    designStyle: 'Designstijl',
-                    designPreferences: 'Design voorkeuren',
-                    logoDescription: 'Logo omschrijving',
+                    fontStyle: 'Lettertype stijl',
                     fontPreferences: 'Lettertype voorkeuren',
+                    designStyle: 'Designstijl',
+                    webshopStyle: 'Webshop stijl',
+                    designPreferences: 'Design voorkeuren',
+                    hasLogo: 'Heeft logo',
+                    logoDescription: 'Logo omschrijving',
+                    inspirationUrls: 'Inspiratie websites',
+                    exampleShops: 'Voorbeeld webshops',
+                    designNotes: 'Design opmerkingen',
                     moodboard: 'Moodboard',
                     referenceWebsites: 'Referentie websites',
                     inspiration: 'Inspiratie',
@@ -1069,12 +1075,116 @@ export default function ProjectDetailModal({
                     packageType: 'Pakket type'
                   }
                   
-                  // Render value based on type
-                  const renderValue = (value: unknown): React.ReactNode => {
+                  // Font style labels
+                  const fontStyleLabels: Record<string, string> = {
+                    modern: 'Modern & Clean (Inter)',
+                    elegant: 'Elegant & Classy (Playfair Display + Lato)',
+                    bold: 'Bold & Impactful (Montserrat + Open Sans)',
+                    friendly: 'Friendly & Warm (Poppins + Nunito)',
+                    creative: 'Creative & Unique (Space Grotesk + DM Sans)'
+                  }
+                  
+                  // Design style labels
+                  const designStyleLabels: Record<string, string> = {
+                    minimalist: 'Minimalistisch',
+                    minimal: 'Minimalistisch',
+                    modern: 'Modern & Strak',
+                    creative: 'Creatief & Speels',
+                    professional: 'Corporate & Zakelijk',
+                    corporate: 'Zakelijk',
+                    warm: 'Warm & Uitnodigend',
+                    bold: 'Bold & Opvallend',
+                    luxury: 'Luxe & Premium',
+                    playful: 'Speels & Vrolijk'
+                  }
+                  
+                  // Check if value is a color (hex)
+                  const isColor = (val: string): boolean => /^#[0-9A-Fa-f]{6}$/.test(val)
+                  
+                  // Render value based on type and field
+                  const renderValue = (value: unknown, fieldName?: string): React.ReactNode => {
                     if (value === null || value === undefined || value === '') return null
                     if (typeof value === 'boolean') return value ? '✓ Ja' : '✗ Nee'
+                    
+                    // Special handling for font style
+                    if (fieldName === 'fontStyle' && typeof value === 'string') {
+                      return fontStyleLabels[value] || value
+                    }
+                    
+                    // Special handling for design style (includes webshopStyle)
+                    if ((fieldName === 'designStyle' || fieldName === 'webshopStyle') && typeof value === 'string') {
+                      return designStyleLabels[value] || value
+                    }
+                    
+                    // Special handling for hasLogo
+                    if (fieldName === 'hasLogo' && typeof value === 'string') {
+                      const logoLabels: Record<string, string> = {
+                        yes: '✓ Ja, heeft logo',
+                        no: '✗ Nee, geen logo',
+                        need_refresh: '↻ Ja, maar wil nieuw logo'
+                      }
+                      return logoLabels[value] || value
+                    }
+                    
                     if (Array.isArray(value)) {
                       if (value.length === 0) return null
+                      // Check if array contains colors
+                      const hasColors = value.some(v => typeof v === 'string' && isColor(v))
+                      if (hasColors) {
+                        return (
+                          <div className="flex flex-wrap gap-2">
+                            {value.map((item, i) => {
+                              const strItem = String(item)
+                              if (isColor(strItem)) {
+                                return (
+                                  <div key={i} className="flex items-center gap-2 px-2 py-1 bg-gray-700/50 rounded">
+                                    <div 
+                                      className="w-6 h-6 rounded border border-white/20" 
+                                      style={{ backgroundColor: strItem }}
+                                    />
+                                    <span className="text-xs font-mono text-gray-300">{strItem}</span>
+                                  </div>
+                                )
+                              }
+                              return (
+                                <span key={i} className="px-2 py-1 bg-gray-700/50 rounded text-xs text-gray-300">
+                                  {strItem}
+                                </span>
+                              )
+                            })}
+                          </div>
+                        )
+                      }
+                      // Check if array contains URLs
+                      const hasUrls = value.some(v => typeof v === 'string' && v.startsWith('http'))
+                      if (hasUrls) {
+                        return (
+                          <div className="flex flex-col gap-1">
+                            {value.map((item, i) => {
+                              const strItem = String(item)
+                              if (strItem.startsWith('http')) {
+                                return (
+                                  <a 
+                                    key={i} 
+                                    href={strItem} 
+                                    target="_blank" 
+                                    rel="noopener noreferrer"
+                                    className="text-xs text-primary-400 hover:text-primary-300 flex items-center gap-1 truncate"
+                                  >
+                                    <ExternalLink className="w-3 h-3 flex-shrink-0" />
+                                    <span className="truncate">{strItem}</span>
+                                  </a>
+                                )
+                              }
+                              return (
+                                <span key={i} className="px-2 py-1 bg-gray-700/50 rounded text-xs text-gray-300">
+                                  {strItem}
+                                </span>
+                              )
+                            })}
+                          </div>
+                        )
+                      }
                       return (
                         <div className="flex flex-wrap gap-1.5">
                           {value.map((item, i) => (
@@ -1118,7 +1228,7 @@ export default function ProjectDetailModal({
                           </h4>
                           <div className="space-y-2">
                             {cat.fieldsWithData.map(field => {
-                              const value = renderValue(data[field])
+                              const value = renderValue(data[field], field)
                               if (!value) return null
                               return (
                                 <div key={field} className="bg-gray-900/50 rounded-lg p-3">
@@ -1143,7 +1253,7 @@ export default function ProjectDetailModal({
                           </h4>
                           <div className="space-y-2">
                             {uncategorizedFields.map(field => {
-                              const value = renderValue(data[field])
+                              const value = renderValue(data[field], field)
                               if (!value) return null
                               return (
                                 <div key={field} className="bg-gray-900/50 rounded-lg p-3">
