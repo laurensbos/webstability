@@ -462,19 +462,24 @@ export default function ClientOnboarding() {
             ...project.onboardingData,
             
             // Map field names that differ between /start and /intake
-            aboutBusiness: project.onboardingData?.uniqueFeatures || '',
+            aboutBusiness: project.onboardingData?.uniqueFeatures || project.onboardingData?.aboutBusiness || '',
             targetAudience: project.onboardingData?.targetAudience || '',
-            brandColors: project.onboardingData?.colorPreferences || [],
+            brandColors: project.onboardingData?.colorPreferences || project.onboardingData?.brandColors || [],
             designStyle: project.onboardingData?.designStyle || '',
-            mainGoal: project.onboardingData?.goal || '',
+            mainGoal: project.onboardingData?.goal || project.onboardingData?.mainGoal || '',
             // Keep pages as both 'pages' and 'selectedPages' for compatibility
-            pages: project.onboardingData?.pages || [],
-            selectedPages: project.onboardingData?.pages || [],
+            pages: project.onboardingData?.pages || project.onboardingData?.selectedPages || [],
+            selectedPages: project.onboardingData?.selectedPages || project.onboardingData?.pages || [],
           }
           
           setFormData(mappedData)
           setServiceType(project.type || 'website')
           setCanEdit(project.status === 'intake' || project.status === 'onboarding')
+          
+          // Restore current step from saved data
+          if (project.onboardingData?.currentStep && typeof project.onboardingData.currentStep === 'number') {
+            setCurrentStep(project.onboardingData.currentStep)
+          }
           setProjectFound(true)
           // Get unread messages count
           const unread = project.messages?.filter((m: { read: boolean; from: string }) => !m.read && m.from === 'developer')?.length || 0
@@ -493,6 +498,12 @@ export default function ClientOnboarding() {
         setCanEdit(data.canEdit ?? true)
         setServiceType(data.serviceType || 'website')
         setProjectFound(true)
+        
+        // Restore current step from saved data
+        if (data.formData?.currentStep && typeof data.formData.currentStep === 'number') {
+          setCurrentStep(data.formData.currentStep)
+        }
+        
         // Get unread messages count
         const unread = data.messages?.filter((m: { read: boolean; from: string }) => !m.read && m.from === 'developer')?.length || 0
         setUnreadCount(unread)
