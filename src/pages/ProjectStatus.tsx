@@ -271,6 +271,9 @@ export default function ProjectStatusNew() {
   
   // Onboarding state
   const [onboardingCompleted, setOnboardingCompleted] = useState(false)
+  const [uploadsCompleted, setUploadsCompleted] = useState(false)
+  const [confirmingUploads, setConfirmingUploads] = useState(false)
+  const [showUploadConfirm, setShowUploadConfirm] = useState(false)
   
   // Timeline expansion
   const [showTimeline, setShowTimeline] = useState(false)
@@ -281,6 +284,37 @@ export default function ProjectStatusNew() {
   
   // Logo project data
   const [logoData, setLogoData] = useState<LogoProject | null>(null)
+  
+  // Handle uploads complete confirmation
+  const handleConfirmUploadsComplete = async () => {
+    if (!projectId || !project) return
+    setConfirmingUploads(true)
+    try {
+      const response = await fetch('/api/uploads-complete', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ projectId })
+      })
+      if (response.ok) {
+        setUploadsCompleted(true)
+        setShowUploadConfirm(false)
+        // Show success notification
+        setNotifications(prev => [{
+          id: 'uploads-complete-' + Date.now(),
+          type: 'success',
+          title: '✅ Bestanden bevestigd!',
+          message: 'Bedankt! We gaan nu aan de slag met je design.',
+          date: new Date().toISOString()
+        }, ...prev])
+        // Refresh project data
+        fetchProject(projectId)
+      }
+    } catch (err) {
+      console.error('Failed to confirm uploads:', err)
+    } finally {
+      setConfirmingUploads(false)
+    }
+  }
   
   // Review approval handlers
   const handleReviewApprove = async () => {
@@ -567,6 +601,11 @@ export default function ProjectStatusNew() {
       if (data.success && data.projects?.length > 0) {
         const proj = data.projects[0]
         sessionStorage.setItem(`project_auth_${proj.projectId.toUpperCase()}`, 'true')
+        setIsVerified(true)
+        // Fetch project data immediately after login
+        await fetchProject(proj.projectId)
+        fetchMessages(proj.projectId)
+        fetchOnboardingStatus(proj.projectId)
         navigate(`/status/${proj.projectId}`, { replace: true })
       } else {
         setVerifyError('Inloggen mislukt.')
@@ -1399,10 +1438,89 @@ export default function ProjectStatusNew() {
                     </div>
                   ))}
                 </div>
+                
+                {/* Upload complete button */}
+                {!uploadsCompleted && !project.uploadsConfirmed && (
+                  <button
+                    onClick={() => setShowUploadConfirm(true)}
+                    className="w-full mt-4 py-3 bg-gradient-to-r from-green-500 to-emerald-500 hover:from-green-400 hover:to-emerald-400 text-white font-semibold rounded-xl transition shadow-lg shadow-green-500/25 flex items-center justify-center gap-2"
+                  >
+                    <CheckCircle2 className="w-5 h-5" />
+                    Alles geüpload? Klik hier
+                  </button>
+                )}
+                
+                {/* Already confirmed */}
+                {(uploadsCompleted || project.uploadsConfirmed) && (
+                  <div className="mt-4 py-3 bg-green-500/20 text-green-400 font-medium rounded-xl flex items-center justify-center gap-2">
+                    <CheckCircle2 className="w-5 h-5" />
+                    Bestanden bevestigd
+                  </div>
+                )}
               </div>
             )}
           </motion.div>
         )}
+
+        {/* Upload confirmation modal */}
+        <AnimatePresence>
+          {showUploadConfirm && (
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              className="fixed inset-0 bg-black/70 backdrop-blur-sm z-50 flex items-center justify-center p-4"
+              onClick={() => setShowUploadConfirm(false)}
+            >
+              <motion.div
+                initial={{ scale: 0.9, opacity: 0 }}
+                animate={{ scale: 1, opacity: 1 }}
+                exit={{ scale: 0.9, opacity: 0 }}
+                className="bg-gray-800 rounded-2xl p-6 max-w-md w-full border border-gray-700 shadow-2xl"
+                onClick={(e) => e.stopPropagation()}
+              >
+                <div className="text-center">
+                  <div className="w-16 h-16 bg-gradient-to-br from-green-500 to-emerald-500 rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-lg">
+                    <CheckCircle2 className="w-8 h-8 text-white" />
+                  </div>
+                  <h3 className="text-xl font-bold text-white mb-2">Alles geüpload?</h3>
+                  <p className="text-gray-400 mb-6">
+                    Bevestig dat je alle bestanden hebt geüpload (logo, foto's, teksten). Na bevestiging starten we met het design.
+                  </p>
+                  
+                  <div className="bg-amber-500/10 border border-amber-500/30 rounded-xl p-4 mb-6">
+                    <p className="text-amber-400 text-sm">
+                      ⚠️ Let op: na bevestiging kun je nog steeds extra bestanden uploaden, maar we starten wel alvast met wat je nu hebt aangeleverd.
+                    </p>
+                  </div>
+                  
+                  <div className="flex gap-3">
+                    <button
+                      onClick={() => setShowUploadConfirm(false)}
+                      className="flex-1 py-3 bg-gray-700 hover:bg-gray-600 text-white font-medium rounded-xl transition"
+                    >
+                      Annuleren
+                    </button>
+                    <button
+                      onClick={handleConfirmUploadsComplete}
+                      disabled={confirmingUploads}
+                      className="flex-1 py-3 bg-gradient-to-r from-green-500 to-emerald-500 hover:from-green-400 hover:to-emerald-400 text-white font-semibold rounded-xl transition shadow-lg shadow-green-500/25 flex items-center justify-center gap-2 disabled:opacity-50"
+                    >
+                      {confirmingUploads ? (
+                        <Loader2 className="w-5 h-5 animate-spin" />
+                      ) : (
+                        <>
+                          <CheckCircle2 className="w-5 h-5" />
+                          Bevestigen
+                        </>
+                      )}
+                    </button>
+                  </div>
+                </div>
+              </motion.div>
+            </motion.div>
+          )}
+        </AnimatePresence>
 
 
 

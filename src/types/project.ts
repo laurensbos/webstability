@@ -181,6 +181,9 @@ export interface Project {
   // Review goedkeuring
   reviewApproved?: boolean       // Is review goedgekeurd
   reviewApprovedAt?: string      // Wanneer goedgekeurd
+  // Upload bevestiging
+  uploadsConfirmed?: boolean     // Heeft klant bevestigd dat alle uploads klaar zijn
+  uploadsConfirmedAt?: string    // Wanneer bevestigd
   // Change requests tracking
   changesThisMonth?: number      // Aantal aanpassingen deze maand
   changesResetAt?: string        // Wanneer teller reset

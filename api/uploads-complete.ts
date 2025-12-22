@@ -65,6 +65,11 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
     // Update project with uploads complete status
     const now = new Date().toISOString()
+    
+    // Set uploadsConfirmed on the project level for easy access
+    ;(project as Record<string, unknown>).uploadsConfirmed = true
+    ;(project as Record<string, unknown>).uploadsConfirmedAt = now
+    
     project.onboardingData = {
       ...project.onboardingData,
       uploadsCompleted: true,
