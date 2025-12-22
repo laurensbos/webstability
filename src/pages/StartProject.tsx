@@ -581,11 +581,8 @@ export default function StartProject() {
                     animate={{ opacity: 1, x: 0 }}
                     transition={{ delay: 0.1 + index * 0.05 }}
                     onClick={() => setSelectedService(service.id)}
-                    className="relative flex-shrink-0 w-[300px] snap-center text-left rounded-2xl shadow-md active:scale-[0.98] transition-transform overflow-hidden"
+                    className="relative flex-shrink-0 w-[300px] snap-center text-left rounded-2xl shadow-md active:scale-[0.98] transition-transform overflow-hidden border-2 border-gray-200 dark:border-gray-700"
                   >
-                    {/* Border overlay */}
-                    <div className="absolute inset-0 rounded-2xl border-2 border-gray-200 dark:border-gray-700 pointer-events-none z-10" />
-                    
                     {/* Colored header with illustration */}
                     <div className={`bg-gradient-to-br ${service.gradient} p-5 flex flex-col items-center justify-center gap-3 h-[150px] relative overflow-hidden`}>
                       {/* Background decoration */}
@@ -653,11 +650,8 @@ export default function StartProject() {
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: 0.1 + index * 0.1 }}
                   onClick={() => setSelectedService(service.id)}
-                  className="relative group text-left rounded-2xl shadow-md hover:shadow-xl transition-all duration-300 hover:-translate-y-1 overflow-hidden"
+                  className="relative group text-left rounded-2xl shadow-md hover:shadow-xl transition-all duration-300 hover:-translate-y-1 overflow-hidden border-2 border-gray-200 dark:border-gray-700 hover:border-gray-300 dark:hover:border-gray-600"
                 >
-                  {/* Border overlay */}
-                  <div className="absolute inset-0 rounded-2xl border-2 border-gray-200 dark:border-gray-700 group-hover:border-gray-300 dark:group-hover:border-gray-600 pointer-events-none z-10 transition-colors" />
-                  
                   {/* Colored header with illustration */}
                   <div className={`bg-gradient-to-br ${service.gradient} p-5 flex flex-col items-center justify-center gap-3 h-[150px] relative overflow-hidden`}>
                     {/* Background decoration */}
