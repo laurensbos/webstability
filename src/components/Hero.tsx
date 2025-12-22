@@ -80,19 +80,32 @@ export default function Hero() {
             transition={{ duration: 0.6 }}
             className="text-center lg:text-left"
           >
-            {/* Badge above headline */}
-            <motion.div
+            {/* Trustpilot Badge */}
+            <motion.a
+              href="https://nl.trustpilot.com/review/webstability.nl"
+              target="_blank"
+              rel="noopener noreferrer"
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.2 }}
-              className="inline-flex items-center gap-2 bg-gradient-to-r from-primary-50 to-blue-50 border border-primary-200/50 rounded-full px-3 py-1.5 sm:px-4 sm:py-2 mb-4 sm:mb-6"
+              className="inline-flex items-center gap-2.5 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-full px-3 py-1.5 sm:px-4 sm:py-2 mb-4 sm:mb-6 shadow-sm hover:shadow-md hover:border-[#00b67a]/50 transition-all group"
             >
-              <span className="relative flex h-2 w-2">
-                <span className="hidden sm:inline-flex animate-ping absolute h-full w-full rounded-full bg-primary-400 opacity-75"></span>
-                <span className="relative inline-flex rounded-full h-2 w-2 bg-primary-500"></span>
-              </span>
-              <span className="text-xs sm:text-sm font-medium text-primary-700">100+ websites opgeleverd</span>
-            </motion.div>
+              {/* Trustpilot logo */}
+              <svg viewBox="0 0 24 24" className="h-4 w-4 sm:h-5 sm:w-5" aria-label="Trustpilot">
+                <path fill="#00b67a" d="M12 0l2.9 8.8H24l-7.4 5.4 2.9 8.8L12 17.6 4.5 23l2.9-8.8L0 8.8h9.1z"/>
+              </svg>
+              {/* 5 stars */}
+              <div className="flex items-center gap-0.5">
+                {[1, 2, 3, 4, 5].map((i) => (
+                  <div key={i} className="w-4 h-4 sm:w-5 sm:h-5 bg-[#00b67a] flex items-center justify-center">
+                    <Star className="w-3 h-3 sm:w-3.5 sm:h-3.5 text-white fill-white" />
+                  </div>
+                ))}
+              </div>
+              {/* Score */}
+              <span className="text-xs sm:text-sm font-semibold text-gray-700 dark:text-gray-200">4.9</span>
+              <span className="text-xs sm:text-sm text-gray-500 dark:text-gray-400">Trustpilot</span>
+            </motion.a>
 
             {/* Main headline - responsive sizing */}
             <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold text-gray-900 dark:text-white leading-[1.1] mb-4 sm:mb-6 tracking-tight">
