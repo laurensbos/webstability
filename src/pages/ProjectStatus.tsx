@@ -276,6 +276,7 @@ export default function ProjectStatusNew() {
   const [uploadsCompleted, setUploadsCompleted] = useState(false)
   const [confirmingUploads, setConfirmingUploads] = useState(false)
   const [showUploadConfirm, setShowUploadConfirm] = useState(false)
+  const [showDesignTransition, setShowDesignTransition] = useState(false)
   
   // Account modal state
   const [showAccountModal, setShowAccountModal] = useState(false)
@@ -301,16 +302,38 @@ export default function ProjectStatusNew() {
         body: JSON.stringify({ projectId })
       })
       if (response.ok) {
+        const data = await response.json()
         setUploadsCompleted(true)
         setShowUploadConfirm(false)
+        
+        // Show design transition animation
+        if (data.movedToDesign) {
+          setShowDesignTransition(true)
+          
+          // Update local project state immediately to show design phase
+          setProject(prev => prev ? { 
+            ...prev, 
+            status: 'design',
+            uploadsConfirmed: true,
+            uploadsConfirmedAt: new Date().toISOString()
+          } : null)
+          
+          // Hide transition after 4 seconds
+          setTimeout(() => {
+            setShowDesignTransition(false)
+          }, 4000)
+        }
+        
         // Show success notification
         setNotifications(prev => [{
-          id: 'uploads-complete-' + Date.now(),
+          id: 'design-started-' + Date.now(),
           type: 'success',
-          title: '✅ Bestanden bevestigd!',
-          message: 'Bedankt! We gaan nu aan de slag met je design.',
+          title: '🎨 Design fase gestart!',
+          message: 'Je project gaat nu naar de design fase. We gaan aan de slag!',
           date: new Date().toISOString()
         }, ...prev])
+        setShowNotifications(true)
+        
         // Refresh project data
         fetchProject(projectId)
       }
@@ -1563,6 +1586,114 @@ export default function ProjectStatusNew() {
                     </button>
                   </div>
                 </div>
+              </motion.div>
+            </motion.div>
+          )}
+        </AnimatePresence>
+
+        {/* Design Phase Transition Modal */}
+        <AnimatePresence>
+          {showDesignTransition && (
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              className="fixed inset-0 bg-black/80 backdrop-blur-md z-[60] flex items-center justify-center p-4"
+            >
+              <motion.div
+                initial={{ scale: 0.8, opacity: 0, y: 50 }}
+                animate={{ scale: 1, opacity: 1, y: 0 }}
+                exit={{ scale: 0.8, opacity: 0, y: 50 }}
+                transition={{ type: 'spring', damping: 20, stiffness: 200 }}
+                className="max-w-lg w-full text-center"
+              >
+                {/* Animated Icon */}
+                <motion.div
+                  initial={{ scale: 0, rotate: -180 }}
+                  animate={{ scale: 1, rotate: 0 }}
+                  transition={{ delay: 0.2, type: 'spring', damping: 15 }}
+                  className="relative mx-auto mb-8"
+                >
+                  <div className="w-32 h-32 bg-gradient-to-br from-amber-400 via-orange-500 to-pink-500 rounded-3xl flex items-center justify-center shadow-2xl shadow-orange-500/30 mx-auto">
+                    <Palette className="w-16 h-16 text-white" />
+                  </div>
+                  {/* Sparkles around icon */}
+                  <motion.div
+                    animate={{ 
+                      scale: [1, 1.2, 1],
+                      opacity: [0.5, 1, 0.5]
+                    }}
+                    transition={{ repeat: Infinity, duration: 2 }}
+                    className="absolute -top-2 -right-2 w-8 h-8 bg-yellow-400 rounded-full flex items-center justify-center shadow-lg"
+                  >
+                    <span className="text-lg">✨</span>
+                  </motion.div>
+                  <motion.div
+                    animate={{ 
+                      scale: [1, 1.3, 1],
+                      opacity: [0.5, 1, 0.5]
+                    }}
+                    transition={{ repeat: Infinity, duration: 2, delay: 0.5 }}
+                    className="absolute -bottom-1 -left-3 w-6 h-6 bg-pink-400 rounded-full flex items-center justify-center shadow-lg"
+                  >
+                    <span className="text-sm">🎨</span>
+                  </motion.div>
+                </motion.div>
+
+                {/* Text Content */}
+                <motion.div
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.4 }}
+                >
+                  <h2 className="text-3xl sm:text-4xl font-bold text-white mb-4">
+                    Design fase gestart! 🎉
+                  </h2>
+                  <p className="text-lg text-gray-300 mb-6">
+                    Je project gaat nu naar de design fase. We gaan aan de slag met het ontwerp van jouw website!
+                  </p>
+                  
+                  {/* Progress indicator */}
+                  <div className="bg-gray-800/50 rounded-2xl p-4 mb-6 border border-gray-700">
+                    <div className="flex items-center justify-between mb-3">
+                      <span className="text-sm text-gray-400">Voortgang</span>
+                      <span className="text-sm font-semibold text-amber-400">35%</span>
+                    </div>
+                    <div className="h-3 bg-gray-700 rounded-full overflow-hidden">
+                      <motion.div
+                        initial={{ width: '15%' }}
+                        animate={{ width: '35%' }}
+                        transition={{ delay: 0.6, duration: 1, ease: 'easeOut' }}
+                        className="h-full bg-gradient-to-r from-amber-400 via-orange-500 to-pink-500 rounded-full"
+                      />
+                    </div>
+                    <div className="flex justify-between mt-3 text-xs text-gray-500">
+                      <span className="text-green-400">✓ Onboarding</span>
+                      <span className="text-amber-400 font-semibold">→ Design</span>
+                      <span>Development</span>
+                      <span>Live</span>
+                    </div>
+                  </div>
+
+                  <p className="text-sm text-gray-400">
+                    Je ontvangt binnenkort een preview van het ontwerp
+                  </p>
+                </motion.div>
+
+                {/* Auto-close indicator */}
+                <motion.div
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  transition={{ delay: 1 }}
+                  className="mt-8"
+                >
+                  <button
+                    onClick={() => setShowDesignTransition(false)}
+                    className="px-6 py-3 bg-white/10 hover:bg-white/20 text-white font-medium rounded-xl transition-colors"
+                  >
+                    Sluiten
+                  </button>
+                </motion.div>
               </motion.div>
             </motion.div>
           )}

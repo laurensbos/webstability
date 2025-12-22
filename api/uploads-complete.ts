@@ -63,12 +63,18 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       return res.status(404).json({ error: 'Project niet gevonden' })
     }
 
-    // Update project with uploads complete status
+    // Update project with uploads complete status AND move to design phase
     const now = new Date().toISOString()
+    const previousStatus = (project as Record<string, unknown>).status
     
     // Set uploadsConfirmed on the project level for easy access
     ;(project as Record<string, unknown>).uploadsConfirmed = true
     ;(project as Record<string, unknown>).uploadsConfirmedAt = now
+    
+    // Automatically move to design phase
+    ;(project as Record<string, unknown>).status = 'design'
+    ;(project as Record<string, unknown>).phase = 'design'
+    ;(project as Record<string, unknown>).movedToDesignAt = now
     
     project.onboardingData = {
       ...project.onboardingData,
@@ -78,8 +84,10 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     }
 
     await kv.set(`project:${projectId}`, project)
+    
+    console.log(`📊 Project ${projectId} moved from ${previousStatus} to design phase`)
 
-    console.log(`✅ Uploads marked complete for project: ${projectId}`)
+    console.log(`📊 Project ${projectId} moved from ${previousStatus} to design phase`)
 
     // Send notification email to developer
     if (isSmtpConfigured()) {
@@ -88,11 +96,11 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       
       const content = `
         <div style="text-align: center; margin-bottom: 32px;">
-          <div style="width: 80px; height: 80px; background: linear-gradient(135deg, #10b981 0%, #059669 100%); border-radius: 50%; margin: 0 auto 20px; display: flex; align-items: center; justify-content: center;">
-            <span style="font-size: 36px;">📤</span>
+          <div style="width: 80px; height: 80px; background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%); border-radius: 50%; margin: 0 auto 20px; display: flex; align-items: center; justify-content: center;">
+            <span style="font-size: 36px;">🎨</span>
           </div>
-          <h1 style="margin: 0 0 8px; font-size: 28px; font-weight: 700; color: #0f172a;">Uploads Compleet!</h1>
-          <p style="margin: 0; color: #64748b; font-size: 16px;">${customerName} heeft aangegeven dat de bestanden klaar staan</p>
+          <h1 style="margin: 0 0 8px; font-size: 28px; font-weight: 700; color: #0f172a;">Design Fase Gestart!</h1>
+          <p style="margin: 0; color: #64748b; font-size: 16px;">${customerName} heeft de bestanden bevestigd - project gaat naar design</p>
         </div>
         
         <!-- Project Info -->
@@ -142,7 +150,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         <!-- Next Step Reminder -->
         <div style="background: #fef3c7; border-radius: 10px; padding: 16px; margin-top: 24px;">
           <p style="margin: 0; color: #92400e; font-size: 14px;">
-            <strong>📋 Volgende stap:</strong> Bekijk de aangeleverde bestanden en start met het design zodra alles compleet is.
+            <strong>🎨 Status update:</strong> Het project is automatisch naar de design fase verplaatst. Start met het ontwerp!
           </p>
         </div>
       `
@@ -150,8 +158,8 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       try {
         await sendEmail({
           to: SMTP_USER || 'info@webstability.nl',
-          subject: `📤 ${customerName} - Uploads compleet (${projectId})`,
-          html: baseTemplate(content, '#10b981'),
+          subject: `🎨 ${customerName} - Design fase gestart (${projectId})`,
+          html: baseTemplate(content, '#f59e0b'),
         })
 
         // Log email
@@ -160,13 +168,13 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
           projectName: customerName,
           recipientEmail: SMTP_USER || 'info@webstability.nl',
           recipientName: 'Developer',
-          type: 'other',
-          subject: `Uploads compleet - ${customerName}`,
-          details: 'Developer notificatie: klant heeft uploads voltooid',
+          type: 'phase_change',
+          subject: `Design fase gestart - ${customerName}`,
+          details: 'Project automatisch naar design fase na upload bevestiging',
           success: true
         })
 
-        console.log(`Developer notification sent for uploads complete: ${projectId}`)
+        console.log(`Developer notification sent for design phase start: ${projectId}`)
       } catch (emailError) {
         console.error('Failed to send developer notification:', emailError)
       }
@@ -174,8 +182,10 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
     return res.status(200).json({ 
       success: true, 
-      message: 'Uploads gemarkeerd als compleet',
-      uploadsCompletedAt: now
+      message: 'Project verplaatst naar design fase',
+      uploadsCompletedAt: now,
+      newStatus: 'design',
+      movedToDesign: true
     })
 
   } catch (error) {
