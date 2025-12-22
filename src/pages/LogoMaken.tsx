@@ -6,7 +6,6 @@ import {
   CheckCircle,
   ArrowRight,
   Sparkles,
-  Zap,
   RefreshCw
 } from 'lucide-react'
 import { Link } from 'react-router-dom'
@@ -14,21 +13,17 @@ import Header from '../components/Header'
 import Footer from '../components/Footer'
 import TrustpilotReviews from '../components/TrustpilotReviews'
 
-// Floating particles component with purple accents
+// Floating particles - ONLY on desktop for performance
 function FloatingParticles() {
   const particles = [
     { size: 4, x: '10%', y: '20%', delay: 0, duration: 4 },
     { size: 6, x: '20%', y: '60%', delay: 1, duration: 5 },
     { size: 3, x: '80%', y: '30%', delay: 0.5, duration: 4.5 },
     { size: 5, x: '70%', y: '70%', delay: 1.5, duration: 5.5 },
-    { size: 4, x: '90%', y: '50%', delay: 2, duration: 4 },
-    { size: 7, x: '15%', y: '80%', delay: 0.8, duration: 6 },
-    { size: 3, x: '60%', y: '15%', delay: 1.2, duration: 4.2 },
-    { size: 5, x: '40%', y: '85%', delay: 0.3, duration: 5.3 },
   ]
 
   return (
-    <>
+    <div className="hidden lg:block">
       {particles.map((p, i) => (
         <motion.div
           key={i}
@@ -53,7 +48,7 @@ function FloatingParticles() {
           }}
         />
       ))}
-    </>
+    </div>
   )
 }
 
@@ -61,32 +56,22 @@ const features = [
   {
     icon: Palette,
     title: 'Uniek ontwerp',
-    description: 'Een logo dat perfect past bij jouw merk en onderscheidend is van de concurrentie.'
+    description: 'Logo dat onderscheidt.'
   },
   {
     icon: Layers,
     title: 'Meerdere varianten',
-    description: 'Je ontvangt verschillende versies: kleur, zwart-wit en varianten voor diverse toepassingen.'
+    description: 'Kleur, zwart-wit, varianten.'
   },
   {
     icon: RefreshCw,
     title: '2 revisierondes',
-    description: 'Niet 100% tevreden? Je krijgt twee aanpassingsrondes om tot het perfecte resultaat te komen.'
+    description: 'Tot het perfect is.'
   },
   {
     icon: FileImage,
-    title: 'Alle bestandsformaten',
-    description: 'PNG, JPG, SVG en PDF. Geschikt voor web, print en sociale media.'
-  },
-  {
-    icon: Zap,
-    title: 'Snelle levering',
-    description: 'Eerste concepten binnen 5 werkdagen. Definitieve bestanden binnen 2 weken.'
-  },
-  {
-    icon: Sparkles,
-    title: 'Professionele kwaliteit',
-    description: 'Ontworpen door ervaren designers met oog voor detail en merkidentiteit.'
+    title: 'Alle formaten',
+    description: 'PNG, SVG, PDF, JPG.'
   },
 ]
 
@@ -107,42 +92,18 @@ export default function LogoMaken() {
       <Header />
 
       <main>
-        {/* Hero - with particles and effects */}
-        <section className="relative min-h-[70vh] flex items-center overflow-hidden bg-gradient-to-br from-slate-50 via-purple-50/30 to-white dark:from-gray-900 dark:via-purple-900/10 dark:to-gray-900 pt-20">
-          {/* Background decorations */}
+        {/* Hero - Mobile optimized */}
+        <section className="relative min-h-[60vh] lg:min-h-[70vh] flex items-center overflow-hidden bg-gradient-to-br from-slate-50 via-purple-50/30 to-white dark:from-gray-900 dark:via-purple-900/10 dark:to-gray-900 pt-20">
+          {/* Background - simplified on mobile */}
           <div className="absolute inset-0 overflow-hidden pointer-events-none">
-            {/* Gradient blobs - animated */}
-            <motion.div 
-              className="absolute top-0 right-0 w-[900px] h-[900px] bg-gradient-to-br from-purple-200/60 via-violet-100/40 to-pink-100/30 dark:from-purple-800/30 dark:via-violet-900/20 dark:to-pink-900/10 rounded-full blur-3xl -translate-y-1/3 translate-x-1/4"
-              animate={{ 
-                scale: [1, 1.05, 1],
-                rotate: [0, 5, 0]
-              }}
-              transition={{ duration: 8, repeat: Infinity, ease: "easeInOut" }}
-            />
-            <motion.div 
-              className="absolute bottom-0 left-0 w-[700px] h-[700px] bg-gradient-to-tr from-violet-100/50 via-purple-100/40 to-transparent dark:from-violet-900/30 dark:via-purple-900/20 dark:to-transparent rounded-full blur-3xl translate-y-1/3 -translate-x-1/4"
-              animate={{ 
-                scale: [1, 1.08, 1],
-                rotate: [0, -5, 0]
-              }}
-              transition={{ duration: 10, repeat: Infinity, ease: "easeInOut" }}
-            />
-            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] bg-gradient-to-r from-pink-100/30 via-purple-100/20 to-violet-100/30 dark:from-pink-900/20 dark:via-purple-900/10 dark:to-violet-900/20 rounded-full blur-3xl" />
-            
-            {/* Floating particles */}
+            <div className="absolute top-0 right-0 w-[400px] lg:w-[900px] h-[400px] lg:h-[900px] bg-gradient-to-br from-purple-200/60 via-violet-100/40 to-pink-100/30 dark:from-purple-800/30 dark:via-violet-900/20 dark:to-pink-900/10 rounded-full blur-3xl -translate-y-1/3 translate-x-1/4" />
             <FloatingParticles />
-            
-            {/* Subtle grid */}
-            <div className="absolute inset-0 bg-[linear-gradient(to_right,#e9d5ff33_1px,transparent_1px),linear-gradient(to_bottom,#e9d5ff33_1px,transparent_1px)] dark:bg-[linear-gradient(to_right,#4c1d9533_1px,transparent_1px),linear-gradient(to_bottom,#4c1d9533_1px,transparent_1px)] bg-[size:4rem_4rem] [mask-image:radial-gradient(ellipse_80%_50%_at_50%_0%,#000_70%,transparent_110%)]" />
-            
-            {/* Decorative rings */}
-            <div className="absolute top-20 right-20 w-32 h-32 border border-purple-200/30 dark:border-purple-700/30 rounded-full" />
-            <div className="absolute top-24 right-24 w-24 h-24 border border-purple-300/20 dark:border-purple-600/20 rounded-full" />
-            <div className="absolute bottom-32 left-20 w-20 h-20 border border-violet-200/40 dark:border-violet-700/40 rounded-full" />
+            {/* Decorative rings - desktop only */}
+            <div className="hidden lg:block absolute top-20 right-20 w-32 h-32 border border-purple-200/30 dark:border-purple-700/30 rounded-full" />
+            <div className="hidden lg:block absolute top-24 right-24 w-24 h-24 border border-purple-300/20 dark:border-purple-600/20 rounded-full" />
           </div>
 
-          <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 lg:py-24">
+          <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 lg:py-24">
             <div className="max-w-3xl mx-auto text-center">
               <motion.div
                 initial={{ opacity: 0, y: 20 }}
@@ -152,39 +113,57 @@ export default function LogoMaken() {
                   initial={{ opacity: 0, scale: 0.9 }}
                   animate={{ opacity: 1, scale: 1 }}
                   transition={{ delay: 0.1 }}
-                  className="inline-flex items-center gap-2 bg-gradient-to-r from-purple-50 to-violet-50 dark:from-purple-900/30 dark:to-violet-900/30 border border-purple-200/50 dark:border-purple-700/50 rounded-full px-4 py-2 mb-6"
+                  className="inline-flex items-center gap-2 bg-gradient-to-r from-purple-50 to-violet-50 dark:from-purple-900/30 dark:to-violet-900/30 border border-purple-200/50 dark:border-purple-700/50 rounded-full px-3 py-1.5 mb-4 lg:mb-6"
                 >
-                  <Palette className="w-4 h-4 text-purple-600 dark:text-purple-400" />
-                  <span className="text-sm font-medium text-purple-700 dark:text-purple-300">Logo laten maken</span>
+                  <Palette className="w-3.5 h-3.5 lg:w-4 lg:h-4 text-purple-600 dark:text-purple-400" />
+                  <span className="text-xs lg:text-sm font-medium text-purple-700 dark:text-purple-300">Logo laten maken</span>
                 </motion.div>
 
-                <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold text-gray-900 dark:text-white mb-6 leading-tight">
-                  Een professioneel{' '}
+                <h1 className="text-2xl sm:text-3xl lg:text-5xl xl:text-6xl font-bold text-gray-900 dark:text-white mb-3 lg:mb-6 leading-tight">
+                  Professioneel{' '}
                   <span className="bg-gradient-to-r from-purple-600 to-violet-600 bg-clip-text text-transparent">logo</span>
-                  <br />voor jouw merk
+                  {' '}voor jouw merk
                 </h1>
 
-                <p className="text-xl text-gray-600 dark:text-gray-300 mb-8 max-w-2xl mx-auto">
-                  Jouw logo is het gezicht van je bedrijf. Wij ontwerpen een uniek, 
-                  tijdloos logo dat perfect past bij jouw merkidentiteit.
+                <p className="text-sm sm:text-base lg:text-xl text-gray-600 dark:text-gray-300 mb-5 lg:mb-8 max-w-xl mx-auto">
+                  Uniek, tijdloos logo dat past bij jouw merkidentiteit. Eenmalig €169.
                 </p>
 
-                <div className="flex flex-col sm:flex-row gap-4 justify-center">
+                <div className="flex flex-col sm:flex-row gap-3 justify-center">
                   <Link
                     to="/start?dienst=logo"
-                    className="group inline-flex items-center justify-center gap-2 px-8 py-4 bg-gradient-to-r from-purple-500 to-purple-600 hover:from-purple-600 hover:to-purple-700 text-white font-semibold rounded-xl transition-all shadow-lg shadow-purple-500/25 hover:shadow-purple-500/40 hover:-translate-y-0.5"
+                    className="group inline-flex items-center justify-center gap-2 px-5 py-3 lg:px-8 lg:py-4 bg-gradient-to-r from-purple-500 to-purple-600 hover:from-purple-600 hover:to-purple-700 text-white font-semibold rounded-xl transition-all shadow-lg shadow-purple-500/25"
                   >
                     Logo aanvragen
-                    <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
+                    <ArrowRight className="w-4 h-4 lg:w-5 lg:h-5 group-hover:translate-x-1 transition-transform" />
                   </Link>
                   <a
                     href="#features"
-                    className="inline-flex items-center justify-center px-8 py-4 bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm hover:bg-white dark:hover:bg-gray-800 text-gray-700 dark:text-gray-200 font-semibold rounded-xl border border-gray-200 dark:border-gray-700 transition-all hover:shadow-lg"
+                    className="inline-flex items-center justify-center px-5 py-3 lg:px-8 lg:py-4 bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm text-gray-700 dark:text-gray-200 font-semibold rounded-xl border border-gray-200 dark:border-gray-700 transition-all"
                   >
-                    Bekijk wat je krijgt
+                    Wat je krijgt
                   </a>
                 </div>
               </motion.div>
+            </div>
+          </div>
+        </section>
+
+        {/* USP Bar - Mobile optimized */}
+        <section className="py-8 lg:py-12 bg-white dark:bg-gray-900 border-b border-gray-100 dark:border-gray-800">
+          <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+              {features.map((feature, i) => (
+                <div key={i} className="flex items-start gap-3 p-3 lg:p-4 bg-gray-50 dark:bg-gray-800 rounded-xl">
+                  <div className="w-9 h-9 lg:w-10 lg:h-10 bg-gradient-to-br from-purple-500 to-violet-600 rounded-lg flex items-center justify-center flex-shrink-0">
+                    <feature.icon className="w-4 h-4 lg:w-5 lg:h-5 text-white" />
+                  </div>
+                  <div>
+                    <h3 className="font-semibold text-gray-900 dark:text-white text-sm">{feature.title}</h3>
+                    <p className="text-xs text-gray-500 dark:text-gray-400 hidden lg:block">{feature.description}</p>
+                  </div>
+                </div>
+              ))}
             </div>
           </div>
         </section>

@@ -98,7 +98,7 @@ const PACKAGES: PackageType[] = [
   {
     id: 'starter',
     name: 'Starter',
-    price: '€99',
+    price: '€119',
     priceLabel: '/maand incl. BTW',
     setupFee: 99,
     monthlyFee: 99,

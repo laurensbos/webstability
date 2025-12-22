@@ -6,7 +6,7 @@ const faqs = [
 	{
 		question: 'Wat zijn de opstartkosten?',
 		answer:
-			'Voor websites betaal je eenmalig vanaf €99 opstartkosten, voor webshops is dit vanaf €249 (alle prijzen incl. BTW). Als ondernemer kun je de 21% BTW terugvragen bij je belastingaangifte. Daarna betaal je alleen het maandelijkse bedrag. Hosting, SSL-certificaat, domeinbeheer en onderhoud zijn allemaal inbegrepen.',
+			'Voor websites betaal je eenmalig vanaf €149 opstartkosten, voor webshops is dit vanaf €299 (alle prijzen incl. BTW). Als ondernemer kun je de 21% BTW terugvragen bij je belastingaangifte. Daarna betaal je alleen het maandelijkse bedrag. Hosting, SSL-certificaat, domeinbeheer en onderhoud zijn allemaal inbegrepen.',
 	},
 	{
 		question: 'Hoe lang duurt het voordat mijn website online staat?',

@@ -77,7 +77,7 @@ export default function Hero() {
           <motion.div
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6 }}
+            transition={{ duration: 0.5 }}
             className="text-center lg:text-left"
           >
             {/* Trustpilot Badge */}
@@ -85,9 +85,9 @@ export default function Hero() {
               href="https://nl.trustpilot.com/review/webstability.nl"
               target="_blank"
               rel="noopener noreferrer"
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.2 }}
+              initial={{ opacity: 0, y: 15, scale: 0.95 }}
+              animate={{ opacity: 1, y: 0, scale: 1 }}
+              transition={{ delay: 0.1, duration: 0.4, ease: "easeOut" }}
               className="inline-flex items-center gap-2.5 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-full px-3 py-1.5 sm:px-4 sm:py-2 mb-4 sm:mb-6 shadow-sm hover:shadow-md hover:border-[#00b67a]/50 transition-all group"
             >
               {/* Trustpilot logo */}
@@ -108,17 +108,22 @@ export default function Hero() {
             </motion.a>
 
             {/* Main headline - responsive sizing */}
-            <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold text-gray-900 dark:text-white leading-[1.1] mb-4 sm:mb-6 tracking-tight">
-              Een website die{' '}
+            <motion.h1 
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.25, duration: 0.5, ease: "easeOut" }}
+              className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold text-gray-900 dark:text-white leading-[1.1] mb-4 sm:mb-6 tracking-tight"
+            >
+              Jouw website,{' '}
               <span className="relative inline-block">
                 <span className="relative z-10 bg-gradient-to-r from-primary-600 via-primary-500 to-blue-500 bg-clip-text text-transparent">
-                  klanten oplevert
+                  binnen 7 dagen live
                 </span>
                 {/* Animated underline - subtle curved line */}
                 <motion.svg
                   initial={{ pathLength: 0, opacity: 0 }}
                   animate={{ pathLength: 1, opacity: 1 }}
-                  transition={{ delay: 0.5, duration: 0.8, ease: "easeOut" }}
+                  transition={{ delay: 0.7, duration: 0.6, ease: "easeOut" }}
                   className="absolute -bottom-1 sm:-bottom-2 left-0 w-full h-2 sm:h-3"
                   viewBox="0 0 200 8"
                   fill="none"
@@ -143,18 +148,23 @@ export default function Hero() {
                   </defs>
                 </motion.svg>
               </span>
-            </h1>
+            </motion.h1>
 
             {/* Subheadline */}
-            <p className="text-base sm:text-lg md:text-xl text-gray-600 dark:text-gray-300 mb-6 sm:mb-8 max-w-lg mx-auto lg:mx-0 leading-relaxed">
-              Professionele website binnen 7 dagen. Geen technisch gedoe, geen verborgen kosten. Focus op je bedrijf, wij regelen de rest.
-            </p>
+            <motion.p 
+              initial={{ opacity: 0, y: 15 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.4, duration: 0.5, ease: "easeOut" }}
+              className="text-base sm:text-lg md:text-xl text-gray-600 dark:text-gray-300 mb-6 sm:mb-8 max-w-lg mx-auto lg:mx-0 leading-relaxed"
+            >
+              Hosting, updates & support inbegrepen. Eigen klantportaal voor wijzigingen. Gewoon ondernemen, wij regelen de rest.
+            </motion.p>
 
             {/* CTA buttons - stacked on mobile */}
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.4 }}
+              transition={{ delay: 0.55, duration: 0.5, ease: "easeOut" }}
               className="flex flex-col sm:flex-row items-center gap-3 sm:gap-4 max-w-md mx-auto lg:mx-0"
             >
               <a
@@ -177,9 +187,9 @@ export default function Hero() {
 
             {/* Trust indicators - always side by side */}
             <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ delay: 0.6 }}
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.7, duration: 0.5, ease: "easeOut" }}
               className="mt-6 sm:mt-8 flex flex-row flex-wrap items-center gap-2 sm:gap-4 justify-center lg:justify-start"
             >
               <div className="flex items-center gap-1.5 sm:gap-2 text-xs sm:text-sm text-gray-600 dark:text-gray-300 bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm border border-gray-100 dark:border-gray-700 rounded-full px-2.5 py-1.5 sm:px-4 sm:py-2">

@@ -1,6 +1,6 @@
 import { motion } from 'framer-motion'
-import { Check, ArrowRight, Sparkles, Shield, Clock, CreditCard } from 'lucide-react'
-import { packages } from '../data/packages'
+import { Check, ArrowRight, Sparkles, Shield, Clock, CreditCard, Zap } from 'lucide-react'
+import { packages, getDeliveryText } from '../data/packages'
 import { useState, useRef, useEffect } from 'react'
 
 export default function Pricing() {
@@ -13,7 +13,7 @@ export default function Pricing() {
 		
 		// Scroll to professional package on mount (mobile)
 		if (window.innerWidth < 1024) {
-			const cardWidth = 280 + 16 // card width + gap
+			const cardWidth = 300 + 16 // card width + gap
 			el.scrollLeft = cardWidth * 1 // Scroll to second card (professional)
 		}
 	}, [])
@@ -21,7 +21,7 @@ export default function Pricing() {
 	// Track active card on scroll
 	const handleScroll = () => {
 		if (!scrollRef.current) return
-		const cardWidth = 280 + 16
+		const cardWidth = 300 + 16
 		const index = Math.round(scrollRef.current.scrollLeft / cardWidth)
 		setActiveIndex(Math.min(index, packages.length - 1))
 	}
@@ -30,22 +30,22 @@ export default function Pricing() {
 		{
 			icon: Sparkles,
 			title: 'Gratis design',
-			description: 'Wij maken eerst een ontwerp. Vind je het niks? Dan stop je gewoon.'
+			description: 'Eerst een ontwerp, pas betalen als je tevreden bent'
 		},
 		{
 			icon: CreditCard,
 			title: 'Betaal na goedkeuring',
-			description: 'Pas na goedkeuring van het design betaal je. Geen cent ervoor.'
+			description: 'Geen cent vooraf, pas na akkoord op design'
 		},
 		{
 			icon: Shield,
 			title: '14 dagen geld-terug',
-			description: 'Niet tevreden na lancering? Volledige terugbetaling, geen vragen.'
+			description: 'Niet tevreden? Volledige terugbetaling'
 		},
 		{
 			icon: Clock,
 			title: 'Maandelijks opzegbaar',
-			description: 'Na 3 maanden kun je elk moment stoppen. Geen lange contracten.'
+			description: 'Na 3 maanden kun je elk moment stoppen'
 		}
 	]
 
@@ -78,7 +78,7 @@ export default function Pricing() {
 						</p>
 					</div>
 
-					{/* Risk-free features grid */}
+					{/* Risk-free features grid - 2x2 on mobile */}
 					<div className="grid grid-cols-2 lg:grid-cols-4 gap-3 lg:gap-4">
 						{riskFreeFeatures.map((feature, index) => (
 							<motion.div
@@ -87,15 +87,15 @@ export default function Pricing() {
 								whileInView={{ opacity: 1, y: 0 }}
 								viewport={{ once: true }}
 								transition={{ delay: index * 0.1 }}
-								className="bg-gradient-to-br from-white to-gray-50 dark:from-gray-800 dark:to-gray-900 border border-gray-100 dark:border-gray-700 rounded-xl p-4 lg:p-5 text-center hover:border-emerald-200 dark:hover:border-emerald-800 hover:shadow-lg hover:shadow-emerald-100 dark:hover:shadow-emerald-900/20 transition-all"
+								className="bg-gradient-to-br from-white to-gray-50 dark:from-gray-800 dark:to-gray-900 border border-gray-100 dark:border-gray-700 rounded-xl p-3 lg:p-5 text-center"
 							>
-								<div className="w-10 h-10 lg:w-12 lg:h-12 bg-gradient-to-br from-emerald-100 to-green-100 dark:from-emerald-900/50 dark:to-green-900/50 rounded-xl flex items-center justify-center mx-auto mb-3">
+								<div className="w-10 h-10 lg:w-12 lg:h-12 bg-gradient-to-br from-emerald-100 to-green-100 dark:from-emerald-900/50 dark:to-green-900/50 rounded-xl flex items-center justify-center mx-auto mb-2 lg:mb-3">
 									<feature.icon className="w-5 h-5 lg:w-6 lg:h-6 text-emerald-600 dark:text-emerald-400" />
 								</div>
-								<h3 className="font-semibold text-gray-900 dark:text-white text-sm lg:text-base mb-1">
+								<h3 className="font-semibold text-gray-900 dark:text-white text-sm lg:text-base mb-0.5 lg:mb-1">
 									{feature.title}
 								</h3>
-								<p className="text-xs lg:text-sm text-gray-500 dark:text-gray-400 leading-relaxed">
+								<p className="text-xs lg:text-sm text-gray-500 dark:text-gray-400 leading-snug">
 									{feature.description}
 								</p>
 							</motion.div>
@@ -104,7 +104,7 @@ export default function Pricing() {
 				</motion.div>
 
 				{/* Divider */}
-				<div className="flex items-center gap-4 mb-12 lg:mb-16">
+				<div className="flex items-center gap-4 mb-10 lg:mb-12">
 					<div className="flex-1 h-px bg-gradient-to-r from-transparent via-gray-200 dark:via-gray-700 to-transparent" />
 					<span className="text-xs font-medium text-gray-400 dark:text-gray-500 uppercase tracking-wider">Kies je pakket</span>
 					<div className="flex-1 h-px bg-gradient-to-r from-transparent via-gray-200 dark:via-gray-700 to-transparent" />
@@ -126,7 +126,7 @@ export default function Pricing() {
 						whileInView={{ opacity: 1, y: 0 }}
 						viewport={{ once: true }}
 						transition={{ delay: 0.1 }}
-						className="text-gray-600 dark:text-gray-400 text-base lg:text-lg"
+						className="text-gray-600 dark:text-gray-400 text-base lg:text-lg mb-4"
 					>
 						Inclusief hosting, SSL, onderhoud, updates en support. Geen verrassingen.
 					</motion.p>
@@ -134,11 +134,16 @@ export default function Pricing() {
 
 				{/* Mobile: Horizontal scroll carousel */}
 				<div className="lg:hidden relative">
-					{/* Cards container */}
+					{/* Swipe hint */}
+					<div className="flex items-center justify-center gap-2 text-xs text-gray-400 dark:text-gray-500 mb-3">
+						<span>← Swipe voor meer →</span>
+					</div>
+
+					{/* Cards container - pt-5 voor ruimte boven "Meest gekozen" badge */}
 					<div
 						ref={scrollRef}
 						onScroll={handleScroll}
-						className="flex gap-4 overflow-x-auto pb-4 px-2 snap-x snap-mandatory scrollbar-hide -mx-4 px-4"
+						className="flex gap-4 overflow-x-auto pt-5 pb-4 snap-x snap-mandatory scrollbar-hide -mx-4 px-4"
 						style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
 					>
 						{packages.map((pkg, index) => (
@@ -148,12 +153,10 @@ export default function Pricing() {
 								whileInView={{ opacity: 1, y: 0 }}
 								viewport={{ once: true }}
 								transition={{ delay: index * 0.1 }}
-								className={`flex-shrink-0 w-[280px] snap-center relative rounded-2xl p-5 flex flex-col bg-white dark:bg-gray-800 transition-all duration-300 ${
+								className={`flex-shrink-0 w-[300px] snap-center relative rounded-2xl p-5 flex flex-col bg-white dark:bg-gray-800 transition-all duration-300 ${
 									pkg.popular
-										? 'border-2 border-primary-500 shadow-lg shadow-primary-100 dark:shadow-primary-900/30 mt-4'
-										: pkg.id === 'webshop'
-											? 'border-2 border-emerald-500 shadow-lg shadow-emerald-100 dark:shadow-emerald-900/30'
-											: 'border border-gray-200 dark:border-gray-700'
+										? 'border-2 border-primary-500 shadow-lg shadow-primary-100 dark:shadow-primary-900/30'
+										: 'border border-gray-200 dark:border-gray-700'
 								}`}
 							>
 								{pkg.popular && (
@@ -184,10 +187,18 @@ export default function Pricing() {
 										+ €{pkg.setupFee} eenmalige opstartkosten
 									</p>
 								</div>
+
+								{/* Delivery time badge */}
+								<div className="flex items-center gap-2 mb-4 px-3 py-2 bg-primary-50 dark:bg-primary-900/20 rounded-lg">
+									<Zap className="w-4 h-4 text-primary-600 dark:text-primary-400" />
+									<span className="text-xs font-medium text-primary-700 dark:text-primary-300">
+										{getDeliveryText(pkg.deliveryDays)}
+									</span>
+								</div>
 								
-								{/* Features list - compact for mobile */}
-								<ul className="space-y-2 mb-4 flex-grow">
-									{pkg.features.slice(0, 5).map((feature, i) => (
+								{/* Features list */}
+								<ul className="space-y-2.5 mb-4 flex-grow">
+									{pkg.features.map((feature, i) => (
 										<li key={i} className="flex items-start gap-2">
 											<Check className="w-4 h-4 mt-0.5 flex-shrink-0 text-primary-500" />
 											<span className="text-sm text-gray-600 dark:text-gray-300">
@@ -195,12 +206,21 @@ export default function Pricing() {
 											</span>
 										</li>
 									))}
-									{pkg.features.length > 5 && (
-										<li className="text-xs text-gray-400 pl-6">
-											+{pkg.features.length - 5} meer...
-										</li>
-									)}
 								</ul>
+
+								{/* Support & revisions info */}
+								<div className="text-xs text-gray-500 dark:text-gray-400 mb-4 pt-3 border-t border-gray-100 dark:border-gray-700">
+									<div className="flex justify-between mb-1">
+										<span>Support reactietijd:</span>
+										<span className="font-medium text-gray-700 dark:text-gray-300">{pkg.supportResponseTime}</span>
+									</div>
+									<div className="flex justify-between">
+										<span>Wijzigingen/maand:</span>
+										<span className="font-medium text-gray-700 dark:text-gray-300">
+											{pkg.revisionsPerMonth === 'unlimited' ? 'Onbeperkt' : pkg.revisionsPerMonth}
+										</span>
+									</div>
+								</div>
 								
 								{/* CTA Button */}
 								<a
@@ -208,9 +228,7 @@ export default function Pricing() {
 									className={`w-full py-3 px-4 rounded-xl font-semibold text-sm text-center transition-all flex items-center justify-center gap-2 ${
 										pkg.popular
 											? 'bg-primary-500 hover:bg-primary-600 text-white shadow-md shadow-primary-200 dark:shadow-primary-900/30'
-											: pkg.id === 'webshop'
-												? 'bg-emerald-500 hover:bg-emerald-600 text-white shadow-md shadow-emerald-200 dark:shadow-emerald-900/30'
-												: 'bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 text-gray-900 dark:text-white'
+											: 'bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 text-gray-900 dark:text-white'
 									}`}
 								>
 									Kies {pkg.name}
@@ -221,13 +239,13 @@ export default function Pricing() {
 					</div>
 
 					{/* Dot indicators */}
-					<div className="flex justify-center gap-2 mt-4">
+					<div className="flex justify-center gap-2 mt-4 mb-8">
 						{packages.map((_, index) => (
 							<button
 								key={index}
 								onClick={() => {
 									if (!scrollRef.current) return
-									const cardWidth = 280 + 16
+									const cardWidth = 300 + 16
 									scrollRef.current.scrollTo({ left: cardWidth * index, behavior: 'smooth' })
 								}}
 								className={`w-2 h-2 rounded-full transition-all ${
@@ -242,7 +260,7 @@ export default function Pricing() {
 				</div>
 
 				{/* Desktop: Grid layout */}
-				<div className="hidden lg:grid lg:grid-cols-4 gap-6 mb-16">
+				<div className="hidden lg:grid lg:grid-cols-3 gap-6 mb-12">
 					{packages.map((pkg, index) => (
 						<motion.div
 							key={pkg.id}
@@ -250,12 +268,10 @@ export default function Pricing() {
 							whileInView={{ opacity: 1, y: 0 }}
 							viewport={{ once: true }}
 							transition={{ delay: index * 0.1 }}
-							className={`relative rounded-2xl p-6 flex flex-col bg-white dark:bg-gray-800 transition-all duration-300 hover:shadow-lg hover:-translate-y-1 ${
+							className={`relative rounded-2xl p-6 flex flex-col bg-white dark:bg-gray-800 transition-all duration-300 hover:shadow-xl hover:-translate-y-1 ${
 								pkg.popular
-									? 'border-2 border-primary-500 shadow-lg shadow-primary-100 dark:shadow-primary-900/30'
-									: pkg.id === 'webshop'
-										? 'border-2 border-emerald-500 shadow-lg shadow-emerald-100 dark:shadow-emerald-900/30'
-										: 'border border-gray-200 dark:border-gray-700 hover:border-gray-300 dark:hover:border-gray-600'
+									? 'border-2 border-primary-500 shadow-lg shadow-primary-100 dark:shadow-primary-900/30 scale-105'
+									: 'border border-gray-200 dark:border-gray-700 hover:border-gray-300 dark:hover:border-gray-600'
 							}`}
 						>
 							{pkg.popular && (
@@ -266,16 +282,21 @@ export default function Pricing() {
 							
 							{/* Package name & tagline */}
 							<div className="mb-4">
-								<h3 className="font-bold text-lg text-gray-900 dark:text-white mb-1">
+								<h3 className="font-bold text-xl text-gray-900 dark:text-white mb-1">
 									{pkg.name}
 								</h3>
 								<p className="text-sm text-gray-500 dark:text-gray-400">
 									{pkg.tagline}
 								</p>
 							</div>
+
+							{/* Description */}
+							<p className="text-sm text-gray-600 dark:text-gray-400 mb-4">
+								{pkg.description}
+							</p>
 							
 							{/* Price */}
-							<div className="mb-6">
+							<div className="mb-4">
 								<div className="flex items-baseline gap-1">
 									<span className="text-4xl font-bold text-gray-900 dark:text-white">
 										€{pkg.price}
@@ -285,6 +306,14 @@ export default function Pricing() {
 								<p className="text-xs text-gray-400 dark:text-gray-500 mt-1">
 									+ €{pkg.setupFee} eenmalige opstartkosten
 								</p>
+							</div>
+
+							{/* Delivery time badge */}
+							<div className="flex items-center gap-2 mb-6 px-3 py-2 bg-primary-50 dark:bg-primary-900/20 rounded-lg w-fit">
+								<Zap className="w-4 h-4 text-primary-600 dark:text-primary-400" />
+								<span className="text-sm font-medium text-primary-700 dark:text-primary-300">
+									{getDeliveryText(pkg.deliveryDays)}
+								</span>
 							</div>
 							
 							{/* Features list */}
@@ -298,16 +327,28 @@ export default function Pricing() {
 									</li>
 								))}
 							</ul>
+
+							{/* Support & revisions info */}
+							<div className="text-sm text-gray-500 dark:text-gray-400 mb-6 pt-4 border-t border-gray-100 dark:border-gray-700 space-y-2">
+								<div className="flex justify-between">
+									<span>Support reactietijd:</span>
+									<span className="font-medium text-gray-700 dark:text-gray-300">{pkg.supportResponseTime}</span>
+								</div>
+								<div className="flex justify-between">
+									<span>Wijzigingen/maand:</span>
+									<span className="font-medium text-gray-700 dark:text-gray-300">
+										{pkg.revisionsPerMonth === 'unlimited' ? 'Onbeperkt' : pkg.revisionsPerMonth}
+									</span>
+								</div>
+							</div>
 							
 							{/* CTA Button */}
 							<a
 								href={`/start?pakket=${pkg.id}`}
-								className={`w-full py-3 px-4 rounded-xl font-semibold text-sm text-center transition-all flex items-center justify-center gap-2 ${
+								className={`w-full py-3.5 px-4 rounded-xl font-semibold text-center transition-all flex items-center justify-center gap-2 ${
 									pkg.popular
 										? 'bg-primary-500 hover:bg-primary-600 text-white shadow-md shadow-primary-200 dark:shadow-primary-900/30'
-										: pkg.id === 'webshop'
-											? 'bg-emerald-500 hover:bg-emerald-600 text-white shadow-md shadow-emerald-200 dark:shadow-emerald-900/30'
-											: 'bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 text-gray-900 dark:text-white'
+										: 'bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 text-gray-900 dark:text-white'
 								}`}
 							>
 								Kies {pkg.name}
@@ -316,6 +357,28 @@ export default function Pricing() {
 						</motion.div>
 					))}
 				</div>
+
+				{/* Webshop CTA */}
+				<motion.div
+					initial={{ opacity: 0, y: 20 }}
+					whileInView={{ opacity: 1, y: 0 }}
+					viewport={{ once: true }}
+					className="bg-gradient-to-r from-emerald-50 to-green-50 dark:from-emerald-900/20 dark:to-green-900/20 border border-emerald-200/50 dark:border-emerald-700/50 rounded-2xl p-6 lg:p-8 text-center"
+				>
+					<h3 className="text-lg lg:text-xl font-bold text-gray-900 dark:text-white mb-2">
+						Liever een webshop?
+					</h3>
+					<p className="text-sm lg:text-base text-gray-600 dark:text-gray-400 mb-4">
+						Bekijk onze webshop pakketten vanaf €399/maand met alle betaalmethodes inbegrepen.
+					</p>
+					<a
+						href="/webshops"
+						className="inline-flex items-center gap-2 px-6 py-3 bg-emerald-500 hover:bg-emerald-600 text-white font-semibold rounded-xl transition-all"
+					>
+						Bekijk webshop pakketten
+						<ArrowRight className="w-4 h-4" />
+					</a>
+				</motion.div>
 
 				{/* BTW notice */}
 				<motion.div

@@ -43,7 +43,7 @@ export const WEBSHOP_PACKAGE_CONFIGS: Record<WebshopPackageId, WebshopPackageCon
   webshopStarter: {
     id: 'webshopStarter',
     name: 'Webshop Starter',
-    price: '€349/maand',
+    price: '€399/maand',
     maxProducts: 100,
     features: {
       unlimitedProducts: false,
@@ -59,7 +59,7 @@ export const WEBSHOP_PACKAGE_CONFIGS: Record<WebshopPackageId, WebshopPackageCon
   webshopPro: {
     id: 'webshopPro',
     name: 'Webshop Pro',
-    price: '€449/maand',
+    price: '€499/maand',
     maxProducts: 999999,
     features: {
       unlimitedProducts: true,

@@ -78,7 +78,7 @@ const ctaConfigs: Record<Exclude<CTAVariant, 'none'>, CTAConfig> = {
     badge: 'Binnen 7 dagen online',
     title: 'Laat je website bouwen door',
     highlight: 'experts',
-    description: '50+ ondernemers gingen je voor. Professioneel design, razendsnelle hosting en persoonlijke support. Vanaf €99 (incl. BTW).',
+    description: '50+ ondernemers gingen je voor. Professioneel design, razendsnelle hosting en persoonlijke support. Vanaf €119/maand (incl. BTW).',
     buttonText: 'Start je project',
     buttonLink: '/start',
     gradient: {
@@ -97,7 +97,7 @@ const ctaConfigs: Record<Exclude<CTAVariant, 'none'>, CTAConfig> = {
     badge: 'Complete e-commerce oplossing',
     title: 'Start vandaag nog met',
     highlight: 'online verkopen',
-    description: 'Professionele webshop met betalingen, verzending en voorraadbeheer. Wij bouwen, jij verkoopt. Vanaf €349/maand (incl. BTW).',
+    description: 'Professionele webshop met betalingen, verzending en voorraadbeheer. Wij bouwen, jij verkoopt. Vanaf €399/maand (incl. BTW).',
     buttonText: 'Start je webshop',
     buttonLink: '/start?dienst=webshop',
     gradient: {

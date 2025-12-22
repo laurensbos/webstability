@@ -40,62 +40,38 @@ interface PackageOption {
   setupFee?: number
   priceNote: string
   features: string[]
+  deliveryDays?: number
+  supportResponseTime?: string
+  revisionsPerMonth?: number | 'unlimited'
 }
 
-// Packages per service type
+// Packages per service type - imported from central data
+import { packages as websitePackages, webshopPackages } from '../data/packages'
+
+// Convert to the format used in this component
 const packagesByService: Record<ServiceType, PackageOption[]> = {
-  website: [
-    {
-      id: 'starter',
-      name: 'Starter',
-      price: 99,
-      setupFee: 99,
-      priceNote: 'per maand incl. btw',
-      features: ['1-5 pagina\'s', 'Mobiel-vriendelijk', 'Contactformulier', 'SSL certificaat'],
-    },
-    {
-      id: 'professional',
-      name: 'Professioneel',
-      price: 149,
-      setupFee: 179,
-      priceNote: 'per maand incl. btw',
-      features: ['5-10 pagina\'s', 'Blog functie', 'Google Analytics', 'Maandelijkse updates'],
-    },
-    {
-      id: 'business',
-      name: 'Business',
-      price: 199,
-      setupFee: 239,
-      priceNote: 'per maand incl. btw',
-      features: ['Onbeperkt pagina\'s', 'CMS systeem', 'Prioriteit support', 'Geavanceerde SEO'],
-    },
-  ],
-  webshop: [
-    {
-      id: 'starter',
-      name: 'Starter',
-      price: 349,
-      setupFee: 249,
-      priceNote: 'per maand incl. btw',
-      features: ['Tot 100 producten', 'iDEAL betaling', 'Voorraadbeheer', 'Basis analytics'],
-    },
-    {
-      id: 'professional',
-      name: 'Professioneel',
-      price: 449,
-      setupFee: 349,
-      priceNote: 'per maand incl. btw',
-      features: ['Tot 500 producten', 'Alle betaalmethodes', 'Kortingscodes', 'Klantaccounts'],
-    },
-    {
-      id: 'business',
-      name: 'Business',
-      price: 599,
-      setupFee: 449,
-      priceNote: 'per maand incl. btw',
-      features: ['Onbeperkt producten', 'Multi-valuta', 'API koppelingen', 'Dedicated support'],
-    },
-  ],
+  website: websitePackages.map(pkg => ({
+    id: pkg.id as PackageType,
+    name: pkg.name,
+    price: pkg.price,
+    setupFee: pkg.setupFee,
+    priceNote: 'per maand incl. btw',
+    features: pkg.features.slice(0, 4),
+    deliveryDays: pkg.deliveryDays,
+    supportResponseTime: pkg.supportResponseTime,
+    revisionsPerMonth: pkg.revisionsPerMonth,
+  })),
+  webshop: webshopPackages.map(pkg => ({
+    id: pkg.id.replace('webshop-', '') as PackageType,
+    name: pkg.name,
+    price: pkg.price,
+    setupFee: pkg.setupFee,
+    priceNote: 'per maand incl. btw',
+    features: pkg.features.slice(0, 4),
+    deliveryDays: pkg.deliveryDays,
+    supportResponseTime: pkg.supportResponseTime,
+    revisionsPerMonth: pkg.revisionsPerMonth,
+  })),
   drone: [
     {
       id: 'starter',
@@ -103,6 +79,7 @@ const packagesByService: Record<ServiceType, PackageOption[]> = {
       price: 349,
       priceNote: 'eenmalig incl. btw',
       features: ['10 bewerkte foto\'s', '1 locatie', 'Digitale levering', 'Binnen 5 dagen'],
+      deliveryDays: 5,
     },
     {
       id: 'professional',
@@ -110,6 +87,7 @@ const packagesByService: Record<ServiceType, PackageOption[]> = {
       price: 549,
       priceNote: 'eenmalig incl. btw',
       features: ['25 bewerkte foto\'s', '1-2 locaties', '1 min video', 'Binnen 3 dagen'],
+      deliveryDays: 3,
     },
     {
       id: 'business',
@@ -117,6 +95,7 @@ const packagesByService: Record<ServiceType, PackageOption[]> = {
       price: 849,
       priceNote: 'eenmalig incl. btw',
       features: ['50+ foto\'s', 'Meerdere locaties', '3 min video', 'Spoedlevering'],
+      deliveryDays: 2,
     },
   ],
   logo: [],  // No packages for logo - single service
@@ -128,9 +107,9 @@ const services: ServiceOption[] = [
     name: 'Website',
     description: 'Professionele website voor je bedrijf',
     icon: Globe,
-    price: 'Vanaf €99',
+    price: 'Vanaf €119',
     priceNote: 'per maand incl. btw',
-    setupNote: '+ eenmalige opstartkosten vanaf €99',
+    setupNote: '+ eenmalige opstartkosten vanaf €149',
     color: 'primary',
     gradient: 'from-primary-500 to-blue-600',
     features: ['Mobiel-vriendelijk', 'SEO geoptimaliseerd', 'Contactformulier', 'Hosting inbegrepen'],
@@ -141,12 +120,12 @@ const services: ServiceOption[] = [
     name: 'Webshop',
     description: 'Verkoop online met je eigen shop',
     icon: ShoppingBag,
-    price: 'Vanaf €349',
+    price: 'Vanaf €399',
     priceNote: 'per maand incl. btw',
-    setupNote: '+ eenmalige opstartkosten vanaf €249',
+    setupNote: '+ eenmalige opstartkosten vanaf €299',
     color: 'emerald',
     gradient: 'from-emerald-500 to-green-600',
-    features: ['Tot 500 producten', 'iDEAL & creditcard', 'Voorraadbeheer', 'Klantaccounts'],
+    features: ['Tot 500 producten', 'iDEAL, creditcard & Klarna', 'Voorraadbeheer', 'Klantaccounts'],
   },
   {
     id: 'drone',

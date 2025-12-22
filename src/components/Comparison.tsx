@@ -1,6 +1,7 @@
 import { motion } from 'framer-motion'
-import { Check, X, Clock, Zap, HeartHandshake, TrendingUp, ArrowRight } from 'lucide-react'
+import { Check, X, Clock, Zap, ArrowRight } from 'lucide-react'
 
+// Gefocust op 5 key pijnpunten - sterker en overtuigender
 const comparisons = [
 	{
 		category: 'Tijdsinvestering',
@@ -9,46 +10,28 @@ const comparisons = [
 		webstability: { value: '~2 uur intake', good: true },
 	},
 	{
-		category: 'Opstartkosten',
-		icon: TrendingUp,
-		diy: { value: '€0-100', neutral: true },
-		webstability: { value: '€120 eenmalig', good: true },
-	},
-	{
-		category: 'Maandelijkse kosten',
-		icon: TrendingUp,
-		diy: { value: '€20-50 + je tijd', bad: true },
-		webstability: { value: 'Vanaf €99/maand', good: true },
-	},
-	{
-		category: 'Professioneel design',
+		category: 'Live binnen',
 		icon: Zap,
-		diy: { value: 'Templates', bad: true },
-		webstability: { value: 'Op maat gemaakt', good: true },
+		diy: { value: 'Weken tot maanden', bad: true },
+		webstability: { value: '7 dagen', good: true },
 	},
 	{
-		category: 'Technisch onderhoud',
+		category: 'Onderhoud & updates',
 		icon: Zap,
 		diy: { value: 'Zelf uitzoeken', bad: true },
-		webstability: { value: 'Wij regelen alles', good: true },
+		webstability: { value: 'Wij doen alles', good: true },
 	},
 	{
 		category: 'Wijzigingen',
-		icon: HeartHandshake,
+		icon: Zap,
 		diy: { value: 'Zelf leren & doen', bad: true },
 		webstability: { value: 'Onbeperkt inbegrepen', good: true },
 	},
 	{
-		category: 'Support',
-		icon: HeartHandshake,
-		diy: { value: 'Forums & YouTube', bad: true },
-		webstability: { value: 'Persoonlijk contact', good: true },
-	},
-	{
-		category: 'Flexibiliteit',
-		icon: HeartHandshake,
-		diy: { value: 'Gebonden aan platform', neutral: true },
-		webstability: { value: 'Maandelijks opzegbaar', good: true },
+		category: 'Resultaat',
+		icon: Zap,
+		diy: { value: 'Template-look', bad: true },
+		webstability: { value: 'Professioneel design', good: true },
 	},
 ]
 
@@ -73,20 +56,19 @@ export default function Comparison() {
 						whileInView={{ opacity: 1, y: 0 }}
 						viewport={{ once: true }}
 						transition={{ delay: 0.1 }}
-						className="text-2xl sm:text-3xl lg:text-4xl font-bold text-gray-900 dark:text-white mb-3"
+						className="text-2xl sm:text-3xl lg:text-4xl font-bold mb-3"
 					>
-						Zelf bouwen vs.{' '}
-						<span className="text-primary-600">Webstability</span>
+						<span className="text-gray-900 dark:text-white">Zelf doen</span>{' '}
+						<span className="text-primary-600">vs. Webstability</span>
 					</motion.h2>
 					<motion.p
 						initial={{ opacity: 0, y: 20 }}
 						whileInView={{ opacity: 1, y: 0 }}
 						viewport={{ once: true }}
 						transition={{ delay: 0.2 }}
-						className="text-gray-600 dark:text-gray-400 max-w-2xl mx-auto"
+						className="text-gray-600 dark:text-gray-400 max-w-xl mx-auto text-sm sm:text-base"
 					>
-						Wix, Squarespace of WordPress zelf leren kost je <strong>50-200 uur</strong>. Wij doen het voor je
-						zodat jij kunt focussen op je bedrijf.
+						Jij focust op je bedrijf. Wij regelen de rest.
 					</motion.p>
 				</div>
 
@@ -100,16 +82,14 @@ export default function Comparison() {
 					>
 						{/* Header row */}
 						<div className="grid grid-cols-3 bg-gray-50 dark:bg-gray-700/50 border-b border-gray-200 dark:border-gray-600">
-							<div className="p-3 text-xs font-medium text-gray-500 dark:text-gray-400">Vergelijking</div>
+							<div className="p-3 text-xs font-medium text-gray-500 dark:text-gray-400"></div>
 							<div className="p-3 text-center">
-								<span className="text-xs font-semibold text-gray-600 dark:text-gray-300">DIY</span>
-								<span className="block text-[10px] text-gray-400">Wix, WP, etc.</span>
+								<span className="text-xs font-semibold text-gray-500 dark:text-gray-400">Zelf doen</span>
 							</div>
 							<div className="p-3 text-center bg-primary-50 dark:bg-primary-900/30">
 								<span className="text-xs font-semibold text-primary-600 dark:text-primary-400">
 									Webstability
 								</span>
-								<span className="block text-[10px] text-primary-500/70">Abonnement</span>
 							</div>
 						</div>
 
@@ -129,16 +109,8 @@ export default function Comparison() {
 									</span>
 								</div>
 								<div className="p-3 text-center">
-									<span
-										className={`text-xs ${
-											item.diy.bad
-												? 'text-red-500'
-												: item.diy.neutral
-												? 'text-gray-500'
-												: 'text-green-500'
-										}`}
-									>
-										{item.diy.bad && <X className="w-3 h-3 inline mr-1" />}
+									<span className="text-xs text-red-500 flex items-center justify-center gap-1">
+										<X className="w-3 h-3" />
 										{item.diy.value}
 									</span>
 								</div>
@@ -187,32 +159,22 @@ export default function Comparison() {
 								<Clock className="w-6 h-6 text-gray-500" />
 							</div>
 							<div>
-								<h3 className="font-bold text-xl text-gray-900 dark:text-white">Zelf bouwen</h3>
-								<p className="text-sm text-gray-500 dark:text-gray-400">Wix, Squarespace, WordPress</p>
+								<h3 className="font-bold text-xl text-gray-900 dark:text-white">Zelf doen</h3>
+								<p className="text-sm text-gray-500 dark:text-gray-400">Wix, WordPress, etc.</p>
 							</div>
 						</div>
 
 						<ul className="space-y-4">
 							{comparisons.map((item, index) => (
 								<li key={index} className="flex items-start gap-3">
-									<span
-										className={`w-5 h-5 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5 ${
-											item.diy.bad
-												? 'bg-red-100 dark:bg-red-900/30'
-												: 'bg-amber-100 dark:bg-amber-900/30'
-										}`}
-									>
-										{item.diy.bad ? (
-											<X className="w-3 h-3 text-red-500" />
-										) : (
-											<span className="w-1.5 h-1.5 rounded-full bg-amber-500" />
-										)}
+									<span className="w-5 h-5 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5 bg-red-100 dark:bg-red-900/30">
+										<X className="w-3 h-3 text-red-500" />
 									</span>
 									<div>
 										<p className="text-sm font-medium text-gray-700 dark:text-gray-300">
 											{item.category}
 										</p>
-										<p className={`text-sm ${item.diy.bad ? 'text-red-500' : 'text-gray-500'}`}>
+										<p className="text-sm text-red-500">
 											{item.diy.value}
 										</p>
 									</div>
@@ -222,9 +184,8 @@ export default function Comparison() {
 
 						<div className="mt-6 p-4 bg-red-50 dark:bg-red-900/20 rounded-xl text-center">
 							<p className="text-sm text-red-600 dark:text-red-400 font-medium">
-								⏱️ Totale tijdsinvestering: 50-200+ uur
+								⏱️ 50-200+ uur van jouw tijd
 							</p>
-							<p className="text-xs text-red-500/70 mt-1">Dat is 1-4 weken fulltime werk</p>
 						</div>
 					</motion.div>
 

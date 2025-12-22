@@ -5,21 +5,21 @@ const steps = [
 	{
 		icon: MessageSquare,
 		step: '01',
-		title: 'Vul het formulier in',
+		title: 'Start je project',
 		description:
-			'Deel je wensen via ons simpele formulier. Je krijgt direct toegang tot je eigen klantportaal.',
+			'Doorloop onze slimme wizard en krijg direct toegang tot je eigen klantportaal met live projectstatus.',
 	},
 	{
 		icon: Palette,
 		step: '02',
 		title: 'Design binnen 5 dagen',
 		description:
-			'Je ontvangt een volledig uitgewerkt ontwerp in je portal. Niet tevreden? We passen aan tot het perfect is.',
+			'Je ontvangt een volledig uitgewerkt ontwerp in je dashboard. Niet tevreden? We passen aan tot het perfect is.',
 	},
 	{
 		icon: Rocket,
 		step: '03',
-		title: 'Goedkeuren & betalen',
+		title: 'Goedkeuren & live',
 		description: 'Blij met het design? Na betaling gaat je website direct live. Inclusief hosting, SSL en domein.',
 	},
 	{
@@ -27,7 +27,7 @@ const steps = [
 		step: '04',
 		title: 'Doorlopende support',
 		description:
-			'Wij blijven je partner. Aanpassingen, vragen of nieuwe ideeën? Regel het via je portal of WhatsApp.',
+			'Wij blijven je partner. Wijzigingen aanvragen, berichten sturen — alles via je persoonlijke dashboard.',
 	},
 ]
 

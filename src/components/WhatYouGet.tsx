@@ -65,16 +65,11 @@ const features = [
 ]
 
 const comparisonData = [
-  { feature: 'Professioneel design op maat', us: true, diy: false },
-  { feature: 'Volledig gebouwd voor jou', us: true, diy: false },
-  { feature: 'Hosting inclusief', us: true, diy: 'Extra kosten' },
-  { feature: 'SSL-certificaat', us: true, diy: 'Extra kosten' },
-  { feature: 'Dagelijkse backups', us: true, diy: false },
-  { feature: 'Updates & onderhoud', us: true, diy: false },
-  { feature: 'Persoonlijke support', us: true, diy: 'Alleen chat/email' },
-  { feature: 'SEO-optimalisatie', us: true, diy: 'Zelf doen' },
-  { feature: 'Technische kennis nodig', us: false, diy: true },
-  { feature: 'Uren zelf klussen', us: false, diy: true },
+  { feature: 'Tijdsinvestering', us: '~2 uur', diy: '50-200+ uur' },
+  { feature: 'Live binnen', us: '7 dagen', diy: 'Weken/maanden' },
+  { feature: 'Onderhoud & updates', us: true, diy: false },
+  { feature: 'Wijzigingen', us: 'Onbeperkt', diy: 'Zelf doen' },
+  { feature: 'Professioneel design', us: true, diy: false },
 ]
 
 export default function WhatYouGet({ variant = 'general', showComparison = true, className = '' }: WhatYouGetProps) {
@@ -176,29 +171,29 @@ export default function WhatYouGet({ variant = 'general', showComparison = true,
             viewport={{ once: true }}
             className="max-w-3xl mx-auto"
           >
-            <div className="text-center mb-8">
-              <h3 className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white mb-2">
-                Webstability vs. Zelf doen
+            <div className="text-center mb-6">
+              <h3 className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white mb-2">
+                Zelf doen vs. Webstability
               </h3>
-              <p className="text-gray-600 dark:text-gray-400">
-                Waarom een abonnement bij ons voordeliger is dan zelf klussen
+              <p className="text-sm text-gray-600 dark:text-gray-400">
+                Jij focust op je bedrijf. Wij regelen de rest.
               </p>
             </div>
 
             <div className="bg-white dark:bg-gray-800 rounded-2xl border border-gray-200 dark:border-gray-700 overflow-hidden shadow-xl">
               {/* Table Header */}
               <div className="grid grid-cols-3 bg-gray-50 dark:bg-gray-800/50 border-b border-gray-200 dark:border-gray-700">
-                <div className="p-4 text-left">
-                  <span className="text-sm font-medium text-gray-500 dark:text-gray-400">Wat je krijgt</span>
+                <div className="p-3 sm:p-4 text-left">
+                  <span className="text-xs sm:text-sm font-medium text-gray-500 dark:text-gray-400"></span>
                 </div>
-                <div className="p-4 text-center">
-                  <span className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-gradient-to-r ${gradientColors[variant]} text-white text-sm font-semibold`}>
-                    <Sparkles className="w-3 h-3" />
+                <div className="p-3 sm:p-4 text-center">
+                  <span className={`inline-flex items-center gap-1 px-2 sm:px-3 py-1 rounded-full bg-gradient-to-r ${gradientColors[variant]} text-white text-xs sm:text-sm font-semibold`}>
+                    <Sparkles className="w-3 h-3 hidden sm:block" />
                     Webstability
                   </span>
                 </div>
-                <div className="p-4 text-center">
-                  <span className="text-sm font-medium text-gray-500 dark:text-gray-400">DIY Platforms</span>
+                <div className="p-3 sm:p-4 text-center">
+                  <span className="text-xs sm:text-sm font-medium text-gray-500 dark:text-gray-400">Zelf doen</span>
                 </div>
               </div>
 
@@ -209,7 +204,7 @@ export default function WhatYouGet({ variant = 'general', showComparison = true,
                   className={`grid grid-cols-3 ${index !== comparisonData.length - 1 ? 'border-b border-gray-100 dark:border-gray-700/50' : ''}`}
                 >
                   <div className="p-3 sm:p-4 text-left">
-                    <span className="text-sm text-gray-700 dark:text-gray-300">{row.feature}</span>
+                    <span className="text-xs sm:text-sm text-gray-700 dark:text-gray-300">{row.feature}</span>
                   </div>
                   <div className="p-3 sm:p-4 flex items-center justify-center">
                     {row.us === true ? (
@@ -217,16 +212,16 @@ export default function WhatYouGet({ variant = 'general', showComparison = true,
                     ) : row.us === false ? (
                       <X className="w-5 h-5 text-gray-300 dark:text-gray-600" />
                     ) : (
-                      <span className="text-xs text-gray-500">{row.us}</span>
+                      <span className="text-xs sm:text-sm font-medium text-green-600 dark:text-green-400">{row.us}</span>
                     )}
                   </div>
                   <div className="p-3 sm:p-4 flex items-center justify-center">
                     {row.diy === true ? (
                       <X className="w-5 h-5 text-red-400" />
                     ) : row.diy === false ? (
-                      <X className="w-5 h-5 text-gray-300 dark:text-gray-600" />
+                      <X className="w-5 h-5 text-red-400" />
                     ) : (
-                      <span className="text-xs text-gray-500 text-center">{row.diy}</span>
+                      <span className="text-xs sm:text-sm text-red-500 text-center">{row.diy}</span>
                     )}
                   </div>
                 </div>
@@ -238,15 +233,11 @@ export default function WhatYouGet({ variant = 'general', showComparison = true,
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
-              className="text-center mt-8"
+              className="text-center mt-6"
             >
-              <p className="text-gray-600 dark:text-gray-400 mb-4">
-                Bespaar tijd en krijg een professioneel resultaat
+              <p className="text-sm text-gray-500 dark:text-gray-400">
+                Jij focust op je bedrijf. Wij regelen de rest.
               </p>
-              <div className={`inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-gradient-to-r ${gradientColors[variant]} text-white font-semibold`}>
-                <Clock className="w-5 h-5" />
-                <span>Gemiddeld 40+ uur bespaard</span>
-              </div>
             </motion.div>
           </motion.div>
         )}

@@ -3,11 +3,8 @@ import {
   ShoppingCart, 
   CreditCard, 
   Shield, 
-  Smartphone,
   CheckCircle,
-  Check,
   ArrowRight,
-  BarChart3,
   Truck,
   Package,
   Star,
@@ -20,22 +17,19 @@ import Header from '../components/Header'
 import Footer from '../components/Footer'
 import TrustpilotReviews from '../components/TrustpilotReviews'
 import WhatYouGet from '../components/WhatYouGet'
+import { webshopPackages } from '../data/packages'
 
-// Floating particles component with green accents
+// Floating particles - ONLY on desktop for performance
 function FloatingParticles() {
   const particles = [
     { size: 4, x: '10%', y: '20%', delay: 0, duration: 4 },
     { size: 6, x: '20%', y: '60%', delay: 1, duration: 5 },
     { size: 3, x: '80%', y: '30%', delay: 0.5, duration: 4.5 },
     { size: 5, x: '70%', y: '70%', delay: 1.5, duration: 5.5 },
-    { size: 4, x: '90%', y: '50%', delay: 2, duration: 4 },
-    { size: 7, x: '15%', y: '80%', delay: 0.8, duration: 6 },
-    { size: 3, x: '60%', y: '15%', delay: 1.2, duration: 4.2 },
-    { size: 5, x: '40%', y: '85%', delay: 0.3, duration: 5.3 },
   ]
 
   return (
-    <>
+    <div className="hidden lg:block">
       {particles.map((p, i) => (
         <motion.div
           key={i}
@@ -60,110 +54,44 @@ function FloatingParticles() {
           }}
         />
       ))}
-    </>
+    </div>
   )
 }
 
 const stats = [
-  { value: '50+', label: 'Webshops gebouwd' },
-  { value: '€2M+', label: 'Omzet via onze shops' },
-  { value: '4.9', label: 'Gemiddelde beoordeling', icon: Star },
-  { value: '24u', label: 'Support reactietijd' },
+  { value: '50+', label: 'Webshops' },
+  { value: '4.9', label: 'Beoordeling', icon: Star },
+  { value: '14', label: 'Dagen live' },
 ]
 
 const features = [
   {
     icon: ShoppingCart,
-    title: 'Producten toevoegen',
-    description: 'Eenvoudig producten beheren met foto\'s, varianten, prijzen en voorraad.'
+    title: 'Producten beheren',
+    description: 'Eenvoudig toevoegen met varianten.'
   },
   {
     icon: CreditCard,
-    title: 'Veilig betalen',
-    description: 'iDEAL, creditcard, PayPal, Klarna en meer. Alles direct inbegrepen.'
+    title: 'Alle betaalmethodes',
+    description: 'iDEAL, creditcard, Klarna.'
   },
   {
     icon: Truck,
-    title: 'Verzendopties',
-    description: 'PostNL, DHL, DPD integraties. Automatische tracking voor je klanten.'
-  },
-  {
-    icon: BarChart3,
-    title: 'Sales dashboard',
-    description: 'Real-time inzicht in omzet, orders en bestverkopende producten.'
-  },
-  {
-    icon: Smartphone,
-    title: 'Mobiel geoptimaliseerd',
-    description: '70% van je klanten koopt via mobiel. Perfecte checkout ervaring.'
+    title: 'Verzendintegraties',
+    description: 'PostNL, DHL, automatische tracking.'
   },
   {
     icon: Shield,
     title: 'SSL & beveiliging',
-    description: 'Veilige checkout, GDPR-compliant en dagelijkse backups.'
+    description: 'Veilige checkout, GDPR-compliant.'
   },
 ]
 
-const packages = [
-  {
-    id: 'starter',
-    name: 'Starter',
-    price: 349,
-    priceExcl: 289,
-    setupFee: 249,
-    setupFeeExcl: 206,
-    tagline: 'Perfect om te beginnen',
-    popular: false,
-    description: 'Perfect om te beginnen met online verkopen',
-    features: [
-      'Tot 50 producten',
-      'iDEAL & creditcard',
-      'Basis verzendopties',
-      'Mobiel-vriendelijk design',
-      'Order management',
-      'E-mail notificaties',
-    ],
-    icon: Package,
-  },
-  {
-    id: 'professional',
-    name: 'Professioneel',
-    price: 449,
-    priceExcl: 371,
-    setupFee: 349,
-    setupFeeExcl: 289,
-    popular: true,
-    description: 'Voor serieuze webshops die willen groeien',
-    features: [
-      'Tot 500 producten',
-      'Alle betaalmethodes',
-      'Geavanceerde verzending',
-      'Koppeling met boekhouden',
-      'Kortingscodes systeem',
-      'Klantaccounts',
-    ],
-    icon: Users,
-  },
-  {
-    id: 'business',
-    name: 'Business',
-    price: 599,
-    priceExcl: 495,
-    setupFee: 449,
-    setupFeeExcl: 371,
-    popular: false,
-    description: 'Complete e-commerce oplossing',
-    features: [
-      'Onbeperkt producten',
-      'Alle betaalmethodes',
-      'Multi-carrier verzending',
-      'Geavanceerde rapportages',
-      'B2B functionaliteiten',
-      'Prioriteit support',
-    ],
-    icon: HeartHandshake,
-  },
-]
+// Use packages from central data with icons
+const packagesWithIcons = webshopPackages.map((pkg, index) => ({
+  ...pkg,
+  icon: index === 0 ? Package : index === 1 ? Users : HeartHandshake,
+}))
 
 const included = [
   'Custom webshop design',
@@ -182,245 +110,88 @@ export default function Webshop() {
       <Header />
 
       <main>
-        {/* Hero */}
-        <section className="relative min-h-[70vh] flex items-center overflow-hidden bg-gradient-to-br from-slate-50 via-emerald-50/30 to-white dark:from-gray-900 dark:via-emerald-900/10 dark:to-gray-900 pt-20">
-          {/* Background decorations */}
+        {/* Hero - Mobile optimized */}
+        <section className="relative min-h-[60vh] lg:min-h-[70vh] flex items-center overflow-hidden bg-gradient-to-br from-slate-50 via-emerald-50/30 to-white dark:from-gray-900 dark:via-emerald-900/10 dark:to-gray-900 pt-20">
+          {/* Background - simplified on mobile */}
           <div className="absolute inset-0 overflow-hidden pointer-events-none">
-            <motion.div 
-              className="absolute top-0 right-0 w-[900px] h-[900px] bg-gradient-to-br from-emerald-200/60 via-green-100/40 to-teal-100/30 dark:from-emerald-800/30 dark:via-green-900/20 dark:to-teal-900/10 rounded-full blur-3xl -translate-y-1/3 translate-x-1/4"
-              animate={{ scale: [1, 1.05, 1], rotate: [0, 5, 0] }}
-              transition={{ duration: 8, repeat: Infinity, ease: "easeInOut" }}
-            />
-            <motion.div 
-              className="absolute bottom-0 left-0 w-[700px] h-[700px] bg-gradient-to-tr from-green-100/50 via-emerald-100/40 to-transparent dark:from-green-900/30 dark:via-emerald-900/20 dark:to-transparent rounded-full blur-3xl translate-y-1/3 -translate-x-1/4"
-              animate={{ scale: [1, 1.08, 1], rotate: [0, -5, 0] }}
-              transition={{ duration: 10, repeat: Infinity, ease: "easeInOut" }}
-            />
-            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] bg-gradient-to-r from-teal-100/30 via-emerald-100/20 to-green-100/30 dark:from-teal-900/20 dark:via-emerald-900/10 dark:to-green-900/20 rounded-full blur-3xl" />
-            
+            <div className="absolute top-0 right-0 w-[400px] lg:w-[900px] h-[400px] lg:h-[900px] bg-gradient-to-br from-emerald-200/60 via-green-100/40 to-teal-100/30 dark:from-emerald-800/30 dark:via-green-900/20 dark:to-teal-900/10 rounded-full blur-3xl -translate-y-1/3 translate-x-1/4" />
             <FloatingParticles />
-            
-            <div className="absolute inset-0 bg-[linear-gradient(to_right,#d1fae533_1px,transparent_1px),linear-gradient(to_bottom,#d1fae533_1px,transparent_1px)] dark:bg-[linear-gradient(to_right,#06554033_1px,transparent_1px),linear-gradient(to_bottom,#06554033_1px,transparent_1px)] bg-[size:4rem_4rem] [mask-image:radial-gradient(ellipse_80%_50%_at_50%_0%,#000_70%,transparent_110%)]" />
-            
-            <div className="absolute top-20 right-20 w-32 h-32 border border-emerald-200/30 dark:border-emerald-700/30 rounded-full" />
-            <div className="absolute top-24 right-24 w-24 h-24 border border-emerald-300/20 dark:border-emerald-600/20 rounded-full" />
-            <div className="absolute bottom-32 left-20 w-20 h-20 border border-green-200/40 dark:border-green-700/40 rounded-full" />
+            {/* Decorative rings - desktop only */}
+            <div className="hidden lg:block absolute top-20 right-20 w-32 h-32 border border-emerald-200/30 dark:border-emerald-700/30 rounded-full" />
+            <div className="hidden lg:block absolute top-24 right-24 w-24 h-24 border border-emerald-300/20 dark:border-emerald-600/20 rounded-full" />
           </div>
 
-          <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 lg:py-24">
+          <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 lg:py-24">
             <div className="max-w-3xl mx-auto text-center">
               <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
                 <motion.div
                   initial={{ opacity: 0, scale: 0.9 }}
                   animate={{ opacity: 1, scale: 1 }}
                   transition={{ delay: 0.1 }}
-                  className="inline-flex items-center gap-2 bg-gradient-to-r from-emerald-50 to-green-50 dark:from-emerald-900/30 dark:to-green-900/30 border border-emerald-200/50 dark:border-emerald-700/50 rounded-full px-4 py-2 mb-6"
+                  className="inline-flex items-center gap-2 bg-gradient-to-r from-emerald-50 to-green-50 dark:from-emerald-900/30 dark:to-green-900/30 border border-emerald-200/50 dark:border-emerald-700/50 rounded-full px-3 py-1.5 mb-4 lg:mb-6"
                 >
-                  <ShoppingCart className="w-4 h-4 text-emerald-600 dark:text-emerald-400" />
-                  <span className="text-sm font-medium text-emerald-700 dark:text-emerald-300">Webshop laten maken</span>
+                  <ShoppingCart className="w-3.5 h-3.5 lg:w-4 lg:h-4 text-emerald-600 dark:text-emerald-400" />
+                  <span className="text-xs lg:text-sm font-medium text-emerald-700 dark:text-emerald-300">Webshop laten maken</span>
                 </motion.div>
 
-                <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold text-gray-900 dark:text-white mb-6 leading-tight">
+                <h1 className="text-2xl sm:text-3xl lg:text-5xl xl:text-6xl font-bold text-gray-900 dark:text-white mb-3 lg:mb-6 leading-tight">
                   Verkoop online met een{' '}
                   <span className="bg-gradient-to-r from-emerald-600 to-green-600 bg-clip-text text-transparent">professionele webshop</span>
                 </h1>
 
-                <p className="text-xl text-gray-600 dark:text-gray-300 mb-8 max-w-2xl mx-auto">
-                  Wij bouwen jouw complete webshop met betalingen, verzending en voorraadbeheer. 
-                  Jij focust op verkopen, wij regelen de techniek.
+                <p className="text-sm sm:text-base lg:text-xl text-gray-600 dark:text-gray-300 mb-5 lg:mb-8 max-w-xl mx-auto">
+                  Complete webshop met betalingen, verzending en voorraadbeheer. Jij focust op verkopen.
                 </p>
 
-                <div className="flex flex-col sm:flex-row gap-4 justify-center">
+                <div className="flex flex-col sm:flex-row gap-3 justify-center">
                   <Link
                     to="/start?dienst=webshop"
-                    className="group inline-flex items-center justify-center gap-2 px-8 py-4 bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-600 hover:to-emerald-700 text-white font-semibold rounded-xl transition-all shadow-lg shadow-emerald-500/25 hover:shadow-emerald-500/40 hover:-translate-y-0.5"
+                    className="group inline-flex items-center justify-center gap-2 px-5 py-3 lg:px-8 lg:py-4 bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-600 hover:to-emerald-700 text-white font-semibold rounded-xl transition-all shadow-lg shadow-emerald-500/25"
                   >
                     Start je webshop
-                    <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
+                    <ArrowRight className="w-4 h-4 lg:w-5 lg:h-5 group-hover:translate-x-1 transition-transform" />
                   </Link>
                   <a
                     href="#pakketten"
-                    className="inline-flex items-center justify-center px-8 py-4 bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm hover:bg-white dark:hover:bg-gray-800 text-gray-700 dark:text-gray-200 font-semibold rounded-xl border border-gray-200 dark:border-gray-700 transition-all hover:shadow-lg"
+                    className="inline-flex items-center justify-center px-5 py-3 lg:px-8 lg:py-4 bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm text-gray-700 dark:text-gray-200 font-semibold rounded-xl border border-gray-200 dark:border-gray-700 transition-all"
                   >
                     Bekijk pakketten
                   </a>
                 </div>
 
-                {/* Payment after design approval badge */}
-                <motion.div
-                  initial={{ opacity: 0, y: 10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 0.4 }}
-                  className="inline-flex items-center gap-2 px-4 py-2 mt-6 bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400 rounded-full text-sm font-medium"
-                >
-                  <Check className="w-4 h-4" />
-                  Betaling pas na goedkeuring design
-                </motion.div>
+                {/* Quick stats on mobile */}
+                <div className="flex justify-center gap-4 mt-6 lg:hidden">
+                  {stats.map((stat, i) => (
+                    <div key={i} className="text-center">
+                      <div className="flex items-center justify-center gap-0.5">
+                        <span className="text-lg font-bold text-gray-900 dark:text-white">{stat.value}</span>
+                        {stat.icon && <stat.icon className="w-3.5 h-3.5 text-yellow-500 fill-yellow-500" />}
+                      </div>
+                      <span className="text-xs text-gray-500">{stat.label}</span>
+                    </div>
+                  ))}
+                </div>
               </motion.div>
             </div>
           </div>
         </section>
 
-        {/* Webshop Showcase */}
-        <section className="py-20 bg-white dark:bg-gray-900 relative overflow-hidden">
-          <div className="absolute inset-0 overflow-hidden pointer-events-none">
-            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-gradient-to-r from-emerald-50/50 via-green-50/30 to-teal-50/50 dark:from-emerald-900/20 dark:via-green-900/10 dark:to-teal-900/20 rounded-full blur-3xl" />
-          </div>
-
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-            <div className="text-center mb-16">
-              <motion.span
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                className="inline-block text-emerald-600 dark:text-emerald-400 font-semibold text-sm tracking-wider uppercase mb-3"
-              >
-                Wat je krijgt
-              </motion.span>
-              <motion.h2
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                className="text-3xl sm:text-4xl font-bold text-gray-900 dark:text-white mb-4"
-              >
-                Een complete{' '}
-                <span className="bg-gradient-to-r from-emerald-600 to-green-600 bg-clip-text text-transparent">
-                  webshop ervaring
-                </span>
-              </motion.h2>
-              <motion.p
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ delay: 0.1 }}
-                className="text-gray-600 dark:text-gray-300 text-lg max-w-2xl mx-auto"
-              >
-                Van productpagina tot checkout - alles is geoptimaliseerd voor conversie.
-              </motion.p>
-            </div>
-
-            {/* Mobile swipe hint */}
-            <div className="md:hidden flex items-center justify-center gap-2 text-xs text-gray-400 dark:text-gray-500 mb-3">
-              <span>← Swipe om te bekijken →</span>
-            </div>
-
-            {/* Mockup grid - Mobile: horizontal scroll, Desktop: grid */}
-            <div className="flex md:grid md:grid-cols-3 gap-4 md:gap-6 mb-12 overflow-x-auto md:overflow-visible pb-4 md:pb-0 snap-x snap-mandatory scrollbar-hide -mx-4 px-4 md:mx-0 md:px-0">
-              {/* Product page mockup */}
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                className="group relative bg-gradient-to-br from-gray-100 to-gray-50 dark:from-gray-800 dark:to-gray-900 rounded-2xl p-6 h-[220px] md:aspect-[4/3] md:h-auto flex items-center justify-center overflow-hidden border border-gray-200/50 dark:border-gray-700/50 min-w-[280px] md:min-w-0 snap-center flex-shrink-0 md:flex-shrink"
-              >
-                <div className="absolute inset-0 bg-gradient-to-br from-emerald-500/5 to-green-500/5 dark:from-emerald-500/10 dark:to-green-500/10 opacity-0 group-hover:opacity-100 transition-opacity" />
-                <div className="relative w-full max-w-[200px]">
-                  <div className="bg-white dark:bg-gray-800 rounded-lg shadow-xl overflow-hidden">
-                    <div className="h-24 bg-gradient-to-br from-emerald-100 to-green-50 dark:from-emerald-900/50 dark:to-green-900/30 flex items-center justify-center">
-                      <Package className="w-10 h-10 text-emerald-500 dark:text-emerald-400" />
-                    </div>
-                    <div className="p-3">
-                      <div className="h-2 bg-gray-200 dark:bg-gray-700 rounded w-3/4 mb-2" />
-                      <div className="h-3 bg-emerald-500 rounded w-1/3 mb-3" />
-                      <div className="flex gap-1">
-                        {[1,2,3,4,5].map(i => (
-                          <Star key={i} className="w-3 h-3 text-yellow-400 fill-yellow-400" />
-                        ))}
-                      </div>
-                    </div>
+        {/* USP Bar - Mobile optimized */}
+        <section className="py-8 lg:py-12 bg-white dark:bg-gray-900 border-b border-gray-100 dark:border-gray-800">
+          <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+              {features.map((feature, i) => (
+                <div key={i} className="flex items-start gap-3 p-3 lg:p-4 bg-gray-50 dark:bg-gray-800 rounded-xl">
+                  <div className="w-9 h-9 lg:w-10 lg:h-10 bg-gradient-to-br from-emerald-500 to-green-600 rounded-lg flex items-center justify-center flex-shrink-0">
+                    <feature.icon className="w-4 h-4 lg:w-5 lg:h-5 text-white" />
                   </div>
-                </div>
-                <p className="absolute bottom-4 left-4 text-sm font-medium text-gray-500 dark:text-gray-400">Productpagina</p>
-              </motion.div>
-
-              {/* Cart mockup */}
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ delay: 0.1 }}
-                className="group relative bg-gradient-to-br from-gray-100 to-gray-50 dark:from-gray-800 dark:to-gray-900 rounded-2xl p-6 h-[220px] md:aspect-[4/3] md:h-auto flex items-center justify-center overflow-hidden border border-gray-200/50 dark:border-gray-700/50 min-w-[280px] md:min-w-0 snap-center flex-shrink-0 md:flex-shrink"
-              >
-                <div className="absolute inset-0 bg-gradient-to-br from-emerald-500/5 to-green-500/5 dark:from-emerald-500/10 dark:to-green-500/10 opacity-0 group-hover:opacity-100 transition-opacity" />
-                <div className="relative w-full max-w-[200px]">
-                  <div className="bg-white dark:bg-gray-800 rounded-lg shadow-xl p-4">
-                    <div className="flex items-center gap-3 mb-3 pb-3 border-b border-gray-100 dark:border-gray-700">
-                      <div className="w-12 h-12 bg-emerald-100 dark:bg-emerald-900/50 rounded-lg" />
-                      <div className="flex-1">
-                        <div className="h-2 bg-gray-200 dark:bg-gray-700 rounded w-full mb-1" />
-                        <div className="h-2 bg-gray-100 dark:bg-gray-600 rounded w-2/3" />
-                      </div>
-                      <div className="text-emerald-600 dark:text-emerald-400 font-bold text-sm">€29</div>
-                    </div>
-                    <div className="flex items-center gap-3 mb-4">
-                      <div className="w-12 h-12 bg-green-100 dark:bg-green-900/50 rounded-lg" />
-                      <div className="flex-1">
-                        <div className="h-2 bg-gray-200 dark:bg-gray-700 rounded w-full mb-1" />
-                        <div className="h-2 bg-gray-100 dark:bg-gray-600 rounded w-1/2" />
-                      </div>
-                      <div className="text-emerald-600 dark:text-emerald-400 font-bold text-sm">€49</div>
-                    </div>
-                    <div className="h-8 bg-gradient-to-r from-emerald-500 to-green-500 rounded-lg flex items-center justify-center">
-                      <span className="text-white text-xs font-semibold">Afrekenen</span>
-                    </div>
+                  <div>
+                    <h3 className="font-semibold text-gray-900 dark:text-white text-sm">{feature.title}</h3>
+                    <p className="text-xs text-gray-500 dark:text-gray-400 hidden lg:block">{feature.description}</p>
                   </div>
-                </div>
-                <p className="absolute bottom-4 left-4 text-sm font-medium text-gray-500 dark:text-gray-400">Winkelwagen</p>
-              </motion.div>
-
-              {/* Checkout mockup */}
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ delay: 0.2 }}
-                className="group relative bg-gradient-to-br from-gray-100 to-gray-50 dark:from-gray-800 dark:to-gray-900 rounded-2xl p-6 h-[220px] md:aspect-[4/3] md:h-auto flex items-center justify-center overflow-hidden border border-gray-200/50 dark:border-gray-700/50 min-w-[280px] md:min-w-0 snap-center flex-shrink-0 md:flex-shrink"
-              >
-                <div className="absolute inset-0 bg-gradient-to-br from-emerald-500/5 to-green-500/5 dark:from-emerald-500/10 dark:to-green-500/10 opacity-0 group-hover:opacity-100 transition-opacity" />
-                <div className="relative w-full max-w-[200px]">
-                  <div className="bg-white dark:bg-gray-800 rounded-lg shadow-xl p-4">
-                    <div className="flex items-center gap-2 mb-4">
-                      <Shield className="w-5 h-5 text-emerald-500" />
-                      <span className="text-xs font-medium text-gray-700 dark:text-gray-300">Veilig afrekenen</span>
-                    </div>
-                    <div className="space-y-2 mb-4">
-                      <div className="h-8 bg-gray-50 dark:bg-gray-700 rounded border border-gray-200 dark:border-gray-600" />
-                      <div className="h-8 bg-gray-50 dark:bg-gray-700 rounded border border-gray-200 dark:border-gray-600" />
-                    </div>
-                    <div className="flex gap-2 mb-4">
-                      <div className="flex-1 h-6 bg-blue-50 dark:bg-blue-900/30 rounded flex items-center justify-center">
-                        <span className="text-[8px] text-blue-600 dark:text-blue-400 font-bold">iDEAL</span>
-                      </div>
-                      <div className="flex-1 h-6 bg-orange-50 dark:bg-orange-900/30 rounded flex items-center justify-center">
-                        <CreditCard className="w-3 h-3 text-orange-600 dark:text-orange-400" />
-                      </div>
-                    </div>
-                    <div className="h-8 bg-gradient-to-r from-emerald-500 to-green-500 rounded-lg flex items-center justify-center">
-                      <span className="text-white text-xs font-semibold">Bestelling plaatsen</span>
-                    </div>
-                  </div>
-                </div>
-                <p className="absolute bottom-4 left-4 text-sm font-medium text-gray-500 dark:text-gray-400">Checkout</p>
-              </motion.div>
-            </div>
-
-            {/* Stats */}
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              className="grid grid-cols-2 md:grid-cols-4 gap-4"
-            >
-              {stats.map((stat, index) => (
-                <div key={index} className="text-center p-4 bg-gradient-to-br from-emerald-50 to-green-50 dark:from-emerald-900/20 dark:to-green-900/20 rounded-xl border border-emerald-100 dark:border-emerald-800/50">
-                  <div className="flex items-center justify-center gap-1 mb-1">
-                    <span className="text-2xl md:text-3xl font-bold text-gray-900 dark:text-white">{stat.value}</span>
-                    {stat.icon && <stat.icon className="w-5 h-5 text-yellow-500 fill-yellow-500" />}
-                  </div>
-                  <p className="text-gray-600 dark:text-gray-400 text-sm">{stat.label}</p>
                 </div>
               ))}
-            </motion.div>
+            </div>
           </div>
         </section>
 
@@ -428,7 +199,7 @@ export default function Webshop() {
         <WhatYouGet variant="webshop" />
 
         {/* Packages */}
-        <section id="pakketten" className="py-20 bg-gradient-to-b from-gray-50 via-emerald-50/20 to-gray-50 dark:from-gray-900 dark:via-emerald-900/10 dark:to-gray-900 relative overflow-hidden">
+        <section id="pakketten" className="py-12 lg:py-20 bg-gradient-to-b from-gray-50 via-emerald-50/20 to-gray-50 dark:from-gray-900 dark:via-emerald-900/10 dark:to-gray-900 relative overflow-hidden">
           <div className="absolute inset-0 overflow-hidden pointer-events-none">
             <div className="absolute -top-40 -left-40 w-80 h-80 bg-gradient-to-br from-emerald-100/40 to-green-100/20 dark:from-emerald-900/30 dark:to-green-900/20 rounded-full blur-3xl" />
             <div className="absolute -bottom-40 -right-40 w-96 h-96 bg-gradient-to-tl from-green-100/30 to-emerald-100/20 dark:from-green-900/20 dark:to-emerald-900/10 rounded-full blur-3xl" />
@@ -472,7 +243,7 @@ export default function Webshop() {
               </div>
 
               <div className="flex gap-4 overflow-x-auto overflow-y-visible pb-4 -mx-4 px-4 snap-x snap-mandatory scrollbar-hide" style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
-                {packages.map((pkg, index) => (
+                {packagesWithIcons.map((pkg, index) => (
                   <motion.div
                     key={pkg.id}
                     initial={{ opacity: 0, y: 20 }}
@@ -517,7 +288,7 @@ export default function Webshop() {
 
               {/* Dot indicators */}
               <div className="flex justify-center gap-2 mt-3">
-                {packages.map((_, idx) => (
+                {packagesWithIcons.map((_, idx) => (
                   <div key={idx} className={`h-2 rounded-full transition-all ${idx === 0 ? 'bg-emerald-500 w-6' : 'bg-gray-300 dark:bg-gray-600 w-2'}`} />
                 ))}
               </div>
@@ -525,7 +296,7 @@ export default function Webshop() {
 
             {/* Desktop: grid */}
             <div className="hidden sm:grid sm:grid-cols-3 gap-6">
-              {packages.map((pkg, index) => (
+              {packagesWithIcons.map((pkg, index) => (
                 <motion.div
                   key={pkg.id}
                   initial={{ opacity: 0, y: 20 }}
@@ -608,13 +379,8 @@ export default function Webshop() {
               </motion.h2>
             </div>
 
-            {/* Mobile swipe hint */}
-            <div className="sm:hidden flex items-center justify-center gap-2 text-xs text-gray-400 dark:text-gray-500 mb-3">
-              <span>← Swipe om te bekijken →</span>
-            </div>
-
-            {/* Mobile: horizontal scroll, Desktop: grid */}
-            <div className="flex sm:grid sm:grid-cols-2 md:grid-cols-4 gap-3 sm:gap-4 mb-10 overflow-x-auto sm:overflow-visible pb-4 sm:pb-0 snap-x snap-mandatory scrollbar-hide -mx-4 px-4 sm:mx-0 sm:px-0">
+            {/* Mobile: 2x2 grid, Desktop: 4 columns grid */}
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-10">
               {included.map((item, index) => (
                 <motion.div
                   key={index}
@@ -622,10 +388,10 @@ export default function Webshop() {
                   whileInView={{ opacity: 1, y: 0 }}
                   viewport={{ once: true }}
                   transition={{ delay: index * 0.05 }}
-                  className="flex items-center gap-3 p-4 bg-white dark:bg-gray-800 rounded-xl border border-gray-100 dark:border-gray-700 shadow-sm min-w-[220px] sm:min-w-0 snap-center flex-shrink-0 sm:flex-shrink"
+                  className="flex items-center gap-2 p-3 sm:p-4 bg-white dark:bg-gray-800 rounded-xl border border-gray-100 dark:border-gray-700 shadow-sm"
                 >
-                  <CheckCircle className="w-5 h-5 text-emerald-500 flex-shrink-0" />
-                  <span className="text-gray-700 dark:text-gray-300 text-sm">{item}</span>
+                  <CheckCircle className="w-4 h-4 sm:w-5 sm:h-5 text-emerald-500 flex-shrink-0" />
+                  <span className="text-gray-700 dark:text-gray-300 text-xs sm:text-sm leading-tight">{item}</span>
                 </motion.div>
               ))}
             </div>

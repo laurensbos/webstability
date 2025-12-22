@@ -41,10 +41,10 @@ export default function StickyCTA() {
                 </div>
                 <div>
                   <p className="text-gray-900 dark:text-white font-semibold">
-                    Start nu vanaf <span className="text-primary-600 dark:text-primary-400">€99/maand</span> <span className="text-gray-400 dark:text-gray-500 text-xs">(incl. BTW)</span>
+                    Start nu vanaf <span className="text-primary-600 dark:text-primary-400">€119/maand</span> <span className="text-gray-400 dark:text-gray-500 text-xs">(incl. BTW)</span>
                   </p>
                   <p className="text-gray-500 dark:text-gray-400 text-sm">
-                    Eenmalig €99 • Online binnen 7 dagen
+                    Eenmalig €149 • Online binnen 7 dagen
                   </p>
                 </div>
               </div>
@@ -56,10 +56,10 @@ export default function StickyCTA() {
                 </div>
                 <div className="min-w-0">
                   <p className="text-gray-900 dark:text-white font-semibold text-sm truncate">
-                    Vanaf <span className="text-primary-600 dark:text-primary-400">€99/maand</span>
+                    Vanaf <span className="text-primary-600 dark:text-primary-400">€119/maand</span>
                   </p>
                   <p className="text-gray-500 dark:text-gray-400 text-xs truncate">
-                    Eenmalig €99 • 7 dagen live
+                    Eenmalig €149 • 7 dagen live
                   </p>
                 </div>
               </div>

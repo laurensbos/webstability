@@ -42,7 +42,7 @@ export const PACKAGE_CONFIGS: Record<PackageId, PackageConfig> = {
   starter: {
     id: 'starter',
     name: 'Starter',
-    price: '€99/maand',
+    price: '€119/maand',
     maxPages: 5,
     features: {
       blog: false,

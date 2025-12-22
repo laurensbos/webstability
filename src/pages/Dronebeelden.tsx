@@ -3,349 +3,290 @@ import {
   Plane, 
   Video, 
   Camera,
-  CheckCircle,
+  Check,
   ArrowRight,
   Shield,
   MapPin,
   Clock,
   Play,
   Award,
-  FileCheck,
-  BadgeCheck,
   Sparkles,
   Zap
 } from 'lucide-react'
 import { Link } from 'react-router-dom'
+import { useState, useRef } from 'react'
 import Header from '../components/Header'
 import Footer from '../components/Footer'
 import TrustpilotReviews from '../components/TrustpilotReviews'
 
-// Floating particles component with orange accents
-function FloatingParticles() {
-  const particles = [
-    { size: 4, x: '10%', y: '20%', delay: 0, duration: 4 },
-    { size: 6, x: '20%', y: '60%', delay: 1, duration: 5 },
-    { size: 3, x: '80%', y: '30%', delay: 0.5, duration: 4.5 },
-    { size: 5, x: '70%', y: '70%', delay: 1.5, duration: 5.5 },
-    { size: 4, x: '90%', y: '50%', delay: 2, duration: 4 },
-    { size: 7, x: '15%', y: '80%', delay: 0.8, duration: 6 },
-    { size: 3, x: '60%', y: '15%', delay: 1.2, duration: 4.2 },
-    { size: 5, x: '40%', y: '85%', delay: 0.3, duration: 5.3 },
-  ]
-
-  return (
-    <>
-      {particles.map((p, i) => (
-        <motion.div
-          key={i}
-          className="absolute rounded-full bg-gradient-to-br from-orange-400 to-amber-500"
-          style={{ 
-            width: p.size, 
-            height: p.size, 
-            left: p.x, 
-            top: p.y,
-            opacity: 0.4 + (p.size / 20)
-          }}
-          animate={{
-            y: [0, -20, 0],
-            opacity: [0.3, 0.6, 0.3],
-            scale: [1, 1.2, 1],
-          }}
-          transition={{
-            duration: p.duration,
-            delay: p.delay,
-            repeat: Infinity,
-            ease: "easeInOut"
-          }}
-        />
-      ))}
-    </>
-  )
-}
-
-const features = [
-  {
-    icon: Shield,
-    title: 'Gecertificeerde piloten',
-    description: 'Al onze piloten zijn EU-gecertificeerd met A1/A2 en A3 dronebewijzen conform EASA-regelgeving.'
-  },
-  {
-    icon: Video,
-    title: '4K video opnames',
-    description: 'Kristalheldere beelden in 4K resolutie voor maximale impact en professionaliteit.'
-  },
-  {
-    icon: Camera,
-    title: 'Hoge resolutie foto\'s',
-    description: 'Scherpe luchtfoto\'s perfect voor je website, social media of drukwerk.'
-  },
-  {
-    icon: MapPin,
-    title: 'Op locatie in heel Nederland',
-    description: 'We komen naar jouw bedrijf, project of locatie toe. Reiskosten inbegrepen.'
-  },
-  {
-    icon: Clock,
-    title: 'Snelle levering',
-    description: 'Bewerkte beelden binnen 5 werkdagen opgeleverd, inclusief kleurcorrectie.'
-  },
-  {
-    icon: Plane,
-    title: 'Professionele apparatuur',
-    description: 'DJI Mavic 3 Pro met Hasselblad camera voor de beste beeldkwaliteit.'
-  },
-]
-
-const included = [
-  'Voorbespreking & planning',
-  'Vliegvergunning aanvragen',
-  'Tot 2 uur op locatie',
-  '10-15 bewerkte foto\'s',
-  '1-2 minuten editted video',
-  'Ruwe bestanden inbegrepen',
-  'Commercieel gebruiksrecht',
-  'Reiskosten heel Nederland',
-]
-
-// Drone packages
+// Drone packages - centralized
 const dronePackages = [
   {
     id: 'starter',
     name: 'Basis',
     price: 349,
-    priceNote: 'eenmalig incl. btw',
     description: 'Perfect voor kleine projecten',
-    features: ['10 bewerkte foto\'s', '1 locatie', 'Digitale levering', 'Binnen 5 werkdagen'],
+    features: ["10 bewerkte foto's", '1 locatie', 'Digitale levering', 'Binnen 5 werkdagen'],
     icon: Camera,
   },
   {
     id: 'professional',
     name: 'Professioneel',
     price: 549,
-    priceNote: 'eenmalig incl. btw',
     popular: true,
-    description: 'Foto\'s + video voor maximale impact',
-    features: ['25 bewerkte foto\'s', '1-2 locaties', '1 min video', 'Binnen 3 werkdagen'],
+    description: "Foto's + video voor maximale impact",
+    features: ["25 bewerkte foto's", '1-2 locaties', '1 min bewerkte video', 'Binnen 3 werkdagen', 'Ruwe bestanden'],
     icon: Video,
   },
   {
     id: 'business',
     name: 'Premium',
     price: 849,
-    priceNote: 'eenmalig incl. btw',
     description: 'Complete coverage voor grote projecten',
-    features: ['50+ foto\'s', 'Meerdere locaties', '3 min video', 'Spoedlevering mogelijk'],
+    features: ["50+ foto's", 'Meerdere locaties', '3 min video', 'Spoedlevering', 'Ruwe bestanden', 'Revisies'],
     icon: Zap,
   },
 ]
 
-const useCases = [
-  'Bedrijfspanden & kantoren',
-  'Bouwprojecten & vastgoed',
-  'Evenementen & festivals',
-  'Agrarische bedrijven',
-  'Hotels & accommodaties',
-  'Restaurants met terras',
-  'Sport- & recreatieparken',
-  'Jachthavens & campings',
-]
-
+// Portfolio videos
 const portfolioVideos = [
   { id: '1124571038', title: 'Locatie overview' },
   { id: '1124569000', title: 'Luchtopname' },
   { id: '1124567381', title: 'Luchtfoto & video' },
 ]
 
+// Quick USPs for hero
+const heroUSPs = [
+  { icon: Shield, text: 'EU-gecertificeerd' },
+  { icon: MapPin, text: 'Heel Nederland' },
+  { icon: Clock, text: 'Binnen 5 dagen' },
+]
+
+// What's included - compact
+const included = [
+  'Voorbespreking & planning',
+  'Vliegvergunning aanvragen',
+  'Tot 2 uur op locatie',
+  'Professionele nabewerking',
+  'Commercieel gebruiksrecht',
+  'Reiskosten inbegrepen',
+]
+
 export default function Luchtvideografie() {
+  const [activeVideo, setActiveVideo] = useState<string | null>(null)
+  const scrollRef = useRef<HTMLDivElement>(null)
+  const [activePkgIndex, setActivePkgIndex] = useState(1)
+
+  const handlePkgScroll = () => {
+    if (!scrollRef.current) return
+    const cardWidth = 300 + 16
+    const index = Math.round(scrollRef.current.scrollLeft / cardWidth)
+    setActivePkgIndex(Math.min(index, dronePackages.length - 1))
+  }
+
+  const getVimeoUrl = (videoId: string, background = true) => {
+    if (background) {
+      return `https://player.vimeo.com/video/${videoId}?background=1&autoplay=1&loop=1&muted=1`
+    }
+    return `https://player.vimeo.com/video/${videoId}?autoplay=1&quality=1080p`
+  }
+
   return (
     <div className="min-h-screen bg-white dark:bg-gray-900">
       <Header />
 
       <main>
-        {/* Hero - with drone footage background */}
-        <section className="relative min-h-[70vh] flex items-center overflow-hidden bg-gray-900 pt-20">
-          {/* Video background */}
+        {/* Hero - Simplified with single video */}
+        <section className="relative min-h-[85vh] lg:min-h-[80vh] flex items-center overflow-hidden bg-gray-900 pt-20">
+          {/* Single video background - full width cover */}
           <div className="absolute inset-0 z-0">
-            <div className="absolute inset-0 grid grid-cols-3 gap-1 opacity-40">
-              {portfolioVideos.map((video) => (
-                <div key={video.id} className="relative h-full overflow-hidden">
-                  <iframe
-                    src={`https://player.vimeo.com/video/${video.id}?background=1&autoplay=1&loop=1&muted=1&quality=720p`}
-                    className="absolute inset-0 w-full h-full scale-150 object-cover"
-                    frameBorder="0"
-                    allow="autoplay; fullscreen; picture-in-picture"
-                    title={video.title}
-                  />
-                </div>
-              ))}
-            </div>
-            {/* Dark overlay */}
-            <div className="absolute inset-0 bg-gradient-to-b from-gray-900/80 via-gray-900/90 to-gray-900" />
+            <iframe
+              src="https://player.vimeo.com/video/1124571038?background=1&autoplay=1&loop=1&muted=1&quality=720p"
+              className="absolute w-[300%] h-[300%] top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 min-w-full min-h-full"
+              style={{ aspectRatio: '16/9' }}
+              frameBorder="0"
+              allow="autoplay; fullscreen"
+              title="Luchtopname achtergrond"
+            />
+            <div className="absolute inset-0 bg-gradient-to-b from-gray-900/70 via-gray-900/80 to-gray-900" />
           </div>
 
-          {/* Background decorations */}
-          <div className="absolute inset-0 overflow-hidden pointer-events-none z-10">
-            {/* Gradient blobs - animated */}
-            <motion.div 
-              className="absolute top-0 right-0 w-[900px] h-[900px] bg-gradient-to-br from-orange-500/20 via-amber-500/10 to-transparent rounded-full blur-3xl -translate-y-1/3 translate-x-1/4"
-              animate={{ 
-                scale: [1, 1.05, 1],
-                rotate: [0, 5, 0]
-              }}
-              transition={{ duration: 8, repeat: Infinity, ease: "easeInOut" }}
-            />
-            <motion.div 
-              className="absolute bottom-0 left-0 w-[700px] h-[700px] bg-gradient-to-tr from-amber-500/15 via-orange-500/10 to-transparent rounded-full blur-3xl translate-y-1/3 -translate-x-1/4"
-              animate={{ 
-                scale: [1, 1.08, 1],
-                rotate: [0, -5, 0]
-              }}
-              transition={{ duration: 10, repeat: Infinity, ease: "easeInOut" }}
-            />
-            
-            {/* Floating particles */}
-            <FloatingParticles />
-            
-            {/* Decorative rings */}
-            <div className="absolute top-20 right-20 w-32 h-32 border border-orange-400/20 rounded-full" />
-            <div className="absolute top-24 right-24 w-24 h-24 border border-orange-500/10 rounded-full" />
-            <div className="absolute bottom-32 left-20 w-20 h-20 border border-amber-400/20 rounded-full" />
-          </div>
-
-          <div className="relative z-20 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 lg:py-24">
-            <div className="max-w-3xl mx-auto text-center">
+          <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 lg:py-20">
+            <div className="max-w-3xl">
               <motion.div
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
               >
-                <motion.div
-                  initial={{ opacity: 0, scale: 0.9 }}
-                  animate={{ opacity: 1, scale: 1 }}
-                  transition={{ delay: 0.1 }}
-                  className="inline-flex items-center gap-2 bg-gradient-to-r from-orange-500/20 to-amber-500/20 border border-orange-400/30 backdrop-blur-sm rounded-full px-4 py-2 mb-6"
-                >
+                {/* Badge */}
+                <div className="inline-flex items-center gap-2 bg-orange-500/20 border border-orange-400/30 backdrop-blur-sm rounded-full px-4 py-2 mb-6">
                   <Plane className="w-4 h-4 text-orange-400" />
                   <span className="text-sm font-medium text-orange-300">Luchtfoto & Videografie</span>
-                </motion.div>
+                </div>
 
-                <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold text-white mb-6 leading-tight">
-                  Til je content naar een{' '}
-                  <span className="bg-gradient-to-r from-orange-400 to-amber-400 bg-clip-text text-transparent">hoger niveau</span>
+                <h1 className="text-3xl sm:text-4xl lg:text-5xl xl:text-6xl font-bold text-white mb-4 lg:mb-6 leading-tight">
+                  Professionele{' '}
+                  <span className="bg-gradient-to-r from-orange-400 to-amber-400 bg-clip-text text-transparent">luchtopnames</span>
+                  {' '}voor jouw bedrijf
                 </h1>
 
-                <p className="text-xl text-gray-300 mb-8 max-w-2xl mx-auto">
-                  Professionele luchtfoto's en video's van jouw bedrijf. 
-                  Maak indruk op je klanten met spectaculaire beelden vanuit de lucht.
+                <p className="text-lg lg:text-xl text-gray-300 mb-6 lg:mb-8 max-w-xl">
+                  Maak indruk met spectaculaire drone foto's en video's. 
+                  Eenmalig vanaf <span className="text-white font-semibold">€349</span>.
                 </p>
 
-                <div className="flex flex-col sm:flex-row gap-4 justify-center">
+                {/* Quick USPs */}
+                <div className="flex flex-wrap gap-3 lg:gap-4 mb-8">
+                  {heroUSPs.map((usp, i) => (
+                    <div key={i} className="flex items-center gap-2 text-gray-300 text-sm">
+                      <div className="w-6 h-6 bg-orange-500/20 rounded-full flex items-center justify-center">
+                        <usp.icon className="w-3.5 h-3.5 text-orange-400" />
+                      </div>
+                      <span>{usp.text}</span>
+                    </div>
+                  ))}
+                </div>
+
+                {/* CTA buttons */}
+                <div className="flex flex-col sm:flex-row gap-3">
                   <Link
                     to="/start?dienst=drone"
-                    className="group inline-flex items-center justify-center gap-2 px-8 py-4 bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 text-white font-semibold rounded-xl transition-all shadow-lg shadow-orange-500/25 hover:shadow-orange-500/40 hover:-translate-y-0.5"
+                    className="group inline-flex items-center justify-center gap-2 px-6 py-3.5 lg:px-8 lg:py-4 bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 text-white font-semibold rounded-xl transition-all shadow-lg shadow-orange-500/25"
                   >
-                    Start je luchtfoto project
+                    Vraag offerte aan
                     <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
                   </Link>
                   <a
-                    href="#pakketten"
-                    className="inline-flex items-center justify-center gap-2 px-8 py-4 bg-white/10 backdrop-blur-sm hover:bg-white/20 text-white font-semibold rounded-xl border border-white/20 transition-all"
+                    href="#portfolio"
+                    className="inline-flex items-center justify-center gap-2 px-6 py-3.5 lg:px-8 lg:py-4 bg-white/10 backdrop-blur-sm hover:bg-white/20 text-white font-semibold rounded-xl border border-white/20 transition-all"
                   >
-                    Bekijk pakketten
+                    <Play className="w-4 h-4" />
+                    Bekijk voorbeelden
                   </a>
                 </div>
               </motion.div>
             </div>
           </div>
-          
-          {/* Scroll indicator */}
-          <motion.div 
-            className="absolute bottom-8 left-1/2 -translate-x-1/2 z-20"
-            animate={{ y: [0, 8, 0] }}
-            transition={{ duration: 2, repeat: Infinity }}
-          >
-            <div className="w-6 h-10 border-2 border-white/30 rounded-full flex justify-center pt-2">
-              <div className="w-1 h-2 bg-white/50 rounded-full" />
-            </div>
-          </motion.div>
         </section>
 
-        {/* Features */}
-        <section id="features" className="py-20 bg-gradient-to-b from-white via-orange-50/20 to-white dark:from-gray-900 dark:via-orange-900/10 dark:to-gray-900 relative overflow-hidden">
-          {/* Background decorations */}
-          <div className="absolute inset-0 overflow-hidden pointer-events-none">
-            <div className="absolute -top-40 -right-40 w-80 h-80 bg-gradient-to-br from-orange-100/40 to-amber-100/20 dark:from-orange-900/30 dark:to-amber-900/20 rounded-full blur-3xl" />
-            <div className="absolute -bottom-40 -left-40 w-96 h-96 bg-gradient-to-tl from-amber-100/30 to-orange-100/20 dark:from-amber-900/20 dark:to-orange-900/10 rounded-full blur-3xl" />
-          </div>
-
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-            <div className="text-center mb-16">
-              <motion.span
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                className="inline-block text-orange-600 dark:text-orange-400 font-semibold text-sm tracking-wider uppercase mb-3"
-              >
-                Waarom luchtopnames
-              </motion.span>
-              <motion.h2 
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                className="text-3xl sm:text-4xl font-bold text-gray-900 dark:text-white mb-4"
-              >
-                Een uniek{' '}
-                <span className="bg-gradient-to-r from-orange-600 to-amber-600 bg-clip-text text-transparent">
-                  perspectief
-                </span>
-              </motion.h2>
-              <motion.p 
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ delay: 0.1 }}
-                className="text-gray-600 dark:text-gray-300 text-lg max-w-2xl mx-auto"
-              >
-                Luchtfoto's en video's geven een uniek perspectief dat je met geen andere techniek 
-                kunt bereiken. Laat je bedrijf zien zoals nooit tevoren.
-              </motion.p>
-            </div>
-
-            <div className="flex md:grid md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6 lg:gap-8 overflow-x-auto md:overflow-visible pb-4 md:pb-0 snap-x snap-mandatory scrollbar-hide -mx-4 px-4 md:mx-0 md:px-0">
-              {features.map((feature, index) => (
-                <motion.div
-                  key={index}
-                  initial={{ opacity: 0, y: 20 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true }}
-                  transition={{ delay: index * 0.1 }}
-                  className="group p-6 bg-white dark:bg-gray-800 border border-gray-200/80 dark:border-gray-700 rounded-2xl shadow-sm hover:shadow-xl hover:border-orange-200 dark:hover:border-orange-700 hover:-translate-y-1 transition-all min-w-[280px] md:min-w-0 snap-center flex-shrink-0 md:flex-shrink"
-                >
-                  {/* Icon + Title row */}
-                  <div className="flex items-center gap-4 mb-4">
-                    <div className="w-12 h-12 bg-gradient-to-br from-orange-500 to-amber-500 rounded-xl flex items-center justify-center shadow-lg shadow-orange-500/20 group-hover:scale-110 transition-transform flex-shrink-0">
-                      <feature.icon className="w-6 h-6 text-white" />
-                    </div>
-                    <h3 className="text-lg font-bold text-gray-900 dark:text-white">{feature.title}</h3>
+        {/* Compact USP Bar */}
+        <section className="py-8 lg:py-12 bg-gradient-to-r from-orange-500 to-amber-500">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 lg:gap-8">
+              {[
+                { icon: Shield, title: 'EU-gecertificeerd', desc: 'A1/A2/A3 dronebewijs' },
+                { icon: Video, title: '4K Video', desc: 'Kristalheldere kwaliteit' },
+                { icon: Clock, title: 'Snelle levering', desc: 'Binnen 5 werkdagen' },
+                { icon: Award, title: 'Verzekerd', desc: 'Volledige dekking' },
+              ].map((item, i) => (
+                <div key={i} className="flex items-center gap-3">
+                  <div className="w-10 h-10 lg:w-12 lg:h-12 bg-white/20 rounded-xl flex items-center justify-center flex-shrink-0">
+                    <item.icon className="w-5 h-5 lg:w-6 lg:h-6 text-white" />
                   </div>
-                  <p className="text-gray-600 dark:text-gray-300 leading-relaxed">{feature.description}</p>
-                </motion.div>
+                  <div>
+                    <div className="text-white font-semibold text-sm lg:text-base">{item.title}</div>
+                    <div className="text-white/70 text-xs lg:text-sm">{item.desc}</div>
+                  </div>
+                </div>
               ))}
             </div>
           </div>
         </section>
 
-        {/* Packages Section */}
-        <section id="pakketten" className="py-20 bg-gradient-to-b from-gray-50 via-orange-50/20 to-gray-50 dark:from-gray-900 dark:via-orange-900/10 dark:to-gray-900 relative overflow-hidden">
+        {/* Portfolio - Video showcase */}
+        <section id="portfolio" className="py-16 lg:py-24 bg-gray-900 relative overflow-hidden">
           <div className="absolute inset-0 overflow-hidden pointer-events-none">
-            <div className="absolute -top-40 -left-40 w-80 h-80 bg-gradient-to-br from-orange-100/40 to-amber-100/20 dark:from-orange-900/30 dark:to-amber-900/20 rounded-full blur-3xl" />
-            <div className="absolute -bottom-40 -right-40 w-96 h-96 bg-gradient-to-tl from-amber-100/30 to-orange-100/20 dark:from-amber-900/20 dark:to-orange-900/10 rounded-full blur-3xl" />
+            <div className="absolute top-0 left-1/4 w-96 h-96 bg-orange-500/10 rounded-full blur-3xl" />
+            <div className="absolute bottom-0 right-1/4 w-96 h-96 bg-amber-500/10 rounded-full blur-3xl" />
+          </div>
+
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+            <div className="text-center mb-10 lg:mb-12">
+              <motion.span 
+                initial={{ opacity: 0 }}
+                whileInView={{ opacity: 1 }}
+                viewport={{ once: true }}
+                className="inline-flex items-center gap-2 px-4 py-2 bg-orange-500/20 border border-orange-400/30 text-orange-300 rounded-full text-sm font-medium mb-4"
+              >
+                <Play className="w-4 h-4" />
+                Ons werk
+              </motion.span>
+              <motion.h2 
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                className="text-2xl sm:text-3xl lg:text-4xl font-bold text-white"
+              >
+                Bekijk onze luchtopnames
+              </motion.h2>
+            </div>
+
+            {/* Video Grid - Desktop */}
+            <div className="hidden lg:grid lg:grid-cols-3 gap-6">
+              {portfolioVideos.map((video, index) => (
+                <motion.div
+                  key={video.id}
+                  initial={{ opacity: 0, y: 20 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ delay: index * 0.1 }}
+                  className="group relative aspect-video rounded-2xl overflow-hidden shadow-2xl ring-1 ring-white/10 hover:ring-orange-500/40 transition-all cursor-pointer"
+                  onClick={() => setActiveVideo(video.id)}
+                >
+                  <iframe
+                    src={getVimeoUrl(video.id)}
+                    className="absolute inset-0 w-full h-full scale-105"
+                    frameBorder="0"
+                    allow="autoplay; fullscreen"
+                    title={video.title}
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
+                  <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+                    <div className="w-14 h-14 bg-white/90 rounded-full flex items-center justify-center">
+                      <Play className="w-6 h-6 text-gray-900 ml-1" />
+                    </div>
+                  </div>
+                  <div className="absolute bottom-4 left-4 right-4 opacity-0 group-hover:opacity-100 transition-opacity">
+                    <p className="text-white font-medium">{video.title}</p>
+                  </div>
+                </motion.div>
+              ))}
+            </div>
+
+            {/* Video Carousel - Mobile */}
+            <div className="lg:hidden">
+              <div className="flex gap-4 overflow-x-auto pb-4 -mx-4 px-4 snap-x snap-mandatory scrollbar-hide">
+                {portfolioVideos.map((video) => (
+                  <div
+                    key={video.id}
+                    className="flex-shrink-0 w-[85vw] aspect-video rounded-xl overflow-hidden snap-center"
+                    onClick={() => setActiveVideo(video.id)}
+                  >
+                    <iframe
+                      src={getVimeoUrl(video.id)}
+                      className="w-full h-full scale-105"
+                      frameBorder="0"
+                      allow="autoplay"
+                      title={video.title}
+                    />
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* Packages Section */}
+        <section id="pakketten" className="py-16 lg:py-24 bg-white dark:bg-gray-900 relative overflow-hidden">
+          <div className="absolute inset-0 overflow-hidden pointer-events-none">
+            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-gradient-to-r from-orange-50/50 via-amber-50/30 to-transparent dark:from-orange-900/10 dark:via-amber-900/5 dark:to-transparent rounded-full blur-3xl" />
           </div>
 
           <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-            <div className="text-center mb-12">
+            {/* Header */}
+            <div className="text-center mb-10 lg:mb-12">
               <motion.span
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
+                initial={{ opacity: 0 }}
+                whileInView={{ opacity: 1 }}
                 viewport={{ once: true }}
                 className="inline-block text-orange-600 dark:text-orange-400 font-semibold text-sm tracking-wider uppercase mb-3"
               >
@@ -355,40 +296,123 @@ export default function Luchtvideografie() {
                 initial={{ opacity: 0, y: 20 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
-                className="text-3xl sm:text-4xl font-bold text-gray-900 dark:text-white mb-4"
+                className="text-2xl sm:text-3xl lg:text-4xl font-bold text-gray-900 dark:text-white mb-4"
               >
-                Kies jouw{' '}
-                <span className="bg-gradient-to-r from-orange-600 to-amber-600 bg-clip-text text-transparent">luchtfoto pakket</span>
+                Kies je luchtfoto pakket
               </motion.h2>
               <motion.p
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
+                initial={{ opacity: 0 }}
+                whileInView={{ opacity: 1 }}
                 viewport={{ once: true }}
-                transition={{ delay: 0.1 }}
-                className="text-gray-600 dark:text-gray-300 text-lg max-w-2xl mx-auto"
+                className="text-gray-600 dark:text-gray-400 max-w-xl mx-auto"
               >
-                Eenmalige investering inclusief voorbereiding, shoot en nabewerking.
+                Eenmalige investering, inclusief alles. BTW aftrekbaar voor zakelijk gebruik.
               </motion.p>
             </div>
 
-            {/* Mobile: swipe to compare */}
-            <div className="sm:hidden">
-              <div className="flex items-center justify-center gap-2 text-xs text-gray-400 dark:text-gray-500 mb-3">
-                <span>Swipe om te vergelijken</span>
-                <ArrowRight className="w-3 h-3" />
+            {/* Mobile: Carousel */}
+            <div className="lg:hidden">
+              <div className="text-center text-xs text-gray-400 mb-3">← Swipe voor meer →</div>
+              <div
+                ref={scrollRef}
+                onScroll={handlePkgScroll}
+                className="flex gap-4 overflow-x-auto pb-4 -mx-4 px-4 snap-x snap-mandatory scrollbar-hide"
+              >
+                {dronePackages.map((pkg, index) => {
+                  const IconComponent = pkg.icon
+                  return (
+                    <motion.div
+                      key={pkg.id}
+                      initial={{ opacity: 0, y: 20 }}
+                      whileInView={{ opacity: 1, y: 0 }}
+                      viewport={{ once: true }}
+                      transition={{ delay: index * 0.05 }}
+                      className={`flex-shrink-0 w-[300px] p-6 bg-white dark:bg-gray-800 rounded-2xl snap-center relative ${
+                        pkg.popular 
+                          ? 'border-2 border-orange-500 shadow-lg shadow-orange-500/10' 
+                          : 'border border-gray-200 dark:border-gray-700'
+                      }`}
+                    >
+                      {pkg.popular && (
+                        <div className="absolute -top-3 left-1/2 -translate-x-1/2">
+                          <span className="bg-gradient-to-r from-orange-500 to-amber-500 text-white text-xs font-semibold px-3 py-1 rounded-full">
+                            Meest gekozen
+                          </span>
+                        </div>
+                      )}
+
+                      <div className="text-center mb-4">
+                        <div className="w-12 h-12 bg-gradient-to-br from-orange-500 to-amber-500 rounded-xl flex items-center justify-center mx-auto mb-3">
+                          <IconComponent className="w-6 h-6 text-white" />
+                        </div>
+                        <h3 className="text-xl font-bold text-gray-900 dark:text-white">{pkg.name}</h3>
+                        <p className="text-gray-500 dark:text-gray-400 text-sm">{pkg.description}</p>
+                      </div>
+
+                      <div className="text-center mb-5">
+                        <span className="text-4xl font-bold text-gray-900 dark:text-white">€{pkg.price}</span>
+                        <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">eenmalig incl. btw</p>
+                      </div>
+
+                      <ul className="space-y-2 mb-5">
+                        {pkg.features.map((feature, i) => (
+                          <li key={i} className="flex items-center gap-2">
+                            <Check className="w-4 h-4 text-orange-500 flex-shrink-0" />
+                            <span className="text-gray-700 dark:text-gray-300 text-sm">{feature}</span>
+                          </li>
+                        ))}
+                      </ul>
+
+                      <Link 
+                        to={`/start?dienst=drone&pakket=${pkg.id}`}
+                        className={`block w-full text-center py-3 rounded-xl font-semibold transition-all ${
+                          pkg.popular
+                            ? 'bg-gradient-to-r from-orange-500 to-amber-500 text-white'
+                            : 'bg-gray-100 dark:bg-gray-700 text-gray-900 dark:text-white hover:bg-gray-200'
+                        }`}
+                      >
+                        Kies {pkg.name}
+                      </Link>
+                    </motion.div>
+                  )
+                })}
               </div>
 
-              <div className="flex gap-4 overflow-x-auto overflow-y-visible pb-4 -mx-4 px-4 snap-x snap-mandatory scrollbar-hide" style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
-                {dronePackages.map((pkg, index) => (
+              {/* Dot indicators */}
+              <div className="flex justify-center gap-2 mt-3">
+                {dronePackages.map((_, idx) => (
+                  <button
+                    key={idx}
+                    onClick={() => {
+                      if (!scrollRef.current) return
+                      const cardWidth = 300 + 16
+                      scrollRef.current.scrollTo({ left: cardWidth * idx, behavior: 'smooth' })
+                    }}
+                    className={`h-2 rounded-full transition-all ${
+                      idx === activePkgIndex ? 'bg-orange-500 w-6' : 'bg-gray-300 dark:bg-gray-600 w-2'
+                    }`}
+                    aria-label={`Ga naar pakket ${idx + 1}`}
+                  />
+                ))}
+              </div>
+            </div>
+
+            {/* Desktop: Grid */}
+            <div className="hidden lg:grid lg:grid-cols-3 gap-6">
+              {dronePackages.map((pkg, index) => {
+                const IconComponent = pkg.icon
+                return (
                   <motion.div
                     key={pkg.id}
                     initial={{ opacity: 0, y: 20 }}
                     whileInView={{ opacity: 1, y: 0 }}
                     viewport={{ once: true }}
-                    transition={{ delay: index * 0.05 }}
-                    className={`relative flex-shrink-0 w-[300px] p-6 bg-white dark:bg-gray-800 rounded-2xl border ${
-                      pkg.popular ? 'border-orange-300 dark:border-orange-600 shadow-xl shadow-orange-500/10' : 'border-gray-200 dark:border-gray-700'
-                    } hover:shadow-xl hover:-translate-y-1 transition-all snap-center`}
+                    transition={{ delay: index * 0.1 }}
+                    className={`relative p-6 bg-white dark:bg-gray-800 rounded-2xl ${
+                      pkg.popular 
+                        ? 'border-2 border-orange-500 shadow-xl shadow-orange-500/10 scale-105' 
+                        : 'border border-gray-200 dark:border-gray-700'
+                    } hover:shadow-xl transition-all`}
                   >
                     {pkg.popular && (
                       <div className="absolute -top-3 left-1/2 -translate-x-1/2">
@@ -398,483 +422,96 @@ export default function Luchtvideografie() {
                       </div>
                     )}
 
-                    <div className="text-center mb-6">
-                      <div className="w-12 h-12 bg-gradient-to-br from-orange-500 to-amber-600 rounded-xl flex items-center justify-center mx-auto mb-4 shadow-lg shadow-orange-500/20">
-                        <pkg.icon className="w-6 h-6 text-white" />
+                    <div className="text-center mb-5">
+                      <div className="w-14 h-14 bg-gradient-to-br from-orange-500 to-amber-500 rounded-xl flex items-center justify-center mx-auto mb-4">
+                        <IconComponent className="w-7 h-7 text-white" />
                       </div>
                       <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-1">{pkg.name}</h3>
                       <p className="text-gray-500 dark:text-gray-400 text-sm">{pkg.description}</p>
                     </div>
 
                     <div className="text-center mb-6">
-                      <div className="flex items-baseline justify-center gap-1">
-                        <span className="text-4xl font-bold text-gray-900 dark:text-white">€{pkg.price}</span>
-                      </div>
-                      <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">{pkg.priceNote}</p>
+                      <span className="text-5xl font-bold text-gray-900 dark:text-white">€{pkg.price}</span>
+                      <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">eenmalig incl. btw</p>
                     </div>
 
                     <ul className="space-y-3 mb-6">
                       {pkg.features.map((feature, i) => (
                         <li key={i} className="flex items-center gap-2">
-                          <CheckCircle className="w-5 h-5 text-orange-500 flex-shrink-0" />
-                          <span className="text-gray-700 dark:text-gray-300 text-sm">{feature}</span>
+                          <Check className="w-5 h-5 text-orange-500 flex-shrink-0" />
+                          <span className="text-gray-700 dark:text-gray-300">{feature}</span>
                         </li>
                       ))}
                     </ul>
 
-                    <Link to={`/start?dienst=drone&pakket=${pkg.id}`} className="block w-full text-center py-3 rounded-xl font-semibold transition-all bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 text-gray-900 dark:text-white">
+                    <Link
+                      to={`/start?dienst=drone&pakket=${pkg.id}`}
+                      className={`block w-full text-center py-3.5 rounded-xl font-semibold transition-all ${
+                        pkg.popular
+                          ? 'bg-gradient-to-r from-orange-500 to-amber-500 hover:from-orange-600 hover:to-amber-600 text-white shadow-lg shadow-orange-500/25'
+                          : 'bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 text-gray-900 dark:text-white'
+                      }`}
+                    >
                       Kies {pkg.name}
                     </Link>
                   </motion.div>
-                ))}
-              </div>
-
-              {/* Dot indicators */}
-              <div className="flex justify-center gap-2 mt-3">
-                {dronePackages.map((_, idx) => (
-                  <div key={idx} className={`h-2 rounded-full transition-all ${idx === 1 ? 'bg-orange-500 w-6' : 'bg-gray-300 dark:bg-gray-600 w-2'}`} />
-                ))}
-              </div>
+                )
+              })}
             </div>
 
-            {/* Desktop: grid - 3 columns */}
-            <div className="hidden sm:grid sm:grid-cols-3 gap-6">
-              {dronePackages.map((pkg, index) => (
-                <motion.div
-                  key={pkg.id}
-                  initial={{ opacity: 0, y: 20 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true }}
-                  transition={{ delay: index * 0.1 }}
-                  className={`relative p-6 bg-white dark:bg-gray-800 rounded-2xl border ${
-                    pkg.popular ? 'border-orange-300 dark:border-orange-600 shadow-xl shadow-orange-500/10' : 'border-gray-200 dark:border-gray-700'
-                  } hover:shadow-xl hover:-translate-y-1 transition-all`}
-                >
-                  {pkg.popular && (
-                    <div className="absolute -top-3 left-1/2 -translate-x-1/2">
-                      <span className="bg-gradient-to-r from-orange-500 to-amber-500 text-white text-xs font-semibold px-3 py-1 rounded-full">
-                        Meest gekozen
-                      </span>
-                    </div>
-                  )}
-
-                  <div className="text-center mb-6">
-                    <div className="w-12 h-12 bg-gradient-to-br from-orange-500 to-amber-600 rounded-xl flex items-center justify-center mx-auto mb-4 shadow-lg shadow-orange-500/20">
-                      <pkg.icon className="w-6 h-6 text-white" />
-                    </div>
-                    <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-1">{pkg.name}</h3>
-                    <p className="text-gray-500 dark:text-gray-400 text-sm">{pkg.description}</p>
-                  </div>
-
-                  <div className="text-center mb-6">
-                    <div className="flex items-baseline justify-center gap-1">
-                      <span className="text-4xl font-bold text-gray-900 dark:text-white">€{pkg.price}</span>
-                    </div>
-                    <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">{pkg.priceNote}</p>
-                  </div>
-
-                  <ul className="space-y-3 mb-6">
-                    {pkg.features.map((feature, i) => (
-                      <li key={i} className="flex items-center gap-2">
-                        <CheckCircle className="w-5 h-5 text-orange-500 flex-shrink-0" />
-                        <span className="text-gray-700 dark:text-gray-300 text-sm">{feature}</span>
-                      </li>
-                    ))}
-                  </ul>
-
-                  <Link
-                    to={`/start?dienst=drone&pakket=${pkg.id}`}
-                    className={`block w-full text-center py-3 rounded-xl font-semibold transition-all ${
-                      pkg.popular
-                        ? 'bg-gradient-to-r from-orange-500 to-amber-600 hover:from-orange-600 hover:to-amber-700 text-white shadow-lg shadow-orange-500/25'
-                        : 'bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 text-gray-900 dark:text-white'
-                    }`}
-                  >
-                    Kies {pkg.name}
-                  </Link>
-                </motion.div>
-              ))}
-            </div>
-          </div>
-        </section>
-
-        {/* Certification Section */}
-        <section className="py-20 bg-gradient-to-b from-gray-900 via-gray-900 to-gray-800 relative overflow-hidden">
-          {/* Background effects */}
-          <div className="absolute inset-0 overflow-hidden pointer-events-none">
-            <div className="absolute top-0 left-1/4 w-96 h-96 bg-orange-500/10 rounded-full blur-3xl" />
-            <div className="absolute bottom-0 right-1/4 w-96 h-96 bg-amber-500/10 rounded-full blur-3xl" />
-          </div>
-
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-            <div className="text-center mb-12">
-              <motion.span 
-                initial={{ opacity: 0, scale: 0.9 }}
-                whileInView={{ opacity: 1, scale: 1 }}
-                viewport={{ once: true }}
-                className="inline-flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-orange-500/20 to-amber-500/20 backdrop-blur-sm border border-orange-400/30 text-orange-300 rounded-full text-sm font-medium mb-4"
-              >
-                <Shield className="w-4 h-4" />
-                100% Gecertificeerd
-              </motion.span>
-              <motion.h2 
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                className="text-3xl sm:text-4xl font-bold text-white mb-4"
-              >
-                Alle piloten{' '}
-                <span className="bg-gradient-to-r from-orange-400 to-amber-400 bg-clip-text text-transparent">
-                  EU-gecertificeerd
-                </span>
-              </motion.h2>
-              <motion.p 
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ delay: 0.1 }}
-                className="text-gray-400 text-lg max-w-2xl mx-auto"
-              >
-                Wij werken uitsluitend met professionele operators die voldoen aan alle 
-                Europese regelgeving voor veilige en legale vluchten.
-              </motion.p>
-            </div>
-
-            <div className="flex md:grid md:grid-cols-3 gap-4 md:gap-6 overflow-x-auto md:overflow-visible pb-4 md:pb-0 snap-x snap-mandatory scrollbar-hide -mx-4 px-4 md:mx-0 md:px-0">
-              {[
-                {
-                  icon: Award,
-                  title: 'A1/A2 Dronebewijs',
-                  description: 'EU-erkend certificaat voor vliegen in bewoonde gebieden en nabij mensen. Inclusief theoretisch en praktisch examen.',
-                  badge: 'EASA Certified'
-                },
-                {
-                  icon: FileCheck,
-                  title: 'A3 Open Categorie',
-                  description: 'Certificering voor grotere projecten en vluchten in onbewoond gebied. Maximale flexibiliteit voor elk type opdracht.',
-                  badge: 'RDW Registered'
-                },
-                {
-                  icon: BadgeCheck,
-                  title: 'Verzekerd & Geregistreerd',
-                  description: 'Volledige aansprakelijkheidsverzekering en RDW-registratie. Alle vluchten zijn volledig gedekt en legaal.',
-                  badge: 'Fully Insured'
-                }
-              ].map((cert, index) => (
-                <motion.div
-                  key={index}
-                  initial={{ opacity: 0, y: 20 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true }}
-                  transition={{ delay: index * 0.1 }}
-                  className="relative p-6 bg-white/5 backdrop-blur-sm border border-white/10 rounded-2xl hover:bg-white/10 transition-all min-w-[280px] md:min-w-0 snap-center flex-shrink-0 md:flex-shrink"
-                >
-                  <div className="absolute -top-3 right-4">
-                    <span className="px-3 py-1 bg-gradient-to-r from-orange-500 to-amber-500 text-white text-xs font-semibold rounded-full shadow-lg">
-                      {cert.badge}
-                    </span>
-                  </div>
-                  <div className="w-14 h-14 bg-gradient-to-br from-orange-500/20 to-amber-500/20 rounded-2xl flex items-center justify-center mb-5">
-                    <cert.icon className="w-7 h-7 text-orange-400" />
-                  </div>
-                  <h3 className="text-xl font-bold text-white mb-2">{cert.title}</h3>
-                  <p className="text-gray-400 leading-relaxed">{cert.description}</p>
-                </motion.div>
-              ))}
-            </div>
-
+            {/* What's included - compact */}
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
-              className="mt-12 p-6 bg-gradient-to-r from-orange-500/10 to-amber-500/10 border border-orange-400/20 rounded-2xl text-center"
+              className="mt-12 p-6 lg:p-8 bg-gradient-to-r from-orange-50 to-amber-50 dark:from-orange-900/20 dark:to-amber-900/20 border border-orange-100 dark:border-orange-800/30 rounded-2xl"
             >
-              <p className="text-gray-300 text-lg">
-                <span className="text-white font-semibold">Belangrijke garantie:</span>{' '}
-                Al onze operators zijn getraind volgens de nieuwste EASA-richtlijnen en 
-                houden zich strikt aan de Nederlandse regelgeving voor onbemande luchtvaartuigen.
-              </p>
-            </motion.div>
-          </div>
-        </section>
-
-        {/* Use cases */}
-        <section className="py-20 bg-gradient-to-b from-white via-orange-50/30 to-white dark:from-gray-900 dark:via-orange-900/10 dark:to-gray-900 relative overflow-hidden">
-          {/* Background decorations */}
-          <div className="absolute inset-0 overflow-hidden pointer-events-none">
-            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-gradient-to-r from-orange-100/30 via-amber-100/20 to-transparent dark:from-orange-900/20 dark:via-amber-900/10 dark:to-transparent rounded-full blur-3xl" />
-          </div>
-
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-            <div className="text-center mb-12">
-              <motion.span
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                className="inline-block text-orange-600 dark:text-orange-400 font-semibold text-sm tracking-wider uppercase mb-3"
-              >
-                Toepassingen
-              </motion.span>
-              <motion.h2 
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white mb-4"
-              >
-                Perfect voor{' '}
-                <span className="bg-gradient-to-r from-orange-600 to-amber-600 bg-clip-text text-transparent">
-                  elk bedrijf
-                </span>
-              </motion.h2>
-            </div>
-            <div className="flex gap-3 overflow-x-auto pb-4 -mx-4 px-4 sm:mx-0 sm:px-0 scrollbar-hide sm:flex-wrap sm:justify-center">
-              {useCases.map((useCase, index) => (
-                <motion.span
-                  key={index}
-                  initial={{ opacity: 0, scale: 0.9 }}
-                  whileInView={{ opacity: 1, scale: 1 }}
-                  viewport={{ once: true }}
-                  transition={{ delay: index * 0.05 }}
-                  className="flex-shrink-0 snap-start px-5 py-2.5 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-full text-gray-700 dark:text-gray-300 text-sm font-medium shadow-sm hover:border-orange-300 dark:hover:border-orange-600 hover:bg-gradient-to-r hover:from-orange-50 hover:to-amber-50 dark:hover:from-orange-900/20 dark:hover:to-amber-900/20 hover:shadow-md transition-all cursor-default"
-                >
-                  {useCase}
-                </motion.span>
-              ))}
-            </div>
-          </div>
-        </section>
-
-        {/* Video Portfolio */}
-        <section id="portfolio" className="py-24 bg-gradient-to-b from-gray-900 via-gray-900 to-gray-800 relative overflow-hidden">
-          {/* Background effects */}
-          <div className="absolute inset-0 overflow-hidden pointer-events-none">
-            <div className="absolute top-0 left-1/4 w-96 h-96 bg-orange-500/10 rounded-full blur-3xl" />
-            <div className="absolute bottom-0 right-1/4 w-96 h-96 bg-amber-500/10 rounded-full blur-3xl" />
-            {/* Subtle grid */}
-            <div 
-              className="absolute inset-0 opacity-[0.03]"
-              style={{
-                backgroundImage: `linear-gradient(#fff 1px, transparent 1px), linear-gradient(90deg, #fff 1px, transparent 1px)`,
-                backgroundSize: '40px 40px'
-              }}
-            />
-          </div>
-
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-            <div className="text-center mb-16">
-              <motion.span 
-                initial={{ opacity: 0, scale: 0.9 }}
-                whileInView={{ opacity: 1, scale: 1 }}
-                viewport={{ once: true }}
-                className="inline-flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-orange-500/20 to-amber-500/20 backdrop-blur-sm border border-orange-400/30 text-orange-300 rounded-full text-sm font-medium mb-4"
-              >
-                <Play className="w-4 h-4" />
-                Ons werk
-              </motion.span>
-              <motion.h2 
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                className="text-3xl sm:text-4xl font-bold text-white mb-4"
-              >
-                Bekijk onze{' '}
-                <span className="bg-gradient-to-r from-orange-400 to-amber-400 bg-clip-text text-transparent">
-                  luchtopnames
-                </span>
-              </motion.h2>
-              <motion.p 
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ delay: 0.1 }}
-                className="text-gray-400 text-lg max-w-2xl mx-auto"
-              >
-                Een greep uit onze recente projecten. Dit soort beelden kunnen wij ook voor jouw bedrijf maken.
-              </motion.p>
-            </div>
-
-            <div className="flex md:grid md:grid-cols-3 gap-4 md:gap-6 overflow-x-auto md:overflow-visible pb-4 md:pb-0 snap-x snap-mandatory scrollbar-hide -mx-4 px-4 md:mx-0 md:px-0">
-              {portfolioVideos.map((video, index) => (
-                <motion.div
-                  key={video.id}
-                  initial={{ opacity: 0, y: 20 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true }}
-                  transition={{ delay: index * 0.1 }}
-                  className="group relative aspect-video rounded-2xl overflow-hidden shadow-2xl shadow-black/50 ring-1 ring-orange-500/20 hover:ring-orange-500/40 transition-all hover:-translate-y-1 min-w-[280px] md:min-w-0 snap-center flex-shrink-0 md:flex-shrink"
-                >
-                  {/* Video iframe - background mode, autoplay, muted, loop */}
-                  <iframe
-                    src={`https://player.vimeo.com/video/${video.id}?background=1&autoplay=1&loop=1&muted=1&quality=1080p`}
-                    className="absolute inset-0 w-full h-full scale-105"
-                    frameBorder="0"
-                    allow="autoplay; fullscreen; picture-in-picture"
-                    title={video.title}
-                  />
-                  {/* Subtle gradient overlay on hover */}
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-                  {/* Title on hover */}
-                  <div className="absolute bottom-0 left-0 right-0 p-4 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                    <p className="text-white font-medium">{video.title}</p>
+              <h3 className="font-semibold text-gray-900 dark:text-white text-center mb-4">
+                Bij elk pakket inbegrepen
+              </h3>
+              <div className="grid grid-cols-2 lg:grid-cols-3 gap-3">
+                {included.map((item, i) => (
+                  <div key={i} className="flex items-center gap-2">
+                    <Check className="w-4 h-4 text-orange-500 flex-shrink-0" />
+                    <span className="text-gray-700 dark:text-gray-300 text-sm">{item}</span>
                   </div>
-                </motion.div>
-              ))}
-            </div>
-
-            {/* CTA */}
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              className="text-center mt-12"
-            >
-              <Link
-                to="/start?dienst=drone"
-                className="group inline-flex items-center gap-2 px-8 py-4 bg-gradient-to-r from-orange-500 to-amber-500 hover:from-orange-600 hover:to-amber-600 text-white font-semibold rounded-xl transition-all shadow-lg shadow-orange-500/25 hover:shadow-orange-500/40 hover:-translate-y-0.5"
-              >
-                Start je luchtfoto project
-                <ArrowRight className="w-5 h-5 group-hover:translate-x-0.5 transition-transform" />
-              </Link>
-            </motion.div>
-          </div>
-        </section>
-
-        {/* What's included */}
-        <section className="py-12 md:py-20 bg-gradient-to-b from-white via-orange-50/20 to-white dark:from-gray-900 dark:via-orange-900/10 dark:to-gray-900 relative overflow-hidden">
-          {/* Background decorations */}
-          <div className="absolute inset-0 overflow-hidden pointer-events-none">
-            <div className="absolute -top-40 -left-40 w-80 h-80 bg-gradient-to-br from-orange-100/40 to-amber-100/20 dark:from-orange-900/30 dark:to-amber-900/20 rounded-full blur-3xl" />
-            <div className="absolute -bottom-40 -right-40 w-96 h-96 bg-gradient-to-tl from-amber-100/30 to-orange-100/20 dark:from-amber-900/20 dark:to-orange-900/10 rounded-full blur-3xl" />
-          </div>
-
-          <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-            <div className="text-center mb-6 md:mb-12">
-              <motion.span
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                className="inline-block text-orange-600 dark:text-orange-400 font-semibold text-xs md:text-sm tracking-wider uppercase mb-2 md:mb-3"
-              >
-                Wat je krijgt
-              </motion.span>
-              <motion.h2 
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                className="text-2xl sm:text-3xl md:text-4xl font-bold text-gray-900 dark:text-white mb-2 md:mb-4"
-              >
-                Complete luchtopnames{' '}
-                <span className="bg-gradient-to-r from-orange-600 to-amber-600 bg-clip-text text-transparent">€349</span>
-              </motion.h2>
-              <motion.p 
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ delay: 0.1 }}
-                className="text-gray-600 dark:text-gray-300 text-sm md:text-lg max-w-2xl mx-auto mb-3"
-              >
-                Eenmalige investering inclusief voorbereiding, shoot en nabewerking.
-              </motion.p>
-              <motion.div
-                initial={{ opacity: 0, y: 10 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ delay: 0.15 }}
-                className="inline-flex flex-col sm:flex-row items-center gap-1 sm:gap-2 bg-emerald-50 dark:bg-emerald-900/30 border border-emerald-200 dark:border-emerald-700 rounded-xl sm:rounded-full px-3 py-2 sm:px-4"
-              >
-                <span className="text-emerald-600 dark:text-emerald-400 text-xs sm:text-sm font-medium">💼 Zakelijke investering</span>
-                <span className="hidden sm:inline text-emerald-600 dark:text-emerald-400 text-sm">•</span>
-                <span className="text-emerald-600 dark:text-emerald-400 text-xs sm:text-sm">BTW aftrekbaar</span>
-              </motion.div>
-            </div>
-
-            {/* Features - Mobile: horizontal scroll */}
-            <div className="md:hidden">
-              <div className="flex gap-3 overflow-x-auto pb-4 snap-x snap-mandatory scrollbar-hide -mx-4 px-4">
-                {included.map((item, index) => (
-                  <motion.div 
-                    key={index} 
-                    initial={{ opacity: 0, y: 10 }}
-                    whileInView={{ opacity: 1, y: 0 }}
-                    viewport={{ once: true }}
-                    transition={{ delay: index * 0.05 }}
-                    className="flex-shrink-0 flex items-center gap-2 p-3 bg-white dark:bg-gray-800 rounded-xl border border-gray-100 dark:border-gray-700 shadow-sm snap-start"
-                  >
-                    <CheckCircle className="w-4 h-4 text-orange-500 flex-shrink-0" />
-                    <span className="text-gray-700 dark:text-gray-300 text-xs whitespace-nowrap">{item}</span>
-                  </motion.div>
                 ))}
               </div>
-            </div>
-
-            {/* Desktop: Grid */}
-            <div className="hidden md:grid sm:grid-cols-2 md:grid-cols-4 gap-4 mb-10">
-              {included.map((item, index) => (
-                <motion.div 
-                  key={index} 
-                  initial={{ opacity: 0, y: 10 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true }}
-                  transition={{ delay: index * 0.05 }}
-                  className="flex items-center gap-2 p-3 bg-white dark:bg-gray-800 rounded-xl border border-gray-100 dark:border-gray-700 shadow-sm"
-                >
-                  <CheckCircle className="w-5 h-5 text-orange-500 flex-shrink-0" />
-                  <span className="text-gray-700 dark:text-gray-300 text-sm">{item}</span>
-                </motion.div>
-              ))}
-            </div>
-
-            <motion.div 
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              className="text-center mt-6 md:mt-0"
-            >
-              <Link
-                to="/start?dienst=drone"
-                className="group inline-flex items-center gap-2 px-6 py-3 md:px-8 md:py-4 bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 text-white font-semibold rounded-xl transition-all shadow-lg shadow-orange-500/25 hover:shadow-orange-500/40 hover:-translate-y-0.5 text-sm md:text-base"
-              >
-                Start je luchtfoto project
-                <ArrowRight className="w-4 h-4 md:w-5 md:h-5 group-hover:translate-x-1 transition-transform" />
-              </Link>
-              <p className="text-gray-500 dark:text-gray-400 text-xs md:text-sm mt-3 md:mt-4">
-                Combineer met een website voor korting
-              </p>
             </motion.div>
           </div>
         </section>
 
         {/* Trustpilot Reviews */}
-        <TrustpilotReviews className="bg-gray-50 dark:bg-gray-800" />
+        <TrustpilotReviews className="bg-gray-50 dark:bg-gray-800/50" />
 
-        {/* Final CTA */}
-        <section className="py-20 bg-white dark:bg-gray-900">
-          <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+        {/* Final CTA - Compact */}
+        <section className="py-16 lg:py-20 bg-gradient-to-br from-gray-900 via-gray-900 to-orange-900/30">
+          <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
             >
-              <div className="inline-flex items-center gap-2 bg-gradient-to-r from-orange-50 to-amber-50 dark:from-orange-900/30 dark:to-amber-900/30 border border-orange-200 dark:border-orange-700 rounded-full px-4 py-2 mb-6">
-                <Sparkles className="w-4 h-4 text-orange-600 dark:text-orange-400" />
-                <span className="text-sm font-medium text-orange-700 dark:text-orange-300">Klaar om te starten?</span>
+              <div className="inline-flex items-center gap-2 bg-orange-500/20 border border-orange-400/30 rounded-full px-4 py-2 mb-6">
+                <Sparkles className="w-4 h-4 text-orange-400" />
+                <span className="text-sm font-medium text-orange-300">Klaar om te starten?</span>
               </div>
               
-              <h2 className="text-3xl sm:text-4xl font-bold text-gray-900 dark:text-white mb-4">
-                Til je content naar een{' '}
-                <span className="bg-gradient-to-r from-orange-600 to-amber-600 bg-clip-text text-transparent">
-                  hoger niveau
-                </span>
+              <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-white mb-4">
+                Vraag vandaag nog een{' '}
+                <span className="bg-gradient-to-r from-orange-400 to-amber-400 bg-clip-text text-transparent">
+                  offerte
+                </span>{' '}aan
               </h2>
               
-              <p className="text-gray-600 dark:text-gray-300 text-lg mb-8 max-w-2xl mx-auto">
+              <p className="text-gray-400 text-lg mb-8 max-w-xl mx-auto">
                 Professionele luchtfoto's en video's binnen 5 werkdagen. 
-                Inclusief voorbereiding, shoot en nabewerking.
+                Vrijblijvend advies, geen verplichtingen.
               </p>
 
               <Link
                 to="/start?dienst=drone"
-                className="group inline-flex items-center gap-2 px-8 py-4 bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 text-white font-semibold rounded-xl transition-all shadow-lg shadow-orange-500/25 hover:shadow-orange-500/40 hover:-translate-y-0.5"
+                className="group inline-flex items-center gap-2 px-8 py-4 bg-gradient-to-r from-orange-500 to-amber-500 hover:from-orange-600 hover:to-amber-600 text-white font-semibold rounded-xl transition-all shadow-lg shadow-orange-500/25"
               >
                 Start je luchtfoto project
                 <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
@@ -884,7 +521,39 @@ export default function Luchtvideografie() {
         </section>
       </main>
 
-      <Footer ctaVariant="none" />
+      <Footer ctaVariant="drone" />
+
+      {/* Video Modal */}
+      {activeVideo && (
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/90"
+          onClick={() => setActiveVideo(null)}
+        >
+          <motion.div
+            initial={{ scale: 0.9 }}
+            animate={{ scale: 1 }}
+            className="relative w-full max-w-4xl aspect-video rounded-2xl overflow-hidden"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <iframe
+              src={getVimeoUrl(activeVideo, false)}
+              className="w-full h-full"
+              frameBorder="0"
+              allow="autoplay; fullscreen"
+              title="Video"
+            />
+            <button
+              onClick={() => setActiveVideo(null)}
+              className="absolute top-4 right-4 w-10 h-10 bg-black/50 hover:bg-black/70 rounded-full flex items-center justify-center text-white"
+            >
+              ✕
+            </button>
+          </motion.div>
+        </motion.div>
+      )}
     </div>
   )
 }

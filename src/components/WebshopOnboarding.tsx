@@ -110,7 +110,7 @@ const PACKAGES: PackageType[] = [
   {
     id: 'professional',
     name: 'Professioneel',
-    price: '€449',
+    price: '€499',
     priceLabel: '/maand incl. BTW',
     setupFee: 349,
     monthlyFee: 449,
@@ -122,7 +122,7 @@ const PACKAGES: PackageType[] = [
   {
     id: 'business',
     name: 'Business',
-    price: '€599',
+    price: '€699',
     priceLabel: '/maand incl. BTW',
     setupFee: 449,
     monthlyFee: 599,
