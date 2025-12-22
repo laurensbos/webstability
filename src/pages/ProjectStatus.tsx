@@ -33,7 +33,8 @@ import {
   ThumbsUp,
   Upload,
   Image,
-  File
+  File,
+  Edit3
 } from 'lucide-react'
 import Logo from '../components/Logo'
 import DesignFeedback from '../components/DesignFeedback'
@@ -1184,6 +1185,15 @@ export default function ProjectStatusNew() {
               Jouw actiepunten
             </h2>
             
+            {/* Onboarding instructions */}
+            {project.status === 'onboarding' && (
+              <div className="p-4 rounded-xl bg-blue-500/10 border border-blue-500/20">
+                <p className="text-sm text-blue-300 leading-relaxed">
+                  Vul de onboarding in zodat we je bedrijf goed begrijpen. Upload vervolgens media via de projectbestanden knop. Klaar? Klik op de groene knop en we gaan aan de slag met je design.
+                </p>
+              </div>
+            )}
+            
             {pendingActions.map((action, index) => (
               <Link
                 key={index}
@@ -1235,6 +1245,16 @@ export default function ProjectStatusNew() {
                     <p className="font-medium text-green-400">{action.title}</p>
                     <p className="text-sm text-gray-500">Afgerond</p>
                   </div>
+                  {/* Edit button for onboarding */}
+                  {action.title === 'Onboarding invullen' && action.link && (
+                    <Link
+                      to={action.link}
+                      className="px-3 py-1.5 bg-gray-700 hover:bg-gray-600 text-gray-300 hover:text-white text-xs font-medium rounded-lg transition flex items-center gap-1.5"
+                    >
+                      <Edit3 className="w-3.5 h-3.5" />
+                      Wijzig
+                    </Link>
+                  )}
                 </div>
               </div>
             ))}
@@ -1441,13 +1461,29 @@ export default function ProjectStatusNew() {
                 
                 {/* Upload complete button */}
                 {!uploadsCompleted && !project.uploadsConfirmed && (
-                  <button
-                    onClick={() => setShowUploadConfirm(true)}
-                    className="w-full mt-4 py-3 bg-gradient-to-r from-green-500 to-emerald-500 hover:from-green-400 hover:to-emerald-400 text-white font-semibold rounded-xl transition shadow-lg shadow-green-500/25 flex items-center justify-center gap-2"
-                  >
-                    <CheckCircle2 className="w-5 h-5" />
-                    Alles geüpload? Klik hier
-                  </button>
+                  onboardingCompleted ? (
+                    <button
+                      onClick={() => setShowUploadConfirm(true)}
+                      className="w-full mt-4 py-3 bg-gradient-to-r from-green-500 to-emerald-500 hover:from-green-400 hover:to-emerald-400 text-white font-semibold rounded-xl transition shadow-lg shadow-green-500/25 flex items-center justify-center gap-2"
+                    >
+                      <CheckCircle2 className="w-5 h-5" />
+                      Alles geüpload? Klik hier
+                    </button>
+                  ) : (
+                    <button
+                      onClick={() => {
+                        // Scroll to onboarding section or navigate
+                        const onboardingBtn = document.querySelector('[data-action="onboarding"]')
+                        if (onboardingBtn) {
+                          onboardingBtn.scrollIntoView({ behavior: 'smooth', block: 'center' })
+                        }
+                      }}
+                      className="w-full mt-4 py-3 bg-gradient-to-r from-red-500 to-rose-500 hover:from-red-400 hover:to-rose-400 text-white font-semibold rounded-xl transition shadow-lg shadow-red-500/25 flex items-center justify-center gap-2"
+                    >
+                      <AlertCircle className="w-5 h-5" />
+                      Eerst onboarding invullen
+                    </button>
+                  )
                 )}
                 
                 {/* Already confirmed */}

@@ -9,7 +9,9 @@ import {
   ArrowRight,
   ArrowLeft,
   Check,
-  Sparkles
+  Sparkles,
+  Monitor,
+  ShoppingCart
 } from 'lucide-react'
 import Header from '../components/Header'
 import Footer from '../components/Footer'
@@ -171,6 +173,99 @@ const services: ServiceOption[] = [
     features: ['Meerdere concepten', 'Revisierondes', 'Alle bestandsformaten', 'Kleurenpalet'],
   },
 ]
+
+// Custom illustration components for service cards
+function WebsiteIllustration() {
+  return (
+    <div className="relative w-16 h-16">
+      {/* Browser window mockup */}
+      <div className="absolute inset-0 bg-white/20 backdrop-blur-sm rounded-xl shadow-lg overflow-hidden">
+        <div className="h-3 bg-white/30 flex items-center gap-1 px-1.5">
+          <div className="w-1.5 h-1.5 rounded-full bg-white/60" />
+          <div className="w-1.5 h-1.5 rounded-full bg-white/60" />
+          <div className="w-1.5 h-1.5 rounded-full bg-white/60" />
+        </div>
+        <div className="p-1.5">
+          <div className="h-2 bg-white/40 rounded mb-1" />
+          <div className="h-1 bg-white/30 rounded w-3/4 mb-0.5" />
+          <div className="h-1 bg-white/30 rounded w-1/2" />
+        </div>
+      </div>
+      <Monitor className="absolute -bottom-1 -right-1 w-6 h-6 text-white/80" />
+    </div>
+  )
+}
+
+function WebshopIllustration() {
+  return (
+    <div className="relative w-16 h-16">
+      {/* Shopping bag with cart */}
+      <div className="absolute inset-0 bg-white/20 backdrop-blur-sm rounded-xl shadow-lg flex items-center justify-center">
+        <ShoppingCart className="w-8 h-8 text-white/90" />
+      </div>
+      {/* Small product boxes */}
+      <div className="absolute -top-1 -right-1 w-5 h-5 bg-white/30 rounded-md flex items-center justify-center">
+        <div className="w-2.5 h-2.5 bg-white/60 rounded-sm" />
+      </div>
+      <div className="absolute -bottom-1 -left-1 w-4 h-4 bg-white/30 rounded-md" />
+    </div>
+  )
+}
+
+function DroneIllustration() {
+  return (
+    <div className="relative w-16 h-16">
+      {/* Drone body */}
+      <div className="absolute inset-0 bg-white/20 backdrop-blur-sm rounded-xl shadow-lg flex items-center justify-center">
+        <Plane className="w-8 h-8 text-white/90 rotate-[-20deg]" />
+      </div>
+      {/* Camera icon */}
+      <div className="absolute -bottom-1 -right-1 w-5 h-5 bg-white/30 rounded-full flex items-center justify-center">
+        <div className="w-2.5 h-2.5 bg-white/60 rounded-full" />
+      </div>
+      {/* Signal waves */}
+      <div className="absolute -top-1 left-1/2 -translate-x-1/2 flex gap-0.5">
+        <div className="w-1 h-2 bg-white/40 rounded-full" />
+        <div className="w-1 h-3 bg-white/50 rounded-full" />
+        <div className="w-1 h-2 bg-white/40 rounded-full" />
+      </div>
+    </div>
+  )
+}
+
+function LogoIllustration() {
+  return (
+    <div className="relative w-16 h-16">
+      {/* Artboard with design */}
+      <div className="absolute inset-0 bg-white/20 backdrop-blur-sm rounded-xl shadow-lg flex items-center justify-center overflow-hidden">
+        <PenTool className="w-7 h-7 text-white/90" />
+      </div>
+      {/* Color swatches */}
+      <div className="absolute -top-1 -right-1 flex gap-0.5">
+        <div className="w-3 h-3 bg-purple-300/80 rounded-full" />
+        <div className="w-3 h-3 bg-violet-300/80 rounded-full" />
+      </div>
+      {/* Shape elements */}
+      <div className="absolute -bottom-1 -left-1 w-4 h-4 border-2 border-white/50 rounded-full" />
+    </div>
+  )
+}
+
+// Get illustration component for service
+function ServiceIllustration({ serviceId }: { serviceId: ServiceType }) {
+  switch (serviceId) {
+    case 'website':
+      return <WebsiteIllustration />
+    case 'webshop':
+      return <WebshopIllustration />
+    case 'drone':
+      return <DroneIllustration />
+    case 'logo':
+      return <LogoIllustration />
+    default:
+      return null
+  }
+}
 
 // Floating particles component
 function FloatingParticles({ activeService }: { activeService: ServiceType }) {
@@ -479,8 +574,6 @@ export default function StartProject() {
             
             <div className="flex gap-4 overflow-x-auto overflow-y-visible pb-4 -mx-4 px-4 snap-x snap-mandatory scrollbar-hide" style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
               {services.map((service, index) => {
-                const Icon = service.icon
-                
                 return (
                   <motion.button
                     key={service.id}
@@ -490,12 +583,15 @@ export default function StartProject() {
                     onClick={() => setSelectedService(service.id)}
                     className="relative flex-shrink-0 w-[300px] snap-center text-left bg-white dark:bg-gray-800 rounded-2xl border-2 border-gray-200 dark:border-gray-700 overflow-hidden shadow-md active:scale-[0.98] transition-transform"
                   >
-                    {/* Colored header with icon */}
-                    <div className={`bg-gradient-to-br ${service.gradient} p-5 flex flex-col items-center justify-center gap-3 h-[150px] rounded-t-2xl`}>
-                      <div className="w-14 h-14 rounded-2xl bg-white/20 backdrop-blur-sm flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-300 flex-shrink-0">
-                        <Icon className="w-7 h-7 text-white" />
+                    {/* Colored header with illustration */}
+                    <div className={`bg-gradient-to-br ${service.gradient} p-5 flex flex-col items-center justify-center gap-3 h-[150px] rounded-t-2xl relative overflow-hidden`}>
+                      {/* Background decoration */}
+                      <div className="absolute inset-0 opacity-20">
+                        <div className="absolute top-2 right-2 w-20 h-20 border border-white/30 rounded-full" />
+                        <div className="absolute bottom-2 left-2 w-12 h-12 border border-white/20 rounded-full" />
                       </div>
-                      <div className="text-white w-full text-center">
+                      <ServiceIllustration serviceId={service.id} />
+                      <div className="text-white w-full text-center relative z-10">
                         <h3 className="font-bold text-lg leading-tight mb-1">{service.name}</h3>
                         <p className="text-white/80 text-sm leading-snug">{service.description}</p>
                       </div>
@@ -547,8 +643,6 @@ export default function StartProject() {
           {/* Service Cards - Desktop Grid */}
           <div className="hidden sm:grid sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
             {services.map((service, index) => {
-              const Icon = service.icon
-              
               return (
                 <motion.button
                   key={service.id}
@@ -558,12 +652,17 @@ export default function StartProject() {
                   onClick={() => setSelectedService(service.id)}
                   className="relative group text-left bg-white dark:bg-gray-800 rounded-2xl border-2 border-gray-200 dark:border-gray-700 overflow-hidden shadow-md hover:shadow-xl hover:border-gray-300 dark:hover:border-gray-600 transition-all duration-300 hover:-translate-y-1"
                 >
-                  {/* Colored header with icon */}
-                  <div className={`bg-gradient-to-br ${service.gradient} p-5 flex flex-col items-center justify-center gap-3 h-[150px] rounded-t-2xl`}>
-                    <div className="w-14 h-14 rounded-2xl bg-white/20 backdrop-blur-sm flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-300 flex-shrink-0">
-                      <Icon className="w-7 h-7 text-white" />
+                  {/* Colored header with illustration */}
+                  <div className={`bg-gradient-to-br ${service.gradient} p-5 flex flex-col items-center justify-center gap-3 h-[150px] rounded-t-2xl relative overflow-hidden`}>
+                    {/* Background decoration */}
+                    <div className="absolute inset-0 opacity-20">
+                      <div className="absolute top-2 right-2 w-20 h-20 border border-white/30 rounded-full" />
+                      <div className="absolute bottom-2 left-2 w-12 h-12 border border-white/20 rounded-full" />
                     </div>
-                    <div className="text-white w-full text-center">
+                    <div className="group-hover:scale-110 transition-transform duration-300">
+                      <ServiceIllustration serviceId={service.id} />
+                    </div>
+                    <div className="text-white w-full text-center relative z-10">
                       <h3 className="font-bold text-lg leading-tight mb-1">{service.name}</h3>
                       <p className="text-white/80 text-sm leading-snug">{service.description}</p>
                     </div>
