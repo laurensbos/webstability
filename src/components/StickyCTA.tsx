@@ -30,32 +30,48 @@ export default function StickyCTA() {
           animate={{ y: 0, opacity: 1 }}
           exit={{ y: 100, opacity: 0 }}
           transition={{ type: 'spring', stiffness: 300, damping: 30 }}
-          className="fixed bottom-0 left-0 right-0 z-40 bg-white dark:bg-gray-900 border-t border-gray-100 dark:border-gray-800 shadow-2xl shadow-gray-200/50 dark:shadow-black/50 safe-area-inset-bottom"
+          className="fixed bottom-0 left-0 right-0 z-40 bg-white/95 dark:bg-gray-900/95 backdrop-blur-sm border-t border-gray-200 dark:border-gray-800 shadow-2xl shadow-gray-900/10 dark:shadow-black/50 safe-area-inset-bottom"
         >
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3 sm:py-4">
-            <div className="flex flex-col sm:flex-row items-center justify-between gap-3 sm:gap-4">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3">
+            <div className="flex items-center justify-between gap-3">
               {/* Left side - offer text */}
-              <div className="flex items-center gap-3">
-                <div className="hidden sm:flex items-center justify-center w-10 h-10 bg-primary-100 dark:bg-primary-900/50 rounded-full">
+              <div className="hidden sm:flex items-center gap-3">
+                <div className="flex items-center justify-center w-10 h-10 bg-primary-100 dark:bg-primary-900/50 rounded-full flex-shrink-0">
                   <Sparkles className="w-5 h-5 text-primary-600 dark:text-primary-400" />
                 </div>
-                <div className="text-center sm:text-left">
-                  <p className="text-gray-900 dark:text-white font-semibold text-sm sm:text-base">
+                <div>
+                  <p className="text-gray-900 dark:text-white font-semibold">
                     Start nu vanaf <span className="text-primary-600 dark:text-primary-400">€99/maand</span> <span className="text-gray-400 dark:text-gray-500 text-xs">(incl. BTW)</span>
                   </p>
-                  <p className="text-gray-500 dark:text-gray-400 text-xs sm:text-sm">
+                  <p className="text-gray-500 dark:text-gray-400 text-sm">
                     Eenmalig €99 • Online binnen 7 dagen
                   </p>
                 </div>
               </div>
 
+              {/* Mobile: Compact centered layout */}
+              <div className="flex sm:hidden items-center gap-3 flex-1">
+                <div className="flex items-center justify-center w-10 h-10 bg-primary-100 dark:bg-primary-900/50 rounded-full flex-shrink-0">
+                  <Sparkles className="w-5 h-5 text-primary-600 dark:text-primary-400" />
+                </div>
+                <div className="min-w-0">
+                  <p className="text-gray-900 dark:text-white font-semibold text-sm truncate">
+                    Vanaf <span className="text-primary-600 dark:text-primary-400">€99/maand</span>
+                  </p>
+                  <p className="text-gray-500 dark:text-gray-400 text-xs truncate">
+                    Eenmalig €99 • 7 dagen live
+                  </p>
+                </div>
+              </div>
+
               {/* Right side - CTA buttons */}
-              <div className="flex items-center gap-3">
+              <div className="flex items-center gap-2 flex-shrink-0">
                 <a
                   href="/start"
-                  className="group inline-flex items-center gap-2 px-5 py-2.5 bg-primary-500 hover:bg-primary-600 text-white font-semibold text-sm rounded-lg transition-all duration-200 shadow-lg shadow-primary-500/25 hover:shadow-primary-500/40"
+                  className="group inline-flex items-center gap-2 px-4 sm:px-5 py-2.5 bg-primary-500 hover:bg-primary-600 text-white font-semibold text-sm rounded-xl transition-all shadow-lg shadow-primary-500/25 hover:shadow-primary-500/40"
                 >
-                  Start je project
+                  <span className="hidden sm:inline">Start je project</span>
+                  <span className="sm:hidden">Start nu</span>
                   <ArrowRight className="w-4 h-4 group-hover:translate-x-0.5 transition-transform" />
                 </a>
                 <button
