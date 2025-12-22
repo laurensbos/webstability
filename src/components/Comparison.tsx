@@ -1,37 +1,37 @@
 import { motion } from 'framer-motion'
 import { Check, X, Clock, Zap, ArrowRight } from 'lucide-react'
 
-// Gefocust op 5 key pijnpunten - sterker en overtuigender
+// Gefocust op 5 key pijnpunten - traditioneel webbureau vs webstability
 const comparisons = [
 	{
-		category: 'Tijdsinvestering',
+		category: 'Opstartkosten',
 		icon: Clock,
-		diy: { value: '50-200+ uur', bad: true },
-		webstability: { value: '~2 uur intake', good: true },
+		traditional: { value: '€3.000 - €10.000+', bad: true },
+		webstability: { value: 'Vanaf €149 eenmalig', good: true },
 	},
 	{
-		category: 'Live binnen',
+		category: 'Doorlooptijd',
 		icon: Zap,
-		diy: { value: 'Weken tot maanden', bad: true },
+		traditional: { value: '4-12 weken', bad: true },
 		webstability: { value: '7 dagen', good: true },
 	},
 	{
-		category: 'Onderhoud & updates',
+		category: 'Onderhoud',
 		icon: Zap,
-		diy: { value: 'Zelf uitzoeken', bad: true },
-		webstability: { value: 'Wij doen alles', good: true },
+		traditional: { value: '€500+/jaar extra', bad: true },
+		webstability: { value: 'Inbegrepen', good: true },
 	},
 	{
 		category: 'Wijzigingen',
 		icon: Zap,
-		diy: { value: 'Zelf leren & doen', bad: true },
+		traditional: { value: '€75-150/uur', bad: true },
 		webstability: { value: 'Onbeperkt inbegrepen', good: true },
 	},
 	{
-		category: 'Resultaat',
+		category: 'Flexibiliteit',
 		icon: Zap,
-		diy: { value: 'Template-look', bad: true },
-		webstability: { value: 'Professioneel design', good: true },
+		traditional: { value: 'Vast contract', bad: true },
+		webstability: { value: 'Maandelijks opzegbaar', good: true },
 	},
 ]
 
@@ -56,10 +56,10 @@ export default function Comparison() {
 						whileInView={{ opacity: 1, y: 0 }}
 						viewport={{ once: true }}
 						transition={{ delay: 0.1 }}
-						className="text-2xl sm:text-3xl lg:text-4xl font-bold mb-3"
+						className="text-2xl sm:text-3xl lg:text-4xl font-bold mb-3 flex flex-wrap items-center justify-center gap-x-2"
 					>
-						<span className="text-gray-900 dark:text-white">Zelf doen</span>{' '}
-						<span className="text-primary-600">vs. Webstability</span>
+						<span className="text-primary-600 dark:text-primary-400">Traditioneel vs.</span>
+						<span className="font-display tracking-tight text-gray-900 dark:text-white">webstability</span>
 					</motion.h2>
 					<motion.p
 						initial={{ opacity: 0, y: 20 }}
@@ -68,7 +68,7 @@ export default function Comparison() {
 						transition={{ delay: 0.2 }}
 						className="text-gray-600 dark:text-gray-400 max-w-xl mx-auto text-sm sm:text-base"
 					>
-						Jij focust op je bedrijf. Wij regelen de rest.
+						Geen grote voorafbetaling, geen verrassingen. Alles inbegrepen.
 					</motion.p>
 				</div>
 
@@ -84,7 +84,7 @@ export default function Comparison() {
 						<div className="grid grid-cols-3 bg-gray-50 dark:bg-gray-700/50 border-b border-gray-200 dark:border-gray-600">
 							<div className="p-3 text-xs font-medium text-gray-500 dark:text-gray-400"></div>
 							<div className="p-3 text-center">
-								<span className="text-xs font-semibold text-gray-500 dark:text-gray-400">Zelf doen</span>
+								<span className="text-xs font-semibold text-gray-500 dark:text-gray-400">Traditioneel</span>
 							</div>
 							<div className="p-3 text-center bg-primary-50 dark:bg-primary-900/30">
 								<span className="text-xs font-semibold text-primary-600 dark:text-primary-400">
@@ -111,7 +111,7 @@ export default function Comparison() {
 								<div className="p-3 text-center">
 									<span className="text-xs text-red-500 flex items-center justify-center gap-1">
 										<X className="w-3 h-3" />
-										{item.diy.value}
+										{item.traditional.value}
 									</span>
 								</div>
 								<div className="p-3 text-center bg-primary-50/50 dark:bg-primary-900/20">
@@ -147,7 +147,7 @@ export default function Comparison() {
 
 				{/* Desktop: Side by side cards */}
 				<div className="hidden lg:grid lg:grid-cols-2 gap-8">
-					{/* DIY Card */}
+					{/* Traditional Card */}
 					<motion.div
 						initial={{ opacity: 0, x: -20 }}
 						whileInView={{ opacity: 1, x: 0 }}
@@ -159,8 +159,8 @@ export default function Comparison() {
 								<Clock className="w-6 h-6 text-gray-500" />
 							</div>
 							<div>
-								<h3 className="font-bold text-xl text-gray-900 dark:text-white">Zelf doen</h3>
-								<p className="text-sm text-gray-500 dark:text-gray-400">Wix, WordPress, etc.</p>
+								<h3 className="font-bold text-xl text-gray-900 dark:text-white">Traditioneel webbureau</h3>
+								<p className="text-sm text-gray-500 dark:text-gray-400">Eenmalige projecten</p>
 							</div>
 						</div>
 
@@ -175,7 +175,7 @@ export default function Comparison() {
 											{item.category}
 										</p>
 										<p className="text-sm text-red-500">
-											{item.diy.value}
+											{item.traditional.value}
 										</p>
 									</div>
 								</li>
@@ -184,7 +184,7 @@ export default function Comparison() {
 
 						<div className="mt-6 p-4 bg-red-50 dark:bg-red-900/20 rounded-xl text-center">
 							<p className="text-sm text-red-600 dark:text-red-400 font-medium">
-								⏱️ 50-200+ uur van jouw tijd
+								💸 €3.000+ vooraf + jaarlijkse kosten
 							</p>
 						</div>
 					</motion.div>
@@ -239,26 +239,29 @@ export default function Comparison() {
 					</motion.div>
 				</div>
 
-				{/* Trust badges */}
+				{/* CTA Section */}
 				<motion.div
 					initial={{ opacity: 0, y: 20 }}
 					whileInView={{ opacity: 1, y: 0 }}
 					viewport={{ once: true }}
-					transition={{ delay: 0.4 }}
-					className="mt-8 lg:mt-12 flex flex-wrap items-center justify-center gap-4 lg:gap-8 text-sm text-gray-500 dark:text-gray-400"
+					transition={{ delay: 0.3 }}
+					className="mt-8 lg:mt-10"
 				>
-					<span className="flex items-center gap-2">
-						<Check className="w-4 h-4 text-green-500" />
-						Geen verplichtingen
-					</span>
-					<span className="flex items-center gap-2">
-						<Check className="w-4 h-4 text-green-500" />
-						Maandelijks opzegbaar
-					</span>
-					<span className="flex items-center gap-2">
-						<Check className="w-4 h-4 text-green-500" />
-						Niet-goed-geld-terug
-					</span>
+					{/* Trust indicators */}
+					<div className="flex flex-wrap items-center justify-center gap-x-6 gap-y-2 text-sm text-gray-500 dark:text-gray-400">
+						<span className="flex items-center gap-1.5">
+							<Check className="w-4 h-4 text-green-500" />
+							Gratis design
+						</span>
+						<span className="flex items-center gap-1.5">
+							<Check className="w-4 h-4 text-green-500" />
+							Maandelijks opzegbaar
+						</span>
+						<span className="flex items-center gap-1.5">
+							<Check className="w-4 h-4 text-green-500" />
+							14 dagen geld-terug
+						</span>
+					</div>
 				</motion.div>
 			</div>
 		</section>

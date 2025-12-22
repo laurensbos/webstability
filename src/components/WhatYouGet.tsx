@@ -8,8 +8,6 @@ import {
   Server,
   Clock,
   Zap,
-  CheckCircle2,
-  X,
   Sparkles
 } from 'lucide-react'
 
@@ -65,11 +63,11 @@ const features = [
 ]
 
 const comparisonData = [
-  { feature: 'Tijdsinvestering', us: '~2 uur', diy: '50-200+ uur' },
-  { feature: 'Live binnen', us: '7 dagen', diy: 'Weken/maanden' },
-  { feature: 'Onderhoud & updates', us: true, diy: false },
-  { feature: 'Wijzigingen', us: 'Onbeperkt', diy: 'Zelf doen' },
-  { feature: 'Professioneel design', us: true, diy: false },
+  { feature: 'Opstartkosten', us: 'Vanaf €149', traditional: '€3.000 - €10.000+' },
+  { feature: 'Doorlooptijd', us: '7 dagen', traditional: '4-12 weken' },
+  { feature: 'Onderhoud', us: 'Inbegrepen', traditional: '€500+/jaar extra' },
+  { feature: 'Wijzigingen', us: 'Onbeperkt', traditional: '€75-150/uur' },
+  { feature: 'Flexibiliteit', us: 'Maandelijks opzegbaar', traditional: 'Vast contract' },
 ]
 
 export default function WhatYouGet({ variant = 'general', showComparison = true, className = '' }: WhatYouGetProps) {
@@ -172,11 +170,13 @@ export default function WhatYouGet({ variant = 'general', showComparison = true,
             className="max-w-3xl mx-auto"
           >
             <div className="text-center mb-6">
-              <h3 className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white mb-2">
-                Zelf doen vs. Webstability
+              <h3 className="text-xl sm:text-2xl font-bold mb-2">
+                <span className={`bg-gradient-to-r ${gradientColors[variant]} bg-clip-text text-transparent`}>Traditioneel vs.</span>
+                {' '}
+                <span className="font-display tracking-tight text-gray-900 dark:text-white">webstability</span>
               </h3>
               <p className="text-sm text-gray-600 dark:text-gray-400">
-                Jij focust op je bedrijf. Wij regelen de rest.
+                Geen grote voorafbetaling, geen verrassingen. Alles inbegrepen.
               </p>
             </div>
 
@@ -193,7 +193,7 @@ export default function WhatYouGet({ variant = 'general', showComparison = true,
                   </span>
                 </div>
                 <div className="p-3 sm:p-4 text-center">
-                  <span className="text-xs sm:text-sm font-medium text-gray-500 dark:text-gray-400">Zelf doen</span>
+                  <span className="text-xs sm:text-sm font-medium text-gray-500 dark:text-gray-400">Traditioneel</span>
                 </div>
               </div>
 
@@ -207,22 +207,10 @@ export default function WhatYouGet({ variant = 'general', showComparison = true,
                     <span className="text-xs sm:text-sm text-gray-700 dark:text-gray-300">{row.feature}</span>
                   </div>
                   <div className="p-3 sm:p-4 flex items-center justify-center">
-                    {row.us === true ? (
-                      <CheckCircle2 className={`w-5 h-5 ${accentColors[variant]}`} />
-                    ) : row.us === false ? (
-                      <X className="w-5 h-5 text-gray-300 dark:text-gray-600" />
-                    ) : (
-                      <span className="text-xs sm:text-sm font-medium text-green-600 dark:text-green-400">{row.us}</span>
-                    )}
+                    <span className="text-xs sm:text-sm font-medium text-green-600 dark:text-green-400 text-center">{row.us}</span>
                   </div>
                   <div className="p-3 sm:p-4 flex items-center justify-center">
-                    {row.diy === true ? (
-                      <X className="w-5 h-5 text-red-400" />
-                    ) : row.diy === false ? (
-                      <X className="w-5 h-5 text-red-400" />
-                    ) : (
-                      <span className="text-xs sm:text-sm text-red-500 text-center">{row.diy}</span>
-                    )}
+                    <span className="text-xs sm:text-sm text-red-500 text-center">{row.traditional}</span>
                   </div>
                 </div>
               ))}
@@ -236,7 +224,7 @@ export default function WhatYouGet({ variant = 'general', showComparison = true,
               className="text-center mt-6"
             >
               <p className="text-sm text-gray-500 dark:text-gray-400">
-                Jij focust op je bedrijf. Wij regelen de rest.
+                Geen grote voorafbetaling, geen verrassingen. Alles inbegrepen.
               </p>
             </motion.div>
           </motion.div>
