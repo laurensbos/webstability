@@ -9,9 +9,7 @@ import {
   ArrowRight,
   ArrowLeft,
   Check,
-  Sparkles,
-  Monitor,
-  ShoppingCart
+  Sparkles
 } from 'lucide-react'
 import Header from '../components/Header'
 import Footer from '../components/Footer'
@@ -134,7 +132,7 @@ const services: ServiceOption[] = [
     priceNote: 'per maand incl. btw',
     setupNote: '+ eenmalige opstartkosten vanaf €99',
     color: 'primary',
-    gradient: 'from-primary-500 to-blue-600',
+    gradient: 'from-primary-500 to-primary-600',
     features: ['Mobiel-vriendelijk', 'SEO geoptimaliseerd', 'Contactformulier', 'Hosting inbegrepen'],
     popular: true,
   },
@@ -146,8 +144,8 @@ const services: ServiceOption[] = [
     price: 'Vanaf €349',
     priceNote: 'per maand incl. btw',
     setupNote: '+ eenmalige opstartkosten vanaf €249',
-    color: 'emerald',
-    gradient: 'from-emerald-500 to-green-600',
+    color: 'primary',
+    gradient: 'from-primary-500 to-primary-600',
     features: ['Tot 500 producten', 'iDEAL & creditcard', 'Voorraadbeheer', 'Klantaccounts'],
   },
   {
@@ -157,8 +155,8 @@ const services: ServiceOption[] = [
     icon: Plane,
     price: 'Vanaf €349',
     priceNote: 'eenmalig incl. btw',
-    color: 'orange',
-    gradient: 'from-orange-500 to-amber-600',
+    color: 'primary',
+    gradient: 'from-gray-600 to-gray-700',
     features: ['Gecertificeerde piloot', 'Bewerkte foto\'s', 'Video content', 'Snelle levering'],
   },
   {
@@ -168,117 +166,22 @@ const services: ServiceOption[] = [
     icon: PenTool,
     price: '€169',
     priceNote: 'eenmalig incl. btw',
-    color: 'purple',
-    gradient: 'from-purple-500 to-violet-600',
+    color: 'primary',
+    gradient: 'from-gray-600 to-gray-700',
     features: ['Meerdere concepten', 'Revisierondes', 'Alle bestandsformaten', 'Kleurenpalet'],
   },
 ]
 
-// Custom illustration components for service cards
-function WebsiteIllustration() {
-  return (
-    <div className="relative w-16 h-16">
-      {/* Browser window mockup */}
-      <div className="absolute inset-0 bg-white/20 backdrop-blur-sm rounded-xl shadow-lg overflow-hidden">
-        <div className="h-3 bg-white/30 flex items-center gap-1 px-1.5">
-          <div className="w-1.5 h-1.5 rounded-full bg-white/60" />
-          <div className="w-1.5 h-1.5 rounded-full bg-white/60" />
-          <div className="w-1.5 h-1.5 rounded-full bg-white/60" />
-        </div>
-        <div className="p-1.5">
-          <div className="h-2 bg-white/40 rounded mb-1" />
-          <div className="h-1 bg-white/30 rounded w-3/4 mb-0.5" />
-          <div className="h-1 bg-white/30 rounded w-1/2" />
-        </div>
-      </div>
-      <Monitor className="absolute -bottom-1 -right-1 w-6 h-6 text-white/80" />
-    </div>
-  )
-}
-
-function WebshopIllustration() {
-  return (
-    <div className="relative w-16 h-16">
-      {/* Shopping bag with cart */}
-      <div className="absolute inset-0 bg-white/20 backdrop-blur-sm rounded-xl shadow-lg flex items-center justify-center">
-        <ShoppingCart className="w-8 h-8 text-white/90" />
-      </div>
-      {/* Small product boxes */}
-      <div className="absolute -top-1 -right-1 w-5 h-5 bg-white/30 rounded-md flex items-center justify-center">
-        <div className="w-2.5 h-2.5 bg-white/60 rounded-sm" />
-      </div>
-      <div className="absolute -bottom-1 -left-1 w-4 h-4 bg-white/30 rounded-md" />
-    </div>
-  )
-}
-
-function DroneIllustration() {
-  return (
-    <div className="relative w-16 h-16">
-      {/* Drone body */}
-      <div className="absolute inset-0 bg-white/20 backdrop-blur-sm rounded-xl shadow-lg flex items-center justify-center">
-        <Plane className="w-8 h-8 text-white/90 rotate-[-20deg]" />
-      </div>
-      {/* Camera icon */}
-      <div className="absolute -bottom-1 -right-1 w-5 h-5 bg-white/30 rounded-full flex items-center justify-center">
-        <div className="w-2.5 h-2.5 bg-white/60 rounded-full" />
-      </div>
-      {/* Signal waves */}
-      <div className="absolute -top-1 left-1/2 -translate-x-1/2 flex gap-0.5">
-        <div className="w-1 h-2 bg-white/40 rounded-full" />
-        <div className="w-1 h-3 bg-white/50 rounded-full" />
-        <div className="w-1 h-2 bg-white/40 rounded-full" />
-      </div>
-    </div>
-  )
-}
-
-function LogoIllustration() {
-  return (
-    <div className="relative w-16 h-16">
-      {/* Artboard with design */}
-      <div className="absolute inset-0 bg-white/20 backdrop-blur-sm rounded-xl shadow-lg flex items-center justify-center overflow-hidden">
-        <PenTool className="w-7 h-7 text-white/90" />
-      </div>
-      {/* Color swatches */}
-      <div className="absolute -top-1 -right-1 flex gap-0.5">
-        <div className="w-3 h-3 bg-purple-300/80 rounded-full" />
-        <div className="w-3 h-3 bg-violet-300/80 rounded-full" />
-      </div>
-      {/* Shape elements */}
-      <div className="absolute -bottom-1 -left-1 w-4 h-4 border-2 border-white/50 rounded-full" />
-    </div>
-  )
-}
-
-// Get illustration component for service
-function ServiceIllustration({ serviceId }: { serviceId: ServiceType }) {
-  switch (serviceId) {
-    case 'website':
-      return <WebsiteIllustration />
-    case 'webshop':
-      return <WebshopIllustration />
-    case 'drone':
-      return <DroneIllustration />
-    case 'logo':
-      return <LogoIllustration />
-    default:
-      return null
-  }
-}
-
 // Floating particles component
 function FloatingParticles({ activeService }: { activeService: ServiceType }) {
+  // Consistent subtle colors - primary for subscriptions, gray for one-time
   const getColors = () => {
     switch (activeService) {
-      case 'webshop':
-        return ['from-emerald-400 to-green-500', 'from-green-400 to-emerald-500', 'from-teal-400 to-green-500']
       case 'drone':
-        return ['from-orange-400 to-amber-500', 'from-amber-400 to-orange-500', 'from-yellow-400 to-orange-500']
       case 'logo':
-        return ['from-purple-400 to-violet-500', 'from-violet-400 to-purple-500', 'from-pink-400 to-purple-500']
+        return ['from-gray-300 to-gray-400', 'from-gray-400 to-gray-300', 'from-gray-350 to-gray-400']
       default:
-        return ['from-primary-400 to-blue-500', 'from-blue-400 to-primary-500', 'from-purple-400 to-blue-500']
+        return ['from-primary-300 to-primary-400', 'from-primary-400 to-primary-300', 'from-primary-350 to-primary-400']
     }
   }
 
@@ -565,139 +468,243 @@ export default function StartProject() {
           </motion.div>
 
           {/* Service Cards - Mobile Carousel */}
-          <div className="sm:hidden">
-            {/* Swipe hint */}
-            <div className="flex items-center justify-center gap-2 text-xs text-gray-400 dark:text-gray-500 mb-3">
-              <span>Swipe om te vergelijken</span>
-              <ArrowRight className="w-3 h-3" />
-            </div>
-            
-            <div className="flex gap-4 overflow-x-auto overflow-y-visible pb-4 -mx-4 px-4 snap-x snap-mandatory scrollbar-hide" style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
-              {services.map((service, index) => {
-                return (
+          <div className="sm:hidden space-y-8">
+            {/* Maandelijkse abonnementen */}
+            <div>
+              <div className="flex items-center gap-3 mb-4">
+                <div className="h-px flex-1 bg-gradient-to-r from-transparent via-gray-300 dark:via-gray-600 to-transparent" />
+                <span className="text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider whitespace-nowrap">Maandelijks</span>
+                <div className="h-px flex-1 bg-gradient-to-r from-transparent via-gray-300 dark:via-gray-600 to-transparent" />
+              </div>
+              
+              <div className="flex gap-4 overflow-x-auto overflow-y-visible pb-4 -mx-4 px-4 snap-x snap-mandatory scrollbar-hide" style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
+                {services.filter(s => s.id === 'website' || s.id === 'webshop').map((service, index) => (
                   <motion.button
                     key={service.id}
                     initial={{ opacity: 0, x: 20 }}
                     animate={{ opacity: 1, x: 0 }}
                     transition={{ delay: 0.1 + index * 0.05 }}
                     onClick={() => setSelectedService(service.id)}
-                    className="relative flex-shrink-0 w-[300px] snap-center text-left rounded-2xl shadow-md active:scale-[0.98] transition-transform overflow-hidden border-2 border-gray-200 dark:border-gray-700"
+                    className="relative flex-shrink-0 w-[280px] snap-center text-left rounded-2xl shadow-md active:scale-[0.98] transition-transform overflow-hidden bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700"
                   >
-                    {/* Colored header with illustration */}
-                    <div className={`bg-gradient-to-br ${service.gradient} p-5 flex flex-col items-center justify-center gap-3 h-[150px] relative overflow-hidden`}>
-                      {/* Background decoration */}
-                      <div className="absolute inset-0 opacity-20">
-                        <div className="absolute top-2 right-2 w-20 h-20 border border-white/30 rounded-full" />
-                        <div className="absolute bottom-2 left-2 w-12 h-12 border border-white/20 rounded-full" />
+                    <div className="p-5">
+                      {/* Icon & Title */}
+                      <div className="flex items-center gap-3 mb-4">
+                        <div className="w-12 h-12 bg-primary-100 dark:bg-primary-900/30 rounded-xl flex items-center justify-center">
+                          <service.icon className="w-6 h-6 text-primary-600 dark:text-primary-400" />
+                        </div>
+                        <div>
+                          <h3 className="font-bold text-lg text-gray-900 dark:text-white">{service.name}</h3>
+                          <p className="text-gray-500 dark:text-gray-400 text-sm">{service.description}</p>
+                        </div>
                       </div>
-                      <ServiceIllustration serviceId={service.id} />
-                      <div className="text-white w-full text-center relative z-10">
-                        <h3 className="font-bold text-lg leading-tight mb-1">{service.name}</h3>
-                        <p className="text-white/80 text-sm leading-snug">{service.description}</p>
-                      </div>
-                    </div>
-                    
-                    <div className="p-5 bg-white dark:bg-gray-800">
+                      
                       {/* Price */}
                       <div className="mb-4 pb-4 border-b border-gray-100 dark:border-gray-700">
                         <span className="text-2xl font-bold text-gray-900 dark:text-white">{service.price}</span>
-                        <br />
-                        <span className="text-sm text-gray-500 dark:text-gray-400">{service.priceNote}</span>
+                        <span className="text-sm text-gray-500 dark:text-gray-400 ml-1">{service.priceNote}</span>
                         {service.setupNote && (
                           <p className="text-xs text-gray-400 dark:text-gray-500 mt-1">{service.setupNote}</p>
                         )}
                       </div>
                       
-                      {/* Features - vertical list */}
-                      <div className="space-y-2.5 mb-5">
+                      {/* Features */}
+                      <div className="space-y-2 mb-5">
                         {service.features.map((feature, i) => (
-                          <div key={i} className="flex items-center gap-2.5 text-sm text-gray-600 dark:text-gray-300">
-                            <Check className="w-4 h-4 text-green-500 flex-shrink-0" />
+                          <div key={i} className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-300">
+                            <Check className="w-4 h-4 text-primary-500 flex-shrink-0" />
                             <span>{feature}</span>
                           </div>
                         ))}
                       </div>
                       
                       {/* CTA */}
-                      <div className={`flex items-center justify-center gap-2 py-3.5 rounded-xl bg-gradient-to-r ${service.gradient} text-white font-semibold shadow-lg`}>
+                      <div className="flex items-center justify-center gap-2 py-3 rounded-xl bg-primary-500 text-white font-semibold">
                         <span>Starten</span>
                         <ArrowRight className="w-4 h-4" />
                       </div>
                     </div>
                   </motion.button>
-                )
-              })}
+                ))}
+              </div>
             </div>
-            
-            {/* Dot indicators */}
-            <div className="flex justify-center gap-2 mt-3">
-              {services.map((_, index) => (
-                <div
-                  key={index}
-                  className={`h-2 rounded-full transition-all ${index === 0 ? 'bg-primary-500 w-6' : 'bg-gray-300 dark:bg-gray-600 w-2'}`}
-                />
-              ))}
+
+            {/* Eenmalige diensten */}
+            <div>
+              <div className="flex items-center gap-3 mb-4">
+                <div className="h-px flex-1 bg-gradient-to-r from-transparent via-gray-300 dark:via-gray-600 to-transparent" />
+                <span className="text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider whitespace-nowrap">Eenmalig</span>
+                <div className="h-px flex-1 bg-gradient-to-r from-transparent via-gray-300 dark:via-gray-600 to-transparent" />
+              </div>
+              
+              <div className="flex gap-4 overflow-x-auto overflow-y-visible pb-4 -mx-4 px-4 snap-x snap-mandatory scrollbar-hide" style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
+                {services.filter(s => s.id === 'drone' || s.id === 'logo').map((service, index) => (
+                  <motion.button
+                    key={service.id}
+                    initial={{ opacity: 0, x: 20 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ delay: 0.1 + index * 0.05 }}
+                    onClick={() => setSelectedService(service.id)}
+                    className="relative flex-shrink-0 w-[280px] snap-center text-left rounded-2xl shadow-md active:scale-[0.98] transition-transform overflow-hidden bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700"
+                  >
+                    <div className="p-5">
+                      {/* Icon & Title */}
+                      <div className="flex items-center gap-3 mb-4">
+                        <div className="w-12 h-12 bg-gray-100 dark:bg-gray-700 rounded-xl flex items-center justify-center">
+                          <service.icon className="w-6 h-6 text-gray-600 dark:text-gray-400" />
+                        </div>
+                        <div>
+                          <h3 className="font-bold text-lg text-gray-900 dark:text-white">{service.name}</h3>
+                          <p className="text-gray-500 dark:text-gray-400 text-sm">{service.description}</p>
+                        </div>
+                      </div>
+                      
+                      {/* Price */}
+                      <div className="mb-4 pb-4 border-b border-gray-100 dark:border-gray-700">
+                        <span className="text-2xl font-bold text-gray-900 dark:text-white">{service.price}</span>
+                        <span className="text-sm text-gray-500 dark:text-gray-400 ml-1">{service.priceNote}</span>
+                      </div>
+                      
+                      {/* Features */}
+                      <div className="space-y-2 mb-5">
+                        {service.features.map((feature, i) => (
+                          <div key={i} className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-300">
+                            <Check className="w-4 h-4 text-gray-500 flex-shrink-0" />
+                            <span>{feature}</span>
+                          </div>
+                        ))}
+                      </div>
+                      
+                      {/* CTA */}
+                      <div className="flex items-center justify-center gap-2 py-3 rounded-xl bg-gray-800 dark:bg-gray-600 text-white font-semibold">
+                        <span>Starten</span>
+                        <ArrowRight className="w-4 h-4" />
+                      </div>
+                    </div>
+                  </motion.button>
+                ))}
+              </div>
             </div>
           </div>
 
-          {/* Service Cards - Desktop Grid - All cards have consistent border styling */}
-          <div className="hidden sm:grid sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
-            {services.map((service, index) => {
-              return (
-                <motion.button
-                  key={service.id}
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 0.1 + index * 0.1 }}
-                  onClick={() => setSelectedService(service.id)}
-                  className="relative group text-left rounded-2xl shadow-md hover:shadow-xl transition-all duration-300 hover:-translate-y-1 overflow-hidden border-2 border-gray-200 dark:border-gray-700 hover:border-gray-300 dark:hover:border-gray-600"
-                >
-                  {/* Colored header with illustration - gradient is clipped by parent overflow-hidden */}
-                  <div className={`bg-gradient-to-br ${service.gradient} p-5 flex flex-col items-center justify-center gap-3 h-[150px] relative overflow-hidden`}>
-                    {/* Background decoration */}
-                    <div className="absolute inset-0 opacity-20">
-                      <div className="absolute top-2 right-2 w-20 h-20 border border-white/30 rounded-full" />
-                      <div className="absolute bottom-2 left-2 w-12 h-12 border border-white/20 rounded-full" />
-                    </div>
-                    <div className="group-hover:scale-110 transition-transform duration-300">
-                      <ServiceIllustration serviceId={service.id} />
-                    </div>
-                    <div className="text-white w-full text-center relative z-10">
-                      <h3 className="font-bold text-lg leading-tight mb-1">{service.name}</h3>
-                      <p className="text-white/80 text-sm leading-snug">{service.description}</p>
-                    </div>
-                  </div>
-                  
-                  <div className="p-5 bg-white dark:bg-gray-800">
-                    {/* Price */}
-                    <div className="mb-4 pb-4 border-b border-gray-100 dark:border-gray-700">
-                      <span className="text-2xl font-bold text-gray-900 dark:text-white">{service.price}</span>
-                      <br />
-                      <span className="text-sm text-gray-500 dark:text-gray-400">{service.priceNote}</span>
-                      {service.setupNote && (
-                        <p className="text-xs text-gray-400 dark:text-gray-500 mt-1">{service.setupNote}</p>
-                      )}
-                    </div>
-                    
-                    {/* Features - vertical list */}
-                    <div className="space-y-2.5 mb-5">
-                      {service.features.map((feature, i) => (
-                        <div key={i} className="flex items-center gap-2.5 text-sm text-gray-600 dark:text-gray-300">
-                          <Check className="w-4 h-4 text-green-500 flex-shrink-0" />
-                          <span>{feature}</span>
+          {/* Service Cards - Desktop Grid with grouping */}
+          <div className="hidden sm:block space-y-10">
+            {/* Maandelijkse abonnementen */}
+            <div>
+              <div className="flex items-center gap-4 mb-6">
+                <div className="h-px flex-1 bg-gradient-to-r from-transparent via-gray-300 dark:via-gray-700 to-transparent" />
+                <span className="text-sm font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider whitespace-nowrap">Maandelijkse abonnementen</span>
+                <div className="h-px flex-1 bg-gradient-to-r from-transparent via-gray-300 dark:via-gray-700 to-transparent" />
+              </div>
+              
+              <div className="grid grid-cols-2 gap-6">
+                {services.filter(s => s.id === 'website' || s.id === 'webshop').map((service, index) => (
+                  <motion.button
+                    key={service.id}
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.1 + index * 0.1 }}
+                    onClick={() => setSelectedService(service.id)}
+                    className="relative group text-left rounded-2xl shadow-md hover:shadow-xl transition-all duration-300 hover:-translate-y-1 overflow-hidden bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 hover:border-primary-300 dark:hover:border-primary-600"
+                  >
+                    <div className="p-6">
+                      {/* Icon & Title */}
+                      <div className="flex items-start gap-4 mb-5">
+                        <div className="w-14 h-14 bg-primary-100 dark:bg-primary-900/30 rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform">
+                          <service.icon className="w-7 h-7 text-primary-600 dark:text-primary-400" />
                         </div>
-                      ))}
+                        <div className="flex-1">
+                          <h3 className="font-bold text-xl text-gray-900 dark:text-white mb-1">{service.name}</h3>
+                          <p className="text-gray-500 dark:text-gray-400 text-sm">{service.description}</p>
+                        </div>
+                      </div>
+                      
+                      {/* Price */}
+                      <div className="mb-5 pb-5 border-b border-gray-100 dark:border-gray-700">
+                        <span className="text-3xl font-bold text-gray-900 dark:text-white">{service.price}</span>
+                        <span className="text-sm text-gray-500 dark:text-gray-400 ml-2">{service.priceNote}</span>
+                        {service.setupNote && (
+                          <p className="text-xs text-gray-400 dark:text-gray-500 mt-1">{service.setupNote}</p>
+                        )}
+                      </div>
+                      
+                      {/* Features */}
+                      <div className="grid grid-cols-2 gap-2 mb-6">
+                        {service.features.map((feature, i) => (
+                          <div key={i} className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-300">
+                            <Check className="w-4 h-4 text-primary-500 flex-shrink-0" />
+                            <span>{feature}</span>
+                          </div>
+                        ))}
+                      </div>
+                      
+                      {/* CTA */}
+                      <div className="flex items-center justify-center gap-2 py-3.5 rounded-xl bg-primary-500 hover:bg-primary-600 text-white font-semibold transition-colors">
+                        <span>Starten</span>
+                        <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+                      </div>
                     </div>
-                    
-                    {/* CTA */}
-                    <div className={`flex items-center justify-center gap-2 py-3.5 rounded-xl bg-gradient-to-r ${service.gradient} text-white font-semibold shadow-lg group-hover:shadow-xl transition-shadow`}>
-                      <span>Starten</span>
-                      <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+                  </motion.button>
+                ))}
+              </div>
+            </div>
+
+            {/* Eenmalige diensten */}
+            <div>
+              <div className="flex items-center gap-4 mb-6">
+                <div className="h-px flex-1 bg-gradient-to-r from-transparent via-gray-300 dark:via-gray-700 to-transparent" />
+                <span className="text-sm font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider whitespace-nowrap">Eenmalige diensten</span>
+                <div className="h-px flex-1 bg-gradient-to-r from-transparent via-gray-300 dark:via-gray-700 to-transparent" />
+              </div>
+              
+              <div className="grid grid-cols-2 gap-6">
+                {services.filter(s => s.id === 'drone' || s.id === 'logo').map((service, index) => (
+                  <motion.button
+                    key={service.id}
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.3 + index * 0.1 }}
+                    onClick={() => setSelectedService(service.id)}
+                    className="relative group text-left rounded-2xl shadow-md hover:shadow-xl transition-all duration-300 hover:-translate-y-1 overflow-hidden bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 hover:border-gray-400 dark:hover:border-gray-500"
+                  >
+                    <div className="p-6">
+                      {/* Icon & Title */}
+                      <div className="flex items-start gap-4 mb-5">
+                        <div className="w-14 h-14 bg-gray-100 dark:bg-gray-700 rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform">
+                          <service.icon className="w-7 h-7 text-gray-600 dark:text-gray-400" />
+                        </div>
+                        <div className="flex-1">
+                          <h3 className="font-bold text-xl text-gray-900 dark:text-white mb-1">{service.name}</h3>
+                          <p className="text-gray-500 dark:text-gray-400 text-sm">{service.description}</p>
+                        </div>
+                      </div>
+                      
+                      {/* Price */}
+                      <div className="mb-5 pb-5 border-b border-gray-100 dark:border-gray-700">
+                        <span className="text-3xl font-bold text-gray-900 dark:text-white">{service.price}</span>
+                        <span className="text-sm text-gray-500 dark:text-gray-400 ml-2">{service.priceNote}</span>
+                      </div>
+                      
+                      {/* Features */}
+                      <div className="grid grid-cols-2 gap-2 mb-6">
+                        {service.features.map((feature, i) => (
+                          <div key={i} className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-300">
+                            <Check className="w-4 h-4 text-gray-500 flex-shrink-0" />
+                            <span>{feature}</span>
+                          </div>
+                        ))}
+                      </div>
+                      
+                      {/* CTA */}
+                      <div className="flex items-center justify-center gap-2 py-3.5 rounded-xl bg-gray-800 hover:bg-gray-700 dark:bg-gray-600 dark:hover:bg-gray-500 text-white font-semibold transition-colors">
+                        <span>Starten</span>
+                        <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+                      </div>
                     </div>
-                  </div>
-                </motion.button>
-              )
-            })}
+                  </motion.button>
+                ))}
+              </div>
+            </div>
           </div>
 
           {/* Trust indicators */}
