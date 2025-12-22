@@ -83,30 +83,32 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     }
 
     // Mark as ready for design AND change status to design phase
-    const updates = {
+    const updates: Record<string, string | boolean> = {
       status: 'design',
-      readyForDesign: true,
+      readyForDesign: 'true',
       readyForDesignAt: new Date().toISOString()
     }
 
     await kv.hset(`project:${projectId}`, updates)
 
-    // Log activity
-    const activityId = `activity:${projectId}:${Date.now()}`
-    await kv.hset(activityId, {
-      projectId,
-      type: 'phase_change',
-      message: 'Project is gestart met de design fase',
-      timestamp: new Date().toISOString(),
-      from: 'system',
-      oldStatus: 'onboarding',
-      newStatus: 'design'
-    })
+    // Log activity - wrap in try-catch to not fail the request
+    try {
+      const activityId = `activity:${projectId}:${Date.now()}`
+      await kv.hset(activityId, {
+        projectId,
+        type: 'phase_change',
+        message: 'Project is gestart met de design fase',
+        timestamp: new Date().toISOString(),
+        from: 'system',
+        oldStatus: 'onboarding',
+        newStatus: 'design'
+      })
+      await kv.lpush(`project:${projectId}:activity`, activityId)
+    } catch (activityError) {
+      console.error('Failed to log activity:', activityError)
+    }
 
-    // Add to project's activity list
-    await kv.lpush(`project:${projectId}:activity`, activityId)
-
-    // Send onboarding complete email to client
+    // Send emails - don't fail the request if this fails
     const customerEmail = project.customer?.email || project.contactEmail
     const customerName = project.customer?.name || project.contactName || 'Klant'
     const businessName = project.customer?.companyName || project.businessName
