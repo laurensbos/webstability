@@ -542,9 +542,11 @@ export default function ProjectStatusNew() {
       })
       const data = await response.json()
       if (data.success) {
-        // Refresh project data
-        fetchProject(projectId)
+        // Immediately update local state to show animation
+        setProject(prev => prev ? { ...prev, status: 'design' as ProjectPhase } : null)
         setConfirmingReadyForDesign(false)
+        // Also refresh from server to get full updated data
+        setTimeout(() => fetchProject(projectId), 500)
       }
     } catch {
       // Ignore
@@ -870,31 +872,67 @@ export default function ProjectStatusNew() {
               return (
                 <div key={phase.key} className="flex items-center flex-1">
                   <div className="flex flex-col items-center">
-                    <div className={`w-10 h-10 sm:w-12 sm:h-12 rounded-xl flex items-center justify-center transition-all ${
-                      status === 'completed' ? 'bg-green-500/20 border-2 border-green-500/50' :
-                      status === 'current' ? `bg-gradient-to-br ${phaseColors.gradient} shadow-lg shadow-primary-500/20` :
-                      'bg-gray-800 border border-gray-700'
-                    }`}>
-                      {status === 'completed' ? (
-                        <CheckCircle2 className="w-5 h-5 sm:w-6 sm:h-6 text-green-400" />
-                      ) : (
-                        <Icon className={`w-5 h-5 sm:w-6 sm:h-6 ${
-                          status === 'current' ? 'text-white' : 'text-gray-500'
-                        }`} />
-                      )}
-                    </div>
-                    <span className={`text-[10px] sm:text-xs mt-2 font-medium text-center ${
-                      status === 'completed' ? 'text-green-400' :
-                      status === 'current' ? 'text-white' :
-                      'text-gray-500'
-                    }`}>
+                    <motion.div 
+                      layout
+                      initial={false}
+                      animate={{
+                        scale: status === 'current' ? 1.05 : 1,
+                        boxShadow: status === 'current' ? '0 0 20px rgba(99, 102, 241, 0.4)' : 'none'
+                      }}
+                      transition={{ type: "spring", stiffness: 300, damping: 25 }}
+                      className={`w-10 h-10 sm:w-12 sm:h-12 rounded-xl flex items-center justify-center transition-colors duration-500 ${
+                        status === 'completed' ? 'bg-green-500/20 border-2 border-green-500/50' :
+                        status === 'current' ? `bg-gradient-to-br ${phaseColors.gradient}` :
+                        'bg-gray-800 border border-gray-700'
+                      }`}
+                    >
+                      <AnimatePresence mode="wait">
+                        {status === 'completed' ? (
+                          <motion.div
+                            key="completed"
+                            initial={{ scale: 0, rotate: -180 }}
+                            animate={{ scale: 1, rotate: 0 }}
+                            exit={{ scale: 0, rotate: 180 }}
+                            transition={{ type: "spring", stiffness: 400, damping: 20 }}
+                          >
+                            <CheckCircle2 className="w-5 h-5 sm:w-6 sm:h-6 text-green-400" />
+                          </motion.div>
+                        ) : (
+                          <motion.div
+                            key="icon"
+                            initial={{ scale: 0.8, opacity: 0 }}
+                            animate={{ scale: 1, opacity: 1 }}
+                            exit={{ scale: 0.8, opacity: 0 }}
+                            transition={{ duration: 0.2 }}
+                          >
+                            <Icon className={`w-5 h-5 sm:w-6 sm:h-6 ${
+                              status === 'current' ? 'text-white' : 'text-gray-500'
+                            }`} />
+                          </motion.div>
+                        )}
+                      </AnimatePresence>
+                    </motion.div>
+                    <motion.span 
+                      initial={false}
+                      animate={{ 
+                        color: status === 'completed' ? '#4ade80' : 
+                               status === 'current' ? '#ffffff' : '#6b7280'
+                      }}
+                      transition={{ duration: 0.5 }}
+                      className="text-[10px] sm:text-xs mt-2 font-medium text-center"
+                    >
                       {phase.label}
-                    </span>
+                    </motion.span>
                   </div>
                   {!isLast && (
-                    <div className={`flex-1 h-0.5 mx-2 sm:mx-3 ${
-                      status === 'completed' ? 'bg-green-500/50' : 'bg-gray-800'
-                    }`} />
+                    <div className="flex-1 h-0.5 mx-2 sm:mx-3 bg-gray-800 overflow-hidden">
+                      <motion.div
+                        initial={{ width: '0%' }}
+                        animate={{ width: status === 'completed' ? '100%' : '0%' }}
+                        transition={{ duration: 0.6, ease: "easeOut", delay: 0.2 }}
+                        className="h-full bg-green-500/70"
+                      />
+                    </div>
                   )}
                 </div>
               )
