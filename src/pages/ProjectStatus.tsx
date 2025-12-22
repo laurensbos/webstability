@@ -34,7 +34,8 @@ import {
   Upload,
   Image,
   File,
-  Edit3
+  Edit3,
+  User
 } from 'lucide-react'
 import Logo from '../components/Logo'
 import DesignFeedback from '../components/DesignFeedback'
@@ -1962,14 +1963,14 @@ export default function ProjectStatusNew() {
             <p className="text-xs text-gray-500">Direct contact</p>
           </a>
 
-          {/* Gegevens */}
+          {/* Klantportaal */}
           <button
             onClick={() => setShowAccountModal(true)}
-            className="p-4 rounded-xl bg-gray-900 border border-gray-800 hover:border-blue-500/50 transition group text-left"
+            className="p-4 rounded-xl bg-gray-900 border border-gray-800 hover:border-primary-500/50 transition group text-left"
           >
-            <FolderOpen className="w-5 h-5 text-blue-400 mb-2" />
-            <p className="text-sm font-medium text-white">Gegevens</p>
-            <p className="text-xs text-gray-500">Bekijk/wijzig</p>
+            <User className="w-5 h-5 text-primary-400 mb-2" />
+            <p className="text-sm font-medium text-white">Mijn Account</p>
+            <p className="text-xs text-gray-500">Gegevens & pakket</p>
           </button>
         </motion.div>
 

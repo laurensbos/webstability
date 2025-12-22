@@ -1,7 +1,6 @@
 import { useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import {
-  X,
   User,
   CreditCard,
   Package,
@@ -9,22 +8,26 @@ import {
   Mail,
   Phone,
   Building2,
-  Check,
   AlertCircle,
   Loader2,
   ExternalLink,
   Clock,
   Receipt,
-  Zap,
-  Shield,
   Globe,
   Edit3,
   Save,
   CheckCircle2,
   Gift,
   Copy,
+  ArrowLeft,
+  Home,
+  ChevronRight,
+  Check,
+  Shield,
+  Zap,
   Sparkles
 } from 'lucide-react'
+import Logo from './Logo'
 import type { Project } from '../types/project'
 
 interface ClientAccountModalProps {
@@ -205,66 +208,100 @@ export default function ClientAccountModal({
     <AnimatePresence>
       {isOpen && (
         <>
-          {/* Backdrop */}
+          {/* Backdrop - subtle for page-like feel */}
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            onClick={onClose}
-            className="fixed inset-0 bg-black/70 backdrop-blur-sm z-50"
+            className="fixed inset-0 bg-gray-950 z-50"
           />
 
-          {/* Modal - Full screen on mobile, centered on desktop */}
+          {/* Full Page Portal */}
           <motion.div
-            initial={{ opacity: 0, y: 50, scale: 0.95 }}
-            animate={{ opacity: 1, y: 0, scale: 1 }}
-            exit={{ opacity: 0, y: 50, scale: 0.95 }}
-            transition={{ type: 'spring', damping: 25, stiffness: 300 }}
-            className="fixed inset-0 sm:inset-4 md:inset-6 lg:inset-10 xl:inset-16 z-50 flex flex-col bg-gray-50 dark:bg-gray-950 sm:rounded-2xl overflow-hidden shadow-2xl"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-50 flex flex-col bg-gray-950 overflow-hidden"
           >
-            {/* Header with gradient */}
+            {/* Header - Website style */}
+            <header className="flex-shrink-0 bg-gray-950/95 backdrop-blur-md border-b border-gray-800 sticky top-0 z-10">
+              <div className="max-w-6xl mx-auto px-4 sm:px-6">
+                <div className="flex items-center justify-between h-16">
+                  {/* Logo */}
+                  <div className="flex items-center gap-4">
+                    <Logo className="h-7" />
+                  </div>
+
+                  {/* Breadcrumb - Desktop */}
+                  <div className="hidden md:flex items-center gap-2 text-sm">
+                    <button
+                      onClick={onClose}
+                      className="text-gray-400 hover:text-white transition-colors flex items-center gap-1"
+                    >
+                      <Home className="w-4 h-4" />
+                      Project
+                    </button>
+                    <ChevronRight className="w-4 h-4 text-gray-600" />
+                    <span className="text-white font-medium">Mijn Account</span>
+                  </div>
+
+                  {/* Back Button */}
+                  <button
+                    onClick={onClose}
+                    className="flex items-center gap-2 px-4 py-2 rounded-xl bg-gray-800 hover:bg-gray-700 text-white text-sm font-medium transition-colors"
+                  >
+                    <ArrowLeft className="w-4 h-4" />
+                    <span className="hidden sm:inline">Terug naar project</span>
+                    <span className="sm:hidden">Terug</span>
+                  </button>
+                </div>
+              </div>
+            </header>
+
+            {/* Hero Section with User Info */}
             <div className="flex-shrink-0 relative overflow-hidden">
               {/* Gradient background */}
               <div className={`absolute inset-0 bg-gradient-to-br ${currentPackage.gradient} opacity-10`} />
-              <div className="absolute inset-0 bg-gradient-to-b from-transparent to-gray-50 dark:to-gray-950" />
+              <div className="absolute inset-0 bg-gradient-to-b from-transparent via-gray-950/50 to-gray-950" />
               
-              <div className="relative px-4 sm:px-6 pt-4 pb-2">
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-3">
-                    {/* Avatar */}
-                    <div className={`w-12 h-12 rounded-xl bg-gradient-to-br ${currentPackage.gradient} flex items-center justify-center shadow-lg`}>
-                      <span className="text-xl font-bold text-white">
-                        {(project.businessName || project.contactName || 'W').charAt(0).toUpperCase()}
+              <div className="relative max-w-6xl mx-auto px-4 sm:px-6 py-8">
+                <div className="flex flex-col sm:flex-row sm:items-center gap-4 sm:gap-6">
+                  {/* Large Avatar */}
+                  <div className={`w-20 h-20 sm:w-24 sm:h-24 rounded-2xl bg-gradient-to-br ${currentPackage.gradient} flex items-center justify-center shadow-2xl shadow-${currentPackage.iconColor}/20`}>
+                    <span className="text-3xl sm:text-4xl font-bold text-white">
+                      {(project.businessName || project.contactName || 'W').charAt(0).toUpperCase()}
+                    </span>
+                  </div>
+                  <div className="flex-1">
+                    <h1 className="text-2xl sm:text-3xl font-bold text-white mb-1">
+                      {project.businessName || 'Mijn Account'}
+                    </h1>
+                    <p className="text-gray-400 text-sm sm:text-base">
+                      {project.contactName ? `${project.contactName} • ` : ''}{project.contactEmail || 'Klantportaal'}
+                    </p>
+                    <div className="flex items-center gap-3 mt-3">
+                      <span className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-medium bg-gradient-to-r ${currentPackage.gradient} text-white`}>
+                        <Package className="w-3.5 h-3.5" />
+                        {currentPackage.name} pakket
+                      </span>
+                      <span className="text-xs text-gray-500">
+                        Project: {project.projectId}
                       </span>
                     </div>
-                    <div>
-                      <h2 className="text-lg sm:text-xl font-bold text-gray-900 dark:text-white">
-                        {project.businessName || 'Mijn Account'}
-                      </h2>
-                      <p className="text-sm text-gray-500 dark:text-gray-400">
-                        {project.contactName || project.contactEmail || 'Klantportaal'}
-                      </p>
-                    </div>
                   </div>
-                  <button
-                    onClick={onClose}
-                    className="p-2.5 rounded-xl bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors"
-                  >
-                    <X className="w-5 h-5 text-gray-600 dark:text-gray-400" />
-                  </button>
                 </div>
 
-                {/* Tabs - Horizontal scroll on mobile */}
-                <div className="mt-4 -mx-4 sm:mx-0 px-4 sm:px-0 overflow-x-auto scrollbar-hide pb-2">
-                  <div className="flex gap-1.5 sm:gap-2">
+                {/* Navigation Tabs */}
+                <nav className="mt-8 -mb-px">
+                  <div className="flex gap-1 sm:gap-2 overflow-x-auto scrollbar-hide pb-1">
                     {tabs.map((tab) => (
                       <button
                         key={tab.id}
                         onClick={() => setActiveTab(tab.id)}
-                        className={`relative flex items-center gap-2 px-3 sm:px-4 py-2.5 rounded-xl text-sm font-medium transition-all whitespace-nowrap ${
+                        className={`relative flex items-center gap-2 px-4 py-3 rounded-t-xl text-sm font-medium transition-all whitespace-nowrap ${
                           activeTab === tab.id
-                            ? 'bg-white dark:bg-gray-800 text-gray-900 dark:text-white shadow-md'
-                            : 'text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 hover:bg-white/50 dark:hover:bg-gray-800/50'
+                            ? 'bg-gray-900 text-white border-t-2 border-x border-t-primary-500 border-gray-800'
+                            : 'text-gray-400 hover:text-white hover:bg-gray-800/50'
                         }`}
                       >
                         <tab.icon className="w-4 h-4" />
@@ -278,59 +315,60 @@ export default function ClientAccountModal({
                       </button>
                     ))}
                   </div>
-                </div>
+                </nav>
               </div>
             </div>
 
             {/* Content */}
-            <div className="flex-1 overflow-y-auto bg-white dark:bg-gray-900">
-              <AnimatePresence mode="wait">
-                {/* Profile Tab */}
-                {activeTab === 'profile' && (
-                  <motion.div
-                    key="profile"
-                    initial={{ opacity: 0, y: 10 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    exit={{ opacity: 0, y: -10 }}
-                    transition={{ duration: 0.2 }}
-                    className="p-4 sm:p-6 space-y-6"
-                  >
-                    {/* Success message */}
-                    {saveSuccess && (
-                      <motion.div
-                        initial={{ opacity: 0, y: -10 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        className="p-4 rounded-xl bg-green-500/10 border border-green-500/20 flex items-center gap-3"
-                      >
-                        <CheckCircle2 className="w-5 h-5 text-green-500 flex-shrink-0" />
-                        <span className="text-green-600 dark:text-green-400 font-medium">
-                          Gegevens succesvol opgeslagen!
-                        </span>
-                      </motion.div>
-                    )}
+            <div className="flex-1 overflow-y-auto bg-gray-900">
+              <div className="max-w-6xl mx-auto">
+                <AnimatePresence mode="wait">
+                  {/* Profile Tab */}
+                  {activeTab === 'profile' && (
+                    <motion.div
+                      key="profile"
+                      initial={{ opacity: 0, y: 10 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      exit={{ opacity: 0, y: -10 }}
+                      transition={{ duration: 0.2 }}
+                      className="p-4 sm:p-6 lg:p-8 space-y-6"
+                    >
+                      {/* Success message */}
+                      {saveSuccess && (
+                        <motion.div
+                          initial={{ opacity: 0, y: -10 }}
+                          animate={{ opacity: 1, y: 0 }}
+                          className="p-4 rounded-xl bg-green-500/10 border border-green-500/20 flex items-center gap-3"
+                        >
+                          <CheckCircle2 className="w-5 h-5 text-green-500 flex-shrink-0" />
+                          <span className="text-green-400 font-medium">
+                            Gegevens succesvol opgeslagen!
+                          </span>
+                        </motion.div>
+                      )}
 
-                    {/* Contact Details Card */}
-                    <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700 overflow-hidden">
-                      <div className="flex items-center justify-between px-4 sm:px-5 py-4 border-b border-gray-100 dark:border-gray-700">
-                        <div className="flex items-center gap-3">
-                          <div className="w-10 h-10 rounded-xl bg-primary-500/10 flex items-center justify-center">
-                            <User className="w-5 h-5 text-primary-500" />
+                      {/* Contact Details Card */}
+                      <div className="bg-gray-800 rounded-2xl border border-gray-700 overflow-hidden">
+                        <div className="flex items-center justify-between px-4 sm:px-6 py-4 border-b border-gray-700">
+                          <div className="flex items-center gap-3">
+                            <div className="w-10 h-10 rounded-xl bg-primary-500/20 flex items-center justify-center">
+                              <User className="w-5 h-5 text-primary-400" />
+                            </div>
+                            <h3 className="text-base sm:text-lg font-semibold text-white">
+                              Contactgegevens
+                            </h3>
                           </div>
-                          <h3 className="text-base sm:text-lg font-semibold text-gray-900 dark:text-white">
-                            Contactgegevens
-                          </h3>
-                        </div>
-                        {!isEditing ? (
-                          <button
-                            onClick={() => setIsEditing(true)}
-                            className="flex items-center gap-2 px-3 sm:px-4 py-2 rounded-xl bg-primary-500/10 text-primary-600 dark:text-primary-400 text-sm font-medium hover:bg-primary-500/20 transition-colors"
-                          >
-                            <Edit3 className="w-4 h-4" />
-                            <span className="hidden sm:inline">Bewerken</span>
-                          </button>
-                        ) : (
-                          <div className="flex gap-2">
+                          {!isEditing ? (
                             <button
+                              onClick={() => setIsEditing(true)}
+                              className="flex items-center gap-2 px-3 sm:px-4 py-2 rounded-xl bg-primary-500/10 text-primary-400 text-sm font-medium hover:bg-primary-500/20 transition-colors"
+                            >
+                              <Edit3 className="w-4 h-4" />
+                              <span className="hidden sm:inline">Bewerken</span>
+                            </button>
+                          ) : (
+                            <div className="flex gap-2">
+                              <button
                               onClick={() => {
                                 setIsEditing(false)
                                 setFormData({
@@ -340,7 +378,7 @@ export default function ClientAccountModal({
                                   businessName: project.businessName || '',
                                 })
                               }}
-                              className="px-3 py-2 rounded-xl bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 text-sm font-medium hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors"
+                              className="px-3 py-2 rounded-xl bg-gray-700 text-gray-300 text-sm font-medium hover:bg-gray-600 transition-colors"
                             >
                               Annuleren
                             </button>
@@ -363,7 +401,7 @@ export default function ClientAccountModal({
                       <div className="p-4 sm:p-5 space-y-4">
                         {/* Business Name */}
                         <div className="group">
-                          <label className="flex items-center gap-2 text-sm text-gray-500 dark:text-gray-400 mb-1.5">
+                          <label className="flex items-center gap-2 text-sm text-gray-400 mb-1.5">
                             <Building2 className="w-4 h-4" />
                             Bedrijfsnaam
                           </label>
@@ -372,11 +410,11 @@ export default function ClientAccountModal({
                               type="text"
                               value={formData.businessName}
                               onChange={(e) => setFormData({ ...formData, businessName: e.target.value })}
-                              className="w-full px-4 py-3 rounded-xl bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all"
+                              className="w-full px-4 py-3 rounded-xl bg-gray-900 border border-gray-200 dark:border-gray-700 text-white focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all"
                               placeholder="Jouw bedrijfsnaam"
                             />
                           ) : (
-                            <p className="px-4 py-3 rounded-xl bg-gray-50 dark:bg-gray-900/50 text-gray-900 dark:text-white font-medium">
+                            <p className="px-4 py-3 rounded-xl bg-gray-900/50 text-white font-medium">
                               {project.businessName || <span className="text-gray-400 italic">Niet ingevuld</span>}
                             </p>
                           )}
@@ -384,7 +422,7 @@ export default function ClientAccountModal({
 
                         {/* Contact Name */}
                         <div className="group">
-                          <label className="flex items-center gap-2 text-sm text-gray-500 dark:text-gray-400 mb-1.5">
+                          <label className="flex items-center gap-2 text-sm text-gray-400 mb-1.5">
                             <User className="w-4 h-4" />
                             Naam
                           </label>
@@ -393,11 +431,11 @@ export default function ClientAccountModal({
                               type="text"
                               value={formData.contactName}
                               onChange={(e) => setFormData({ ...formData, contactName: e.target.value })}
-                              className="w-full px-4 py-3 rounded-xl bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all"
+                              className="w-full px-4 py-3 rounded-xl bg-gray-900 border border-gray-200 dark:border-gray-700 text-white focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all"
                               placeholder="Je naam"
                             />
                           ) : (
-                            <p className="px-4 py-3 rounded-xl bg-gray-50 dark:bg-gray-900/50 text-gray-900 dark:text-white font-medium">
+                            <p className="px-4 py-3 rounded-xl bg-gray-900/50 text-white font-medium">
                               {project.contactName || <span className="text-gray-400 italic">Niet ingevuld</span>}
                             </p>
                           )}
@@ -406,7 +444,7 @@ export default function ClientAccountModal({
                         {/* Email & Phone - 2 column on larger screens */}
                         <div className="grid sm:grid-cols-2 gap-4">
                           <div className="group">
-                            <label className="flex items-center gap-2 text-sm text-gray-500 dark:text-gray-400 mb-1.5">
+                            <label className="flex items-center gap-2 text-sm text-gray-400 mb-1.5">
                               <Mail className="w-4 h-4" />
                               E-mailadres
                             </label>
@@ -415,18 +453,18 @@ export default function ClientAccountModal({
                                 type="email"
                                 value={formData.contactEmail}
                                 onChange={(e) => setFormData({ ...formData, contactEmail: e.target.value })}
-                                className="w-full px-4 py-3 rounded-xl bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all"
+                                className="w-full px-4 py-3 rounded-xl bg-gray-900 border border-gray-200 dark:border-gray-700 text-white focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all"
                                 placeholder="email@voorbeeld.nl"
                               />
                             ) : (
-                              <p className="px-4 py-3 rounded-xl bg-gray-50 dark:bg-gray-900/50 text-gray-900 dark:text-white font-medium break-all">
+                              <p className="px-4 py-3 rounded-xl bg-gray-900/50 text-white font-medium break-all">
                                 {project.contactEmail || <span className="text-gray-400 italic">Niet ingevuld</span>}
                               </p>
                             )}
                           </div>
 
                           <div className="group">
-                            <label className="flex items-center gap-2 text-sm text-gray-500 dark:text-gray-400 mb-1.5">
+                            <label className="flex items-center gap-2 text-sm text-gray-400 mb-1.5">
                               <Phone className="w-4 h-4" />
                               Telefoonnummer
                             </label>
@@ -435,11 +473,11 @@ export default function ClientAccountModal({
                                 type="tel"
                                 value={formData.contactPhone}
                                 onChange={(e) => setFormData({ ...formData, contactPhone: e.target.value })}
-                                className="w-full px-4 py-3 rounded-xl bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all"
+                                className="w-full px-4 py-3 rounded-xl bg-gray-900 border border-gray-200 dark:border-gray-700 text-white focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all"
                                 placeholder="06 12345678"
                               />
                             ) : (
-                              <p className="px-4 py-3 rounded-xl bg-gray-50 dark:bg-gray-900/50 text-gray-900 dark:text-white font-medium">
+                              <p className="px-4 py-3 rounded-xl bg-gray-900/50 text-white font-medium">
                                 {project.contactPhone || <span className="text-gray-400 italic">Niet ingevuld</span>}
                               </p>
                             )}
@@ -449,25 +487,25 @@ export default function ClientAccountModal({
                     </div>
 
                     {/* Project Info Card */}
-                    <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700 overflow-hidden">
-                      <div className="flex items-center gap-3 px-4 sm:px-5 py-4 border-b border-gray-100 dark:border-gray-700">
-                        <div className="w-10 h-10 rounded-xl bg-gray-100 dark:bg-gray-700 flex items-center justify-center">
-                          <Globe className="w-5 h-5 text-gray-600 dark:text-gray-400" />
+                    <div className="bg-gray-800 rounded-2xl shadow-sm border border-gray-700 overflow-hidden">
+                      <div className="flex items-center gap-3 px-4 sm:px-5 py-4 border-b border-gray-700">
+                        <div className="w-10 h-10 rounded-xl bg-gray-700 flex items-center justify-center">
+                          <Globe className="w-5 h-5 text-gray-400" />
                         </div>
-                        <h3 className="text-base sm:text-lg font-semibold text-gray-900 dark:text-white">
+                        <h3 className="text-base sm:text-lg font-semibold text-white">
                           Projectinformatie
                         </h3>
                       </div>
 
                       <div className="p-4 sm:p-5">
                         <div className="grid sm:grid-cols-2 gap-4">
-                          <div className="p-4 rounded-xl bg-gray-50 dark:bg-gray-900/50">
-                            <p className="text-sm text-gray-500 dark:text-gray-400 mb-1">Project ID</p>
-                            <p className="font-mono text-sm text-gray-900 dark:text-white">{project.projectId}</p>
+                          <div className="p-4 rounded-xl bg-gray-900/50">
+                            <p className="text-sm text-gray-400 mb-1">Project ID</p>
+                            <p className="font-mono text-sm text-white">{project.projectId}</p>
                           </div>
-                          <div className="p-4 rounded-xl bg-gray-50 dark:bg-gray-900/50">
-                            <p className="text-sm text-gray-500 dark:text-gray-400 mb-1">Aangemaakt op</p>
-                            <p className="font-medium text-gray-900 dark:text-white">
+                          <div className="p-4 rounded-xl bg-gray-900/50">
+                            <p className="text-sm text-gray-400 mb-1">Aangemaakt op</p>
+                            <p className="font-medium text-white">
                               {new Date(project.createdAt).toLocaleDateString('nl-NL', {
                                 day: 'numeric',
                                 month: 'long',
@@ -475,15 +513,15 @@ export default function ClientAccountModal({
                               })}
                             </p>
                           </div>
-                          <div className="p-4 rounded-xl bg-gray-50 dark:bg-gray-900/50">
-                            <p className="text-sm text-gray-500 dark:text-gray-400 mb-1">Type dienst</p>
-                            <p className="font-medium text-gray-900 dark:text-white capitalize">
+                          <div className="p-4 rounded-xl bg-gray-900/50">
+                            <p className="text-sm text-gray-400 mb-1">Type dienst</p>
+                            <p className="font-medium text-white capitalize">
                               {serviceTypeLabels[project.serviceType || 'website'] || 'Website'}
                             </p>
                           </div>
-                          <div className="p-4 rounded-xl bg-gray-50 dark:bg-gray-900/50">
-                            <p className="text-sm text-gray-500 dark:text-gray-400 mb-1">Pakket</p>
-                            <p className="font-medium text-gray-900 dark:text-white">{currentPackage.name}</p>
+                          <div className="p-4 rounded-xl bg-gray-900/50">
+                            <p className="text-sm text-gray-400 mb-1">Pakket</p>
+                            <p className="font-medium text-white">{currentPackage.name}</p>
                           </div>
                         </div>
                       </div>
@@ -498,23 +536,23 @@ export default function ClientAccountModal({
                               <Gift className="w-5 h-5 text-primary-500" />
                             </div>
                             <div className="flex-1 min-w-0">
-                              <h4 className="font-semibold text-gray-900 dark:text-white mb-1">Referral Programma</h4>
-                              <p className="text-sm text-gray-500 dark:text-gray-400 mb-3">
+                              <h4 className="font-semibold text-white mb-1">Referral Programma</h4>
+                              <p className="text-sm text-gray-400 mb-3">
                                 Deel je code en verdien €50 korting per doorverwijzing!
                               </p>
-                              <div className="flex items-center gap-2 p-3 rounded-xl bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700">
-                                <span className="font-mono font-bold text-primary-600 dark:text-primary-400 flex-1">
+                              <div className="flex items-center gap-2 p-3 rounded-xl bg-gray-800 border border-gray-200 dark:border-gray-700">
+                                <span className="font-mono font-bold text-primary-400 flex-1">
                                   {project.referralCode}
                                 </span>
                                 <button
                                   onClick={() => navigator.clipboard.writeText(project.referralCode || '')}
-                                  className="p-2 rounded-lg bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors"
+                                  className="p-2 rounded-lg bg-gray-700 hover:bg-gray-600 transition-colors"
                                 >
-                                  <Copy className="w-4 h-4 text-gray-600 dark:text-gray-400" />
+                                  <Copy className="w-4 h-4 text-gray-400" />
                                 </button>
                               </div>
                               {(project.referralsCount || 0) > 0 && (
-                                <p className="mt-2 text-sm text-primary-600 dark:text-primary-400">
+                                <p className="mt-2 text-sm text-primary-400">
                                   ✨ {project.referralsCount} doorverwijzing(en) • €{project.referralRewards || 0} verdiend
                                 </p>
                               )}
@@ -542,7 +580,7 @@ export default function ClientAccountModal({
                         ? 'bg-gradient-to-br from-green-500/10 to-emerald-500/5 border border-green-500/20'
                         : project.paymentStatus === 'awaiting_payment'
                         ? 'bg-gradient-to-br from-amber-500/10 to-orange-500/5 border border-amber-500/20'
-                        : 'bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700'
+                        : 'bg-gray-800 border border-gray-700'
                     }`}>
                       <div className="p-5 sm:p-6">
                         <div className="flex flex-col sm:flex-row sm:items-center gap-4">
@@ -551,7 +589,7 @@ export default function ClientAccountModal({
                               ? 'bg-green-500/20'
                               : project.paymentStatus === 'awaiting_payment'
                               ? 'bg-amber-500/20'
-                              : 'bg-gray-100 dark:bg-gray-700'
+                              : 'bg-gray-700'
                           }`}>
                             {project.paymentStatus === 'paid' ? (
                               <CheckCircle2 className="w-7 h-7 text-green-500" />
@@ -564,10 +602,10 @@ export default function ClientAccountModal({
                           <div className="flex-1">
                             <h3 className={`text-lg sm:text-xl font-bold mb-1 ${
                               project.paymentStatus === 'paid'
-                                ? 'text-green-600 dark:text-green-400'
+                                ? 'text-green-400'
                                 : project.paymentStatus === 'awaiting_payment'
-                                ? 'text-amber-600 dark:text-amber-400'
-                                : 'text-gray-600 dark:text-gray-400'
+                                ? 'text-amber-400'
+                                : 'text-gray-400'
                             }`}>
                               {project.paymentStatus === 'paid'
                                 ? 'Betaling ontvangen ✓'
@@ -577,7 +615,7 @@ export default function ClientAccountModal({
                                 ? 'Nog geen betaling nodig'
                                 : 'Betaalstatus onbekend'}
                             </h3>
-                            <p className="text-sm text-gray-500 dark:text-gray-400">
+                            <p className="text-sm text-gray-400">
                               {project.paymentStatus === 'paid' && project.paymentCompletedAt
                                 ? `Betaald op ${new Date(project.paymentCompletedAt).toLocaleDateString('nl-NL', { day: 'numeric', month: 'long', year: 'numeric' })}`
                                 : project.paymentStatus === 'awaiting_payment'
@@ -601,36 +639,36 @@ export default function ClientAccountModal({
                     </div>
 
                     {/* Current Subscription */}
-                    <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700 overflow-hidden">
-                      <div className="flex items-center gap-3 px-4 sm:px-5 py-4 border-b border-gray-100 dark:border-gray-700">
+                    <div className="bg-gray-800 rounded-2xl shadow-sm border border-gray-700 overflow-hidden">
+                      <div className="flex items-center gap-3 px-4 sm:px-5 py-4 border-b border-gray-700">
                         <div className={`w-10 h-10 rounded-xl ${currentPackage.iconBg} flex items-center justify-center`}>
                           <Package className={`w-5 h-5 ${currentPackage.iconColor}`} />
                         </div>
-                        <h3 className="text-base sm:text-lg font-semibold text-gray-900 dark:text-white">
+                        <h3 className="text-base sm:text-lg font-semibold text-white">
                           Huidige abonnement
                         </h3>
                       </div>
                       <div className="p-4 sm:p-5">
-                        <div className="flex items-center justify-between p-4 rounded-xl bg-gray-50 dark:bg-gray-900/50">
+                        <div className="flex items-center justify-between p-4 rounded-xl bg-gray-900/50">
                           <div>
-                            <p className="font-semibold text-gray-900 dark:text-white">{currentPackage.name}</p>
-                            <p className="text-sm text-gray-500 dark:text-gray-400">Maandelijks abonnement</p>
+                            <p className="font-semibold text-white">{currentPackage.name}</p>
+                            <p className="text-sm text-gray-400">Maandelijks abonnement</p>
                           </div>
                           <div className="text-right">
-                            <p className="text-2xl font-bold text-gray-900 dark:text-white">€{currentPackage.price}</p>
-                            <p className="text-sm text-gray-500 dark:text-gray-400">per maand</p>
+                            <p className="text-2xl font-bold text-white">€{currentPackage.price}</p>
+                            <p className="text-sm text-gray-400">per maand</p>
                           </div>
                         </div>
                       </div>
                     </div>
 
                     {/* Invoices */}
-                    <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700 overflow-hidden">
-                      <div className="flex items-center gap-3 px-4 sm:px-5 py-4 border-b border-gray-100 dark:border-gray-700">
-                        <div className="w-10 h-10 rounded-xl bg-gray-100 dark:bg-gray-700 flex items-center justify-center">
-                          <Receipt className="w-5 h-5 text-gray-600 dark:text-gray-400" />
+                    <div className="bg-gray-800 rounded-2xl shadow-sm border border-gray-700 overflow-hidden">
+                      <div className="flex items-center gap-3 px-4 sm:px-5 py-4 border-b border-gray-700">
+                        <div className="w-10 h-10 rounded-xl bg-gray-700 flex items-center justify-center">
+                          <Receipt className="w-5 h-5 text-gray-400" />
                         </div>
-                        <h3 className="text-base sm:text-lg font-semibold text-gray-900 dark:text-white">
+                        <h3 className="text-base sm:text-lg font-semibold text-white">
                           Factuurgeschiedenis
                         </h3>
                       </div>
@@ -640,7 +678,7 @@ export default function ClientAccountModal({
                             {project.invoices.map((invoice) => (
                               <div
                                 key={invoice.id}
-                                className="flex items-center justify-between p-4 rounded-xl bg-gray-50 dark:bg-gray-900/50"
+                                className="flex items-center justify-between p-4 rounded-xl bg-gray-900/50"
                               >
                                 <div className="flex items-center gap-3">
                                   <div className={`w-10 h-10 rounded-xl flex items-center justify-center ${
@@ -648,7 +686,7 @@ export default function ClientAccountModal({
                                       ? 'bg-green-500/20'
                                       : invoice.status === 'overdue'
                                       ? 'bg-red-500/20'
-                                      : 'bg-gray-200 dark:bg-gray-700'
+                                      : 'bg-gray-700'
                                   }`}>
                                     <Receipt className={`w-5 h-5 ${
                                       invoice.status === 'paid'
@@ -659,20 +697,20 @@ export default function ClientAccountModal({
                                     }`} />
                                   </div>
                                   <div>
-                                    <p className="font-medium text-gray-900 dark:text-white">{invoice.description}</p>
-                                    <p className="text-sm text-gray-500 dark:text-gray-400">
+                                    <p className="font-medium text-white">{invoice.description}</p>
+                                    <p className="text-sm text-gray-400">
                                       {new Date(invoice.date).toLocaleDateString('nl-NL')}
                                     </p>
                                   </div>
                                 </div>
                                 <div className="text-right">
-                                  <p className="font-semibold text-gray-900 dark:text-white">€{invoice.amount.toFixed(2)}</p>
+                                  <p className="font-semibold text-white">€{invoice.amount.toFixed(2)}</p>
                                   <span className={`text-xs px-2 py-0.5 rounded-full ${
                                     invoice.status === 'paid'
-                                      ? 'bg-green-500/20 text-green-600 dark:text-green-400'
+                                      ? 'bg-green-500/20 text-green-400'
                                       : invoice.status === 'overdue'
                                       ? 'bg-red-500/20 text-red-600 dark:text-red-400'
-                                      : 'bg-gray-200 dark:bg-gray-700 text-gray-600 dark:text-gray-400'
+                                      : 'bg-gray-700 text-gray-400'
                                   }`}>
                                     {invoice.status === 'paid' ? 'Betaald' :
                                      invoice.status === 'overdue' ? 'Achterstallig' :
@@ -685,7 +723,7 @@ export default function ClientAccountModal({
                         ) : (
                           <div className="py-10 text-center">
                             <Receipt className="w-12 h-12 text-gray-300 dark:text-gray-600 mx-auto mb-3" />
-                            <p className="text-gray-500 dark:text-gray-400 font-medium">Nog geen facturen</p>
+                            <p className="text-gray-400 font-medium">Nog geen facturen</p>
                             <p className="text-sm text-gray-400 dark:text-gray-500 mt-1">
                               Facturen verschijnen hier zodra ze beschikbaar zijn
                             </p>
@@ -745,28 +783,28 @@ export default function ClientAccountModal({
 
                     {/* Service Details */}
                     <div className="grid sm:grid-cols-2 gap-4">
-                      <div className="bg-white dark:bg-gray-800 rounded-2xl p-5 border border-gray-100 dark:border-gray-700">
+                      <div className="bg-gray-800 rounded-2xl p-5 border border-gray-700">
                         <div className="flex items-center gap-3 mb-3">
                           <div className="w-10 h-10 rounded-xl bg-primary-500/10 flex items-center justify-center">
                             <Globe className="w-5 h-5 text-primary-500" />
                           </div>
                           <div>
-                            <p className="text-sm text-gray-500 dark:text-gray-400">Type dienst</p>
-                            <p className="font-semibold text-gray-900 dark:text-white">
+                            <p className="text-sm text-gray-400">Type dienst</p>
+                            <p className="font-semibold text-white">
                               {serviceTypeLabels[project.serviceType || 'website'] || 'Website'}
                             </p>
                           </div>
                         </div>
                       </div>
 
-                      <div className="bg-white dark:bg-gray-800 rounded-2xl p-5 border border-gray-100 dark:border-gray-700">
+                      <div className="bg-gray-800 rounded-2xl p-5 border border-gray-700">
                         <div className="flex items-center gap-3 mb-3">
                           <div className="w-10 h-10 rounded-xl bg-green-500/10 flex items-center justify-center">
                             <Shield className="w-5 h-5 text-green-500" />
                           </div>
                           <div>
-                            <p className="text-sm text-gray-500 dark:text-gray-400">Support reactietijd</p>
-                            <p className="font-semibold text-gray-900 dark:text-white">
+                            <p className="text-sm text-gray-400">Support reactietijd</p>
+                            <p className="font-semibold text-white">
                               {project.package === 'business' || project.package === 'premium'
                                 ? 'Binnen 4 uur'
                                 : project.package === 'professional'
@@ -780,24 +818,24 @@ export default function ClientAccountModal({
 
                     {/* Revisions Progress */}
                     {project.revisionsTotal !== undefined && (
-                      <div className="bg-white dark:bg-gray-800 rounded-2xl p-5 border border-gray-100 dark:border-gray-700">
+                      <div className="bg-gray-800 rounded-2xl p-5 border border-gray-700">
                         <div className="flex items-center justify-between mb-3">
                           <div className="flex items-center gap-3">
                             <div className="w-10 h-10 rounded-xl bg-purple-500/10 flex items-center justify-center">
                               <Edit3 className="w-5 h-5 text-purple-500" />
                             </div>
                             <div>
-                              <p className="font-semibold text-gray-900 dark:text-white">Revisies deze maand</p>
-                              <p className="text-sm text-gray-500 dark:text-gray-400">
+                              <p className="font-semibold text-white">Revisies deze maand</p>
+                              <p className="text-sm text-gray-400">
                                 {project.revisionsUsed || 0} van {project.revisionsTotal} gebruikt
                               </p>
                             </div>
                           </div>
-                          <span className="text-2xl font-bold text-gray-900 dark:text-white">
+                          <span className="text-2xl font-bold text-white">
                             {project.revisionsTotal - (project.revisionsUsed || 0)}
                           </span>
                         </div>
-                        <div className="h-3 rounded-full bg-gray-100 dark:bg-gray-700 overflow-hidden">
+                        <div className="h-3 rounded-full bg-gray-700 overflow-hidden">
                           <div
                             className="h-full bg-gradient-to-r from-purple-500 to-pink-500 rounded-full transition-all"
                             style={{
@@ -843,17 +881,17 @@ export default function ClientAccountModal({
                     transition={{ duration: 0.2 }}
                     className="p-4 sm:p-6"
                   >
-                    <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700 overflow-hidden">
-                      <div className="flex items-center gap-3 px-4 sm:px-5 py-4 border-b border-gray-100 dark:border-gray-700">
+                    <div className="bg-gray-800 rounded-2xl shadow-sm border border-gray-700 overflow-hidden">
+                      <div className="flex items-center gap-3 px-4 sm:px-5 py-4 border-b border-gray-700">
                         <div className="w-10 h-10 rounded-xl bg-primary-500/10 flex items-center justify-center">
                           <MessageSquare className="w-5 h-5 text-primary-500" />
                         </div>
                         <div>
-                          <h3 className="text-base sm:text-lg font-semibold text-gray-900 dark:text-white">
+                          <h3 className="text-base sm:text-lg font-semibold text-white">
                             Berichtengeschiedenis
                           </h3>
                           {project.messages && project.messages.length > 0 && (
-                            <p className="text-sm text-gray-500 dark:text-gray-400">
+                            <p className="text-sm text-gray-400">
                               {project.messages.length} bericht{project.messages.length !== 1 ? 'en' : ''}
                             </p>
                           )}
@@ -874,14 +912,14 @@ export default function ClientAccountModal({
                                     className={`max-w-[85%] sm:max-w-[75%] p-4 rounded-2xl ${
                                       message.from === 'client'
                                         ? 'bg-primary-500 text-white rounded-br-sm'
-                                        : 'bg-gray-100 dark:bg-gray-700 text-gray-900 dark:text-white rounded-bl-sm'
+                                        : 'bg-gray-700 text-white rounded-bl-sm'
                                     }`}
                                   >
                                     <div className="flex items-center gap-2 mb-1">
                                       <span className={`text-xs font-medium ${
                                         message.from === 'client'
                                           ? 'text-white/80'
-                                          : 'text-gray-500 dark:text-gray-400'
+                                          : 'text-gray-400'
                                       }`}>
                                         {message.from === 'client' ? 'Jij' : message.senderName || 'Webstability'}
                                       </span>
@@ -912,11 +950,11 @@ export default function ClientAccountModal({
                           </div>
                         ) : (
                           <div className="py-12 text-center">
-                            <div className="w-16 h-16 rounded-2xl bg-gray-100 dark:bg-gray-700 flex items-center justify-center mx-auto mb-4">
+                            <div className="w-16 h-16 rounded-2xl bg-gray-700 flex items-center justify-center mx-auto mb-4">
                               <MessageSquare className="w-8 h-8 text-gray-400" />
                             </div>
-                            <p className="text-gray-500 dark:text-gray-400 font-medium">Nog geen berichten</p>
-                            <p className="text-sm text-gray-400 dark:text-gray-500 mt-1">
+                            <p className="text-gray-400 font-medium">Nog geen berichten</p>
+                            <p className="text-sm text-gray-500 mt-1">
                               Berichten met ons team verschijnen hier
                             </p>
                           </div>
@@ -926,7 +964,21 @@ export default function ClientAccountModal({
                   </motion.div>
                 )}
               </AnimatePresence>
+              </div>
             </div>
+
+            {/* Footer */}
+            <footer className="flex-shrink-0 bg-gray-950 border-t border-gray-800 py-4">
+              <div className="max-w-6xl mx-auto px-4 sm:px-6 flex items-center justify-between">
+                <p className="text-xs text-gray-500">
+                  © {new Date().getFullYear()} Webstability
+                </p>
+                <div className="flex items-center gap-2 text-xs text-gray-500">
+                  <Shield className="w-3.5 h-3.5 text-green-500" />
+                  Beveiligd
+                </div>
+              </div>
+            </footer>
           </motion.div>
         </>
       )}
