@@ -1,6 +1,6 @@
 <svg width="32" height="32" viewBox="0 0 500 500" xmlns="http://www.w3.org/2000/svg">
-  <rect width="500" height="500" fill="white"/>
-  <!-- "web" centered, with "." offset to the right -->
-  <text x="250" y="320" font-family="Arial Black, Arial, sans-serif" font-weight="900" font-size="180" fill="black" text-anchor="middle">web</text>
-  <circle cx="420" cy="300" r="22" fill="black"/>
+  <!-- Zwarte cirkel -->
+  <circle cx="250" cy="250" r="240" fill="#000000"/>
+  <!-- "web." tekst in wit -->
+  <text x="250" y="300" font-family="Arial Black, Arial, sans-serif" font-weight="900" font-size="140" fill="white" text-anchor="middle">web.</text>
 </svg>
