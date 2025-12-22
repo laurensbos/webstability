@@ -71,11 +71,10 @@ const PHASE_ACTIONS: Record<ProjectPhase, {
   ],
   design: [
     { 
-      title: 'Design reviewen', 
-      description: 'Bekijk het design en geef feedback',
-      buttonText: 'Design',
-      type: 'link',
-      urgent: true
+      title: 'WhatsApp ons', 
+      description: 'Heb je een vraag? Stuur ons een berichtje',
+      buttonText: 'WhatsApp',
+      type: 'whatsapp'
     }
   ],
   design_approved: [
@@ -1134,7 +1133,7 @@ export default function ProjectStatusNew() {
         )}
 
         {/* Project Files Section - Only show in onboarding phase when we have a drive URL */}
-        {(project.status === 'onboarding' || project.status === 'design') && project.googleDriveUrl && (
+        {project.status === 'onboarding' && project.googleDriveUrl && (
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -1194,6 +1193,103 @@ export default function ProjectStatusNew() {
                 Open Google Drive
                 <ExternalLink className="w-4 h-4" />
               </a>
+            </div>
+          </motion.div>
+        )}
+
+        {/* Design Phase - Progress & Preview Section */}
+        {project.status === 'design' && (
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.15 }}
+            className="space-y-4"
+          >
+            {/* Design Progress Card */}
+            <div className="bg-gradient-to-br from-amber-500/10 to-orange-500/10 border border-amber-500/30 rounded-2xl p-5 relative overflow-hidden">
+              <div className="absolute top-0 right-0 w-32 h-32 bg-amber-500/10 rounded-full blur-3xl" />
+              <div className="relative">
+                <div className="flex items-start gap-4">
+                  <div className="w-12 h-12 bg-amber-500/20 rounded-xl flex items-center justify-center flex-shrink-0">
+                    <Palette className="w-6 h-6 text-amber-400" />
+                  </div>
+                  <div className="flex-1">
+                    <h3 className="font-semibold text-white text-lg mb-1">Design in ontwikkeling</h3>
+                    <p className="text-sm text-gray-300 mb-4">
+                      Onze designer werkt aan jouw unieke ontwerp. Je ontvangt een melding zodra de preview klaar is.
+                    </p>
+                    
+                    {/* Progress Steps */}
+                    <div className="space-y-2">
+                      {[
+                        { label: 'Materialen ontvangen', done: true },
+                        { label: 'Wireframe schetsen', done: true },
+                        { label: 'Visueel ontwerp', done: false, current: true },
+                        { label: 'Preview klaarzetten', done: false },
+                      ].map((step, i) => (
+                        <div key={i} className="flex items-center gap-3">
+                          <div className={`w-5 h-5 rounded-full flex items-center justify-center ${
+                            step.done ? 'bg-green-500/20 border border-green-500/50' :
+                            step.current ? 'bg-amber-500/20 border-2 border-amber-500 animate-pulse' :
+                            'bg-gray-800 border border-gray-700'
+                          }`}>
+                            {step.done && <CheckCircle2 className="w-3 h-3 text-green-400" />}
+                            {step.current && <div className="w-2 h-2 bg-amber-400 rounded-full" />}
+                          </div>
+                          <span className={`text-sm ${
+                            step.done ? 'text-gray-400' : step.current ? 'text-white font-medium' : 'text-gray-500'
+                          }`}>{step.label}</span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Design Preview Link - Only show when available */}
+            {project.designPreviewUrl && (
+              <motion.a
+                initial={{ opacity: 0, scale: 0.95 }}
+                animate={{ opacity: 1, scale: 1 }}
+                href={project.designPreviewUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="block p-5 rounded-2xl bg-gradient-to-r from-purple-500/20 to-pink-500/20 border border-purple-500/40 hover:border-purple-400/60 transition group"
+              >
+                <div className="flex items-center gap-4">
+                  <div className="w-14 h-14 rounded-xl bg-purple-500/20 flex items-center justify-center group-hover:scale-110 transition">
+                    <span className="text-2xl">🎨</span>
+                  </div>
+                  <div className="flex-1">
+                    <div className="flex items-center gap-2 mb-1">
+                      <span className="text-xs font-medium text-purple-400 bg-purple-500/20 px-2 py-0.5 rounded-full">NIEUW</span>
+                    </div>
+                    <p className="font-semibold text-white text-lg">Bekijk je design preview!</p>
+                    <p className="text-sm text-gray-400">Klik hier om je ontwerp te bekijken en feedback te geven</p>
+                  </div>
+                  <ArrowRight className="w-6 h-6 text-purple-400 group-hover:translate-x-1 transition" />
+                </div>
+              </motion.a>
+            )}
+
+            {/* What to expect */}
+            <div className="bg-gray-900/50 border border-gray-800 rounded-xl p-4">
+              <p className="text-xs text-gray-500 mb-2 font-medium uppercase tracking-wide">Wat kun je verwachten?</p>
+              <ul className="space-y-2 text-sm text-gray-400">
+                <li className="flex items-start gap-2">
+                  <span className="text-amber-400 mt-0.5">→</span>
+                  <span>Je ontvangt een <strong className="text-white">preview link</strong> via email zodra het ontwerp klaar is</span>
+                </li>
+                <li className="flex items-start gap-2">
+                  <span className="text-amber-400 mt-0.5">→</span>
+                  <span>Bekijk het ontwerp en geef feedback via de <strong className="text-white">feedback knop</strong></span>
+                </li>
+                <li className="flex items-start gap-2">
+                  <span className="text-amber-400 mt-0.5">→</span>
+                  <span>Na goedkeuring starten we met <strong className="text-white">bouwen</strong></span>
+                </li>
+              </ul>
             </div>
           </motion.div>
         )}
