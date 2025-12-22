@@ -58,8 +58,13 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   }
 
   try {
-    // Get current project
-    const project = await kv.hgetall(`project:${projectId}`) as Project | null
+    // Get current project - use kv.get (JSON) not hgetall (hash) to match other endpoints
+    let project = await kv.get<Project>(`project:${projectId}`)
+    
+    if (!project) {
+      // Try lowercase
+      project = await kv.get<Project>(`project:${projectId.toLowerCase()}`)
+    }
 
     if (!project) {
       return res.status(404).json({ error: 'Project not found', projectId })
@@ -83,22 +88,25 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     }
 
     // Mark as ready for design AND change status to design phase
-    const updates: Record<string, string | boolean> = {
+    const now = new Date().toISOString()
+    const updatedProject = {
+      ...project,
       status: 'design',
-      readyForDesign: 'true',
-      readyForDesignAt: new Date().toISOString()
+      readyForDesign: true,
+      readyForDesignAt: now,
+      updatedAt: now
     }
 
-    await kv.hset(`project:${projectId}`, updates)
+    await kv.set(`project:${projectId}`, updatedProject)
 
     // Log activity - wrap in try-catch to not fail the request
     try {
       const activityId = `activity:${projectId}:${Date.now()}`
-      await kv.hset(activityId, {
+      await kv.set(activityId, {
         projectId,
         type: 'phase_change',
         message: 'Project is gestart met de design fase',
-        timestamp: new Date().toISOString(),
+        timestamp: now,
         from: 'system',
         oldStatus: 'onboarding',
         newStatus: 'design'
@@ -146,7 +154,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       success: true, 
       message: 'Project moved to design phase',
       status: 'design',
-      readyForDesignAt: updates.readyForDesignAt
+      readyForDesignAt: now
     })
 
   } catch (error) {
