@@ -329,14 +329,19 @@ export default function Websites() {
               </motion.p>
             </div>
 
-            {/* Mockup grid */}
-            <div className="grid md:grid-cols-3 gap-6 mb-12">
+            {/* Mobile swipe hint */}
+            <div className="md:hidden flex items-center justify-center gap-2 text-xs text-gray-400 dark:text-gray-500 mb-3">
+              <span>← Swipe om te bekijken →</span>
+            </div>
+
+            {/* Mockup grid - Mobile: horizontal scroll, Desktop: grid */}
+            <div className="flex md:grid md:grid-cols-3 gap-4 md:gap-6 mb-12 overflow-x-auto md:overflow-visible pb-4 md:pb-0 snap-x snap-mandatory scrollbar-hide -mx-4 px-4 md:mx-0 md:px-0">
               {/* Desktop mockup */}
               <motion.div
                 initial={{ opacity: 0, y: 20 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
-                className="group relative bg-gradient-to-br from-gray-100 to-gray-50 dark:from-gray-800 dark:to-gray-900 rounded-2xl p-6 aspect-[4/3] flex items-center justify-center overflow-hidden border border-gray-200/50 dark:border-gray-700/50"
+                className="group relative bg-gradient-to-br from-gray-100 to-gray-50 dark:from-gray-800 dark:to-gray-900 rounded-2xl p-6 h-[220px] md:aspect-[4/3] md:h-auto flex items-center justify-center overflow-hidden border border-gray-200/50 dark:border-gray-700/50 min-w-[280px] md:min-w-0 snap-center flex-shrink-0 md:flex-shrink"
               >
                 <div className="absolute inset-0 bg-gradient-to-br from-primary-500/5 to-blue-500/5 dark:from-primary-500/10 dark:to-blue-500/10 opacity-0 group-hover:opacity-100 transition-opacity" />
                 <div className="relative w-full max-w-[200px]">
@@ -371,7 +376,7 @@ export default function Websites() {
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
                 transition={{ delay: 0.1 }}
-                className="group relative bg-gradient-to-br from-gray-100 to-gray-50 dark:from-gray-800 dark:to-gray-900 rounded-2xl p-6 aspect-[4/3] flex items-center justify-center overflow-hidden border border-gray-200/50 dark:border-gray-700/50"
+                className="group relative bg-gradient-to-br from-gray-100 to-gray-50 dark:from-gray-800 dark:to-gray-900 rounded-2xl p-6 h-[220px] md:aspect-[4/3] md:h-auto flex items-center justify-center overflow-hidden border border-gray-200/50 dark:border-gray-700/50 min-w-[280px] md:min-w-0 snap-center flex-shrink-0 md:flex-shrink"
               >
                 <div className="absolute inset-0 bg-gradient-to-br from-primary-500/5 to-blue-500/5 dark:from-primary-500/10 dark:to-blue-500/10 opacity-0 group-hover:opacity-100 transition-opacity" />
                 <div className="relative">
@@ -397,7 +402,7 @@ export default function Websites() {
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
                 transition={{ delay: 0.2 }}
-                className="group relative bg-gradient-to-br from-gray-100 to-gray-50 dark:from-gray-800 dark:to-gray-900 rounded-2xl p-6 aspect-[4/3] flex items-center justify-center overflow-hidden border border-gray-200/50 dark:border-gray-700/50"
+                className="group relative bg-gradient-to-br from-gray-100 to-gray-50 dark:from-gray-800 dark:to-gray-900 rounded-2xl p-6 h-[220px] md:aspect-[4/3] md:h-auto flex items-center justify-center overflow-hidden border border-gray-200/50 dark:border-gray-700/50 min-w-[280px] md:min-w-0 snap-center flex-shrink-0 md:flex-shrink"
               >
                 <div className="absolute inset-0 bg-gradient-to-br from-primary-500/5 to-blue-500/5 dark:from-primary-500/10 dark:to-blue-500/10 opacity-0 group-hover:opacity-100 transition-opacity" />
                 <div className="relative">
@@ -466,7 +471,13 @@ export default function Websites() {
               </motion.h2>
             </div>
 
-            <div className="grid md:grid-cols-4 gap-6">
+            {/* Mobile swipe hint */}
+            <div className="md:hidden flex items-center justify-center gap-2 text-xs text-gray-400 dark:text-gray-500 mb-3">
+              <span>← Swipe om stappen te bekijken →</span>
+            </div>
+
+            {/* Mobile: horizontal scroll, Desktop: grid */}
+            <div className="flex md:grid md:grid-cols-4 gap-4 md:gap-6 overflow-x-auto md:overflow-visible pb-4 md:pb-0 snap-x snap-mandatory scrollbar-hide -mx-4 px-4 md:mx-0 md:px-0">
               {howItWorks.map((step, index) => (
                 <motion.div
                   key={step.step}
@@ -474,12 +485,13 @@ export default function Websites() {
                   whileInView={{ opacity: 1, y: 0 }}
                   viewport={{ once: true }}
                   transition={{ delay: index * 0.1 }}
-                  className="relative text-center"
+                  className="relative text-center min-w-[200px] md:min-w-0 snap-center flex-shrink-0 md:flex-shrink bg-white dark:bg-gray-800 md:bg-transparent md:dark:bg-transparent rounded-2xl md:rounded-none p-4 md:p-0 border border-gray-100 dark:border-gray-700 md:border-0"
                 >
                   <div className="w-14 h-14 bg-gradient-to-br from-primary-500 to-blue-600 rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-lg shadow-primary-500/20">
                     <step.icon className="w-7 h-7 text-white" />
                   </div>
                   <div className="absolute top-7 left-1/2 w-full h-0.5 bg-gradient-to-r from-primary-200 to-blue-200 dark:from-primary-800 dark:to-blue-800 -z-10 hidden md:block last:hidden" style={{ display: index === howItWorks.length - 1 ? 'none' : undefined }} />
+                  <span className="inline-block md:hidden text-xs font-semibold text-primary-500 mb-1">Stap {index + 1}</span>
                   <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-2">{step.title}</h3>
                   <p className="text-gray-600 dark:text-gray-400 text-sm">{step.description}</p>
                 </motion.div>
@@ -670,7 +682,8 @@ export default function Websites() {
               </motion.h2>
             </div>
 
-            <div className="grid sm:grid-cols-2 md:grid-cols-4 gap-4 mb-10">
+            {/* Mobile: horizontal scroll, Desktop: grid */}
+            <div className="flex sm:grid sm:grid-cols-2 md:grid-cols-4 gap-3 sm:gap-4 mb-10 overflow-x-auto sm:overflow-visible pb-4 sm:pb-0 snap-x snap-mandatory scrollbar-hide -mx-4 px-4 sm:mx-0 sm:px-0">
               {included.map((item, index) => (
                 <motion.div
                   key={index}
@@ -678,10 +691,10 @@ export default function Websites() {
                   whileInView={{ opacity: 1, y: 0 }}
                   viewport={{ once: true }}
                   transition={{ delay: index * 0.05 }}
-                  className="flex items-center gap-2 p-3 bg-white dark:bg-gray-800 rounded-xl border border-gray-100 dark:border-gray-700 shadow-sm"
+                  className="flex items-center gap-2 p-3 bg-white dark:bg-gray-800 rounded-xl border border-gray-100 dark:border-gray-700 shadow-sm min-w-[180px] sm:min-w-0 snap-center flex-shrink-0 sm:flex-shrink"
                 >
                   <CheckCircle className="w-5 h-5 text-primary-500 flex-shrink-0" />
-                  <span className="text-gray-700 dark:text-gray-300 text-sm">{item}</span>
+                  <span className="text-gray-700 dark:text-gray-300 text-sm whitespace-nowrap sm:whitespace-normal">{item}</span>
                 </motion.div>
               ))}
             </div>
@@ -800,7 +813,7 @@ export default function Websites() {
         </section>
       </main>
 
-      <Footer ctaVariant="default" />
+      <Footer ctaVariant="none" />
     </div>
   )
 }

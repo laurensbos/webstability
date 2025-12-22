@@ -688,7 +688,7 @@ export default function Luchtvideografie() {
         </section>
       </main>
 
-      <Footer ctaVariant="drone" />
+      <Footer ctaVariant="none" />
     </div>
   )
 }

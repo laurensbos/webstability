@@ -274,14 +274,13 @@ async function createProject(req: VercelRequest, res: VercelResponse) {
   // Send confirmation emails and email verification
   if (isSmtpConfigured()) {
     try {
-      // Send welcome email to customer (include password and drive link if available)
+      // Send welcome email to customer (no password for security - they must remember it)
       const welcomeResult = await sendWelcomeEmail({
         email: project.customer.email,
         name: project.customer.companyName || project.customer.name || 'daar',
         projectId: project.id,
         package: project.packageType,
         type: project.type,
-        password: body.password, // Include plain password in welcome email
         phase: 'onboarding', // Start phase for progress bar
         driveLink: driveFolderLink, // Include Google Drive link if created
       })

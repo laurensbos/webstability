@@ -64,18 +64,6 @@ const PHASE_ACTIONS: Record<ProjectPhase, {
       urgent: true
     },
     { 
-      title: 'Media uploaden', 
-      description: "Upload logo's, foto's en andere bestanden",
-      buttonText: 'Google Drive',
-      type: 'link'
-    },
-    { 
-      title: 'Teksten aanleveren', 
-      description: 'Lever je content aan',
-      buttonText: 'Uploaden',
-      type: 'link'
-    },
-    { 
       title: 'Direct contact via Chat', 
       description: 'Stel je vraag via de chat',
       buttonText: 'Chat',

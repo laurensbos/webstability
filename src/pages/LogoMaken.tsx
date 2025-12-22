@@ -566,7 +566,7 @@ export default function LogoMaken() {
         </section>
       </main>
 
-      <Footer ctaVariant="logo" />
+      <Footer ctaVariant="none" />
     </div>
   )
 }

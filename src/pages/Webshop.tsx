@@ -299,14 +299,19 @@ export default function Webshop() {
               </motion.p>
             </div>
 
-            {/* Mockup grid */}
-            <div className="grid md:grid-cols-3 gap-6 mb-12">
+            {/* Mobile swipe hint */}
+            <div className="md:hidden flex items-center justify-center gap-2 text-xs text-gray-400 dark:text-gray-500 mb-3">
+              <span>← Swipe om te bekijken →</span>
+            </div>
+
+            {/* Mockup grid - Mobile: horizontal scroll, Desktop: grid */}
+            <div className="flex md:grid md:grid-cols-3 gap-4 md:gap-6 mb-12 overflow-x-auto md:overflow-visible pb-4 md:pb-0 snap-x snap-mandatory scrollbar-hide -mx-4 px-4 md:mx-0 md:px-0">
               {/* Product page mockup */}
               <motion.div
                 initial={{ opacity: 0, y: 20 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
-                className="group relative bg-gradient-to-br from-gray-100 to-gray-50 dark:from-gray-800 dark:to-gray-900 rounded-2xl p-6 aspect-[4/3] flex items-center justify-center overflow-hidden border border-gray-200/50 dark:border-gray-700/50"
+                className="group relative bg-gradient-to-br from-gray-100 to-gray-50 dark:from-gray-800 dark:to-gray-900 rounded-2xl p-6 h-[220px] md:aspect-[4/3] md:h-auto flex items-center justify-center overflow-hidden border border-gray-200/50 dark:border-gray-700/50 min-w-[280px] md:min-w-0 snap-center flex-shrink-0 md:flex-shrink"
               >
                 <div className="absolute inset-0 bg-gradient-to-br from-emerald-500/5 to-green-500/5 dark:from-emerald-500/10 dark:to-green-500/10 opacity-0 group-hover:opacity-100 transition-opacity" />
                 <div className="relative w-full max-w-[200px]">
@@ -334,7 +339,7 @@ export default function Webshop() {
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
                 transition={{ delay: 0.1 }}
-                className="group relative bg-gradient-to-br from-gray-100 to-gray-50 dark:from-gray-800 dark:to-gray-900 rounded-2xl p-6 aspect-[4/3] flex items-center justify-center overflow-hidden border border-gray-200/50 dark:border-gray-700/50"
+                className="group relative bg-gradient-to-br from-gray-100 to-gray-50 dark:from-gray-800 dark:to-gray-900 rounded-2xl p-6 h-[220px] md:aspect-[4/3] md:h-auto flex items-center justify-center overflow-hidden border border-gray-200/50 dark:border-gray-700/50 min-w-[280px] md:min-w-0 snap-center flex-shrink-0 md:flex-shrink"
               >
                 <div className="absolute inset-0 bg-gradient-to-br from-emerald-500/5 to-green-500/5 dark:from-emerald-500/10 dark:to-green-500/10 opacity-0 group-hover:opacity-100 transition-opacity" />
                 <div className="relative w-full max-w-[200px]">
@@ -369,7 +374,7 @@ export default function Webshop() {
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
                 transition={{ delay: 0.2 }}
-                className="group relative bg-gradient-to-br from-gray-100 to-gray-50 dark:from-gray-800 dark:to-gray-900 rounded-2xl p-6 aspect-[4/3] flex items-center justify-center overflow-hidden border border-gray-200/50 dark:border-gray-700/50"
+                className="group relative bg-gradient-to-br from-gray-100 to-gray-50 dark:from-gray-800 dark:to-gray-900 rounded-2xl p-6 h-[220px] md:aspect-[4/3] md:h-auto flex items-center justify-center overflow-hidden border border-gray-200/50 dark:border-gray-700/50 min-w-[280px] md:min-w-0 snap-center flex-shrink-0 md:flex-shrink"
               >
                 <div className="absolute inset-0 bg-gradient-to-br from-emerald-500/5 to-green-500/5 dark:from-emerald-500/10 dark:to-green-500/10 opacity-0 group-hover:opacity-100 transition-opacity" />
                 <div className="relative w-full max-w-[200px]">
@@ -603,7 +608,8 @@ export default function Webshop() {
               </motion.h2>
             </div>
 
-            <div className="grid sm:grid-cols-2 md:grid-cols-4 gap-4 mb-10">
+            {/* Mobile: horizontal scroll, Desktop: grid */}
+            <div className="flex sm:grid sm:grid-cols-2 md:grid-cols-4 gap-3 sm:gap-4 mb-10 overflow-x-auto sm:overflow-visible pb-4 sm:pb-0 snap-x snap-mandatory scrollbar-hide -mx-4 px-4 sm:mx-0 sm:px-0">
               {included.map((item, index) => (
                 <motion.div
                   key={index}
@@ -611,10 +617,10 @@ export default function Webshop() {
                   whileInView={{ opacity: 1, y: 0 }}
                   viewport={{ once: true }}
                   transition={{ delay: index * 0.05 }}
-                  className="flex items-center gap-2 p-3 bg-white dark:bg-gray-800 rounded-xl border border-gray-100 dark:border-gray-700 shadow-sm"
+                  className="flex items-center gap-2 p-3 bg-white dark:bg-gray-800 rounded-xl border border-gray-100 dark:border-gray-700 shadow-sm min-w-[180px] sm:min-w-0 snap-center flex-shrink-0 sm:flex-shrink"
                 >
                   <CheckCircle className="w-5 h-5 text-emerald-500 flex-shrink-0" />
-                  <span className="text-gray-700 dark:text-gray-300 text-sm">{item}</span>
+                  <span className="text-gray-700 dark:text-gray-300 text-sm whitespace-nowrap sm:whitespace-normal">{item}</span>
                 </motion.div>
               ))}
             </div>
@@ -732,7 +738,7 @@ export default function Webshop() {
         </section>
       </main>
 
-      <Footer ctaVariant="webshop" />
+      <Footer ctaVariant="none" />
     </div>
   )
 }

@@ -568,45 +568,19 @@ export const sendWelcomeEmail = async (customer: {
       Super dat je voor Webstability hebt gekozen! We gaan direct voor je aan de slag.
     </p>
     
-    ${customer.password ? `
-    <!-- Login Credentials Card - Dark mode -->
-    <div style="background: ${BRAND_COLORS.primaryBg}; border: 2px solid ${BRAND_COLORS.primary}; border-radius: 12px; padding: 24px; margin-bottom: 24px;">
-      <h3 style="margin: 0 0 8px; font-size: 18px; font-weight: 700; color: ${BRAND_COLORS.primaryLight};">🔐 Je inloggegevens</h3>
-      <p style="margin: 0 0 16px; color: ${BRAND_COLORS.primary}; font-size: 14px;">Gebruik deze gegevens om de status van je project te volgen</p>
-      <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="background: ${BRAND_COLORS.bgCard}; border-radius: 8px; overflow: hidden;">
-        <tr>
-          <td style="padding: 16px; border-bottom: 1px solid ${BRAND_COLORS.border};">
-            <p style="margin: 0; color: ${BRAND_COLORS.textMuted}; font-size: 12px; text-transform: uppercase; letter-spacing: 0.5px;">E-mailadres</p>
-            <p style="margin: 6px 0 0; color: ${BRAND_COLORS.textWhite}; font-size: 18px; font-weight: 600;">${customer.email}</p>
-          </td>
-        </tr>
-        <tr>
-          <td style="padding: 16px;">
-            <p style="margin: 0; color: ${BRAND_COLORS.textMuted}; font-size: 12px; text-transform: uppercase; letter-spacing: 0.5px;">Wachtwoord</p>
-            <p style="margin: 6px 0 0; color: ${BRAND_COLORS.textWhite}; font-size: 20px; font-weight: 700; font-family: monospace;">${customer.password}</p>
-          </td>
-        </tr>
-      </table>
+    <!-- Magic Link Login - Clean card -->
+    <div style="background: ${BRAND_COLORS.primaryBg}; border: 2px solid ${BRAND_COLORS.primary}; border-radius: 12px; padding: 24px; margin-bottom: 24px; text-align: center;">
+      <h3 style="margin: 0 0 8px; font-size: 18px; font-weight: 700; color: ${BRAND_COLORS.primaryLight};">🔐 Direct inloggen</h3>
+      <p style="margin: 0 0 16px; color: ${BRAND_COLORS.primary}; font-size: 14px;">Klik op de knop om de status van je project te bekijken</p>
+      <a href="${magicLink}" style="display: inline-block; background: ${colors.gradient}; color: white; padding: 14px 32px; border-radius: 10px; text-decoration: none; font-weight: 600; font-size: 16px; box-shadow: 0 4px 14px rgba(0, 0, 0, 0.15);">
+        Bekijk mijn project →
+      </a>
       <div style="margin-top: 16px; padding: 12px; background: ${BRAND_COLORS.bgCard}; border-radius: 8px;">
-        <p style="margin: 0; color: ${BRAND_COLORS.primaryLight}; font-size: 13px; line-height: 1.5;">
-          <strong>💡 Zo log je in:</strong><br>
-          1. Ga naar <a href="https://webstability.nl/status" style="color: ${BRAND_COLORS.primary}; font-weight: 600;">webstability.nl/status</a><br>
-          2. Vul je e-mailadres in<br>
-          3. Vul je wachtwoord in en klik op inloggen
+        <p style="margin: 0; color: ${BRAND_COLORS.textMuted}; font-size: 13px; line-height: 1.5;">
+          💡 Je kunt ook inloggen via <a href="https://webstability.nl/status" style="color: ${BRAND_COLORS.primary};">webstability.nl/status</a> met je e-mailadres en wachtwoord.
         </p>
       </div>
     </div>
-    ` : `
-    <!-- Email verification when no password is set yet -->
-    <div style="background: ${colors.gradient}; border-radius: 12px; padding: 24px; margin-bottom: 24px; text-align: center;">
-      <p style="margin: 0 0 16px; color: rgba(255,255,255,0.9); font-size: 16px;">
-        Verifieer je e-mailadres om toegang te krijgen tot je project
-      </p>
-      <a href="${magicLink}" style="display: inline-block; background: white; color: ${colors.primary}; padding: 14px 32px; border-radius: 10px; text-decoration: none; font-weight: 600; font-size: 16px; box-shadow: 0 4px 14px rgba(0, 0, 0, 0.15);">
-        ✉️ Verifieer e-mail →
-      </a>
-    </div>
-    `}
     
     <!-- Steps - Dark Mode -->
     <h2 style="margin: 0 0 20px; font-size: 18px; font-weight: 600; color: ${BRAND_COLORS.textWhite};">Zo werkt het:</h2>
