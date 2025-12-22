@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
+import { useDarkMode } from '../contexts/DarkModeContext'
 import {
   User,
   CreditCard,
@@ -29,6 +30,9 @@ import {
 } from 'lucide-react'
 import Logo from './Logo'
 import type { Project } from '../types/project'
+
+// WhatsApp nummer
+const WHATSAPP_NUMBER = '31612345678'
 
 interface ClientAccountModalProps {
   isOpen: boolean
@@ -147,6 +151,7 @@ export default function ClientAccountModal({
   project,
   onUpdateProject 
 }: ClientAccountModalProps) {
+  const { darkMode } = useDarkMode()
   const [activeTab, setActiveTab] = useState<TabType>('profile')
   const [isEditing, setIsEditing] = useState(false)
   const [isSaving, setIsSaving] = useState(false)
@@ -213,7 +218,7 @@ export default function ClientAccountModal({
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 bg-gray-950 z-50"
+            className={`fixed inset-0 z-50 ${darkMode ? 'bg-gray-950' : 'bg-gray-50'}`}
           />
 
           {/* Full Page Portal */}
@@ -221,39 +226,69 @@ export default function ClientAccountModal({
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 z-50 flex flex-col bg-gray-950 overflow-hidden"
+            className={`fixed inset-0 z-50 flex flex-col overflow-hidden ${darkMode ? 'bg-gray-950' : 'bg-gray-50'}`}
           >
             {/* Header - Website style */}
-            <header className="flex-shrink-0 bg-gray-950/95 backdrop-blur-md border-b border-gray-800 sticky top-0 z-10">
+            <header className={`flex-shrink-0 backdrop-blur-md border-b sticky top-0 z-10 ${
+              darkMode 
+                ? 'bg-gray-950/95 border-gray-800' 
+                : 'bg-white/95 border-gray-200'
+            }`}>
               <div className="max-w-6xl mx-auto px-4 sm:px-6">
                 <div className="flex items-center justify-between h-16">
                   {/* Logo */}
                   <div className="flex items-center gap-4">
-                    <Logo className="h-7" />
+                    <Logo className="h-7" variant={darkMode ? 'white' : 'default'} />
                   </div>
 
                   {/* Breadcrumb - Desktop */}
                   <div className="hidden md:flex items-center gap-2 text-sm">
                     <button
                       onClick={onClose}
-                      className="text-gray-400 hover:text-white transition-colors flex items-center gap-1"
+                      className={`hover:text-primary-500 transition-colors flex items-center gap-1 ${
+                        darkMode ? 'text-gray-400' : 'text-gray-500'
+                      }`}
                     >
                       <Home className="w-4 h-4" />
                       Project
                     </button>
-                    <ChevronRight className="w-4 h-4 text-gray-600" />
-                    <span className="text-white font-medium">Mijn Account</span>
+                    <ChevronRight className={`w-4 h-4 ${darkMode ? 'text-gray-600' : 'text-gray-400'}`} />
+                    <span className={`font-medium ${darkMode ? 'text-white' : 'text-gray-900'}`}>Mijn Account</span>
                   </div>
 
-                  {/* Back Button */}
-                  <button
-                    onClick={onClose}
-                    className="flex items-center gap-2 px-4 py-2 rounded-xl bg-gray-800 hover:bg-gray-700 text-white text-sm font-medium transition-colors"
-                  >
-                    <ArrowLeft className="w-4 h-4" />
-                    <span className="hidden sm:inline">Terug naar project</span>
-                    <span className="sm:hidden">Terug</span>
-                  </button>
+                  {/* Actions */}
+                  <div className="flex items-center gap-2">
+                    {/* WhatsApp Button */}
+                    <a
+                      href={`https://wa.me/${WHATSAPP_NUMBER}?text=Hoi! Vraag over project ${project.projectId}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className={`flex items-center gap-2 px-3 py-2 rounded-xl text-sm font-medium transition-colors ${
+                        darkMode
+                          ? 'bg-green-500/10 text-green-400 hover:bg-green-500/20'
+                          : 'bg-green-50 text-green-600 hover:bg-green-100'
+                      }`}
+                    >
+                      <svg className="w-4 h-4" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/>
+                      </svg>
+                      <span className="hidden sm:inline">WhatsApp</span>
+                    </a>
+
+                    {/* Back Button */}
+                    <button
+                      onClick={onClose}
+                      className={`flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-medium transition-colors ${
+                        darkMode
+                          ? 'bg-gray-800 hover:bg-gray-700 text-white'
+                          : 'bg-gray-100 hover:bg-gray-200 text-gray-900'
+                      }`}
+                    >
+                      <ArrowLeft className="w-4 h-4" />
+                      <span className="hidden sm:inline">Terug naar project</span>
+                      <span className="sm:hidden">Terug</span>
+                    </button>
+                  </div>
                 </div>
               </div>
             </header>
@@ -262,21 +297,23 @@ export default function ClientAccountModal({
             <div className="flex-shrink-0 relative overflow-hidden">
               {/* Gradient background */}
               <div className={`absolute inset-0 bg-gradient-to-br ${currentPackage.gradient} opacity-10`} />
-              <div className="absolute inset-0 bg-gradient-to-b from-transparent via-gray-950/50 to-gray-950" />
+              <div className={`absolute inset-0 bg-gradient-to-b from-transparent via-transparent ${
+                darkMode ? 'to-gray-950' : 'to-gray-50'
+              }`} />
               
               <div className="relative max-w-6xl mx-auto px-4 sm:px-6 py-8">
                 <div className="flex flex-col sm:flex-row sm:items-center gap-4 sm:gap-6">
                   {/* Large Avatar */}
-                  <div className={`w-20 h-20 sm:w-24 sm:h-24 rounded-2xl bg-gradient-to-br ${currentPackage.gradient} flex items-center justify-center shadow-2xl shadow-${currentPackage.iconColor}/20`}>
+                  <div className={`w-20 h-20 sm:w-24 sm:h-24 rounded-2xl bg-gradient-to-br ${currentPackage.gradient} flex items-center justify-center shadow-2xl`}>
                     <span className="text-3xl sm:text-4xl font-bold text-white">
                       {(project.businessName || project.contactName || 'W').charAt(0).toUpperCase()}
                     </span>
                   </div>
                   <div className="flex-1">
-                    <h1 className="text-2xl sm:text-3xl font-bold text-white mb-1">
+                    <h1 className={`text-2xl sm:text-3xl font-bold mb-1 ${darkMode ? 'text-white' : 'text-gray-900'}`}>
                       {project.businessName || 'Mijn Account'}
                     </h1>
-                    <p className="text-gray-400 text-sm sm:text-base">
+                    <p className={`text-sm sm:text-base ${darkMode ? 'text-gray-400' : 'text-gray-600'}`}>
                       {project.contactName ? `${project.contactName} • ` : ''}{project.contactEmail || 'Klantportaal'}
                     </p>
                     <div className="flex items-center gap-3 mt-3">
@@ -284,7 +321,7 @@ export default function ClientAccountModal({
                         <Package className="w-3.5 h-3.5" />
                         {currentPackage.name} pakket
                       </span>
-                      <span className="text-xs text-gray-500">
+                      <span className={`text-xs ${darkMode ? 'text-gray-500' : 'text-gray-400'}`}>
                         Project: {project.projectId}
                       </span>
                     </div>
@@ -300,8 +337,12 @@ export default function ClientAccountModal({
                         onClick={() => setActiveTab(tab.id)}
                         className={`relative flex items-center gap-2 px-4 py-3 rounded-t-xl text-sm font-medium transition-all whitespace-nowrap ${
                           activeTab === tab.id
-                            ? 'bg-gray-900 text-white border-t-2 border-x border-t-primary-500 border-gray-800'
-                            : 'text-gray-400 hover:text-white hover:bg-gray-800/50'
+                            ? darkMode
+                              ? 'bg-gray-900 text-white border-t-2 border-x border-t-primary-500 border-gray-800'
+                              : 'bg-white text-gray-900 border-t-2 border-x border-t-primary-500 border-gray-200 shadow-sm'
+                            : darkMode
+                              ? 'text-gray-400 hover:text-white hover:bg-gray-800/50'
+                              : 'text-gray-500 hover:text-gray-900 hover:bg-gray-100'
                         }`}
                       >
                         <tab.icon className="w-4 h-4" />
@@ -320,7 +361,7 @@ export default function ClientAccountModal({
             </div>
 
             {/* Content */}
-            <div className="flex-1 overflow-y-auto bg-gray-900">
+            <div className={`flex-1 overflow-y-auto ${darkMode ? 'bg-gray-900' : 'bg-white'}`}>
               <div className="max-w-6xl mx-auto">
                 <AnimatePresence mode="wait">
                   {/* Profile Tab */}
@@ -348,20 +389,32 @@ export default function ClientAccountModal({
                       )}
 
                       {/* Contact Details Card */}
-                      <div className="bg-gray-800 rounded-2xl border border-gray-700 overflow-hidden">
-                        <div className="flex items-center justify-between px-4 sm:px-6 py-4 border-b border-gray-700">
+                      <div className={`rounded-2xl border overflow-hidden ${
+                        darkMode ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-200 shadow-sm'
+                      }`}>
+                        <div className={`flex items-center justify-between px-4 sm:px-6 py-4 border-b ${
+                          darkMode ? 'border-gray-700' : 'border-gray-100'
+                        }`}>
                           <div className="flex items-center gap-3">
-                            <div className="w-10 h-10 rounded-xl bg-primary-500/20 flex items-center justify-center">
-                              <User className="w-5 h-5 text-primary-400" />
+                            <div className={`w-10 h-10 rounded-xl flex items-center justify-center ${
+                              darkMode ? 'bg-primary-500/20' : 'bg-primary-50'
+                            }`}>
+                              <User className={`w-5 h-5 ${darkMode ? 'text-primary-400' : 'text-primary-600'}`} />
                             </div>
-                            <h3 className="text-base sm:text-lg font-semibold text-white">
+                            <h3 className={`text-base sm:text-lg font-semibold ${
+                              darkMode ? 'text-white' : 'text-gray-900'
+                            }`}>
                               Contactgegevens
                             </h3>
                           </div>
                           {!isEditing ? (
                             <button
                               onClick={() => setIsEditing(true)}
-                              className="flex items-center gap-2 px-3 sm:px-4 py-2 rounded-xl bg-primary-500/10 text-primary-400 text-sm font-medium hover:bg-primary-500/20 transition-colors"
+                              className={`flex items-center gap-2 px-3 sm:px-4 py-2 rounded-xl text-sm font-medium transition-colors ${
+                                darkMode 
+                                  ? 'bg-primary-500/10 text-primary-400 hover:bg-primary-500/20' 
+                                  : 'bg-primary-50 text-primary-600 hover:bg-primary-100'
+                              }`}
                             >
                               <Edit3 className="w-4 h-4" />
                               <span className="hidden sm:inline">Bewerken</span>
@@ -378,7 +431,11 @@ export default function ClientAccountModal({
                                   businessName: project.businessName || '',
                                 })
                               }}
-                              className="px-3 py-2 rounded-xl bg-gray-700 text-gray-300 text-sm font-medium hover:bg-gray-600 transition-colors"
+                              className={`px-3 py-2 rounded-xl text-sm font-medium transition-colors ${
+                                darkMode 
+                                  ? 'bg-gray-700 text-gray-300 hover:bg-gray-600' 
+                                  : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                              }`}
                             >
                               Annuleren
                             </button>
@@ -401,7 +458,7 @@ export default function ClientAccountModal({
                       <div className="p-4 sm:p-5 space-y-4">
                         {/* Business Name */}
                         <div className="group">
-                          <label className="flex items-center gap-2 text-sm text-gray-400 mb-1.5">
+                          <label className={`flex items-center gap-2 text-sm mb-1.5 ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>
                             <Building2 className="w-4 h-4" />
                             Bedrijfsnaam
                           </label>
@@ -410,19 +467,25 @@ export default function ClientAccountModal({
                               type="text"
                               value={formData.businessName}
                               onChange={(e) => setFormData({ ...formData, businessName: e.target.value })}
-                              className="w-full px-4 py-3 rounded-xl bg-gray-900 border border-gray-200 dark:border-gray-700 text-white focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all"
+                              className={`w-full px-4 py-3 rounded-xl border focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all ${
+                                darkMode 
+                                  ? 'bg-gray-900 border-gray-700 text-white' 
+                                  : 'bg-gray-50 border-gray-200 text-gray-900'
+                              }`}
                               placeholder="Jouw bedrijfsnaam"
                             />
                           ) : (
-                            <p className="px-4 py-3 rounded-xl bg-gray-900/50 text-white font-medium">
-                              {project.businessName || <span className="text-gray-400 italic">Niet ingevuld</span>}
+                            <p className={`px-4 py-3 rounded-xl font-medium ${
+                              darkMode ? 'bg-gray-900/50 text-white' : 'bg-gray-50 text-gray-900'
+                            }`}>
+                              {project.businessName || <span className={darkMode ? 'text-gray-400 italic' : 'text-gray-400 italic'}>Niet ingevuld</span>}
                             </p>
                           )}
                         </div>
 
                         {/* Contact Name */}
                         <div className="group">
-                          <label className="flex items-center gap-2 text-sm text-gray-400 mb-1.5">
+                          <label className={`flex items-center gap-2 text-sm mb-1.5 ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>
                             <User className="w-4 h-4" />
                             Naam
                           </label>
@@ -431,11 +494,17 @@ export default function ClientAccountModal({
                               type="text"
                               value={formData.contactName}
                               onChange={(e) => setFormData({ ...formData, contactName: e.target.value })}
-                              className="w-full px-4 py-3 rounded-xl bg-gray-900 border border-gray-200 dark:border-gray-700 text-white focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all"
+                              className={`w-full px-4 py-3 rounded-xl border focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all ${
+                                darkMode 
+                                  ? 'bg-gray-900 border-gray-700 text-white' 
+                                  : 'bg-gray-50 border-gray-200 text-gray-900'
+                              }`}
                               placeholder="Je naam"
                             />
                           ) : (
-                            <p className="px-4 py-3 rounded-xl bg-gray-900/50 text-white font-medium">
+                            <p className={`px-4 py-3 rounded-xl font-medium ${
+                              darkMode ? 'bg-gray-900/50 text-white' : 'bg-gray-50 text-gray-900'
+                            }`}>
                               {project.contactName || <span className="text-gray-400 italic">Niet ingevuld</span>}
                             </p>
                           )}
@@ -444,7 +513,7 @@ export default function ClientAccountModal({
                         {/* Email & Phone - 2 column on larger screens */}
                         <div className="grid sm:grid-cols-2 gap-4">
                           <div className="group">
-                            <label className="flex items-center gap-2 text-sm text-gray-400 mb-1.5">
+                            <label className={`flex items-center gap-2 text-sm mb-1.5 ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>
                               <Mail className="w-4 h-4" />
                               E-mailadres
                             </label>
@@ -453,18 +522,24 @@ export default function ClientAccountModal({
                                 type="email"
                                 value={formData.contactEmail}
                                 onChange={(e) => setFormData({ ...formData, contactEmail: e.target.value })}
-                                className="w-full px-4 py-3 rounded-xl bg-gray-900 border border-gray-200 dark:border-gray-700 text-white focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all"
+                                className={`w-full px-4 py-3 rounded-xl border focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all ${
+                                  darkMode 
+                                    ? 'bg-gray-900 border-gray-700 text-white' 
+                                    : 'bg-gray-50 border-gray-200 text-gray-900'
+                                }`}
                                 placeholder="email@voorbeeld.nl"
                               />
                             ) : (
-                              <p className="px-4 py-3 rounded-xl bg-gray-900/50 text-white font-medium break-all">
+                              <p className={`px-4 py-3 rounded-xl font-medium break-all ${
+                                darkMode ? 'bg-gray-900/50 text-white' : 'bg-gray-50 text-gray-900'
+                              }`}>
                                 {project.contactEmail || <span className="text-gray-400 italic">Niet ingevuld</span>}
                               </p>
                             )}
                           </div>
 
                           <div className="group">
-                            <label className="flex items-center gap-2 text-sm text-gray-400 mb-1.5">
+                            <label className={`flex items-center gap-2 text-sm mb-1.5 ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>
                               <Phone className="w-4 h-4" />
                               Telefoonnummer
                             </label>
@@ -473,11 +548,17 @@ export default function ClientAccountModal({
                                 type="tel"
                                 value={formData.contactPhone}
                                 onChange={(e) => setFormData({ ...formData, contactPhone: e.target.value })}
-                                className="w-full px-4 py-3 rounded-xl bg-gray-900 border border-gray-200 dark:border-gray-700 text-white focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all"
+                                className={`w-full px-4 py-3 rounded-xl border focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all ${
+                                  darkMode 
+                                    ? 'bg-gray-900 border-gray-700 text-white' 
+                                    : 'bg-gray-50 border-gray-200 text-gray-900'
+                                }`}
                                 placeholder="06 12345678"
                               />
                             ) : (
-                              <p className="px-4 py-3 rounded-xl bg-gray-900/50 text-white font-medium">
+                              <p className={`px-4 py-3 rounded-xl font-medium ${
+                                darkMode ? 'bg-gray-900/50 text-white' : 'bg-gray-50 text-gray-900'
+                              }`}>
                                 {project.contactPhone || <span className="text-gray-400 italic">Niet ingevuld</span>}
                               </p>
                             )}
@@ -487,25 +568,33 @@ export default function ClientAccountModal({
                     </div>
 
                     {/* Project Info Card */}
-                    <div className="bg-gray-800 rounded-2xl shadow-sm border border-gray-700 overflow-hidden">
-                      <div className="flex items-center gap-3 px-4 sm:px-5 py-4 border-b border-gray-700">
-                        <div className="w-10 h-10 rounded-xl bg-gray-700 flex items-center justify-center">
-                          <Globe className="w-5 h-5 text-gray-400" />
+                    <div className={`rounded-2xl shadow-sm border overflow-hidden ${
+                      darkMode ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-200'
+                    }`}>
+                      <div className={`flex items-center gap-3 px-4 sm:px-5 py-4 border-b ${
+                        darkMode ? 'border-gray-700' : 'border-gray-100'
+                      }`}>
+                        <div className={`w-10 h-10 rounded-xl flex items-center justify-center ${
+                          darkMode ? 'bg-gray-700' : 'bg-gray-100'
+                        }`}>
+                          <Globe className={`w-5 h-5 ${darkMode ? 'text-gray-400' : 'text-gray-500'}`} />
                         </div>
-                        <h3 className="text-base sm:text-lg font-semibold text-white">
+                        <h3 className={`text-base sm:text-lg font-semibold ${
+                          darkMode ? 'text-white' : 'text-gray-900'
+                        }`}>
                           Projectinformatie
                         </h3>
                       </div>
 
                       <div className="p-4 sm:p-5">
                         <div className="grid sm:grid-cols-2 gap-4">
-                          <div className="p-4 rounded-xl bg-gray-900/50">
-                            <p className="text-sm text-gray-400 mb-1">Project ID</p>
-                            <p className="font-mono text-sm text-white">{project.projectId}</p>
+                          <div className={`p-4 rounded-xl ${darkMode ? 'bg-gray-900/50' : 'bg-gray-50'}`}>
+                            <p className={`text-sm mb-1 ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>Project ID</p>
+                            <p className={`font-mono text-sm ${darkMode ? 'text-white' : 'text-gray-900'}`}>{project.projectId}</p>
                           </div>
-                          <div className="p-4 rounded-xl bg-gray-900/50">
-                            <p className="text-sm text-gray-400 mb-1">Aangemaakt op</p>
-                            <p className="font-medium text-white">
+                          <div className={`p-4 rounded-xl ${darkMode ? 'bg-gray-900/50' : 'bg-gray-50'}`}>
+                            <p className={`text-sm mb-1 ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>Aangemaakt op</p>
+                            <p className={`font-medium ${darkMode ? 'text-white' : 'text-gray-900'}`}>
                               {new Date(project.createdAt).toLocaleDateString('nl-NL', {
                                 day: 'numeric',
                                 month: 'long',
@@ -513,15 +602,15 @@ export default function ClientAccountModal({
                               })}
                             </p>
                           </div>
-                          <div className="p-4 rounded-xl bg-gray-900/50">
-                            <p className="text-sm text-gray-400 mb-1">Type dienst</p>
-                            <p className="font-medium text-white capitalize">
+                          <div className={`p-4 rounded-xl ${darkMode ? 'bg-gray-900/50' : 'bg-gray-50'}`}>
+                            <p className={`text-sm mb-1 ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>Type dienst</p>
+                            <p className={`font-medium capitalize ${darkMode ? 'text-white' : 'text-gray-900'}`}>
                               {serviceTypeLabels[project.serviceType || 'website'] || 'Website'}
                             </p>
                           </div>
-                          <div className="p-4 rounded-xl bg-gray-900/50">
-                            <p className="text-sm text-gray-400 mb-1">Pakket</p>
-                            <p className="font-medium text-white">{currentPackage.name}</p>
+                          <div className={`p-4 rounded-xl ${darkMode ? 'bg-gray-900/50' : 'bg-gray-50'}`}>
+                            <p className={`text-sm mb-1 ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>Pakket</p>
+                            <p className={`font-medium ${darkMode ? 'text-white' : 'text-gray-900'}`}>{currentPackage.name}</p>
                           </div>
                         </div>
                       </div>
@@ -968,12 +1057,14 @@ export default function ClientAccountModal({
             </div>
 
             {/* Footer */}
-            <footer className="flex-shrink-0 bg-gray-950 border-t border-gray-800 py-4">
+            <footer className={`flex-shrink-0 border-t py-4 ${
+              darkMode ? 'bg-gray-950 border-gray-800' : 'bg-gray-50 border-gray-200'
+            }`}>
               <div className="max-w-6xl mx-auto px-4 sm:px-6 flex items-center justify-between">
-                <p className="text-xs text-gray-500">
+                <p className={`text-xs ${darkMode ? 'text-gray-500' : 'text-gray-400'}`}>
                   © {new Date().getFullYear()} Webstability
                 </p>
-                <div className="flex items-center gap-2 text-xs text-gray-500">
+                <div className={`flex items-center gap-2 text-xs ${darkMode ? 'text-gray-500' : 'text-gray-400'}`}>
                   <Shield className="w-3.5 h-3.5 text-green-500" />
                   Beveiligd
                 </div>
