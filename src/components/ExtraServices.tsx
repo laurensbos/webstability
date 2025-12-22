@@ -7,6 +7,45 @@ import {
 } from 'lucide-react'
 import { Link } from 'react-router-dom'
 
+// Service-specific color helper
+const getServiceColors = (serviceId: string) => {
+  switch (serviceId) {
+    case 'logo':
+      return {
+        iconBg: 'bg-purple-100 dark:bg-purple-900/30',
+        iconColor: 'text-purple-600 dark:text-purple-400',
+        checkColor: 'text-purple-500',
+        buttonBg: 'bg-purple-500 hover:bg-purple-600',
+        borderHover: 'hover:border-purple-300 dark:hover:border-purple-700',
+        shadow: 'hover:shadow-purple-500/10',
+        tagBg: 'bg-purple-50 dark:bg-purple-900/20',
+        tagText: 'text-purple-600 dark:text-purple-400'
+      }
+    case 'drone':
+      return {
+        iconBg: 'bg-orange-100 dark:bg-orange-900/30',
+        iconColor: 'text-orange-600 dark:text-orange-400',
+        checkColor: 'text-orange-500',
+        buttonBg: 'bg-orange-500 hover:bg-orange-600',
+        borderHover: 'hover:border-orange-300 dark:hover:border-orange-700',
+        shadow: 'hover:shadow-orange-500/10',
+        tagBg: 'bg-orange-50 dark:bg-orange-900/20',
+        tagText: 'text-orange-600 dark:text-orange-400'
+      }
+    default:
+      return {
+        iconBg: 'bg-primary-100 dark:bg-primary-900/30',
+        iconColor: 'text-primary-600 dark:text-primary-400',
+        checkColor: 'text-primary-500',
+        buttonBg: 'bg-primary-500 hover:bg-primary-600',
+        borderHover: 'hover:border-primary-300 dark:hover:border-primary-700',
+        shadow: 'hover:shadow-primary-500/10',
+        tagBg: 'bg-primary-50 dark:bg-primary-900/20',
+        tagText: 'text-primary-600 dark:text-primary-400'
+      }
+  }
+}
+
 const extraServices = [
   {
     id: 'logo',
@@ -43,20 +82,22 @@ export default function ExtraServices() {
 
         {/* Mobile: Compact horizontal cards */}
         <div className="sm:hidden flex gap-4 overflow-x-auto pb-4 -mx-4 px-4 snap-x snap-mandatory scrollbar-hide" style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
-          {extraServices.map((service, index) => (
+          {extraServices.map((service, index) => {
+            const colors = getServiceColors(service.id)
+            return (
             <motion.div
               key={service.id}
               initial={{ opacity: 0, x: 20 }}
               whileInView={{ opacity: 1, x: 0 }}
               viewport={{ once: true }}
               transition={{ delay: index * 0.1 }}
-              className="flex-shrink-0 w-[280px] snap-center bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 overflow-hidden"
+              className={`flex-shrink-0 w-[280px] snap-center bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 overflow-hidden ${colors.borderHover} transition-all`}
             >
               {/* Header */}
               <div className="p-4 border-b border-gray-100 dark:border-gray-700">
                 <div className="flex items-center justify-between mb-2">
-                  <div className="w-10 h-10 bg-primary-100 dark:bg-primary-900/30 rounded-xl flex items-center justify-center">
-                    <service.icon className="w-5 h-5 text-primary-600 dark:text-primary-400" />
+                  <div className={`w-10 h-10 ${colors.iconBg} rounded-xl flex items-center justify-center`}>
+                    <service.icon className={`w-5 h-5 ${colors.iconColor}`} />
                   </div>
                   <div className="text-right">
                     <span className="text-2xl font-bold text-gray-900 dark:text-white">€{service.price}</span>
@@ -74,7 +115,7 @@ export default function ExtraServices() {
                 <div className="space-y-1.5 mb-4">
                   {service.features.slice(0, 3).map((feature, i) => (
                     <div key={i} className="flex items-center gap-2 text-xs text-gray-600 dark:text-gray-400">
-                      <CheckCircle className="w-3.5 h-3.5 text-primary-500 flex-shrink-0" />
+                      <CheckCircle className={`w-3.5 h-3.5 ${colors.checkColor} flex-shrink-0`} />
                       <span>{feature}</span>
                     </div>
                   ))}
@@ -84,7 +125,7 @@ export default function ExtraServices() {
                 <div className="flex gap-2">
                   <Link
                     to={`/start?dienst=${service.id}`}
-                    className="flex-1 py-2.5 bg-primary-500 hover:bg-primary-600 text-white font-semibold rounded-lg text-sm flex items-center justify-center gap-1.5 transition-colors"
+                    className={`flex-1 py-2.5 ${colors.buttonBg} text-white font-semibold rounded-lg text-sm flex items-center justify-center gap-1.5 transition-colors`}
                   >
                     Aanvragen
                     <ArrowRight className="w-3.5 h-3.5" />
@@ -98,30 +139,34 @@ export default function ExtraServices() {
                 </div>
               </div>
             </motion.div>
-          ))}
+          )})}
         </div>
 
         {/* Desktop: Clean cards */}
         <div className="hidden sm:grid sm:grid-cols-2 gap-6">
-          {extraServices.map((service, index) => (
+          {extraServices.map((service, index) => {
+            const colors = getServiceColors(service.id)
+            return (
             <motion.div
               key={service.id}
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ delay: index * 0.1 }}
-              className="group bg-white dark:bg-gray-800 rounded-2xl border border-gray-200 dark:border-gray-700 hover:border-primary-300 dark:hover:border-primary-700 overflow-hidden transition-all duration-300 hover:shadow-lg hover:-translate-y-1"
+              className={`group bg-white dark:bg-gray-800 rounded-2xl border border-gray-200 dark:border-gray-700 ${colors.borderHover} overflow-hidden transition-all duration-300 hover:shadow-xl ${colors.shadow} hover:-translate-y-1`}
             >
               <div className="p-6">
                 {/* Header row */}
                 <div className="flex items-start justify-between gap-4 mb-4">
                   <div className="flex items-center gap-3">
-                    <div className="w-12 h-12 bg-primary-100 dark:bg-primary-900/30 rounded-xl flex items-center justify-center">
-                      <service.icon className="w-6 h-6 text-primary-600 dark:text-primary-400" />
+                    <div className={`w-12 h-12 ${colors.iconBg} rounded-xl flex items-center justify-center`}>
+                      <service.icon className={`w-6 h-6 ${colors.iconColor}`} />
                     </div>
                     <div>
                       <h3 className="text-lg font-bold text-gray-900 dark:text-white">{service.title}</h3>
-                      <p className="text-sm text-gray-500 dark:text-gray-400">Eenmalig</p>
+                      <span className={`inline-flex items-center px-2 py-0.5 ${colors.tagBg} ${colors.tagText} text-xs font-medium rounded-md`}>
+                        Eenmalig
+                      </span>
                     </div>
                   </div>
                   <div className="text-right">
@@ -136,7 +181,7 @@ export default function ExtraServices() {
                 <div className="grid grid-cols-2 gap-x-4 gap-y-2 mb-6">
                   {service.features.map((feature, i) => (
                     <div key={i} className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-400">
-                      <CheckCircle className="w-4 h-4 text-primary-500 flex-shrink-0" />
+                      <CheckCircle className={`w-4 h-4 ${colors.checkColor} flex-shrink-0`} />
                       <span>{feature}</span>
                     </div>
                   ))}
@@ -146,7 +191,7 @@ export default function ExtraServices() {
                 <div className="flex gap-3">
                   <Link
                     to={`/start?dienst=${service.id}`}
-                    className="flex-1 py-3 bg-primary-500 hover:bg-primary-600 text-white font-semibold rounded-xl transition-all hover:shadow-lg flex items-center justify-center gap-2"
+                    className={`flex-1 py-3 ${colors.buttonBg} text-white font-semibold rounded-xl transition-all hover:shadow-lg flex items-center justify-center gap-2`}
                   >
                     Direct aanvragen
                     <ArrowRight className="w-4 h-4" />
@@ -160,7 +205,7 @@ export default function ExtraServices() {
                 </div>
               </div>
             </motion.div>
-          ))}
+          )})}
         </div>
       </div>
     </section>

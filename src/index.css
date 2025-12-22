@@ -74,6 +74,15 @@
 
 html {
   scroll-behavior: smooth;
+  /* Mobile-first: slightly smaller base for compact mobile experience */
+  font-size: 15px;
+}
+
+/* Larger screens get normal sizing */
+@media (min-width: 640px) {
+  html {
+    font-size: 16px;
+  }
 }
 
 body {

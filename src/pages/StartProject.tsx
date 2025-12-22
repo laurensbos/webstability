@@ -357,35 +357,44 @@ export default function StartProject() {
         <FloatingParticles activeService={selectedService} />
         <Header />
         
-        <main className="relative z-10 pt-24 sm:pt-28 pb-12 sm:pb-16 lg:pb-20">
+        <main className="relative z-10 pt-20 sm:pt-28 pb-8 sm:pb-16 lg:pb-20">
           <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
-            {/* Back button */}
+            {/* Back button - styled nicely */}
             <motion.button
               initial={{ opacity: 0, x: -20 }}
               animate={{ opacity: 1, x: 0 }}
               onClick={() => setSelectedService(null)}
-              className="flex items-center gap-2 text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white mb-6 transition-colors"
+              className="inline-flex items-center gap-2 px-4 py-2 bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm text-gray-700 dark:text-gray-300 hover:bg-white dark:hover:bg-gray-800 rounded-full text-sm font-medium transition-all shadow-sm border border-gray-200/50 dark:border-gray-700/50 mb-4 sm:mb-6"
             >
               <ArrowLeft className="w-4 h-4" />
-              <span>Terug naar diensten</span>
+              <span>Terug</span>
             </motion.button>
 
-            {/* Header */}
+            {/* Header - Compact */}
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
-              className="text-center mb-8 sm:mb-12"
+              className="text-center mb-4 sm:mb-8"
             >
-              <div className={`inline-flex items-center gap-2 px-4 py-2 rounded-full bg-gradient-to-r ${serviceInfo.gradient} text-white text-sm font-medium mb-4`}>
-                <serviceInfo.icon className="w-4 h-4" />
+              <div className={`inline-flex items-center gap-2 px-3 py-1.5 sm:px-4 sm:py-2 rounded-full bg-gradient-to-r ${serviceInfo.gradient} text-white text-xs sm:text-sm font-medium mb-3 sm:mb-4`}>
+                <serviceInfo.icon className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
                 {serviceInfo.name}
               </div>
-              <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-gray-900 dark:text-white mb-3">
+              <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-gray-900 dark:text-white mb-1 sm:mb-2">
                 Kies je pakket
               </h1>
-              <p className="text-gray-600 dark:text-gray-400 max-w-xl mx-auto">
-                Selecteer het pakket dat het beste bij jouw wensen past
-              </p>
+              
+              {/* Trustpilot badge - compact */}
+              <div className="flex items-center justify-center gap-1.5 mt-3">
+                <div className="flex">
+                  {[...Array(5)].map((_, i) => (
+                    <svg key={i} className="w-4 h-4 sm:w-5 sm:h-5" viewBox="0 0 24 24" fill="#00b67a">
+                      <path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/>
+                    </svg>
+                  ))}
+                </div>
+                <span className="text-xs sm:text-sm text-gray-500 dark:text-gray-400 font-medium">4.9 op Trustpilot</span>
+              </div>
             </motion.div>
 
             {/* Gratis design banner */}
@@ -393,61 +402,62 @@ export default function StartProject() {
               <motion.div
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
-                className="bg-gradient-to-r from-emerald-50 to-green-50 dark:from-emerald-900/20 dark:to-green-900/20 border border-emerald-200 dark:border-emerald-800 rounded-xl p-4 mb-6 text-center"
+                className="bg-emerald-500/10 dark:bg-emerald-500/20 border border-emerald-500/30 rounded-xl p-3 mb-4 sm:mb-6 text-center"
               >
-                <p className="text-emerald-800 dark:text-emerald-300 font-medium text-sm sm:text-base">
-                  ✨ Geheel vrijblijvend gratis design — Betaal pas als je tevreden bent!
+                <p className="text-emerald-700 dark:text-emerald-400 font-medium text-sm">
+                  ✨ Gratis design — Betaal pas als je tevreden bent
                 </p>
               </motion.div>
             )}
 
             {/* Package cards - Horizontal scroll on mobile */}
             <div className="relative -mx-4 px-4 sm:mx-0 sm:px-0">
-              {/* Swipe hint for mobile */}
-              <p className="text-center text-gray-400 dark:text-gray-500 text-xs mb-3 sm:hidden">
-                ← Swipe om alle pakketten te zien →
-              </p>
-              
-              <div className="flex gap-4 overflow-x-auto snap-x snap-mandatory pb-4 sm:pb-0 sm:grid sm:grid-cols-3 sm:gap-6 sm:overflow-visible scrollbar-hide">
+              <div className="flex gap-4 overflow-x-auto snap-x snap-mandatory pb-2 sm:pb-0 sm:grid sm:grid-cols-3 sm:gap-5 sm:overflow-visible scrollbar-hide" style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
                 {availablePackages.map((pkg, index) => (
                   <motion.button
                     key={pkg.id}
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: index * 0.1 }}
+                    transition={{ delay: index * 0.05 }}
                     onClick={() => setSelectedPackage(pkg.id)}
-                    className="flex-shrink-0 w-[280px] sm:w-auto snap-center first:ml-0 last:mr-0 relative p-6 rounded-2xl text-left transition-all bg-white dark:bg-gray-800 shadow-lg hover:shadow-xl hover:scale-[1.02] active:scale-[0.98]"
+                    className="flex-shrink-0 w-[300px] sm:w-auto snap-center relative p-5 rounded-xl text-left transition-all bg-white dark:bg-gray-800 shadow-md hover:shadow-lg active:scale-[0.98] border border-gray-200 dark:border-gray-700"
                   >
-                    <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-2">
+                    <h3 className="text-lg font-bold text-gray-900 dark:text-white">
                       {pkg.name}
                     </h3>
                     
-                    <div className="mb-4">
+                    <div className="mt-2 mb-4">
                       <span className="text-3xl font-bold text-gray-900 dark:text-white">€{pkg.price}</span>
                       <span className="text-gray-500 dark:text-gray-400 text-sm ml-1">
-                        {pkg.priceNote.includes('eenmalig') ? ' eenmalig' : '/maand'}
+                        {pkg.priceNote.includes('eenmalig') ? 'eenmalig' : '/maand'}
                       </span>
                       {pkg.setupFee && (
                         <p className="text-xs text-gray-400 dark:text-gray-500 mt-1">
-                          + €{pkg.setupFee} eenmalige opstartkosten
+                          + €{pkg.setupFee} opstartkosten
                         </p>
                       )}
                     </div>
                     
-                    <ul className="space-y-2 mb-6">
-                      {pkg.features.map((feature, i) => (
-                        <li key={i} className="flex items-start gap-2 text-sm text-gray-600 dark:text-gray-400">
-                          <Check className="w-4 h-4 text-green-500 shrink-0 mt-0.5" />
-                          {feature}
+                    <ul className="space-y-2 mb-4">
+                      {pkg.features.slice(0, 4).map((feature, i) => (
+                        <li key={i} className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-400">
+                          <Check className="w-4 h-4 text-green-500 shrink-0" />
+                          <span>{feature}</span>
                         </li>
                       ))}
                     </ul>
                     
-                    <div className="w-full py-3 rounded-xl font-semibold text-center transition-all bg-gradient-to-r from-primary-500 to-blue-600 text-white">
-                      Kies {pkg.name}
-                      <ArrowRight className="inline-block w-4 h-4 ml-2" />
+                    <div className="w-full py-3 rounded-lg font-semibold text-center text-base transition-all bg-primary-500 hover:bg-primary-600 text-white">
+                      Kies {pkg.name} →
                     </div>
                   </motion.button>
+                ))}
+              </div>
+              
+              {/* Scroll indicator dots - mobile only */}
+              <div className="flex justify-center gap-1.5 mt-3 sm:hidden">
+                {availablePackages.map((_, i) => (
+                  <div key={i} className={`w-2 h-2 rounded-full ${i === 0 ? 'bg-primary-500' : 'bg-gray-300 dark:bg-gray-600'}`} />
                 ))}
               </div>
             </div>
@@ -456,12 +466,12 @@ export default function StartProject() {
             <motion.p
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
-              transition={{ delay: 0.4 }}
-              className="text-center text-gray-500 dark:text-gray-400 text-sm mt-8"
+              transition={{ delay: 0.3 }}
+              className="text-center text-gray-400 dark:text-gray-500 text-sm mt-5 sm:mt-6"
             >
               {selectedService === 'drone' 
-                ? 'Alle prijzen zijn inclusief BTW. Beelden worden digitaal geleverd.'
-                : 'Alle pakketten zijn maandelijks opzegbaar na 3 maanden. Inclusief hosting en onderhoud.'
+                ? 'Incl. BTW • Digitale levering'
+                : 'Maandelijks opzegbaar na 3 maanden • Incl. hosting'
               }
             </motion.p>
           </div>
@@ -504,10 +514,9 @@ export default function StartProject() {
               </span>
             </h1>
             
-            <p className="text-sm sm:text-xl text-gray-600 dark:text-gray-300 max-w-2xl mx-auto">
-              <span className="sm:hidden">Kies een dienst en start direct.</span>
-              <span className="hidden sm:inline">Kies een dienst en doorloop onze slimme wizard. 
-              Binnen 5 minuten heb je je project aangevraagd.</span>
+            <p className="text-sm sm:text-xl text-gray-600 dark:text-gray-300 max-w-2xl mx-auto hidden sm:block">
+              Kies een dienst en doorloop onze slimme wizard. 
+              Binnen 5 minuten heb je je project aangevraagd.
             </p>
             
             {/* Payment after design approval badge */}
@@ -521,6 +530,23 @@ export default function StartProject() {
               <span className="hidden sm:inline">Betaling pas na goedkeuring design — start vrijblijvend</span>
               <span className="sm:hidden">Betaling na design goedkeuring</span>
             </motion.div>
+            
+            {/* Trustpilot badge */}
+            <motion.div
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.4 }}
+              className="flex items-center justify-center gap-1.5 mt-3"
+            >
+              <div className="flex">
+                {[...Array(5)].map((_, i) => (
+                  <svg key={i} className="w-4 h-4" viewBox="0 0 24 24" fill="#00b67a">
+                    <path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/>
+                  </svg>
+                ))}
+              </div>
+              <span className="text-xs text-gray-500 dark:text-gray-400 font-medium">4.9 op Trustpilot</span>
+            </motion.div>
           </motion.div>
 
           {/* Service Cards - Mobile Carousel */}
@@ -533,7 +559,7 @@ export default function StartProject() {
                 <div className="h-px flex-1 bg-gradient-to-r from-transparent via-gray-300 dark:via-gray-600 to-transparent" />
               </div>
               
-              <div className="flex gap-4 overflow-x-auto overflow-y-visible pb-4 -mx-4 px-4 snap-x snap-mandatory scrollbar-hide" style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
+              <div className="flex gap-4 overflow-x-auto overflow-y-visible pb-2 -mx-4 px-4 snap-x snap-mandatory scrollbar-hide" style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
                 {services.filter(s => s.id === 'website' || s.id === 'webshop').map((service, index) => {
                   const colors = getServiceColors(service.id)
                   return (
@@ -586,6 +612,11 @@ export default function StartProject() {
                   )
                 })}
               </div>
+              {/* Scroll indicator dots */}
+              <div className="flex justify-center gap-2 mt-2">
+                <div className="w-2 h-2 rounded-full bg-primary-500" />
+                <div className="w-2 h-2 rounded-full bg-gray-300 dark:bg-gray-600" />
+              </div>
             </div>
 
             {/* Eenmalige diensten */}
@@ -596,7 +627,7 @@ export default function StartProject() {
                 <div className="h-px flex-1 bg-gradient-to-r from-transparent via-gray-300 dark:via-gray-600 to-transparent" />
               </div>
               
-              <div className="flex gap-4 overflow-x-auto overflow-y-visible pb-4 -mx-4 px-4 snap-x snap-mandatory scrollbar-hide" style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
+              <div className="flex gap-4 overflow-x-auto overflow-y-visible pb-2 -mx-4 px-4 snap-x snap-mandatory scrollbar-hide" style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
                 {services.filter(s => s.id === 'drone' || s.id === 'logo').map((service, index) => {
                   const colors = getServiceColors(service.id)
                   return (
@@ -645,6 +676,11 @@ export default function StartProject() {
                     </motion.button>
                   )
                 })}
+              </div>
+              {/* Scroll indicator dots */}
+              <div className="flex justify-center gap-2 mt-2">
+                <div className="w-2 h-2 rounded-full bg-purple-500" />
+                <div className="w-2 h-2 rounded-full bg-gray-300 dark:bg-gray-600" />
               </div>
             </div>
           </div>
