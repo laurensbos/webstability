@@ -15,7 +15,6 @@ import {
   ChevronRight,
   ChevronDown,
   ExternalLink,
-  Calendar,
   MessageSquare,
   Send,
   Phone,
@@ -35,7 +34,9 @@ import {
   Image,
   File,
   Edit3,
-  User
+  User,
+  Sun,
+  Moon
 } from 'lucide-react'
 import Logo from '../components/Logo'
 import DesignFeedback from '../components/DesignFeedback'
@@ -282,8 +283,19 @@ export default function ProjectStatusNew() {
   // Account modal state
   const [showAccountModal, setShowAccountModal] = useState(false)
   
-  // Timeline expansion
-  const [showTimeline, setShowTimeline] = useState(false)
+  // Dark mode state
+  const [darkMode, setDarkMode] = useState(() => {
+    if (typeof window !== 'undefined') {
+      const saved = localStorage.getItem('projectPortalDarkMode')
+      return saved !== null ? JSON.parse(saved) : true // Default to dark
+    }
+    return true
+  })
+  
+  // Save dark mode preference
+  useEffect(() => {
+    localStorage.setItem('projectPortalDarkMode', JSON.stringify(darkMode))
+  }, [darkMode])
   
   // Design approval state
   const [approvingDesign, setApprovingDesign] = useState(false)
@@ -1031,17 +1043,37 @@ export default function ProjectStatusNew() {
   const unreadMessages = messages.filter(m => !m.read && m.from === 'developer').length
 
   return (
-    <div className="min-h-screen bg-gray-950">
+    <div className={`min-h-screen transition-colors ${darkMode ? 'bg-gray-950' : 'bg-gray-100'}`}>
       {/* Header */}
-      <header className="sticky top-0 z-50 border-b border-white/10 bg-gray-950/80 backdrop-blur-xl">
+      <header className={`sticky top-0 z-50 border-b backdrop-blur-xl transition-colors ${
+        darkMode 
+          ? 'border-white/10 bg-gray-950/80' 
+          : 'border-gray-200 bg-white/80'
+      }`}>
         <div className="max-w-3xl mx-auto px-4 py-3 flex items-center justify-between">
           <Link to="/" className="hover:opacity-80 transition">
-            <Logo variant="white" size="sm" />
+            <Logo variant={darkMode ? 'white' : 'default'} size="sm" />
           </Link>
           <div className="flex items-center gap-2">
+            {/* Dark Mode Toggle */}
+            <button
+              onClick={() => setDarkMode(!darkMode)}
+              className={`p-2 rounded-lg transition-colors ${
+                darkMode 
+                  ? 'text-gray-400 hover:text-white hover:bg-gray-800' 
+                  : 'text-gray-500 hover:text-gray-900 hover:bg-gray-200'
+              }`}
+              title={darkMode ? 'Light mode' : 'Dark mode'}
+            >
+              {darkMode ? <Sun className="w-5 h-5" /> : <Moon className="w-5 h-5" />}
+            </button>
             <button
               onClick={() => setShowChat(!showChat)}
-              className="relative p-2 text-gray-400 hover:text-white transition rounded-lg hover:bg-gray-800"
+              className={`relative p-2 transition rounded-lg ${
+                darkMode 
+                  ? 'text-gray-400 hover:text-white hover:bg-gray-800' 
+                  : 'text-gray-500 hover:text-gray-900 hover:bg-gray-200'
+              }`}
             >
               <MessageSquare className="w-5 h-5" />
               {unreadMessages > 0 && (
@@ -1050,7 +1082,9 @@ export default function ProjectStatusNew() {
                 </span>
               )}
             </button>
-            <span className="px-2.5 py-1 bg-gray-800 rounded-lg text-xs font-mono text-gray-400">
+            <span className={`px-2.5 py-1 rounded-lg text-xs font-mono ${
+              darkMode ? 'bg-gray-800 text-gray-400' : 'bg-gray-200 text-gray-600'
+            }`}>
               {projectId}
             </span>
           </div>
@@ -1058,6 +1092,61 @@ export default function ProjectStatusNew() {
       </header>
 
       <main className="max-w-3xl mx-auto px-4 py-6 space-y-4">
+        {/* Horizontal Timeline - Always visible */}
+        <motion.div
+          initial={{ opacity: 0, y: -10 }}
+          animate={{ opacity: 1, y: 0 }}
+          className={`rounded-2xl p-4 transition-colors ${
+            darkMode ? 'bg-gray-900 border border-gray-800' : 'bg-white border border-gray-200 shadow-sm'
+          }`}
+        >
+          <div className="flex items-center justify-between overflow-x-auto scrollbar-hide gap-2">
+            {PHASES.map((phase, index) => {
+              const status = getPhaseStatus(phase.key)
+              const Icon = phase.icon
+              const isLast = index === PHASES.length - 1
+              
+              return (
+                <div key={phase.key} className="flex items-center flex-1 min-w-0">
+                  <div className="flex flex-col items-center flex-shrink-0">
+                    <div className={`w-10 h-10 rounded-xl flex items-center justify-center transition-all ${
+                      status === 'completed' 
+                        ? 'bg-green-500 text-white' 
+                        : status === 'current' 
+                          ? `bg-gradient-to-br ${phaseColors.gradient} text-white shadow-lg` 
+                          : darkMode 
+                            ? 'bg-gray-800 text-gray-500' 
+                            : 'bg-gray-100 text-gray-400'
+                    }`}>
+                      {status === 'completed' ? (
+                        <CheckCircle2 className="w-5 h-5" />
+                      ) : (
+                        <Icon className="w-5 h-5" />
+                      )}
+                    </div>
+                    <span className={`mt-1.5 text-xs font-medium text-center whitespace-nowrap ${
+                      status === 'completed' 
+                        ? 'text-green-500' 
+                        : status === 'current' 
+                          ? darkMode ? 'text-white' : 'text-gray-900'
+                          : darkMode ? 'text-gray-500' : 'text-gray-400'
+                    }`}>
+                      {phase.label}
+                    </span>
+                  </div>
+                  {!isLast && (
+                    <div className={`flex-1 h-0.5 mx-2 rounded-full transition-colors ${
+                      status === 'completed' 
+                        ? 'bg-green-500' 
+                        : darkMode ? 'bg-gray-800' : 'bg-gray-200'
+                    }`} />
+                  )}
+                </div>
+              )
+            })}
+          </div>
+        </motion.div>
+
         {/* Notifications Banner */}
         <AnimatePresence>
           {showNotifications && notifications.length > 0 && (
@@ -1862,88 +1951,6 @@ export default function ProjectStatusNew() {
           </motion.div>
         )}
 
-        {/* Timeline - Collapsible */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.3 }}
-          className="bg-gray-900 rounded-xl border border-gray-800 overflow-hidden"
-        >
-          <button
-            onClick={() => setShowTimeline(!showTimeline)}
-            className="w-full p-4 flex items-center justify-between text-left"
-          >
-            <div className="flex items-center gap-3">
-              <Calendar className={`w-5 h-5 ${phaseColors.text}`} />
-              <div>
-                <p className="font-medium text-white">Project Timeline</p>
-                <p className="text-xs text-gray-500">
-                  Fase {PHASES.findIndex(p => p.key === project.status || (project.status === 'design_approved' && p.key === 'design')) + 1} van {PHASES.length}
-                </p>
-              </div>
-            </div>
-            <ChevronDown className={`w-5 h-5 text-gray-500 transition ${showTimeline ? 'rotate-180' : ''}`} />
-          </button>
-
-          <AnimatePresence>
-            {showTimeline && (
-              <motion.div
-                initial={{ height: 0, opacity: 0 }}
-                animate={{ height: 'auto', opacity: 1 }}
-                exit={{ height: 0, opacity: 0 }}
-                className="overflow-hidden"
-              >
-                <div className="px-4 pb-4 space-y-3">
-                  {PHASES.map((phase) => {
-                    const status = getPhaseStatus(phase.key)
-                    const Icon = phase.icon
-                    
-                    return (
-                      <div
-                        key={phase.key}
-                        className={`flex items-center gap-3 p-3 rounded-lg ${
-                          status === 'current' ? 'bg-gray-800' : ''
-                        } ${status === 'pending' ? 'opacity-50' : ''}`}
-                      >
-                        <div className={`w-8 h-8 rounded-lg flex items-center justify-center ${
-                          status === 'completed' ? 'bg-green-500/20' :
-                          status === 'current' ? phaseColors.bg :
-                          'bg-gray-800'
-                        }`}>
-                          {status === 'completed' ? (
-                            <CheckCircle2 className="w-4 h-4 text-green-400" />
-                          ) : (
-                            <Icon className={`w-4 h-4 ${
-                              status === 'current' ? 'text-white' : 'text-gray-500'
-                            }`} />
-                          )}
-                        </div>
-                        <div className="flex-1">
-                          <p className={`text-sm font-medium ${
-                            status === 'completed' ? 'text-green-400' :
-                            status === 'current' ? 'text-white' :
-                            'text-gray-500'
-                          }`}>
-                            {phase.label}
-                            {status === 'current' && (
-                              <span className="ml-2 text-xs text-gray-400 font-normal">Nu</span>
-                            )}
-                          </p>
-                        </div>
-                        {project.phaseDeadlines?.[phase.key as keyof typeof project.phaseDeadlines] && (
-                          <span className="text-xs text-gray-500">
-                            {new Date(project.phaseDeadlines[phase.key as keyof typeof project.phaseDeadlines]!).toLocaleDateString('nl-NL', { day: 'numeric', month: 'short' })}
-                          </span>
-                        )}
-                      </div>
-                    )
-                  })}
-                </div>
-              </motion.div>
-            )}
-          </AnimatePresence>
-        </motion.div>
-
         {/* Quick Actions */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -1956,26 +1963,34 @@ export default function ProjectStatusNew() {
             href={`https://wa.me/${WHATSAPP_NUMBER}?text=Hoi! Vraag over project ${projectId}`}
             target="_blank"
             rel="noopener noreferrer"
-            className="p-4 rounded-xl bg-gray-900 border border-gray-800 hover:border-green-500/50 transition group"
+            className={`p-4 rounded-xl border transition group ${
+              darkMode 
+                ? 'bg-gray-900 border-gray-800 hover:border-green-500/50' 
+                : 'bg-white border-gray-200 hover:border-green-500/50 shadow-sm'
+            }`}
           >
-            <Phone className="w-5 h-5 text-green-400 mb-2" />
-            <p className="text-sm font-medium text-white">WhatsApp</p>
-            <p className="text-xs text-gray-500">Direct contact</p>
+            <Phone className="w-5 h-5 text-green-500 mb-2" />
+            <p className={`text-sm font-medium ${darkMode ? 'text-white' : 'text-gray-900'}`}>WhatsApp</p>
+            <p className={`text-xs ${darkMode ? 'text-gray-500' : 'text-gray-500'}`}>Direct contact</p>
           </a>
 
           {/* Klantportaal */}
           <button
             onClick={() => setShowAccountModal(true)}
-            className="p-4 rounded-xl bg-gray-900 border border-gray-800 hover:border-primary-500/50 transition group text-left"
+            className={`p-4 rounded-xl border transition group text-left ${
+              darkMode 
+                ? 'bg-gray-900 border-gray-800 hover:border-primary-500/50' 
+                : 'bg-white border-gray-200 hover:border-primary-500/50 shadow-sm'
+            }`}
           >
-            <User className="w-5 h-5 text-primary-400 mb-2" />
-            <p className="text-sm font-medium text-white">Mijn Account</p>
-            <p className="text-xs text-gray-500">Gegevens & pakket</p>
+            <User className="w-5 h-5 text-primary-500 mb-2" />
+            <p className={`text-sm font-medium ${darkMode ? 'text-white' : 'text-gray-900'}`}>Mijn Account</p>
+            <p className={`text-xs ${darkMode ? 'text-gray-500' : 'text-gray-500'}`}>Gegevens & pakket</p>
           </button>
         </motion.div>
 
         {/* Trust badges */}
-        <div className="flex justify-center gap-6 py-4 text-xs text-gray-500">
+        <div className={`flex justify-center gap-6 py-4 text-xs ${darkMode ? 'text-gray-500' : 'text-gray-500'}`}>
           <div className="flex items-center gap-1.5">
             <Shield className="w-4 h-4 text-green-500" />
             Beveiligd
