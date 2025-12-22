@@ -581,10 +581,13 @@ export default function StartProject() {
                     animate={{ opacity: 1, x: 0 }}
                     transition={{ delay: 0.1 + index * 0.05 }}
                     onClick={() => setSelectedService(service.id)}
-                    className="relative flex-shrink-0 w-[300px] snap-center text-left bg-white dark:bg-gray-800 rounded-2xl border-2 border-gray-200 dark:border-gray-700 overflow-hidden shadow-md active:scale-[0.98] transition-transform"
+                    className="relative flex-shrink-0 w-[300px] snap-center text-left rounded-2xl shadow-md active:scale-[0.98] transition-transform overflow-hidden"
                   >
+                    {/* Border overlay */}
+                    <div className="absolute inset-0 rounded-2xl border-2 border-gray-200 dark:border-gray-700 pointer-events-none z-10" />
+                    
                     {/* Colored header with illustration */}
-                    <div className={`bg-gradient-to-br ${service.gradient} p-5 flex flex-col items-center justify-center gap-3 h-[150px] relative overflow-hidden rounded-t-2xl`}>
+                    <div className={`bg-gradient-to-br ${service.gradient} p-5 flex flex-col items-center justify-center gap-3 h-[150px] relative overflow-hidden`}>
                       {/* Background decoration */}
                       <div className="absolute inset-0 opacity-20">
                         <div className="absolute top-2 right-2 w-20 h-20 border border-white/30 rounded-full" />
@@ -597,7 +600,7 @@ export default function StartProject() {
                       </div>
                     </div>
                     
-                    <div className="p-5">
+                    <div className="p-5 bg-white dark:bg-gray-800">
                       {/* Price */}
                       <div className="mb-4 pb-4 border-b border-gray-100 dark:border-gray-700">
                         <span className="text-2xl font-bold text-gray-900 dark:text-white">{service.price}</span>
@@ -650,10 +653,13 @@ export default function StartProject() {
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: 0.1 + index * 0.1 }}
                   onClick={() => setSelectedService(service.id)}
-                  className="relative group text-left bg-white dark:bg-gray-800 rounded-2xl border-2 border-gray-200 dark:border-gray-700 overflow-hidden shadow-md hover:shadow-xl hover:border-gray-300 dark:hover:border-gray-600 transition-all duration-300 hover:-translate-y-1"
+                  className="relative group text-left rounded-2xl shadow-md hover:shadow-xl transition-all duration-300 hover:-translate-y-1 overflow-hidden"
                 >
+                  {/* Border overlay */}
+                  <div className="absolute inset-0 rounded-2xl border-2 border-gray-200 dark:border-gray-700 group-hover:border-gray-300 dark:group-hover:border-gray-600 pointer-events-none z-10 transition-colors" />
+                  
                   {/* Colored header with illustration */}
-                  <div className={`bg-gradient-to-br ${service.gradient} p-5 flex flex-col items-center justify-center gap-3 h-[150px] relative overflow-hidden rounded-t-2xl`}>
+                  <div className={`bg-gradient-to-br ${service.gradient} p-5 flex flex-col items-center justify-center gap-3 h-[150px] relative overflow-hidden`}>
                     {/* Background decoration */}
                     <div className="absolute inset-0 opacity-20">
                       <div className="absolute top-2 right-2 w-20 h-20 border border-white/30 rounded-full" />
@@ -668,7 +674,7 @@ export default function StartProject() {
                     </div>
                   </div>
                   
-                  <div className="p-5">
+                  <div className="p-5 bg-white dark:bg-gray-800">
                     {/* Price */}
                     <div className="mb-4 pb-4 border-b border-gray-100 dark:border-gray-700">
                       <span className="text-2xl font-bold text-gray-900 dark:text-white">{service.price}</span>
