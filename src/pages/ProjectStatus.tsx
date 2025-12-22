@@ -511,10 +511,10 @@ export default function ProjectStatusNew() {
     
     if (hasSession) {
       setIsVerified(true)
-      fetchProject(projectId)
+      // Eerst project laden, loading blijft true totdat fetch klaar is
+      fetchProject(projectId).finally(() => setLoading(false))
       fetchMessages(projectId)
       fetchOnboardingStatus(projectId)
-      setLoading(false)
     } else if (magicSession) {
       verifyMagicSession(projectId, magicSession)
     } else if (pwd) {
