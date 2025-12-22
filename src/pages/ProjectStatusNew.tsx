@@ -105,7 +105,7 @@ const PHASE_ACTIONS: Record<ProjectPhase, {
 const PHASE_INFO: Record<ProjectPhase, { title: string; description: string }> = {
   onboarding: {
     title: 'We verzamelen je informatie',
-    description: 'Vul de onboarding in zodat we je bedrijf goed begrijpen. Zodra je klaar bent, gaan we aan de slag met het design.'
+    description: 'Vul de onboarding in zodat we je bedrijf goed begrijpen. Upload vervolgens media via de projectbestanden knop. Klaar? Klik op de groene knop en we gaan aan de slag met je design.'
   },
   design: {
     title: 'Je design wordt gemaakt',
