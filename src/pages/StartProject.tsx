@@ -640,7 +640,7 @@ export default function StartProject() {
             </div>
           </div>
 
-          {/* Service Cards - Desktop Grid */}
+          {/* Service Cards - Desktop Grid - All cards have consistent border styling */}
           <div className="hidden sm:grid sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
             {services.map((service, index) => {
               return (
@@ -652,7 +652,7 @@ export default function StartProject() {
                   onClick={() => setSelectedService(service.id)}
                   className="relative group text-left rounded-2xl shadow-md hover:shadow-xl transition-all duration-300 hover:-translate-y-1 overflow-hidden border-2 border-gray-200 dark:border-gray-700 hover:border-gray-300 dark:hover:border-gray-600"
                 >
-                  {/* Colored header with illustration */}
+                  {/* Colored header with illustration - gradient is clipped by parent overflow-hidden */}
                   <div className={`bg-gradient-to-br ${service.gradient} p-5 flex flex-col items-center justify-center gap-3 h-[150px] relative overflow-hidden`}>
                     {/* Background decoration */}
                     <div className="absolute inset-0 opacity-20">
