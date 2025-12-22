@@ -369,7 +369,46 @@ export default function ProjectStatusNew() {
       const response = await fetch(`/api/projects?id=${encodeURIComponent(id)}`)
       if (response.ok) {
         const data = await response.json()
-        setProject(data.project || data)
+        const apiProject = data.project || data
+        
+        // Transform API response to frontend Project format
+        const transformedProject: Project = {
+          projectId: apiProject.id || apiProject.projectId || id,
+          businessName: apiProject.customer?.companyName || apiProject.businessName || apiProject.customer?.name || 'Mijn project',
+          contactName: apiProject.customer?.name || apiProject.contactName,
+          contactEmail: apiProject.customer?.email || apiProject.contactEmail,
+          contactPhone: apiProject.customer?.phone || apiProject.contactPhone,
+          serviceType: apiProject.type || apiProject.serviceType || 'website',
+          package: apiProject.packageType || apiProject.package || 'starter',
+          status: apiProject.status || 'onboarding',
+          statusMessage: apiProject.statusMessage || '',
+          estimatedCompletion: apiProject.estimatedCompletion || '',
+          updates: apiProject.updates || [],
+          createdAt: apiProject.createdAt || new Date().toISOString(),
+          designPreviewUrl: apiProject.designPreviewUrl,
+          liveUrl: apiProject.liveUrl,
+          paymentStatus: apiProject.paymentStatus,
+          paymentUrl: apiProject.paymentUrl,
+          paymentCompletedAt: apiProject.paymentCompletedAt,
+          designApprovedAt: apiProject.designApprovedAt,
+          messages: apiProject.messages || [],
+          changeRequests: apiProject.changeRequests || [],
+          feedback: apiProject.feedback || [],
+          tasks: apiProject.tasks || [],
+          invoices: apiProject.invoices || [],
+          revisionsUsed: apiProject.revisionsUsed,
+          revisionsTotal: apiProject.revisionsTotal,
+          googleDriveUrl: apiProject.googleDriveUrl || apiProject.onboardingData?.driveFolderLink,
+          liveDate: apiProject.liveDate,
+          phaseDeadlines: apiProject.phaseDeadlines,
+          referralCode: apiProject.referralCode,
+          referredBy: apiProject.referredBy,
+          referralDiscount: apiProject.referralDiscount,
+          referralsCount: apiProject.referralsCount,
+          referralRewards: apiProject.referralRewards,
+        }
+        
+        setProject(transformedProject)
         setError('')
       } else if (response.status === 404) {
         // Project bestaat niet - toon geen error, gewoon placeholder
