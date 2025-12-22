@@ -73,8 +73,9 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       })
     }
 
-    // Mark as ready for design (but don't change phase yet - developer will do that)
+    // Mark as ready for design AND change status to design phase
     const updates = {
+      status: 'design',
       readyForDesign: true,
       readyForDesignAt: new Date().toISOString()
     }
@@ -85,10 +86,12 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     const activityId = `activity:${projectId}:${Date.now()}`
     await kv.hset(activityId, {
       projectId,
-      type: 'ready_for_design',
-      message: 'Klant heeft bevestigd klaar te zijn voor design',
+      type: 'phase_change',
+      message: 'Project is gestart met de design fase',
       timestamp: new Date().toISOString(),
-      from: 'client'
+      from: 'system',
+      oldStatus: 'onboarding',
+      newStatus: 'design'
     })
 
     // Add to project's activity list
@@ -120,7 +123,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
           businessName: businessName || 'Nieuw project',
           customerName: customerName,
           customerEmail: customerEmail,
-          message: `${customerName} heeft aangegeven klaar te zijn voor de design fase. Alle bestanden zijn geüpload.`
+          message: `${customerName} heeft de design fase gestart. Het project staat nu op 'Design'. Alle bestanden zijn geüpload naar Google Drive.`
         })
         console.log('Developer notification email sent')
       } catch (emailError) {
@@ -130,7 +133,8 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
     return res.status(200).json({ 
       success: true, 
-      message: 'Project marked as ready for design',
+      message: 'Project moved to design phase',
+      status: 'design',
       readyForDesignAt: updates.readyForDesignAt
     })
 
