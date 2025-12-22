@@ -9,7 +9,6 @@ import {
   CheckCircle,
   ArrowRight,
   Sparkles,
-  Calendar,
   Zap,
   Star,
   Users,
@@ -84,8 +83,8 @@ const contactMethods = [
     icon: Mail,
     title: 'E-mail',
     subtitle: 'Voor uitgebreide vragen',
-    value: 'hallo@webstability.nl',
-    href: 'mailto:hallo@webstability.nl',
+    value: 'info@webstability.nl',
+    href: 'mailto:info@webstability.nl',
     color: 'blue',
   },
   {
@@ -95,14 +94,6 @@ const contactMethods = [
     value: '06 44712573',
     href: 'tel:+31644712573',
     color: 'purple',
-  },
-  {
-    icon: Calendar,
-    title: 'Videocall',
-    subtitle: 'Gratis kennismaking',
-    value: 'Plan een gesprek',
-    href: 'https://calendly.com/webstability',
-    color: 'amber',
   },
 ]
 
@@ -313,7 +304,7 @@ export default function Contact() {
               </motion.p>
             </div>
 
-            <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-6">
               {contactMethods.map((method, index) => {
                 const colors = getColorClasses(method.color)
                 return (
@@ -326,23 +317,30 @@ export default function Contact() {
                     whileInView={{ opacity: 1, y: 0 }}
                     viewport={{ once: true }}
                     transition={{ delay: index * 0.1 }}
-                    className={`group relative p-6 bg-white dark:bg-gray-800 border-2 ${colors.border} rounded-2xl ${colors.hover} transition-all hover:shadow-xl dark:hover:shadow-gray-900/50 hover:-translate-y-1`}
+                    className={`group relative flex sm:flex-col items-center sm:items-start gap-4 sm:gap-0 p-4 sm:p-6 bg-white dark:bg-gray-800 border-2 ${colors.border} rounded-xl sm:rounded-2xl ${colors.hover} transition-all hover:shadow-xl dark:hover:shadow-gray-900/50 hover:-translate-y-1`}
                   >
                     {method.badge && (
-                      <div className="absolute -top-3 left-1/2 -translate-x-1/2">
-                        <span className={`px-3 py-1 ${colors.bg} text-white text-xs font-semibold rounded-full shadow-lg`}>
+                      <div className="absolute -top-2.5 left-4 sm:left-1/2 sm:-translate-x-1/2">
+                        <span className={`px-2.5 py-0.5 sm:px-3 sm:py-1 ${colors.bg} text-white text-[10px] sm:text-xs font-semibold rounded-full shadow-lg`}>
                           {method.badge}
                         </span>
                       </div>
                     )}
                     
-                    <div className={`w-14 h-14 ${colors.bgLight} rounded-xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform`}>
-                      <method.icon className={`w-7 h-7 ${colors.text}`} />
+                    <div className={`w-12 h-12 sm:w-14 sm:h-14 ${colors.bgLight} rounded-xl flex items-center justify-center flex-shrink-0 sm:mb-4 group-hover:scale-110 transition-transform`}>
+                      <method.icon className={`w-6 h-6 sm:w-7 sm:h-7 ${colors.text}`} />
                     </div>
                     
-                    <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-1">{method.title}</h3>
-                    <p className="text-sm text-gray-500 dark:text-gray-400 mb-3">{method.subtitle}</p>
-                    <p className={`font-semibold ${colors.text}`}>{method.value}</p>
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center gap-2 sm:block">
+                        <h3 className="text-base sm:text-lg font-bold text-gray-900 dark:text-white sm:mb-1">{method.title}</h3>
+                        <span className="text-xs text-gray-400 dark:text-gray-500 sm:hidden">•</span>
+                        <p className="text-xs sm:text-sm text-gray-500 dark:text-gray-400 sm:mb-3">{method.subtitle}</p>
+                      </div>
+                      <p className={`font-semibold text-sm sm:text-base ${colors.text} truncate`}>{method.value}</p>
+                    </div>
+
+                    <ArrowRight className={`w-5 h-5 ${colors.text} opacity-50 group-hover:opacity-100 group-hover:translate-x-1 transition-all flex-shrink-0 sm:hidden`} />
                   </motion.a>
                 )
               })}

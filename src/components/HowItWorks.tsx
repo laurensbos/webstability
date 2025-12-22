@@ -5,29 +5,29 @@ const steps = [
 	{
 		icon: MessageSquare,
 		step: '01',
-		title: 'Klik op "Start nu"',
+		title: 'Vul het formulier in',
 		description:
-			'Deel je gegevens en wensen via ons simpele formulier. Binnen 24 uur nemen we contact met je op.',
+			'Deel je wensen via ons simpele formulier. Je krijgt direct toegang tot je eigen klantportaal.',
 	},
 	{
 		icon: Palette,
 		step: '02',
 		title: 'Design binnen 5 dagen',
 		description:
-			'Je ontvangt een volledig uitgewerkt ontwerp. Niet tevreden? We passen aan tot het perfect is.',
+			'Je ontvangt een volledig uitgewerkt ontwerp in je portal. Niet tevreden? We passen aan tot het perfect is.',
 	},
 	{
 		icon: Rocket,
 		step: '03',
-		title: 'Live binnen 7 dagen',
-		description: 'Na jouw goedkeuring gaat de website direct online. Inclusief hosting, SSL en domein.',
+		title: 'Goedkeuren & betalen',
+		description: 'Blij met het design? Na betaling gaat je website direct live. Inclusief hosting, SSL en domein.',
 	},
 	{
 		icon: HeartHandshake,
 		step: '04',
 		title: 'Doorlopende support',
 		description:
-			'Wij blijven je partner. Aanpassingen, vragen of nieuwe ideeën? Wij staan altijd voor je klaar.',
+			'Wij blijven je partner. Aanpassingen, vragen of nieuwe ideeën? Regel het via je portal of WhatsApp.',
 	},
 ]
 

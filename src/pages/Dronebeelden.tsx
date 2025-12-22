@@ -12,7 +12,8 @@ import {
   Award,
   FileCheck,
   BadgeCheck,
-  Sparkles
+  Sparkles,
+  Zap
 } from 'lucide-react'
 import { Link } from 'react-router-dom'
 import Header from '../components/Header'
@@ -104,6 +105,38 @@ const included = [
   'Ruwe bestanden inbegrepen',
   'Commercieel gebruiksrecht',
   'Reiskosten heel Nederland',
+]
+
+// Drone packages
+const dronePackages = [
+  {
+    id: 'starter',
+    name: 'Basis',
+    price: 349,
+    priceNote: 'eenmalig incl. btw',
+    description: 'Perfect voor kleine projecten',
+    features: ['10 bewerkte foto\'s', '1 locatie', 'Digitale levering', 'Binnen 5 werkdagen'],
+    icon: Camera,
+  },
+  {
+    id: 'professional',
+    name: 'Professioneel',
+    price: 549,
+    priceNote: 'eenmalig incl. btw',
+    popular: true,
+    description: 'Foto\'s + video voor maximale impact',
+    features: ['25 bewerkte foto\'s', '1-2 locaties', '1 min video', 'Binnen 3 werkdagen'],
+    icon: Video,
+  },
+  {
+    id: 'business',
+    name: 'Premium',
+    price: 849,
+    priceNote: 'eenmalig incl. btw',
+    description: 'Complete coverage voor grote projecten',
+    features: ['50+ foto\'s', 'Meerdere locaties', '3 min video', 'Spoedlevering mogelijk'],
+    icon: Zap,
+  },
 ]
 
 const useCases = [
@@ -214,11 +247,10 @@ export default function Luchtvideografie() {
                     <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
                   </Link>
                   <a
-                    href="#portfolio"
+                    href="#pakketten"
                     className="inline-flex items-center justify-center gap-2 px-8 py-4 bg-white/10 backdrop-blur-sm hover:bg-white/20 text-white font-semibold rounded-xl border border-white/20 transition-all"
                   >
-                    <Play className="w-5 h-5" />
-                    Bekijk voorbeelden
+                    Bekijk pakketten
                   </a>
                 </div>
               </motion.div>
@@ -296,6 +328,170 @@ export default function Luchtvideografie() {
                     <h3 className="text-lg font-bold text-gray-900 dark:text-white">{feature.title}</h3>
                   </div>
                   <p className="text-gray-600 dark:text-gray-300 leading-relaxed">{feature.description}</p>
+                </motion.div>
+              ))}
+            </div>
+          </div>
+        </section>
+
+        {/* Packages Section */}
+        <section id="pakketten" className="py-20 bg-gradient-to-b from-gray-50 via-orange-50/20 to-gray-50 dark:from-gray-900 dark:via-orange-900/10 dark:to-gray-900 relative overflow-hidden">
+          <div className="absolute inset-0 overflow-hidden pointer-events-none">
+            <div className="absolute -top-40 -left-40 w-80 h-80 bg-gradient-to-br from-orange-100/40 to-amber-100/20 dark:from-orange-900/30 dark:to-amber-900/20 rounded-full blur-3xl" />
+            <div className="absolute -bottom-40 -right-40 w-96 h-96 bg-gradient-to-tl from-amber-100/30 to-orange-100/20 dark:from-amber-900/20 dark:to-orange-900/10 rounded-full blur-3xl" />
+          </div>
+
+          <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+            <div className="text-center mb-12">
+              <motion.span
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                className="inline-block text-orange-600 dark:text-orange-400 font-semibold text-sm tracking-wider uppercase mb-3"
+              >
+                Pakketten
+              </motion.span>
+              <motion.h2
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                className="text-3xl sm:text-4xl font-bold text-gray-900 dark:text-white mb-4"
+              >
+                Kies jouw{' '}
+                <span className="bg-gradient-to-r from-orange-600 to-amber-600 bg-clip-text text-transparent">luchtfoto pakket</span>
+              </motion.h2>
+              <motion.p
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ delay: 0.1 }}
+                className="text-gray-600 dark:text-gray-300 text-lg max-w-2xl mx-auto"
+              >
+                Eenmalige investering inclusief voorbereiding, shoot en nabewerking.
+              </motion.p>
+            </div>
+
+            {/* Mobile: swipe to compare */}
+            <div className="sm:hidden">
+              <div className="flex items-center justify-center gap-2 text-xs text-gray-400 dark:text-gray-500 mb-3">
+                <span>Swipe om te vergelijken</span>
+                <ArrowRight className="w-3 h-3" />
+              </div>
+
+              <div className="flex gap-4 overflow-x-auto overflow-y-visible pb-4 -mx-4 px-4 snap-x snap-mandatory scrollbar-hide" style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
+                {dronePackages.map((pkg, index) => (
+                  <motion.div
+                    key={pkg.id}
+                    initial={{ opacity: 0, y: 20 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    viewport={{ once: true }}
+                    transition={{ delay: index * 0.05 }}
+                    className={`relative flex-shrink-0 w-[300px] p-6 bg-white dark:bg-gray-800 rounded-2xl border ${
+                      pkg.popular ? 'border-orange-300 dark:border-orange-600 shadow-xl shadow-orange-500/10' : 'border-gray-200 dark:border-gray-700'
+                    } hover:shadow-xl hover:-translate-y-1 transition-all snap-center`}
+                  >
+                    {pkg.popular && (
+                      <div className="absolute -top-3 left-1/2 -translate-x-1/2">
+                        <span className="bg-gradient-to-r from-orange-500 to-amber-500 text-white text-xs font-semibold px-3 py-1 rounded-full">
+                          Meest gekozen
+                        </span>
+                      </div>
+                    )}
+
+                    <div className="text-center mb-6">
+                      <div className="w-12 h-12 bg-gradient-to-br from-orange-500 to-amber-600 rounded-xl flex items-center justify-center mx-auto mb-4 shadow-lg shadow-orange-500/20">
+                        <pkg.icon className="w-6 h-6 text-white" />
+                      </div>
+                      <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-1">{pkg.name}</h3>
+                      <p className="text-gray-500 dark:text-gray-400 text-sm">{pkg.description}</p>
+                    </div>
+
+                    <div className="text-center mb-6">
+                      <div className="flex items-baseline justify-center gap-1">
+                        <span className="text-4xl font-bold text-gray-900 dark:text-white">€{pkg.price}</span>
+                      </div>
+                      <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">{pkg.priceNote}</p>
+                    </div>
+
+                    <ul className="space-y-3 mb-6">
+                      {pkg.features.map((feature, i) => (
+                        <li key={i} className="flex items-center gap-2">
+                          <CheckCircle className="w-5 h-5 text-orange-500 flex-shrink-0" />
+                          <span className="text-gray-700 dark:text-gray-300 text-sm">{feature}</span>
+                        </li>
+                      ))}
+                    </ul>
+
+                    <Link to={`/start?dienst=drone&pakket=${pkg.id}`} className="block w-full text-center py-3 rounded-xl font-semibold transition-all bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 text-gray-900 dark:text-white">
+                      Kies {pkg.name}
+                    </Link>
+                  </motion.div>
+                ))}
+              </div>
+
+              {/* Dot indicators */}
+              <div className="flex justify-center gap-2 mt-3">
+                {dronePackages.map((_, idx) => (
+                  <div key={idx} className={`h-2 rounded-full transition-all ${idx === 1 ? 'bg-orange-500 w-6' : 'bg-gray-300 dark:bg-gray-600 w-2'}`} />
+                ))}
+              </div>
+            </div>
+
+            {/* Desktop: grid - 3 columns */}
+            <div className="hidden sm:grid sm:grid-cols-3 gap-6">
+              {dronePackages.map((pkg, index) => (
+                <motion.div
+                  key={pkg.id}
+                  initial={{ opacity: 0, y: 20 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ delay: index * 0.1 }}
+                  className={`relative p-6 bg-white dark:bg-gray-800 rounded-2xl border ${
+                    pkg.popular ? 'border-orange-300 dark:border-orange-600 shadow-xl shadow-orange-500/10' : 'border-gray-200 dark:border-gray-700'
+                  } hover:shadow-xl hover:-translate-y-1 transition-all`}
+                >
+                  {pkg.popular && (
+                    <div className="absolute -top-3 left-1/2 -translate-x-1/2">
+                      <span className="bg-gradient-to-r from-orange-500 to-amber-500 text-white text-xs font-semibold px-3 py-1 rounded-full">
+                        Meest gekozen
+                      </span>
+                    </div>
+                  )}
+
+                  <div className="text-center mb-6">
+                    <div className="w-12 h-12 bg-gradient-to-br from-orange-500 to-amber-600 rounded-xl flex items-center justify-center mx-auto mb-4 shadow-lg shadow-orange-500/20">
+                      <pkg.icon className="w-6 h-6 text-white" />
+                    </div>
+                    <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-1">{pkg.name}</h3>
+                    <p className="text-gray-500 dark:text-gray-400 text-sm">{pkg.description}</p>
+                  </div>
+
+                  <div className="text-center mb-6">
+                    <div className="flex items-baseline justify-center gap-1">
+                      <span className="text-4xl font-bold text-gray-900 dark:text-white">€{pkg.price}</span>
+                    </div>
+                    <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">{pkg.priceNote}</p>
+                  </div>
+
+                  <ul className="space-y-3 mb-6">
+                    {pkg.features.map((feature, i) => (
+                      <li key={i} className="flex items-center gap-2">
+                        <CheckCircle className="w-5 h-5 text-orange-500 flex-shrink-0" />
+                        <span className="text-gray-700 dark:text-gray-300 text-sm">{feature}</span>
+                      </li>
+                    ))}
+                  </ul>
+
+                  <Link
+                    to={`/start?dienst=drone&pakket=${pkg.id}`}
+                    className={`block w-full text-center py-3 rounded-xl font-semibold transition-all ${
+                      pkg.popular
+                        ? 'bg-gradient-to-r from-orange-500 to-amber-600 hover:from-orange-600 hover:to-amber-700 text-white shadow-lg shadow-orange-500/25'
+                        : 'bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 text-gray-900 dark:text-white'
+                    }`}
+                  >
+                    Kies {pkg.name}
+                  </Link>
                 </motion.div>
               ))}
             </div>

@@ -34,8 +34,8 @@ export default function Pricing() {
 		},
 		{
 			icon: CreditCard,
-			title: 'Geen opstartkosten',
-			description: 'Je betaalt pas na goedkeuring van het design. Geen cent ervoor.'
+			title: 'Betaal na goedkeuring',
+			description: 'Pas na goedkeuring van het design betaal je. Geen cent ervoor.'
 		},
 		{
 			icon: Shield,

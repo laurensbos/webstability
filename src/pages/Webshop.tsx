@@ -434,7 +434,7 @@ export default function Webshop() {
             <div className="absolute -bottom-40 -right-40 w-96 h-96 bg-gradient-to-tl from-green-100/30 to-emerald-100/20 dark:from-green-900/20 dark:to-emerald-900/10 rounded-full blur-3xl" />
           </div>
 
-          <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+          <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
             <div className="text-center mb-12">
               <motion.span
                 initial={{ opacity: 0, y: 20 }}
@@ -524,7 +524,7 @@ export default function Webshop() {
             </div>
 
             {/* Desktop: grid */}
-            <div className="hidden md:grid md:grid-cols-2 gap-8 max-w-4xl mx-auto">
+            <div className="hidden sm:grid sm:grid-cols-3 gap-6">
               {packages.map((pkg, index) => (
                 <motion.div
                   key={pkg.id}

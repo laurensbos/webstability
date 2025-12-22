@@ -382,7 +382,7 @@ export default function Header({ urgencyBannerVisible = false }: HeaderProps) {
             </div>
 
             {/* Mobile header icons (left of hamburger) */}
-            <div className="flex lg:hidden items-center gap-2">
+            <div className="flex lg:hidden items-center gap-1.5">
               {/* WhatsApp - Mobile header */}
               <a
                 href="https://wa.me/31644712573?text=Hoi!%20Ik%20heb%20een%20vraag%20over%20jullie%20diensten."
@@ -393,6 +393,15 @@ export default function Header({ urgencyBannerVisible = false }: HeaderProps) {
               >
                 <WhatsAppIcon className="w-5 h-5" />
               </a>
+
+              {/* Mijn project - Mobile header */}
+              <button
+                onClick={() => setShowProjectModal(true)}
+                className="p-2 text-gray-600 hover:text-primary-600 dark:text-gray-400 dark:hover:text-primary-400 bg-gray-100 dark:bg-gray-800 hover:bg-primary-50 dark:hover:bg-primary-900/30 rounded-lg transition-all"
+                aria-label="Mijn project"
+              >
+                <ClipboardList className="w-5 h-5" />
+              </button>
 
               {/* Dark mode toggle - Mobile header */}
               <button
