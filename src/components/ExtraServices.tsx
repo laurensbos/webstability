@@ -14,7 +14,6 @@ const extraServices = [
     title: 'Logo laten maken',
     description: 'Professioneel logo ontwerp inclusief 3 concepten en 2 revisierondes.',
     price: '169',
-    color: 'purple',
     features: ['3 unieke concepten', '2 revisierondes', 'Alle bestandsformaten', 'Binnen 2 weken klaar'],
     link: '/logo'
   },
@@ -24,7 +23,6 @@ const extraServices = [
     title: 'Luchtvideografie',
     description: 'Spectaculaire luchtopnames van je bedrijf door een gecertificeerde piloot.',
     price: '349',
-    color: 'sky',
     features: ['4K video opnames', '10-15 bewerkte foto\'s', 'Gecertificeerd piloot', 'Heel Nederland'],
     link: '/luchtvideografie'
   }
@@ -32,227 +30,139 @@ const extraServices = [
 
 export default function ExtraServices() {
   return (
-    <section className="py-16 bg-gray-50 dark:bg-gray-900">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="text-center mb-12">
-          <motion.p
-            initial={{ opacity: 0, y: 10 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            className="text-primary-600 dark:text-primary-400 font-semibold mb-2"
-          >
-              Aanvullende diensten
-            </motion.p>
-            <motion.h2
-              initial={{ opacity: 0, y: 10 }}
+    <section className="py-16 sm:py-20 bg-gray-50 dark:bg-gray-900/50">
+      <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
+        {/* Section divider with label */}
+        <div className="flex items-center gap-4 mb-10">
+          <div className="h-px flex-1 bg-gradient-to-r from-transparent via-gray-300 dark:via-gray-700 to-transparent" />
+          <span className="text-sm font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider whitespace-nowrap">
+            Eenmalige diensten
+          </span>
+          <div className="h-px flex-1 bg-gradient-to-r from-transparent via-gray-300 dark:via-gray-700 to-transparent" />
+        </div>
+
+        {/* Mobile: Compact horizontal cards */}
+        <div className="sm:hidden flex gap-4 overflow-x-auto pb-4 -mx-4 px-4 snap-x snap-mandatory scrollbar-hide" style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
+          {extraServices.map((service, index) => (
+            <motion.div
+              key={service.id}
+              initial={{ opacity: 0, x: 20 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              viewport={{ once: true }}
+              transition={{ delay: index * 0.1 }}
+              className="flex-shrink-0 w-[280px] snap-center bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 overflow-hidden"
+            >
+              {/* Header */}
+              <div className="p-4 border-b border-gray-100 dark:border-gray-700">
+                <div className="flex items-center justify-between mb-2">
+                  <div className="w-10 h-10 bg-primary-100 dark:bg-primary-900/30 rounded-xl flex items-center justify-center">
+                    <service.icon className="w-5 h-5 text-primary-600 dark:text-primary-400" />
+                  </div>
+                  <div className="text-right">
+                    <span className="text-2xl font-bold text-gray-900 dark:text-white">€{service.price}</span>
+                    <span className="text-gray-500 dark:text-gray-400 text-xs block">eenmalig incl. btw</span>
+                  </div>
+                </div>
+                <h3 className="font-bold text-lg text-gray-900 dark:text-white">{service.title}</h3>
+              </div>
+
+              {/* Content */}
+              <div className="p-4">
+                <p className="text-gray-600 dark:text-gray-400 text-sm mb-3 line-clamp-2">{service.description}</p>
+
+                {/* Compact features */}
+                <div className="space-y-1.5 mb-4">
+                  {service.features.slice(0, 3).map((feature, i) => (
+                    <div key={i} className="flex items-center gap-2 text-xs text-gray-600 dark:text-gray-400">
+                      <CheckCircle className="w-3.5 h-3.5 text-primary-500 flex-shrink-0" />
+                      <span>{feature}</span>
+                    </div>
+                  ))}
+                </div>
+
+                {/* Buttons */}
+                <div className="flex gap-2">
+                  <Link
+                    to={`/start?dienst=${service.id}`}
+                    className="flex-1 py-2.5 bg-primary-500 hover:bg-primary-600 text-white font-semibold rounded-lg text-sm flex items-center justify-center gap-1.5 transition-colors"
+                  >
+                    Aanvragen
+                    <ArrowRight className="w-3.5 h-3.5" />
+                  </Link>
+                  <Link
+                    to={service.link}
+                    className="px-4 py-2.5 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600 font-medium rounded-lg text-sm transition-colors"
+                  >
+                    Info
+                  </Link>
+                </div>
+              </div>
+            </motion.div>
+          ))}
+        </div>
+
+        {/* Desktop: Clean cards */}
+        <div className="hidden sm:grid sm:grid-cols-2 gap-6">
+          {extraServices.map((service, index) => (
+            <motion.div
+              key={service.id}
+              initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
-              transition={{ delay: 0.1 }}
-              className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white"
+              transition={{ delay: index * 0.1 }}
+              className="group bg-white dark:bg-gray-800 rounded-2xl border border-gray-200 dark:border-gray-700 hover:border-primary-300 dark:hover:border-primary-700 overflow-hidden transition-all duration-300 hover:shadow-lg hover:-translate-y-1"
             >
-              Alles voor een sterke online aanwezigheid
-            </motion.h2>
-          </div>
-
-          {/* Mobile: Compact horizontal cards */}
-          <div className="md:hidden flex gap-4 overflow-x-auto pb-4 -mx-4 px-4 snap-x snap-mandatory scrollbar-hide" style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
-            {extraServices.map((service, index) => {
-              const colorClasses = service.color === 'purple'
-                ? { bg: 'bg-purple-500', gradient: 'from-purple-500 to-purple-600', light: 'bg-purple-50', text: 'text-purple-600', border: 'border-purple-200/50' }
-                : { bg: 'bg-sky-500', gradient: 'from-sky-500 to-sky-600', light: 'bg-sky-50', text: 'text-sky-600', border: 'border-sky-200/50' }
-
-              return (
-                <motion.div
-                  key={service.id}
-                  initial={{ opacity: 0, x: 20 }}
-                  whileInView={{ opacity: 1, x: 0 }}
-                  viewport={{ once: true }}
-                  transition={{ delay: index * 0.1 }}
-                  className={`flex-shrink-0 w-[280px] snap-center bg-white dark:bg-gray-800 rounded-xl border ${colorClasses.border} dark:border-gray-700 overflow-hidden`}
-                >
-                  {/* Compact header with icon and price */}
-                  <div className={`p-4 bg-gradient-to-r ${colorClasses.gradient} text-white`}>
-                    <div className="flex items-center justify-between mb-2">
-                      <div className="w-10 h-10 bg-white/20 rounded-xl flex items-center justify-center">
-                        <service.icon className="w-5 h-5 text-white" />
-                      </div>
-                      <div className="text-right">
-                        <span className="text-2xl font-bold">€{service.price}</span>
-                        <span className="text-white/70 text-xs block">incl. btw</span>
-                      </div>
+              <div className="p-6">
+                {/* Header row */}
+                <div className="flex items-start justify-between gap-4 mb-4">
+                  <div className="flex items-center gap-3">
+                    <div className="w-12 h-12 bg-primary-100 dark:bg-primary-900/30 rounded-xl flex items-center justify-center">
+                      <service.icon className="w-6 h-6 text-primary-600 dark:text-primary-400" />
                     </div>
-                    <h3 className="font-bold text-lg">{service.title}</h3>
-                  </div>
-
-                  {/* Content */}
-                  <div className="p-4">
-                    <p className="text-gray-600 dark:text-gray-300 text-sm mb-3 line-clamp-2">{service.description}</p>
-
-                    {/* Compact features - 2x2 grid */}
-                    <div className="grid grid-cols-2 gap-2 mb-4">
-                      {service.features.slice(0, 4).map((feature, i) => (
-                        <div key={i} className="flex items-center gap-1.5 text-xs text-gray-600 dark:text-gray-400">
-                          <CheckCircle className={`w-3.5 h-3.5 ${colorClasses.text} flex-shrink-0`} />
-                          <span className="truncate">{feature}</span>
-                        </div>
-                      ))}
-                    </div>
-
-                    {/* Buttons */}
-                    <div className="flex gap-2">
-                      <Link
-                        to={`/start?dienst=${service.id}`}
-                        className={`flex-1 py-2.5 bg-gradient-to-r ${colorClasses.gradient} text-white font-semibold rounded-lg text-sm flex items-center justify-center gap-1.5`}
-                      >
-                        Direct aanvragen
-                        <ArrowRight className="w-3.5 h-3.5" />
-                      </Link>
-                      <Link
-                        to={service.link}
-                        className={`px-4 py-2.5 ${colorClasses.light} dark:bg-gray-700 ${colorClasses.text} dark:text-gray-300 font-semibold rounded-lg text-sm`}
-                      >
-                        Meer info
-                      </Link>
+                    <div>
+                      <h3 className="text-lg font-bold text-gray-900 dark:text-white">{service.title}</h3>
+                      <p className="text-sm text-gray-500 dark:text-gray-400">Eenmalig</p>
                     </div>
                   </div>
-                </motion.div>
-              )
-            })}
-          </div>
-
-          {/* Desktop: Original large cards */}
-          <div className="hidden md:grid md:grid-cols-2 gap-8 max-w-5xl mx-auto">
-            {extraServices.map((service, index) => {
-              const colorClasses = service.color === 'purple'
-                ? { bg: 'bg-purple-500', gradient: 'from-purple-500 to-purple-600', light: 'bg-purple-50', text: 'text-purple-600', border: 'border-purple-200/50', hover: 'hover:border-purple-300', shadow: 'hover:shadow-purple-100' }
-                : { bg: 'bg-sky-500', gradient: 'from-sky-500 to-sky-600', light: 'bg-sky-50', text: 'text-sky-600', border: 'border-sky-200/50', hover: 'hover:border-sky-300', shadow: 'hover:shadow-sky-100' }
-
-              return (
-                <motion.div
-                  key={service.id}
-                  initial={{ opacity: 0, y: 20 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true }}
-                  transition={{ delay: index * 0.1 }}
-                  className={`group bg-white dark:bg-gray-800 rounded-2xl border ${colorClasses.border} dark:border-gray-700 ${colorClasses.hover} overflow-hidden transition-all duration-300 hover:shadow-xl ${colorClasses.shadow} dark:hover:shadow-gray-900/50`}
-                >
-                  {/* Visual header - different style per service */}
-                  <div className="relative h-44 overflow-hidden">
-                    {service.id === 'drone' ? (
-                      <div className="absolute inset-0 bg-gradient-to-br from-sky-100 via-sky-50 to-cyan-50 dark:from-sky-900/30 dark:via-sky-900/20 dark:to-cyan-900/20 flex items-center justify-center">
-                        {/* Animated clouds */}
-                        <motion.div 
-                          className="absolute top-6 left-8 w-16 h-6 bg-white/60 dark:bg-gray-600/40 rounded-full blur-sm"
-                          animate={{ x: [0, 20, 0] }}
-                          transition={{ duration: 8, repeat: Infinity, ease: 'easeInOut' }}
-                        />
-                        <motion.div 
-                          className="absolute top-10 right-12 w-12 h-4 bg-white/50 dark:bg-gray-600/30 rounded-full blur-sm"
-                          animate={{ x: [0, -15, 0] }}
-                          transition={{ duration: 6, repeat: Infinity, ease: 'easeInOut' }}
-                        />
-                        <motion.div 
-                          className="absolute bottom-16 left-16 w-10 h-3 bg-white/40 dark:bg-gray-600/20 rounded-full blur-sm"
-                          animate={{ x: [0, 10, 0] }}
-                          transition={{ duration: 7, repeat: Infinity, ease: 'easeInOut' }}
-                        />
-                        
-                        {/* Drone with animation */}
-                        <div className="relative">
-                          {/* Drone shadow on ground */}
-                          <motion.div 
-                            className="absolute top-20 left-1/2 -translate-x-1/2 w-12 h-3 bg-sky-200/50 dark:bg-sky-700/30 rounded-full blur-md"
-                            animate={{ scale: [1, 0.9, 1], opacity: [0.5, 0.3, 0.5] }}
-                            transition={{ duration: 2, repeat: Infinity, ease: 'easeInOut' }}
-                          />
-                          
-                          {/* Floating abstract shapes around drone */}
-                          <motion.div 
-                            className="absolute -top-10 -left-10 w-16 h-16 bg-gradient-to-br from-sky-300/40 to-cyan-300/40 dark:from-sky-500/30 dark:to-cyan-500/30 rounded-2xl rotate-12"
-                            animate={{ rotate: [12, 18, 12], y: [0, -5, 0] }}
-                            transition={{ duration: 4, repeat: Infinity, ease: 'easeInOut' }}
-                          />
-                          <motion.div 
-                            className="absolute -bottom-8 -right-8 w-14 h-14 bg-gradient-to-br from-cyan-300/40 to-sky-300/40 dark:from-cyan-500/30 dark:to-sky-500/30 rounded-full"
-                            animate={{ scale: [1, 1.15, 1] }}
-                            transition={{ duration: 3, repeat: Infinity, ease: 'easeInOut' }}
-                          />
-                          
-                          {/* Main drone body - static */}
-                          <div className="relative w-20 h-20 bg-gradient-to-br from-sky-500 to-sky-600 rounded-2xl flex items-center justify-center shadow-lg shadow-sky-200 dark:shadow-sky-900/50">
-                            <Plane className="w-10 h-10 text-white" />
-                          </div>
-                        </div>
-                      </div>
-                    ) : (
-                      <div className="absolute inset-0 bg-gradient-to-br from-purple-100 via-purple-50 to-pink-50 dark:from-purple-900/30 dark:via-purple-900/20 dark:to-pink-900/20 flex items-center justify-center">
-                        {/* Abstract logo design elements */}
-                        <div className="relative">
-                          <motion.div 
-                            className="absolute -top-8 -left-8 w-24 h-24 bg-gradient-to-br from-purple-300/50 to-pink-300/50 dark:from-purple-500/30 dark:to-pink-500/30 rounded-2xl rotate-12"
-                            animate={{ rotate: [12, 18, 12] }}
-                            transition={{ duration: 4, repeat: Infinity, ease: 'easeInOut' }}
-                          />
-                          <motion.div 
-                            className="absolute -bottom-6 -right-6 w-20 h-20 bg-gradient-to-br from-pink-300/50 to-purple-300/50 dark:from-pink-500/30 dark:to-purple-500/30 rounded-full"
-                            animate={{ scale: [1, 1.1, 1] }}
-                            transition={{ duration: 3, repeat: Infinity, ease: 'easeInOut' }}
-                          />
-                          <div className="relative w-20 h-20 bg-gradient-to-br from-purple-500 to-purple-600 rounded-2xl flex items-center justify-center shadow-lg shadow-purple-200 dark:shadow-purple-900/50">
-                            <Palette className="w-10 h-10 text-white" />
-                          </div>
-                        </div>
-                      </div>
-                    )}
-                    {/* Gradient overlay for smooth transition */}
-                    <div className="absolute inset-x-0 bottom-0 h-16 bg-gradient-to-t from-white dark:from-gray-800 to-transparent" />
+                  <div className="text-right">
+                    <span className="text-2xl font-bold text-gray-900 dark:text-white">€{service.price}</span>
+                    <span className="text-gray-400 dark:text-gray-500 text-xs block">incl. btw</span>
                   </div>
+                </div>
 
-                  <div className="p-6 pt-2">
-                    <div className="flex items-start justify-between gap-4 mb-3">
-                      <div>
-                        <h3 className="text-xl font-bold text-gray-900 dark:text-white">{service.title}</h3>
-                        <p className={`text-lg font-bold ${colorClasses.text}`}>
-                          €{service.price} <span className="text-gray-400 dark:text-gray-500 font-normal text-sm">incl. btw</span>
-                        </p>
-                      </div>
-                      <div className={`p-2.5 ${colorClasses.light} dark:bg-opacity-20 rounded-xl`}>
-                        <service.icon className={`w-5 h-5 ${colorClasses.text}`} />
-                      </div>
+                <p className="text-gray-600 dark:text-gray-400 mb-5">{service.description}</p>
+
+                {/* Features grid */}
+                <div className="grid grid-cols-2 gap-x-4 gap-y-2 mb-6">
+                  {service.features.map((feature, i) => (
+                    <div key={i} className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-400">
+                      <CheckCircle className="w-4 h-4 text-primary-500 flex-shrink-0" />
+                      <span>{feature}</span>
                     </div>
+                  ))}
+                </div>
 
-                    <p className="text-gray-600 dark:text-gray-300 mb-5">{service.description}</p>
-
-                    <div className="grid grid-cols-2 gap-x-4 gap-y-2 mb-6">
-                      {service.features.map((feature, i) => (
-                        <div key={i} className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-400">
-                          <CheckCircle className={`w-4 h-4 ${colorClasses.text} flex-shrink-0`} />
-                          <span>{feature}</span>
-                        </div>
-                      ))}
-                    </div>
-
-                    <div className="flex gap-3">
-                      <Link
-                        to={`/start?dienst=${service.id}`}
-                        className={`flex-1 py-3 bg-gradient-to-r ${colorClasses.gradient} text-white font-semibold rounded-xl transition-all hover:shadow-lg hover:-translate-y-0.5 flex items-center justify-center gap-2`}
-                      >
-                        Direct aanvragen
-                        <ArrowRight className="w-4 h-4" />
-                      </Link>
-                      <Link
-                        to={service.link}
-                        className={`px-5 py-3 ${colorClasses.light} dark:bg-gray-700 ${colorClasses.text} dark:text-gray-300 font-semibold rounded-xl transition hover:opacity-80`}
-                      >
-                        Meer info
-                      </Link>
-                    </div>
-                  </div>
-                </motion.div>
-              )
-            })}
-          </div>
+                {/* Buttons */}
+                <div className="flex gap-3">
+                  <Link
+                    to={`/start?dienst=${service.id}`}
+                    className="flex-1 py-3 bg-primary-500 hover:bg-primary-600 text-white font-semibold rounded-xl transition-all hover:shadow-lg flex items-center justify-center gap-2"
+                  >
+                    Direct aanvragen
+                    <ArrowRight className="w-4 h-4" />
+                  </Link>
+                  <Link
+                    to={service.link}
+                    className="px-5 py-3 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600 font-semibold rounded-xl transition-colors"
+                  >
+                    Meer info
+                  </Link>
+                </div>
+              </div>
+            </motion.div>
+          ))}
         </div>
-      </section>
+      </div>
+    </section>
   )
 }
