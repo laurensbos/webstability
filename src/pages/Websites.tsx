@@ -682,6 +682,11 @@ export default function Websites() {
               </motion.h2>
             </div>
 
+            {/* Mobile swipe hint */}
+            <div className="sm:hidden flex items-center justify-center gap-2 text-xs text-gray-400 dark:text-gray-500 mb-3">
+              <span>← Swipe om te bekijken →</span>
+            </div>
+
             {/* Mobile: horizontal scroll, Desktop: grid */}
             <div className="flex sm:grid sm:grid-cols-2 md:grid-cols-4 gap-3 sm:gap-4 mb-10 overflow-x-auto sm:overflow-visible pb-4 sm:pb-0 snap-x snap-mandatory scrollbar-hide -mx-4 px-4 sm:mx-0 sm:px-0">
               {included.map((item, index) => (
@@ -691,10 +696,10 @@ export default function Websites() {
                   whileInView={{ opacity: 1, y: 0 }}
                   viewport={{ once: true }}
                   transition={{ delay: index * 0.05 }}
-                  className="flex items-center gap-2 p-3 bg-white dark:bg-gray-800 rounded-xl border border-gray-100 dark:border-gray-700 shadow-sm min-w-[180px] sm:min-w-0 snap-center flex-shrink-0 sm:flex-shrink"
+                  className="flex items-center gap-3 p-4 bg-white dark:bg-gray-800 rounded-xl border border-gray-100 dark:border-gray-700 shadow-sm min-w-[220px] sm:min-w-0 snap-center flex-shrink-0 sm:flex-shrink"
                 >
                   <CheckCircle className="w-5 h-5 text-primary-500 flex-shrink-0" />
-                  <span className="text-gray-700 dark:text-gray-300 text-sm whitespace-nowrap sm:whitespace-normal">{item}</span>
+                  <span className="text-gray-700 dark:text-gray-300 text-sm">{item}</span>
                 </motion.div>
               ))}
             </div>

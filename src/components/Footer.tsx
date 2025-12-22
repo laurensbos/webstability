@@ -442,15 +442,19 @@ export default function Footer({ ctaVariant = 'default' }: FooterProps) {
 
         {/* Bottom */}
         <div className="py-6 border-t border-gray-200 dark:border-gray-800">
-          <div className="flex flex-col lg:flex-row justify-between items-center gap-4">
-            <div className="flex items-center gap-3 text-sm text-gray-500 dark:text-gray-400">
+          <div className="flex flex-col items-center gap-4">
+            {/* Logo and copyright */}
+            <div className="flex items-center gap-2 text-sm text-gray-500 dark:text-gray-400">
               <span>© {new Date().getFullYear()}</span>
               <Link to="/" className="font-display font-bold text-gray-900 dark:text-white hover:text-primary-600 transition-colors tracking-tight">
                 webstability
               </Link>
-              <span>•</span>
+            </div>
+
+            {/* Made with love + Trustpilot */}
+            <div className="flex items-center gap-3 text-sm text-gray-500 dark:text-gray-400">
               <span className="flex items-center gap-1">Made with <span className="text-red-500">❤️</span></span>
-              <span>•</span>
+              <span className="text-gray-300 dark:text-gray-600">•</span>
               {/* Trustpilot Badge */}
               <a 
                 href="https://nl.trustpilot.com/review/webstability.nl"
@@ -470,9 +474,11 @@ export default function Footer({ ctaVariant = 'default' }: FooterProps) {
                 </div>
               </a>
             </div>
-            <div className="flex flex-wrap items-center justify-center gap-4 text-xs text-gray-400">
+
+            {/* KVK and BTW */}
+            <div className="flex items-center gap-3 text-xs text-gray-400">
               <span>KVK: 91186307</span>
-              <span>•</span>
+              <span className="text-gray-300 dark:text-gray-600">•</span>
               <span>BTW: NL004875371B72</span>
             </div>
           </div>
