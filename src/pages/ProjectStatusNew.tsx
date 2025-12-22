@@ -34,12 +34,13 @@ import ClientAccountModal from '../components/ClientAccountModal'
 import type { Project, ProjectPhase, ProjectMessage } from '../types/project'
 import { getProgressPercentage } from '../types/project'
 
-// Phase configuration
+// Phase configuration - Visual stepper phases
+// Maps to backend phases: onboarding, design, design_approved (feedback), development (after payment), review, live
 const PHASES: { key: ProjectPhase; label: string; icon: typeof FileText }[] = [
   { key: 'onboarding', label: 'Onboarding', icon: FileText },
   { key: 'design', label: 'Design', icon: Palette },
+  { key: 'design_approved', label: 'Feedback', icon: MessageSquare },
   { key: 'development', label: 'Development', icon: Code },
-  { key: 'review', label: 'Review', icon: MessageSquare },
   { key: 'live', label: 'Live', icon: Rocket }
 ]
 
@@ -554,10 +555,16 @@ export default function ProjectStatusNew() {
     setReadyForDesignLoading(false)
   }
 
-  // Get phase status
+  // Get phase status for stepper visualization
   const getPhaseStatus = (phaseKey: ProjectPhase) => {
     if (!project) return 'pending'
-    const currentIndex = PHASES.findIndex(p => p.key === project.status || (project.status === 'design_approved' && p.key === 'design'))
+    
+    // Map project status to stepper phase
+    // Backend uses: onboarding, design, design_approved, development, review, live
+    // Stepper shows: Onboarding, Design, Feedback (design_approved), Development, Live
+    const currentPhaseKey = project.status === 'review' ? 'development' : project.status
+    
+    const currentIndex = PHASES.findIndex(p => p.key === currentPhaseKey)
     const phaseIndex = PHASES.findIndex(p => p.key === phaseKey)
     
     if (phaseIndex < currentIndex) return 'completed'
@@ -816,7 +823,7 @@ export default function ProjectStatusNew() {
             <div className="flex items-center gap-1.5">
               <div className={`w-2 h-2 rounded-full ${phaseColors.bg}`} />
               <span className="text-xs text-gray-400">
-                {PHASES.find(p => p.key === project.status || (project.status === 'design_approved' && p.key === 'design'))?.label}
+                {PHASES.find(p => p.key === project.status)?.label || (project.status === 'review' ? 'Development' : project.status)}
               </span>
             </div>
           </div>
@@ -971,7 +978,7 @@ export default function ProjectStatusNew() {
                 {project.status === 'live' ? (
                   <span className="text-2xl">🎉</span>
                 ) : (() => {
-                  const currentPhase = PHASES.find(p => p.key === project.status || (project.status === 'design_approved' && p.key === 'design'))
+                  const currentPhase = PHASES.find(p => p.key === project.status) || PHASES.find(p => p.key === 'development')
                   const PhaseIcon = currentPhase?.icon || FileText
                   return <PhaseIcon className="w-6 h-6 text-white" />
                 })()}
