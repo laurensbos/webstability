@@ -35,6 +35,29 @@ function deterministicAvailable(seed: string){
 // In-memory projects store for mock API
 const PROJECTS: Array<any> = [
   {
+    projectId: 'WS-BMZGRP',
+    businessName: 'BMZGRP Media',
+    contactName: 'Laurens Bos',
+    contactEmail: 'laurens@webstability.nl',
+    contactPhone: '0612345678',
+    package: 'professional',
+    status: 'onboarding',
+    statusMessage: 'Vul de onboarding in om te starten',
+    estimatedCompletion: '29 december 2025',
+    createdAt: '2025-12-20T10:00:00.000Z',
+    googleDriveUrl: 'https://drive.google.com/drive/folders/example',
+    paymentStatus: 'pending',
+    updates: [],
+    revisionsUsed: 0,
+    revisionsTotal: 3,
+    messages: [],
+    changeRequests: [],
+    phaseDeadlines: {
+      onboarding: '2025-12-24T23:59:59.000Z',
+      design: '2025-12-29T23:59:59.000Z'
+    }
+  },
+  {
     projectId: 'TEST123',
     businessName: 'Test Bedrijf',
     contactName: 'Jan Jansen',
