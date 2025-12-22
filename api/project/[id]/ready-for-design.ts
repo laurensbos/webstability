@@ -62,14 +62,23 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     const project = await kv.hgetall(`project:${projectId}`) as Project | null
 
     if (!project) {
-      return res.status(404).json({ error: 'Project not found' })
+      return res.status(404).json({ error: 'Project not found', projectId })
     }
 
-    // Check if project is in onboarding phase
-    if (project.status !== 'onboarding') {
+    // Check if project is in onboarding phase (allow if already in design too - idempotent)
+    if (project.status !== 'onboarding' && project.status !== 'design') {
       return res.status(400).json({ 
-        error: 'Project is not in onboarding phase',
+        error: 'Project is not in onboarding or design phase',
         currentStatus: project.status
+      })
+    }
+
+    // If already in design, just return success
+    if (project.status === 'design') {
+      return res.status(200).json({ 
+        success: true, 
+        message: 'Project is already in design phase',
+        status: 'design'
       })
     }
 
@@ -140,6 +149,11 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
   } catch (error) {
     console.error('Error marking project ready for design:', error)
-    return res.status(500).json({ error: 'Failed to update project' })
+    const errorMessage = error instanceof Error ? error.message : 'Unknown error'
+    return res.status(500).json({ 
+      error: 'Failed to update project',
+      details: errorMessage,
+      projectId 
+    })
   }
 }
