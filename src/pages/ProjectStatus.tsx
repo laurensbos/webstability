@@ -40,6 +40,7 @@ import Logo from '../components/Logo'
 import DesignFeedback from '../components/DesignFeedback'
 import LiveApprovalSection from '../components/LiveApprovalSection'
 import LogoProjectSection from '../components/LogoProjectSection'
+import ClientAccountModal from '../components/ClientAccountModal'
 import type { Project, ProjectPhase, ProjectMessage, ChangeRequest, LogoProject, LogoDeliverable } from '../types/project'
 import { getProgressPercentage } from '../types/project'
 
@@ -275,6 +276,9 @@ export default function ProjectStatusNew() {
   const [uploadsCompleted, setUploadsCompleted] = useState(false)
   const [confirmingUploads, setConfirmingUploads] = useState(false)
   const [showUploadConfirm, setShowUploadConfirm] = useState(false)
+  
+  // Account modal state
+  const [showAccountModal, setShowAccountModal] = useState(false)
   
   // Timeline expansion
   const [showTimeline, setShowTimeline] = useState(false)
@@ -779,6 +783,21 @@ export default function ProjectStatusNew() {
       // Ignore
     }
     setMessageLoading(false)
+  }
+
+  // Update project data (for account modal)
+  const updateProject = async (updates: Partial<Project>) => {
+    if (!projectId) throw new Error('No project ID')
+    const response = await fetch(`/api/projects?id=${projectId}`, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(updates)
+    })
+    if (!response.ok) {
+      throw new Error('Failed to update project')
+    }
+    // Update local state
+    setProject(prev => prev ? { ...prev, ...updates } : null)
   }
 
   // Approve design - updates project status to design_approved
@@ -1812,15 +1831,15 @@ export default function ProjectStatusNew() {
             <p className="text-xs text-gray-500">Direct contact</p>
           </a>
 
-          {/* Help */}
-          <Link
-            to={`/intake/${projectId}`}
-            className="p-4 rounded-xl bg-gray-900 border border-gray-800 hover:border-blue-500/50 transition group"
+          {/* Gegevens */}
+          <button
+            onClick={() => setShowAccountModal(true)}
+            className="p-4 rounded-xl bg-gray-900 border border-gray-800 hover:border-blue-500/50 transition group text-left"
           >
             <FolderOpen className="w-5 h-5 text-blue-400 mb-2" />
             <p className="text-sm font-medium text-white">Gegevens</p>
             <p className="text-xs text-gray-500">Bekijk/wijzig</p>
-          </Link>
+          </button>
         </motion.div>
 
         {/* Trust badges */}
@@ -1952,6 +1971,16 @@ export default function ProjectStatusNew() {
             </span>
           )}
         </motion.button>
+      )}
+
+      {/* Client Account Modal */}
+      {project && (
+        <ClientAccountModal
+          isOpen={showAccountModal}
+          onClose={() => setShowAccountModal(false)}
+          project={project}
+          onUpdateProject={updateProject}
+        />
       )}
     </div>
   )
