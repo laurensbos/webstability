@@ -20,6 +20,7 @@ interface Annotation {
   color: string
   comment: string
   device: 'desktop' | 'mobile'
+  scrollPosition: number
 }
 
 interface DesignPreviewModalProps {
@@ -83,6 +84,7 @@ function DesignPreviewModal({ isOpen, onClose, projectId, designPreviewUrl, onFe
   const [hasEverAnnotated, setHasEverAnnotated] = useState(false)
   const svgRef = useRef<SVGSVGElement>(null)
   const containerRef = useRef<HTMLDivElement>(null)
+  const scrollContainerRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
     const checkMobile = () => setIsMobile(window.innerWidth < 1024)
@@ -165,7 +167,8 @@ function DesignPreviewModal({ isOpen, onClose, projectId, designPreviewUrl, onFe
   const handleEnd = useCallback(() => {
     if (!isDrawing || currentPoints.length === 0 || isScrollMode) return
     setIsDrawing(false)
-    const newAnnotation: Annotation = { id: Date.now().toString(), type: currentTool, points: currentPoints, color: currentColor, comment: '', device }
+    const scrollPos = scrollContainerRef.current ? Math.round((scrollContainerRef.current.scrollTop / (scrollContainerRef.current.scrollHeight - scrollContainerRef.current.clientHeight)) * 100) || 0 : 0
+    const newAnnotation: Annotation = { id: Date.now().toString(), type: currentTool, points: currentPoints, color: currentColor, comment: '', device, scrollPosition: scrollPos }
     setAnnotations(prev => [...prev, newAnnotation]); setHasEverAnnotated(true)
     setActiveAnnotation(newAnnotation.id)
     setCurrentPoints([])
@@ -205,6 +208,13 @@ function DesignPreviewModal({ isOpen, onClose, projectId, designPreviewUrl, onFe
 
   const undoLast = () => { setAnnotations(prev => prev.slice(0, -1)); setActiveAnnotation(null) }
   const clearAll = () => { setAnnotations([]); setActiveAnnotation(null) }
+  
+  const scrollToPosition = (position: number) => {
+    if (scrollContainerRef.current) {
+      const maxScroll = scrollContainerRef.current.scrollHeight - scrollContainerRef.current.clientHeight
+      scrollContainerRef.current.scrollTo({ top: (position / 100) * maxScroll, behavior: 'smooth' })
+    }
+  }
   const toggleTag = (tagId: string) => setSelectedTags(prev => prev.includes(tagId) ? prev.filter(t => t !== tagId) : [...prev, tagId])
 
   const handleApprove = async () => {
@@ -294,7 +304,7 @@ function DesignPreviewModal({ isOpen, onClose, projectId, designPreviewUrl, onFe
         <div className={'pt-14 h-full ' + (isMobile ? '' : 'flex')}>
           <div ref={containerRef} className={'relative ' + (isMobile ? 'h-[60vh]' : 'flex-1 h-full') + ' bg-zinc-950 overflow-hidden'}>
             <div className={'absolute inset-4 flex items-center justify-center ' + (device === 'mobile' ? 'max-w-[375px] mx-auto' : '')}>
-              <div className={'relative w-full h-full bg-white rounded-lg overflow-hidden shadow-2xl transition-all ' + (!isScrollMode ? 'ring-4 ring-purple-500/50' : '')}>
+              <div ref={scrollContainerRef} className={'relative w-full h-full bg-white rounded-lg overflow-y-auto shadow-2xl transition-all ' + (!isScrollMode ? 'ring-4 ring-purple-500/50' : '')}>
                 {!isScrollMode && !isMobile && (
                   <div className="absolute top-3 left-3 z-20 bg-purple-600 text-white px-3 py-1.5 rounded-full text-xs font-medium flex items-center gap-1.5 shadow-lg">
                     <Pencil className="w-3 h-3" />Markeer modus - klik om te markeren (scroll eerst naar de juiste plek)
@@ -380,6 +390,7 @@ function DesignPreviewModal({ isOpen, onClose, projectId, designPreviewUrl, onFe
                         <div className="flex items-center gap-2 mb-2">
                           <div className="w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold text-white flex-shrink-0" style={{ backgroundColor: annotation.color }}>{index + 1}</div>
                           <span className="text-sm text-zinc-300 flex-1">{annotation.type === 'marker' && 'Punt'}{annotation.type === 'square' && 'Kader'}</span>
+                          <button onClick={() => scrollToPosition(annotation.scrollPosition)} className="px-2 py-1 text-xs bg-zinc-700 hover:bg-zinc-600 text-zinc-300 rounded transition-colors" title="Ga naar deze positie">📍 {annotation.scrollPosition}%</button>
                           <button onClick={() => deleteAnnotation(annotation.id)} className="p-1 text-zinc-500 hover:text-red-400 transition-colors" title="Verwijderen"><Trash2 className="w-4 h-4" /></button>
                         </div>
                         <input type="text" value={annotation.comment} onChange={(e) => updateAnnotationComment(annotation.id, e.target.value)} placeholder="Wat wil je hier veranderen?" className="w-full px-3 py-2 bg-zinc-900 border border-zinc-700 rounded-lg text-sm text-white placeholder-zinc-500 focus:outline-none focus:ring-1 focus:ring-purple-500" />
