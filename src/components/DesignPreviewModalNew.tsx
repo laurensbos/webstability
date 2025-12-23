@@ -82,6 +82,7 @@ function DesignPreviewModal({ isOpen, onClose, projectId, designPreviewUrl, onFe
   const [showTutorial, setShowTutorial] = useState(false)
   const [tutorialStep, setTutorialStep] = useState(0)
   const [hasEverAnnotated, setHasEverAnnotated] = useState(false)
+  const [showScrollWarning, setShowScrollWarning] = useState(false)
   const svgRef = useRef<SVGSVGElement>(null)
   const containerRef = useRef<HTMLDivElement>(null)
   const scrollContainerRef = useRef<HTMLDivElement>(null)
@@ -308,8 +309,13 @@ function DesignPreviewModal({ isOpen, onClose, projectId, designPreviewUrl, onFe
               <div ref={scrollContainerRef} className={'relative w-full h-full bg-white rounded-lg overflow-y-auto shadow-2xl transition-all ' + (!isScrollMode ? 'ring-4 ring-purple-500/50' : '')}>
                 {!isScrollMode && !isMobile && (
                   <div className="absolute top-3 left-3 z-20 bg-purple-600 text-white px-3 py-1.5 rounded-full text-xs font-medium flex items-center gap-1.5 shadow-lg">
-                    <Pencil className="w-3 h-3" />Markeer modus - klik om te markeren (scroll eerst naar de juiste plek)
+                    <Pencil className="w-3 h-3" />✏️ Markeer modus — Scroll uitgeschakeld
                   </div>
+                )}
+                {showScrollWarning && annotations.length > 0 && (
+                  <motion.div initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }} className="absolute top-3 left-1/2 -translate-x-1/2 z-30 bg-amber-500 text-black px-4 py-2 rounded-lg text-sm font-medium shadow-lg">
+                    ⚠️ Let op: markeringen staan vast op de huidige scroll positie
+                  </motion.div>
                 )}
                 {!iframeLoaded && <div className="absolute inset-0 flex items-center justify-center bg-zinc-900"><Loader2 className="w-8 h-8 text-purple-500 animate-spin" /></div>}
                 <iframe src={absoluteUrl} className="w-full h-full border-0" onLoad={() => setIframeLoaded(true)} title="Design Preview" style={{ pointerEvents: isScrollMode ? 'auto' : 'none' }} />
@@ -340,7 +346,7 @@ function DesignPreviewModal({ isOpen, onClose, projectId, designPreviewUrl, onFe
               <div className="p-4 border-b border-zinc-800">
                 <div className="mb-4">
                   <div className="flex bg-zinc-800 rounded-xl p-1 gap-1">
-                    <button onClick={() => setIsScrollMode(true)} className={'flex-1 px-4 py-3 rounded-lg flex items-center justify-center gap-3 text-sm font-medium transition-all ' + (isScrollMode ? 'bg-blue-600 text-white shadow-lg' : 'text-zinc-400 hover:text-white hover:bg-zinc-700')}>
+                    <button onClick={() => { if (annotations.length > 0 && !isScrollMode) { setShowScrollWarning(true); setTimeout(() => setShowScrollWarning(false), 3000) } setIsScrollMode(true) }} className={'flex-1 px-4 py-3 rounded-lg flex items-center justify-center gap-3 text-sm font-medium transition-all ' + (isScrollMode ? 'bg-blue-600 text-white shadow-lg' : 'text-zinc-400 hover:text-white hover:bg-zinc-700')}>
                       <Hand className="w-5 h-5" /><div className="text-left"><div>Bekijken</div><div className="text-xs opacity-70">Scroll door de pagina</div></div>
                     </button>
                     <button onClick={() => setIsScrollMode(false)} className={'flex-1 px-4 py-3 rounded-lg flex items-center justify-center gap-3 text-sm font-medium transition-all ' + (!isScrollMode ? 'bg-purple-600 text-white shadow-lg' : 'text-zinc-400 hover:text-white hover:bg-zinc-700') + (!hasEverAnnotated && isScrollMode ? ' animate-pulse ring-2 ring-purple-500' : '')}>
