@@ -352,7 +352,7 @@ const getServiceColor = (_type?: string) => ({
 // Progress Bar Component for Emails - Dark Mode
 // ===========================================
 
-type ProjectPhase = 'onboarding' | 'design' | 'design_approved' | 'development' | 'review' | 'live'
+type ProjectPhase = 'onboarding' | 'design' | 'feedback' | 'payment' | 'live'
 
 const PHASE_CONFIG: { key: ProjectPhase; label: string; emoji: string }[] = [
   { key: 'onboarding', label: 'Onboarding', emoji: '📝' },

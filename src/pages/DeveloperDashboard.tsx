@@ -69,7 +69,7 @@ type DashboardView =
   | 'messages' 
   | 'payments'
 
-type ProjectPhase = 'onboarding' | 'design' | 'design_approved' | 'development' | 'review' | 'live'
+type ProjectPhase = 'onboarding' | 'design' | 'feedback' | 'payment' | 'live'
 type PaymentStatus = 'pending' | 'awaiting_payment' | 'paid' | 'failed' | 'refunded'
 type ServiceType = 'drone' | 'logo' | 'foto' | 'tekst' | 'seo'
 
@@ -179,9 +179,8 @@ const PACKAGE_CONFIG = {
 const PHASE_CONFIG: Record<ProjectPhase, { label: string; color: string; bg: string; icon: typeof FileText }> = {
   onboarding: { label: 'Onboarding', color: 'text-emerald-600', bg: 'bg-emerald-100', icon: FileText },
   design: { label: 'Design', color: 'text-amber-600', bg: 'bg-amber-100', icon: Palette },
-  design_approved: { label: 'Goedgekeurd', color: 'text-blue-600', bg: 'bg-blue-100', icon: CreditCard },
-  development: { label: 'Development', color: 'text-purple-600', bg: 'bg-purple-100', icon: Code },
-  review: { label: 'Review', color: 'text-cyan-600', bg: 'bg-cyan-100', icon: Eye },
+  feedback: { label: 'Feedback', color: 'text-blue-600', bg: 'bg-blue-100', icon: MessageSquare },
+  payment: { label: 'Betaling', color: 'text-purple-600', bg: 'bg-purple-100', icon: CreditCard },
   live: { label: 'Live', color: 'text-green-600', bg: 'bg-green-100', icon: Rocket },
 }
 
@@ -391,7 +390,7 @@ function WelcomeTour({ darkMode, onComplete }: WelcomeTourProps) {
     {
       icon: '📁',
       title: 'Stap 1: Projecten beheren',
-      content: 'Alle klantprojecten staan hier. Je ziet ze in een Kanban-bord met 5 fases: Onboarding → Design → Development → Review → Live. Sleep projecten naar de volgende fase wanneer ze klaar zijn.',
+      content: 'Alle klantprojecten staan hier. Je ziet ze in een Kanban-bord met 5 fases: Onboarding → Design → Betaling → Betaling → Live. Sleep projecten naar de volgende fase wanneer ze klaar zijn.',
       highlight: 'projects',
     },
     {
@@ -732,7 +731,7 @@ function Sidebar({
                 <div className={`p-4 rounded-xl ${darkMode ? 'bg-gray-700/50' : 'bg-gray-50'}`}>
                   <h3 className={`font-semibold mb-2 flex items-center gap-2 ${darkMode ? 'text-purple-400' : 'text-purple-600'}`}>
                     <span className="w-6 h-6 rounded-full bg-purple-500 text-white text-xs flex items-center justify-center">3</span>
-                    Development
+                    Betaling
                   </h3>
                   <p className={`text-sm ${darkMode ? 'text-gray-300' : 'text-gray-600'}`}>
                     Bouw de website op basis van het goedgekeurde design. Zet de staging URL in het project.
@@ -743,7 +742,7 @@ function Sidebar({
                 <div className={`p-4 rounded-xl ${darkMode ? 'bg-gray-700/50' : 'bg-gray-50'}`}>
                   <h3 className={`font-semibold mb-2 flex items-center gap-2 ${darkMode ? 'text-orange-400' : 'text-orange-600'}`}>
                     <span className="w-6 h-6 rounded-full bg-orange-500 text-white text-xs flex items-center justify-center">4</span>
-                    Review
+                    Betaling
                   </h3>
                   <p className={`text-sm ${darkMode ? 'text-gray-300' : 'text-gray-600'}`}>
                     Klant bekijkt de staging site en geeft feedback. Verwerk feedback en vraag om finale goedkeuring.
@@ -1288,7 +1287,7 @@ type SmartAction = {
 const MESSAGE_TEMPLATES = [
   { id: 'drive_link', label: '📁 Drive link', message: 'Hi! Hier is de Google Drive link met alle bestanden: [LINK]. Laat me weten als je vragen hebt!' },
   { id: 'design_ready', label: '🎨 Design klaar', message: 'Het design is klaar voor review! Bekijk het hier: [STAGING_URL]. Ik hoor graag je feedback.' },
-  { id: 'development_start', label: '🚀 Development start', message: 'Goed nieuws! Ik ga nu aan de slag met de development. Ik hou je op de hoogte van de voortgang.' },
+  { id: 'development_start', label: '🚀 Betaling start', message: 'Goed nieuws! Ik ga nu aan de slag met de development. Ik hou je op de hoogte van de voortgang.' },
   { id: 'feedback_request', label: '💬 Vraag feedback', message: 'Kun je even kijken naar de laatste updates? Je feedback is heel belangrijk!' },
   { id: 'live_announcement', label: '🎉 Website live', message: 'Je website staat live! 🎉 Bekijk hem hier: [LIVE_URL]. Gefeliciteerd!' },
   { id: 'quick_thanks', label: '👍 Bedankt', message: 'Bedankt voor je bericht! Ik ga er direct mee aan de slag.' },
@@ -1335,7 +1334,7 @@ function OverviewView({ darkMode, projects, setActiveView, onSelectProject, onUp
       }
       
       // Ready to go live
-      if (project.paymentStatus === 'paid' && project.phase === 'review') {
+      if (project.paymentStatus === 'paid' && project.phase === 'payment') {
         actions.push({
           id: `live_${project.id}`,
           projectId: project.id,
@@ -1399,7 +1398,7 @@ function OverviewView({ darkMode, projects, setActiveView, onSelectProject, onUp
       }
       
       // Design approved phase - waiting for payment
-      if (project.phase === 'design_approved' && project.paymentStatus !== 'paid') {
+      if (project.phase === 'feedback' && project.paymentStatus !== 'paid') {
         actions.push({
           id: `payment_approved_${project.id}`,
           projectId: project.id,
@@ -1415,7 +1414,7 @@ function OverviewView({ darkMode, projects, setActiveView, onSelectProject, onUp
       }
       
       // Design approved + paid - move to development
-      if (project.phase === 'design_approved' && project.paymentStatus === 'paid') {
+      if (project.phase === 'feedback' && project.paymentStatus === 'paid') {
         actions.push({
           id: `start_dev_paid_${project.id}`,
           projectId: project.id,
@@ -1430,8 +1429,8 @@ function OverviewView({ darkMode, projects, setActiveView, onSelectProject, onUp
         })
       }
       
-      // Development done, send for review
-      if (project.phase === 'development' && project.stagingUrl) {
+      // Betaling done, send for review
+      if (project.phase === 'payment' && project.stagingUrl) {
         actions.push({
           id: `review_${project.id}`,
           projectId: project.id,
@@ -1439,7 +1438,7 @@ function OverviewView({ darkMode, projects, setActiveView, onSelectProject, onUp
           type: 'send_review_request',
           priority: 'medium',
           label: 'Stuur review verzoek',
-          description: 'Development klaar - vraag feedback',
+          description: 'Betaling klaar - vraag feedback',
           icon: <Eye className="w-4 h-4" />,
           color: 'text-orange-500',
           bgColor: 'bg-orange-500/10'
@@ -1508,12 +1507,12 @@ function OverviewView({ darkMode, projects, setActiveView, onSelectProject, onUp
           setCompletedActions(prev => [...prev, action.id])
           break
         case 'start_development':
-          await onUpdateProject({ ...project, phase: 'development' })
+          await onUpdateProject({ ...project, phase: 'payment' })
           setCompletedActions(prev => [...prev, action.id])
           break
         case 'start_development_paid':
           // Design approved + paid -> move to development
-          await onUpdateProject({ ...project, phase: 'development' })
+          await onUpdateProject({ ...project, phase: 'payment' })
           setCompletedActions(prev => [...prev, action.id])
           break
         case 'send_payment_link':
@@ -1529,7 +1528,7 @@ function OverviewView({ darkMode, projects, setActiveView, onSelectProject, onUp
           if (onSendMessage) {
             const reviewMsg = `De website is klaar voor review! 🎉\n\nBekijk hem hier: ${project.stagingUrl}\n\nLaat me weten wat je ervan vindt!`
             await onSendMessage(project.id, reviewMsg)
-            await onUpdateProject({ ...project, phase: 'review' })
+            await onUpdateProject({ ...project, phase: 'payment' })
             setCompletedActions(prev => [...prev, action.id])
           }
           break
@@ -1881,7 +1880,7 @@ function OverviewView({ darkMode, projects, setActiveView, onSelectProject, onUp
           Projecten per fase
         </h3>
         <div className="grid grid-cols-6 gap-2">
-          {(['onboarding', 'design', 'design_approved', 'development', 'review', 'live'] as ProjectPhase[]).map(phase => {
+          {(['onboarding', 'design', 'feedback', 'payment', 'payment', 'live'] as ProjectPhase[]).map(phase => {
             const count = projects.filter(p => p.phase === phase).length
             const config = PHASE_CONFIG[phase]
             const PhaseIcon = config.icon
@@ -2129,9 +2128,9 @@ function ProjectsView({ darkMode, projects, onUpdateProject, onDeleteProject: _o
   const phases: { key: ProjectPhase; label: string; color: string; bgColor: string }[] = [
     { key: 'onboarding', label: 'Onboarding', color: 'bg-yellow-500', bgColor: darkMode ? 'bg-yellow-900/20' : 'bg-yellow-50' },
     { key: 'design', label: 'Design', color: 'bg-emerald-500', bgColor: darkMode ? 'bg-emerald-900/20' : 'bg-emerald-50' },
-    { key: 'design_approved', label: 'Goedgekeurd', color: 'bg-blue-500', bgColor: darkMode ? 'bg-blue-900/20' : 'bg-blue-50' },
-    { key: 'development', label: 'Development', color: 'bg-purple-500', bgColor: darkMode ? 'bg-purple-900/20' : 'bg-purple-50' },
-    { key: 'review', label: 'Review', color: 'bg-orange-500', bgColor: darkMode ? 'bg-orange-900/20' : 'bg-orange-50' },
+    { key: 'feedback', label: 'Feedback', color: 'bg-blue-500', bgColor: darkMode ? 'bg-blue-900/20' : 'bg-blue-50' },
+    { key: 'payment', label: 'Betaling', color: 'bg-purple-500', bgColor: darkMode ? 'bg-purple-900/20' : 'bg-purple-50' },
+    { key: 'payment', label: 'Betaling', color: 'bg-orange-500', bgColor: darkMode ? 'bg-orange-900/20' : 'bg-orange-50' },
     { key: 'live', label: 'Live', color: 'bg-green-500', bgColor: darkMode ? 'bg-green-900/20' : 'bg-green-50' },
   ]
 
@@ -2164,32 +2163,20 @@ function ProjectsView({ darkMode, projects, onUpdateProject, onDeleteProject: _o
           { id: 'des_checkout', label: 'Checkout flow besproken' },
         ] : []),
       ],
-      design_approved: [
-        { id: 'app_payment_sent', label: 'Betaallink verstuurd' },
-        { id: 'app_payment_received', label: 'Betaling ontvangen' },
+      feedback: [
+        { id: 'fb_preview_sent', label: 'Design preview naar klant gestuurd' },
+        { id: 'fb_feedback_received', label: 'Feedback van klant ontvangen' },
+        { id: 'fb_changes_made', label: 'Feedback verwerkt' },
+        { id: 'fb_approved', label: 'Design definitief goedgekeurd' },
       ],
-      development: [
-        { id: 'dev_pages', label: 'Alle pagina\'s gebouwd' },
-        { id: 'dev_forms', label: 'Formulieren werkend' },
-        { id: 'dev_responsive', label: 'Responsive getest' },
+      payment: [
+        { id: 'pay_link_sent', label: 'Betaallink verstuurd' },
+        { id: 'pay_received', label: 'Betaling ontvangen' },
+        { id: 'pay_build_complete', label: 'Website gebouwd' },
+        { id: 'pay_domain', label: 'Domein geconfigureerd' },
         ...(isWebshop ? [
-          { id: 'dev_products', label: 'Producten geïmporteerd' },
-          { id: 'dev_cart', label: 'Winkelwagen werkend' },
-          { id: 'dev_checkout', label: 'Checkout & betaling getest' },
-          { id: 'dev_inventory', label: 'Voorraad systeem ingesteld' },
-        ] : []),
-        ...(isBusiness || isProfessional ? [
-          { id: 'dev_seo', label: 'SEO meta tags ingesteld' },
-          { id: 'dev_analytics', label: 'Google Analytics gekoppeld' },
-        ] : []),
-      ],
-      review: [
-        { id: 'rev_test', label: 'Uitgebreid getest' },
-        { id: 'rev_client_test', label: 'Klant heeft getest' },
-        { id: 'rev_approval', label: 'Klant akkoord voor live' },
-        ...(isWebshop ? [
-          { id: 'rev_test_order', label: 'Testbestelling geplaatst' },
-          { id: 'rev_payment_test', label: 'Betaling getest (sandbox)' },
+          { id: 'pay_products', label: 'Producten geïmporteerd' },
+          { id: 'pay_payment_provider', label: 'Betaalprovider ingesteld' },
         ] : []),
       ],
       live: [
@@ -2227,16 +2214,16 @@ function ProjectsView({ darkMode, projects, onUpdateProject, onDeleteProject: _o
         }
         return { action: 'Wacht op design goedkeuring', priority: 'medium', icon: '⏳' }
       
-      case 'design_approved':
+      case 'feedback':
         if (project.paymentStatus !== 'paid') {
           return { action: 'Stuur betaallink naar klant', priority: 'high', icon: '💳' }
         }
         return { action: 'Ga door naar development', priority: 'high', icon: '🚀' }
       
-      case 'development':
+      case 'payment':
         return { action: 'Bouw de website en zet staging URL', priority: 'high', icon: '💻' }
       
-      case 'review':
+      case 'payment':
         return { action: 'Verwerk feedback en vraag finale akkoord', priority: 'medium', icon: '✅' }
       
       case 'live':
@@ -2250,7 +2237,7 @@ function ProjectsView({ darkMode, projects, onUpdateProject, onDeleteProject: _o
   // Handle confirmed phase change
   const handleConfirmedPhaseChange = async (project: Project, direction: 'next' | 'previous') => {
     setPhaseChangeLoading(true)
-    const phaseOrder: ProjectPhase[] = ['onboarding', 'design', 'design_approved', 'development', 'review', 'live']
+    const phaseOrder: ProjectPhase[] = ['onboarding', 'design', 'feedback', 'payment', 'payment', 'live']
     const currentIndex = phaseOrder.indexOf(project.phase)
     const targetIndex = direction === 'next' ? currentIndex + 1 : currentIndex - 1
     
@@ -2332,9 +2319,9 @@ function ProjectsView({ darkMode, projects, onUpdateProject, onDeleteProject: _o
       const items = [
         { key: 'payment', label: 'Betaling', done: project.paymentStatus === 'paid' },
         { key: 'onboarding', label: 'Onboarding', done: project.onboardingData && Object.keys(project.onboardingData).length > 0 },
-        { key: 'design', label: 'Design', done: ['development', 'review', 'live'].includes(project.phase) },
-        { key: 'development', label: 'Ontwikkeling', done: ['review', 'live'].includes(project.phase) },
-        { key: 'review', label: 'Review', done: project.phase === 'live' },
+        { key: 'design', label: 'Design', done: ['payment', 'payment', 'live'].includes(project.phase) },
+        { key: 'payment', label: 'Ontwikkeling', done: ['payment', 'live'].includes(project.phase) },
+        { key: 'payment', label: 'Betaling', done: project.phase === 'live' },
       ]
       const completed = items.filter(i => i.done).length
       return { items, completed, total: items.length, percentage: Math.round((completed / items.length) * 100) }
@@ -2371,10 +2358,9 @@ function ProjectsView({ darkMode, projects, onUpdateProject, onDeleteProject: _o
     const getNextPhaseLabel = () => {
       const phaseLabels: Record<ProjectPhase, string> = {
         onboarding: '→ Design',
-        design: '→ Goedgekeurd',
-        design_approved: '→ Development',
-        development: '→ Review',
-        review: '→ Live',
+        design: '→ Feedback',
+        feedback: '→ Betaling',
+        payment: '→ Live',
         live: ''
       }
       return phaseLabels[project.phase]
@@ -2462,7 +2448,7 @@ function ProjectsView({ darkMode, projects, onUpdateProject, onDeleteProject: _o
           {(() => {
             const needsOnboarding = project.phase === 'onboarding' && (!project.onboardingData || Object.keys(project.onboardingData).length === 0)
             const needsPayment = (project.paymentStatus === 'pending' || project.paymentStatus === 'failed') && 
-                                 (project.phase === 'design_approved' || project.designApprovedAt)
+                                 (project.phase === 'feedback' || project.designApprovedAt)
             
             if (unreadCount > 0) {
               return (
@@ -2485,10 +2471,10 @@ function ProjectsView({ darkMode, projects, onUpdateProject, onDeleteProject: _o
                 </span>
               )
             }
-            if (project.phase === 'review') {
+            if (project.phase === 'payment') {
               return (
                 <span className="px-2 py-0.5 text-xs font-medium bg-purple-500 text-white rounded-full">
-                  Klant: Review
+                  Klant: Betaling
                 </span>
               )
             }
@@ -2571,7 +2557,7 @@ function ProjectsView({ darkMode, projects, onUpdateProject, onDeleteProject: _o
             </button>
           )}
           {/* Send deadline reminder button for client-action phases */}
-          {['onboarding', 'design', 'review'].includes(project.phase) && (
+          {['onboarding', 'design', 'payment'].includes(project.phase) && (
             <button
               onClick={async (e) => {
                 e.stopPropagation()
@@ -2607,7 +2593,7 @@ function ProjectsView({ darkMode, projects, onUpdateProject, onDeleteProject: _o
             </button>
           )}
           {/* Show payment button for design_approved phase */}
-          {project.phase === 'design_approved' && project.paymentStatus !== 'paid' && (
+          {project.phase === 'feedback' && project.paymentStatus !== 'paid' && (
             <button
               onClick={(e) => {
                 e.stopPropagation()
@@ -2994,8 +2980,8 @@ function ProjectsView({ darkMode, projects, onUpdateProject, onDeleteProject: _o
                           const needsOnboarding = project.phase === 'onboarding' && (!project.onboardingData || Object.keys(project.onboardingData).length === 0)
                           const uploadsReady = project.onboardingData?.uploadsCompleted === true
                           const needsPayment = (project.paymentStatus === 'pending' || project.paymentStatus === 'failed') &&
-                                               (project.phase === 'design_approved' || project.designApprovedAt)
-                          const awaitingApproval = project.phase === 'review'
+                                               (project.phase === 'feedback' || project.designApprovedAt)
+                          const awaitingApproval = project.phase === 'payment'
                           
                           if (hasUnreadMessages) {
                             return (
@@ -3033,7 +3019,7 @@ function ProjectsView({ darkMode, projects, onUpdateProject, onDeleteProject: _o
                             return (
                               <span className="px-2 py-1 text-xs font-medium bg-purple-500 text-white rounded-full flex items-center gap-1 w-fit">
                                 <User className="w-3 h-3" />
-                                Klant: Review
+                                Klant: Betaling
                               </span>
                             )
                           }
@@ -3128,7 +3114,7 @@ function ProjectsView({ darkMode, projects, onUpdateProject, onDeleteProject: _o
               } shadow-2xl`}
             >
               {(() => {
-                const phaseOrder: ProjectPhase[] = ['onboarding', 'design', 'design_approved', 'development', 'review', 'live']
+                const phaseOrder: ProjectPhase[] = ['onboarding', 'design', 'feedback', 'payment', 'payment', 'live']
                 const currentIndex = phaseOrder.indexOf(phaseChangeProject.phase)
                 const targetIndex = phaseChangeDirection === 'next' ? currentIndex + 1 : currentIndex - 1
                 const targetPhase = phaseOrder[targetIndex]
@@ -3321,25 +3307,17 @@ function ProjectDetailModal({ project, darkMode, onClose, onUpdate, phases }: Om
       { id: 'des_feedback', label: 'Feedback van klant ontvangen' },
       { id: 'des_approved', label: 'Design goedgekeurd door klant' },
     ],
-    design_approved: [
-      { id: 'app_payment_link', label: 'Betaallink verstuurd' },
-      { id: 'app_payment_received', label: 'Betaling ontvangen' },
-      { id: 'app_confirmed', label: 'Klant bevestigd voor development' },
+    feedback: [
+      { id: 'fb_preview_sent', label: 'Design preview naar klant gestuurd' },
+      { id: 'fb_feedback_received', label: 'Feedback ontvangen' },
+      { id: 'fb_changes_made', label: 'Feedback verwerkt' },
+      { id: 'fb_approved', label: 'Design definitief goedgekeurd' },
     ],
-    development: [
-      { id: 'dev_setup', label: 'Project setup voltooid' },
-      { id: 'dev_pages', label: 'Alle pagina\'s gebouwd' },
-      { id: 'dev_forms', label: 'Formulieren werkend' },
-      { id: 'dev_responsive', label: 'Responsive getest' },
-      { id: 'dev_seo', label: 'SEO ingesteld' },
-    ],
-    review: [
-      { id: 'rev_test', label: 'Uitgebreid getest' },
-      { id: 'rev_speed', label: 'Performance geoptimaliseerd' },
-      { id: 'rev_client_test', label: 'Klant heeft getest' },
-      { id: 'rev_feedback', label: 'Laatste feedback verwerkt' },
-      { id: 'rev_approval', label: 'Klant akkoord voor live' },
-      { id: 'rev_transfer_code', label: 'Verhuiscode domein ontvangen (indien nodig)' },
+    payment: [
+      { id: 'pay_link_sent', label: 'Betaallink verstuurd' },
+      { id: 'pay_received', label: 'Betaling ontvangen' },
+      { id: 'pay_build', label: 'Website gebouwd' },
+      { id: 'pay_domain', label: 'Domein geconfigureerd' },
     ],
     live: [
       { id: 'live_domain', label: 'Domein gekoppeld' },
@@ -3360,7 +3338,7 @@ function ProjectDetailModal({ project, darkMode, onClose, onUpdate, phases }: Om
   }
 
   const handleMoveToNextPhaseWithEmail = async () => {
-    const phaseOrder: ProjectPhase[] = ['onboarding', 'design', 'design_approved', 'development', 'review', 'live']
+    const phaseOrder: ProjectPhase[] = ['onboarding', 'design', 'feedback', 'payment', 'live']
     const currentIndex = phaseOrder.indexOf(editPhase)
     if (currentIndex < phaseOrder.length - 1) {
       const nextPhase = phaseOrder[currentIndex + 1]
@@ -3796,8 +3774,8 @@ function ProjectDetailModal({ project, darkMode, onClose, onUpdate, phases }: Om
                 </div>
               )}
 
-              {/* URLs Input Fields - for staging and live */}
-              {(editPhase === 'development' || editPhase === 'review' || editPhase === 'live') && (
+              {/* URLs Input Fields - for payment and live */}
+              {(editPhase === 'payment' || editPhase === 'live') && (
                 <div className={`p-4 rounded-xl border ${darkMode ? 'bg-gray-700/50 border-gray-600' : 'bg-gray-50 border-gray-200'}`}>
                   <h3 className={`font-semibold mb-4 flex items-center gap-2 ${darkMode ? 'text-white' : 'text-gray-900'}`}>
                     🔗 Website URLs
@@ -3925,7 +3903,7 @@ function ProjectDetailModal({ project, darkMode, onClose, onUpdate, phases }: Om
                               {fb.status === 'resolved' ? '✓ Verwerkt' : '⏳ Open'}
                             </span>
                             <span className={`text-xs ${darkMode ? 'text-gray-500' : 'text-gray-400'}`}>
-                              {fb.type === 'design' ? '🎨 Design' : '✅ Review'}
+                              {fb.type === 'design' ? '🎨 Design' : '✅ Betaling'}
                             </span>
                           </div>
                           <span className={`text-xs ${darkMode ? 'text-gray-500' : 'text-gray-400'}`}>
@@ -3955,7 +3933,7 @@ function ProjectDetailModal({ project, darkMode, onClose, onUpdate, phases }: Om
                             {fb.feedbackItems.filter((item: any) => item.rating === 'positive').length > 0 && (
                               <div className={`p-2 rounded-lg ${darkMode ? 'bg-green-900/30' : 'bg-green-50'}`}>
                                 <p className={`text-sm font-medium ${darkMode ? 'text-green-300' : 'text-green-700'}`}>
-                                  ✅ Goedgekeurd: {fb.feedbackItems.filter((item: any) => item.rating === 'positive').map((item: any) => item.category).join(', ')}
+                                  ✅ Feedback: {fb.feedbackItems.filter((item: any) => item.rating === 'positive').map((item: any) => item.category).join(', ')}
                                 </p>
                               </div>
                             )}
@@ -6794,7 +6772,7 @@ function ClientsView({ darkMode, projects, onUpdateProject, onDeleteProject }: C
                         <div className="flex items-center gap-3">
                           <span className={`w-2 h-2 rounded-full ${
                             project.phase === 'live' ? 'bg-emerald-500' : 
-                            project.phase === 'review' ? 'bg-blue-500' : 'bg-yellow-500'
+                            project.phase === 'payment' ? 'bg-blue-500' : 'bg-yellow-500'
                           }`} />
                           <div>
                             <p className={`font-medium ${darkMode ? 'text-white' : 'text-gray-900'}`}>
@@ -8934,9 +8912,12 @@ export default function DeveloperDashboardNew() {
       'onboarding': 'onboarding',
       'intake': 'onboarding',
       'design': 'design',
-      'development': 'development',
-      'review': 'review',
-      'revisions': 'review',
+      'feedback': 'feedback',
+      'design_approved': 'feedback',
+      'payment': 'payment',
+      'development': 'payment',
+      'review': 'payment',
+      'revisions': 'payment',
       'live': 'live',
     }
     return statusMap[status] || 'onboarding'

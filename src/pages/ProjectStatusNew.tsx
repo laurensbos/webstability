@@ -10,7 +10,6 @@ import {
   AlertCircle,
   FileText,
   Palette,
-  Code,
   Rocket,
   ChevronRight,
   ExternalLink,
@@ -36,12 +35,12 @@ import type { Project, ProjectPhase, ProjectMessage } from '../types/project'
 import { getProgressPercentage } from '../types/project'
 
 // Phase configuration - Visual stepper phases
-// Maps to backend phases: onboarding, design, design_approved (feedback), development (after payment), review, live
+// Flow: Onboarding → Design → Feedback → Betaling → Live
 const PHASES: { key: ProjectPhase; label: string; icon: typeof FileText }[] = [
   { key: 'onboarding', label: 'Onboarding', icon: FileText },
   { key: 'design', label: 'Design', icon: Palette },
-  { key: 'design_approved', label: 'Feedback', icon: MessageSquare },
-  { key: 'development', label: 'Development', icon: Code },
+  { key: 'feedback', label: 'Feedback', icon: MessageSquare },
+  { key: 'payment', label: 'Betaling', icon: CreditCard },
   { key: 'live', label: 'Live', icon: Rocket }
 ]
 
@@ -78,22 +77,21 @@ const PHASE_ACTIONS: Record<ProjectPhase, {
       type: 'whatsapp'
     }
   ],
-  design_approved: [
+  feedback: [
     { 
-      title: 'Betaling afronden', 
-      description: 'Rond de betaling af om door te gaan',
-      buttonText: 'Betalen',
+      title: 'Bekijk je design', 
+      description: 'Bekijk de preview en geef feedback',
+      buttonText: 'Design bekijken',
       type: 'action',
       urgent: true
     }
   ],
-  development: [],
-  review: [
+  payment: [
     { 
-      title: 'Website reviewen', 
-      description: 'Test alle paginas en geef feedback',
-      buttonText: 'Review',
-      type: 'link',
+      title: 'Betaling afronden', 
+      description: 'Rond de betaling af om live te gaan',
+      buttonText: 'Betalen',
+      type: 'action',
       urgent: true
     }
   ],
@@ -110,17 +108,13 @@ const PHASE_INFO: Record<ProjectPhase, { title: string; description: string }> =
     title: 'Je design wordt gemaakt',
     description: 'We werken aan het ontwerp van jouw website. Je ontvangt binnenkort een preview om te bekijken.'
   },
-  design_approved: {
-    title: 'Design goedgekeurd!',
-    description: 'Super! Na de betaling starten we direct met het bouwen van je website.'
+  feedback: {
+    title: 'Bekijk je design preview',
+    description: 'Je design is klaar! Bekijk de preview en geef je feedback. Na goedkeuring ontvang je de betaallink.'
   },
-  development: {
-    title: 'Je website wordt gebouwd',
-    description: 'We zijn druk bezig met bouwen! Even geduld, we houden je op de hoogte.'
-  },
-  review: {
-    title: 'Klaar voor review',
-    description: 'Je website is klaar om te bekijken. Test alles en geef je feedback.'
+  payment: {
+    title: 'Wachten op betaling',
+    description: 'Je design is goedgekeurd! Na de betaling zetten we je website live.'
   },
   live: {
     title: 'Gefeliciteerd! 🎉',
@@ -133,9 +127,8 @@ const getPhaseColors = (phase: ProjectPhase) => {
   const colors: Record<ProjectPhase, { bg: string; gradient: string; text: string }> = {
     onboarding: { bg: 'bg-blue-500', gradient: 'from-blue-600 to-indigo-600', text: 'text-blue-400' },
     design: { bg: 'bg-amber-500', gradient: 'from-amber-500 to-orange-500', text: 'text-amber-400' },
-    design_approved: { bg: 'bg-indigo-500', gradient: 'from-indigo-500 to-purple-500', text: 'text-indigo-400' },
-    development: { bg: 'bg-purple-500', gradient: 'from-purple-600 to-indigo-500', text: 'text-purple-400' },
-    review: { bg: 'bg-cyan-500', gradient: 'from-cyan-500 to-teal-500', text: 'text-cyan-400' },
+    feedback: { bg: 'bg-indigo-500', gradient: 'from-indigo-500 to-purple-500', text: 'text-indigo-400' },
+    payment: { bg: 'bg-purple-500', gradient: 'from-purple-600 to-indigo-500', text: 'text-purple-400' },
     live: { bg: 'bg-green-500', gradient: 'from-green-500 to-emerald-500', text: 'text-green-400' }
   }
   return colors[phase] || colors.onboarding
@@ -543,10 +536,8 @@ export default function ProjectStatusNew() {
   const getPhaseStatus = (phaseKey: ProjectPhase) => {
     if (!project) return 'pending'
     
-    // Map project status to stepper phase
-    // Backend uses: onboarding, design, design_approved, development, review, live
-    // Stepper shows: Onboarding, Design, Feedback (design_approved), Development, Live
-    const currentPhaseKey = project.status === 'review' ? 'development' : project.status
+    // Flow: Onboarding → Design → Feedback → Betaling → Live
+    const currentPhaseKey = project.status
     
     const currentIndex = PHASES.findIndex(p => p.key === currentPhaseKey)
     const phaseIndex = PHASES.findIndex(p => p.key === phaseKey)
@@ -807,7 +798,7 @@ export default function ProjectStatusNew() {
             <div className="flex items-center gap-1.5">
               <div className={`w-2 h-2 rounded-full ${phaseColors.bg}`} />
               <span className="text-xs text-gray-400">
-                {PHASES.find(p => p.key === project.status)?.label || (project.status === 'review' ? 'Development' : project.status)}
+                {PHASES.find(p => p.key === project.status)?.label || project.status}
               </span>
             </div>
           </div>
@@ -962,7 +953,7 @@ export default function ProjectStatusNew() {
                 {project.status === 'live' ? (
                   <span className="text-2xl">🎉</span>
                 ) : (() => {
-                  const currentPhase = PHASES.find(p => p.key === project.status) || PHASES.find(p => p.key === 'development')
+                  const currentPhase = PHASES.find(p => p.key === project.status) || PHASES[0]
                   const PhaseIcon = currentPhase?.icon || FileText
                   return <PhaseIcon className="w-6 h-6 text-white" />
                 })()}
@@ -1342,8 +1333,8 @@ export default function ProjectStatusNew() {
           </motion.div>
         )}
 
-        {/* Design Preview Link */}
-        {project.designPreviewUrl && (project.status === 'design' || project.status === 'review' || project.status === 'development' || project.status === 'design_approved') && (
+        {/* Design Preview Link - Show during feedback and payment phases */}
+        {project.designPreviewUrl && (project.status === 'design' || project.status === 'feedback' || project.status === 'payment') && (
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -1408,7 +1399,7 @@ export default function ProjectStatusNew() {
         )}
 
         {/* Payment Section */}
-        {project.status === 'design_approved' && project.paymentStatus !== 'paid' && (
+        {project.status === 'payment' && project.paymentStatus !== 'paid' && (
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}

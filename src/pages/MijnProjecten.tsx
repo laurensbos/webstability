@@ -16,17 +16,16 @@ import {
   Loader2,
   ChevronRight,
   Clock,
-  CheckCircle2,
   AlertCircle,
   Rocket,
   Palette,
-  Code,
   FileText,
   MessageSquare,
   Mail,
   LogOut,
   User,
-  RefreshCw
+  RefreshCw,
+  CreditCard
 } from 'lucide-react'
 import Logo from '../components/Logo'
 
@@ -42,9 +41,8 @@ interface ProjectSummary {
 const STATUS_CONFIG: Record<string, { label: string; color: string; bg: string; icon: typeof FileText }> = {
   onboarding: { label: 'Onboarding', color: 'text-blue-500', bg: 'bg-blue-500/20', icon: FileText },
   design: { label: 'Design', color: 'text-amber-500', bg: 'bg-amber-500/20', icon: Palette },
-  design_approved: { label: 'Goedgekeurd', color: 'text-indigo-500', bg: 'bg-indigo-500/20', icon: CheckCircle2 },
-  development: { label: 'Development', color: 'text-purple-500', bg: 'bg-purple-500/20', icon: Code },
-  review: { label: 'Review', color: 'text-cyan-500', bg: 'bg-cyan-500/20', icon: MessageSquare },
+  feedback: { label: 'Feedback', color: 'text-indigo-500', bg: 'bg-indigo-500/20', icon: MessageSquare },
+  payment: { label: 'Betaling', color: 'text-purple-500', bg: 'bg-purple-500/20', icon: CreditCard },
   live: { label: 'Live', color: 'text-green-500', bg: 'bg-green-500/20', icon: Rocket }
 }
 
@@ -432,11 +430,10 @@ export default function MijnProjecten() {
                       <div 
                         className={`h-full ${
                           project.status === 'live' ? 'bg-green-500 w-full' :
-                          project.status === 'review' ? 'bg-cyan-500 w-5/6' :
-                          project.status === 'development' ? 'bg-purple-500 w-4/6' :
-                          project.status === 'design_approved' ? 'bg-indigo-500 w-3/6' :
-                          project.status === 'design' ? 'bg-amber-500 w-2/6' :
-                          'bg-blue-500 w-1/6'
+                          project.status === 'payment' ? 'bg-purple-500 w-4/5' :
+                          project.status === 'feedback' ? 'bg-indigo-500 w-3/5' :
+                          project.status === 'design' ? 'bg-amber-500 w-2/5' :
+                          'bg-blue-500 w-1/5'
                         } transition-all`}
                       />
                     </div>

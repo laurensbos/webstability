@@ -52,7 +52,7 @@ type DashboardView =
   | 'services' 
   | 'settings'
 
-type ProjectPhase = 'onboarding' | 'design' | 'design_approved' | 'development' | 'review' | 'live'
+type ProjectPhase = 'onboarding' | 'design' | 'feedback' | 'payment' | 'live'
 type PaymentStatus = 'pending' | 'awaiting_payment' | 'paid' | 'failed' | 'refunded'
 type ServiceType = 'drone' | 'logo' | 'foto' | 'tekst' | 'seo'
 
@@ -141,9 +141,8 @@ const PACKAGE_CONFIG = {
 const PHASE_CONFIG: Record<ProjectPhase, { label: string; color: string; bg: string; icon: typeof FileText }> = {
   onboarding: { label: 'Onboarding', color: 'text-blue-600', bg: 'bg-blue-100', icon: FileText },
   design: { label: 'Design', color: 'text-amber-600', bg: 'bg-amber-100', icon: Palette },
-  design_approved: { label: 'Goedgekeurd', color: 'text-indigo-600', bg: 'bg-indigo-100', icon: CreditCard },
-  development: { label: 'Development', color: 'text-purple-600', bg: 'bg-purple-100', icon: Code },
-  review: { label: 'Review', color: 'text-cyan-600', bg: 'bg-cyan-100', icon: Eye },
+  feedback: { label: 'Feedback', color: 'text-indigo-600', bg: 'bg-indigo-100', icon: MessageSquare },
+  payment: { label: 'Betaling', color: 'text-purple-600', bg: 'bg-purple-100', icon: CreditCard },
   live: { label: 'Live', color: 'text-green-600', bg: 'bg-green-100', icon: Rocket },
 }
 
@@ -734,7 +733,7 @@ function OverviewView({ darkMode, projects, clients, serviceRequests, setActiveV
     pendingServices: serviceRequests.filter(s => s.status === 'pending').length,
   }
 
-  const readyToGoLive = projects.filter(p => p.paymentStatus === 'paid' && p.phase === 'review')
+  const readyToGoLive = projects.filter(p => p.paymentStatus === 'paid' && p.phase === 'payment')
   const awaitingPayment = projects.filter(p => p.designApproved && p.paymentStatus === 'awaiting_payment')
 
   return (

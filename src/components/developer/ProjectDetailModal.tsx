@@ -77,8 +77,8 @@ export default function ProjectDetailModal({
   const unreadMessages = project.messages.filter(m => !m.read && m.from === 'client').length
   const pendingFeedback = project.feedbackHistory?.filter(f => f.status === 'pending') || []
   
-  // Phase navigation
-  const phases: ProjectPhase[] = ['onboarding', 'design', 'design_approved', 'development', 'review', 'live']
+  // Phase navigation - Flow: Onboarding → Design → Feedback → Betaling → Live
+  const phases: ProjectPhase[] = ['onboarding', 'design', 'feedback', 'payment', 'live']
   const currentPhaseIndex = phases.indexOf(project.phase)
 
   // Helper to safely get onboarding data values
@@ -202,14 +202,14 @@ export default function ProjectDetailModal({
     if (designPreviewUrl === project.designPreviewUrl) return
     setSavingDesignUrl(true)
     
-    // Als er een URL wordt ingevuld en we zijn in 'design' fase, ga automatisch naar 'design_approved' (feedback fase)
+    // Als er een URL wordt ingevuld en we zijn in 'design' fase, ga automatisch naar 'feedback' fase
     const shouldAdvanceToFeedback = designPreviewUrl && designPreviewUrl.trim() !== '' && project.phase === 'design'
     
     onUpdate({
       ...project,
       designPreviewUrl: designPreviewUrl || undefined,
       // Automatisch naar feedback fase als URL wordt toegevoegd tijdens design fase
-      ...(shouldAdvanceToFeedback && { phase: 'design_approved' as ProjectPhase }),
+      ...(shouldAdvanceToFeedback && { phase: 'feedback' as ProjectPhase }),
       updatedAt: new Date().toISOString()
     })
     setTimeout(() => setSavingDesignUrl(false), 500)
@@ -424,7 +424,7 @@ export default function ProjectDetailModal({
                     </button>
                     
                     {/* Send Payment Link */}
-                    {project.phase === 'design_approved' && project.paymentStatus !== 'paid' && (
+                    {project.phase === 'feedback' && project.paymentStatus !== 'paid' && (
                       <button
                         onClick={() => onSendPaymentLink(project)}
                         className="flex items-center gap-2 px-3 py-2 bg-amber-500/20 hover:bg-amber-500/30 rounded-lg text-sm text-amber-400 transition"

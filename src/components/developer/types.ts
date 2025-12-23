@@ -5,7 +5,7 @@
 
 export type DashboardView = 'projects' | 'messages' | 'payments' | 'customers'
 
-export type ProjectPhase = 'onboarding' | 'design' | 'design_approved' | 'development' | 'review' | 'live'
+export type ProjectPhase = 'onboarding' | 'design' | 'feedback' | 'payment' | 'live'
 export type PaymentStatus = 'pending' | 'awaiting_payment' | 'paid' | 'failed' | 'refunded'
 export type ServiceType = 'website' | 'webshop' | 'logo' | 'drone'
 
@@ -179,23 +179,17 @@ export const PHASE_CONFIG: Record<ProjectPhase, {
     bgColor: 'bg-amber-500/20',
     emoji: '🎨'
   },
-  design_approved: { 
-    label: 'Goedgekeurd', 
+  feedback: { 
+    label: 'Feedback', 
     color: 'text-blue-400',
     bgColor: 'bg-blue-500/20',
-    emoji: '✅'
+    emoji: '💬'
   },
-  development: { 
-    label: 'Development', 
+  payment: { 
+    label: 'Betaling', 
     color: 'text-purple-400',
     bgColor: 'bg-purple-500/20',
-    emoji: '💻'
-  },
-  review: { 
-    label: 'Review', 
-    color: 'text-cyan-400',
-    bgColor: 'bg-cyan-500/20',
-    emoji: '👁️'
+    emoji: '�'
   },
   live: { 
     label: 'Live', 
@@ -245,38 +239,28 @@ export const PHASE_CHECKLIST: Record<ProjectPhase, {
       'Upload design preview naar project',
       'Verstuur design ter goedkeuring',
     ],
-    nextAction: 'Design klaar → Stuur ter goedkeuring',
+    nextAction: 'Design klaar → Stuur ter feedback',
   },
-  design_approved: {
-    title: 'Wachten op betaling',
-    tasks: [
-      'Klant heeft design goedgekeurd ✓',
-      'Wacht op eerste betaling',
-      'Check of betaling is ontvangen',
-    ],
-    nextAction: 'Betaling binnen → Start development',
-  },
-  development: {
-    title: 'Website bouwen',
-    tasks: [
-      'Zet project op in code editor',
-      'Bouw alle paginas volgens design',
-      'Voeg content en afbeeldingen toe',
-      'Test responsive design (mobile/tablet/desktop)',
-      'Test formulieren en functionaliteit',
-      'Optimaliseer performance en SEO',
-    ],
-    nextAction: 'Website klaar → Verstuur review link',
-  },
-  review: {
+  feedback: {
     title: 'Feedback verwerken',
     tasks: [
-      'Klant bekijkt preview website',
+      'Klant bekijkt design preview',
       'Verwerk feedback punten',
-      'Finale check doen',
-      'Vraag klant om akkoord voor live gaan',
+      'Bouw website volgens goedgekeurd design',
+      'Test responsive design (mobile/tablet/desktop)',
+      'Vraag klant om akkoord voor betaling',
     ],
-    nextAction: 'Klant akkoord → Zet website live',
+    nextAction: 'Klant akkoord → Stuur betaallink',
+  },
+  payment: {
+    title: 'Wachten op betaling',
+    tasks: [
+      'Betaallink verstuurd naar klant',
+      'Wacht op eerste betaling',
+      'Check of betaling is ontvangen',
+      'Configureer domein & DNS',
+    ],
+    nextAction: 'Betaling binnen → Zet website live',
   },
   live: {
     title: 'Website is live',

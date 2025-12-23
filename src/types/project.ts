@@ -2,7 +2,7 @@
  * Project status types voor het klantportaal
  */
 
-export type ProjectPhase = 'onboarding' | 'design' | 'design_approved' | 'development' | 'review' | 'live'
+export type ProjectPhase = 'onboarding' | 'design' | 'feedback' | 'payment' | 'live'
 
 export type PackageType = 'starter' | 'professional' | 'premium' | 'webshop'
 
@@ -281,50 +281,34 @@ export const PHASE_CONFIGS: PhaseConfig[] = [
     nextPhaseAction: 'Design goedkeuren →'
   },
   {
-    key: 'design_approved',
-    label: 'Goedgekeurd',
+    key: 'feedback',
+    label: 'Feedback',
     color: 'text-blue-700',
     bgColor: 'bg-blue-100',
     borderColor: 'border-blue-300',
-    description: 'Design goedgekeurd, wacht op betaling',
-    customerMessage: 'Je hebt het design goedgekeurd! Na betaling starten we met de bouw van je website.',
+    description: 'Bekijk design en geef feedback',
+    customerMessage: 'Je design preview is klaar! Bekijk het en geef je feedback.',
     checklist: [
+      { label: 'Design preview bekeken', forCustomer: true },
+      { label: 'Feedback gegeven', forCustomer: true },
+      { label: 'Feedback verwerkt', forCustomer: false },
       { label: 'Design definitief goedgekeurd', forCustomer: true },
+    ],
+    nextPhaseAction: 'Naar betaling →'
+  },
+  {
+    key: 'payment',
+    label: 'Betaling',
+    color: 'text-purple-700',
+    bgColor: 'bg-purple-100',
+    borderColor: 'border-purple-300',
+    description: 'Wacht op betaling om live te gaan',
+    customerMessage: 'Je design is goedgekeurd! Na betaling zetten we je website live.',
+    checklist: [
       { label: 'Betaallink verstuurd', forCustomer: false },
       { label: 'Betaling ontvangen', forCustomer: true },
-    ],
-    nextPhaseAction: 'Start development →'
-  },
-  {
-    key: 'development',
-    label: 'Development',
-    color: 'text-blue-700',
-    bgColor: 'bg-blue-100',
-    borderColor: 'border-blue-300',
-    description: 'We bouwen de website',
-    customerMessage: 'Design is goedgekeurd! We zijn nu je website aan het bouwen.',
-    checklist: [
-      { label: 'Homepage gebouwd', forCustomer: false },
-      { label: 'Overige pagina\'s gebouwd', forCustomer: false },
-      { label: 'Formulieren werkend', forCustomer: false },
-      { label: 'Responsive check gedaan', forCustomer: false },
-      { label: 'SEO basis ingesteld', forCustomer: false },
-    ],
-    nextPhaseAction: 'Klaar voor review →'
-  },
-  {
-    key: 'review',
-    label: 'Review',
-    color: 'text-amber-700',
-    bgColor: 'bg-amber-100',
-    borderColor: 'border-amber-300',
-    description: 'Klant bekijkt en geeft feedback',
-    customerMessage: 'Je website is klaar voor review! Bekijk de preview en geef je feedback.',
-    checklist: [
-      { label: 'Preview link naar klant gestuurd', forCustomer: false },
-      { label: 'Klant heeft gereviewd', forCustomer: true },
-      { label: 'Feedback verwerkt', forCustomer: false },
-      { label: 'Finale goedkeuring ontvangen', forCustomer: true },
+      { label: 'Website gebouwd', forCustomer: false },
+      { label: 'Domein geconfigureerd', forCustomer: false },
     ],
     nextPhaseAction: 'Zet live! 🚀'
   },
@@ -356,7 +340,7 @@ export const getPhaseConfig = (phase: ProjectPhase): PhaseConfig => {
  * Haal volgende fase op
  */
 export const getNextPhase = (currentPhase: ProjectPhase): ProjectPhase | null => {
-  const phases: ProjectPhase[] = ['onboarding', 'design', 'development', 'review', 'live']
+  const phases: ProjectPhase[] = ['onboarding', 'design', 'feedback', 'payment', 'live']
   const currentIndex = phases.indexOf(currentPhase)
   if (currentIndex < phases.length - 1) {
     return phases[currentIndex + 1]
@@ -371,9 +355,8 @@ export const getProgressPercentage = (status: ProjectPhase): number => {
   const percentages: Record<ProjectPhase, number> = {
     onboarding: 15,
     design: 35,
-    design_approved: 50,
-    development: 70,
-    review: 85,
+    feedback: 55,
+    payment: 75,
     live: 100
   }
   return percentages[status] ?? 0
@@ -435,23 +418,17 @@ export const PHASE_FAQS: Record<ProjectPhase, PhaseFAQ[]> = {
     { question: 'Hoe kan ik feedback geven?', answer: 'Via de feedbacksectie op deze pagina kun je je opmerkingen doorgeven. Wees zo specifiek mogelijk over wat je anders wilt.' },
     { question: 'Hoe lang duurt de designfase?', answer: 'Gemiddeld 3-5 werkdagen, afhankelijk van de complexiteit en feedback.' }
   ],
-  design_approved: [
-    { question: 'Wat betekent "Design goedgekeurd"?', answer: 'Je hebt het ontwerp goedgekeurd! Nu wachten we op je betaling voordat we verder gaan met de bouw van je website.' },
+  feedback: [
+    { question: 'Wat moet ik doen in de feedbackfase?', answer: 'Bekijk je design preview en geef aan wat je mooi vindt en wat je graag anders ziet. Wees zo specifiek mogelijk!' },
+    { question: 'Hoeveel feedback rondes zijn er?', answer: 'Afhankelijk van je pakket heb je 2-5 feedbackrondes. We verwerken je feedback tot je 100% tevreden bent.' },
+    { question: 'Hoe kan ik feedback geven?', answer: 'Via de design preview knop kun je per categorie feedback geven. Je kunt ook algemene opmerkingen toevoegen.' },
+    { question: 'Wat gebeurt er na mijn goedkeuring?', answer: 'Na je goedkeuring ontvang je een betaallink. Zodra de betaling binnen is, zetten we je website live!' }
+  ],
+  payment: [
     { question: 'Hoe kan ik betalen?', answer: 'Je ontvangt een betaallink via e-mail. Je kunt betalen via iDEAL, creditcard of andere betaalmethodes.' },
-    { question: 'Wat gebeurt er na betaling?', answer: 'Zodra we je betaling hebben ontvangen, starten we direct met het bouwen van je website!' },
-    { question: 'Kan ik nog wijzigingen doorgeven?', answer: 'Kleine wijzigingen zijn nog mogelijk tijdens de bouwfase. Grote ontwerpwijzigingen kunnen extra kosten met zich meebrengen.' }
-  ],
-  development: [
-    { question: 'Wat gebeurt er nu?', answer: 'We bouwen je website op basis van het goedgekeurde ontwerp. Alles wordt responsive gemaakt voor mobiel, tablet en desktop.' },
-    { question: 'Kan ik nog wijzigingen doorgeven?', answer: 'Kleine tekstaanpassingen zijn mogelijk. Grote structurele wijzigingen kunnen extra kosten met zich meebrengen.' },
-    { question: 'Hoe lang duurt development?', answer: 'Gemiddeld 5-10 werkdagen, afhankelijk van de complexiteit van je website.' },
-    { question: 'Wordt mijn website SEO-vriendelijk?', answer: 'Ja, we optimaliseren de technische SEO-basis: snelle laadtijden, goede structuur, en juiste meta-tags.' }
-  ],
-  review: [
-    { question: 'Wat moet ik controleren?', answer: 'Check alle teksten op spelfouten, of de foto\'s goed staan, of links werken, en of alles goed leesbaar is op je telefoon.' },
-    { question: 'Hoeveel tijd heb ik voor review?', answer: 'We geven je gemiddeld 3-5 werkdagen om alles te bekijken. Langer mag ook, maar dit kan de livegang vertragen.' },
-    { question: 'Wat als ik iets wil aanpassen?', answer: 'Gebruik het feedbackformulier om je aanpassingen door te geven. We verwerken deze zo snel mogelijk.' },
-    { question: 'Wanneer gaat mijn site live?', answer: 'Zodra je de finale goedkeuring geeft, kunnen we binnen 1-2 werkdagen live gaan!' }
+    { question: 'Wat gebeurt er na betaling?', answer: 'Zodra we je betaling hebben ontvangen, configureren we je domein en zetten we je website live!' },
+    { question: 'Hoe lang duurt het tot mijn site live is?', answer: 'Na betaling duurt het meestal 1-2 werkdagen voordat je website volledig live is.' },
+    { question: 'Wat als ik nog iets wil aanpassen?', answer: 'Kleine wijzigingen zijn altijd mogelijk. Neem contact met ons op via de chat.' }
   ],
   live: [
     { question: 'Mijn website is live! Wat nu?', answer: 'Gefeliciteerd! Je kunt nu je website delen. Wij zorgen voor hosting, SSL en technisch onderhoud.' },

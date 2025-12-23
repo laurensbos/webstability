@@ -11,7 +11,7 @@ const kv = REDIS_URL && REDIS_TOKEN
 
 interface Project {
   id: string
-  status: 'onboarding' | 'intake' | 'design' | 'development' | 'review' | 'live'
+  status: 'onboarding' | 'intake' | 'design' | 'feedback' | 'payment' | 'live'
   type: 'website' | 'webshop' | 'drone' | 'logo'
   packageType: string
   customer: {
@@ -185,15 +185,17 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 }
 
 // Map internal status to dashboard phase
-function mapStatus(status: string): 'onboarding' | 'design' | 'development' | 'review' | 'live' {
-  const statusMap: Record<string, 'onboarding' | 'design' | 'development' | 'review' | 'live'> = {
+function mapStatus(status: string): 'onboarding' | 'design' | 'feedback' | 'payment' | 'live' {
+  const statusMap: Record<string, 'onboarding' | 'design' | 'feedback' | 'payment' | 'live'> = {
     'pending': 'onboarding',
     'onboarding': 'onboarding',
     'intake': 'onboarding',
     'design': 'design',
-    'development': 'development',
-    'review': 'review',
-    'revisions': 'review',
+    'feedback': 'feedback',
+    'design_approved': 'feedback',  // Legacy mapping
+    'payment': 'payment',
+    'development': 'payment',        // Legacy mapping
+    'review': 'payment',             // Legacy mapping
     'live': 'live',
   }
   return statusMap[status] || 'onboarding'
@@ -204,8 +206,8 @@ function mapPhaseToStatus(phase: string): Project['status'] | null {
   const phaseMap: Record<string, Project['status']> = {
     'onboarding': 'onboarding',
     'design': 'design',
-    'development': 'development',
-    'review': 'review',
+    'feedback': 'feedback',
+    'payment': 'payment',
     'live': 'live',
   }
   return phaseMap[phase] || null
