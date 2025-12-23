@@ -52,6 +52,7 @@ import {
   AlertTriangle,
   FolderOpen,
   Layers,
+  Download,
 } from 'lucide-react'
 import Logo from '../components/Logo'
 // GrowthTools components available: ChurnAlert, UpsellBanner for future use
@@ -4276,70 +4277,285 @@ function ProjectDetailModal({ project, darkMode, onClose, onUpdate, phases }: Om
             <div className="space-y-6">
               {project.onboardingData && Object.keys(project.onboardingData).length > 0 ? (
                 <>
+                  {/* Header met download knop */}
                   <div className={`p-4 rounded-xl ${darkMode ? 'bg-emerald-900/20 border border-emerald-500/30' : 'bg-emerald-50 border border-emerald-200'}`}>
-                    <div className="flex items-center gap-3">
-                      <CheckCircle className="w-5 h-5 text-emerald-500" />
-                      <div>
-                        <h4 className={`font-semibold ${darkMode ? 'text-emerald-400' : 'text-emerald-800'}`}>
-                          Onboarding ingevuld
-                        </h4>
-                        <p className={`text-sm ${darkMode ? 'text-emerald-500' : 'text-emerald-700'}`}>
-                          De klant heeft de onboarding gegevens ingevuld
-                        </p>
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-3">
+                        <CheckCircle className="w-5 h-5 text-emerald-500" />
+                        <div>
+                          <h4 className={`font-semibold ${darkMode ? 'text-emerald-400' : 'text-emerald-800'}`}>
+                            Onboarding ingevuld ✓
+                          </h4>
+                          <p className={`text-sm ${darkMode ? 'text-emerald-500' : 'text-emerald-700'}`}>
+                            Alle klantgegevens staan hieronder
+                          </p>
+                        </div>
                       </div>
+                      <button
+                        onClick={() => {
+                          // Generate TXT content
+                          const generateTxtContent = () => {
+                            const lines: string[] = []
+                            lines.push('═══════════════════════════════════════════════════════════')
+                            lines.push(`  ONBOARDING GEGEVENS - ${project.businessName}`)
+                            lines.push('═══════════════════════════════════════════════════════════')
+                            lines.push('')
+                            lines.push(`Project ID: ${project.projectId}`)
+                            lines.push(`Geëxporteerd op: ${new Date().toLocaleString('nl-NL')}`)
+                            lines.push('')
+                            
+                            // Group onboarding data
+                            const groups: Record<string, { label: string; fields: string[] }> = {
+                              basis: { label: '📋 BASIS INFORMATIE', fields: ['businessName', 'companyName', 'contactName', 'contactEmail', 'contactPhone', 'industry', 'package', 'packageType'] },
+                              bedrijf: { label: '🏢 OVER HET BEDRIJF', fields: ['aboutBusiness', 'aboutText', 'uniqueFeatures', 'services', 'targetAudience', 'targetAudienceDetails', 'competitors'] },
+                              design: { label: '🎨 DESIGN VOORKEUREN', fields: ['designStyle', 'brandColors', 'colorPreferences', 'hasLogo', 'logoDescription', 'inspirationUrls', 'designNotes'] },
+                              website: { label: '🌐 WEBSITE STRUCTUUR', fields: ['selectedPages', 'pages', 'customPages', 'homePageDetails', 'servicesDetails', 'aboutPageDetails', 'extraFeatures'] },
+                              doelen: { label: '🎯 DOELEN & CONVERSIE', fields: ['goal', 'mainGoal', 'callToAction', 'conversionSpeed', 'contactMethods'] },
+                              content: { label: '📝 CONTENT', fields: ['hasContent', 'hasPhotos', 'wantsBlog', 'contentNotes'] },
+                              planning: { label: '📅 PLANNING', fields: ['deadline', 'specificDeadline', 'wantsMultilang', 'languages'] },
+                              social: { label: '📱 SOCIAL MEDIA', fields: ['socialFacebook', 'socialInstagram', 'socialLinkedIn', 'socialOther'] },
+                              extra: { label: '💡 EXTRA', fields: ['preferredDomain', 'existingDomain', 'needsBusinessEmail', 'additionalNotes', 'extraWishes'] },
+                            }
+                            
+                            const data = project.onboardingData as Record<string, unknown>
+                            const usedKeys = new Set<string>()
+                            
+                            Object.entries(groups).forEach(([, group]) => {
+                              const groupFields = group.fields.filter(f => {
+                                const val = data[f]
+                                return val !== undefined && val !== null && val !== ''
+                              })
+                              
+                              if (groupFields.length > 0) {
+                                lines.push('')
+                                lines.push(`─── ${group.label} ───────────────────────────`)
+                                lines.push('')
+                                
+                                groupFields.forEach(fieldKey => {
+                                  usedKeys.add(fieldKey)
+                                  const label = ONBOARDING_FIELD_LABELS[fieldKey] || fieldKey
+                                  const value = data[fieldKey]
+                                  let displayValue = ''
+                                  
+                                  if (Array.isArray(value)) {
+                                    displayValue = value.join(', ')
+                                  } else if (typeof value === 'boolean') {
+                                    displayValue = value ? 'Ja' : 'Nee'
+                                  } else if (typeof value === 'object' && value !== null) {
+                                    displayValue = JSON.stringify(value, null, 2)
+                                  } else {
+                                    displayValue = ONBOARDING_VALUE_LABELS[fieldKey]?.[String(value)] || String(value)
+                                  }
+                                  
+                                  lines.push(`${label}:`)
+                                  lines.push(`  ${displayValue}`)
+                                  lines.push('')
+                                })
+                              }
+                            })
+                            
+                            // Add any ungrouped fields
+                            const ungroupedFields = Object.keys(data).filter(k => 
+                              !usedKeys.has(k) && 
+                              !['lastUpdated', 'projectId', 'completed', 'isComplete', 'completedAt', 'uploadsCompleted'].includes(k) &&
+                              data[k] !== undefined && data[k] !== null && data[k] !== ''
+                            )
+                            
+                            if (ungroupedFields.length > 0) {
+                              lines.push('')
+                              lines.push('─── 📎 OVERIGE GEGEVENS ───────────────────────────')
+                              lines.push('')
+                              
+                              ungroupedFields.forEach(fieldKey => {
+                                const label = ONBOARDING_FIELD_LABELS[fieldKey] || fieldKey
+                                const value = data[fieldKey]
+                                let displayValue = ''
+                                
+                                if (Array.isArray(value)) {
+                                  displayValue = value.join(', ')
+                                } else if (typeof value === 'boolean') {
+                                  displayValue = value ? 'Ja' : 'Nee'
+                                } else if (typeof value === 'object' && value !== null) {
+                                  displayValue = JSON.stringify(value, null, 2)
+                                } else {
+                                  displayValue = String(value)
+                                }
+                                
+                                lines.push(`${label}:`)
+                                lines.push(`  ${displayValue}`)
+                                lines.push('')
+                              })
+                            }
+                            
+                            lines.push('')
+                            lines.push('═══════════════════════════════════════════════════════════')
+                            lines.push('  Gegenereerd door Webstability Developer Dashboard')
+                            lines.push('═══════════════════════════════════════════════════════════')
+                            
+                            return lines.join('\n')
+                          }
+                          
+                          const content = generateTxtContent()
+                          const blob = new Blob([content], { type: 'text/plain;charset=utf-8' })
+                          const url = URL.createObjectURL(blob)
+                          const a = document.createElement('a')
+                          a.href = url
+                          a.download = `onboarding-${project.projectId}-${project.businessName.replace(/\s+/g, '-').toLowerCase()}.txt`
+                          document.body.appendChild(a)
+                          a.click()
+                          document.body.removeChild(a)
+                          URL.revokeObjectURL(url)
+                        }}
+                        className={`flex items-center gap-2 px-4 py-2 rounded-lg font-medium transition ${
+                          darkMode 
+                            ? 'bg-purple-600 hover:bg-purple-500 text-white' 
+                            : 'bg-purple-500 hover:bg-purple-600 text-white'
+                        }`}
+                      >
+                        <Download className="w-4 h-4" />
+                        Download TXT
+                      </button>
                     </div>
                   </div>
 
-                  <div className="space-y-4">
-                    {Object.entries(project.onboardingData).map(([key, value]) => {
-                      // Skip internal fields
-                      if (key === 'lastUpdated' || key === 'projectId') return null
-                      
-                      // Format the key for display
-                      const formatKey = (k: string) => {
-                        const labels: Record<string, string> = {
-                          businessName: 'Bedrijfsnaam',
-                          businessDescription: 'Bedrijfsomschrijving',
-                          targetAudience: 'Doelgroep',
-                          websiteGoals: 'Website doelen',
-                          preferredColors: 'Voorkeurskleuren',
-                          exampleWebsites: 'Voorbeeldwebsites',
-                          logo: 'Logo',
-                          content: 'Content/Teksten',
-                          pages: 'Gewenste pagina\'s',
-                          contactInfo: 'Contactgegevens',
-                          socialMedia: 'Social media links',
-                          specialRequirements: 'Speciale wensen',
-                          deadline: 'Deadline',
-                          additionalNotes: 'Extra opmerkingen'
-                        }
-                        return labels[k] || k.replace(/([A-Z])/g, ' $1').replace(/^./, str => str.toUpperCase())
-                      }
-
-                      // Format the value for display
-                      const formatValue = (v: unknown): string => {
-                        if (v === null || v === undefined || v === '') return '-'
-                        if (typeof v === 'boolean') return v ? 'Ja' : 'Nee'
-                        if (Array.isArray(v)) return v.join(', ') || '-'
-                        if (typeof v === 'object') return JSON.stringify(v, null, 2)
-                        return String(v)
-                      }
-
-                      const displayValue = formatValue(value)
-                      if (displayValue === '-') return null
-
-                      return (
-                        <div key={key} className={`p-4 rounded-xl border ${darkMode ? 'bg-gray-800/50 border-gray-700' : 'bg-gray-50 border-gray-200'}`}>
-                          <p className={`text-sm font-medium mb-1 ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>
-                            {formatKey(key)}
-                          </p>
-                          <p className={`${darkMode ? 'text-white' : 'text-gray-900'} whitespace-pre-wrap break-words`}>
-                            {displayValue}
-                          </p>
-                        </div>
-                      )
-                    })}
-                  </div>
+                  {/* Grouped Onboarding Data */}
+                  {(() => {
+                    const groups: { id: string; label: string; icon: string; fields: string[] }[] = [
+                      { id: 'basis', label: 'Basis Informatie', icon: '📋', fields: ['businessName', 'companyName', 'contactName', 'contactEmail', 'contactPhone', 'industry', 'package', 'packageType'] },
+                      { id: 'bedrijf', label: 'Over het Bedrijf', icon: '🏢', fields: ['aboutBusiness', 'aboutText', 'uniqueFeatures', 'services', 'targetAudience', 'targetAudienceDetails', 'competitors'] },
+                      { id: 'design', label: 'Design Voorkeuren', icon: '🎨', fields: ['designStyle', 'brandColors', 'colorPreferences', 'hasLogo', 'logoDescription', 'inspirationUrls', 'designNotes'] },
+                      { id: 'website', label: 'Website Structuur', icon: '🌐', fields: ['selectedPages', 'pages', 'customPages', 'homePageDetails', 'servicesDetails', 'aboutPageDetails', 'extraFeatures'] },
+                      { id: 'doelen', label: 'Doelen & Conversie', icon: '🎯', fields: ['goal', 'mainGoal', 'callToAction', 'conversionSpeed', 'contactMethods'] },
+                      { id: 'content', label: 'Content', icon: '📝', fields: ['hasContent', 'hasPhotos', 'wantsBlog', 'contentNotes'] },
+                      { id: 'planning', label: 'Planning', icon: '📅', fields: ['deadline', 'specificDeadline', 'wantsMultilang', 'languages'] },
+                      { id: 'social', label: 'Social Media', icon: '📱', fields: ['socialFacebook', 'socialInstagram', 'socialLinkedIn', 'socialOther'] },
+                      { id: 'extra', label: 'Extra Wensen', icon: '💡', fields: ['preferredDomain', 'existingDomain', 'needsBusinessEmail', 'additionalNotes', 'extraWishes'] },
+                    ]
+                    
+                    const data = project.onboardingData as Record<string, unknown>
+                    const usedKeys = new Set<string>()
+                    
+                    return (
+                      <div className="space-y-4">
+                        {groups.map(group => {
+                          const groupFields = group.fields.filter(f => {
+                            const val = data[f]
+                            return val !== undefined && val !== null && val !== ''
+                          })
+                          
+                          if (groupFields.length === 0) return null
+                          
+                          groupFields.forEach(k => usedKeys.add(k))
+                          
+                          return (
+                            <div key={group.id} className={`rounded-xl border overflow-hidden ${darkMode ? 'bg-gray-800/50 border-gray-700' : 'bg-white border-gray-200'}`}>
+                              <div className={`px-4 py-3 border-b ${darkMode ? 'bg-gray-800 border-gray-700' : 'bg-gray-50 border-gray-200'}`}>
+                                <h5 className={`font-semibold flex items-center gap-2 ${darkMode ? 'text-white' : 'text-gray-900'}`}>
+                                  <span>{group.icon}</span>
+                                  {group.label}
+                                  <span className={`ml-auto text-xs px-2 py-0.5 rounded-full ${darkMode ? 'bg-gray-700 text-gray-400' : 'bg-gray-200 text-gray-600'}`}>
+                                    {groupFields.length} veld{groupFields.length !== 1 ? 'en' : ''}
+                                  </span>
+                                </h5>
+                              </div>
+                              <div className="divide-y divide-gray-200 dark:divide-gray-700">
+                                {groupFields.map(fieldKey => {
+                                  const label = ONBOARDING_FIELD_LABELS[fieldKey] || fieldKey
+                                  const value = data[fieldKey]
+                                  let displayValue = ''
+                                  let isLink = false
+                                  
+                                  if (Array.isArray(value)) {
+                                    displayValue = value.join(', ')
+                                  } else if (typeof value === 'boolean') {
+                                    displayValue = value ? 'Ja ✓' : 'Nee'
+                                  } else if (typeof value === 'object' && value !== null) {
+                                    displayValue = JSON.stringify(value, null, 2)
+                                  } else {
+                                    const strVal = String(value)
+                                    displayValue = ONBOARDING_VALUE_LABELS[fieldKey]?.[strVal] || strVal
+                                    isLink = strVal.startsWith('http://') || strVal.startsWith('https://') || strVal.startsWith('www.')
+                                  }
+                                  
+                                  return (
+                                    <div key={fieldKey} className={`px-4 py-3 ${darkMode ? '' : ''}`}>
+                                      <p className={`text-xs font-medium uppercase tracking-wide mb-1 ${darkMode ? 'text-gray-500' : 'text-gray-400'}`}>
+                                        {label}
+                                      </p>
+                                      {isLink ? (
+                                        <a 
+                                          href={displayValue.startsWith('http') ? displayValue : `https://${displayValue}`}
+                                          target="_blank"
+                                          rel="noopener noreferrer"
+                                          className={`text-purple-500 hover:text-purple-400 underline break-all`}
+                                        >
+                                          {displayValue}
+                                        </a>
+                                      ) : (
+                                        <p className={`${darkMode ? 'text-white' : 'text-gray-900'} whitespace-pre-wrap break-words`}>
+                                          {displayValue}
+                                        </p>
+                                      )}
+                                    </div>
+                                  )
+                                })}
+                              </div>
+                            </div>
+                          )
+                        })}
+                        
+                        {/* Ungrouped fields */}
+                        {(() => {
+                          const ungroupedFields = Object.keys(data).filter(k => 
+                            !usedKeys.has(k) && 
+                            !['lastUpdated', 'projectId', 'completed', 'isComplete', 'completedAt', 'uploadsCompleted'].includes(k) &&
+                            data[k] !== undefined && data[k] !== null && data[k] !== ''
+                          )
+                          
+                          if (ungroupedFields.length === 0) return null
+                          
+                          return (
+                            <div className={`rounded-xl border overflow-hidden ${darkMode ? 'bg-gray-800/50 border-gray-700' : 'bg-white border-gray-200'}`}>
+                              <div className={`px-4 py-3 border-b ${darkMode ? 'bg-gray-800 border-gray-700' : 'bg-gray-50 border-gray-200'}`}>
+                                <h5 className={`font-semibold flex items-center gap-2 ${darkMode ? 'text-white' : 'text-gray-900'}`}>
+                                  <span>📎</span>
+                                  Overige Gegevens
+                                </h5>
+                              </div>
+                              <div className="divide-y divide-gray-200 dark:divide-gray-700">
+                                {ungroupedFields.map(fieldKey => {
+                                  const label = ONBOARDING_FIELD_LABELS[fieldKey] || fieldKey.replace(/([A-Z])/g, ' $1').replace(/^./, str => str.toUpperCase())
+                                  const value = data[fieldKey]
+                                  let displayValue = ''
+                                  
+                                  if (Array.isArray(value)) {
+                                    displayValue = value.join(', ')
+                                  } else if (typeof value === 'boolean') {
+                                    displayValue = value ? 'Ja ✓' : 'Nee'
+                                  } else if (typeof value === 'object' && value !== null) {
+                                    displayValue = JSON.stringify(value, null, 2)
+                                  } else {
+                                    displayValue = String(value)
+                                  }
+                                  
+                                  return (
+                                    <div key={fieldKey} className={`px-4 py-3`}>
+                                      <p className={`text-xs font-medium uppercase tracking-wide mb-1 ${darkMode ? 'text-gray-500' : 'text-gray-400'}`}>
+                                        {label}
+                                      </p>
+                                      <p className={`${darkMode ? 'text-white' : 'text-gray-900'} whitespace-pre-wrap break-words`}>
+                                        {displayValue}
+                                      </p>
+                                    </div>
+                                  )
+                                })}
+                              </div>
+                            </div>
+                          )
+                        })()}
+                      </div>
+                    )
+                  })()}
                 </>
               ) : (
                 <div className={`p-8 rounded-xl text-center ${darkMode ? 'bg-gray-800/50 border border-gray-700' : 'bg-gray-50 border border-gray-200'}`}>
