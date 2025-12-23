@@ -218,6 +218,42 @@ export interface Project {
     desiredLaunchDate?: string
     additionalNotes?: string
   }
+  // Pre-live checklist data
+  domainInfo?: {
+    hasDomain?: boolean
+    domainName?: string
+    registrar?: string
+    authCode?: string
+    transferStatus?: string
+  }
+  emailInfo?: {
+    emailPreference?: 'none' | 'new' | 'existing'
+    currentProvider?: string
+    desiredEmails?: string[]
+    hasBusinessEmail?: boolean
+  }
+  legalInfo?: {
+    hasPrivacyPolicy?: boolean
+    privacyPolicyUrl?: string
+    wantsPrivacyPolicyCreated?: boolean
+    hasTermsConditions?: boolean
+    termsConditionsUrl?: string
+    wantsTermsCreated?: boolean
+    wantsAnalytics?: boolean
+  }
+  businessInfo?: {
+    kvkNumber?: string
+    btwNumber?: string
+  }
+  preLiveChecklist?: {
+    paymentReceived?: boolean
+    authCodeProvided?: boolean
+    privacyPolicyProvided?: boolean
+    termsConditionsProvided?: boolean
+    emailPreferenceConfirmed?: boolean
+    analyticsAgreed?: boolean
+    finalApprovalGiven?: boolean
+  }
 }
 
 export interface ProjectStep {

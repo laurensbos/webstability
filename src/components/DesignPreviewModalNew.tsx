@@ -1,6 +1,3 @@
-/**
- * DesignPreviewModal - Simpele, mobiel-vriendelijke versie
- */
 import { useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import confetti from 'canvas-confetti'

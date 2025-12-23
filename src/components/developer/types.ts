@@ -42,7 +42,10 @@ export interface Project {
   // Domain & Email for live going
   domainInfo?: DomainInfo
   emailInfo?: EmailInfo
+  legalInfo?: LegalInfo
+  businessInfo?: BusinessInfo
   liveGoingData?: LiveGoingData
+  preLiveChecklist?: PreLiveChecklist
 }
 
 export interface ChatMessage {
@@ -125,18 +128,68 @@ export interface EmailInfo {
 export interface LiveGoingData {
   domainInfo: DomainInfo
   emailInfo: EmailInfo
-  checklist: {
-    contentApproved: boolean
-    domainConfigured: boolean
-    dnsVerified: boolean
-    sslInstalled: boolean
-    emailConfigured: boolean
-    finalReview: boolean
-    clientApproved: boolean
-  }
+  legalInfo: LegalInfo
+  businessInfo: BusinessInfo
+  checklist: PreLiveChecklist
   scheduledLiveDate?: string
   actualLiveDate?: string
   notes?: string
+}
+
+// Legal documents info
+export interface LegalInfo {
+  hasPrivacyPolicy: boolean
+  privacyPolicyUrl?: string // Drive link or URL
+  privacyPolicyUploadedAt?: string
+  wantsPrivacyPolicyCreated: boolean
+  
+  hasTermsConditions: boolean
+  termsConditionsUrl?: string
+  termsConditionsUploadedAt?: string
+  wantsTermsCreated: boolean
+  
+  wantsAnalytics: boolean
+  analyticsConfigured?: boolean
+  cookieConsentConfigured?: boolean
+}
+
+// Business info for website
+export interface BusinessInfo {
+  kvkNumber?: string
+  btwNumber?: string
+  iban?: string // For webshops
+  businessAddress?: string
+  businessCity?: string
+  businessPostcode?: string
+}
+
+// Pre-live checklist - items klant moet afvinken
+export interface PreLiveChecklist {
+  // Automatisch
+  paymentReceived: boolean
+  paymentReceivedAt?: string
+  
+  // Domein
+  authCodeProvided: boolean
+  authCode?: string
+  authCodeProvidedAt?: string
+  domainTransferStarted: boolean
+  domainTransferCompleted: boolean
+  
+  // Juridisch
+  privacyPolicyProvided: boolean
+  termsConditionsProvided: boolean
+  
+  // Email
+  emailPreferenceConfirmed: boolean
+  emailSetupCompleted: boolean
+  
+  // Analytics
+  analyticsAgreed: boolean
+  
+  // Final
+  finalApprovalGiven: boolean
+  finalApprovalAt?: string
 }
 
 // Popular domain registrars in NL

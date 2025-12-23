@@ -31,6 +31,7 @@ import {
 import Logo from '../components/Logo'
 import ClientAccountModal from '../components/ClientAccountModal'
 import DesignPreviewModal from '../components/DesignPreviewModalNew'
+import PreLiveChecklist from '../components/PreLiveChecklist'
 import type { Project, ProjectPhase, ProjectMessage } from '../types/project'
 import { getProgressPercentage } from '../types/project'
 
@@ -1414,6 +1415,50 @@ export default function ProjectStatusNew() {
                 )}
               </div>
             </div>
+          </motion.div>
+        )}
+
+        {/* Pre-Live Checklist - Show after payment is received */}
+        {project.paymentStatus === 'paid' && project.status !== 'live' && (
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.25 }}
+          >
+            <PreLiveChecklist
+              projectId={project.projectId}
+              projectData={{
+                businessName: project.businessName,
+                domainInfo: project.domainInfo as any,
+                emailInfo: project.emailInfo as any,
+                legalInfo: project.legalInfo as any,
+                businessInfo: project.businessInfo as any,
+                preLiveChecklist: project.preLiveChecklist as any
+              }}
+              onUpdate={async (data) => {
+                try {
+                  const response = await fetch(`/api/project/${project.projectId}/prelive`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(data)
+                  })
+                  if (response.ok) {
+                    // Refresh project data
+                    const result = await response.json()
+                    setProject(prev => prev ? {
+                      ...prev,
+                      domainInfo: result.domainInfo,
+                      emailInfo: result.emailInfo,
+                      legalInfo: result.legalInfo,
+                      businessInfo: result.businessInfo,
+                      preLiveChecklist: result.preLiveChecklist
+                    } : null)
+                  }
+                } catch (error) {
+                  console.error('Error updating pre-live data:', error)
+                }
+              }}
+            />
           </motion.div>
         )}
 

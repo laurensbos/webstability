@@ -20,7 +20,7 @@ import {
   X,
   Info
 } from 'lucide-react'
-import type { DomainInfo, EmailInfo, LiveGoingData } from './developer/types'
+import type { DomainInfo, EmailInfo, LegalInfo, BusinessInfo, LiveGoingData } from './developer/types'
 import { DOMAIN_REGISTRARS, EMAIL_PROVIDERS } from './developer/types'
 
 interface LiveGoingWizardProps {
@@ -42,13 +42,31 @@ const DEFAULT_EMAIL_INFO: EmailInfo = {
 }
 
 const DEFAULT_CHECKLIST = {
-  contentApproved: false,
-  domainConfigured: false,
-  dnsVerified: false,
-  sslInstalled: false,
-  emailConfigured: false,
-  finalReview: false,
-  clientApproved: false
+  // Automatisch
+  paymentReceived: false,
+  paymentReceivedAt: undefined,
+  
+  // Domein
+  authCodeProvided: false,
+  authCode: undefined,
+  authCodeProvidedAt: undefined,
+  domainTransferStarted: false,
+  domainTransferCompleted: false,
+  
+  // Juridisch
+  privacyPolicyProvided: false,
+  termsConditionsProvided: false,
+  
+  // Email
+  emailPreferenceConfirmed: false,
+  emailSetupCompleted: false,
+  
+  // Analytics
+  analyticsAgreed: false,
+  
+  // Final
+  finalApprovalGiven: false,
+  finalApprovalAt: undefined
 }
 
 export default function LiveGoingWizard({
@@ -68,6 +86,18 @@ export default function LiveGoingWizard({
   const [emailInfo, setEmailInfo] = useState<EmailInfo>(
     initialData?.emailInfo || DEFAULT_EMAIL_INFO
   )
+  const [legalInfo] = useState<LegalInfo>(
+    initialData?.legalInfo || {
+      hasPrivacyPolicy: false,
+      wantsPrivacyPolicyCreated: false,
+      hasTermsConditions: false,
+      wantsTermsCreated: false,
+      wantsAnalytics: false
+    }
+  )
+  const [businessInfo] = useState<BusinessInfo>(
+    initialData?.businessInfo || {}
+  )
   const [notes, setNotes] = useState(initialData?.notes || '')
 
   const totalSteps = 4 // Domain, Email, Summary, Done
@@ -84,6 +114,8 @@ export default function LiveGoingWizard({
       await onSave({
         domainInfo,
         emailInfo,
+        legalInfo,
+        businessInfo,
         checklist: DEFAULT_CHECKLIST,
         notes
       })
