@@ -54,7 +54,7 @@ const QUICK_TAGS = [
 const TUTORIAL_STEPS_DESKTOP = [
   { title: 'Welkom! 👋', description: 'Hier kun je je website design bekijken en feedback geven. In 3 simpele stappen!', icon: '👋' },
   { title: 'Stap 1: Bekijk je design', description: 'Scroll eerst door de pagina om alles te bekijken. Gebruik de knop "Bekijken" hiervoor.', icon: '👁️' },
-  { title: 'Stap 2: Markeer wat opvalt', description: 'Klik op "Markeren" en gebruik Punt (📍) of Kader (⬜) om iets aan te wijzen. Voeg daarna een opmerking toe.', icon: '✏️' },
+  { title: 'Stap 2: Markeer wat opvalt', description: 'Scroll eerst naar de plek die je wilt markeren. Klik dan op "Markeren" en gebruik Punt (📍) of Kader (⬜). De positie wordt automatisch opgeslagen!', icon: '✏️' },
   { title: 'Stap 3: Verstuur of keur goed', description: 'Klaar? Klik op "Feedback versturen" of keur het design goed met de groene knop!', icon: '🚀' }
 ]
 
@@ -232,7 +232,8 @@ function DesignPreviewModal({ isOpen, onClose, projectId, designPreviewUrl, onFe
     if (annotations.length === 0 && !feedbackText.trim() && selectedTags.length === 0) return
     setIsSubmitting(true)
     try {
-      await fetch('/api/project/' + projectId + '/feedback', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ annotations, tags: selectedTags, text: feedbackText, device }) })
+      const markers = annotations.map(a => ({ id: a.id, x: a.points[0]?.x || 0, y: a.points[0]?.y || 0, device: a.device, comment: a.comment, type: 'suggestion' as const, scrollPosition: a.scrollPosition }))
+      await fetch('/api/project-feedback', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ projectId, approved: false, type: 'design', markers, quickTags: selectedTags, details: feedbackText }) })
       if (onFeedbackSubmit) await onFeedbackSubmit()
       setShowSuccess('feedback')
       setTimeout(() => onClose(), 2500)
@@ -390,7 +391,7 @@ function DesignPreviewModal({ isOpen, onClose, projectId, designPreviewUrl, onFe
                         <div className="flex items-center gap-2 mb-2">
                           <div className="w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold text-white flex-shrink-0" style={{ backgroundColor: annotation.color }}>{index + 1}</div>
                           <span className="text-sm text-zinc-300 flex-1">{annotation.type === 'marker' && 'Punt'}{annotation.type === 'square' && 'Kader'}</span>
-                          <button onClick={() => scrollToPosition(annotation.scrollPosition)} className="px-2 py-1 text-xs bg-zinc-700 hover:bg-zinc-600 text-zinc-300 rounded transition-colors" title="Ga naar deze positie">📍 {annotation.scrollPosition}%</button>
+                          <button onClick={() => scrollToPosition(annotation.scrollPosition)} className="px-2 py-1 text-xs bg-zinc-700 hover:bg-zinc-600 text-zinc-300 rounded transition-colors" title="Ga naar deze positie">📍 Ga naar</button>
                           <button onClick={() => deleteAnnotation(annotation.id)} className="p-1 text-zinc-500 hover:text-red-400 transition-colors" title="Verwijderen"><Trash2 className="w-4 h-4" /></button>
                         </div>
                         <input type="text" value={annotation.comment} onChange={(e) => updateAnnotationComment(annotation.id, e.target.value)} placeholder="Wat wil je hier veranderen?" className="w-full px-3 py-2 bg-zinc-900 border border-zinc-700 rounded-lg text-sm text-white placeholder-zinc-500 focus:outline-none focus:ring-1 focus:ring-purple-500" />

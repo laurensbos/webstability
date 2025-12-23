@@ -103,6 +103,7 @@ interface FeedbackMarker {
   device: string
   comment: string
   type: 'positive' | 'suggestion'
+  scrollPosition?: number
 }
 
 interface FeedbackRequest {
@@ -230,7 +231,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       if (markers && markers.length > 0) {
         feedbackSummary += `**Feedback punten op preview:**\n`
         markers.forEach((m, i) => {
-          feedbackSummary += `${i + 1}. [${m.device}] ${m.comment}\n`
+          feedbackSummary += `${i + 1}. [${m.device}]${m.scrollPosition !== undefined ? ` (scroll: ${m.scrollPosition}%)` : ``} ${m.comment}\n`
         })
         feedbackSummary += '\n'
       }
