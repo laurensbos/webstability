@@ -297,7 +297,7 @@ function DesignPreviewModal({ isOpen, onClose, projectId, designPreviewUrl, onFe
               <div className={'relative w-full h-full bg-white rounded-lg overflow-hidden shadow-2xl transition-all ' + (!isScrollMode ? 'ring-4 ring-purple-500/50' : '')}>
                 {!isScrollMode && !isMobile && (
                   <div className="absolute top-3 left-3 z-20 bg-purple-600 text-white px-3 py-1.5 rounded-full text-xs font-medium flex items-center gap-1.5 shadow-lg">
-                    <Pencil className="w-3 h-3" />Markeer modus - klik om te markeren
+                    <Pencil className="w-3 h-3" />Markeer modus - klik om te markeren (scroll eerst naar de juiste plek)
                   </div>
                 )}
                 {!iframeLoaded && <div className="absolute inset-0 flex items-center justify-center bg-zinc-900"><Loader2 className="w-8 h-8 text-purple-500 animate-spin" /></div>}
