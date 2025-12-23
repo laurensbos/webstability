@@ -228,6 +228,11 @@ export default function ProjectStatusNew() {
     const pwd = searchParams.get('pwd')
     const magicSession = searchParams.get('magic_session')
     
+    // Always remove sensitive params from URL immediately
+    if (pwd || magicSession) {
+      window.history.replaceState({}, '', `/status/${projectId}`)
+    }
+    
     if (hasSession) {
       setIsVerified(true)
       // Eerst project laden, loading blijft true totdat fetch klaar is
