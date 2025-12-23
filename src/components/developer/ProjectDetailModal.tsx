@@ -201,9 +201,15 @@ export default function ProjectDetailModal({
   const handleSaveDesignUrl = async () => {
     if (designPreviewUrl === project.designPreviewUrl) return
     setSavingDesignUrl(true)
+    
+    // Als er een URL wordt ingevuld en we zijn in 'design' fase, ga automatisch naar 'design_approved' (feedback fase)
+    const shouldAdvanceToFeedback = designPreviewUrl && designPreviewUrl.trim() !== '' && project.phase === 'design'
+    
     onUpdate({
       ...project,
       designPreviewUrl: designPreviewUrl || undefined,
+      // Automatisch naar feedback fase als URL wordt toegevoegd tijdens design fase
+      ...(shouldAdvanceToFeedback && { phase: 'design_approved' as ProjectPhase }),
       updatedAt: new Date().toISOString()
     })
     setTimeout(() => setSavingDesignUrl(false), 500)

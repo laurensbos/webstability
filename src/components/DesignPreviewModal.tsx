@@ -128,15 +128,21 @@ export default function DesignPreviewModal({
 
   const categories = FEEDBACK_CATEGORIES[serviceType] || FEEDBACK_CATEGORIES.website
 
+  // Valideer of de URL geldig is (niet leeg en begint met http:// of https://)
+  const isValidUrl = designPreviewUrl && 
+    designPreviewUrl.trim() !== '' && 
+    (designPreviewUrl.startsWith('http://') || designPreviewUrl.startsWith('https://'))
+
   // Reset state when modal opens
   useEffect(() => {
     if (isOpen) {
       setDevice('desktop')
       setActiveTab('preview')
       setIframeLoaded(false)
-      setIframeError(false)
+      // Als URL ongeldig is, toon direct error
+      setIframeError(!isValidUrl)
     }
-  }, [isOpen])
+  }, [isOpen, isValidUrl])
 
   // Device dimensions
   const deviceSizes = {
@@ -328,15 +334,17 @@ export default function DesignPreviewModal({
                   
                   <div className="w-px h-6 bg-gray-700 mx-2" />
                   
-                  <a
-                    href={designPreviewUrl}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="flex items-center gap-2 px-4 py-2 text-gray-400 hover:text-white hover:bg-gray-800 rounded-lg text-sm transition"
-                  >
-                    <ExternalLink className="w-4 h-4" />
-                    Open in nieuw tabblad
-                  </a>
+                  {isValidUrl && (
+                    <a
+                      href={designPreviewUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="flex items-center gap-2 px-4 py-2 text-gray-400 hover:text-white hover:bg-gray-800 rounded-lg text-sm transition"
+                    >
+                      <ExternalLink className="w-4 h-4" />
+                      Open in nieuw tabblad
+                    </a>
+                  )}
                   
                   <button
                     onClick={() => {
@@ -381,7 +389,7 @@ export default function DesignPreviewModal({
                           </div>
                           <div className="flex-1 mx-4">
                             <div className="bg-gray-700 rounded-lg px-4 py-1.5 text-xs text-gray-400 truncate max-w-md">
-                              {designPreviewUrl}
+                              {isValidUrl ? designPreviewUrl : 'Geen geldige URL ingesteld'}
                             </div>
                           </div>
                         </div>
@@ -408,28 +416,34 @@ export default function DesignPreviewModal({
                             </div>
                             <h3 className="text-lg font-semibold text-gray-800 mb-2">Preview niet beschikbaar</h3>
                             <p className="text-gray-600 mb-4 max-w-sm">
-                              De preview kan niet in dit venster worden geladen. Bekijk het design in een nieuw tabblad.
+                              {!isValidUrl 
+                                ? 'Er is nog geen geldige preview URL ingesteld. Neem contact op met de developer.'
+                                : 'De preview kan niet in dit venster worden geladen. Bekijk het design in een nieuw tabblad.'}
                             </p>
-                            <a
-                              href={designPreviewUrl}
-                              target="_blank"
-                              rel="noopener noreferrer"
-                              className="px-6 py-3 bg-purple-500 text-white rounded-xl font-medium hover:bg-purple-400 transition flex items-center gap-2"
-                            >
-                              <ExternalLink className="w-4 h-4" />
-                              Open in nieuw tabblad
-                            </a>
+                            {isValidUrl && (
+                              <a
+                                href={designPreviewUrl}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="px-6 py-3 bg-purple-500 text-white rounded-xl font-medium hover:bg-purple-400 transition flex items-center gap-2"
+                              >
+                                <ExternalLink className="w-4 h-4" />
+                                Open in nieuw tabblad
+                              </a>
+                            )}
                           </div>
                         )}
 
-                        <iframe
-                          src={designPreviewUrl}
-                          className={`w-full h-full border-0 ${iframeLoaded ? 'opacity-100' : 'opacity-0'}`}
-                          onLoad={() => setIframeLoaded(true)}
-                          onError={() => setIframeError(true)}
-                          title="Design Preview"
-                          sandbox="allow-scripts allow-same-origin"
-                        />
+                        {isValidUrl && (
+                          <iframe
+                            src={designPreviewUrl}
+                            className={`w-full h-full border-0 ${iframeLoaded ? 'opacity-100' : 'opacity-0'}`}
+                            onLoad={() => setIframeLoaded(true)}
+                            onError={() => setIframeError(true)}
+                            title="Design Preview"
+                            sandbox="allow-scripts allow-same-origin"
+                          />
+                        )}
                       </div>
                     </div>
                   </div>
