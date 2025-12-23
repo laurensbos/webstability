@@ -30,6 +30,11 @@ interface Project {
     message: string
     read: boolean
   }>
+  designPreviewUrl?: string
+  stagingUrl?: string
+  liveUrl?: string
+  googleDriveUrl?: string
+  internalNotes?: string
   createdAt: string
   updatedAt: string
 }
@@ -94,6 +99,11 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         messages: p.messages || [],
         onboardingData: p.onboardingData || {},
         type: p.type,
+        designPreviewUrl: p.designPreviewUrl || '',
+        stagingUrl: p.stagingUrl || '',
+        liveUrl: p.liveUrl || '',
+        googleDriveUrl: p.googleDriveUrl || '',
+        internalNotes: p.internalNotes || '',
       }))
       
       // Sort by createdAt (newest first)
@@ -124,6 +134,11 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         status: mapPhaseToStatus(updates.phase) || existing.status,
         paymentStatus: updates.paymentStatus || existing.paymentStatus,
         messages: updates.messages || existing.messages,
+        designPreviewUrl: updates.designPreviewUrl !== undefined ? updates.designPreviewUrl : existing.designPreviewUrl,
+        stagingUrl: updates.stagingUrl !== undefined ? updates.stagingUrl : existing.stagingUrl,
+        liveUrl: updates.liveUrl !== undefined ? updates.liveUrl : existing.liveUrl,
+        internalNotes: updates.internalNotes !== undefined ? updates.internalNotes : existing.internalNotes,
+        googleDriveUrl: updates.googleDriveUrl !== undefined ? updates.googleDriveUrl : existing.googleDriveUrl,
         updatedAt: new Date().toISOString(),
       }
       
