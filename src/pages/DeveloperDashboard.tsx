@@ -3942,6 +3942,24 @@ function ProjectDetailModal({ project, darkMode, onClose, onUpdate, phases }: Om
                           <p className={`text-sm whitespace-pre-line ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>{fb.feedback}</p>
                         ) : null}
                         
+                        {/* Show markers with scroll position */}
+                        {fb.markers && fb.markers.length > 0 && (
+                          <div className={\`mt-3 p-3 rounded-lg \${darkMode ? 'bg-purple-900/30 border border-purple-500/30' : 'bg-purple-50 border border-purple-200'}\`}>
+                            <p className={\`text-xs font-medium mb-2 \${darkMode ? 'text-purple-300' : 'text-purple-700'}\`}>📍 Annotaties op preview:</p>
+                            <div className="space-y-1">
+                              {fb.markers.map((marker: any, i: number) => (
+                                <div key={i} className={\`flex items-center gap-2 text-sm \${darkMode ? 'text-purple-200' : 'text-purple-800'}\`}>
+                                  <span className="font-medium">{i + 1}.</span>
+                                  <span className={\`px-1.5 py-0.5 rounded text-xs \${darkMode ? 'bg-purple-800' : 'bg-purple-200'}\`}>
+                                    {marker.device === 'desktop' ? '🖥️' : '📱'} {marker.scrollPosition !== undefined ? \`scroll \${marker.scrollPosition}%\` : ''}
+                                  </span>
+                                  <span>{marker.comment || 'Geen opmerking'}</span>
+                                </div>
+                              ))}
+                            </div>
+                          </div>
+                        )}
+                        
                         {/* Mark as resolved button */}
                         {fb.status !== 'resolved' && (
                           <button
