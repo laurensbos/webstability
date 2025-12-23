@@ -28,7 +28,8 @@ import {
   EyeOff,
   Loader2,
   ClipboardList,
-  ListChecks
+  ListChecks,
+  Palette
 } from 'lucide-react'
 import type { Project, ProjectPhase, ChatMessage } from './types'
 import { PHASE_CONFIG, PACKAGE_CONFIG, SERVICE_CONFIG, PHASE_CHECKLIST } from './types'
@@ -54,6 +55,8 @@ export default function ProjectDetailModal({
   const [newMessage, setNewMessage] = useState('')
   const [copied, setCopied] = useState(false)
   const [internalNotes, setInternalNotes] = useState(project.internalNotes || '')
+  const [designPreviewUrl, setDesignPreviewUrl] = useState(project.designPreviewUrl || '')
+  const [savingDesignUrl, setSavingDesignUrl] = useState(false)
   const messagesEndRef = useRef<HTMLDivElement>(null)
   
   // Delete confirmation state
@@ -193,6 +196,17 @@ export default function ProjectDetailModal({
       internalNotes,
       updatedAt: new Date().toISOString()
     })
+  }
+
+  const handleSaveDesignUrl = async () => {
+    if (designPreviewUrl === project.designPreviewUrl) return
+    setSavingDesignUrl(true)
+    onUpdate({
+      ...project,
+      designPreviewUrl: designPreviewUrl || undefined,
+      updatedAt: new Date().toISOString()
+    })
+    setTimeout(() => setSavingDesignUrl(false), 500)
   }
 
   const handleCopyLink = (url: string) => {
@@ -452,6 +466,60 @@ export default function ProjectDetailModal({
                     )}
                   </div>
                 </div>
+
+                {/* 🎨 DESIGN PREVIEW URL - Only in design phase */}
+                {project.phase === 'design' && (
+                  <div className={`rounded-xl p-4 border-2 ${
+                    designPreviewUrl 
+                      ? 'bg-emerald-500/10 border-emerald-500/50' 
+                      : 'bg-purple-500/10 border-purple-500 animate-pulse'
+                  }`}>
+                    <div className="flex items-center gap-3 mb-3">
+                      <div className={`p-2 rounded-lg ${designPreviewUrl ? 'bg-emerald-500' : 'bg-purple-500'}`}>
+                        <Palette className="w-5 h-5 text-white" />
+                      </div>
+                      <div className="flex-1">
+                        <h4 className={`font-bold text-sm ${designPreviewUrl ? 'text-emerald-400' : 'text-purple-400'}`}>
+                          🎨 Design Preview URL {!designPreviewUrl && '(VERPLICHT!)'}
+                        </h4>
+                        <p className="text-xs text-gray-400">
+                          Figma, staging, of andere preview link voor de klant
+                        </p>
+                      </div>
+                    </div>
+                    <div className="flex gap-2">
+                      <input
+                        type="url"
+                        value={designPreviewUrl}
+                        onChange={(e) => setDesignPreviewUrl(e.target.value)}
+                        onBlur={handleSaveDesignUrl}
+                        placeholder="https://figma.com/... of https://preview.webstability.nl/..."
+                        className="flex-1 bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm text-gray-300 placeholder-gray-600 focus:outline-none focus:border-purple-500"
+                      />
+                      {designPreviewUrl && (
+                        <a
+                          href={designPreviewUrl}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="px-3 py-2 bg-purple-500 text-white rounded-lg hover:bg-purple-600 transition flex items-center gap-1 text-sm"
+                        >
+                          <ExternalLink className="w-4 h-4" />
+                          Open
+                        </a>
+                      )}
+                    </div>
+                    {savingDesignUrl && (
+                      <p className="text-xs text-emerald-400 mt-2 flex items-center gap-1">
+                        <Loader2 className="w-3 h-3 animate-spin" /> Opslaan...
+                      </p>
+                    )}
+                    {designPreviewUrl && !savingDesignUrl && (
+                      <p className="text-xs text-emerald-400 mt-2">
+                        ✓ Klant kan dit bekijken via hun dashboard
+                      </p>
+                    )}
+                  </div>
+                )}
 
                 {/* Developer Checklist - Wat moet je doen? */}
                 <div className="bg-gradient-to-br from-emerald-500/10 to-emerald-500/5 border border-emerald-500/20 rounded-xl p-4">
