@@ -51,17 +51,16 @@ const QUICK_TAGS = [
 ]
 
 const TUTORIAL_STEPS_DESKTOP = [
-  { title: 'Welkom bij de feedback tool!', description: 'Met deze tool kun je eenvoudig aangeven wat je wel of niet mooi vindt aan het design.', icon: '👋' },
-  { title: 'Bekijken of Markeren', description: 'Kies "Bekijken" om door de pagina te scrollen, of "Markeren" om feedback toe te voegen.', icon: '🔄' },
-  { title: 'Markeer tools', description: 'Gebruik punt, kader, lijn of pijl om delen van het design te markeren.', icon: '🎨' },
-  { title: 'Opmerking toevoegen', description: 'Typ bij elke markering een opmerking. Zo weten we precies wat je bedoelt!', icon: '💬' },
-  { title: 'Goedkeuren of verzenden', description: 'Tevreden? Keur het design goed! Nog feedback? Verstuur je opmerkingen.', icon: '✅' }
+  { title: 'Welkom! 👋', description: 'Hier kun je je website design bekijken en feedback geven. In 3 simpele stappen!', icon: '👋' },
+  { title: 'Stap 1: Bekijk je design', description: 'Scroll eerst door de pagina om alles te bekijken. Gebruik de knop "Bekijken" hiervoor.', icon: '👁️' },
+  { title: 'Stap 2: Markeer wat opvalt', description: 'Klik op "Markeren" en gebruik Punt (📍) of Kader (⬜) om iets aan te wijzen. Voeg daarna een opmerking toe.', icon: '✏️' },
+  { title: 'Stap 3: Verstuur of keur goed', description: 'Klaar? Klik op "Feedback versturen" of keur het design goed met de groene knop!', icon: '🚀' }
 ]
 
 const TUTORIAL_STEPS_MOBILE = [
-  { title: 'Welkom!', description: 'Bekijk hier de mobiele versie van je design.', icon: '📱' },
-  { title: 'Scrollen & markeren', description: 'Wissel tussen scrollen (handje) en markeren (potlood) met de knop linksonder.', icon: '✏️' },
-  { title: 'Feedback geven', description: 'Tik om te markeren, voeg een opmerking toe en verstuur je feedback.', icon: '📤' }
+  { title: 'Welkom! 📱', description: 'Hier kun je de mobiele versie van je website bekijken en feedback geven.', icon: '📱' },
+  { title: 'Stap 1: Bekijk & Markeer', description: 'Gebruik het handje (👋) om te scrollen, en het potlood (✏️) om te markeren.', icon: '✏️' },
+  { title: 'Stap 2: Verstuur', description: 'Voeg een opmerking toe en klik op "Feedback versturen"!', icon: '🚀' }
 ]
 
 function DesignPreviewModal({ isOpen, onClose, projectId, designPreviewUrl, onFeedbackSubmit, onApprove }: DesignPreviewModalProps) {
