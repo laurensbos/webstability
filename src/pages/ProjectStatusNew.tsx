@@ -30,7 +30,7 @@ import {
 } from 'lucide-react'
 import Logo from '../components/Logo'
 import ClientAccountModal from '../components/ClientAccountModal'
-import DesignPreviewModal from '../components/DesignPreviewModal'
+import DesignPreviewModal from '../components/DesignPreviewModalNew'
 import type { Project, ProjectPhase, ProjectMessage } from '../types/project'
 import { getProgressPercentage } from '../types/project'
 
@@ -1596,7 +1596,7 @@ export default function ProjectStatusNew() {
           projectName={project.businessName}
           serviceType={(project.serviceType as 'website' | 'webshop' | 'logo' | 'drone') || 'website'}
           designPreviewUrl={ensureAbsoluteUrl(project.designPreviewUrl)}
-          onFeedbackSubmit={async (approved) => {
+          onFeedbackSubmit={async (approved, _markers) => {
             // Refresh project data after feedback is submitted
             if (approved) {
               // Update local state to reflect approval
