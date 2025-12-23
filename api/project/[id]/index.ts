@@ -35,6 +35,7 @@ interface Project {
   contactPhone?: string
   paymentStatus?: string
   previewUrl?: string
+  designPreviewUrl?: string
   liveUrl?: string
   estimatedCompletion?: string
   statusMessage?: string
@@ -163,6 +164,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       paymentStatus: project.paymentStatus || 'pending',
       estimatedCompletion: project.estimatedCompletion || '',
       previewUrl: project.previewUrl || '',
+      designPreviewUrl: project.designPreviewUrl || '',
       liveUrl: project.liveUrl || '',
       updates: project.updates || [],
       messages: project.messages || [],
