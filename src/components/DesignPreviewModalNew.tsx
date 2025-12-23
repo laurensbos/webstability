@@ -350,12 +350,12 @@ function DesignPreviewModal({ isOpen, onClose, projectId, designPreviewUrl, onFe
                       </div>
                       <div className="grid grid-cols-2 gap-2 mb-3">
                         {[{ type: 'marker' as AnnotationType, icon: MapPin, label: 'Punt', tooltip: 'Klik om een specifieke plek te markeren' }, { type: 'square' as AnnotationType, icon: Square, label: 'Kader', tooltip: 'Sleep om een gebied te omkaderen' }, ].map(({ type, icon: Icon, label, tooltip }) => (
-                          <button key={type} onClick={() => setCurrentTool(type)} title={tooltip} className={'flex flex-col items-center gap-1 p-3 rounded-lg transition-all ' + (currentTool === type ? 'bg-purple-600 text-white ring-2 ring-purple-400 ring-offset-2 ring-offset-zinc-900' : 'bg-zinc-800 text-zinc-400 hover:text-white hover:bg-zinc-700')}><Icon className="w-5 h-5" /><span className="text-xs font-medium">{label}</span></button>
+                          <button key={type} onClick={() => setCurrentTool(type)} title={tooltip} className={'flex flex-col items-center gap-2 p-4 rounded-xl transition-all ' + (currentTool === type ? 'bg-purple-600 text-white ring-2 ring-purple-400 ring-offset-2 ring-offset-zinc-900' : 'bg-zinc-800 text-zinc-400 hover:text-white hover:bg-zinc-700')}><Icon className="w-7 h-7" /><span className="text-sm font-medium">{label}</span></button>
                         ))}
                       </div>
                       <div className="flex items-center gap-3">
                         <span className="text-xs text-zinc-400">Kleur:</span>
-                        <div className="flex gap-2">{COLORS.map(color => <button key={color.id} onClick={() => setCurrentColor(color.value)} className={'w-7 h-7 rounded-full border-2 transition-all ' + (currentColor === color.value ? 'border-white scale-110 ring-2 ring-white/30' : 'border-transparent hover:scale-105')} style={{ backgroundColor: color.value }} title={color.label} />)}</div>
+                        <div className="flex gap-2">{COLORS.map(color => <button key={color.id} onClick={() => setCurrentColor(color.value)} className={'w-8 h-8 rounded-full border-2 transition-all ' + (currentColor === color.value ? 'border-white scale-110 ring-2 ring-white/30' : 'border-transparent hover:scale-105')} style={{ backgroundColor: color.value }} title={color.label} />)}</div>
                       </div>
                       <p className="text-xs text-zinc-500 mt-3 text-center">Klik op de preview om te markeren</p>
                     </motion.div>
