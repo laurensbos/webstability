@@ -34,6 +34,16 @@ import DesignPreviewModal from '../components/DesignPreviewModal'
 import type { Project, ProjectPhase, ProjectMessage } from '../types/project'
 import { getProgressPercentage } from '../types/project'
 
+// Helper function to ensure URL has protocol
+const ensureAbsoluteUrl = (url: string | undefined): string => {
+  if (!url) return ''
+  const trimmed = url.trim()
+  if (trimmed.startsWith('http://') || trimmed.startsWith('https://')) {
+    return trimmed
+  }
+  return `https://${trimmed}`
+}
+
 // Phase configuration - Visual stepper phases
 // Flow: Onboarding → Design → Feedback → Betaling → Live
 const PHASES: { key: ProjectPhase; label: string; icon: typeof FileText }[] = [
@@ -1338,7 +1348,7 @@ export default function ProjectStatusNew() {
             
             <div className="flex items-center justify-center gap-4 mt-3">
               <a
-                href={project.designPreviewUrl}
+                href={ensureAbsoluteUrl(project.designPreviewUrl)}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="text-sm text-gray-500 hover:text-purple-400 transition flex items-center gap-1"
@@ -1585,7 +1595,7 @@ export default function ProjectStatusNew() {
           projectId={project.projectId}
           projectName={project.businessName}
           serviceType={(project.serviceType as 'website' | 'webshop' | 'logo' | 'drone') || 'website'}
-          designPreviewUrl={project.designPreviewUrl}
+          designPreviewUrl={ensureAbsoluteUrl(project.designPreviewUrl)}
           onFeedbackSubmit={async (approved) => {
             // Refresh project data after feedback is submitted
             if (approved) {
