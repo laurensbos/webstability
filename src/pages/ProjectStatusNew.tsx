@@ -31,6 +31,7 @@ import {
 } from 'lucide-react'
 import Logo from '../components/Logo'
 import ClientAccountModal from '../components/ClientAccountModal'
+import DesignPreviewModal from '../components/DesignPreviewModal'
 import type { Project, ProjectPhase, ProjectMessage } from '../types/project'
 import { getProgressPercentage } from '../types/project'
 
@@ -208,6 +209,9 @@ export default function ProjectStatusNew() {
   
   // Account modal state
   const [showAccountModal, setShowAccountModal] = useState(false)
+  
+  // Design preview modal state
+  const [showDesignPreview, setShowDesignPreview] = useState(false)
   
   const phaseColors = project ? getPhaseColors(project.status) : getPhaseColors('onboarding')
   
@@ -442,8 +446,7 @@ export default function ProjectStatusNew() {
         const prevDeveloperMessages = messages.filter(m => m.from === 'developer')
         
         if (developerMessages.length > prevDeveloperMessages.length && prevMessageCountRef.current > 0) {
-          // Show browser notification if permitted
-          showBrowserNotification('Nieuw bericht', 'Je hebt een nieuw bericht ontvangen')
+          // New message received - no notification to avoid sounds
         }
         
         prevMessageCountRef.current = newMessages.length
@@ -451,15 +454,6 @@ export default function ProjectStatusNew() {
       }
     } catch {
       // Ignore
-    }
-  }
-
-  // Show browser notification
-  const showBrowserNotification = (title: string, body: string) => {
-    if ('Notification' in window && Notification.permission === 'granted') {
-      new Notification(title, { body, icon: '/favicon.svg' })
-    } else if ('Notification' in window && Notification.permission !== 'denied') {
-      Notification.requestPermission()
     }
   }
 
@@ -1233,13 +1227,11 @@ export default function ProjectStatusNew() {
 
             {/* Design Preview Link - Only show when available */}
             {project.designPreviewUrl && (
-              <motion.a
+              <motion.button
                 initial={{ opacity: 0, scale: 0.95 }}
                 animate={{ opacity: 1, scale: 1 }}
-                href={project.designPreviewUrl}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="block p-5 rounded-2xl bg-gradient-to-r from-purple-500/20 to-pink-500/20 border border-purple-500/40 hover:border-purple-400/60 transition group"
+                onClick={() => setShowDesignPreview(true)}
+                className="w-full text-left p-5 rounded-2xl bg-gradient-to-r from-purple-500/20 to-pink-500/20 border border-purple-500/40 hover:border-purple-400/60 transition group"
               >
                 <div className="flex items-center gap-4">
                   <div className="w-14 h-14 rounded-xl bg-purple-500/20 flex items-center justify-center group-hover:scale-110 transition">
@@ -1254,7 +1246,7 @@ export default function ProjectStatusNew() {
                   </div>
                   <ArrowRight className="w-6 h-6 text-purple-400 group-hover:translate-x-1 transition" />
                 </div>
-              </motion.a>
+              </motion.button>
             )}
 
             {/* What to expect */}
@@ -1263,7 +1255,7 @@ export default function ProjectStatusNew() {
               <ul className="space-y-2 text-sm text-gray-400">
                 <li className="flex items-start gap-2">
                   <span className="text-amber-400 mt-0.5">→</span>
-                  <span>Je ontvangt een <strong className="text-white">preview link</strong> via email zodra het ontwerp klaar is</span>
+                  <span>Je ontvangt een <strong className="text-white">email</strong> zodra de preview klaar is om te bekijken</span>
                 </li>
                 <li className="flex items-start gap-2">
                   <span className="text-amber-400 mt-0.5">→</span>
@@ -1344,27 +1336,44 @@ export default function ProjectStatusNew() {
         )}
 
         {/* Design Preview Link */}
-        {project.designPreviewUrl && (project.status === 'design' || project.status === 'review' || project.status === 'development') && (
-          <motion.a
+        {project.designPreviewUrl && (project.status === 'design' || project.status === 'review' || project.status === 'development' || project.status === 'design_approved') && (
+          <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.2 }}
-            href={project.designPreviewUrl}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="block p-4 rounded-xl bg-purple-500/10 border border-purple-500/30 hover:border-purple-500/50 transition group"
+            className="p-5 rounded-2xl bg-gradient-to-br from-purple-500/20 to-pink-500/10 border border-purple-500/30"
           >
-            <div className="flex items-center gap-4">
-              <div className="w-10 h-10 rounded-lg bg-purple-500/20 flex items-center justify-center">
-                <Palette className="w-5 h-5 text-purple-400" />
+            <div className="flex items-center gap-4 mb-4">
+              <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center shadow-lg">
+                <Palette className="w-6 h-6 text-white" />
               </div>
               <div className="flex-1">
-                <p className="font-medium text-white">Bekijk preview</p>
-                <p className="text-sm text-gray-500 truncate">{project.designPreviewUrl}</p>
+                <h3 className="font-bold text-white text-lg">Design Preview Klaar! ✨</h3>
+                <p className="text-sm text-gray-400">Bekijk je design en geef direct feedback</p>
               </div>
-              <ExternalLink className="w-5 h-5 text-purple-400 group-hover:translate-x-1 transition" />
             </div>
-          </motion.a>
+            
+            <button
+              onClick={() => setShowDesignPreview(true)}
+              className="w-full py-4 bg-gradient-to-r from-purple-500 to-pink-500 text-white rounded-xl font-semibold hover:from-purple-400 hover:to-pink-400 transition flex items-center justify-center gap-3 shadow-lg hover:shadow-purple-500/25"
+            >
+              <Eye className="w-5 h-5" />
+              Bekijk & Beoordeel Design
+              <ChevronRight className="w-5 h-5" />
+            </button>
+            
+            <div className="flex items-center justify-center gap-4 mt-3">
+              <a
+                href={project.designPreviewUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-sm text-gray-500 hover:text-purple-400 transition flex items-center gap-1"
+              >
+                <ExternalLink className="w-3 h-3" />
+                Open in nieuw tabblad
+              </a>
+            </div>
+          </motion.div>
         )}
 
         {/* Live website link */}
@@ -1591,6 +1600,25 @@ export default function ProjectStatusNew() {
           onClose={() => setShowAccountModal(false)}
           project={project}
           onUpdateProject={updateProject}
+        />
+      )}
+
+      {/* Design Preview Modal */}
+      {project && project.designPreviewUrl && (
+        <DesignPreviewModal
+          isOpen={showDesignPreview}
+          onClose={() => setShowDesignPreview(false)}
+          projectId={project.projectId}
+          projectName={project.businessName}
+          serviceType={(project.serviceType as 'website' | 'webshop' | 'logo' | 'drone') || 'website'}
+          designPreviewUrl={project.designPreviewUrl}
+          onFeedbackSubmit={async (approved) => {
+            // Refresh project data after feedback is submitted
+            if (approved) {
+              // Update local state to reflect approval
+              setProject(prev => prev ? { ...prev, designApprovedAt: new Date().toISOString() } : null)
+            }
+          }}
         />
       )}
     </div>

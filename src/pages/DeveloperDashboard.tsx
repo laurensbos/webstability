@@ -89,6 +89,7 @@ interface Project {
   estimatedCompletion?: string
   stagingUrl?: string
   liveUrl?: string
+  designPreviewUrl?: string
   designApproved?: boolean
   designApprovedAt?: string
   googleDriveUrl?: string
@@ -3286,8 +3287,9 @@ function ProjectDetailModal({ project, darkMode, onClose, onUpdate, phases }: Om
   const [editPhase, setEditPhase] = useState(project.phase)
   const [editPaymentStatus, setEditPaymentStatus] = useState(project.paymentStatus)
   const [internalNotes, setInternalNotes] = useState(project.internalNotes || '')
-  const [stagingUrl] = useState(project.stagingUrl || '')
-  const [liveUrl] = useState(project.liveUrl || '')
+  const [stagingUrl, setStagingUrl] = useState(project.stagingUrl || '')
+  const [liveUrl, setLiveUrl] = useState(project.liveUrl || '')
+  const [designPreviewUrl, setDesignPreviewUrl] = useState(project.designPreviewUrl || '')
   const [newMessage, setNewMessage] = useState('')
   const [isSaving, setIsSaving] = useState(false)
   const [checklist, setChecklist] = useState<Record<string, boolean>>(project.phaseChecklist || {})
@@ -3398,6 +3400,7 @@ function ProjectDetailModal({ project, darkMode, onClose, onUpdate, phases }: Om
       paymentStatus: editPaymentStatus,
       stagingUrl,
       liveUrl,
+      designPreviewUrl,
       internalNotes,
       phaseChecklist: checklist,
       updatedAt: new Date().toISOString(),
@@ -3671,6 +3674,117 @@ function ProjectDetailModal({ project, darkMode, onClose, onUpdate, phases }: Om
                   </div>
                 )}
               </div>
+
+              {/* 🎨 Design Preview URL - Only show in design phase */}
+              {editPhase === 'design' && (
+                <div className={`p-5 rounded-xl border-2 ${
+                  designPreviewUrl 
+                    ? darkMode ? 'bg-emerald-900/20 border-emerald-500' : 'bg-emerald-50 border-emerald-400'
+                    : darkMode ? 'bg-purple-900/30 border-purple-500 animate-pulse' : 'bg-purple-50 border-purple-400'
+                }`}>
+                  <div className="flex items-start gap-3 mb-4">
+                    <div className={`p-2 rounded-lg ${designPreviewUrl ? 'bg-emerald-500' : 'bg-purple-500'}`}>
+                      <Palette className="w-6 h-6 text-white" />
+                    </div>
+                    <div className="flex-1">
+                      <h3 className={`font-bold text-lg ${darkMode ? 'text-white' : 'text-gray-900'}`}>
+                        🎨 Design Preview Link
+                      </h3>
+                      <p className={`text-sm ${darkMode ? 'text-gray-400' : 'text-gray-600'}`}>
+                        Plaats hier de link naar het design (Figma, staging, etc.) zodat de klant het kan bekijken en goedkeuren.
+                      </p>
+                    </div>
+                  </div>
+                  
+                  <div className="space-y-3">
+                    <div className="flex gap-2">
+                      <input
+                        type="url"
+                        value={designPreviewUrl}
+                        onChange={(e) => setDesignPreviewUrl(e.target.value)}
+                        placeholder="https://figma.com/... of https://preview.webstability.nl/..."
+                        className={`flex-1 px-4 py-3 rounded-xl border-2 text-sm ${
+                          darkMode 
+                            ? 'bg-gray-800 border-gray-600 text-white placeholder-gray-500 focus:border-purple-500' 
+                            : 'bg-white border-gray-300 text-gray-900 placeholder-gray-400 focus:border-purple-500'
+                        } focus:outline-none focus:ring-2 focus:ring-purple-500/20`}
+                      />
+                      {designPreviewUrl && (
+                        <a
+                          href={designPreviewUrl}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="px-4 py-3 bg-purple-500 text-white rounded-xl hover:bg-purple-600 transition-colors flex items-center gap-2"
+                        >
+                          <ExternalLink className="w-4 h-4" />
+                          Open
+                        </a>
+                      )}
+                    </div>
+                    
+                    {!designPreviewUrl && (
+                      <div className={`flex items-center gap-2 p-3 rounded-lg ${darkMode ? 'bg-amber-900/30' : 'bg-amber-100'}`}>
+                        <AlertCircle className={`w-5 h-5 ${darkMode ? 'text-amber-400' : 'text-amber-600'}`} />
+                        <span className={`text-sm font-medium ${darkMode ? 'text-amber-300' : 'text-amber-700'}`}>
+                          ⚠️ Voeg de design link toe voordat je naar de volgende fase gaat!
+                        </span>
+                      </div>
+                    )}
+                    
+                    {designPreviewUrl && (
+                      <div className={`flex items-center gap-2 p-3 rounded-lg ${darkMode ? 'bg-emerald-900/30' : 'bg-emerald-100'}`}>
+                        <CheckCircle className={`w-5 h-5 ${darkMode ? 'text-emerald-400' : 'text-emerald-600'}`} />
+                        <span className={`text-sm ${darkMode ? 'text-emerald-300' : 'text-emerald-700'}`}>
+                          ✓ Design link ingesteld - klant kan dit bekijken via hun dashboard
+                        </span>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              )}
+
+              {/* URLs Input Fields - for staging and live */}
+              {(editPhase === 'development' || editPhase === 'review' || editPhase === 'live') && (
+                <div className={`p-4 rounded-xl border ${darkMode ? 'bg-gray-700/50 border-gray-600' : 'bg-gray-50 border-gray-200'}`}>
+                  <h3 className={`font-semibold mb-4 flex items-center gap-2 ${darkMode ? 'text-white' : 'text-gray-900'}`}>
+                    🔗 Website URLs
+                  </h3>
+                  <div className="space-y-3">
+                    <div>
+                      <label className={`block text-sm font-medium mb-1 ${darkMode ? 'text-gray-400' : 'text-gray-600'}`}>
+                        Staging/Preview URL
+                      </label>
+                      <input
+                        type="url"
+                        value={stagingUrl}
+                        onChange={(e) => setStagingUrl(e.target.value)}
+                        placeholder="https://staging.webstability.nl/project-naam"
+                        className={`w-full px-4 py-2 rounded-lg border ${
+                          darkMode 
+                            ? 'bg-gray-800 border-gray-600 text-white placeholder-gray-500' 
+                            : 'bg-white border-gray-300 text-gray-900 placeholder-gray-400'
+                        } focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500`}
+                      />
+                    </div>
+                    <div>
+                      <label className={`block text-sm font-medium mb-1 ${darkMode ? 'text-gray-400' : 'text-gray-600'}`}>
+                        Live URL
+                      </label>
+                      <input
+                        type="url"
+                        value={liveUrl}
+                        onChange={(e) => setLiveUrl(e.target.value)}
+                        placeholder="https://klantnaam.nl"
+                        className={`w-full px-4 py-2 rounded-lg border ${
+                          darkMode 
+                            ? 'bg-gray-800 border-gray-600 text-white placeholder-gray-500' 
+                            : 'bg-white border-gray-300 text-gray-900 placeholder-gray-400'
+                        } focus:outline-none focus:ring-2 focus:ring-green-500/20 focus:border-green-500`}
+                      />
+                    </div>
+                  </div>
+                </div>
+              )}
 
               {/* Contact Info */}
               <div className={`p-4 rounded-xl ${darkMode ? 'bg-gray-700/50' : 'bg-gray-50'}`}>
