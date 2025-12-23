@@ -106,6 +106,12 @@ interface FeedbackMarker {
   scrollPosition?: number
 }
 
+interface SectionFeedbackItem {
+  sectionId: string
+  rating: 'good' | 'change' | null
+  comment: string
+}
+
 interface FeedbackRequest {
   projectId: string
   approved: boolean
@@ -118,6 +124,9 @@ interface FeedbackRequest {
   category?: string
   details?: string
   markers?: FeedbackMarker[]
+  // Section-based feedback
+  sectionFeedback?: SectionFeedbackItem[]
+  generalComment?: string
 }
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
@@ -136,7 +145,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   
   try {
     const body = req.body as FeedbackRequest
-    const { projectId, approved, feedback, feedbackItems, type, severity, quickTags, category, details, markers } = body
+    const { projectId, approved, feedback, feedbackItems, type, severity, quickTags, category, details, markers, sectionFeedback, generalComment } = body
     
     if (!projectId) {
       return res.status(400).json({ success: false, error: 'Project ID is vereist' })
