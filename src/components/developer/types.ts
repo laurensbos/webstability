@@ -60,13 +60,31 @@ export interface FeedbackEntry {
   feedback: string
   feedbackItems?: FeedbackItem[]
   status: 'pending' | 'resolved'
+  // Extended feedback fields
+  severity?: 'small' | 'medium' | 'large'
+  quickTags?: string[]
+  category?: string
+  details?: string
+  markers?: FeedbackMarker[]
+}
+
+export interface FeedbackMarker {
+  id: string
+  x: number
+  y: number
+  device: 'desktop' | 'mobile'
+  comment: string
+  type: 'positive' | 'suggestion'
 }
 
 export interface FeedbackItem {
   category: string
-  rating: 'positive' | 'negative' | 'neutral'
-  feedback: string
-  priority: 'low' | 'normal' | 'urgent'
+  rating?: 'positive' | 'negative' | 'neutral'
+  type?: 'positive' | 'suggestion'
+  feedback?: string
+  text?: string
+  priority?: 'low' | 'normal' | 'urgent'
+  position?: { x: number; y: number; device: string }
 }
 
 // Domain & Email configuration for going live

@@ -88,9 +88,21 @@ interface ProjectData {
 
 interface FeedbackItem {
   category: string
-  rating: 'positive' | 'negative' | 'neutral'
-  feedback: string
-  priority: 'low' | 'normal' | 'urgent'
+  rating?: 'positive' | 'negative' | 'neutral'
+  type?: 'positive' | 'suggestion'
+  feedback?: string
+  text?: string
+  priority?: 'low' | 'normal' | 'urgent'
+  position?: { x: number; y: number; device: string }
+}
+
+interface FeedbackMarker {
+  id: string
+  x: number
+  y: number
+  device: string
+  comment: string
+  type: 'positive' | 'suggestion'
 }
 
 interface FeedbackRequest {
@@ -99,6 +111,12 @@ interface FeedbackRequest {
   feedback?: string
   feedbackItems?: FeedbackItem[]
   type: 'design' | 'review'
+  // Extended feedback fields
+  severity?: 'small' | 'medium' | 'large'
+  quickTags?: string[]
+  category?: string
+  details?: string
+  markers?: FeedbackMarker[]
 }
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
@@ -117,13 +135,13 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   
   try {
     const body = req.body as FeedbackRequest
-    const { projectId, approved, feedback, feedbackItems, type } = body
+    const { projectId, approved, feedback, feedbackItems, type, severity, quickTags, category, details, markers } = body
     
     if (!projectId) {
       return res.status(400).json({ success: false, error: 'Project ID is vereist' })
     }
     
-    console.log(`[Feedback] Received for project ${projectId}:`, { approved, type, feedback: feedback?.substring(0, 100) })
+    console.log(`[Feedback] Received for project ${projectId}:`, { approved, type, severity, feedback: feedback?.substring(0, 100) })
     
     // Haal project data op
     const projectData = kv ? await kv.get(`project:${projectId}`) as ProjectData | null : null
@@ -142,7 +160,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       // Update project met design approval
       projectData.designApprovedAt = designApprovedAt
       projectData.paymentStatus = 'awaiting_payment'
-      projectData.status = 'design_approved' // Move to design_approved phase - waiting for payment
+      projectData.status = 'payment' // Move to payment phase
       
       // Genereer betaallink als we customer info hebben
       if (projectData.contactEmail && projectData.package) {
@@ -171,30 +189,76 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       
     } else {
       // Feedback ontvangen - stuur naar developer
-      console.log(`[Feedback] Changes requested for ${projectId}:`, feedback, feedbackItems)
+      console.log(`[Feedback] Changes requested for ${projectId}:`, { severity, quickTags, details })
+      
+      // Update status back to design phase
+      projectData.status = 'design'
       
       // Voeg feedback toe aan project
       const existingFeedback = (projectData as any).feedbackHistory || []
       
-      // Bouw feedback samenvatting op basis van gestructureerde items
-      let feedbackSummary = feedback || ''
+      // Bouw feedback samenvatting op
+      const severityLabels = {
+        small: '🟢 Klein',
+        medium: '🟡 Medium', 
+        large: '🔴 Groot'
+      }
+      
+      let feedbackSummary = ''
+      
+      // Add severity
+      if (severity) {
+        feedbackSummary += `**Ernst:** ${severityLabels[severity] || severity}\n\n`
+      }
+      
+      // Add quick tags
+      if (quickTags && quickTags.length > 0) {
+        feedbackSummary += `**Aanpassingen:** ${quickTags.join(', ')}\n\n`
+      }
+      
+      // Add category
+      if (category) {
+        feedbackSummary += `**Categorie:** ${category}\n\n`
+      }
+      
+      // Add details
+      if (details) {
+        feedbackSummary += `**Toelichting:**\n${details}\n\n`
+      }
+      
+      // Add markers
+      if (markers && markers.length > 0) {
+        feedbackSummary += `**Feedback punten op preview:**\n`
+        markers.forEach((m, i) => {
+          feedbackSummary += `${i + 1}. [${m.device}] ${m.comment}\n`
+        })
+        feedbackSummary += '\n'
+      }
+      
+      // Legacy support - add old feedbackItems format
       if (feedbackItems && feedbackItems.length > 0) {
-        const itemsNeedingChange = feedbackItems.filter(f => f.rating === 'negative')
+        const itemsNeedingChange = feedbackItems.filter(f => f.rating === 'negative' || f.type === 'suggestion')
         if (itemsNeedingChange.length > 0) {
-          feedbackSummary += '\n\n📋 Wijzigingen nodig:\n'
+          feedbackSummary += '\n📋 Wijzigingen nodig:\n'
           itemsNeedingChange.forEach(item => {
             const priorityEmoji = item.priority === 'urgent' ? '🔴' : item.priority === 'normal' ? '🟡' : '🟢'
-            feedbackSummary += `${priorityEmoji} ${item.category}: ${item.feedback}\n`
+            feedbackSummary += `${priorityEmoji} ${item.category}: ${item.feedback || item.text}\n`
           })
         }
         
-        const positiveItems = feedbackItems.filter(f => f.rating === 'positive')
+        const positiveItems = feedbackItems.filter(f => f.rating === 'positive' || f.type === 'positive')
         if (positiveItems.length > 0) {
-          feedbackSummary += '\n\n✅ Goedgekeurd:\n'
+          feedbackSummary += '\n✅ Goedgekeurd:\n'
           positiveItems.forEach(item => {
-            feedbackSummary += `• ${item.category}${item.feedback ? `: ${item.feedback}` : ''}\n`
+            const text = item.feedback || item.text
+            feedbackSummary += `• ${item.category}${text ? `: ${text}` : ''}\n`
           })
         }
+      }
+      
+      // Add legacy feedback text
+      if (feedback) {
+        feedbackSummary += `\n${feedback}`
       }
       
       existingFeedback.push({
@@ -202,10 +266,18 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         date: new Date().toISOString(),
         type,
         feedback: feedbackSummary.trim(),
+        severity: severity || null,
+        quickTags: quickTags || [],
+        category: category || 'general',
+        details: details || '',
+        markers: markers || [],
         feedbackItems: feedbackItems || [],
         status: 'pending'
       })
       ;(projectData as any).feedbackHistory = existingFeedback
+      ;(projectData as any).hasPendingFeedback = true
+      ;(projectData as any).lastFeedbackAt = new Date().toISOString()
+      ;(projectData as any).lastFeedbackSeverity = severity || 'small'
       
       // Sla op in Redis
       if (kv) {

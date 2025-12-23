@@ -1593,15 +1593,21 @@ export default function ProjectStatusNew() {
           isOpen={showDesignPreview}
           onClose={() => setShowDesignPreview(false)}
           projectId={project.projectId}
-          projectName={project.businessName}
-          serviceType={(project.serviceType as 'website' | 'webshop' | 'logo' | 'drone') || 'website'}
           designPreviewUrl={ensureAbsoluteUrl(project.designPreviewUrl)}
-          onFeedbackSubmit={async (approved, _markers) => {
-            // Refresh project data after feedback is submitted
-            if (approved) {
-              // Update local state to reflect approval
-              setProject(prev => prev ? { ...prev, designApprovedAt: new Date().toISOString() } : null)
-            }
+          onApprove={async () => {
+            // Design approved - move to payment phase
+            setProject(prev => prev ? { 
+              ...prev, 
+              designApprovedAt: new Date().toISOString(),
+              status: 'payment' as ProjectPhase 
+            } : null)
+          }}
+          onFeedbackSubmit={async () => {
+            // Feedback given - move back to design phase
+            setProject(prev => prev ? { 
+              ...prev, 
+              status: 'design' as ProjectPhase 
+            } : null)
           }}
         />
       )}

@@ -1,215 +1,219 @@
-/**
- * DesignPreviewModal Component - Redesigned
- * 
- * Split-screen layout met:
- * - Links: Live website preview (desktop/mobiel)
- * - Rechts: Feedback panel
- * - Click-to-comment: Klik op de preview om feedback te plaatsen
- * - Interactieve markers op de preview
- */
-
-import { useState, useEffect, useRef } from 'react'
+import { useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import {
-  X,
-  Monitor,
-  Smartphone,
-  ExternalLink,
-  MessageCircle,
-  ThumbsUp,
-  AlertCircle,
-  CheckCircle2,
-  Trash2,
-  Loader2,
-  Send,
-  MousePointer2,
-  Plus
-} from 'lucide-react'
+import { X, Monitor, Smartphone, ThumbsUp, MessageSquare, Loader2, ChevronLeft, Check, Trash2 } from 'lucide-react'
+import confetti from 'canvas-confetti'
 
-// Feedback marker interface
 interface FeedbackMarker {
   id: string
-  x: number // percentage position
-  y: number // percentage position
-  device: 'desktop' | 'mobile'
+  x: number
+  y: number
   comment: string
-  type: 'positive' | 'suggestion'
-  createdAt: string
+  device: 'desktop' | 'mobile'
 }
 
 interface DesignPreviewModalProps {
   isOpen: boolean
   onClose: () => void
-  projectId: string
-  projectName: string
-  serviceType?: 'website' | 'webshop' | 'logo' | 'drone'
   designPreviewUrl: string
-  onFeedbackSubmit?: (approved: boolean, markers: FeedbackMarker[]) => Promise<void>
+  projectId: string
+  onApprove?: () => void
+  onFeedbackSubmit?: () => void
 }
 
-// Quick feedback suggestions
-const QUICK_SUGGESTIONS = [
-  { emoji: '🎨', text: 'Kleur aanpassen' },
-  { emoji: '📝', text: 'Tekst wijzigen' },
-  { emoji: '📷', text: 'Andere afbeelding' },
-  { emoji: '↔️', text: 'Formaat aanpassen' },
-  { emoji: '🔄', text: 'Volgorde wijzigen' },
-  { emoji: '✨', text: 'Ziet er goed uit!' },
+type ViewMode = 'desktop' | 'mobile'
+type ModalMode = 'preview' | 'approve' | 'feedback'
+type SeverityLevel = 'small' | 'medium' | 'large'
+
+const quickTags = [
+  { id: 'colors', label: 'Andere kleuren', icon: '🎨' },
+  { id: 'fonts', label: 'Ander lettertype', icon: '🔤' },
+  { id: 'images', label: 'Andere afbeeldingen', icon: '🖼️' },
+  { id: 'layout', label: 'Andere layout', icon: '📐' },
+  { id: 'text', label: 'Tekst aanpassen', icon: '✏️' },
+  { id: 'logo', label: 'Logo aanpassen', icon: '⭐' },
+  { id: 'complete-redesign', label: 'Compleet ander design', icon: '🔄' },
+  { id: 'other', label: 'Anders', icon: '💬' },
 ]
 
-export default function DesignPreviewModal({
-  isOpen,
-  onClose,
+const severityOptions: { value: SeverityLevel; label: string; description: string; color: string }[] = [
+  { value: 'small', label: 'Klein', description: 'Kleine aanpassingen zoals kleuren of tekst', color: 'bg-green-500' },
+  { value: 'medium', label: 'Medium', description: 'Grotere wijzigingen in layout of secties', color: 'bg-yellow-500' },
+  { value: 'large', label: 'Groot', description: 'Compleet nieuw design gewenst', color: 'bg-red-500' },
+]
+
+export default function DesignPreviewModal({ 
+  isOpen, 
+  onClose, 
+  designPreviewUrl, 
   projectId,
-  projectName,
-  designPreviewUrl,
-  onFeedbackSubmit
+  onApprove,
+  onFeedbackSubmit 
 }: DesignPreviewModalProps) {
-  // State
-  const [device, setDevice] = useState<'desktop' | 'mobile'>('desktop')
-  const [markers, setMarkers] = useState<FeedbackMarker[]>([])
-  const [isAddingMarker, setIsAddingMarker] = useState(false)
-  const [pendingMarker, setPendingMarker] = useState<{ x: number; y: number } | null>(null)
-  const [activeMarkerId, setActiveMarkerId] = useState<string | null>(null)
-  const [newComment, setNewComment] = useState('')
-  const [newCommentType, setNewCommentType] = useState<'positive' | 'suggestion'>('suggestion')
-  const [iframeLoaded, setIframeLoaded] = useState(false)
-  const [iframeError, setIframeError] = useState(false)
+  const [viewMode, setViewMode] = useState<ViewMode>('desktop')
+  const [modalMode, setModalMode] = useState<ModalMode>('preview')
+  const [isLoading, setIsLoading] = useState(true)
   const [isSubmitting, setIsSubmitting] = useState(false)
-  const [showSuccess, setShowSuccess] = useState(false)
-  const [generalFeedback, setGeneralFeedback] = useState('')
-  
-  const previewRef = useRef<HTMLDivElement>(null)
-  const iframeRef = useRef<HTMLIFrameElement>(null)
+  const [feedbackText, setFeedbackText] = useState('')
+  const [severity, setSeverity] = useState<SeverityLevel>('small')
+  const [selectedTags, setSelectedTags] = useState<string[]>([])
+  const [markers, setMarkers] = useState<FeedbackMarker[]>([])
+  const [activeMarker, setActiveMarker] = useState<string | null>(null)
+  const [pendingMarker, setPendingMarker] = useState<{ x: number; y: number } | null>(null)
+  const [markerComment, setMarkerComment] = useState('')
+  const [showApprovalConfirm, setShowApprovalConfirm] = useState(false)
 
-  // Ensure URL is absolute
-  const ensureAbsoluteUrl = (url: string): string => {
-    if (!url) return ''
-    if (url.startsWith('http://') || url.startsWith('https://')) return url
-    return `https://${url}`
-  }
-
-  const absoluteUrl = ensureAbsoluteUrl(designPreviewUrl)
-  const isValidUrl = absoluteUrl && absoluteUrl.startsWith('http')
-
-  // Reset state when modal opens/closes
   useEffect(() => {
     if (isOpen) {
-      setDevice('desktop')
+      setIsLoading(true)
+      setModalMode('preview')
+      setFeedbackText('')
+      setSeverity('small')
+      setSelectedTags([])
       setMarkers([])
-      setIsAddingMarker(false)
+      setActiveMarker(null)
       setPendingMarker(null)
-      setActiveMarkerId(null)
-      setNewComment('')
-      setIframeLoaded(false)
-      setIframeError(false)
-      setShowSuccess(false)
-      setGeneralFeedback('')
+      setMarkerComment('')
+      setShowApprovalConfirm(false)
     }
   }, [isOpen])
 
-  // Handle click on preview to add marker
-  const handlePreviewClick = (e: React.MouseEvent<HTMLDivElement>) => {
-    if (!isAddingMarker || !previewRef.current) return
-
-    const rect = previewRef.current.getBoundingClientRect()
-    const x = ((e.clientX - rect.left) / rect.width) * 100
-    const y = ((e.clientY - rect.top) / rect.height) * 100
-
-    setPendingMarker({ x, y })
-    setIsAddingMarker(false)
+  const handleIframeLoad = () => {
+    setIsLoading(false)
   }
 
-  // Add new marker with comment
-  const addMarker = () => {
-    if (!pendingMarker || !newComment.trim()) return
+  const handlePreviewClick = (e: React.MouseEvent<HTMLDivElement>) => {
+    if (modalMode !== 'feedback') return
+    
+    const rect = e.currentTarget.getBoundingClientRect()
+    const x = ((e.clientX - rect.left) / rect.width) * 100
+    const y = ((e.clientY - rect.top) / rect.height) * 100
+    
+    setPendingMarker({ x, y })
+    setMarkerComment('')
+  }
 
+  const addMarker = () => {
+    if (!pendingMarker || !markerComment.trim()) return
+    
     const newMarker: FeedbackMarker = {
       id: Date.now().toString(),
       x: pendingMarker.x,
       y: pendingMarker.y,
-      device,
-      comment: newComment.trim(),
-      type: newCommentType,
-      createdAt: new Date().toISOString()
+      comment: markerComment.trim(),
+      device: viewMode
     }
-
-    setMarkers(prev => [...prev, newMarker])
-    setPendingMarker(null)
-    setNewComment('')
-    setNewCommentType('suggestion')
-  }
-
-  // Delete marker
-  const deleteMarker = (id: string) => {
-    setMarkers(prev => prev.filter(m => m.id !== id))
-    if (activeMarkerId === id) setActiveMarkerId(null)
-  }
-
-  // Cancel pending marker
-  const cancelPendingMarker = () => {
-    setPendingMarker(null)
-    setNewComment('')
-  }
-
-  // Submit all feedback
-  const handleSubmit = async (approved: boolean) => {
-    setIsSubmitting(true)
     
-    try {
-      // Add general feedback as a marker if provided
-      const allMarkers = [...markers]
-      if (generalFeedback.trim()) {
-        allMarkers.push({
-          id: 'general-' + Date.now(),
-          x: 50,
-          y: 10,
-          device: 'desktop',
-          comment: `[Algemene feedback] ${generalFeedback.trim()}`,
-          type: 'suggestion',
-          createdAt: new Date().toISOString()
-        })
-      }
+    setMarkers([...markers, newMarker])
+    setPendingMarker(null)
+    setMarkerComment('')
+  }
 
-      // Call API
+  const removeMarker = (id: string) => {
+    setMarkers(markers.filter(m => m.id !== id))
+    if (activeMarker === id) setActiveMarker(null)
+  }
+
+  const toggleTag = (tagId: string) => {
+    if (selectedTags.includes(tagId)) {
+      setSelectedTags(selectedTags.filter(t => t !== tagId))
+    } else {
+      setSelectedTags([...selectedTags, tagId])
+    }
+  }
+
+  const triggerConfetti = () => {
+    const duration = 3000
+    const end = Date.now() + duration
+
+    const frame = () => {
+      confetti({
+        particleCount: 3,
+        angle: 60,
+        spread: 55,
+        origin: { x: 0 },
+        colors: ['#10b981', '#34d399', '#6ee7b7']
+      })
+      confetti({
+        particleCount: 3,
+        angle: 120,
+        spread: 55,
+        origin: { x: 1 },
+        colors: ['#10b981', '#34d399', '#6ee7b7']
+      })
+
+      if (Date.now() < end) {
+        requestAnimationFrame(frame)
+      }
+    }
+    frame()
+  }
+
+  const handleApprove = async () => {
+    setIsSubmitting(true)
+    try {
       const response = await fetch('/api/project-feedback', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           projectId,
-          approved,
-          type: 'design',
-          markers: allMarkers,
-          feedbackItems: allMarkers.map(m => ({
-            category: 'visual',
-            type: m.type,
-            text: m.comment,
-            position: { x: m.x, y: m.y, device: m.device }
-          }))
+          type: 'approval',
+          approved: true
         })
       })
 
-      if (!response.ok) throw new Error('Failed to submit')
-
-      if (onFeedbackSubmit) {
-        await onFeedbackSubmit(approved, allMarkers)
-      }
-
-      setShowSuccess(true)
+      if (!response.ok) throw new Error('Failed to approve')
+      
+      triggerConfetti()
+      
       setTimeout(() => {
+        onApprove?.()
         onClose()
       }, 2000)
     } catch (error) {
-      console.error('Error submitting feedback:', error)
-      alert('Er ging iets mis bij het versturen. Probeer het opnieuw.')
+      console.error('Approval error:', error)
     } finally {
       setIsSubmitting(false)
     }
   }
 
-  // Get markers for current device
-  const currentDeviceMarkers = markers.filter(m => m.device === device)
-  const otherDeviceMarkers = markers.filter(m => m.device !== device)
+  const handleSubmitFeedback = async () => {
+    if (!feedbackText.trim() && markers.length === 0 && selectedTags.length === 0) return
+    
+    setIsSubmitting(true)
+    try {
+      const response = await fetch('/api/project-feedback', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          projectId,
+          type: 'feedback',
+          approved: false,
+          feedback: feedbackText.trim(),
+          severity,
+          quickTags: selectedTags,
+          markers: markers.map(m => ({
+            x: m.x,
+            y: m.y,
+            comment: m.comment,
+            device: m.device
+          }))
+        })
+      })
+
+      if (!response.ok) throw new Error('Failed to submit feedback')
+      
+      onFeedbackSubmit?.()
+      setModalMode('preview')
+      setFeedbackText('')
+      setSeverity('small')
+      setSelectedTags([])
+      setMarkers([])
+    } catch (error) {
+      console.error('Feedback error:', error)
+    } finally {
+      setIsSubmitting(false)
+    }
+  }
 
   if (!isOpen) return null
 
@@ -219,510 +223,348 @@ export default function DesignPreviewModal({
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         exit={{ opacity: 0 }}
-        className="fixed inset-0 z-50 flex items-center justify-center"
+        className="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4"
+        onClick={onClose}
       >
-        {/* Backdrop */}
-        <div 
-          className="absolute inset-0 bg-black/80 backdrop-blur-sm"
-          onClick={onClose}
-        />
-
-        {/* Modal */}
         <motion.div
-          initial={{ opacity: 0, scale: 0.95, y: 20 }}
-          animate={{ opacity: 1, scale: 1, y: 0 }}
-          exit={{ opacity: 0, scale: 0.95, y: 20 }}
-          className="relative w-[95vw] h-[90vh] bg-gray-900 rounded-2xl overflow-hidden flex flex-col"
+          initial={{ opacity: 0, scale: 0.95 }}
+          animate={{ opacity: 1, scale: 1 }}
+          exit={{ opacity: 0, scale: 0.95 }}
+          className="bg-gray-900 rounded-2xl w-full max-w-7xl h-[90vh] flex flex-col overflow-hidden"
+          onClick={e => e.stopPropagation()}
         >
-          {/* Success overlay */}
-          <AnimatePresence>
-            {showSuccess && (
-              <motion.div
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                exit={{ opacity: 0 }}
-                className="absolute inset-0 z-50 bg-gray-900/95 flex items-center justify-center"
-              >
-                <motion.div
-                  initial={{ scale: 0 }}
-                  animate={{ scale: 1 }}
-                  className="text-center"
-                >
-                  <div className="w-20 h-20 bg-green-500/20 rounded-full flex items-center justify-center mx-auto mb-4">
-                    <CheckCircle2 className="w-10 h-10 text-green-400" />
-                  </div>
-                  <h3 className="text-2xl font-bold text-white mb-2">Feedback verzonden!</h3>
-                  <p className="text-gray-400">Bedankt voor je feedback. We gaan ermee aan de slag.</p>
-                </motion.div>
-              </motion.div>
-            )}
-          </AnimatePresence>
-
           {/* Header */}
           <div className="flex items-center justify-between px-6 py-4 border-b border-gray-800">
             <div className="flex items-center gap-4">
-              <h2 className="text-xl font-bold text-white">{projectName}</h2>
-              <span className="px-3 py-1 bg-purple-500/20 text-purple-400 text-sm rounded-full">
-                Design Review
-              </span>
-            </div>
-
-            {/* Device toggle */}
-            <div className="flex items-center gap-2 bg-gray-800 rounded-xl p-1">
-              <button
-                onClick={() => setDevice('desktop')}
-                className={`flex items-center gap-2 px-4 py-2 rounded-lg transition ${
-                  device === 'desktop' 
-                    ? 'bg-purple-500 text-white' 
-                    : 'text-gray-400 hover:text-white'
-                }`}
-              >
-                <Monitor className="w-4 h-4" />
-                <span className="text-sm font-medium">Desktop</span>
-              </button>
-              <button
-                onClick={() => setDevice('mobile')}
-                className={`flex items-center gap-2 px-4 py-2 rounded-lg transition ${
-                  device === 'mobile' 
-                    ? 'bg-purple-500 text-white' 
-                    : 'text-gray-400 hover:text-white'
-                }`}
-              >
-                <Smartphone className="w-4 h-4" />
-                <span className="text-sm font-medium">Mobiel</span>
-              </button>
-            </div>
-
-            <div className="flex items-center gap-3">
-              {isValidUrl && (
-                <a
-                  href={absoluteUrl}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="flex items-center gap-2 px-4 py-2 bg-gray-800 text-gray-300 rounded-xl hover:bg-gray-700 transition"
+              {modalMode !== 'preview' && (
+                <button
+                  onClick={() => setModalMode('preview')}
+                  className="p-2 hover:bg-gray-800 rounded-lg transition-colors"
                 >
-                  <ExternalLink className="w-4 h-4" />
-                  <span className="text-sm">Nieuw tabblad</span>
-                </a>
+                  <ChevronLeft className="w-5 h-5" />
+                </button>
               )}
+              <h2 className="text-xl font-semibold">
+                {modalMode === 'preview' && 'Design Preview'}
+                {modalMode === 'approve' && 'Design Goedkeuren'}
+                {modalMode === 'feedback' && 'Feedback Geven'}
+              </h2>
+            </div>
+            
+            <div className="flex items-center gap-4">
+              {/* View mode toggle */}
+              <div className="flex bg-gray-800 rounded-lg p-1">
+                <button
+                  onClick={() => setViewMode('desktop')}
+                  className={`flex items-center gap-2 px-3 py-1.5 rounded-md transition-colors ${
+                    viewMode === 'desktop' ? 'bg-emerald-600 text-white' : 'text-gray-400 hover:text-white'
+                  }`}
+                >
+                  <Monitor className="w-4 h-4" />
+                  <span className="text-sm">Desktop</span>
+                </button>
+                <button
+                  onClick={() => setViewMode('mobile')}
+                  className={`flex items-center gap-2 px-3 py-1.5 rounded-md transition-colors ${
+                    viewMode === 'mobile' ? 'bg-emerald-600 text-white' : 'text-gray-400 hover:text-white'
+                  }`}
+                >
+                  <Smartphone className="w-4 h-4" />
+                  <span className="text-sm">Mobile</span>
+                </button>
+              </div>
+              
               <button
                 onClick={onClose}
-                className="p-2 text-gray-400 hover:text-white hover:bg-gray-800 rounded-xl transition"
+                className="p-2 hover:bg-gray-800 rounded-lg transition-colors"
               >
                 <X className="w-5 h-5" />
               </button>
             </div>
           </div>
 
-          {/* Main content - Split screen */}
+          {/* Content */}
           <div className="flex-1 flex overflow-hidden">
-            {/* Left: Preview */}
-            <div className="flex-1 relative bg-gray-950 flex items-center justify-center p-6">
-              {/* Add marker mode indicator */}
-              <AnimatePresence>
-                {isAddingMarker && (
-                  <motion.div
-                    initial={{ opacity: 0, y: -20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    exit={{ opacity: 0, y: -20 }}
-                    className="absolute top-4 left-1/2 -translate-x-1/2 z-20 bg-purple-500 text-white px-4 py-2 rounded-full flex items-center gap-2 shadow-lg"
-                  >
-                    <MousePointer2 className="w-4 h-4" />
-                    <span className="text-sm font-medium">Klik op de plek waar je feedback wilt geven</span>
-                    <button 
-                      onClick={() => setIsAddingMarker(false)}
-                      className="ml-2 p-1 hover:bg-purple-600 rounded-full"
-                    >
-                      <X className="w-3 h-3" />
-                    </button>
-                  </motion.div>
-                )}
-              </AnimatePresence>
-
-              {/* Device frame */}
-              <div 
-                className={`relative transition-all duration-500 ${
-                  device === 'desktop' 
-                    ? 'w-full h-full max-w-[1200px]' 
-                    : 'w-[400px] h-[85%] max-h-[800px]'
+            {/* Preview Panel */}
+            <div className={`${modalMode === 'feedback' ? 'w-[65%]' : 'flex-1'} bg-gray-950 p-6 flex items-center justify-center overflow-hidden`}>
+              <div
+                className={`relative bg-white rounded-lg overflow-hidden shadow-2xl transition-all duration-300 ${
+                  viewMode === 'desktop' ? 'w-full h-full' : 'w-[400px] h-full'
                 }`}
+                onClick={handlePreviewClick}
+                style={{ cursor: modalMode === 'feedback' ? 'crosshair' : 'default' }}
               >
-                {/* Device mockup frame */}
-                <div className={`w-full h-full rounded-2xl overflow-hidden shadow-2xl ${
-                  device === 'mobile' 
-                    ? 'border-[8px] border-gray-700 bg-gray-700' 
-                    : 'border-4 border-gray-700 bg-gray-700'
-                }`}>
-                  {/* Mobile notch */}
-                  {device === 'mobile' && (
-                    <div className="absolute top-0 left-1/2 -translate-x-1/2 w-32 h-6 bg-gray-700 rounded-b-2xl z-10" />
-                  )}
-
-                  {/* Preview container */}
-                  <div 
-                    ref={previewRef}
-                    className={`relative w-full h-full bg-white overflow-hidden ${
-                      isAddingMarker ? 'cursor-crosshair' : ''
-                    }`}
-                    onClick={handlePreviewClick}
-                  >
-                    {/* Loading state */}
-                    {!iframeLoaded && !iframeError && isValidUrl && (
-                      <div className="absolute inset-0 flex flex-col items-center justify-center bg-gray-100 z-10">
-                        <Loader2 className="w-10 h-10 text-purple-500 animate-spin mb-4" />
-                        <p className="text-gray-600 font-medium">Design laden...</p>
-                      </div>
-                    )}
-
-                    {/* Error state */}
-                    {(iframeError || !isValidUrl) && (
-                      <div className="absolute inset-0 flex flex-col items-center justify-center bg-gray-100 p-8 text-center z-10">
-                        <div className="w-16 h-16 bg-amber-100 rounded-2xl flex items-center justify-center mb-4">
-                          <AlertCircle className="w-8 h-8 text-amber-600" />
-                        </div>
-                        <h3 className="text-lg font-semibold text-gray-800 mb-2">Preview niet beschikbaar</h3>
-                        <p className="text-gray-600 mb-4 max-w-sm">
-                          {!isValidUrl 
-                            ? 'Er is nog geen preview URL ingesteld.'
-                            : 'De website kan niet in dit venster worden geladen vanwege beveiligingsinstellingen.'}
-                        </p>
-                        {isValidUrl && (
-                          <a
-                            href={absoluteUrl}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="px-6 py-3 bg-purple-500 text-white rounded-xl font-medium hover:bg-purple-400 transition flex items-center gap-2"
-                          >
-                            <ExternalLink className="w-4 h-4" />
-                            Bekijk in nieuw tabblad
-                          </a>
-                        )}
-                      </div>
-                    )}
-
-                    {/* Iframe */}
-                    {isValidUrl && (
-                      <iframe
-                        ref={iframeRef}
-                        src={absoluteUrl}
-                        className={`w-full h-full border-0 transition-opacity ${
-                          iframeLoaded ? 'opacity-100' : 'opacity-0'
-                        } ${isAddingMarker ? 'pointer-events-none' : ''}`}
-                        onLoad={() => setIframeLoaded(true)}
-                        onError={() => setIframeError(true)}
-                        title="Design Preview"
-                        sandbox="allow-scripts allow-same-origin allow-forms"
-                      />
-                    )}
-
-                    {/* Existing markers */}
-                    {currentDeviceMarkers.map((marker, index) => (
-                      <motion.div
-                        key={marker.id}
-                        initial={{ scale: 0 }}
-                        animate={{ scale: 1 }}
-                        className="absolute z-20"
-                        style={{ left: `${marker.x}%`, top: `${marker.y}%` }}
-                      >
-                        <button
-                          onClick={(e) => {
-                            e.stopPropagation()
-                            setActiveMarkerId(activeMarkerId === marker.id ? null : marker.id)
-                          }}
-                          className={`w-8 h-8 -ml-4 -mt-4 rounded-full flex items-center justify-center text-white text-sm font-bold shadow-lg transition-transform hover:scale-110 ${
-                            marker.type === 'positive' 
-                              ? 'bg-green-500' 
-                              : 'bg-purple-500'
-                          } ${activeMarkerId === marker.id ? 'ring-4 ring-white/50' : ''}`}
-                        >
-                          {index + 1}
-                        </button>
-
-                        {/* Marker tooltip */}
-                        <AnimatePresence>
-                          {activeMarkerId === marker.id && (
-                            <motion.div
-                              initial={{ opacity: 0, y: 10, scale: 0.9 }}
-                              animate={{ opacity: 1, y: 0, scale: 1 }}
-                              exit={{ opacity: 0, y: 10, scale: 0.9 }}
-                              className="absolute top-8 left-0 w-64 bg-gray-800 rounded-xl shadow-2xl p-3 z-30"
-                              onClick={(e) => e.stopPropagation()}
-                            >
-                              <div className="flex items-start justify-between gap-2 mb-2">
-                                <span className={`px-2 py-0.5 rounded text-xs font-medium ${
-                                  marker.type === 'positive' 
-                                    ? 'bg-green-500/20 text-green-400' 
-                                    : 'bg-purple-500/20 text-purple-400'
-                                }`}>
-                                  {marker.type === 'positive' ? '👍 Positief' : '💬 Suggestie'}
-                                </span>
-                                <button
-                                  onClick={() => deleteMarker(marker.id)}
-                                  className="p-1 text-gray-500 hover:text-red-400 transition"
-                                >
-                                  <Trash2 className="w-3 h-3" />
-                                </button>
-                              </div>
-                              <p className="text-white text-sm">{marker.comment}</p>
-                            </motion.div>
-                          )}
-                        </AnimatePresence>
-                      </motion.div>
-                    ))}
-
-                    {/* Pending marker (while adding) */}
-                    <AnimatePresence>
-                      {pendingMarker && (
-                        <motion.div
-                          initial={{ scale: 0 }}
-                          animate={{ scale: 1 }}
-                          className="absolute z-30"
-                          style={{ left: `${pendingMarker.x}%`, top: `${pendingMarker.y}%` }}
-                        >
-                          <div className="w-8 h-8 -ml-4 -mt-4 rounded-full bg-purple-500 flex items-center justify-center animate-pulse shadow-lg ring-4 ring-purple-500/30">
-                            <Plus className="w-4 h-4 text-white" />
-                          </div>
-                        </motion.div>
-                      )}
-                    </AnimatePresence>
+                {isLoading && (
+                  <div className="absolute inset-0 flex items-center justify-center bg-gray-900">
+                    <Loader2 className="w-8 h-8 animate-spin text-emerald-500" />
                   </div>
-                </div>
+                )}
+                <iframe
+                  src={designPreviewUrl}
+                  className="w-full h-full border-0"
+                  onLoad={handleIframeLoad}
+                  title="Design Preview"
+                />
+                
+                {/* Feedback Markers */}
+                {modalMode === 'feedback' && markers.filter(m => m.device === viewMode).map((marker, index) => (
+                  <div
+                    key={marker.id}
+                    className="absolute w-6 h-6 -ml-3 -mt-3 bg-red-500 rounded-full flex items-center justify-center text-white text-xs font-bold cursor-pointer hover:scale-110 transition-transform"
+                    style={{ left: `${marker.x}%`, top: `${marker.y}%` }}
+                    onClick={(e) => {
+                      e.stopPropagation()
+                      setActiveMarker(activeMarker === marker.id ? null : marker.id)
+                    }}
+                  >
+                    {index + 1}
+                  </div>
+                ))}
+                
+                {/* Pending Marker */}
+                {pendingMarker && (
+                  <div
+                    className="absolute w-6 h-6 -ml-3 -mt-3 bg-yellow-500 rounded-full flex items-center justify-center animate-pulse"
+                    style={{ left: `${pendingMarker.x}%`, top: `${pendingMarker.y}%` }}
+                  >
+                    <span className="text-white text-xs font-bold">?</span>
+                  </div>
+                )}
               </div>
             </div>
 
-            {/* Right: Feedback panel */}
-            <div className="w-[380px] bg-gray-900 border-l border-gray-800 flex flex-col">
-              {/* Pending marker form */}
-              <AnimatePresence>
-                {pendingMarker && (
-                  <motion.div
-                    initial={{ opacity: 0, height: 0 }}
-                    animate={{ opacity: 1, height: 'auto' }}
-                    exit={{ opacity: 0, height: 0 }}
-                    className="border-b border-gray-800"
-                  >
-                    <div className="p-4">
-                      <div className="flex items-center justify-between mb-3">
-                        <h3 className="text-white font-semibold flex items-center gap-2">
-                          <Plus className="w-4 h-4 text-purple-400" />
-                          Nieuwe feedback
-                        </h3>
-                        <button
-                          onClick={cancelPendingMarker}
-                          className="text-gray-500 hover:text-white"
-                        >
-                          <X className="w-4 h-4" />
-                        </button>
-                      </div>
+            {/* Feedback Panel */}
+            {modalMode === 'feedback' && (
+              <motion.div
+                initial={{ opacity: 0, x: 20 }}
+                animate={{ opacity: 1, x: 0 }}
+                className="w-[35%] border-l border-gray-800 p-6 overflow-y-auto"
+              >
+                <div className="space-y-6">
+                  {/* Instructions */}
+                  <div className="bg-gray-800/50 rounded-lg p-4">
+                    <p className="text-sm text-gray-400">
+                      💡 Klik op het design om specifieke punten aan te wijzen, of gebruik onderstaande opties.
+                    </p>
+                  </div>
 
-                      {/* Type selector */}
-                      <div className="flex gap-2 mb-3">
-                        <button
-                          onClick={() => setNewCommentType('suggestion')}
-                          className={`flex-1 py-2 px-3 rounded-lg text-sm font-medium transition ${
-                            newCommentType === 'suggestion'
-                              ? 'bg-purple-500 text-white'
-                              : 'bg-gray-800 text-gray-400 hover:text-white'
-                          }`}
-                        >
-                          💬 Suggestie
-                        </button>
-                        <button
-                          onClick={() => setNewCommentType('positive')}
-                          className={`flex-1 py-2 px-3 rounded-lg text-sm font-medium transition ${
-                            newCommentType === 'positive'
-                              ? 'bg-green-500 text-white'
-                              : 'bg-gray-800 text-gray-400 hover:text-white'
-                          }`}
-                        >
-                          👍 Positief
-                        </button>
-                      </div>
-
-                      {/* Quick suggestions */}
-                      <div className="flex flex-wrap gap-1.5 mb-3">
-                        {QUICK_SUGGESTIONS.map((suggestion) => (
-                          <button
-                            key={suggestion.text}
-                            onClick={() => setNewComment(suggestion.text)}
-                            className="px-2 py-1 bg-gray-800 text-gray-300 text-xs rounded-lg hover:bg-gray-700 transition"
-                          >
-                            {suggestion.emoji} {suggestion.text}
-                          </button>
-                        ))}
-                      </div>
-
-                      {/* Comment input */}
+                  {/* Pending Marker Input */}
+                  {pendingMarker && (
+                    <div className="bg-yellow-500/10 border border-yellow-500/30 rounded-lg p-4 space-y-3">
+                      <p className="text-sm text-yellow-400 font-medium">Voeg een opmerking toe:</p>
                       <textarea
-                        value={newComment}
-                        onChange={(e) => setNewComment(e.target.value)}
-                        placeholder="Schrijf je feedback..."
-                        className="w-full px-3 py-2 bg-gray-800 border border-gray-700 rounded-xl text-white placeholder-gray-500 text-sm resize-none focus:outline-none focus:ring-2 focus:ring-purple-500"
-                        rows={3}
+                        value={markerComment}
+                        onChange={e => setMarkerComment(e.target.value)}
+                        placeholder="Wat wil je hier veranderd hebben?"
+                        className="w-full bg-gray-800 rounded-lg px-3 py-2 text-sm resize-none h-20"
                         autoFocus
                       />
-
-                      {/* Add button */}
-                      <button
-                        onClick={addMarker}
-                        disabled={!newComment.trim()}
-                        className="w-full mt-3 py-2.5 bg-purple-500 text-white rounded-xl font-medium hover:bg-purple-400 disabled:opacity-50 disabled:cursor-not-allowed transition flex items-center justify-center gap-2"
-                      >
-                        <Plus className="w-4 h-4" />
-                        Feedback toevoegen
-                      </button>
+                      <div className="flex gap-2">
+                        <button
+                          onClick={addMarker}
+                          disabled={!markerComment.trim()}
+                          className="flex-1 bg-yellow-500 hover:bg-yellow-600 disabled:opacity-50 text-black font-medium py-2 rounded-lg text-sm transition-colors"
+                        >
+                          Toevoegen
+                        </button>
+                        <button
+                          onClick={() => setPendingMarker(null)}
+                          className="px-4 py-2 bg-gray-700 hover:bg-gray-600 rounded-lg text-sm transition-colors"
+                        >
+                          Annuleren
+                        </button>
+                      </div>
                     </div>
-                  </motion.div>
-                )}
-              </AnimatePresence>
-
-              {/* Add marker button */}
-              {!pendingMarker && (
-                <div className="p-4 border-b border-gray-800">
-                  <button
-                    onClick={() => setIsAddingMarker(true)}
-                    className={`w-full py-3 rounded-xl font-medium transition flex items-center justify-center gap-2 ${
-                      isAddingMarker
-                        ? 'bg-purple-500 text-white'
-                        : 'bg-gray-800 text-gray-300 hover:bg-gray-700 hover:text-white'
-                    }`}
-                  >
-                    <MousePointer2 className="w-4 h-4" />
-                    Klik om feedback te plaatsen
-                  </button>
-                </div>
-              )}
-
-              {/* Feedback list */}
-              <div className="flex-1 overflow-y-auto p-4">
-                <div className="flex items-center justify-between mb-4">
-                  <h3 className="text-white font-semibold">
-                    Jouw feedback ({markers.length})
-                  </h3>
-                  {otherDeviceMarkers.length > 0 && (
-                    <span className="text-xs text-gray-500">
-                      +{otherDeviceMarkers.length} op {device === 'desktop' ? 'mobiel' : 'desktop'}
-                    </span>
                   )}
-                </div>
 
-                {markers.length === 0 ? (
-                  <div className="text-center py-8">
-                    <div className="w-12 h-12 bg-gray-800 rounded-full flex items-center justify-center mx-auto mb-3">
-                      <MessageCircle className="w-6 h-6 text-gray-600" />
-                    </div>
-                    <p className="text-gray-500 text-sm">
-                      Nog geen feedback gegeven.
-                    </p>
-                    <p className="text-gray-600 text-xs mt-1">
-                      Klik op de preview om te beginnen.
-                    </p>
-                  </div>
-                ) : (
-                  <div className="space-y-3">
-                    {markers.map((marker, index) => (
-                      <motion.div
-                        key={marker.id}
-                        initial={{ opacity: 0, x: 20 }}
-                        animate={{ opacity: 1, x: 0 }}
-                        className={`p-3 rounded-xl border transition cursor-pointer ${
-                          activeMarkerId === marker.id
-                            ? 'bg-gray-800 border-purple-500'
-                            : 'bg-gray-800/50 border-gray-700 hover:border-gray-600'
-                        } ${marker.device !== device ? 'opacity-50' : ''}`}
-                        onClick={() => {
-                          if (marker.device !== device) {
-                            setDevice(marker.device)
-                          }
-                          setActiveMarkerId(marker.id)
-                        }}
-                      >
-                        <div className="flex items-start gap-3">
-                          <div className={`w-6 h-6 rounded-full flex items-center justify-center text-white text-xs font-bold flex-shrink-0 ${
-                            marker.type === 'positive' ? 'bg-green-500' : 'bg-purple-500'
-                          }`}>
-                            {index + 1}
-                          </div>
-                          <div className="flex-1 min-w-0">
-                            <div className="flex items-center gap-2 mb-1">
-                              <span className={`text-xs font-medium ${
-                                marker.type === 'positive' ? 'text-green-400' : 'text-purple-400'
-                              }`}>
-                                {marker.type === 'positive' ? '👍 Positief' : '💬 Suggestie'}
-                              </span>
-                              {marker.device !== device && (
-                                <span className="text-xs text-gray-500 flex items-center gap-1">
-                                  {marker.device === 'desktop' ? <Monitor className="w-3 h-3" /> : <Smartphone className="w-3 h-3" />}
-                                </span>
-                              )}
-                            </div>
-                            <p className="text-white text-sm">{marker.comment}</p>
-                          </div>
-                          <button
-                            onClick={(e) => {
-                              e.stopPropagation()
-                              deleteMarker(marker.id)
-                            }}
-                            className="p-1 text-gray-500 hover:text-red-400 transition flex-shrink-0"
+                  {/* Markers List */}
+                  {markers.length > 0 && (
+                    <div className="space-y-2">
+                      <h4 className="text-sm font-medium text-gray-300">Markeringen ({markers.length})</h4>
+                      <div className="space-y-2">
+                        {markers.map((marker, index) => (
+                          <div
+                            key={marker.id}
+                            className={`bg-gray-800 rounded-lg p-3 flex items-start gap-3 ${
+                              activeMarker === marker.id ? 'ring-2 ring-red-500' : ''
+                            }`}
                           >
-                            <Trash2 className="w-4 h-4" />
-                          </button>
-                        </div>
-                      </motion.div>
-                    ))}
-                  </div>
-                )}
-
-                {/* General feedback */}
-                <div className="mt-6">
-                  <h4 className="text-gray-400 text-sm font-medium mb-2">Algemene opmerkingen</h4>
-                  <textarea
-                    value={generalFeedback}
-                    onChange={(e) => setGeneralFeedback(e.target.value)}
-                    placeholder="Nog iets anders? Schrijf het hier..."
-                    className="w-full px-3 py-2 bg-gray-800 border border-gray-700 rounded-xl text-white placeholder-gray-500 text-sm resize-none focus:outline-none focus:ring-2 focus:ring-purple-500"
-                    rows={3}
-                  />
-                </div>
-              </div>
-
-              {/* Submit buttons */}
-              <div className="p-4 border-t border-gray-800 space-y-3">
-                <button
-                  onClick={() => handleSubmit(true)}
-                  disabled={isSubmitting}
-                  className="w-full py-3 bg-green-500 text-white rounded-xl font-medium hover:bg-green-400 disabled:opacity-50 transition flex items-center justify-center gap-2"
-                >
-                  {isSubmitting ? (
-                    <Loader2 className="w-5 h-5 animate-spin" />
-                  ) : (
-                    <>
-                      <ThumbsUp className="w-5 h-5" />
-                      Design goedkeuren
-                    </>
+                            <span className="w-6 h-6 bg-red-500 rounded-full flex items-center justify-center text-white text-xs font-bold flex-shrink-0">
+                              {index + 1}
+                            </span>
+                            <div className="flex-1 min-w-0">
+                              <p className="text-sm text-gray-300">{marker.comment}</p>
+                              <p className="text-xs text-gray-500 mt-1">{marker.device === 'desktop' ? '🖥️ Desktop' : '📱 Mobile'}</p>
+                            </div>
+                            <button
+                              onClick={() => removeMarker(marker.id)}
+                              className="p-1 hover:bg-gray-700 rounded transition-colors"
+                            >
+                              <Trash2 className="w-4 h-4 text-gray-500" />
+                            </button>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
                   )}
-                </button>
 
-                {(markers.length > 0 || generalFeedback.trim()) && (
+                  {/* Severity */}
+                  <div className="space-y-3">
+                    <h4 className="text-sm font-medium text-gray-300">Hoe groot is de wijziging?</h4>
+                    <div className="space-y-2">
+                      {severityOptions.map(option => (
+                        <button
+                          key={option.value}
+                          onClick={() => setSeverity(option.value)}
+                          className={`w-full flex items-center gap-3 p-3 rounded-lg border transition-colors ${
+                            severity === option.value
+                              ? 'border-emerald-500 bg-emerald-500/10'
+                              : 'border-gray-700 hover:border-gray-600'
+                          }`}
+                        >
+                          <span className={`w-3 h-3 rounded-full ${option.color}`} />
+                          <div className="text-left">
+                            <p className="text-sm font-medium">{option.label}</p>
+                            <p className="text-xs text-gray-500">{option.description}</p>
+                          </div>
+                          {severity === option.value && (
+                            <Check className="w-4 h-4 text-emerald-500 ml-auto" />
+                          )}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* Quick Tags */}
+                  <div className="space-y-3">
+                    <h4 className="text-sm font-medium text-gray-300">Wat wil je aanpassen?</h4>
+                    <div className="flex flex-wrap gap-2">
+                      {quickTags.map(tag => (
+                        <button
+                          key={tag.id}
+                          onClick={() => toggleTag(tag.id)}
+                          className={`px-3 py-1.5 rounded-full text-sm transition-colors ${
+                            selectedTags.includes(tag.id)
+                              ? 'bg-emerald-600 text-white'
+                              : 'bg-gray-800 text-gray-400 hover:text-white'
+                          }`}
+                        >
+                          {tag.icon} {tag.label}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* Feedback Text */}
+                  <div className="space-y-2">
+                    <h4 className="text-sm font-medium text-gray-300">Extra toelichting</h4>
+                    <textarea
+                      value={feedbackText}
+                      onChange={e => setFeedbackText(e.target.value)}
+                      placeholder="Beschrijf je gewenste aanpassingen..."
+                      className="w-full bg-gray-800 rounded-lg px-4 py-3 text-sm resize-none h-32"
+                    />
+                  </div>
+
+                  {/* Submit Button */}
                   <button
-                    onClick={() => handleSubmit(false)}
-                    disabled={isSubmitting}
-                    className="w-full py-3 bg-gray-800 text-white rounded-xl font-medium hover:bg-gray-700 disabled:opacity-50 transition flex items-center justify-center gap-2"
+                    onClick={handleSubmitFeedback}
+                    disabled={isSubmitting || (!feedbackText.trim() && markers.length === 0 && selectedTags.length === 0)}
+                    className="w-full bg-emerald-600 hover:bg-emerald-700 disabled:opacity-50 disabled:cursor-not-allowed py-3 rounded-lg font-medium transition-colors flex items-center justify-center gap-2"
                   >
                     {isSubmitting ? (
-                      <Loader2 className="w-5 h-5 animate-spin" />
+                      <>
+                        <Loader2 className="w-5 h-5 animate-spin" />
+                        Versturen...
+                      </>
                     ) : (
                       <>
-                        <Send className="w-5 h-5" />
-                        Feedback versturen ({markers.length + (generalFeedback.trim() ? 1 : 0)})
+                        <MessageSquare className="w-5 h-5" />
+                        Feedback Versturen
                       </>
                     )}
                   </button>
-                )}
+                </div>
+              </motion.div>
+            )}
+
+            {/* Action Buttons (Preview Mode) */}
+            {modalMode === 'preview' && (
+              <div className="absolute bottom-6 left-1/2 -translate-x-1/2 flex gap-4">
+                <button
+                  onClick={() => setModalMode('feedback')}
+                  className="flex items-center gap-2 px-6 py-3 bg-gray-800 hover:bg-gray-700 rounded-xl font-medium transition-colors"
+                >
+                  <MessageSquare className="w-5 h-5" />
+                  Feedback Geven
+                </button>
+                <button
+                  onClick={() => setShowApprovalConfirm(true)}
+                  className="flex items-center gap-2 px-6 py-3 bg-emerald-600 hover:bg-emerald-700 rounded-xl font-medium transition-colors"
+                >
+                  <ThumbsUp className="w-5 h-5" />
+                  Design Goedkeuren
+                </button>
               </div>
-            </div>
+            )}
           </div>
         </motion.div>
+
+        {/* Approval Confirmation Modal */}
+        <AnimatePresence>
+          {showApprovalConfirm && (
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              className="fixed inset-0 z-60 bg-black/50 flex items-center justify-center p-4"
+              onClick={() => setShowApprovalConfirm(false)}
+            >
+              <motion.div
+                initial={{ opacity: 0, scale: 0.9 }}
+                animate={{ opacity: 1, scale: 1 }}
+                exit={{ opacity: 0, scale: 0.9 }}
+                className="bg-gray-900 rounded-2xl p-6 max-w-md w-full"
+                onClick={e => e.stopPropagation()}
+              >
+                <div className="text-center space-y-4">
+                  <div className="w-16 h-16 bg-emerald-500/20 rounded-full flex items-center justify-center mx-auto">
+                    <ThumbsUp className="w-8 h-8 text-emerald-500" />
+                  </div>
+                  <h3 className="text-xl font-semibold">Design Goedkeuren?</h3>
+                  <p className="text-gray-400">
+                    Door het design goed te keuren, ga je akkoord met het ontwerp en gaan we door naar de betalingsfase.
+                  </p>
+                  <div className="flex gap-3 pt-2">
+                    <button
+                      onClick={() => setShowApprovalConfirm(false)}
+                      className="flex-1 px-4 py-3 bg-gray-800 hover:bg-gray-700 rounded-xl font-medium transition-colors"
+                    >
+                      Annuleren
+                    </button>
+                    <button
+                      onClick={handleApprove}
+                      disabled={isSubmitting}
+                      className="flex-1 px-4 py-3 bg-emerald-600 hover:bg-emerald-700 disabled:opacity-50 rounded-xl font-medium transition-colors flex items-center justify-center gap-2"
+                    >
+                      {isSubmitting ? (
+                        <>
+                          <Loader2 className="w-5 h-5 animate-spin" />
+                          Bezig...
+                        </>
+                      ) : (
+                        <>
+                          <Check className="w-5 h-5" />
+                          Ja, Goedkeuren
+                        </>
+                      )}
+                    </button>
+                  </div>
+                </div>
+              </motion.div>
+            </motion.div>
+          )}
+        </AnimatePresence>
       </motion.div>
     </AnimatePresence>
   )

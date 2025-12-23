@@ -826,6 +826,21 @@ export default function ProjectDetailModal({
                 exit={{ opacity: 0, y: -10 }}
                 className="space-y-4"
               >
+                {/* Pending feedback alert */}
+                {pendingFeedback.length > 0 && (
+                  <div className="p-4 rounded-xl bg-red-500/20 border border-red-500/30">
+                    <div className="flex items-center gap-3 mb-2">
+                      <div className="w-10 h-10 bg-red-500/30 rounded-full flex items-center justify-center">
+                        <AlertCircle className="w-5 h-5 text-red-400" />
+                      </div>
+                      <div>
+                        <h4 className="text-white font-semibold">Nieuwe feedback ontvangen!</h4>
+                        <p className="text-red-300 text-sm">{pendingFeedback.length} item(s) wachten op verwerking</p>
+                      </div>
+                    </div>
+                  </div>
+                )}
+
                 {(!project.feedbackHistory || project.feedbackHistory.length === 0) ? (
                   <div className="flex items-center justify-center py-12 text-gray-500">
                     <div className="text-center">
@@ -856,6 +871,16 @@ export default function ProjectDetailModal({
                           <span className="text-xs text-gray-500">
                             {fb.type === 'design' ? '🎨 Design' : '✅ Review'}
                           </span>
+                          {/* Severity badge */}
+                          {fb.severity && (
+                            <span className={`px-2 py-0.5 rounded text-xs font-medium ${
+                              fb.severity === 'large' ? 'bg-red-500/20 text-red-400' :
+                              fb.severity === 'medium' ? 'bg-yellow-500/20 text-yellow-400' :
+                              'bg-green-500/20 text-green-400'
+                            }`}>
+                              {fb.severity === 'large' ? '🔴 Groot' : fb.severity === 'medium' ? '🟡 Medium' : '🟢 Klein'}
+                            </span>
+                          )}
                         </div>
                         <span className="text-xs text-gray-500">
                           {new Date(fb.date).toLocaleDateString('nl-NL', {
@@ -867,10 +892,63 @@ export default function ProjectDetailModal({
                         </span>
                       </div>
 
-                      {/* Structured feedback items */}
+                      {/* Quick tags */}
+                      {fb.quickTags && fb.quickTags.length > 0 && (
+                        <div className="flex flex-wrap gap-1.5 mb-3">
+                          {fb.quickTags.map((tag: string, i: number) => (
+                            <span 
+                              key={i}
+                              className={`px-2 py-1 rounded-lg text-xs font-medium ${
+                                tag === 'complete-redesign' 
+                                  ? 'bg-red-500/30 text-red-300' 
+                                  : 'bg-purple-500/20 text-purple-300'
+                              }`}
+                            >
+                              {tag === 'colors' ? '🎨 Andere kleuren' :
+                               tag === 'font' ? '🔤 Ander lettertype' :
+                               tag === 'layout' ? '📐 Andere indeling' :
+                               tag === 'images' ? '📷 Andere afbeeldingen' :
+                               tag === 'spacing' ? '↔️ Meer ruimte' :
+                               tag === 'less-busy' ? '✨ Minder druk' :
+                               tag === 'complete-redesign' ? '🔄 Compleet ander design' :
+                               tag}
+                            </span>
+                          ))}
+                        </div>
+                      )}
+
+                      {/* Markers from preview */}
+                      {fb.markers && fb.markers.length > 0 && (
+                        <div className="mb-3">
+                          <p className="text-xs text-gray-400 mb-2">📍 Feedback op preview ({fb.markers.length})</p>
+                          <div className="space-y-1.5">
+                            {fb.markers.map((marker: { id: string; device: string; comment: string }, i: number) => (
+                              <div key={marker.id || i} className="flex items-start gap-2 bg-gray-800/50 rounded-lg p-2">
+                                <span className="w-5 h-5 bg-purple-500 rounded-full flex items-center justify-center text-white text-xs font-bold flex-shrink-0">
+                                  {i + 1}
+                                </span>
+                                <div className="flex-1 min-w-0">
+                                  <p className="text-sm text-gray-300">{marker.comment}</p>
+                                  <span className="text-xs text-gray-500">{marker.device}</span>
+                                </div>
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+                      )}
+
+                      {/* Details */}
+                      {fb.details && (
+                        <div className="mb-3 bg-gray-800/50 rounded-lg p-3">
+                          <p className="text-xs text-gray-400 mb-1">Toelichting:</p>
+                          <p className="text-sm text-gray-300 whitespace-pre-line">{fb.details}</p>
+                        </div>
+                      )}
+
+                      {/* Structured feedback items (legacy) */}
                       {fb.feedbackItems && fb.feedbackItems.length > 0 ? (
                         <div className="space-y-2">
-                          {fb.feedbackItems.filter(item => item.rating === 'negative').map((item, i) => (
+                          {fb.feedbackItems.filter((item: { rating?: string; type?: string }) => item.rating === 'negative' || item.type === 'suggestion').map((item: { category: string; priority?: string; feedback?: string; text?: string }, i: number) => (
                             <div key={i} className="bg-red-500/10 rounded-lg p-3">
                               <div className="flex items-center justify-between mb-1">
                                 <span className="font-medium text-sm text-red-300">⚠️ {item.category}</span>
@@ -881,19 +959,19 @@ export default function ProjectDetailModal({
                                   {item.priority === 'urgent' ? '🔴 Urgent' : item.priority === 'normal' ? '🟡 Normaal' : '🟢 Laag'}
                                 </span>
                               </div>
-                              <p className="text-sm text-red-200">{item.feedback}</p>
+                              <p className="text-sm text-red-200">{item.feedback || item.text}</p>
                             </div>
                           ))}
                           
-                          {fb.feedbackItems.filter(item => item.rating === 'positive').length > 0 && (
+                          {fb.feedbackItems.filter((item: { rating?: string; type?: string }) => item.rating === 'positive' || item.type === 'positive').length > 0 && (
                             <div className="bg-green-500/10 rounded-lg p-3">
                               <p className="text-sm text-green-300">
-                                ✅ Goedgekeurd: {fb.feedbackItems.filter(item => item.rating === 'positive').map(item => item.category).join(', ')}
+                                ✅ Goedgekeurd: {fb.feedbackItems.filter((item: { rating?: string; type?: string }) => item.rating === 'positive' || item.type === 'positive').map((item: { category: string }) => item.category).join(', ')}
                               </p>
                             </div>
                           )}
                         </div>
-                      ) : fb.feedback ? (
+                      ) : fb.feedback && !fb.details && !fb.markers?.length && !fb.quickTags?.length ? (
                         <p className="text-sm text-gray-300 whitespace-pre-line">{fb.feedback}</p>
                       ) : null}
 
