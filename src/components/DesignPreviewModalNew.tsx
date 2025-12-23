@@ -390,7 +390,13 @@ function DesignPreviewModal({ isOpen, onClose, projectId, designPreviewUrl, onFe
                 </div>
               )}
             </div>
-            <div className="p-4 border-t border-zinc-800 space-y-2">
+            <div className="p-4 border-t border-zinc-800 space-y-3">
+              {annotations.length > 0 && !isScrollMode && (
+                <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="bg-purple-500/20 border border-purple-500/30 rounded-lg p-3 text-center">
+                  <p className="text-purple-300 text-sm font-medium">🎯 {annotations.length} markering{annotations.length > 1 ? 'en' : ''} geplaatst!</p>
+                  <p className="text-purple-400/70 text-xs mt-1">Voeg opmerkingen toe of verstuur je feedback</p>
+                </motion.div>
+              )}
               <button onClick={handleSubmitFeedback} disabled={isSubmitting || (annotations.length === 0 && !feedbackText.trim() && selectedTags.length === 0)} className="w-full py-3 bg-zinc-800 text-white rounded-lg font-medium hover:bg-zinc-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors flex items-center justify-center gap-2">{isSubmitting ? <Loader2 className="w-5 h-5 animate-spin" /> : <><Send className="w-5 h-5" />Feedback versturen</>}</button>
               <button onClick={handleApprove} disabled={isSubmitting} className="w-full py-3 bg-gradient-to-r from-green-500 to-emerald-600 text-white rounded-lg font-medium hover:from-green-600 hover:to-emerald-700 disabled:opacity-50 disabled:cursor-not-allowed transition-all flex items-center justify-center gap-2">{isSubmitting ? <Loader2 className="w-5 h-5 animate-spin" /> : <><ThumbsUp className="w-5 h-5" />Design goedkeuren</>}</button>
             </div>
