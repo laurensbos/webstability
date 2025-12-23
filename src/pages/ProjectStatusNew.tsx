@@ -282,7 +282,8 @@ export default function ProjectStatusNew() {
         await fetchProject(id)
         fetchMessages(id)
         fetchOnboardingStatus(id)
-        navigate(`/status/${id}`, { replace: true })
+        // Remove magic_session from URL for security
+        window.history.replaceState({}, '', `/status/${id}`)
       } else {
         setVerifyError('Ongeldige of verlopen link.')
         setLoading(false)
@@ -313,7 +314,8 @@ export default function ProjectStatusNew() {
         await fetchProject(id)
         fetchMessages(id)
         fetchOnboardingStatus(id)
-        navigate(`/status/${id}`, { replace: true })
+        // Remove password from URL for security
+        window.history.replaceState({}, '', `/status/${id}`)
       } else {
         setVerifyError(data.message || 'Onjuist wachtwoord.')
         setLoading(false)
