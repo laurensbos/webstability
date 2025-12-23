@@ -324,7 +324,7 @@ function DesignPreviewModal({ isOpen, onClose, projectId, designPreviewUrl, onFe
                 <button onClick={() => setIsScrollMode(!isScrollMode)} className={"p-3 rounded-full transition-colors shadow-lg " + (isScrollMode ? "bg-blue-600 text-white" : "bg-purple-600 text-white")}>{isScrollMode ? <Hand className="w-5 h-5" /> : <Pencil className="w-5 h-5" />}</button>
                 {!isScrollMode && (
                   <div className="bg-zinc-900/95 backdrop-blur-sm rounded-full px-3 py-2 flex items-center gap-1 border border-zinc-700">
-                    {[{ type: 'marker' as AnnotationType, icon: MapPin }, { type: 'square' as AnnotationType, icon: Square }].map(({ type, icon: Icon }) => (
+                    {[{ type: 'marker' as AnnotationType, icon: MapPin, tooltip: 'Punt' }, { type: 'square' as AnnotationType, icon: Square, tooltip: 'Kader' }].map(({ type, icon: Icon, tooltip }) => (
                       <button key={type} onClick={() => setCurrentTool(type)} title={tooltip} className={'p-2 rounded-full transition-colors ' + (currentTool === type ? 'bg-purple-600 text-white' : 'text-zinc-400 hover:text-white')}><Icon className="w-4 h-4" /></button>
                     ))}
                     <div className="w-px h-5 bg-zinc-700 mx-1" />
