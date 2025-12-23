@@ -30,8 +30,6 @@ import {
   Wallet,
   TrendingDown,
   Palette,
-  Code,
-  Eye,
   Camera,
   Plane,
   PenTool

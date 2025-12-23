@@ -9,7 +9,6 @@ import {
   Rocket,
   FileText,
   Palette,
-  Code,
   MessageSquare,
   AlertCircle,
   Star,
@@ -39,9 +38,8 @@ interface TaskListProps {
 const PHASE_INFO: Record<ProjectPhase, { icon: typeof FileText; label: string; color: string }> = {
   onboarding: { icon: FileText, label: 'Onboarding', color: 'blue' },
   design: { icon: Palette, label: 'Design', color: 'amber' },
-  design_approved: { icon: CreditCard, label: 'Goedgekeurd', color: 'indigo' },
-  development: { icon: Code, label: 'Development', color: 'purple' },
-  review: { icon: MessageSquare, label: 'Review', color: 'cyan' },
+  feedback: { icon: MessageSquare, label: 'Feedback', color: 'purple' },
+  payment: { icon: CreditCard, label: 'Betaling', color: 'indigo' },
   live: { icon: Rocket, label: 'Live', color: 'green' },
 }
 
@@ -100,7 +98,7 @@ export default function TaskList({
   const myTasks = tasks.filter(t => t.assignedTo === 'client' && t.status !== 'completed')
 
   // Order of phases
-  const phaseOrder: ProjectPhase[] = ['onboarding', 'design', 'development', 'review', 'live']
+  const phaseOrder: ProjectPhase[] = ['onboarding', 'design', 'feedback', 'payment', 'live']
 
   return (
     <motion.div

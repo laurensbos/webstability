@@ -20,7 +20,7 @@ interface ProjectCardProps {
 
 export default function ProjectCard({ project, onClick }: ProjectCardProps) {
   const unreadMessages = project.messages.filter(m => !m.read && m.from === 'client').length
-  const hasPendingPayment = project.phase === 'design_approved' && project.paymentStatus !== 'paid'
+  const hasPendingPayment = project.phase === 'feedback' && project.paymentStatus !== 'paid'
   const hasPendingFeedback = project.feedbackHistory?.some(f => f.status === 'pending')
   const packageInfo = PACKAGE_CONFIG[project.package]
   const serviceInfo = project.serviceType ? SERVICE_CONFIG[project.serviceType] : null

@@ -17,27 +17,27 @@ interface DeadlineTrackerProps {
   phaseDeadlines?: {
     onboarding?: string
     design?: string
-    development?: string
-    review?: string
+    feedback?: string
+    payment?: string
     live?: string
   }
   packageType?: string
 }
 
 // Standaard doorlooptijden per pakket (in werkdagen)
-const PACKAGE_DURATIONS: Record<string, { design: number; development: number; review: number; total: number }> = {
-  starter: { design: 3, development: 5, review: 2, total: 10 },
-  professional: { design: 4, development: 7, review: 3, total: 14 },
-  business: { design: 5, development: 10, review: 3, total: 18 },
-  webshop: { design: 5, development: 14, review: 4, total: 23 }
+const PACKAGE_DURATIONS: Record<string, { design: number; feedback: number; payment: number; total: number }> = {
+  starter: { design: 3, feedback: 5, payment: 2, total: 10 },
+  professional: { design: 4, feedback: 7, payment: 3, total: 14 },
+  business: { design: 5, feedback: 10, payment: 3, total: 18 },
+  webshop: { design: 5, feedback: 14, payment: 4, total: 23 }
 }
 
 // Fase labels en iconen
 const PHASE_INFO: Record<string, { label: string; icon: typeof Clock }> = {
   onboarding: { label: 'Onboarding', icon: Calendar },
   design: { label: 'Design', icon: Clock },
-  development: { label: 'Development', icon: Zap },
-  review: { label: 'Review', icon: CheckCircle2 },
+  feedback: { label: 'Feedback', icon: Zap },
+  payment: { label: 'Betaling', icon: CheckCircle2 },
   live: { label: 'Live', icon: TrendingUp }
 }
 
@@ -77,15 +77,15 @@ export default function DeadlineTracker({
     
     const onboardingEnd = addWorkdays(startDate, 1) // 1 werkdag voor onboarding
     const designEnd = addWorkdays(onboardingEnd, durations.design)
-    const developmentEnd = addWorkdays(designEnd, durations.development)
-    const reviewEnd = addWorkdays(developmentEnd, durations.review)
+    const feedbackEnd = addWorkdays(designEnd, durations.feedback)
+    const paymentEnd = addWorkdays(feedbackEnd, durations.payment)
     
     return {
       onboarding: onboardingEnd.toISOString(),
       design: designEnd.toISOString(),
-      development: developmentEnd.toISOString(),
-      review: reviewEnd.toISOString(),
-      live: reviewEnd.toISOString()
+      feedback: feedbackEnd.toISOString(),
+      payment: paymentEnd.toISOString(),
+      live: paymentEnd.toISOString()
     }
   }
 
@@ -96,8 +96,8 @@ export default function DeadlineTracker({
     switch (status) {
       case 'onboarding': return deadlines.onboarding || null
       case 'design': return deadlines.design || null
-      case 'development': return deadlines.development || null
-      case 'review': return deadlines.review || null
+      case 'feedback': return deadlines.feedback || null
+      case 'payment': return deadlines.payment || null
       case 'live': return null // Geen deadline meer
       default: return null
     }
@@ -138,7 +138,7 @@ export default function DeadlineTracker({
 
   // Bereken voortgang per fase
   const getPhaseProgress = () => {
-    const phases = ['onboarding', 'design', 'development', 'review', 'live']
+    const phases = ['onboarding', 'design', 'feedback', 'payment', 'live']
     const currentIndex = phases.indexOf(status)
     
     return phases.map((phase, index) => ({

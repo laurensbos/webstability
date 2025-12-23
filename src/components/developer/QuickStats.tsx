@@ -15,7 +15,7 @@ export default function QuickStats({ projects }: QuickStatsProps) {
   // Calculate stats
   const activeProjects = projects.filter(p => p.phase !== 'live').length
   const liveProjects = projects.filter(p => p.phase === 'live').length
-  const awaitingPayment = projects.filter(p => p.paymentStatus === 'awaiting_payment' || (p.phase === 'design_approved' && p.paymentStatus !== 'paid')).length
+  const awaitingPayment = projects.filter(p => p.paymentStatus === 'awaiting_payment' || (p.phase === 'feedback' && p.paymentStatus !== 'paid')).length
   const totalClients = new Set(projects.map(p => p.contactEmail)).size
   
   // Monthly revenue (simple calculation)

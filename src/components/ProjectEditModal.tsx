@@ -7,7 +7,6 @@ import {
   Check,
   FileText,
   Palette,
-  Code,
   MessageSquare,
   Rocket,
   Plus,
@@ -35,9 +34,8 @@ interface ProjectEditModalProps {
 const PHASE_ICONS: Record<ProjectPhase, typeof FileText> = {
   onboarding: FileText,
   design: Palette,
-  design_approved: CreditCard,
-  development: Code,
-  review: MessageSquare,
+  feedback: MessageSquare,
+  payment: CreditCard,
   live: Rocket
 }
 

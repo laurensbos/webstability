@@ -52,9 +52,9 @@ import { PHASE_CONFIG, PACKAGE_CONFIG } from './types'
 const PHASE_GRADIENTS: Record<ProjectPhase, string> = {
   onboarding: 'from-amber-500 to-orange-600',
   design: 'from-purple-500 to-pink-600',
-  design_approved: 'from-blue-500 to-cyan-600',
-  development: 'from-emerald-500 to-teal-600',
-  review: 'from-indigo-500 to-purple-600',
+  feedback: 'from-blue-500 to-cyan-600',
+  payment: 'from-emerald-500 to-teal-600',
+  
   live: 'from-green-500 to-emerald-600'
 }
 
@@ -73,10 +73,10 @@ function getProjectUrgency(project: Project): { level: 'high' | 'medium' | 'low'
   if (unreadMessages > 0) {
     return { level: 'high', reason: `${unreadMessages} nieuw bericht${unreadMessages > 1 ? 'en' : ''}` }
   }
-  if (project.phase === 'design_approved' && project.paymentStatus === 'paid') {
+  if (project.phase === 'feedback' && project.paymentStatus === 'paid') {
     return { level: 'high', reason: 'Klaar om te beginnen!' }
   }
-  if (project.phase === 'review') {
+  if (project.phase === 'payment') {
     return { level: 'high', reason: 'Wacht op review' }
   }
   
@@ -84,7 +84,7 @@ function getProjectUrgency(project: Project): { level: 'high' | 'medium' | 'low'
   if (daysSinceUpdate > 3 && project.phase !== 'live') {
     return { level: 'medium', reason: `${daysSinceUpdate} dagen geen update` }
   }
-  if (project.phase === 'design_approved' && project.paymentStatus !== 'paid') {
+  if (project.phase === 'feedback' && project.paymentStatus !== 'paid') {
     return { level: 'medium', reason: 'Wacht op betaling' }
   }
   
@@ -333,7 +333,7 @@ export default function DeveloperDashboard() {
     )
   }
 
-  const phases: ProjectPhase[] = ['onboarding', 'design', 'design_approved', 'development', 'review']
+  const phases: ProjectPhase[] = ['onboarding', 'design', 'feedback', 'payment']
   const liveProjects = filteredProjects.filter(p => p.phase === 'live')
   const activeProjects = filteredProjects.filter(p => p.phase !== 'live')
   const grouped = projectsByPhase(phases)
@@ -1075,10 +1075,10 @@ export default function DeveloperDashboard() {
                     </div>
                     <p className="text-xs text-gray-400 uppercase tracking-wider mb-1">Openstaand</p>
                     <p className="text-3xl font-bold text-amber-400">
-                      €{projects.filter(p => p.phase === 'design_approved' && p.paymentStatus !== 'paid').reduce((sum, p) => sum + getFirstPayment(p.package), 0)}
+                      €{projects.filter(p => p.phase === 'feedback' && p.paymentStatus !== 'paid').reduce((sum, p) => sum + getFirstPayment(p.package), 0)}
                     </p>
                     <p className="text-xs text-gray-500 mt-2">
-                      {projects.filter(p => p.phase === 'design_approved' && p.paymentStatus !== 'paid').length} wachtend op betaling
+                      {projects.filter(p => p.phase === 'feedback' && p.paymentStatus !== 'paid').length} wachtend op betaling
                     </p>
                   </div>
                 </motion.div>
@@ -1113,7 +1113,7 @@ export default function DeveloperDashboard() {
                 </h3>
                 <div className="space-y-3">
                   {projects
-                    .filter(p => p.phase === 'design_approved' && p.paymentStatus !== 'paid')
+                    .filter(p => p.phase === 'feedback' && p.paymentStatus !== 'paid')
                     .map(project => {
                       const packageInfo = PACKAGE_CONFIG[project.package]
                       const gradient = PHASE_GRADIENTS[project.phase]
@@ -1162,7 +1162,7 @@ export default function DeveloperDashboard() {
                       )
                     })}
                   
-                  {projects.filter(p => p.phase === 'design_approved' && p.paymentStatus !== 'paid').length === 0 && (
+                  {projects.filter(p => p.phase === 'feedback' && p.paymentStatus !== 'paid').length === 0 && (
                     <div className="text-center py-10 text-gray-500 bg-white/5 rounded-xl border border-dashed border-white/10">
                       <CheckCircle2 className="w-12 h-12 mx-auto mb-3 opacity-50" />
                       <p className="font-medium">Geen openstaande betalingen</p>

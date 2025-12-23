@@ -31,7 +31,7 @@ const PACKAGE_LIMITS: Record<string, { changes: number; label: string }> = {
 
 interface LiveApprovalSectionProps {
   projectPackage: string
-  status: 'review' | 'live'
+  status: 'payment' | 'live'
   stagingUrl?: string
   liveUrl?: string
   googleDriveUrl?: string
@@ -181,8 +181,8 @@ export default function LiveApprovalSection({
     }
   }
 
-  // Review phase - needs approval
-  if (status === 'review' && !reviewApproved) {
+  // Payment phase - waiting for payment/approval before going live
+  if (status === 'payment' && !reviewApproved) {
     return (
       <motion.div
         initial={{ opacity: 0, y: 20 }}

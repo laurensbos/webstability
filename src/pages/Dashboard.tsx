@@ -67,7 +67,7 @@ interface Project {
   contactEmail: string
   contactPhone: string
   package: string
-  status: 'onboarding' | 'design' | 'development' | 'review' | 'live'
+  status: 'onboarding' | 'design' | 'feedback' | 'payment' | 'live'
   statusMessage: string
   estimatedCompletion: string
   updates: ProjectUpdate[]
@@ -808,8 +808,8 @@ export default function Dashboard() {
     switch (status) {
       case 'onboarding': return 'bg-gray-100 text-gray-700'
       case 'design': return 'bg-purple-100 text-purple-700'
-      case 'development': return 'bg-blue-100 text-blue-700'
-      case 'review': return 'bg-amber-100 text-amber-700'
+      case 'feedback': return 'bg-blue-100 text-blue-700'
+      case 'payment': return 'bg-amber-100 text-amber-700'
       case 'live': return 'bg-green-100 text-green-700'
       default: return 'bg-gray-100 text-gray-700'
     }
@@ -819,8 +819,8 @@ export default function Dashboard() {
     switch (status) {
       case 'onboarding': return 'Onboarding'
       case 'design': return 'Design'
-      case 'development': return 'Development'
-      case 'review': return 'Review'
+      case 'feedback': return 'Feedback'
+      case 'payment': return 'Betaling'
       case 'live': return 'Live'
       default: return status
     }
@@ -1156,9 +1156,9 @@ export default function Dashboard() {
                   </div>
                 </div>
                 <p className="text-2xl font-bold text-gray-900 dark:text-white">
-                  {projects.filter(p => p.status === 'development').length}
+                  {projects.filter(p => p.status === 'feedback').length}
                 </p>
-                <p className="text-sm text-gray-500 dark:text-gray-400">Development</p>
+                <p className="text-sm text-gray-500 dark:text-gray-400">Feedback</p>
               </motion.div>
               
               <motion.div 
@@ -1173,9 +1173,9 @@ export default function Dashboard() {
                   </div>
                 </div>
                 <p className="text-2xl font-bold text-gray-900 dark:text-white">
-                  {projects.filter(p => p.status === 'review').length}
+                  {projects.filter(p => p.status === 'payment').length}
                 </p>
-                <p className="text-sm text-gray-500 dark:text-gray-400">Review</p>
+                <p className="text-sm text-gray-500 dark:text-gray-400">Betaling</p>
               </motion.div>
               
               <motion.div 
@@ -1313,13 +1313,13 @@ export default function Dashboard() {
                 </div>
               ) : (
                 <div className="grid md:grid-cols-5 gap-4">
-                  {['onboarding', 'design', 'development', 'review', 'live'].map((status) => {
+                  {['onboarding', 'design', 'feedback', 'payment', 'live'].map((status) => {
                     const statusProjects = projects.filter(p => p.status === status)
                     const colors = {
                       onboarding: { bg: 'bg-gray-50', border: 'border-gray-200', dot: 'bg-gray-400' },
                       design: { bg: 'bg-purple-50', border: 'border-purple-200', dot: 'bg-purple-500' },
-                      development: { bg: 'bg-blue-50', border: 'border-blue-200', dot: 'bg-blue-500' },
-                      review: { bg: 'bg-amber-50', border: 'border-amber-200', dot: 'bg-amber-500' },
+                      feedback: { bg: 'bg-blue-50', border: 'border-blue-200', dot: 'bg-blue-500' },
+                      payment: { bg: 'bg-amber-50', border: 'border-amber-200', dot: 'bg-amber-500' },
                       live: { bg: 'bg-green-50', border: 'border-green-200', dot: 'bg-green-500' }
                     }
                     const color = colors[status as keyof typeof colors]
@@ -1769,8 +1769,8 @@ export default function Dashboard() {
                   {[
                     { key: 'onboarding', label: 'Onboarding', color: 'gray', icon: '📋' },
                     { key: 'design', label: 'Design', color: 'purple', icon: '🎨' },
-                    { key: 'development', label: 'Development', color: 'blue', icon: '💻' },
-                    { key: 'review', label: 'Review', color: 'amber', icon: '👀' },
+                    { key: 'feedback', label: 'Feedback', color: 'blue', icon: '�' },
+                    { key: 'payment', label: 'Betaling', color: 'amber', icon: '�' },
                     { key: 'live', label: 'Live', color: 'green', icon: '🚀' }
                   ].map(phase => {
                     const phaseProjects = projects.filter(p => p.status === phase.key)

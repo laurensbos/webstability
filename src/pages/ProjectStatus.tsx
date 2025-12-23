@@ -53,8 +53,8 @@ const WHATSAPP_NUMBER = '31644712573'
 const PHASES: { key: ProjectPhase; label: string; icon: typeof FileText }[] = [
   { key: 'onboarding', label: 'Onboarding', icon: FileText },
   { key: 'design', label: 'Design', icon: Palette },
-  { key: 'development', label: 'Development', icon: Code },
-  { key: 'review', label: 'Review', icon: MessageSquare },
+  { key: 'payment', label: 'Development', icon: Code },
+  { key: 'payment', label: 'Review', icon: MessageSquare },
   { key: 'live', label: 'Live', icon: Rocket }
 ]
 
@@ -86,22 +86,21 @@ const PHASE_ACTIONS: Record<ProjectPhase, {
       urgent: true
     }
   ],
-  design_approved: [
+  feedback: [
     { 
-      title: 'Betaling afronden', 
-      description: 'Rond de betaling af om door te gaan',
-      buttonText: 'Betalen',
+      title: 'Bekijk je design', 
+      description: 'Bekijk de preview en geef feedback',
+      buttonText: 'Design bekijken',
       type: 'action',
       urgent: true
     }
   ],
-  development: [],
-  review: [
+  payment: [
     { 
-      title: 'Website reviewen', 
-      description: 'Test alle paginas en geef feedback',
-      buttonText: 'Review',
-      type: 'link',
+      title: 'Betaling afronden', 
+      description: 'Rond de betaling af om live te gaan',
+      buttonText: 'Betalen',
+      type: 'action',
       urgent: true
     }
   ],
@@ -118,17 +117,13 @@ const PHASE_INFO: Record<ProjectPhase, { title: string; description: string }> =
     title: 'Je design wordt gemaakt',
     description: 'We werken aan het ontwerp van jouw website. Je ontvangt binnenkort een preview om te bekijken.'
   },
-  design_approved: {
-    title: 'Design goedgekeurd!',
-    description: 'Super! Na de betaling starten we direct met het bouwen van je website.'
+  feedback: {
+    title: 'Bekijk je design preview',
+    description: 'Je design is klaar! Bekijk de preview en geef je feedback. Na goedkeuring ontvang je de betaallink.'
   },
-  development: {
-    title: 'Je website wordt gebouwd',
-    description: 'We zijn druk bezig met bouwen! Even geduld, we houden je op de hoogte.'
-  },
-  review: {
-    title: 'Klaar voor review',
-    description: 'Je website is klaar om te bekijken. Test alles en geef je feedback.'
+  payment: {
+    title: 'Wachten op betaling',
+    description: 'Je design is goedgekeurd! Na de betaling zetten we je website live.'
   },
   live: {
     title: 'Gefeliciteerd! 🎉',
@@ -143,7 +138,7 @@ const SERVICE_PHASE_INFO: Record<string, Partial<Record<ProjectPhase, { title: s
       title: 'We verzamelen je webshop informatie',
       description: 'Vul de onboarding in met je producten, categorieën en betaalinstellingen.'
     },
-    development: {
+    payment: {
       title: 'Je webshop wordt gebouwd',
       description: 'We bouwen je webshop met alle producten, betaalmethodes en verzendopties.'
     },
@@ -161,7 +156,7 @@ const SERVICE_PHASE_INFO: Record<string, Partial<Record<ProjectPhase, { title: s
       title: 'Je logo wordt ontworpen',
       description: 'We maken meerdere logo concepten. Je ontvangt binnenkort de eerste ontwerpen.'
     },
-    review: {
+    payment: {
       title: 'Logo concepten klaar',
       description: 'Bekijk de ontwerpen en geef feedback. We passen aan tot je 100% tevreden bent.'
     },
@@ -179,7 +174,7 @@ const SERVICE_PHASE_INFO: Record<string, Partial<Record<ProjectPhase, { title: s
       title: 'Opnames worden gepland',
       description: 'We checken het weer en vluchtregels. Je ontvangt binnenkort de opnamedatum.'
     },
-    development: {
+    payment: {
       title: 'Beelden worden bewerkt',
       description: 'We editen de beelden met kleurcorrectie, stabilisatie en muziek.'
     },
@@ -203,9 +198,8 @@ const getPhaseColors = (phase: ProjectPhase) => {
   const colors: Record<ProjectPhase, { bg: string; gradient: string; text: string }> = {
     onboarding: { bg: 'bg-blue-500', gradient: 'from-blue-600 to-indigo-600', text: 'text-blue-400' },
     design: { bg: 'bg-amber-500', gradient: 'from-amber-500 to-orange-500', text: 'text-amber-400' },
-    design_approved: { bg: 'bg-indigo-500', gradient: 'from-indigo-500 to-purple-500', text: 'text-indigo-400' },
-    development: { bg: 'bg-purple-500', gradient: 'from-purple-600 to-indigo-500', text: 'text-purple-400' },
-    review: { bg: 'bg-cyan-500', gradient: 'from-cyan-500 to-teal-500', text: 'text-cyan-400' },
+    feedback: { bg: 'bg-indigo-500', gradient: 'from-indigo-500 to-purple-500', text: 'text-indigo-400' },
+    payment: { bg: 'bg-purple-500', gradient: 'from-purple-600 to-indigo-500', text: 'text-purple-400' },
     live: { bg: 'bg-green-500', gradient: 'from-green-500 to-emerald-500', text: 'text-green-400' }
   }
   return colors[phase] || colors.onboarding
@@ -379,7 +373,7 @@ export default function ProjectStatusNew() {
         } : null)
       }
     } catch (err) {
-      console.error('Failed to approve review:', err)
+      console.error('Failed to approve payment:', err)
     }
   }
 
@@ -390,7 +384,7 @@ export default function ProjectStatusNew() {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          type: 'review',
+          type: 'payment',
           feedback,
           date: new Date().toISOString()
         })
@@ -755,7 +749,7 @@ export default function ProjectStatusNew() {
       })
     }
     
-    if (proj.status === 'design_approved' && proj.paymentStatus !== 'paid') {
+    if (proj.status === 'feedback' && proj.paymentStatus !== 'paid') {
       notifs.push({
         id: 'payment-pending',
         type: 'warning',
@@ -766,7 +760,7 @@ export default function ProjectStatusNew() {
     }
     
     // Payment ready notification - show prominently when payment URL is available
-    if (proj.paymentUrl && proj.paymentStatus !== 'paid' && proj.status !== 'design_approved') {
+    if (proj.paymentUrl && proj.paymentStatus !== 'paid' && proj.status !== 'feedback') {
       notifs.push({
         id: 'payment-ready',
         type: 'warning',
@@ -776,7 +770,7 @@ export default function ProjectStatusNew() {
       })
     }
     
-    if (proj.status === 'review' && proj.designPreviewUrl) {
+    if (proj.status === 'payment' && proj.designPreviewUrl) {
       notifs.push({
         id: 'review-ready',
         type: 'success',
@@ -845,12 +839,12 @@ export default function ProjectStatusNew() {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          status: 'design_approved',
+          status: 'feedback',
           designApprovedAt: new Date().toISOString()
         })
       })
       if (response.ok) {
-        setProject(prev => prev ? { ...prev, status: 'design_approved', designApprovedAt: new Date().toISOString() } : null)
+        setProject(prev => prev ? { ...prev, status: 'feedback', designApprovedAt: new Date().toISOString() } : null)
         setShowApprovalConfirm(false)
         // Add success notification
         setNotifications(prev => [...prev, {
@@ -871,7 +865,7 @@ export default function ProjectStatusNew() {
   // Get phase status
   const getPhaseStatus = (phaseKey: ProjectPhase) => {
     if (!project) return 'pending'
-    const currentIndex = PHASES.findIndex(p => p.key === project.status || (project.status === 'design_approved' && p.key === 'design'))
+    const currentIndex = PHASES.findIndex(p => p.key === project.status || (project.status === 'feedback' && p.key === 'design'))
     const phaseIndex = PHASES.findIndex(p => p.key === phaseKey)
     
     if (phaseIndex < currentIndex) return 'completed'
@@ -1234,7 +1228,7 @@ export default function ProjectStatusNew() {
                   )}
                   {/* Phase Badge */}
                   <span className="px-2.5 py-1 bg-white/20 backdrop-blur-sm rounded-full text-xs font-medium">
-                    {PHASES.find(p => p.key === project.status || (project.status === 'design_approved' && p.key === 'design'))?.label || project.status}
+                    {PHASES.find(p => p.key === project.status || (project.status === 'feedback' && p.key === 'design'))?.label || project.status}
                   </span>
                   {project.status !== 'live' && (
                     <span className="text-white/70 text-xs">{progress}% voltooid</span>
@@ -1384,8 +1378,8 @@ export default function ProjectStatusNew() {
           </motion.div>
         )}
 
-        {/* Design Preview Link */}
-        {project.designPreviewUrl && (project.status === 'design' || project.status === 'review' || project.status === 'development') && (
+        {/* Design Preview Link - Show during feedback and payment phases */}
+        {project.designPreviewUrl && (project.status === 'design' || project.status === 'feedback' || project.status === 'payment') && (
           <motion.a
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -1490,7 +1484,7 @@ export default function ProjectStatusNew() {
         )}
 
         {/* Review & Live Approval Section - includes feedback, approval, and change requests */}
-        {(project.status === 'review' || project.status === 'live') && (
+        {(project.status === 'payment' || project.status === 'live') && (
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -1498,7 +1492,7 @@ export default function ProjectStatusNew() {
           >
             <LiveApprovalSection
               projectPackage={project.package}
-              status={project.status as 'review' | 'live'}
+              status={project.status as 'payment' | 'live'}
               stagingUrl={project.designPreviewUrl}
               liveUrl={project.liveUrl}
               googleDriveUrl={project.googleDriveUrl}
@@ -1811,7 +1805,7 @@ export default function ProjectStatusNew() {
                   </span>
                 </div>
                 <p className="text-sm text-gray-400 mb-4">
-                  {project.status === 'design_approved' 
+                  {project.status === 'feedback' 
                     ? 'Je design is goedgekeurd! Rond de betaling af om door te gaan naar development.'
                     : 'Er staat een betaling voor je klaar. Rond deze af om verder te gaan.'}
                 </p>
@@ -1840,7 +1834,7 @@ export default function ProjectStatusNew() {
         )}
 
         {/* Awaiting Payment Link - Show when design approved but no link yet */}
-        {project.status === 'design_approved' && !project.paymentUrl && project.paymentStatus !== 'paid' && (
+        {project.status === 'feedback' && !project.paymentUrl && project.paymentStatus !== 'paid' && (
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
