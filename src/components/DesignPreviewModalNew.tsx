@@ -7,7 +7,7 @@ import { motion, AnimatePresence } from 'framer-motion'
 import confetti from 'canvas-confetti'
 import {
   X, Monitor, Smartphone, ExternalLink, ThumbsUp, Loader2, Send,
-  Square, Minus, ArrowUpRight, MapPin, Undo2, Trash2, HelpCircle,
+  Square, MapPin, Undo2, Trash2, HelpCircle,
   ChevronRight, ChevronLeft, Hand, Pencil
 } from 'lucide-react'
 
@@ -304,7 +304,7 @@ function DesignPreviewModal({ isOpen, onClose, projectId, designPreviewUrl, onFe
                 <iframe src={absoluteUrl} className="w-full h-full border-0" onLoad={() => setIframeLoaded(true)} title="Design Preview" style={{ pointerEvents: isScrollMode ? 'auto' : 'none' }} />
                 <svg ref={svgRef} className={"absolute inset-0 w-full h-full " + (isScrollMode ? "pointer-events-none" : "cursor-crosshair")} style={{ touchAction: isScrollMode ? 'auto' : 'none' }} onMouseDown={handleStart} onMouseMove={handleMove} onMouseUp={handleEnd} onMouseLeave={handleEnd} onTouchStart={handleStart} onTouchMove={handleMove} onTouchEnd={handleEnd}>
                   {annotations.filter(a => a.device === device).map(renderAnnotation)}
-                  {isDrawing && currentPoints.length > 0 && <path d={'M ' + currentPoints.map(p => p.x + '% ' + p.y + '%').join(' L ')} fill="none" stroke={currentColor} strokeWidth={3} strokeLinecap="round" strokeLinejoin="round" strokeDasharray="5,5" />}
+                  {isDrawing && currentPoints.length > 0 && (<>{currentTool === 'marker' && <circle cx={currentPoints[0].x + '%'} cy={currentPoints[0].y + '%'} r={10} fill={currentColor} stroke="white" strokeWidth={2} opacity={0.8} />}{currentTool === 'square' && currentPoints.length >= 2 && <rect x={Math.min(currentPoints[0].x, currentPoints[currentPoints.length-1].x) + '%'} y={Math.min(currentPoints[0].y, currentPoints[currentPoints.length-1].y) + '%'} width={Math.abs(currentPoints[currentPoints.length-1].x - currentPoints[0].x) + '%'} height={Math.abs(currentPoints[currentPoints.length-1].y - currentPoints[0].y) + '%'} fill={currentColor + '20'} stroke={currentColor} strokeWidth={3} strokeDasharray="8,4" />}</>)}
                 </svg>
               </div>
             </div>
@@ -347,8 +347,8 @@ function DesignPreviewModal({ isOpen, onClose, projectId, designPreviewUrl, onFe
                           <button onClick={clearAll} disabled={annotations.length === 0} className="p-1.5 text-zinc-400 hover:text-red-400 disabled:opacity-30 disabled:cursor-not-allowed" title="Alles wissen"><Trash2 className="w-4 h-4" /></button>
                         </div>
                       </div>
-                      <div className="grid grid-cols-4 gap-2 mb-3">
-                        {[{ type: 'marker' as AnnotationType, icon: MapPin, label: 'Punt' }, { type: 'square' as AnnotationType, icon: Square, label: 'Kader' }, { type: 'underline' as AnnotationType, icon: Minus, label: 'Lijn' }, { type: 'arrow' as AnnotationType, icon: ArrowUpRight, label: 'Pijl' }].map(({ type, icon: Icon, label }) => (
+                      <div className="grid grid-cols-2 gap-2 mb-3">
+                        {[{ type: 'marker' as AnnotationType, icon: MapPin, label: 'Punt' }, { type: 'square' as AnnotationType, icon: Square, label: 'Kader' }, ].map(({ type, icon: Icon, label }) => (
                           <button key={type} onClick={() => setCurrentTool(type)} className={'flex flex-col items-center gap-1 p-3 rounded-lg transition-all ' + (currentTool === type ? 'bg-purple-600 text-white ring-2 ring-purple-400 ring-offset-2 ring-offset-zinc-900' : 'bg-zinc-800 text-zinc-400 hover:text-white hover:bg-zinc-700')}><Icon className="w-5 h-5" /><span className="text-xs font-medium">{label}</span></button>
                         ))}
                       </div>
@@ -379,7 +379,7 @@ function DesignPreviewModal({ isOpen, onClose, projectId, designPreviewUrl, onFe
                       <div key={annotation.id} className={'p-3 rounded-lg border transition-colors ' + (activeAnnotation === annotation.id ? 'border-purple-500 bg-purple-500/10' : 'border-zinc-700 bg-zinc-800')}>
                         <div className="flex items-center gap-2 mb-2">
                           <div className="w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold text-white flex-shrink-0" style={{ backgroundColor: annotation.color }}>{index + 1}</div>
-                          <span className="text-sm text-zinc-300 flex-1">{annotation.type === 'marker' && 'Punt'}{annotation.type === 'square' && 'Kader'}{annotation.type === 'underline' && 'Lijn'}{annotation.type === 'arrow' && 'Pijl'}</span>
+                          <span className="text-sm text-zinc-300 flex-1">{annotation.type === 'marker' && 'Punt'}{annotation.type === 'square' && 'Kader'}</span>
                           <button onClick={() => deleteAnnotation(annotation.id)} className="p-1 text-zinc-500 hover:text-red-400 transition-colors" title="Verwijderen"><Trash2 className="w-4 h-4" /></button>
                         </div>
                         <input type="text" value={annotation.comment} onChange={(e) => updateAnnotationComment(annotation.id, e.target.value)} placeholder="Wat wil je hier veranderen?" className="w-full px-3 py-2 bg-zinc-900 border border-zinc-700 rounded-lg text-sm text-white placeholder-zinc-500 focus:outline-none focus:ring-1 focus:ring-purple-500" />
