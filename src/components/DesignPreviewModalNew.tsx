@@ -7,11 +7,11 @@ import { motion, AnimatePresence } from 'framer-motion'
 import confetti from 'canvas-confetti'
 import {
   X, Monitor, Smartphone, ExternalLink, ThumbsUp, Loader2, Send,
-  Circle, Minus, ArrowUpRight, MapPin, Undo2, Trash2, HelpCircle,
-  ChevronRight, ChevronLeft
+  Circle, Square, Minus, ArrowUpRight, MapPin, Undo2, Trash2, HelpCircle,
+  ChevronRight, ChevronLeft, Hand, Pencil
 } from 'lucide-react'
 
-type AnnotationType = 'circle' | 'underline' | 'arrow' | 'marker'
+type AnnotationType = 'circle' | 'square' | 'underline' | 'arrow' | 'marker'
 
 interface Annotation {
   id: string
