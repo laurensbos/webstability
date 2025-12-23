@@ -3483,6 +3483,58 @@ function ProjectDetailModal({ project, darkMode, onClose, onUpdate, phases }: Om
             </button>
           </div>
 
+          {/* 🎨 DESIGN PREVIEW URL - Prominent in design phase */}
+          {editPhase === 'design' && (
+            <div className={`mt-4 p-4 rounded-xl border-2 ${
+              designPreviewUrl 
+                ? 'bg-emerald-500/10 border-emerald-500' 
+                : 'bg-purple-500/10 border-purple-500 animate-pulse'
+            }`}>
+              <div className="flex items-center gap-3 mb-3">
+                <div className={`p-2 rounded-lg ${designPreviewUrl ? 'bg-emerald-500' : 'bg-purple-500'}`}>
+                  <Palette className="w-5 h-5 text-white" />
+                </div>
+                <div className="flex-1">
+                  <h3 className={`font-bold ${darkMode ? 'text-white' : 'text-gray-900'}`}>
+                    🎨 Design Preview URL {!designPreviewUrl && '(VERPLICHT)'}
+                  </h3>
+                  <p className={`text-sm ${darkMode ? 'text-gray-400' : 'text-gray-600'}`}>
+                    Voer de Figma/preview link in zodat de klant het design kan bekijken
+                  </p>
+                </div>
+              </div>
+              <div className="flex gap-2">
+                <input
+                  type="url"
+                  value={designPreviewUrl}
+                  onChange={(e) => setDesignPreviewUrl(e.target.value)}
+                  placeholder="https://figma.com/... of https://preview.webstability.nl/..."
+                  className={`flex-1 px-4 py-2.5 rounded-xl border text-sm ${
+                    darkMode 
+                      ? 'bg-gray-700 border-gray-600 text-white placeholder-gray-500 focus:border-purple-500' 
+                      : 'bg-white border-gray-300 text-gray-900 placeholder-gray-400 focus:border-purple-500'
+                  } focus:outline-none focus:ring-2 focus:ring-purple-500/20`}
+                />
+                {designPreviewUrl && (
+                  <a
+                    href={designPreviewUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="px-4 py-2.5 bg-purple-500 text-white rounded-xl hover:bg-purple-600 transition-colors flex items-center gap-2 text-sm font-medium"
+                  >
+                    <ExternalLink className="w-4 h-4" />
+                    Open
+                  </a>
+                )}
+              </div>
+              {designPreviewUrl && (
+                <p className={`text-xs mt-2 ${darkMode ? 'text-emerald-400' : 'text-emerald-600'}`}>
+                  ✓ Klant kan dit bekijken via hun dashboard
+                </p>
+              )}
+            </div>
+          )}
+
           {/* Tabs - Vereenvoudigd naar 4 */}
           <div className="flex gap-2 mt-4 overflow-x-auto pb-1">
             {(['overview', 'messages', 'payment', 'onboarding'] as const).map(tab => (
