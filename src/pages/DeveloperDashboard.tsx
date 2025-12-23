@@ -6,6 +6,7 @@ import {
   User,
   UserPlus,
   MessageSquare,
+  MessageCircle,
   FolderKanban,
   CreditCard,
   LogOut,
@@ -53,6 +54,8 @@ import {
   FolderOpen,
   Layers,
   Download,
+  ThumbsUp,
+  ThumbsDown,
 } from 'lucide-react'
 import Logo from '../components/Logo'
 // GrowthTools components available: ChurnAlert, UpsellBanner for future use
@@ -3265,7 +3268,7 @@ interface ProjectDetailModalProps {
 }
 
 function ProjectDetailModal({ project, darkMode, onClose, onUpdate, phases }: Omit<ProjectDetailModalProps, 'onDelete' | 'onPaymentClick'>) {
-  const [activeTab, setActiveTab] = useState<'overview' | 'messages' | 'payment' | 'onboarding'>('overview')
+  const [activeTab, setActiveTab] = useState<'overview' | 'messages' | 'payment' | 'onboarding' | 'feedback'>('overview')
   const [paymentLoading, setPaymentLoading] = useState(false)
   const [generatedPaymentUrl, setGeneratedPaymentUrl] = useState('')
   const [paymentEmailSent, setPaymentEmailSent] = useState(false)
@@ -3515,7 +3518,7 @@ function ProjectDetailModal({ project, darkMode, onClose, onUpdate, phases }: Om
 
           {/* Tabs - Vereenvoudigd naar 4 */}
           <div className="flex gap-2 mt-4 overflow-x-auto pb-1">
-            {(['overview', 'messages', 'payment', 'onboarding'] as const).map(tab => (
+            {(['overview', 'messages', 'payment', 'onboarding', 'feedback'] as const).map(tab => (
               <button
                 key={tab}
                 onClick={() => setActiveTab(tab)}
@@ -3550,6 +3553,15 @@ function ProjectDetailModal({ project, darkMode, onClose, onUpdate, phases }: Om
                     Onboarding
                     {project.onboardingData && Object.keys(project.onboardingData).length > 0 && (
                       <span className={`w-2 h-2 rounded-full bg-emerald-500`} />
+                    )}
+                  </>
+                )}
+                {tab === 'feedback' && (
+                  <>
+                    <MessageSquare className="w-4 h-4" />
+                    Feedback
+                    {project.onboardingData?.sectionFeedback && (
+                      <span className={`w-2 h-2 rounded-full bg-blue-500`} />
                     )}
                   </>
                 )}
@@ -4617,6 +4629,112 @@ function ProjectDetailModal({ project, darkMode, onClose, onUpdate, phases }: Om
                   <p className={`text-xs mt-2 ${darkMode ? 'text-gray-500' : 'text-gray-400'}`}>
                     Klantportaal: {window.location.origin}/project/{project.projectId}
                   </p>
+                </div>
+              )}
+            </div>
+          )}
+
+          {/* Feedback Tab - Sectie feedback van klant */}
+          {activeTab === 'feedback' && (
+            <div className="space-y-6">
+              {project.onboardingData?.sectionFeedback ? (
+                <>
+                  {/* Sectie Feedback Overzicht */}
+                  <div className={`p-4 rounded-xl ${darkMode ? 'bg-blue-900/20 border border-blue-500/30' : 'bg-blue-50 border border-blue-200'}`}>
+                    <div className="flex items-center gap-3 mb-4">
+                      <MessageSquare className="w-5 h-5 text-blue-500" />
+                      <h4 className={`font-semibold ${darkMode ? 'text-blue-400' : 'text-blue-800'}`}>
+                        Sectie Feedback Ontvangen
+                      </h4>
+                    </div>
+                    
+                    {/* Stats */}
+                    <div className="grid grid-cols-2 gap-4 mb-4">
+                      <div className={`p-3 rounded-lg ${darkMode ? 'bg-emerald-900/30' : 'bg-emerald-100'}`}>
+                        <div className="flex items-center gap-2">
+                          <ThumbsUp className="w-4 h-4 text-emerald-500" />
+                          <span className={`font-bold ${darkMode ? 'text-emerald-400' : 'text-emerald-700'}`}>
+                            {(project.onboardingData.sectionFeedback as Array<{rating: string}>).filter((s) => s.rating === 'good').length}
+                          </span>
+                          <span className={`text-sm ${darkMode ? 'text-emerald-500' : 'text-emerald-600'}`}>Goedgekeurd</span>
+                        </div>
+                      </div>
+                      <div className={`p-3 rounded-lg ${darkMode ? 'bg-amber-900/30' : 'bg-amber-100'}`}>
+                        <div className="flex items-center gap-2">
+                          <ThumbsDown className="w-4 h-4 text-amber-500" />
+                          <span className={`font-bold ${darkMode ? 'text-amber-400' : 'text-amber-700'}`}>
+                            {(project.onboardingData.sectionFeedback as Array<{rating: string}>).filter((s) => s.rating === 'change').length}
+                          </span>
+                          <span className={`text-sm ${darkMode ? 'text-amber-500' : 'text-amber-600'}`}>Aanpassen</span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Algemene opmerking */}
+                  {project.onboardingData.generalComment && (
+                    <div className={`p-4 rounded-xl ${darkMode ? 'bg-gray-800/50 border border-gray-700' : 'bg-gray-50 border border-gray-200'}`}>
+                      <h5 className={`font-medium mb-2 flex items-center gap-2 ${darkMode ? 'text-white' : 'text-gray-900'}`}>
+                        <MessageCircle className="w-4 h-4" />
+                        Algemene opmerking
+                      </h5>
+                      <p className={`text-sm ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>
+                        {project.onboardingData.generalComment as string}
+                      </p>
+                    </div>
+                  )}
+
+                  {/* Per sectie feedback */}
+                  <div className="space-y-3">
+                    <h5 className={`font-medium ${darkMode ? 'text-white' : 'text-gray-900'}`}>Per sectie:</h5>
+                    {(project.onboardingData.sectionFeedback as Array<{sectionId: string; rating: string; comment?: string}>).map((section) => (
+                      <div
+                        key={section.sectionId}
+                        className={`p-4 rounded-xl border ${
+                          section.rating === 'good'
+                            ? darkMode ? 'bg-emerald-900/20 border-emerald-500/30' : 'bg-emerald-50 border-emerald-200'
+                            : darkMode ? 'bg-amber-900/20 border-amber-500/30' : 'bg-amber-50 border-amber-200'
+                        }`}
+                      >
+                        <div className="flex items-center justify-between mb-2">
+                          <span className={`font-medium capitalize ${darkMode ? 'text-white' : 'text-gray-900'}`}>
+                            {section.sectionId.replace(/-/g, ' ')}
+                          </span>
+                          {section.rating === 'good' ? (
+                            <span className="flex items-center gap-1 text-emerald-500">
+                              <ThumbsUp className="w-4 h-4" />
+                              <span className="text-sm font-medium">Goed</span>
+                            </span>
+                          ) : (
+                            <span className="flex items-center gap-1 text-amber-500">
+                              <ThumbsDown className="w-4 h-4" />
+                              <span className="text-sm font-medium">Aanpassen</span>
+                            </span>
+                          )}
+                        </div>
+                        {section.comment && (
+                          <p className={`text-sm mt-2 p-2 rounded ${darkMode ? 'bg-black/20 text-gray-300' : 'bg-white/50 text-gray-600'}`}>
+                            "{section.comment}"
+                          </p>
+                        )}
+                      </div>
+                    ))}
+                  </div>
+                </>
+              ) : (
+                <div className={`p-8 rounded-xl text-center ${darkMode ? 'bg-gray-800/50 border border-gray-700' : 'bg-gray-50 border border-gray-200'}`}>
+                  <MessageSquare className={`w-12 h-12 mx-auto mb-4 ${darkMode ? 'text-gray-600' : 'text-gray-300'}`} />
+                  <h4 className={`font-semibold mb-2 ${darkMode ? 'text-white' : 'text-gray-900'}`}>
+                    Nog geen feedback ontvangen
+                  </h4>
+                  <p className={`text-sm ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>
+                    De klant heeft nog geen feedback gegeven op het design.
+                  </p>
+                  {project.designPreviewUrl && (
+                    <p className={`text-xs mt-3 ${darkMode ? 'text-gray-500' : 'text-gray-400'}`}>
+                      Design preview is beschikbaar: <a href={project.designPreviewUrl} target="_blank" rel="noopener noreferrer" className="text-blue-500 hover:underline">bekijk</a>
+                    </p>
+                  )}
                 </div>
               )}
             </div>
