@@ -320,8 +320,8 @@ export default function DesignFeedbackSections({
         {/* Main content */}
         <div className="flex-1 overflow-hidden flex flex-col md:flex-row">
           
-          {/* Preview area */}
-          <div className={`${isMobile || step === 'intro' ? 'h-[45vh] md:h-auto' : 'flex-1'} bg-zinc-950 p-4 flex items-center justify-center`}>
+          {/* Preview area - hidden on intro, smaller on desktop */}
+          <div className={`${step === 'intro' ? 'hidden md:flex md:w-1/3' : isMobile ? 'h-[45vh]' : 'flex-1'} bg-zinc-950 p-4 flex items-center justify-center`}>
             <div className={`relative w-full h-full ${device === 'mobile' ? 'max-w-[375px]' : ''} bg-white rounded-lg overflow-hidden shadow-2xl`}>
               {!iframeLoaded && (
                 <div className="absolute inset-0 flex items-center justify-center bg-zinc-900">
@@ -337,47 +337,48 @@ export default function DesignFeedbackSections({
             </div>
           </div>
 
-          {/* Feedback panel */}
-          <div className={`${isMobile ? 'flex-1' : 'w-full md:w-[400px]'} bg-zinc-900 border-t md:border-t-0 md:border-l border-zinc-800 flex flex-col overflow-hidden`}>
+          {/* Feedback panel - larger on intro */}
+          <div className={`${step === 'intro' ? 'flex-1 md:w-2/3' : isMobile ? 'flex-1' : 'w-full md:w-[450px] lg:w-[500px]'} bg-zinc-900 border-t md:border-t-0 md:border-l border-zinc-800 flex flex-col overflow-hidden`}>
             
             {/* INTRO STEP */}
             {step === 'intro' && (
-              <div className="flex-1 flex flex-col items-center justify-center p-6 text-center">
+              <div className="flex-1 flex flex-col items-center justify-center p-8 md:p-12 text-center">
                 <motion.div
                   initial={{ scale: 0.9, opacity: 0 }}
                   animate={{ scale: 1, opacity: 1 }}
                   transition={{ delay: 0.1 }}
+                  className="max-w-md"
                 >
-                  <div className="text-6xl mb-4">👋</div>
-                  <h2 className="text-2xl font-bold text-white mb-3">Welkom!</h2>
-                  <p className="text-zinc-400 mb-6 max-w-xs">
+                  <div className="text-7xl md:text-8xl mb-6">👋</div>
+                  <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">Welkom!</h2>
+                  <p className="text-lg text-zinc-400 mb-8">
                     We gaan samen door je website design. Per onderdeel kun je aangeven of het goed is of aangepast moet worden.
                   </p>
                   
-                  <div className="bg-zinc-800/50 rounded-xl p-4 mb-6 text-left max-w-xs">
-                    <p className="text-sm text-zinc-300 mb-3 font-medium">Zo werkt het:</p>
-                    <div className="space-y-2 text-sm text-zinc-400">
-                      <div className="flex items-center gap-2">
-                        <div className="w-6 h-6 rounded-full bg-green-500/20 flex items-center justify-center">
-                          <ThumbsUp className="w-3 h-3 text-green-400" />
+                  <div className="bg-zinc-800/50 rounded-2xl p-6 mb-8 text-left">
+                    <p className="text-base text-zinc-300 mb-4 font-medium">Zo werkt het:</p>
+                    <div className="space-y-4 text-base text-zinc-400">
+                      <div className="flex items-center gap-3">
+                        <div className="w-10 h-10 rounded-full bg-green-500/20 flex items-center justify-center flex-shrink-0">
+                          <ThumbsUp className="w-5 h-5 text-green-400" />
                         </div>
-                        <span>Goed = dit is prima zo</span>
+                        <span><strong className="text-green-400">Goed</strong> = dit is prima zo</span>
                       </div>
-                      <div className="flex items-center gap-2">
-                        <div className="w-6 h-6 rounded-full bg-amber-500/20 flex items-center justify-center">
-                          <ThumbsDown className="w-3 h-3 text-amber-400" />
+                      <div className="flex items-center gap-3">
+                        <div className="w-10 h-10 rounded-full bg-amber-500/20 flex items-center justify-center flex-shrink-0">
+                          <ThumbsDown className="w-5 h-5 text-amber-400" />
                         </div>
-                        <span>Aanpassen = hier wil ik iets veranderen</span>
+                        <span><strong className="text-amber-400">Aanpassen</strong> = hier wil ik iets veranderen</span>
                       </div>
                     </div>
                   </div>
 
                   <button
                     onClick={() => setStep('sections')}
-                    className="px-8 py-3 bg-purple-600 text-white rounded-xl font-medium hover:bg-purple-700 transition-colors flex items-center gap-2"
+                    className="w-full md:w-auto px-10 py-4 bg-purple-600 text-white text-lg rounded-xl font-medium hover:bg-purple-700 transition-colors flex items-center justify-center gap-2"
                   >
                     Start feedback
-                    <ChevronRight className="w-5 h-5" />
+                    <ChevronRight className="w-6 h-6" />
                   </button>
                 </motion.div>
               </div>
