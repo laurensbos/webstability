@@ -1223,30 +1223,6 @@ export default function ProjectStatusNew() {
               </div>
             </div>
 
-            {/* Design Preview Link - Only show when available */}
-            {project.designPreviewUrl && (
-              <motion.button
-                initial={{ opacity: 0, scale: 0.95 }}
-                animate={{ opacity: 1, scale: 1 }}
-                onClick={() => setShowDesignPreview(true)}
-                className="w-full text-left p-5 rounded-2xl bg-gradient-to-r from-purple-500/20 to-pink-500/20 border border-purple-500/40 hover:border-purple-400/60 transition group"
-              >
-                <div className="flex items-center gap-4">
-                  <div className="w-14 h-14 rounded-xl bg-purple-500/20 flex items-center justify-center group-hover:scale-110 transition">
-                    <span className="text-2xl">🎨</span>
-                  </div>
-                  <div className="flex-1">
-                    <div className="flex items-center gap-2 mb-1">
-                      <span className="text-xs font-medium text-purple-400 bg-purple-500/20 px-2 py-0.5 rounded-full">NIEUW</span>
-                    </div>
-                    <p className="font-semibold text-white text-lg">Bekijk je design preview!</p>
-                    <p className="text-sm text-gray-400">Klik hier om je ontwerp te bekijken en feedback te geven</p>
-                  </div>
-                  <ArrowRight className="w-6 h-6 text-purple-400 group-hover:translate-x-1 transition" />
-                </div>
-              </motion.button>
-            )}
-
             {/* What to expect */}
             <div className="bg-gray-900/50 border border-gray-800 rounded-xl p-4">
               <p className="text-xs text-gray-500 mb-2 font-medium uppercase tracking-wide">Wat kun je verwachten?</p>
@@ -1333,8 +1309,8 @@ export default function ProjectStatusNew() {
           </motion.div>
         )}
 
-        {/* Design Preview Link - Show during feedback and payment phases */}
-        {project.designPreviewUrl && (project.status === 'design' || project.status === 'feedback' || project.status === 'payment') && (
+        {/* Design Preview Link - Show during feedback phase only */}
+        {project.designPreviewUrl && project.status === 'feedback' && (
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
