@@ -81,6 +81,7 @@ function DesignPreviewModal({ isOpen, onClose, projectId, designPreviewUrl, onFe
   const [showSuccess, setShowSuccess] = useState<'approved' | 'feedback' | null>(null)
   const [showTutorial, setShowTutorial] = useState(false)
   const [tutorialStep, setTutorialStep] = useState(0)
+  const [hasEverAnnotated, setHasEverAnnotated] = useState(false)
   const svgRef = useRef<SVGSVGElement>(null)
   const containerRef = useRef<HTMLDivElement>(null)
 
@@ -166,7 +167,7 @@ function DesignPreviewModal({ isOpen, onClose, projectId, designPreviewUrl, onFe
     if (!isDrawing || currentPoints.length === 0 || isScrollMode) return
     setIsDrawing(false)
     const newAnnotation: Annotation = { id: Date.now().toString(), type: currentTool, points: currentPoints, color: currentColor, comment: '', device }
-    setAnnotations(prev => [...prev, newAnnotation])
+    setAnnotations(prev => [...prev, newAnnotation]); setHasEverAnnotated(true)
     setActiveAnnotation(newAnnotation.id)
     setCurrentPoints([])
   }, [isDrawing, currentPoints, currentTool, currentColor, device, isScrollMode])
@@ -332,7 +333,7 @@ function DesignPreviewModal({ isOpen, onClose, projectId, designPreviewUrl, onFe
                     <button onClick={() => setIsScrollMode(true)} className={'flex-1 px-4 py-3 rounded-lg flex items-center justify-center gap-3 text-sm font-medium transition-all ' + (isScrollMode ? 'bg-blue-600 text-white shadow-lg' : 'text-zinc-400 hover:text-white hover:bg-zinc-700')}>
                       <Hand className="w-5 h-5" /><div className="text-left"><div>Bekijken</div><div className="text-xs opacity-70">Scroll door de pagina</div></div>
                     </button>
-                    <button onClick={() => setIsScrollMode(false)} className={'flex-1 px-4 py-3 rounded-lg flex items-center justify-center gap-3 text-sm font-medium transition-all ' + (!isScrollMode ? 'bg-purple-600 text-white shadow-lg' : 'text-zinc-400 hover:text-white hover:bg-zinc-700')}>
+                    <button onClick={() => setIsScrollMode(false)} className={'flex-1 px-4 py-3 rounded-lg flex items-center justify-center gap-3 text-sm font-medium transition-all ' + (!isScrollMode ? 'bg-purple-600 text-white shadow-lg' : 'text-zinc-400 hover:text-white hover:bg-zinc-700') + (!hasEverAnnotated && isScrollMode ? ' animate-pulse ring-2 ring-purple-500' : '')}>
                       <Pencil className="w-5 h-5" /><div className="text-left"><div>Markeren</div><div className="text-xs opacity-70">Geef feedback</div></div>
                     </button>
                   </div>
