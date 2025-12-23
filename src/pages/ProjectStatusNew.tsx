@@ -195,7 +195,6 @@ export default function ProjectStatusNew() {
   const [chatExpanded, setChatExpanded] = useState(false)
   const messagesEndRef = useRef<HTMLDivElement>(null)
   const prevMessageCountRef = useRef<number>(0)
-  const audioRef = useRef<HTMLAudioElement | null>(null)
   
   // Onboarding state
   const [onboardingCompleted, setOnboardingCompleted] = useState(false)
@@ -443,8 +442,6 @@ export default function ProjectStatusNew() {
         const prevDeveloperMessages = messages.filter(m => m.from === 'developer')
         
         if (developerMessages.length > prevDeveloperMessages.length && prevMessageCountRef.current > 0) {
-          // Play notification sound
-          playNotificationSound()
           // Show browser notification if permitted
           showBrowserNotification('Nieuw bericht', 'Je hebt een nieuw bericht ontvangen')
         }
@@ -454,19 +451,6 @@ export default function ProjectStatusNew() {
       }
     } catch {
       // Ignore
-    }
-  }
-
-  // Play notification sound
-  const playNotificationSound = () => {
-    try {
-      if (!audioRef.current) {
-        audioRef.current = new Audio('data:audio/wav;base64,UklGRnoGAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQoGAACBhYqFbF1fdH2Onp6ZkH1xaHSAlp+fm5eMenBudoegnpyYjoF1b3eDl5+dnJWKf3Z2f4uZnpuYkYd9dniDjpqdmpeNg3x4fIaSnZqXlIqAfHl9iJSampeTiYF8enyGkZqZlpGIgH18fomTmpiUj4V/fH2Ak5mYlI+FgX5+gJKYl5OOhIF/f4GRl5aRjYSBgICDkJaVkIuDgoGChI+UlI6KgoKChYaOk5KNiYODhIaHjZGQjIiEhIaHiIyPjouHhYWHiImLjY2KhoaGiIqKi4yLiYaHh4mKioqLioiHh4iJiomKiomIiIiJiYmJiYmIiIiJiYmJiYmIiImJiYmJiYmJiYmJiYmJiYk=')
-      }
-      audioRef.current.volume = 0.5
-      audioRef.current.play().catch(() => {})
-    } catch {
-      // Audio not supported
     }
   }
 
