@@ -4687,7 +4687,7 @@ function ProjectDetailModal({ project, darkMode, onClose, onUpdate, phases }: Om
                   {/* Per sectie feedback */}
                   <div className="space-y-3">
                     <h5 className={`font-medium ${darkMode ? 'text-white' : 'text-gray-900'}`}>Per sectie:</h5>
-                    {(project.onboardingData.sectionFeedback as Array<{sectionId: string; rating: string; comment?: string}>).map((section) => (
+                    {(project.onboardingData.sectionFeedback as Array<{sectionId: string; rating: string; comment?: string; presets?: string[]}>).map((section) => (
                       <div
                         key={section.sectionId}
                         className={`p-4 rounded-xl border ${
@@ -4712,6 +4712,29 @@ function ProjectDetailModal({ project, darkMode, onClose, onUpdate, phases }: Om
                             </span>
                           )}
                         </div>
+                        {/* Show selected presets */}
+                        {section.presets && section.presets.length > 0 && (
+                          <div className="flex flex-wrap gap-1 mt-2">
+                            {section.presets.map((presetId: string) => {
+                              const presetLabels: Record<string, { emoji: string; label: string }> = {
+                                'colors': { emoji: '🎨', label: 'Kleuren' },
+                                'text': { emoji: '📝', label: 'Tekst' },
+                                'image': { emoji: '📷', label: 'Afbeelding' },
+                                'layout': { emoji: '📐', label: 'Indeling' },
+                                'font': { emoji: '🔤', label: 'Lettertype' },
+                                'size': { emoji: '📏', label: 'Formaat' },
+                                'remove': { emoji: '🗑️', label: 'Verwijderen' },
+                                'spacing': { emoji: '↔️', label: 'Ruimte' },
+                              }
+                              const preset = presetLabels[presetId]
+                              return preset ? (
+                                <span key={presetId} className={`text-xs px-2 py-1 rounded-full ${darkMode ? 'bg-amber-500/20 text-amber-300' : 'bg-amber-100 text-amber-700'}`}>
+                                  {preset.emoji} {preset.label}
+                                </span>
+                              ) : null
+                            })}
+                          </div>
+                        )}
                         {section.comment && (
                           <p className={`text-sm mt-2 p-2 rounded ${darkMode ? 'bg-black/20 text-gray-300' : 'bg-white/50 text-gray-600'}`}>
                             "{section.comment}"

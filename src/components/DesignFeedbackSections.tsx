@@ -38,10 +38,23 @@ const DEFAULT_SECTIONS = [
   { id: 'footer', name: 'Footer', description: 'Onderaan de pagina', icon: '📋' },
 ]
 
+// Feedback presets - klikbare opties voor gedetailleerde feedback
+const FEEDBACK_PRESETS = [
+  { id: 'colors', label: 'Kleuren', emoji: '🎨', description: 'Andere kleuren gewenst' },
+  { id: 'text', label: 'Tekst', emoji: '📝', description: 'Tekst aanpassen/herschrijven' },
+  { id: 'image', label: 'Afbeelding', emoji: '📷', description: 'Andere foto/afbeelding' },
+  { id: 'layout', label: 'Indeling', emoji: '📐', description: 'Layout/positie aanpassen' },
+  { id: 'font', label: 'Lettertype', emoji: '🔤', description: 'Ander font gewenst' },
+  { id: 'size', label: 'Formaat', emoji: '📏', description: 'Groter/kleiner maken' },
+  { id: 'remove', label: 'Verwijderen', emoji: '🗑️', description: 'Deze sectie weghalen' },
+  { id: 'spacing', label: 'Ruimte', emoji: '↔️', description: 'Meer/minder witruimte' },
+]
+
 interface SectionFeedback {
   sectionId: string
   rating: 'good' | 'change' | null
   comment: string
+  presets: string[] // NEW: selected preset IDs
 }
 
 interface DesignFeedbackSectionsProps {
@@ -70,7 +83,7 @@ export default function DesignFeedbackSections({
   
   // Feedback state
   const [sectionFeedback, setSectionFeedback] = useState<SectionFeedback[]>(
-    sections.map(s => ({ sectionId: s.id, rating: null, comment: '' }))
+    sections.map(s => ({ sectionId: s.id, rating: null, comment: '', presets: [] }))
   )
   const [currentSectionIndex, setCurrentSectionIndex] = useState(0)
   const [generalComment, setGeneralComment] = useState('')
@@ -93,7 +106,7 @@ export default function DesignFeedbackSections({
   useEffect(() => {
     if (isOpen) {
       setDevice(isMobile ? 'mobile' : 'desktop')
-      setSectionFeedback(sections.map(s => ({ sectionId: s.id, rating: null, comment: '' })))
+      setSectionFeedback(sections.map(s => ({ sectionId: s.id, rating: null, comment: '', presets: [] })))
       setCurrentSectionIndex(0)
       setGeneralComment('')
       setStep('intro')
@@ -120,6 +133,20 @@ export default function DesignFeedbackSections({
     setSectionFeedback(prev => prev.map(f => 
       f.sectionId === sectionId ? { ...f, ...update } : f
     ))
+  }
+
+  // Toggle preset selection
+  const togglePreset = (sectionId: string, presetId: string) => {
+    setSectionFeedback(prev => prev.map(f => {
+      if (f.sectionId !== sectionId) return f
+      const hasPreset = f.presets.includes(presetId)
+      return {
+        ...f,
+        presets: hasPreset 
+          ? f.presets.filter(p => p !== presetId)
+          : [...f.presets, presetId]
+      }
+    }))
   }
 
   // Navigation
@@ -449,14 +476,37 @@ export default function DesignFeedbackSections({
                         exit={{ opacity: 0, height: 0 }}
                         className="mb-4"
                       >
+                        {/* Preset buttons */}
+                        <p className="text-sm text-zinc-400 mb-3">Wat wil je aanpassen?</p>
+                        <div className="flex flex-wrap gap-2 mb-4">
+                          {FEEDBACK_PRESETS.map(preset => {
+                            const isSelected = currentFeedback?.presets.includes(preset.id)
+                            return (
+                              <button
+                                key={preset.id}
+                                onClick={() => togglePreset(currentSection.id, preset.id)}
+                                className={`px-3 py-2 rounded-lg text-sm font-medium transition-all flex items-center gap-2 ${
+                                  isSelected
+                                    ? 'bg-amber-500/30 border-amber-500 text-amber-300 border'
+                                    : 'bg-zinc-800 border-zinc-700 text-zinc-400 border hover:border-zinc-600 hover:text-zinc-300'
+                                }`}
+                              >
+                                <span>{preset.emoji}</span>
+                                <span>{preset.label}</span>
+                              </button>
+                            )
+                          })}
+                        </div>
+
+                        {/* Custom comment */}
                         <label className="text-sm text-zinc-400 mb-2 block">
-                          Wat wil je veranderen? <span className="text-zinc-600">(optioneel)</span>
+                          Extra toelichting <span className="text-zinc-600">(optioneel)</span>
                         </label>
                         <textarea
                           value={currentFeedback?.comment || ''}
                           onChange={(e) => updateFeedback(currentSection.id, { comment: e.target.value })}
-                          placeholder="Bijv. andere kleur, groter logo, ander lettertype..."
-                          className="w-full h-24 px-3 py-2 bg-zinc-800 border border-zinc-700 rounded-lg text-white placeholder-zinc-500 resize-none focus:outline-none focus:ring-2 focus:ring-purple-500"
+                          placeholder="Beschrijf hier wat je precies wilt veranderen..."
+                          className="w-full h-20 px-3 py-2 bg-zinc-800 border border-zinc-700 rounded-lg text-white placeholder-zinc-500 resize-none focus:outline-none focus:ring-2 focus:ring-purple-500"
                         />
                       </motion.div>
                     )}
@@ -544,6 +594,19 @@ export default function DesignFeedbackSections({
                           <span className="text-xl">{section.icon}</span>
                           <div className="flex-1">
                             <p className="text-sm font-medium text-white">{section.name}</p>
+                            {/* Show selected presets */}
+                            {feedback?.presets && feedback.presets.length > 0 && (
+                              <div className="flex flex-wrap gap-1 mt-1">
+                                {feedback.presets.map(presetId => {
+                                  const preset = FEEDBACK_PRESETS.find(p => p.id === presetId)
+                                  return preset ? (
+                                    <span key={presetId} className="text-xs px-2 py-0.5 bg-amber-500/20 text-amber-300 rounded-full">
+                                      {preset.emoji} {preset.label}
+                                    </span>
+                                  ) : null
+                                })}
+                              </div>
+                            )}
                             {feedback?.comment && (
                               <p className="text-xs text-zinc-400 mt-1">"{feedback.comment}"</p>
                             )}

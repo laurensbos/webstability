@@ -110,6 +110,19 @@ interface SectionFeedbackItem {
   sectionId: string
   rating: 'good' | 'change' | null
   comment: string
+  presets?: string[] // NEW: selected preset IDs like 'colors', 'text', 'image', etc.
+}
+
+// Preset labels for the summary
+const PRESET_LABELS: Record<string, { emoji: string; label: string }> = {
+  'colors': { emoji: '🎨', label: 'Kleuren' },
+  'text': { emoji: '📝', label: 'Tekst' },
+  'image': { emoji: '📷', label: 'Afbeelding' },
+  'layout': { emoji: '📐', label: 'Indeling' },
+  'font': { emoji: '🔤', label: 'Lettertype' },
+  'size': { emoji: '📏', label: 'Formaat' },
+  'remove': { emoji: '🗑️', label: 'Verwijderen' },
+  'spacing': { emoji: '↔️', label: 'Ruimte' },
 }
 
 interface FeedbackRequest {
@@ -215,6 +228,38 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       }
       
       let feedbackSummary = ''
+
+      // Add section feedback (NEW section-based system)
+      if (sectionFeedback && sectionFeedback.length > 0) {
+        const goodSections = sectionFeedback.filter(s => s.rating === 'good')
+        const changeSections = sectionFeedback.filter(s => s.rating === 'change')
+        
+        if (changeSections.length > 0) {
+          feedbackSummary += `**🔧 Aan te passen (${changeSections.length}):**\n`
+          changeSections.forEach(s => {
+            feedbackSummary += `• **${s.sectionId}**`
+            // Add presets if available
+            if (s.presets && s.presets.length > 0) {
+              const presetLabels = s.presets.map(p => PRESET_LABELS[p]?.label || p).join(', ')
+              feedbackSummary += ` — ${presetLabels}`
+            }
+            if (s.comment) {
+              feedbackSummary += `\n  💬 "${s.comment}"`
+            }
+            feedbackSummary += '\n'
+          })
+          feedbackSummary += '\n'
+        }
+        
+        if (goodSections.length > 0) {
+          feedbackSummary += `**✅ Goedgekeurd (${goodSections.length}):** ${goodSections.map(s => s.sectionId).join(', ')}\n\n`
+        }
+      }
+      
+      // Add general comment
+      if (generalComment) {
+        feedbackSummary += `**💬 Algemene opmerking:**\n${generalComment}\n\n`
+      }
       
       // Add severity
       if (severity) {
