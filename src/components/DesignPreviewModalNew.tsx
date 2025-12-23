@@ -52,21 +52,22 @@ const QUICK_TAGS = [
 
 const TUTORIAL_STEPS_DESKTOP = [
   { title: 'Welkom bij de feedback tool!', description: 'Met deze tool kun je eenvoudig aangeven wat je wel of niet mooi vindt aan het design.', icon: '👋' },
-  { title: 'Annotatie tools', description: 'Gebruik de tools om te markeren: omcirkelen, onderstrepen, pijlen plaatsen of punten markeren.', icon: '🎨' },
+  { title: 'Annotatie tools', description: 'Markeer met: cirkel, vierkant, onderstrepen, pijlen of punten. Kies wat het beste past!', icon: '🎨' },
   { title: 'Kleuren kiezen', description: 'Kies een kleur voor je annotatie. Rood voor problemen, groen voor wat je mooi vindt!', icon: '🌈' },
   { title: 'Feedback toevoegen', description: 'Na het tekenen kun je een opmerking toevoegen. Gebruik ook de snelle tags voor veelvoorkomende feedback.', icon: '💬' },
   { title: 'Goedkeuren of verzenden', description: 'Tevreden? Keur het design goed! Nog feedback? Verstuur je opmerkingen.', icon: '✅' }
 ]
 
 const TUTORIAL_STEPS_MOBILE = [
-  { title: 'Welkom!', description: 'Tik op het scherm om feedback te geven.', icon: '👋' },
-  { title: 'Teken & markeer', description: 'Selecteer een tool en teken op het design.', icon: '✏️' },
-  { title: 'Verstuur feedback', description: 'Voeg een opmerking toe en verstuur.', icon: '📤' }
+  { title: 'Welkom!', description: 'Bekijk hier de mobiele versie van je design. Voor de desktop versie, open deze pagina op een computer.', icon: '📱' },
+  { title: 'Scrollen & markeren', description: 'Wissel tussen scrollen (handje) en markeren (potlood) met de knop linksonder.', icon: '✏️' },
+  { title: 'Feedback geven', description: 'Tik om te markeren, voeg tags toe en verstuur je feedback.', icon: '📤' }
 ]
 
 function DesignPreviewModal({ isOpen, onClose, projectId, designPreviewUrl, onFeedbackSubmit, onApprove }: DesignPreviewModalProps) {
   const [device, setDevice] = useState<'desktop' | 'mobile'>('desktop')
   const [isMobile, setIsMobile] = useState(false)
+  const [isScrollMode, setIsScrollMode] = useState(false) // Mobile: toggle between scroll and draw
   const [annotations, setAnnotations] = useState<Annotation[]>([])
   const [currentTool, setCurrentTool] = useState<AnnotationType>('marker')
   const [currentColor, setCurrentColor] = useState(COLORS[0].value)
@@ -181,6 +182,13 @@ function DesignPreviewModal({ isOpen, onClose, projectId, designPreviewUrl, onFe
         const rx = Math.abs(last.x - first.x) / 2, ry = Math.abs(last.y - first.y) / 2
         return <ellipse key={id} cx={cx + '%'} cy={cy + '%'} rx={rx + '%'} ry={ry + '%'} fill="none" stroke={color} strokeWidth={isActive ? 4 : 3} strokeDasharray={isActive ? "5,5" : "none"} className="cursor-pointer" onClick={() => setActiveAnnotation(id)} />
       }
+      case 'square': {
+        if (points.length < 2) return null
+        const first = points[0], last = points[points.length - 1]
+        const x = Math.min(first.x, last.x), y = Math.min(first.y, last.y)
+        const width = Math.abs(last.x - first.x), height = Math.abs(last.y - first.y)
+        return <rect key={id} x={x + '%'} y={y + '%'} width={width + '%'} height={height + '%'} fill="none" stroke={color} strokeWidth={isActive ? 4 : 3} strokeDasharray={isActive ? "5,5" : "none"} className="cursor-pointer" onClick={() => setActiveAnnotation(id)} />
+      }
       case 'underline': {
         if (points.length < 2) return null
         const first = points[0], last = points[points.length - 1]
@@ -229,26 +237,9 @@ function DesignPreviewModal({ isOpen, onClose, projectId, designPreviewUrl, onFe
 
   if (!isOpen) return null
 
-  const TutorialOverlay = () => {
-    const steps = isMobile ? TUTORIAL_STEPS_MOBILE : TUTORIAL_STEPS_DESKTOP
-    const currentStep = steps[tutorialStep]
-    const isLastStep = tutorialStep === steps.length - 1
-    return (
-      <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="absolute inset-0 z-50 bg-black/80 flex items-center justify-center p-4">
-        <motion.div initial={{ scale: 0.9, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} className="bg-zinc-900 rounded-2xl p-6 max-w-md w-full text-center border border-zinc-700">
-          <div className="text-5xl mb-4">{currentStep.icon}</div>
-          <h3 className="text-xl font-bold text-white mb-2">{currentStep.title}</h3>
-          <p className="text-zinc-400 mb-6">{currentStep.description}</p>
-          <div className="flex justify-center gap-2 mb-6">{steps.map((_, i) => <div key={i} className={'w-2 h-2 rounded-full transition-colors ' + (i === tutorialStep ? 'bg-purple-500' : 'bg-zinc-600')} />)}</div>
-          <div className="flex gap-3">
-            {tutorialStep > 0 && <button onClick={() => setTutorialStep(prev => prev - 1)} className="flex-1 px-4 py-2 bg-zinc-800 text-white rounded-lg hover:bg-zinc-700 transition-colors flex items-center justify-center gap-2"><ChevronLeft className="w-4 h-4" />Vorige</button>}
-            <button onClick={() => { if (isLastStep) completeTutorial(); else setTutorialStep(prev => prev + 1) }} className="flex-1 px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors flex items-center justify-center gap-2">{isLastStep ? 'Start!' : 'Volgende'}{!isLastStep && <ChevronRight className="w-4 h-4" />}</button>
-          </div>
-          <button onClick={completeTutorial} className="mt-4 text-sm text-zinc-500 hover:text-zinc-400">Overslaan</button>
-        </motion.div>
-      </motion.div>
-    )
-  }
+  const tutorialSteps = isMobile ? TUTORIAL_STEPS_MOBILE : TUTORIAL_STEPS_DESKTOP
+  const currentTutorialStep = tutorialSteps[tutorialStep]
+  const isLastTutorialStep = tutorialStep === tutorialSteps.length - 1
 
   if (showSuccess) {
     return (
@@ -265,14 +256,33 @@ function DesignPreviewModal({ isOpen, onClose, projectId, designPreviewUrl, onFe
   return (
     <AnimatePresence>
       <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="fixed inset-0 z-50 bg-black/95">
-        <AnimatePresence>{showTutorial && <TutorialOverlay />}</AnimatePresence>
+        {showTutorial && (
+          <div className="absolute inset-0 z-50 bg-black/80 flex items-center justify-center p-4">
+            <motion.div key="tutorial-modal" initial={{ scale: 0.9, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} className="bg-zinc-900 rounded-2xl p-6 max-w-md w-full text-center border border-zinc-700">
+              <div className="text-5xl mb-4">{currentTutorialStep.icon}</div>
+              <h3 className="text-xl font-bold text-white mb-2">{currentTutorialStep.title}</h3>
+              <p className="text-zinc-400 mb-6">{currentTutorialStep.description}</p>
+              <div className="flex justify-center gap-2 mb-6">{tutorialSteps.map((_, i) => <div key={i} className={'w-2 h-2 rounded-full transition-colors ' + (i === tutorialStep ? 'bg-purple-500' : 'bg-zinc-600')} />)}</div>
+              <div className="flex gap-3">
+                {tutorialStep > 0 && <button onClick={() => setTutorialStep(prev => prev - 1)} className="flex-1 px-4 py-2 bg-zinc-800 text-white rounded-lg hover:bg-zinc-700 transition-colors flex items-center justify-center gap-2"><ChevronLeft className="w-4 h-4" />Vorige</button>}
+                <button onClick={() => { if (isLastTutorialStep) completeTutorial(); else setTutorialStep(prev => prev + 1) }} className="flex-1 px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors flex items-center justify-center gap-2">{isLastTutorialStep ? 'Start!' : 'Volgende'}{!isLastTutorialStep && <ChevronRight className="w-4 h-4" />}</button>
+              </div>
+              <button onClick={completeTutorial} className="mt-4 text-sm text-zinc-500 hover:text-zinc-400">Overslaan</button>
+            </motion.div>
+          </div>
+        )}
         <div className="absolute top-0 left-0 right-0 h-14 bg-zinc-900/90 backdrop-blur-sm border-b border-zinc-800 flex items-center justify-between px-4 z-40">
           <div className="flex items-center gap-4">
             <button onClick={onClose} className="p-2 text-zinc-400 hover:text-white hover:bg-zinc-800 rounded-lg transition-colors"><X className="w-5 h-5" /></button>
-            <div className="flex bg-zinc-800 rounded-lg p-1">
-              <button onClick={() => setDevice('desktop')} className={'px-3 py-1.5 rounded-md flex items-center gap-2 text-sm transition-colors ' + (device === 'desktop' ? 'bg-purple-600 text-white' : 'text-zinc-400 hover:text-white')}><Monitor className="w-4 h-4" />{!isMobile && 'Desktop'}</button>
-              <button onClick={() => setDevice('mobile')} className={'px-3 py-1.5 rounded-md flex items-center gap-2 text-sm transition-colors ' + (device === 'mobile' ? 'bg-purple-600 text-white' : 'text-zinc-400 hover:text-white')}><Smartphone className="w-4 h-4" />{!isMobile && 'Mobiel'}</button>
-            </div>
+            {!isMobile && (
+              <div className="flex bg-zinc-800 rounded-lg p-1">
+                <button onClick={() => setDevice('desktop')} className={'px-3 py-1.5 rounded-md flex items-center gap-2 text-sm transition-colors ' + (device === 'desktop' ? 'bg-purple-600 text-white' : 'text-zinc-400 hover:text-white')}><Monitor className="w-4 h-4" />Desktop</button>
+                <button onClick={() => setDevice('mobile')} className={'px-3 py-1.5 rounded-md flex items-center gap-2 text-sm transition-colors ' + (device === 'mobile' ? 'bg-purple-600 text-white' : 'text-zinc-400 hover:text-white')}><Smartphone className="w-4 h-4" />Mobiel</button>
+              </div>
+            )}
+            {isMobile && (
+              <div className="flex items-center gap-2 text-zinc-400 text-sm"><Smartphone className="w-4 h-4" /><span>Mobiele weergave</span></div>
+            )}
           </div>
           <div className="flex items-center gap-2">
             <button onClick={() => { setShowTutorial(true); setTutorialStep(0) }} className="p-2 text-zinc-400 hover:text-white hover:bg-zinc-800 rounded-lg transition-colors" title="Hoe werkt het?"><HelpCircle className="w-5 h-5" /></button>
@@ -286,19 +296,29 @@ function DesignPreviewModal({ isOpen, onClose, projectId, designPreviewUrl, onFe
               <div className="relative w-full h-full bg-white rounded-lg overflow-hidden shadow-2xl">
                 {!iframeLoaded && <div className="absolute inset-0 flex items-center justify-center bg-zinc-900"><Loader2 className="w-8 h-8 text-purple-500 animate-spin" /></div>}
                 <iframe src={absoluteUrl} className="w-full h-full border-0" onLoad={() => setIframeLoaded(true)} title="Design Preview" />
-                <svg ref={svgRef} className="absolute inset-0 w-full h-full cursor-crosshair" style={{ touchAction: 'none' }} onMouseDown={handleStart} onMouseMove={handleMove} onMouseUp={handleEnd} onMouseLeave={handleEnd} onTouchStart={handleStart} onTouchMove={handleMove} onTouchEnd={handleEnd}>
+                <svg ref={svgRef} className={"absolute inset-0 w-full h-full " + (isMobile && isScrollMode ? "pointer-events-none" : "cursor-crosshair")} style={{ touchAction: isMobile && isScrollMode ? 'auto' : 'none' }} onMouseDown={!isScrollMode ? handleStart : undefined} onMouseMove={!isScrollMode ? handleMove : undefined} onMouseUp={!isScrollMode ? handleEnd : undefined} onMouseLeave={!isScrollMode ? handleEnd : undefined} onTouchStart={!isScrollMode ? handleStart : undefined} onTouchMove={!isScrollMode ? handleMove : undefined} onTouchEnd={!isScrollMode ? handleEnd : undefined}>
                   {annotations.filter(a => a.device === device).map(renderAnnotation)}
                   {isDrawing && currentPoints.length > 0 && <path d={'M ' + currentPoints.map(p => p.x + '% ' + p.y + '%').join(' L ')} fill="none" stroke={currentColor} strokeWidth={3} strokeLinecap="round" strokeLinejoin="round" strokeDasharray="5,5" />}
                 </svg>
               </div>
             </div>
             {isMobile && (
-              <div className="absolute bottom-4 left-1/2 -translate-x-1/2 bg-zinc-900/95 backdrop-blur-sm rounded-full px-4 py-2 flex items-center gap-2 border border-zinc-700">
-                {[{ type: 'marker' as AnnotationType, icon: MapPin }, { type: 'circle' as AnnotationType, icon: Circle }, { type: 'underline' as AnnotationType, icon: Minus }, { type: 'arrow' as AnnotationType, icon: ArrowUpRight }].map(({ type, icon: Icon }) => (
-                  <button key={type} onClick={() => setCurrentTool(type)} className={'p-2 rounded-full transition-colors ' + (currentTool === type ? 'bg-purple-600 text-white' : 'text-zinc-400 hover:text-white')}><Icon className="w-5 h-5" /></button>
-                ))}
-                <div className="w-px h-6 bg-zinc-700" />
-                {COLORS.slice(0, 3).map(color => <button key={color.id} onClick={() => setCurrentColor(color.value)} className={'w-6 h-6 rounded-full border-2 transition-transform ' + (currentColor === color.value ? 'border-white scale-110' : 'border-transparent')} style={{ backgroundColor: color.value }} />)}
+              <div className="absolute bottom-4 left-4 right-4 flex items-center justify-between">
+                <button onClick={() => setIsScrollMode(!isScrollMode)} className={"p-3 rounded-full transition-colors shadow-lg " + (isScrollMode ? "bg-blue-600 text-white" : "bg-purple-600 text-white")}>
+                  {isScrollMode ? <Hand className="w-5 h-5" /> : <Pencil className="w-5 h-5" />}
+                </button>
+                {!isScrollMode && (
+                  <div className="bg-zinc-900/95 backdrop-blur-sm rounded-full px-3 py-2 flex items-center gap-1 border border-zinc-700">
+                    {[{ type: 'marker' as AnnotationType, icon: MapPin }, { type: 'circle' as AnnotationType, icon: Circle }, { type: 'square' as AnnotationType, icon: Square }].map(({ type, icon: Icon }) => (
+                      <button key={type} onClick={() => setCurrentTool(type)} className={'p-2 rounded-full transition-colors ' + (currentTool === type ? 'bg-purple-600 text-white' : 'text-zinc-400 hover:text-white')}><Icon className="w-4 h-4" /></button>
+                    ))}
+                    <div className="w-px h-5 bg-zinc-700 mx-1" />
+                    {COLORS.slice(0, 3).map(color => <button key={color.id} onClick={() => setCurrentColor(color.value)} className={'w-5 h-5 rounded-full border-2 transition-transform ' + (currentColor === color.value ? 'border-white scale-110' : 'border-transparent')} style={{ backgroundColor: color.value }} />)}
+                  </div>
+                )}
+                {isScrollMode && (
+                  <div className="bg-zinc-900/95 backdrop-blur-sm rounded-full px-4 py-2 text-sm text-zinc-300 border border-zinc-700">Scroll om te navigeren</div>
+                )}
               </div>
             )}
           </div>
@@ -314,7 +334,7 @@ function DesignPreviewModal({ isOpen, onClose, projectId, designPreviewUrl, onFe
                   </div>
                 </div>
                 <div className="flex gap-2 mb-3">
-                  {[{ type: 'marker' as AnnotationType, icon: MapPin, label: 'Punt' }, { type: 'circle' as AnnotationType, icon: Circle, label: 'Cirkel' }, { type: 'underline' as AnnotationType, icon: Minus, label: 'Lijn' }, { type: 'arrow' as AnnotationType, icon: ArrowUpRight, label: 'Pijl' }].map(({ type, icon: Icon, label }) => (
+                  {[{ type: 'marker' as AnnotationType, icon: MapPin, label: 'Punt' }, { type: 'circle' as AnnotationType, icon: Circle, label: 'Cirkel' }, { type: 'square' as AnnotationType, icon: Square, label: 'Vierkant' }, { type: 'underline' as AnnotationType, icon: Minus, label: 'Lijn' }, { type: 'arrow' as AnnotationType, icon: ArrowUpRight, label: 'Pijl' }].map(({ type, icon: Icon, label }) => (
                     <button key={type} onClick={() => setCurrentTool(type)} className={'flex-1 flex flex-col items-center gap-1 p-2 rounded-lg transition-colors ' + (currentTool === type ? 'bg-purple-600 text-white' : 'bg-zinc-800 text-zinc-400 hover:text-white')}><Icon className="w-4 h-4" /><span className="text-xs">{label}</span></button>
                   ))}
                 </div>
@@ -339,7 +359,7 @@ function DesignPreviewModal({ isOpen, onClose, projectId, designPreviewUrl, onFe
                       <div key={annotation.id} onClick={() => setActiveAnnotation(annotation.id)} className={'p-2 rounded-lg border cursor-pointer transition-colors ' + (activeAnnotation === annotation.id ? 'border-purple-500 bg-purple-500/10' : 'border-zinc-700 bg-zinc-800 hover:border-zinc-600')}>
                         <div className="flex items-center gap-2">
                           <div className="w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold text-white" style={{ backgroundColor: annotation.color }}>{index + 1}</div>
-                          <span className="text-sm text-zinc-300 capitalize">{annotation.type === 'marker' && 'Punt'}{annotation.type === 'circle' && 'Cirkel'}{annotation.type === 'underline' && 'Lijn'}{annotation.type === 'arrow' && 'Pijl'}</span>
+                          <span className="text-sm text-zinc-300 capitalize">{annotation.type === 'marker' && 'Punt'}{annotation.type === 'circle' && 'Cirkel'}{annotation.type === 'square' && 'Vierkant'}{annotation.type === 'underline' && 'Lijn'}{annotation.type === 'arrow' && 'Pijl'}</span>
                         </div>
                       </div>
                     ))}
