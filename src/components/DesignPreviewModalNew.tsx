@@ -314,7 +314,7 @@ function DesignPreviewModal({ isOpen, onClose, projectId, designPreviewUrl, onFe
                 {!isScrollMode && (
                   <div className="bg-zinc-900/95 backdrop-blur-sm rounded-full px-3 py-2 flex items-center gap-1 border border-zinc-700">
                     {[{ type: 'marker' as AnnotationType, icon: MapPin }, { type: 'square' as AnnotationType, icon: Square }].map(({ type, icon: Icon }) => (
-                      <button key={type} onClick={() => setCurrentTool(type)} className={'p-2 rounded-full transition-colors ' + (currentTool === type ? 'bg-purple-600 text-white' : 'text-zinc-400 hover:text-white')}><Icon className="w-4 h-4" /></button>
+                      <button key={type} onClick={() => setCurrentTool(type)} title={tooltip} className={'p-2 rounded-full transition-colors ' + (currentTool === type ? 'bg-purple-600 text-white' : 'text-zinc-400 hover:text-white')}><Icon className="w-4 h-4" /></button>
                     ))}
                     <div className="w-px h-5 bg-zinc-700 mx-1" />
                     {COLORS.slice(0, 3).map(color => <button key={color.id} onClick={() => setCurrentColor(color.value)} className={'w-5 h-5 rounded-full border-2 transition-transform ' + (currentColor === color.value ? 'border-white scale-110' : 'border-transparent')} style={{ backgroundColor: color.value }} />)}
@@ -348,8 +348,8 @@ function DesignPreviewModal({ isOpen, onClose, projectId, designPreviewUrl, onFe
                         </div>
                       </div>
                       <div className="grid grid-cols-2 gap-2 mb-3">
-                        {[{ type: 'marker' as AnnotationType, icon: MapPin, label: 'Punt' }, { type: 'square' as AnnotationType, icon: Square, label: 'Kader' }, ].map(({ type, icon: Icon, label }) => (
-                          <button key={type} onClick={() => setCurrentTool(type)} className={'flex flex-col items-center gap-1 p-3 rounded-lg transition-all ' + (currentTool === type ? 'bg-purple-600 text-white ring-2 ring-purple-400 ring-offset-2 ring-offset-zinc-900' : 'bg-zinc-800 text-zinc-400 hover:text-white hover:bg-zinc-700')}><Icon className="w-5 h-5" /><span className="text-xs font-medium">{label}</span></button>
+                        {[{ type: 'marker' as AnnotationType, icon: MapPin, label: 'Punt', tooltip: 'Klik om een specifieke plek te markeren' }, { type: 'square' as AnnotationType, icon: Square, label: 'Kader', tooltip: 'Sleep om een gebied te omkaderen' }, ].map(({ type, icon: Icon, label, tooltip }) => (
+                          <button key={type} onClick={() => setCurrentTool(type)} title={tooltip} className={'flex flex-col items-center gap-1 p-3 rounded-lg transition-all ' + (currentTool === type ? 'bg-purple-600 text-white ring-2 ring-purple-400 ring-offset-2 ring-offset-zinc-900' : 'bg-zinc-800 text-zinc-400 hover:text-white hover:bg-zinc-700')}><Icon className="w-5 h-5" /><span className="text-xs font-medium">{label}</span></button>
                         ))}
                       </div>
                       <div className="flex items-center gap-3">
