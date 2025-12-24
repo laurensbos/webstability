@@ -32,7 +32,9 @@ import {
   Sparkles,
   Cloud,
   AlertCircle,
-  Trash2
+  Trash2,
+  Square,
+  CheckSquare
 } from 'lucide-react'
 
 // Dark Mode Context
@@ -293,6 +295,7 @@ export default function MarketingDashboard() {
     }
   })
   const [statusFilter, setStatusFilter] = useState<string>('alle')
+  const [selectedLeadIds, setSelectedLeadIds] = useState<Set<string>>(new Set())
   const [showAddModal, setShowAddModal] = useState(false)
   const [showEmailModal, setShowEmailModal] = useState(false)
   const [selectedLead, setSelectedLead] = useState<Lead | null>(null)
@@ -741,16 +744,17 @@ export default function MarketingDashboard() {
     localStorage.setItem('webstability_contacted_history', JSON.stringify(contactedHistory))
   }, [contactedHistory])
 
-  // Auto-delete leads after 7 days (soft delete)
+  // Auto-delete gecontacteerde leads after 5 days without response (soft delete)
   useEffect(() => {
-    const sevenDaysAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString()
+    const fiveDaysAgo = new Date(Date.now() - 5 * 24 * 60 * 60 * 1000).toISOString()
     
     setLeads(prev => {
       const leadsToArchive = prev.filter(lead => {
-        // Don't auto-delete klanten or geïnteresseerden
-        if (lead.status === 'klant' || lead.status === 'geinteresseerd') return false
-        // Check if created more than 7 days ago
-        return lead.createdAt < sevenDaysAgo && !lead.deletedAt
+        // Only auto-delete "gecontacteerd" status leads after 5 days
+        if (lead.status !== 'gecontacteerd') return false
+        // Check if first contacted more than 5 days ago
+        const contactDate = lead.firstContactedAt || lead.createdAt
+        return contactDate < fiveDaysAgo && !lead.deletedAt
       })
       
       // Add to contact history before removing
@@ -1194,7 +1198,51 @@ export default function MarketingDashboard() {
       const leadToDelete = leads.find(l => l.id === leadId)
       setLeads(prev => prev.filter(l => l.id !== leadId))
       if (leadToDelete) syncLeadToAPI(leadToDelete, 'delete')
+      // Also remove from selection if selected
+      setSelectedLeadIds(prev => {
+        const next = new Set(prev)
+        next.delete(leadId)
+        return next
+      })
     }
+  }
+
+  // Bulk delete selected leads
+  const bulkDeleteLeads = () => {
+    if (selectedLeadIds.size === 0) return
+    if (confirm(`Weet je zeker dat je ${selectedLeadIds.size} lead(s) wilt verwijderen?`)) {
+      const idsToDelete = Array.from(selectedLeadIds)
+      idsToDelete.forEach(id => {
+        const leadToDelete = leads.find(l => l.id === id)
+        if (leadToDelete) syncLeadToAPI(leadToDelete, 'delete')
+      })
+      setLeads(prev => prev.filter(l => !selectedLeadIds.has(l.id)))
+      setSelectedLeadIds(new Set())
+    }
+  }
+
+  // Toggle lead selection
+  const toggleLeadSelection = (leadId: string) => {
+    setSelectedLeadIds(prev => {
+      const next = new Set(prev)
+      if (next.has(leadId)) {
+        next.delete(leadId)
+      } else {
+        next.add(leadId)
+      }
+      return next
+    })
+  }
+
+  // Select all visible leads in current filter
+  const selectAllVisibleLeads = () => {
+    const visibleIds = filteredLeads.map(l => l.id)
+    setSelectedLeadIds(new Set(visibleIds))
+  }
+
+  // Deselect all leads
+  const deselectAllLeads = () => {
+    setSelectedLeadIds(new Set())
   }
 
   return (
@@ -2005,6 +2053,57 @@ Webstability`
           })}
           </div>
 
+          {/* Bulk actions bar - shown when on gecontacteerd filter or when leads are selected */}
+          {(statusFilter === 'gecontacteerd' || selectedLeadIds.size > 0) && (
+            <div className={`flex items-center justify-between gap-4 mb-4 p-3 rounded-xl ${
+              darkMode ? 'bg-gray-800/80 border border-gray-700' : 'bg-gray-50 border border-gray-200'
+            }`}>
+              <div className="flex items-center gap-3">
+                <button
+                  onClick={selectedLeadIds.size === filteredLeads.length ? deselectAllLeads : selectAllVisibleLeads}
+                  className={`flex items-center gap-2 px-3 py-1.5 rounded-lg text-sm font-medium transition-all ${
+                    selectedLeadIds.size > 0
+                      ? 'bg-emerald-500 text-white'
+                      : darkMode ? 'bg-gray-700 text-gray-300 hover:bg-gray-600' : 'bg-white text-gray-600 hover:bg-gray-100 border border-gray-200'
+                  }`}
+                >
+                  {selectedLeadIds.size === filteredLeads.length ? (
+                    <>
+                      <CheckSquare className="w-4 h-4" />
+                      Deselecteer alles
+                    </>
+                  ) : (
+                    <>
+                      <Square className="w-4 h-4" />
+                      Selecteer alles ({filteredLeads.length})
+                    </>
+                  )}
+                </button>
+                {selectedLeadIds.size > 0 && (
+                  <span className={`text-sm ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>
+                    {selectedLeadIds.size} geselecteerd
+                  </span>
+                )}
+              </div>
+              {selectedLeadIds.size > 0 && (
+                <motion.button
+                  whileHover={{ scale: 1.02 }}
+                  whileTap={{ scale: 0.98 }}
+                  onClick={bulkDeleteLeads}
+                  className="flex items-center gap-2 px-4 py-2 bg-red-500 text-white rounded-lg text-sm font-medium hover:bg-red-600 transition-colors"
+                >
+                  <Trash2 className="w-4 h-4" />
+                  Verwijderen ({selectedLeadIds.size})
+                </motion.button>
+              )}
+              {statusFilter === 'gecontacteerd' && selectedLeadIds.size === 0 && (
+                <p className={`text-xs ${darkMode ? 'text-gray-500' : 'text-gray-400'}`}>
+                  Leads worden automatisch verwijderd na 5 dagen zonder reactie
+                </p>
+              )}
+            </div>
+          )}
+
         {/* Leads List */}
         <motion.div 
           initial={{ opacity: 0, y: 20 }}
@@ -2050,6 +2149,9 @@ Webstability`
                     onAnalyzeWebsite={() => analyzeLeadWebsite(lead.id)}
                     templates={emailTemplates}
                     darkMode={darkMode}
+                    showCheckbox={statusFilter === 'gecontacteerd' || selectedLeadIds.size > 0}
+                    isSelected={selectedLeadIds.has(lead.id)}
+                    onToggleSelect={() => toggleLeadSelection(lead.id)}
                   />
                 </motion.div>
               ))}
@@ -2853,7 +2955,10 @@ function LeadRow({
   onSetFollowUp,
   onAnalyzeWebsite,
   templates,
-  darkMode = false
+  darkMode = false,
+  isSelected = false,
+  onToggleSelect,
+  showCheckbox = false
 }: { 
   lead: Lead
   onEmail: (template?: EmailTemplate) => void
@@ -2867,6 +2972,9 @@ function LeadRow({
   onAnalyzeWebsite: () => Promise<void>
   templates: EmailTemplate[]
   darkMode?: boolean
+  isSelected?: boolean
+  onToggleSelect?: () => void
+  showCheckbox?: boolean
 }) {
   const [showMenu, setShowMenu] = useState(false)
   const [showTemplates, setShowTemplates] = useState(false)
@@ -2904,6 +3012,20 @@ function LeadRow({
           : darkMode ? 'hover:bg-gray-700/50' : 'hover:bg-gray-50'
     }`}>
       <div className="flex items-start gap-3 sm:gap-4">
+        {/* Selection checkbox */}
+        {showCheckbox && (
+          <button
+            onClick={onToggleSelect}
+            className={`mt-1 transition-colors ${
+              isSelected 
+                ? 'text-emerald-500' 
+                : darkMode ? 'text-gray-600 hover:text-emerald-400' : 'text-gray-300 hover:text-emerald-400'
+            }`}
+          >
+            {isSelected ? <CheckSquare className="w-5 h-5" /> : <Square className="w-5 h-5" />}
+          </button>
+        )}
+
         {/* Priority star */}
         <button
           onClick={onTogglePriority}

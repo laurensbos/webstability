@@ -9513,10 +9513,13 @@ export default function DeveloperDashboardNew() {
           paymentStatus: updatedProject.paymentStatus,
           stagingUrl: updatedProject.stagingUrl,
           liveUrl: updatedProject.liveUrl,
+          designPreviewUrl: updatedProject.designPreviewUrl,
           designApproved: updatedProject.designApproved,
           designApprovedAt: updatedProject.designApprovedAt,
           messages: updatedProject.messages,
           internalNotes: updatedProject.internalNotes,
+          feedbackQuestions: updatedProject.feedbackQuestions,
+          customQuestions: updatedProject.customQuestions,
         })
       })
       
