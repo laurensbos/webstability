@@ -57,6 +57,22 @@ const phaseInfo: Record<string, { description: string; nextSteps: string[] }> = 
       'Geef je goedkeuring om live te gaan'
     ]
   },
+  'revisie': {
+    description: 'Bedankt voor je feedback! ✨ We zijn je aanpassingen aan het verwerken en je ontvangt binnenkort een nieuwe preview.',
+    nextSteps: [
+      'We verwerken je feedback met zorg',
+      'Je ontvangt binnen 2-3 werkdagen een nieuwe preview',
+      'Neem gerust contact op als je vragen hebt'
+    ]
+  },
+  'feedback': {
+    description: 'Je nieuwe design preview is klaar! 🎨 Bekijk de aanpassingen en geef feedback.',
+    nextSteps: [
+      'Bekijk de preview via het klantportaal',
+      'Controleer of je feedback is verwerkt',
+      'Geef goedkeuring of nieuwe feedback'
+    ]
+  },
   'live': {
     description: '🎉 Gefeliciteerd! Je website is nu live en bereikbaar voor iedereen!',
     nextSteps: [

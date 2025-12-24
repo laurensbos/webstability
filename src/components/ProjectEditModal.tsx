@@ -19,7 +19,8 @@ import {
   Calendar,
   Link as LinkIcon,
   AlertCircle,
-  CreditCard
+  CreditCard,
+  RefreshCw
 } from 'lucide-react'
 import type { Project, ProjectPhase, ProjectUpdate } from '../types/project'
 import { PHASE_CONFIGS, getPhaseConfig, getNextPhase, getProgressPercentage } from '../types/project'
@@ -35,6 +36,7 @@ const PHASE_ICONS: Record<ProjectPhase, typeof FileText> = {
   onboarding: FileText,
   design: Palette,
   feedback: MessageSquare,
+  revisie: RefreshCw,
   payment: CreditCard,
   live: Rocket
 }

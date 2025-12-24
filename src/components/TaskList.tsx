@@ -12,7 +12,8 @@ import {
   MessageSquare,
   AlertCircle,
   Star,
-  CreditCard
+  CreditCard,
+  RefreshCw
 } from 'lucide-react'
 import type { ProjectPhase } from '../types/project'
 
@@ -39,6 +40,7 @@ const PHASE_INFO: Record<ProjectPhase, { icon: typeof FileText; label: string; c
   onboarding: { icon: FileText, label: 'Onboarding', color: 'blue' },
   design: { icon: Palette, label: 'Design', color: 'amber' },
   feedback: { icon: MessageSquare, label: 'Feedback', color: 'purple' },
+  revisie: { icon: RefreshCw, label: 'Revisie', color: 'cyan' },
   payment: { icon: CreditCard, label: 'Betaling', color: 'indigo' },
   live: { icon: Rocket, label: 'Live', color: 'green' },
 }

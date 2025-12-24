@@ -95,6 +95,14 @@ const PHASE_ACTIONS: Record<ProjectPhase, {
       urgent: true
     }
   ],
+  revisie: [
+    { 
+      title: 'WhatsApp ons', 
+      description: 'Heb je een vraag? Stuur ons een berichtje',
+      buttonText: 'WhatsApp',
+      type: 'whatsapp'
+    }
+  ],
   payment: [
     { 
       title: 'Betaling afronden', 
@@ -120,6 +128,10 @@ const PHASE_INFO: Record<ProjectPhase, { title: string; description: string }> =
   feedback: {
     title: 'Bekijk je design preview',
     description: 'Je design is klaar! Bekijk de preview en geef je feedback. Na goedkeuring ontvang je de betaallink.'
+  },
+  revisie: {
+    title: 'Je feedback wordt verwerkt ✨',
+    description: 'Bedankt voor je feedback! We zijn de aanpassingen aan het verwerken. Je ontvangt binnenkort een nieuwe preview.'
   },
   payment: {
     title: 'Wachten op betaling',
@@ -199,6 +211,7 @@ const getPhaseColors = (phase: ProjectPhase) => {
     onboarding: { bg: 'bg-blue-500', gradient: 'from-blue-600 to-indigo-600', text: 'text-blue-400' },
     design: { bg: 'bg-amber-500', gradient: 'from-amber-500 to-orange-500', text: 'text-amber-400' },
     feedback: { bg: 'bg-indigo-500', gradient: 'from-indigo-500 to-purple-500', text: 'text-indigo-400' },
+    revisie: { bg: 'bg-cyan-500', gradient: 'from-cyan-500 to-blue-500', text: 'text-cyan-400' },
     payment: { bg: 'bg-purple-500', gradient: 'from-purple-600 to-indigo-500', text: 'text-purple-400' },
     live: { bg: 'bg-green-500', gradient: 'from-green-500 to-emerald-500', text: 'text-green-400' }
   }

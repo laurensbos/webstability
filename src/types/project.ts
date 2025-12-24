@@ -2,7 +2,7 @@
  * Project status types voor het klantportaal
  */
 
-export type ProjectPhase = 'onboarding' | 'design' | 'feedback' | 'payment' | 'live'
+export type ProjectPhase = 'onboarding' | 'design' | 'feedback' | 'revisie' | 'payment' | 'live'
 
 export type PackageType = 'starter' | 'professional' | 'premium' | 'webshop'
 
@@ -453,7 +453,8 @@ export const getProgressPercentage = (status: ProjectPhase): number => {
   const percentages: Record<ProjectPhase, number> = {
     onboarding: 15,
     design: 35,
-    feedback: 55,
+    feedback: 50,
+    revisie: 60,
     payment: 75,
     live: 100
   }
@@ -521,6 +522,12 @@ export const PHASE_FAQS: Record<ProjectPhase, PhaseFAQ[]> = {
     { question: 'Hoeveel feedback rondes zijn er?', answer: 'Afhankelijk van je pakket heb je 2-5 feedbackrondes. We verwerken je feedback tot je 100% tevreden bent.' },
     { question: 'Hoe kan ik feedback geven?', answer: 'Via de design preview knop kun je per categorie feedback geven. Je kunt ook algemene opmerkingen toevoegen.' },
     { question: 'Wat gebeurt er na mijn goedkeuring?', answer: 'Na je goedkeuring ontvang je een betaallink. Zodra de betaling binnen is, zetten we je website live!' }
+  ],
+  revisie: [
+    { question: 'Wat gebeurt er nu met mijn feedback?', answer: 'We zijn je feedback aan het verwerken en passen het design aan. Je ontvangt binnenkort een nieuwe preview.' },
+    { question: 'Hoe lang duurt de revisie?', answer: 'Meestal 1-3 werkdagen, afhankelijk van de hoeveelheid aanpassingen.' },
+    { question: 'Kan ik nog meer feedback geven?', answer: 'Zodra de revisie klaar is, krijg je een nieuwe preview te zien waarop je opnieuw feedback kunt geven.' },
+    { question: 'Hoeveel revisies zijn inbegrepen?', answer: 'Afhankelijk van je pakket heb je 2-5 revisierondes inbegrepen.' }
   ],
   payment: [
     { question: 'Hoe kan ik betalen?', answer: 'Je ontvangt een betaallink via e-mail. Je kunt betalen via iDEAL, creditcard of andere betaalmethodes.' },

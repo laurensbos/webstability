@@ -225,13 +225,16 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     } else {
       // Feedback ontvangen - stuur naar developer
       console.log(`[Feedback] Changes requested for ${projectId}:`, { severity, quickTags, details })
-      
-      // Update status back to design phase
-      projectData.status = 'design'
+
+      // Update status to revisie phase (instead of back to design)
+      projectData.status = 'revisie'
       
       // Mark that feedback was received - so we can show status to client
       projectData.feedbackReceivedAt = new Date().toISOString()
       projectData.feedbackStatus = 'processing' // processing | completed
+      
+      // Increment revision counter
+      projectData.revisionsUsed = (projectData.revisionsUsed || 0) + 1
       
       // Voeg feedback toe aan project
       const existingFeedback = (projectData as any).feedbackHistory || []

@@ -26,7 +26,8 @@ import {
   Sparkles,
   Timer,
   CreditCard,
-  X
+  X,
+  RefreshCw
 } from 'lucide-react'
 import Logo from '../components/Logo'
 import ClientAccountModal from '../components/ClientAccountModal'
@@ -46,11 +47,12 @@ const ensureAbsoluteUrl = (url: string | undefined): string => {
 }
 
 // Phase configuration - Visual stepper phases
-// Flow: Onboarding → Design → Feedback → Betaling → Live
+// Flow: Onboarding → Design → Feedback → Revisie → Betaling → Live
 const PHASES: { key: ProjectPhase; label: string; icon: typeof FileText }[] = [
   { key: 'onboarding', label: 'Onboarding', icon: FileText },
   { key: 'design', label: 'Design', icon: Palette },
   { key: 'feedback', label: 'Feedback', icon: MessageSquare },
+  { key: 'revisie', label: 'Revisie', icon: RefreshCw },
   { key: 'payment', label: 'Betaling', icon: CreditCard },
   { key: 'live', label: 'Live', icon: Rocket }
 ]
@@ -97,6 +99,14 @@ const PHASE_ACTIONS: Record<ProjectPhase, {
       urgent: true
     }
   ],
+  revisie: [
+    { 
+      title: 'WhatsApp ons', 
+      description: 'Heb je een vraag? Stuur ons een berichtje',
+      buttonText: 'WhatsApp',
+      type: 'whatsapp'
+    }
+  ],
   payment: [
     { 
       title: 'Betaling afronden', 
@@ -123,6 +133,10 @@ const PHASE_INFO: Record<ProjectPhase, { title: string; description: string }> =
     title: 'Bekijk je design preview',
     description: 'Je design is klaar! Bekijk de preview en geef je feedback. Na goedkeuring ontvang je de betaallink.'
   },
+  revisie: {
+    title: 'Je feedback wordt verwerkt ✨',
+    description: 'Bedankt voor je feedback! We zijn de aanpassingen aan het verwerken. Je ontvangt binnenkort een nieuwe preview.'
+  },
   payment: {
     title: 'Wachten op betaling',
     description: 'Je design is goedgekeurd! Na de betaling zetten we je website live.'
@@ -139,6 +153,7 @@ const getPhaseColors = (phase: ProjectPhase) => {
     onboarding: { bg: 'bg-blue-500', gradient: 'from-blue-600 to-indigo-600', text: 'text-blue-400' },
     design: { bg: 'bg-amber-500', gradient: 'from-amber-500 to-orange-500', text: 'text-amber-400' },
     feedback: { bg: 'bg-indigo-500', gradient: 'from-indigo-500 to-purple-500', text: 'text-indigo-400' },
+    revisie: { bg: 'bg-cyan-500', gradient: 'from-cyan-500 to-blue-500', text: 'text-cyan-400' },
     payment: { bg: 'bg-purple-500', gradient: 'from-purple-600 to-indigo-500', text: 'text-purple-400' },
     live: { bg: 'bg-green-500', gradient: 'from-green-500 to-emerald-500', text: 'text-green-400' }
   }
@@ -971,7 +986,7 @@ export default function ProjectStatusNew() {
               <div className="w-12 h-12 bg-white/20 backdrop-blur-sm rounded-xl flex items-center justify-center flex-shrink-0">
                 {project.status === 'live' ? (
                   <span className="text-2xl">🎉</span>
-                ) : project.feedbackReceivedAt && project.feedbackStatus === 'processing' ? (
+                ) : project.status === 'revisie' ? (
                   <span className="text-2xl">✨</span>
                 ) : (() => {
                   const currentPhase = PHASES.find(p => p.key === project.status) || PHASES[0]
@@ -980,25 +995,13 @@ export default function ProjectStatusNew() {
                 })()}
               </div>
               <div className="flex-1">
-                {/* Show special feedback received message */}
-                {project.feedbackReceivedAt && project.feedbackStatus === 'processing' && project.status === 'design' ? (
-                  <>
-                    <h2 className="font-bold text-lg sm:text-xl mb-1">Je feedback is ontvangen!</h2>
-                    <p className="text-sm text-white/80 leading-relaxed">
-                      Bedankt voor je feedback! We zijn je aanpassingen aan het verwerken. Je ontvangt binnenkort een nieuwe preview.
-                    </p>
-                  </>
-                ) : (
-                  <>
-                    <h2 className="font-bold text-lg sm:text-xl mb-1">{PHASE_INFO[project.status]?.title}</h2>
-                    <p className="text-sm text-white/80 leading-relaxed">{PHASE_INFO[project.status]?.description}</p>
-                  </>
-                )}
+                <h2 className="font-bold text-lg sm:text-xl mb-1">{PHASE_INFO[project.status]?.title}</h2>
+                <p className="text-sm text-white/80 leading-relaxed">{PHASE_INFO[project.status]?.description}</p>
               </div>
             </div>
 
-            {/* Feedback received timestamp */}
-            {project.feedbackReceivedAt && project.feedbackStatus === 'processing' && project.status === 'design' && (
+            {/* Feedback received timestamp - show in revisie phase */}
+            {project.status === 'revisie' && project.feedbackReceivedAt && (
               <div className="mt-4 pt-4 border-t border-white/20 flex items-center gap-2">
                 <CheckCircle2 className="w-4 h-4 text-green-300" />
                 <span className="text-sm text-white/70">
@@ -1008,7 +1011,7 @@ export default function ProjectStatusNew() {
             )}
 
             {/* Countdown timer */}
-            {countdown && project.status !== 'live' && !project.feedbackReceivedAt && (
+            {countdown && project.status !== 'live' && project.status !== 'revisie' && (
               <div className="mt-4 pt-4 border-t border-white/20 flex items-center gap-2">
                 <Timer className="w-4 h-4 text-white/70" />
                 <span className="text-sm text-white/70">
@@ -1018,6 +1021,52 @@ export default function ProjectStatusNew() {
             )}
           </div>
         </motion.div>
+
+        {/* Special Revisie Status Card - shown when feedback is being processed */}
+        {project.status === 'revisie' && (
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.1 }}
+            className="bg-gray-900 rounded-2xl p-5 border border-cyan-500/30"
+          >
+            <div className="flex items-start gap-4">
+              <div className="w-12 h-12 bg-cyan-500/20 rounded-xl flex items-center justify-center flex-shrink-0">
+                <motion.div
+                  animate={{ rotate: 360 }}
+                  transition={{ duration: 3, repeat: Infinity, ease: "linear" }}
+                >
+                  <RefreshCw className="w-6 h-6 text-cyan-400" />
+                </motion.div>
+              </div>
+              <div className="flex-1">
+                <h3 className="font-semibold text-white mb-1">We verwerken je feedback</h3>
+                <p className="text-sm text-gray-400 mb-3">
+                  Ons team is druk bezig met het doorvoeren van je aanpassingen. Je ontvangt binnenkort een nieuwe preview.
+                </p>
+                
+                {/* Revision counter */}
+                <div className="flex items-center gap-4 text-sm">
+                  <div className="flex items-center gap-2">
+                    <CheckCircle2 className="w-4 h-4 text-cyan-400" />
+                    <span className="text-gray-400">
+                      Revisieronde: <span className="text-white font-medium">{project.revisionsUsed || 1}</span>
+                      {project.revisionsTotal && <span className="text-gray-500">/{project.revisionsTotal}</span>}
+                    </span>
+                  </div>
+                  {project.feedbackReceivedAt && (
+                    <div className="flex items-center gap-2">
+                      <Clock className="w-4 h-4 text-gray-500" />
+                      <span className="text-gray-500">
+                        {new Date(project.feedbackReceivedAt).toLocaleDateString('nl-NL', { day: 'numeric', month: 'short' })}
+                      </span>
+                    </div>
+                  )}
+                </div>
+              </div>
+            </div>
+          </motion.div>
+        )}
 
         {/* Action Cards - What the client needs to do */}
         {pendingActions.length > 0 && (

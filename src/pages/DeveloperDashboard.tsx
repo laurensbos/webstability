@@ -73,7 +73,7 @@ type DashboardView =
   | 'messages' 
   | 'payments'
 
-type ProjectPhase = 'onboarding' | 'design' | 'feedback' | 'payment' | 'live'
+type ProjectPhase = 'onboarding' | 'design' | 'feedback' | 'revisie' | 'payment' | 'live'
 type PaymentStatus = 'pending' | 'awaiting_payment' | 'paid' | 'failed' | 'refunded'
 type ServiceType = 'drone' | 'logo' | 'foto' | 'tekst' | 'seo'
 
@@ -187,6 +187,7 @@ const PHASE_CONFIG: Record<ProjectPhase, { label: string; color: string; bg: str
   onboarding: { label: 'Onboarding', color: 'text-emerald-600', bg: 'bg-emerald-100', icon: FileText },
   design: { label: 'Design', color: 'text-amber-600', bg: 'bg-amber-100', icon: Palette },
   feedback: { label: 'Feedback', color: 'text-blue-600', bg: 'bg-blue-100', icon: MessageSquare },
+  revisie: { label: 'Revisie', color: 'text-cyan-600', bg: 'bg-cyan-100', icon: RefreshCw },
   payment: { label: 'Betaling', color: 'text-purple-600', bg: 'bg-purple-100', icon: CreditCard },
   live: { label: 'Live', color: 'text-green-600', bg: 'bg-green-100', icon: Rocket },
 }
@@ -2136,8 +2137,8 @@ function ProjectsView({ darkMode, projects, onUpdateProject, onDeleteProject: _o
     { key: 'onboarding', label: 'Onboarding', color: 'bg-yellow-500', bgColor: darkMode ? 'bg-yellow-900/20' : 'bg-yellow-50' },
     { key: 'design', label: 'Design', color: 'bg-emerald-500', bgColor: darkMode ? 'bg-emerald-900/20' : 'bg-emerald-50' },
     { key: 'feedback', label: 'Feedback', color: 'bg-blue-500', bgColor: darkMode ? 'bg-blue-900/20' : 'bg-blue-50' },
+    { key: 'revisie', label: 'Revisie', color: 'bg-cyan-500', bgColor: darkMode ? 'bg-cyan-900/20' : 'bg-cyan-50' },
     { key: 'payment', label: 'Betaling', color: 'bg-purple-500', bgColor: darkMode ? 'bg-purple-900/20' : 'bg-purple-50' },
-    { key: 'payment', label: 'Betaling', color: 'bg-orange-500', bgColor: darkMode ? 'bg-orange-900/20' : 'bg-orange-50' },
     { key: 'live', label: 'Live', color: 'bg-green-500', bgColor: darkMode ? 'bg-green-900/20' : 'bg-green-50' },
   ]
 
@@ -2175,6 +2176,12 @@ function ProjectsView({ darkMode, projects, onUpdateProject, onDeleteProject: _o
         { id: 'fb_feedback_received', label: 'Feedback van klant ontvangen' },
         { id: 'fb_changes_made', label: 'Feedback verwerkt' },
         { id: 'fb_approved', label: 'Design definitief goedgekeurd' },
+      ],
+      revisie: [
+        { id: 'rev_feedback_reviewed', label: 'Feedback bekeken' },
+        { id: 'rev_changes_made', label: 'Aanpassingen doorgevoerd' },
+        { id: 'rev_preview_updated', label: 'Preview bijgewerkt' },
+        { id: 'rev_ready_for_review', label: 'Klaar voor nieuwe review' },
       ],
       payment: [
         { id: 'pay_link_sent', label: 'Betaallink verstuurd' },
@@ -2244,7 +2251,7 @@ function ProjectsView({ darkMode, projects, onUpdateProject, onDeleteProject: _o
   // Handle confirmed phase change
   const handleConfirmedPhaseChange = async (project: Project, direction: 'next' | 'previous') => {
     setPhaseChangeLoading(true)
-    const phaseOrder: ProjectPhase[] = ['onboarding', 'design', 'feedback', 'payment', 'payment', 'live']
+    const phaseOrder: ProjectPhase[] = ['onboarding', 'design', 'feedback', 'revisie', 'payment', 'live']
     const currentIndex = phaseOrder.indexOf(project.phase)
     const targetIndex = direction === 'next' ? currentIndex + 1 : currentIndex - 1
     
@@ -2366,7 +2373,8 @@ function ProjectsView({ darkMode, projects, onUpdateProject, onDeleteProject: _o
       const phaseLabels: Record<ProjectPhase, string> = {
         onboarding: '→ Design',
         design: '→ Feedback',
-        feedback: '→ Betaling',
+        feedback: '→ Revisie',
+        revisie: '→ Betaling',
         payment: '→ Live',
         live: ''
       }
@@ -3121,7 +3129,7 @@ function ProjectsView({ darkMode, projects, onUpdateProject, onDeleteProject: _o
               } shadow-2xl`}
             >
               {(() => {
-                const phaseOrder: ProjectPhase[] = ['onboarding', 'design', 'feedback', 'payment', 'payment', 'live']
+                const phaseOrder: ProjectPhase[] = ['onboarding', 'design', 'feedback', 'revisie', 'payment', 'live']
                 const currentIndex = phaseOrder.indexOf(phaseChangeProject.phase)
                 const targetIndex = phaseChangeDirection === 'next' ? currentIndex + 1 : currentIndex - 1
                 const targetPhase = phaseOrder[targetIndex]
@@ -3326,6 +3334,12 @@ function ProjectDetailModal({ project, darkMode, onClose, onUpdate, phases }: Om
       { id: 'fb_changes_made', label: 'Feedback verwerkt' },
       { id: 'fb_approved', label: 'Design definitief goedgekeurd' },
     ],
+    revisie: [
+      { id: 'rev_feedback_reviewed', label: 'Feedback bekeken' },
+      { id: 'rev_changes_made', label: 'Aanpassingen doorgevoerd' },
+      { id: 'rev_preview_updated', label: 'Preview bijgewerkt' },
+      { id: 'rev_ready_for_review', label: 'Klaar voor nieuwe review' },
+    ],
     payment: [
       { id: 'pay_link_sent', label: 'Betaallink verstuurd' },
       { id: 'pay_received', label: 'Betaling ontvangen' },
@@ -3351,7 +3365,7 @@ function ProjectDetailModal({ project, darkMode, onClose, onUpdate, phases }: Om
   }
 
   const handleMoveToNextPhaseWithEmail = async () => {
-    const phaseOrder: ProjectPhase[] = ['onboarding', 'design', 'feedback', 'payment', 'live']
+    const phaseOrder: ProjectPhase[] = ['onboarding', 'design', 'feedback', 'revisie', 'payment', 'live']
     const currentIndex = phaseOrder.indexOf(editPhase)
     if (currentIndex < phaseOrder.length - 1) {
       const nextPhase = phaseOrder[currentIndex + 1]
@@ -3518,8 +3532,8 @@ function ProjectDetailModal({ project, darkMode, onClose, onUpdate, phases }: Om
             </button>
           </div>
 
-          {/* 🎨 DESIGN PREVIEW URL - Prominent in design and feedback phase */}
-          {(editPhase === 'design' || editPhase === 'feedback') && (
+          {/* 🎨 DESIGN PREVIEW URL - Prominent in design, feedback and revisie phase */}
+          {(editPhase === 'design' || editPhase === 'feedback' || editPhase === 'revisie') && (
             <div className={`mt-4 p-4 rounded-xl border-2 ${
               designPreviewUrl 
                 ? 'bg-emerald-500/10 border-emerald-500' 
