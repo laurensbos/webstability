@@ -414,7 +414,15 @@ export default function ProjectStatusNew() {
           referralDiscount: apiProject.referralDiscount,
           referralsCount: apiProject.referralsCount,
           referralRewards: apiProject.referralRewards,
+          // Feedback questions from developer
+          feedbackQuestions: apiProject.feedbackQuestions || [],
+          customQuestions: apiProject.customQuestions || [],
         }
+        
+        console.log('[ProjectStatusNew] Loaded project with questions:', {
+          feedbackQuestions: transformedProject.feedbackQuestions,
+          customQuestions: transformedProject.customQuestions
+        })
         
         setProject(transformedProject)
         setError('')

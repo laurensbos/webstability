@@ -85,6 +85,10 @@ export default function DesignFeedbackSections({
   feedbackQuestionIds = [],
   customQuestions = []
 }: DesignFeedbackSectionsProps) {
+  // Debug: log incoming questions
+  console.log('[DesignFeedbackSections] feedbackQuestionIds:', feedbackQuestionIds)
+  console.log('[DesignFeedbackSections] customQuestions:', customQuestions)
+  
   // Device state
   const [device, setDevice] = useState<'desktop' | 'mobile'>('desktop')
   const [isMobile, setIsMobile] = useState(false)
@@ -439,11 +443,11 @@ export default function DesignFeedbackSections({
 
             {/* Desktop/Laptop Mockup - only on desktop */}
             {!isMobile && device === 'desktop' && (
-              <div className="relative w-full h-full flex flex-col items-center justify-center p-4">
-                {/* MacBook Pro style mockup */}
-                <div className="relative w-full max-w-5xl" style={{ height: 'calc(100% - 40px)', maxHeight: '75vh' }}>
+              <div className="relative w-full h-full flex items-center justify-center p-2 md:p-4">
+                {/* MacBook Pro style mockup - fills available space */}
+                <div className="relative w-full h-full max-w-6xl flex flex-col">
                   {/* Screen bezel - dark frame around screen */}
-                  <div className="bg-zinc-900 rounded-2xl p-3 shadow-2xl h-full flex flex-col">
+                  <div className="bg-zinc-900 rounded-2xl p-2 md:p-3 shadow-2xl flex-1 flex flex-col min-h-0">
                     {/* Browser chrome inside bezel */}
                     <div className="bg-zinc-800 rounded-t-lg flex-shrink-0">
                       <div className="px-3 py-2 flex items-center gap-2">
@@ -484,12 +488,12 @@ export default function DesignFeedbackSections({
                   </div>
                   
                   {/* MacBook hinge/notch */}
-                  <div className="flex justify-center">
+                  <div className="flex justify-center flex-shrink-0">
                     <div className="w-16 h-1 bg-zinc-700 rounded-b-sm"></div>
                   </div>
                   
                   {/* MacBook base */}
-                  <div className="bg-gradient-to-b from-zinc-800 to-zinc-900 h-4 rounded-b-xl mx-4 flex items-center justify-center">
+                  <div className="bg-gradient-to-b from-zinc-800 to-zinc-900 h-4 rounded-b-xl mx-4 flex items-center justify-center flex-shrink-0">
                     <div className="w-20 h-1 bg-zinc-700/50 rounded-full"></div>
                   </div>
                 </div>
