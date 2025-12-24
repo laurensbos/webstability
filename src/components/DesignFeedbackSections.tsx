@@ -439,60 +439,38 @@ export default function DesignFeedbackSections({
 
             {/* Desktop/Laptop Mockup - only on desktop */}
             {!isMobile && device === 'desktop' && (
-              <div className="relative w-full h-full max-w-4xl flex flex-col">
-                {/* Laptop top bezel / Browser chrome */}
-                <div className="bg-zinc-800 rounded-t-xl px-3 py-2 flex items-center gap-2 flex-shrink-0">
-                  {/* Traffic lights */}
-                  <div className="flex items-center gap-1.5">
-                    <div className="w-3 h-3 rounded-full bg-red-500/80"></div>
-                    <div className="w-3 h-3 rounded-full bg-yellow-500/80"></div>
-                    <div className="w-3 h-3 rounded-full bg-green-500/80"></div>
-                  </div>
-                  {/* URL bar */}
-                  <div className="flex-1 mx-2">
-                    <div className="bg-zinc-700 rounded-md px-3 py-1 text-xs text-zinc-400 truncate max-w-xs mx-auto text-center">
-                      {absoluteUrl}
-                    </div>
-                  </div>
-                </div>
-                
-                {/* Screen content */}
-                <div className="relative flex-1 bg-white rounded-b-xl overflow-hidden shadow-2xl">
-                  {!iframeLoaded && (
-                    <div className="absolute inset-0 flex items-center justify-center bg-zinc-900">
-                      <Loader2 className="w-8 h-8 text-purple-500 animate-spin" />
-                    </div>
-                  )}
-                  <iframe
-                    src={absoluteUrl}
-                    className="w-full h-full border-0"
-                    onLoad={() => setIframeLoaded(true)}
-                    title="Design Preview"
-                  />
-                </div>
-                
-                {/* Laptop base/stand */}
-                <div className="h-3 bg-gradient-to-b from-zinc-700 to-zinc-800 rounded-b-sm mx-8"></div>
-                <div className="h-1.5 bg-zinc-700 rounded-b-lg mx-16"></div>
-              </div>
-            )}
-
-            {/* Mobile/Phone Mockup - only on desktop when viewing mobile preview */}
-            {!isMobile && device === 'mobile' && (
-              <div className="relative h-full max-h-[600px] aspect-[9/19] flex flex-col">
-                {/* Phone frame */}
-                <div className="absolute inset-0 bg-zinc-800 rounded-[2.5rem] shadow-2xl p-2">
-                  {/* Inner bezel */}
-                  <div className="relative w-full h-full bg-black rounded-[2rem] overflow-hidden">
-                    {/* Dynamic Island / Notch */}
-                    <div className="absolute top-2 left-1/2 -translate-x-1/2 w-20 h-6 bg-black rounded-full z-10 flex items-center justify-center">
-                      <div className="w-2 h-2 rounded-full bg-zinc-700"></div>
+              <div className="relative w-full h-full max-w-4xl flex flex-col justify-center">
+                {/* MacBook Pro style mockup */}
+                <div className="relative">
+                  {/* Screen bezel - dark frame around screen */}
+                  <div className="bg-zinc-900 rounded-2xl p-3 shadow-2xl">
+                    {/* Browser chrome inside bezel */}
+                    <div className="bg-zinc-800 rounded-t-lg">
+                      <div className="px-3 py-2 flex items-center gap-2">
+                        {/* Traffic lights */}
+                        <div className="flex items-center gap-1.5">
+                          <div className="w-3 h-3 rounded-full bg-red-500 shadow-sm"></div>
+                          <div className="w-3 h-3 rounded-full bg-yellow-500 shadow-sm"></div>
+                          <div className="w-3 h-3 rounded-full bg-green-500 shadow-sm"></div>
+                        </div>
+                        {/* URL bar */}
+                        <div className="flex-1 mx-4">
+                          <div className="bg-zinc-700/80 rounded-md px-4 py-1.5 text-xs text-zinc-400 truncate max-w-sm mx-auto text-center flex items-center justify-center gap-2">
+                            <svg className="w-3 h-3 text-zinc-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+                            </svg>
+                            {absoluteUrl}
+                          </div>
+                        </div>
+                        {/* Window controls placeholder */}
+                        <div className="w-16"></div>
+                      </div>
                     </div>
                     
                     {/* Screen content */}
-                    <div className="relative w-full h-full bg-white overflow-hidden">
+                    <div className="relative bg-white overflow-hidden" style={{ height: 'calc(100% - 40px)', minHeight: '300px', maxHeight: '500px' }}>
                       {!iframeLoaded && (
-                        <div className="absolute inset-0 flex items-center justify-center bg-zinc-900">
+                        <div className="absolute inset-0 flex items-center justify-center bg-zinc-100">
                           <Loader2 className="w-8 h-8 text-purple-500 animate-spin" />
                         </div>
                       )}
@@ -503,10 +481,63 @@ export default function DesignFeedbackSections({
                         title="Design Preview"
                       />
                     </div>
-                    
-                    {/* Home indicator */}
-                    <div className="absolute bottom-2 left-1/2 -translate-x-1/2 w-28 h-1 bg-zinc-600 rounded-full"></div>
                   </div>
+                  
+                  {/* MacBook hinge/notch */}
+                  <div className="flex justify-center">
+                    <div className="w-16 h-1 bg-zinc-700 rounded-b-sm"></div>
+                  </div>
+                  
+                  {/* MacBook base */}
+                  <div className="bg-gradient-to-b from-zinc-800 to-zinc-900 h-4 rounded-b-xl mx-4 flex items-center justify-center">
+                    <div className="w-20 h-1 bg-zinc-700/50 rounded-full"></div>
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/* Mobile/Phone Mockup - only on desktop when viewing mobile preview */}
+            {!isMobile && device === 'mobile' && (
+              <div className="relative h-full flex items-center justify-center py-4">
+                {/* iPhone style mockup */}
+                <div className="relative" style={{ height: 'min(100%, 580px)', aspectRatio: '9/19.5' }}>
+                  {/* Phone outer frame - titanium style */}
+                  <div className="absolute inset-0 bg-gradient-to-b from-zinc-700 via-zinc-800 to-zinc-700 rounded-[3rem] shadow-2xl p-1">
+                    {/* Phone inner bezel */}
+                    <div className="relative w-full h-full bg-black rounded-[2.5rem] overflow-hidden">
+                      {/* Dynamic Island */}
+                      <div className="absolute top-3 left-1/2 -translate-x-1/2 w-28 h-8 bg-black rounded-full z-10 flex items-center justify-center gap-2">
+                        <div className="w-2.5 h-2.5 rounded-full bg-zinc-800 ring-1 ring-zinc-700"></div>
+                        <div className="w-3 h-3 rounded-full bg-zinc-900 ring-1 ring-zinc-800"></div>
+                      </div>
+                      
+                      {/* Screen content */}
+                      <div className="absolute inset-0 bg-white overflow-hidden rounded-[2.5rem]">
+                        {!iframeLoaded && (
+                          <div className="absolute inset-0 flex items-center justify-center bg-zinc-100">
+                            <Loader2 className="w-8 h-8 text-purple-500 animate-spin" />
+                          </div>
+                        )}
+                        <iframe
+                          src={absoluteUrl}
+                          className="w-full h-full border-0"
+                          onLoad={() => setIframeLoaded(true)}
+                          title="Design Preview"
+                        />
+                      </div>
+                      
+                      {/* Home indicator */}
+                      <div className="absolute bottom-2 left-1/2 -translate-x-1/2 w-32 h-1 bg-zinc-600 rounded-full z-10"></div>
+                    </div>
+                  </div>
+                  
+                  {/* Side buttons - volume */}
+                  <div className="absolute left-0 top-28 w-0.5 h-8 bg-zinc-600 rounded-l-sm -translate-x-0.5"></div>
+                  <div className="absolute left-0 top-40 w-0.5 h-12 bg-zinc-600 rounded-l-sm -translate-x-0.5"></div>
+                  <div className="absolute left-0 top-56 w-0.5 h-12 bg-zinc-600 rounded-l-sm -translate-x-0.5"></div>
+                  
+                  {/* Side button - power */}
+                  <div className="absolute right-0 top-36 w-0.5 h-16 bg-zinc-600 rounded-r-sm translate-x-0.5"></div>
                 </div>
               </div>
             )}
