@@ -1098,16 +1098,29 @@ export default function MarketingDashboard() {
                 <div className={`divide-y ${darkMode ? 'divide-gray-700' : 'divide-gray-100'} ${mobileSearchExpanded ? 'max-h-96' : 'max-h-[60vh] sm:max-h-96'} overflow-y-auto`}>
                   {searchResults.map((business) => {
                     const isAdded = leads.some(l => l.id === business.id)
+                    const existingLead = leads.find(l => l.email === business.email || l.id === business.id)
+                    const hasBeenEmailed = existingLead && existingLead.emailsSent > 0
                     const analysis = websiteAnalyses[business.id]
                     const isAnalyzing = analyzingWebsites[business.id]
                     
                     return (
-                      <div key={business.id} className={`p-4 transition-colors ${darkMode ? 'hover:bg-gray-700/50' : 'hover:bg-gray-50'}`}>
+                      <div key={business.id} className={`p-4 transition-colors ${hasBeenEmailed ? (darkMode ? 'bg-emerald-900/10' : 'bg-emerald-50/50') : ''} ${darkMode ? 'hover:bg-gray-700/50' : 'hover:bg-gray-50'}`}>
                         <div className="flex items-start justify-between gap-4">
                           <div className="flex-1 min-w-0">
-                            <h5 className={`font-medium truncate ${darkMode ? 'text-white' : 'text-gray-900'}`}>
-                              {business.name}
-                            </h5>
+                            <div className="flex items-center gap-2">
+                              <h5 className={`font-medium truncate ${darkMode ? 'text-white' : 'text-gray-900'}`}>
+                                {business.name}
+                              </h5>
+                              {/* Email sent indicator */}
+                              {hasBeenEmailed && (
+                                <span className={`flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium ${
+                                  darkMode ? 'bg-emerald-500/20 text-emerald-400' : 'bg-emerald-100 text-emerald-700'
+                                }`}>
+                                  <CheckCircle className="w-3 h-3" />
+                                  Gemaild
+                                </span>
+                              )}
+                            </div>
                             <p className={`text-sm ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>
                               {business.address}, {business.city}
                             </p>
@@ -1156,7 +1169,7 @@ export default function MarketingDashboard() {
                                       city: business.city,
                                       type: business.type
                                     })
-                                    setProspectSubject(`Even een tipje`)
+                                    setProspectSubject(`Website verbetering ${business.name || ''}`.trim())
                                     setProspectBody(
 `Hoi,
 
@@ -1216,10 +1229,17 @@ Webstability`
                                   </ul>
                                 )}
                                 {analysis.issues.length > 0 && business.email ? (
-                                  <p className={`mt-2 text-xs italic flex items-center gap-1 ${darkMode ? 'text-yellow-400' : 'text-yellow-600'}`}>
-                                    💡 Klik om een vriendelijk tipje te sturen
-                                    <Mail className="w-3 h-3 inline" />
-                                  </p>
+                                  hasBeenEmailed ? (
+                                    <p className={`mt-2 text-xs italic flex items-center gap-1 ${darkMode ? 'text-emerald-400' : 'text-emerald-600'}`}>
+                                      <CheckCircle className="w-3 h-3" />
+                                      Al gemaild - klik om opnieuw te mailen
+                                    </p>
+                                  ) : (
+                                    <p className={`mt-2 text-xs italic flex items-center gap-1 ${darkMode ? 'text-yellow-400' : 'text-yellow-600'}`}>
+                                      💡 Klik om een vriendelijk tipje te sturen
+                                      <Mail className="w-3 h-3 inline" />
+                                    </p>
+                                  )
                                 ) : (
                                   <p className={`mt-2 text-xs italic ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>
                                     💡 {analysis.recommendation}
