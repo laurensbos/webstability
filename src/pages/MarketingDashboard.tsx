@@ -292,6 +292,13 @@ export default function MarketingDashboard() {
   const [prospectSubject, setProspectSubject] = useState('')
   const [prospectBody, setProspectBody] = useState('')
   const [prospectBusinessName, setProspectBusinessName] = useState('')
+  const [prospectBusinessData, setProspectBusinessData] = useState<{
+    website?: string
+    phone?: string
+    address?: string
+    city?: string
+    type?: string
+  } | null>(null)
   const [sendingProspect, setSendingProspect] = useState(false)
 
   // Dark mode effect
@@ -1095,9 +1102,16 @@ export default function MarketingDashboard() {
                                       .map(issue => `• ${issue.message}`)
                                       .join('\n')
                                     
-                                    // Open prospect email modal
+                                    // Open prospect email modal met alle business data
                                     setProspectEmail(business.email)
                                     setProspectBusinessName(business.name || 'jullie bedrijf')
+                                    setProspectBusinessData({
+                                      website: business.website,
+                                      phone: business.phone,
+                                      address: business.address,
+                                      city: business.city,
+                                      type: business.type
+                                    })
                                     setProspectSubject(`Even een tipje`)
                                     setProspectBody(
 `Hoi,
@@ -1649,8 +1663,53 @@ Webstability`
                         })
                       })
                       if (response.ok) {
+                        // Maak een nieuwe lead aan of update bestaande
+                        const existingLead = leads.find(l => l.email === prospectEmail)
+                        
+                        const emailHistoryItem: EmailHistoryItem = {
+                          id: Date.now().toString(),
+                          sentAt: new Date().toISOString(),
+                          subject: prospectSubject,
+                          templateName: 'Website analyse'
+                        }
+                        
+                        if (existingLead) {
+                          // Update bestaande lead met nieuwe email
+                          setLeads(prev => prev.map(l => 
+                            l.id === existingLead.id 
+                              ? { 
+                                  ...l, 
+                                  emailsSent: (l.emailsSent || 0) + 1,
+                                  emailHistory: [...(l.emailHistory || []), emailHistoryItem],
+                                  status: l.status === 'nieuw' ? 'gecontacteerd' : l.status
+                                }
+                              : l
+                          ))
+                        } else {
+                          // Maak nieuwe lead aan
+                          const newLead: Lead = {
+                            id: Date.now().toString(),
+                            companyName: prospectBusinessName,
+                            contactPerson: '',
+                            email: prospectEmail,
+                            phone: prospectBusinessData?.phone || '',
+                            website: prospectBusinessData?.website || '',
+                            address: prospectBusinessData?.address || '',
+                            city: prospectBusinessData?.city || '',
+                            notes: prospectBusinessData?.type ? `Type: ${prospectBusinessData.type}\nVia website analyse` : 'Via website analyse',
+                            status: 'gecontacteerd',
+                            priority: false,
+                            createdAt: new Date().toISOString(),
+                            emailsSent: 1,
+                            emailHistory: [emailHistoryItem],
+                            notesTimeline: []
+                          }
+                          setLeads(prev => [newLead, ...prev])
+                        }
+                        
                         setShowProspectEmailModal(false)
-                        alert('Email verstuurd naar ' + prospectBusinessName + '!')
+                        setProspectBusinessData(null)
+                        alert('Email verstuurd en lead aangemaakt voor ' + prospectBusinessName + '!')
                       } else {
                         alert('Fout bij versturen email')
                       }
