@@ -63,6 +63,29 @@ const PHASE_ACTIONS: Record<string, { action: string; urgentAction: string }> = 
   review: {
     action: 'de website te testen en eventuele feedback te geven',
     urgentAction: 'de review af te ronden zodat we live kunnen gaan'
+  },
+  payment: {
+    action: 'de betaling af te ronden zodat we je website live kunnen zetten',
+    urgentAction: 'de betaling te voldoen - je website staat klaar!'
+  }
+}
+
+// Payment reminder templates
+const PAYMENT_TEMPLATES = {
+  friendly: {
+    subject: (name: string) => `Herinnering: Je website wacht op je, ${name}!`,
+    heading: 'Je website is bijna klaar! 🎉',
+    message: 'We wilden je even herinneren dat de betaling nog openstaat. Zodra die binnen is, zetten we je website direct live!'
+  },
+  urgent: {
+    subject: (businessName: string) => `Actie vereist: Betaling voor ${businessName}`,
+    heading: 'Betaling vereist',
+    message: 'We hebben de betaling nog niet ontvangen. Om je website te kunnen lanceren, is het belangrijk dat de betaling wordt afgerond.'
+  },
+  final: {
+    subject: (businessName: string) => `Laatste herinnering: Website ${businessName}`,
+    heading: 'Laatste herinnering',
+    message: 'Dit is onze laatste herinnering. Als we de betaling niet binnen 3 dagen ontvangen, moeten we het project helaas pauzeren.'
   }
 }
 
@@ -272,7 +295,16 @@ async function checkAllProjects(_req: VercelRequest, res: VercelResponse, isCron
 
 // Verstuur herinnering voor specifiek project
 async function sendSingleReminder(req: VercelRequest, res: VercelResponse) {
-  const { projectId, force } = req.body
+  const { 
+    projectId, 
+    force, 
+    type,           // 'payment' | 'deadline'
+    template,       // 'friendly' | 'urgent' | 'final'
+    recipientEmail, // Override email
+    recipientName,  // Override name
+    businessName,   // For payment reminders
+    paymentUrl      // Direct payment link
+  } = req.body
   
   if (!projectId) {
     return res.status(400).json({ error: 'Project ID is verplicht' })
@@ -282,6 +314,17 @@ async function sendSingleReminder(req: VercelRequest, res: VercelResponse) {
   
   if (!project) {
     return res.status(404).json({ error: 'Project niet gevonden' })
+  }
+
+  // Handle payment reminders
+  if (type === 'payment') {
+    return await sendPaymentReminder(req, res, project, {
+      template: template || 'friendly',
+      recipientEmail: recipientEmail || project.customer.email,
+      recipientName: recipientName || project.customer.name,
+      businessName: businessName || project.customer.companyName || project.customer.name,
+      paymentUrl
+    })
   }
   
   // Check of herinnering nodig is (tenzij force=true)
@@ -363,4 +406,88 @@ async function sendSingleReminder(req: VercelRequest, res: VercelResponse) {
     success: false, 
     error: result.error || 'Email versturen mislukt'
   })
+}
+
+// Verstuur payment reminder
+async function sendPaymentReminder(
+  _req: VercelRequest, 
+  res: VercelResponse, 
+  project: Project,
+  options: {
+    template: 'friendly' | 'urgent' | 'final'
+    recipientEmail: string
+    recipientName: string
+    businessName: string
+    paymentUrl?: string
+  }
+) {
+  const { template, recipientEmail, recipientName, businessName, paymentUrl } = options
+  const templateConfig = PAYMENT_TEMPLATES[template]
+  
+  // Construct payment URL if not provided
+  const finalPaymentUrl = paymentUrl || `https://webstability.nl/project/${project.id}`
+  
+  // Get current reminder count
+  const reminderCount = (project.onboardingData?.reminderCount || 0) + 1
+  
+  try {
+    // Use the existing SMTP function with payment-appropriate parameters
+    const result = await sendDeadlineReminderEmail({
+      email: recipientEmail,
+      name: recipientName || 'daar',
+      projectId: project.id,
+      phase: 'review' as const, // Use review phase as it's closest to payment urgency
+      type: project.type,
+      deadline: new Date().toISOString(),
+      daysUntil: template === 'final' ? -1 : template === 'urgent' ? 0 : 3,
+      reminderType: template === 'final' ? 'overdue' : template === 'urgent' ? 'urgent' : 'upcoming',
+      action: `de betaling af te ronden zodat we ${businessName} live kunnen zetten`,
+      driveLink: finalPaymentUrl // Use driveLink field for payment URL
+    })
+    
+    if (result.success) {
+      // Update project with reminder tracking
+      const updatedOnboardingData = {
+        ...project.onboardingData,
+        lastPaymentReminderSent: new Date().toISOString(),
+        paymentReminderCount: reminderCount
+      }
+      
+      await kv!.set(`project:${project.id}`, {
+        ...project,
+        onboardingData: updatedOnboardingData,
+        updatedAt: new Date().toISOString()
+      })
+      
+      // Log email
+      await logEmailSent({
+        projectId: project.id,
+        projectName: businessName,
+        recipientEmail,
+        recipientName,
+        type: 'payment_link',
+        subject: templateConfig.subject(template === 'friendly' ? recipientName : businessName),
+        details: `Betalingsherinnering (${template}) - #${reminderCount}`,
+        success: true
+      })
+      
+      return res.status(200).json({ 
+        success: true, 
+        message: 'Betalingsherinnering verstuurd',
+        template,
+        reminderCount
+      })
+    }
+    
+    return res.status(500).json({ 
+      success: false, 
+      error: result.error || 'Email versturen mislukt'
+    })
+  } catch (error) {
+    console.error('Payment reminder error:', error)
+    return res.status(500).json({ 
+      success: false, 
+      error: error instanceof Error ? error.message : 'Onbekende fout'
+    })
+  }
 }

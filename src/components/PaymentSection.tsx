@@ -1,4 +1,4 @@
-import { motion } from 'framer-motion'
+import { motion, AnimatePresence } from 'framer-motion'
 import { 
   CreditCard, 
   CheckCircle2, 
@@ -8,7 +8,13 @@ import {
   Lock,
   AlertCircle,
   Loader2,
-  ExternalLink
+  ExternalLink,
+  RefreshCw,
+  Mail,
+  Calendar,
+  HelpCircle,
+  ChevronDown,
+  ChevronUp
 } from 'lucide-react'
 import { useState } from 'react'
 import { packages } from '../config/company'
@@ -20,6 +26,10 @@ interface PaymentSectionProps {
   paymentUrl?: string
   designApprovedAt?: string
   onPaymentInitiated?: () => void
+  // Nieuwe props voor verbeterde tracking
+  lastPaymentAttempt?: string
+  paymentFailureReason?: string
+  paymentRetryCount?: number
 }
 
 export default function PaymentSection({
@@ -28,10 +38,14 @@ export default function PaymentSection({
   paymentStatus,
   paymentUrl,
   designApprovedAt,
-  onPaymentInitiated
+  onPaymentInitiated,
+  lastPaymentAttempt,
+  paymentFailureReason,
+  paymentRetryCount = 0
 }: PaymentSectionProps) {
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
+  const [showHelp, setShowHelp] = useState(false)
 
   // Vind het pakket
   const pkg = packages[packageType as keyof typeof packages] || packages.professional
@@ -140,22 +154,114 @@ export default function PaymentSection({
           </div>
           <div>
             <h3 className="text-xl font-bold text-red-900">Betaling niet gelukt</h3>
-            <p className="text-red-700">Probeer het opnieuw of neem contact op</p>
+            <p className="text-red-700">
+              {paymentRetryCount > 0 
+                ? `Poging ${paymentRetryCount + 1} - Probeer het opnieuw`
+                : 'Probeer het opnieuw of neem contact op'}
+            </p>
           </div>
         </div>
+
+        {/* Fout details */}
+        {paymentFailureReason && (
+          <div className="bg-red-100 rounded-xl p-4 mb-4 border border-red-200">
+            <p className="text-sm text-red-800">
+              <strong>Reden:</strong> {paymentFailureReason}
+            </p>
+          </div>
+        )}
+
+        {/* Laatste poging */}
+        {lastPaymentAttempt && (
+          <div className="flex items-center gap-2 text-sm text-red-600 mb-4">
+            <Calendar className="w-4 h-4" />
+            <span>
+              Laatste poging: {new Date(lastPaymentAttempt).toLocaleDateString('nl-NL', {
+                day: 'numeric',
+                month: 'long',
+                hour: '2-digit',
+                minute: '2-digit'
+              })}
+            </span>
+          </div>
+        )}
+
+        {/* Help accordion */}
+        <AnimatePresence>
+          {showHelp && (
+            <motion.div
+              initial={{ height: 0, opacity: 0 }}
+              animate={{ height: 'auto', opacity: 1 }}
+              exit={{ height: 0, opacity: 0 }}
+              className="overflow-hidden mb-4"
+            >
+              <div className="bg-white rounded-xl p-4 border border-red-200">
+                <h4 className="font-semibold text-gray-900 mb-3 flex items-center gap-2">
+                  <HelpCircle className="w-4 h-4" />
+                  Mogelijke oplossingen
+                </h4>
+                <ul className="space-y-2 text-sm text-gray-700">
+                  <li className="flex items-start gap-2">
+                    <CheckCircle2 className="w-4 h-4 text-green-500 mt-0.5 flex-shrink-0" />
+                    <span>Controleer of je genoeg saldo hebt</span>
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <CheckCircle2 className="w-4 h-4 text-green-500 mt-0.5 flex-shrink-0" />
+                    <span>Probeer een andere betaalmethode (iDEAL, creditcard)</span>
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <CheckCircle2 className="w-4 h-4 text-green-500 mt-0.5 flex-shrink-0" />
+                    <span>Check of je bank geen online transacties blokkeert</span>
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <CheckCircle2 className="w-4 h-4 text-green-500 mt-0.5 flex-shrink-0" />
+                    <span>Neem contact met ons op als het probleem aanhoudt</span>
+                  </li>
+                </ul>
+
+                <a
+                  href="https://wa.me/31612345678?text=Hoi, ik heb problemen met de betaling voor mijn website."
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="mt-4 flex items-center justify-center gap-2 w-full px-4 py-2 bg-green-500 hover:bg-green-600 text-white rounded-lg text-sm font-medium transition"
+                >
+                  <Mail className="w-4 h-4" />
+                  Contact via WhatsApp
+                </a>
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
+
+        <button
+          onClick={() => setShowHelp(!showHelp)}
+          className="w-full flex items-center justify-center gap-2 text-sm text-red-600 hover:text-red-800 mb-4 transition"
+        >
+          {showHelp ? (
+            <>
+              <ChevronUp className="w-4 h-4" />
+              Verberg hulp
+            </>
+          ) : (
+            <>
+              <ChevronDown className="w-4 h-4" />
+              Hulp nodig?
+            </>
+          )}
+        </button>
 
         <motion.button
           onClick={initiatePayment}
           disabled={loading}
           whileHover={{ scale: 1.02 }}
           whileTap={{ scale: 0.98 }}
-          className="w-full mt-4 flex items-center justify-center gap-3 px-6 py-4 bg-gradient-to-r from-red-600 to-rose-600 hover:from-red-700 hover:to-rose-700 text-white font-semibold rounded-xl transition disabled:opacity-50 shadow-lg shadow-red-500/25"
+          className="w-full flex items-center justify-center gap-3 px-6 py-4 bg-gradient-to-r from-red-600 to-rose-600 hover:from-red-700 hover:to-rose-700 text-white font-semibold rounded-xl transition disabled:opacity-50 shadow-lg shadow-red-500/25"
         >
           {loading ? (
             <Loader2 className="w-5 h-5 animate-spin" />
           ) : (
             <>
-              <CreditCard className="w-5 h-5" />
+              <RefreshCw className="w-5 h-5" />
               Opnieuw proberen
             </>
           )}

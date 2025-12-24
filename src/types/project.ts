@@ -209,6 +209,12 @@ export interface Project {
   paymentUrl?: string           // Mollie checkout URL
   paymentCompletedAt?: string   // Wanneer betaald
   designApprovedAt?: string     // Wanneer design goedgekeurd
+  // Payment tracking voor verbeterde UX
+  lastPaymentAttempt?: string   // Laatste betaalpoging
+  paymentFailureReason?: string // Reden van mislukking
+  paymentRetryCount?: number    // Aantal pogingen
+  paymentReminderCount?: number // Aantal verstuurde herinneringen
+  lastPaymentReminderSent?: string // Laatste herinnering datum
   // Feedback status tracking
   feedbackReceivedAt?: string   // Wanneer feedback ontvangen
   feedbackStatus?: 'processing' | 'completed'  // Verwerking status
