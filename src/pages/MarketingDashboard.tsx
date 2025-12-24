@@ -46,13 +46,39 @@ interface EmailHistoryItem {
   subject: string
   templateName?: string
   sentAt: string
+  sentBy?: string // Account die de email verstuurde
 }
 
 interface NoteItem {
   id: string
   text: string
   createdAt: string
+  createdBy?: string
 }
+
+// Email reply from inbox
+interface EmailReply {
+  id: string
+  from: string
+  subject: string
+  body: string
+  receivedAt: string
+  read: boolean
+  leadId?: string // Link naar lead indien bekend
+}
+
+// Sales account
+interface SalesAccount {
+  id: string
+  name: string
+  email: string
+}
+
+const SALES_ACCOUNTS: SalesAccount[] = [
+  { id: 'admin', name: 'Admin', email: 'info@webstability.nl' },
+  { id: 'wesley', name: 'Wesley', email: 'wesley@webstability.nl' },
+  { id: 'laurens', name: 'Laurens', email: 'laurens@webstability.nl' },
+]
 
 interface Lead {
   id: string
@@ -73,6 +99,9 @@ interface Lead {
   emailHistory: EmailHistoryItem[]
   notesTimeline: NoteItem[]
   followUpDate?: string
+  // Account tracking
+  createdBy?: string  // Account ID die lead aanmaakte
+  emailedBy?: string[] // Account IDs die emails stuurden
 }
 
 interface EmailTemplate {
@@ -219,6 +248,21 @@ export default function MarketingDashboard() {
   const [emailSubject, setEmailSubject] = useState('')
   const [emailBody, setEmailBody] = useState('')
   const [sending, setSending] = useState(false)
+  
+  // Current sales account - stored in localStorage
+  const [currentAccount, setCurrentAccount] = useState<SalesAccount>(() => {
+    const saved = localStorage.getItem('webstability_sales_account')
+    if (saved) {
+      const found = SALES_ACCOUNTS.find(a => a.id === saved)
+      if (found) return found
+    }
+    return SALES_ACCOUNTS[0] // Default to admin
+  })
+  
+  // Email inbox state (for future IMAP integration)
+  const [emailReplies, _setEmailReplies] = useState<EmailReply[]>([])
+  const [_loadingInbox, _setLoadingInbox] = useState(false)
+  const [_selectedReply, _setSelectedReply] = useState<EmailReply | null>(null)
   
   // Main view tab - zoeken, leads or postvak
   const [mainTab, setMainTab] = useState<'zoeken' | 'leads' | 'postvak'>('zoeken')
@@ -413,11 +457,22 @@ export default function MarketingDashboard() {
               }
             }
             
-            // Sort by createdAt descending
-            mergedLeads.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
+            // Filter out leads older than 3 months (unless they are klant or geinteresseerd)
+            const threeMonthsAgo = new Date()
+            threeMonthsAgo.setMonth(threeMonthsAgo.getMonth() - 3)
             
-            setLeads(mergedLeads)
-            localStorage.setItem('webstability_leads', JSON.stringify(mergedLeads))
+            const filteredLeads = mergedLeads.filter(lead => {
+              // Always keep klanten and geinteresseerde leads
+              if (lead.status === 'klant' || lead.status === 'geinteresseerd') return true
+              // Keep leads created within last 3 months
+              return new Date(lead.createdAt) > threeMonthsAgo
+            })
+            
+            // Sort by createdAt descending
+            filteredLeads.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
+            
+            setLeads(filteredLeads)
+            localStorage.setItem('webstability_leads', JSON.stringify(filteredLeads))
           }
           
           setSyncStatus('synced')
@@ -545,7 +600,8 @@ export default function MarketingDashboard() {
       createdAt: new Date().toISOString(),
       emailsSent: 0,
       emailHistory: [],
-      notesTimeline: []
+      notesTimeline: [],
+      createdBy: currentAccount.id
     }
 
     setLeads(prev => [newLead, ...prev])
@@ -622,6 +678,16 @@ export default function MarketingDashboard() {
     return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
   })
 
+  // Per-account stats
+  const accountStats = SALES_ACCOUNTS.map(account => ({
+    account,
+    leadsCreated: leads.filter(l => l.createdBy === account.id).length,
+    emailsSent: leads.reduce((sum, l) => {
+      return sum + (l.emailHistory?.filter(e => e.sentBy === account.id).length || 0)
+    }, 0),
+    leadsEmailed: leads.filter(l => l.emailedBy?.includes(account.id)).length,
+  }))
+
   const stats = {
     total: leads.length,
     nieuw: leads.filter(l => l.status === 'nieuw').length,
@@ -633,7 +699,12 @@ export default function MarketingDashboard() {
     afgewezen: leads.filter(l => l.status === 'afgewezen').length,
     emailsSent: leads.reduce((sum, l) => sum + l.emailsSent, 0),
     followUpsToday: leads.filter(l => l.followUpDate === new Date().toISOString().split('T')[0]).length,
-    followUpsOverdue: leads.filter(l => l.followUpDate && l.followUpDate < new Date().toISOString().split('T')[0]).length
+    followUpsOverdue: leads.filter(l => l.followUpDate && l.followUpDate < new Date().toISOString().split('T')[0]).length,
+    // Current account stats
+    myEmailsSent: leads.reduce((sum, l) => {
+      return sum + (l.emailHistory?.filter(e => e.sentBy === currentAccount.id).length || 0)
+    }, 0),
+    myLeadsEmailed: leads.filter(l => l.emailedBy?.includes(currentAccount.id)).length,
   }
 
   const openEmailModal = (lead: Lead, template?: EmailTemplate) => {
@@ -675,7 +746,8 @@ export default function MarketingDashboard() {
           to: selectedLead.email,
           subject: emailSubject,
           body: emailBody,
-          leadId: selectedLead.id
+          leadId: selectedLead.id,
+          sentBy: currentAccount.id
         })
       })
 
@@ -685,7 +757,8 @@ export default function MarketingDashboard() {
           id: Date.now().toString(),
           subject: emailSubject,
           templateName: selectedTemplate?.name,
-          sentAt: new Date().toISOString()
+          sentAt: new Date().toISOString(),
+          sentBy: currentAccount.id
         }
 
         const updatedLead = { 
@@ -693,7 +766,8 @@ export default function MarketingDashboard() {
           status: selectedLead.status === 'nieuw' ? 'gecontacteerd' as const : selectedLead.status,
           emailsSent: selectedLead.emailsSent + 1,
           lastContact: new Date().toISOString(),
-          emailHistory: [...(selectedLead.emailHistory || []), newEmailHistoryItem]
+          emailHistory: [...(selectedLead.emailHistory || []), newEmailHistoryItem],
+          emailedBy: [...new Set([...(selectedLead.emailedBy || []), currentAccount.id])]
         }
 
         setLeads(prev => prev.map(l => l.id === selectedLead.id ? updatedLead : l))
@@ -891,6 +965,40 @@ export default function MarketingDashboard() {
                 
                 {/* Dark Mode & Help - Always visible */}
                 <div className="flex items-center gap-1 ml-2">
+                  {/* Account selector with stats */}
+                  <div className="relative">
+                    <select
+                      value={currentAccount.id}
+                      onChange={(e) => {
+                        const account = SALES_ACCOUNTS.find(a => a.id === e.target.value)
+                        if (account) {
+                          setCurrentAccount(account)
+                          localStorage.setItem('webstability_sales_account', account.id)
+                        }
+                      }}
+                      className={`appearance-none pl-3 pr-8 py-1.5 rounded-lg text-sm font-medium cursor-pointer ${
+                        darkMode 
+                          ? 'bg-purple-900/30 text-purple-300 border border-purple-700/50' 
+                          : 'bg-purple-100 text-purple-700 border border-purple-200'
+                      }`}
+                    >
+                      {SALES_ACCOUNTS.map(account => (
+                        <option key={account.id} value={account.id}>
+                          {account.name}
+                        </option>
+                      ))}
+                    </select>
+                    <ChevronDown className="absolute right-2 top-1/2 -translate-y-1/2 w-4 h-4 pointer-events-none text-purple-500" />
+                  </div>
+                  
+                  {/* My stats badge */}
+                  <div className={`hidden sm:flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-xs font-medium ${
+                    darkMode ? 'bg-purple-900/30 text-purple-400' : 'bg-purple-100 text-purple-700'
+                  }`}>
+                    <Mail className="w-3.5 h-3.5" />
+                    <span>{stats.myEmailsSent} emails</span>
+                  </div>
+                  
                   {/* Sync status indicator */}
                   <div className={`hidden sm:flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-xs font-medium ${
                     syncStatus === 'synced' 
@@ -959,60 +1067,88 @@ export default function MarketingDashboard() {
         <main className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-8 pb-24 lg:pb-8">
 
         {/* Desktop: Simple tab navigation */}
-        <div className="hidden sm:flex items-center gap-2 mb-6">
-          <button
-            onClick={() => setMainTab('zoeken')}
-            className={`flex items-center gap-2 px-4 py-2.5 rounded-xl font-medium transition-all ${
-              mainTab === 'zoeken'
-                ? 'bg-emerald-500 text-white shadow-lg shadow-emerald-500/25'
-                : darkMode 
-                  ? 'text-gray-400 hover:text-white hover:bg-gray-800' 
-                  : 'text-gray-600 hover:text-gray-900 hover:bg-gray-100'
-            }`}
-          >
-            <Search className="w-4 h-4" />
-            Zoeken
-          </button>
-          <button
-            onClick={() => setMainTab('leads')}
-            className={`flex items-center gap-2 px-4 py-2.5 rounded-xl font-medium transition-all ${
-              mainTab === 'leads'
-                ? 'bg-emerald-500 text-white shadow-lg shadow-emerald-500/25'
-                : darkMode 
-                  ? 'text-gray-400 hover:text-white hover:bg-gray-800' 
-                  : 'text-gray-600 hover:text-gray-900 hover:bg-gray-100'
-            }`}
-          >
-            <Building2 className="w-4 h-4" />
-            Leads
-            {stats.total > 0 && (
-              <span className={`px-1.5 py-0.5 rounded text-xs ${
-                mainTab === 'leads' ? 'bg-white/20' : 'bg-emerald-500 text-white'
-              }`}>
-                {stats.total}
-              </span>
-            )}
-          </button>
-          <button
-            onClick={() => setMainTab('postvak')}
-            className={`flex items-center gap-2 px-4 py-2.5 rounded-xl font-medium transition-all ${
-              mainTab === 'postvak'
-                ? 'bg-emerald-500 text-white shadow-lg shadow-emerald-500/25'
-                : darkMode 
-                  ? 'text-gray-400 hover:text-white hover:bg-gray-800' 
-                  : 'text-gray-600 hover:text-gray-900 hover:bg-gray-100'
-            }`}
-          >
-            <Mail className="w-4 h-4" />
-            Postvak
-            {stats.emailsSent > 0 && (
-              <span className={`px-1.5 py-0.5 rounded text-xs ${
-                mainTab === 'postvak' ? 'bg-white/20' : 'bg-blue-500 text-white'
-              }`}>
-                {stats.emailsSent}
-              </span>
-            )}
-          </button>
+        <div className="hidden sm:flex items-center justify-between gap-2 mb-6">
+          <div className="flex items-center gap-2">
+            <button
+              onClick={() => setMainTab('zoeken')}
+              className={`flex items-center gap-2 px-4 py-2.5 rounded-xl font-medium transition-all ${
+                mainTab === 'zoeken'
+                  ? 'bg-emerald-500 text-white shadow-lg shadow-emerald-500/25'
+                  : darkMode 
+                    ? 'text-gray-400 hover:text-white hover:bg-gray-800' 
+                    : 'text-gray-600 hover:text-gray-900 hover:bg-gray-100'
+              }`}
+            >
+              <Search className="w-4 h-4" />
+              Zoeken
+            </button>
+            <button
+              onClick={() => setMainTab('leads')}
+              className={`flex items-center gap-2 px-4 py-2.5 rounded-xl font-medium transition-all ${
+                mainTab === 'leads'
+                  ? 'bg-emerald-500 text-white shadow-lg shadow-emerald-500/25'
+                  : darkMode 
+                    ? 'text-gray-400 hover:text-white hover:bg-gray-800' 
+                    : 'text-gray-600 hover:text-gray-900 hover:bg-gray-100'
+              }`}
+            >
+              <Building2 className="w-4 h-4" />
+              Leads
+              {stats.total > 0 && (
+                <span className={`px-1.5 py-0.5 rounded text-xs ${
+                  mainTab === 'leads' ? 'bg-white/20' : 'bg-emerald-500 text-white'
+                }`}>
+                  {stats.total}
+                </span>
+              )}
+            </button>
+            <button
+              onClick={() => setMainTab('postvak')}
+              className={`flex items-center gap-2 px-4 py-2.5 rounded-xl font-medium transition-all ${
+                mainTab === 'postvak'
+                  ? 'bg-emerald-500 text-white shadow-lg shadow-emerald-500/25'
+                  : darkMode 
+                    ? 'text-gray-400 hover:text-white hover:bg-gray-800' 
+                    : 'text-gray-600 hover:text-gray-900 hover:bg-gray-100'
+              }`}
+            >
+              <Mail className="w-4 h-4" />
+              Postvak
+              {emailReplies.filter(r => !r.read).length > 0 && (
+                <span className="px-1.5 py-0.5 rounded text-xs bg-red-500 text-white">
+                  {emailReplies.filter(r => !r.read).length}
+                </span>
+              )}
+            </button>
+          </div>
+          
+          {/* Account stats leaderboard */}
+          <div className={`flex items-center gap-3 px-4 py-2 rounded-xl ${
+            darkMode ? 'bg-gray-800/50' : 'bg-gray-100/50'
+          }`}>
+            {accountStats.map((stat, idx) => (
+              <div 
+                key={stat.account.id} 
+                className={`flex items-center gap-2 px-3 py-1 rounded-lg ${
+                  stat.account.id === currentAccount.id 
+                    ? darkMode ? 'bg-purple-900/50 text-purple-300' : 'bg-purple-100 text-purple-700'
+                    : ''
+                }`}
+              >
+                <span className={`text-sm font-medium ${
+                  idx === 0 ? 'text-yellow-500' : idx === 1 ? 'text-gray-400' : 'text-amber-600'
+                }`}>
+                  {idx === 0 ? '🥇' : idx === 1 ? '🥈' : '🥉'}
+                </span>
+                <span className={`text-sm ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>
+                  {stat.account.name}
+                </span>
+                <span className={`text-xs font-bold ${darkMode ? 'text-emerald-400' : 'text-emerald-600'}`}>
+                  {stat.emailsSent}
+                </span>
+              </div>
+            ))}
+          </div>
         </div>
 
         {/* Main Content */}
@@ -1504,13 +1640,38 @@ Webstability`
             }`}
           >
             <div className={`p-4 sm:p-6 border-b ${darkMode ? 'border-gray-700' : 'border-gray-200'}`}>
-              <h3 className={`text-lg font-semibold flex items-center gap-2 ${darkMode ? 'text-white' : 'text-gray-900'}`}>
-                <Mail className="w-5 h-5 text-blue-500" />
-                Verzonden emails
-              </h3>
-              <p className={`text-sm mt-1 ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>
-                Complete mailgeschiedenis met alle leads
-              </p>
+              <div className="flex items-center justify-between">
+                <div>
+                  <h3 className={`text-lg font-semibold flex items-center gap-2 ${darkMode ? 'text-white' : 'text-gray-900'}`}>
+                    <Mail className="w-5 h-5 text-blue-500" />
+                    Verzonden emails
+                  </h3>
+                  <p className={`text-sm mt-1 ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>
+                    Complete mailgeschiedenis met alle leads
+                  </p>
+                </div>
+                
+                {/* Filter by account */}
+                <div className="flex items-center gap-2">
+                  <span className={`text-xs ${darkMode ? 'text-gray-500' : 'text-gray-400'}`}>Filter:</span>
+                  <select
+                    className={`text-sm px-3 py-1.5 rounded-lg ${
+                      darkMode ? 'bg-gray-700 text-white border-gray-600' : 'bg-gray-100 text-gray-900 border-gray-200'
+                    } border`}
+                    defaultValue="all"
+                    onChange={(e) => {
+                      // Filter logic will be applied in the map
+                      const el = e.target as HTMLSelectElement
+                      el.dataset.filter = e.target.value
+                    }}
+                  >
+                    <option value="all">Iedereen</option>
+                    {SALES_ACCOUNTS.map(acc => (
+                      <option key={acc.id} value={acc.id}>{acc.name}</option>
+                    ))}
+                  </select>
+                </div>
+              </div>
             </div>
             
             {/* All emails from all leads, sorted by date */}
@@ -1539,50 +1700,60 @@ Webstability`
               
               return (
                 <div className={`divide-y ${darkMode ? 'divide-gray-700' : 'divide-gray-100'} max-h-[60vh] overflow-y-auto`}>
-                  {allEmails.map((email) => (
-                    <div 
-                      key={email.id}
-                      className={`p-4 transition-colors ${darkMode ? 'hover:bg-gray-700/50' : 'hover:bg-gray-50'}`}
-                    >
-                      <div className="flex items-start justify-between gap-3">
-                        <div className="flex-1 min-w-0">
-                          <div className="flex items-center gap-2 mb-1">
-                            <span className={`font-medium truncate ${darkMode ? 'text-white' : 'text-gray-900'}`}>
-                              {email.companyName}
-                            </span>
-                            {email.templateName && (
-                              <span className={`px-2 py-0.5 rounded text-xs ${
-                                darkMode ? 'bg-blue-500/20 text-blue-400' : 'bg-blue-100 text-blue-700'
-                              }`}>
-                                {email.templateName}
+                  {allEmails.map((email) => {
+                    const sentByAccount = SALES_ACCOUNTS.find(a => a.id === email.sentBy)
+                    return (
+                      <div 
+                        key={email.id}
+                        className={`p-4 transition-colors ${darkMode ? 'hover:bg-gray-700/50' : 'hover:bg-gray-50'}`}
+                      >
+                        <div className="flex items-start justify-between gap-3">
+                          <div className="flex-1 min-w-0">
+                            <div className="flex items-center gap-2 mb-1">
+                              <span className={`font-medium truncate ${darkMode ? 'text-white' : 'text-gray-900'}`}>
+                                {email.companyName}
                               </span>
-                            )}
+                              {email.templateName && (
+                                <span className={`px-2 py-0.5 rounded text-xs ${
+                                  darkMode ? 'bg-blue-500/20 text-blue-400' : 'bg-blue-100 text-blue-700'
+                                }`}>
+                                  {email.templateName}
+                                </span>
+                              )}
+                              {sentByAccount && (
+                                <span className={`px-2 py-0.5 rounded text-xs ${
+                                  darkMode ? 'bg-purple-500/20 text-purple-400' : 'bg-purple-100 text-purple-700'
+                                }`}>
+                                  {sentByAccount.name}
+                                </span>
+                              )}
+                            </div>
+                            <p className={`text-sm truncate ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>
+                              {email.subject}
+                            </p>
+                            <div className={`flex items-center gap-3 mt-2 text-xs ${darkMode ? 'text-gray-500' : 'text-gray-400'}`}>
+                              <span className="flex items-center gap-1">
+                                <User className="w-3 h-3" />
+                                {email.contactPerson || 'Geen contact'}
+                              </span>
+                              <span className="flex items-center gap-1">
+                                <Mail className="w-3 h-3" />
+                                {email.leadEmail}
+                              </span>
+                            </div>
                           </div>
-                          <p className={`text-sm truncate ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>
-                            {email.subject}
-                          </p>
-                          <div className={`flex items-center gap-3 mt-2 text-xs ${darkMode ? 'text-gray-500' : 'text-gray-400'}`}>
-                            <span className="flex items-center gap-1">
-                              <User className="w-3 h-3" />
-                              {email.contactPerson || 'Geen contact'}
-                            </span>
-                            <span className="flex items-center gap-1">
-                              <Mail className="w-3 h-3" />
-                              {email.leadEmail}
-                            </span>
+                          <div className={`text-xs whitespace-nowrap ${darkMode ? 'text-gray-500' : 'text-gray-400'}`}>
+                            {new Date(email.sentAt).toLocaleDateString('nl-NL', {
+                              day: 'numeric',
+                              month: 'short',
+                              hour: '2-digit',
+                              minute: '2-digit'
+                            })}
                           </div>
-                        </div>
-                        <div className={`text-xs whitespace-nowrap ${darkMode ? 'text-gray-500' : 'text-gray-400'}`}>
-                          {new Date(email.sentAt).toLocaleDateString('nl-NL', {
-                            day: 'numeric',
-                            month: 'short',
-                            hour: '2-digit',
-                            minute: '2-digit'
-                          })}
                         </div>
                       </div>
-                    </div>
-                  ))}
+                    )
+                  })}
                 </div>
               )
             })()}
@@ -1824,7 +1995,8 @@ Webstability`
                           to: prospectEmail,
                           subject: prospectSubject,
                           body: prospectBody,
-                          businessName: prospectBusinessName
+                          businessName: prospectBusinessName,
+                          sentBy: currentAccount.id
                         })
                       })
                       if (response.ok) {
@@ -1835,7 +2007,8 @@ Webstability`
                           id: Date.now().toString(),
                           sentAt: new Date().toISOString(),
                           subject: prospectSubject,
-                          templateName: 'Website analyse'
+                          templateName: 'Website analyse',
+                          sentBy: currentAccount.id
                         }
                         
                         if (existingLead) {
@@ -1844,7 +2017,8 @@ Webstability`
                             ...existingLead, 
                             emailsSent: (existingLead.emailsSent || 0) + 1,
                             emailHistory: [...(existingLead.emailHistory || []), emailHistoryItem],
-                            status: existingLead.status === 'nieuw' ? 'gecontacteerd' as const : existingLead.status
+                            status: existingLead.status === 'nieuw' ? 'gecontacteerd' as const : existingLead.status,
+                            emailedBy: [...new Set([...(existingLead.emailedBy || []), currentAccount.id])]
                           }
                           setLeads(prev => prev.map(l => l.id === existingLead.id ? updatedLead : l))
                           syncLeadToAPI(updatedLead, 'update')
@@ -1865,7 +2039,9 @@ Webstability`
                             createdAt: new Date().toISOString(),
                             emailsSent: 1,
                             emailHistory: [emailHistoryItem],
-                            notesTimeline: []
+                            notesTimeline: [],
+                            createdBy: currentAccount.id,
+                            emailedBy: [currentAccount.id]
                           }
                           setLeads(prev => [newLead, ...prev])
                           syncLeadToAPI(newLead, 'create')
