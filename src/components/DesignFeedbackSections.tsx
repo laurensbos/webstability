@@ -352,28 +352,28 @@ export default function DesignFeedbackSections({
       >
         {/* Mobile hint - only visible on mobile */}
         {isMobile && step === 'intro' && (
-          <div className="flex-shrink-0 bg-purple-600/20 border-b border-purple-500/30 px-4 py-2 text-center">
-            <p className="text-xs text-purple-300">
+          <div className="flex-shrink-0 bg-purple-600/20 border-b border-purple-500/30 px-3 sm:px-4 py-2 text-center safe-area-inset-top">
+            <p className="text-[11px] sm:text-xs text-purple-300">
               💻 Tip: Voor de beste ervaring, open dit op een desktop of laptop
             </p>
           </div>
         )}
 
         {/* Header */}
-        <div className="flex-shrink-0 h-14 bg-zinc-900/90 backdrop-blur-sm border-b border-zinc-800 flex items-center justify-between px-4">
-          <div className="flex items-center gap-4">
+        <div className="flex-shrink-0 h-12 sm:h-14 bg-zinc-900/90 backdrop-blur-sm border-b border-zinc-800 flex items-center justify-between px-3 sm:px-4">
+          <div className="flex items-center gap-2 sm:gap-4">
             <button
               onClick={onClose}
-              className="p-2 text-zinc-400 hover:text-white hover:bg-zinc-800 rounded-lg transition-colors"
+              className="p-1.5 sm:p-2 text-zinc-400 hover:text-white hover:bg-zinc-800 rounded-lg transition-colors"
             >
-              <X className="w-5 h-5" />
+              <X className="w-4 h-4 sm:w-5 sm:h-5" />
             </button>
             
-            <h1 className="text-white font-medium hidden sm:block">Design Feedback</h1>
+            <h1 className="text-sm sm:text-base text-white font-medium hidden sm:block">Design Feedback</h1>
             
             {/* Progress indicator */}
             {step === 'sections' && (
-              <div className="flex items-center gap-2 text-sm text-zinc-400">
+              <div className="flex items-center gap-1.5 sm:gap-2 text-xs sm:text-sm text-zinc-400">
                 <span className="text-purple-400 font-medium">{currentSectionIndex + 1}</span>
                 <span>/</span>
                 <span>{sections.length}</span>
@@ -381,27 +381,27 @@ export default function DesignFeedbackSections({
             )}
           </div>
 
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-1.5 sm:gap-2">
             {/* Device toggle - only on desktop when not in intro */}
             {!isMobile && step !== 'intro' && (
-              <div className="flex bg-zinc-800 rounded-lg p-1">
+              <div className="flex bg-zinc-800 rounded-lg p-0.5 sm:p-1">
                 <button
                   onClick={() => setDevice('desktop')}
-                  className={`px-3 py-1.5 rounded-md flex items-center gap-2 text-sm transition-colors ${
+                  className={`px-2 sm:px-3 py-1 sm:py-1.5 rounded-md flex items-center gap-1.5 sm:gap-2 text-xs sm:text-sm transition-colors ${
                     device === 'desktop' ? 'bg-purple-600 text-white' : 'text-zinc-400 hover:text-white'
                   }`}
                 >
-                  <Monitor className="w-4 h-4" />
-                  <span className="hidden sm:inline">Desktop</span>
+                  <Monitor className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
+                  <span className="hidden md:inline">Desktop</span>
                 </button>
                 <button
                   onClick={() => setDevice('mobile')}
-                  className={`px-3 py-1.5 rounded-md flex items-center gap-2 text-sm transition-colors ${
+                  className={`px-2 sm:px-3 py-1 sm:py-1.5 rounded-md flex items-center gap-1.5 sm:gap-2 text-xs sm:text-sm transition-colors ${
                     device === 'mobile' ? 'bg-purple-600 text-white' : 'text-zinc-400 hover:text-white'
                   }`}
                 >
-                  <Smartphone className="w-4 h-4" />
-                  <span className="hidden sm:inline">Mobiel</span>
+                  <Smartphone className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
+                  <span className="hidden md:inline">Mobiel</span>
                 </button>
               </div>
             )}
@@ -411,9 +411,9 @@ export default function DesignFeedbackSections({
               href={absoluteUrl}
               target="_blank"
               rel="noopener noreferrer"
-              className="p-2 text-zinc-400 hover:text-white hover:bg-zinc-800 rounded-lg transition-colors"
+              className="p-1.5 sm:p-2 text-zinc-400 hover:text-white hover:bg-zinc-800 rounded-lg transition-colors"
             >
-              <ExternalLink className="w-5 h-5" />
+              <ExternalLink className="w-4 h-4 sm:w-5 sm:h-5" />
             </a>
           </div>
         </div>
@@ -422,7 +422,7 @@ export default function DesignFeedbackSections({
         <div className="flex-1 overflow-hidden flex flex-col md:flex-row">
           
           {/* Preview area - hidden on intro, adjusted for mobile */}
-          <div className={`${step === 'intro' ? 'hidden md:flex md:w-1/3' : isMobile ? 'h-[35vh] flex-shrink-0' : 'flex-1'} bg-zinc-950 p-2 md:p-4 flex items-center justify-center`}>
+          <div className={`${step === 'intro' ? 'hidden md:flex md:w-1/3' : isMobile ? 'h-[30vh] min-h-[180px] flex-shrink-0' : 'flex-1'} bg-zinc-950 p-1.5 sm:p-2 md:p-4 flex items-center justify-center`}>
             
             {/* On mobile: show simple framed preview without device mockup */}
             {isMobile && step !== 'intro' && (
@@ -552,31 +552,31 @@ export default function DesignFeedbackSections({
             
             {/* INTRO STEP */}
             {step === 'intro' && (
-              <div className="flex-1 flex flex-col items-center justify-center p-8 md:p-12 text-center">
+              <div className="flex-1 flex flex-col items-center justify-center p-5 sm:p-8 md:p-12 text-center overflow-y-auto">
                 <motion.div
                   initial={{ scale: 0.9, opacity: 0 }}
                   animate={{ scale: 1, opacity: 1 }}
                   transition={{ delay: 0.1 }}
-                  className="max-w-md"
+                  className="max-w-md w-full"
                 >
-                  <div className="text-7xl md:text-8xl mb-6">👋</div>
-                  <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">Welkom!</h2>
-                  <p className="text-lg text-zinc-400 mb-8">
+                  <div className="text-5xl sm:text-7xl md:text-8xl mb-4 sm:mb-6">👋</div>
+                  <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-white mb-3 sm:mb-4">Welkom!</h2>
+                  <p className="text-sm sm:text-base md:text-lg text-zinc-400 mb-5 sm:mb-8">
                     We gaan samen door je website design. Per onderdeel kun je aangeven of het goed is of aangepast moet worden.
                   </p>
                   
-                  <div className="bg-zinc-800/50 rounded-2xl p-6 mb-8 text-left">
-                    <p className="text-base text-zinc-300 mb-4 font-medium">Zo werkt het:</p>
-                    <div className="space-y-4 text-base text-zinc-400">
-                      <div className="flex items-center gap-3">
-                        <div className="w-10 h-10 rounded-full bg-green-500/20 flex items-center justify-center flex-shrink-0">
-                          <ThumbsUp className="w-5 h-5 text-green-400" />
+                  <div className="bg-zinc-800/50 rounded-xl sm:rounded-2xl p-4 sm:p-6 mb-5 sm:mb-8 text-left">
+                    <p className="text-sm sm:text-base text-zinc-300 mb-3 sm:mb-4 font-medium">Zo werkt het:</p>
+                    <div className="space-y-3 sm:space-y-4 text-sm sm:text-base text-zinc-400">
+                      <div className="flex items-center gap-2 sm:gap-3">
+                        <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-green-500/20 flex items-center justify-center flex-shrink-0">
+                          <ThumbsUp className="w-4 h-4 sm:w-5 sm:h-5 text-green-400" />
                         </div>
                         <span><strong className="text-green-400">Goed</strong> = dit is prima zo</span>
                       </div>
-                      <div className="flex items-center gap-3">
-                        <div className="w-10 h-10 rounded-full bg-amber-500/20 flex items-center justify-center flex-shrink-0">
-                          <ThumbsDown className="w-5 h-5 text-amber-400" />
+                      <div className="flex items-center gap-2 sm:gap-3">
+                        <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-amber-500/20 flex items-center justify-center flex-shrink-0">
+                          <ThumbsDown className="w-4 h-4 sm:w-5 sm:h-5 text-amber-400" />
                         </div>
                         <span><strong className="text-amber-400">Aanpassen</strong> = hier wil ik iets veranderen</span>
                       </div>
@@ -585,10 +585,10 @@ export default function DesignFeedbackSections({
 
                   <button
                     onClick={() => setStep('sections')}
-                    className="w-full md:w-auto px-10 py-4 bg-purple-600 text-white text-lg rounded-xl font-medium hover:bg-purple-700 transition-colors flex items-center justify-center gap-2"
+                    className="w-full sm:w-auto px-8 sm:px-10 py-3 sm:py-4 bg-purple-600 text-white text-base sm:text-lg rounded-xl font-medium hover:bg-purple-700 transition-colors flex items-center justify-center gap-2"
                   >
                     Start feedback
-                    <ChevronRight className="w-6 h-6" />
+                    <ChevronRight className="w-5 h-5 sm:w-6 sm:h-6" />
                   </button>
                 </motion.div>
               </div>
@@ -598,17 +598,17 @@ export default function DesignFeedbackSections({
             {step === 'sections' && currentSection && (
               <div className="flex-1 flex flex-col min-h-0 overflow-hidden">
                 {/* Section header - fixed */}
-                <div className="p-4 border-b border-zinc-800 flex-shrink-0">
-                  <div className="flex items-center gap-3 mb-2">
-                    <span className="text-2xl">{currentSection.icon}</span>
-                    <div>
-                      <h3 className="text-lg font-semibold text-white">{currentSection.name}</h3>
-                      <p className="text-sm text-zinc-400">{currentSection.description}</p>
+                <div className="p-3 sm:p-4 border-b border-zinc-800 flex-shrink-0">
+                  <div className="flex items-center gap-2 sm:gap-3 mb-2">
+                    <span className="text-xl sm:text-2xl">{currentSection.icon}</span>
+                    <div className="min-w-0 flex-1">
+                      <h3 className="text-base sm:text-lg font-semibold text-white truncate">{currentSection.name}</h3>
+                      <p className="text-xs sm:text-sm text-zinc-400 truncate">{currentSection.description}</p>
                     </div>
                   </div>
                   
                   {/* Progress bar */}
-                  <div className="mt-3 h-1 bg-zinc-800 rounded-full overflow-hidden">
+                  <div className="mt-2 sm:mt-3 h-1 bg-zinc-800 rounded-full overflow-hidden">
                     <motion.div 
                       className="h-full bg-purple-500"
                       initial={{ width: 0 }}
@@ -618,20 +618,20 @@ export default function DesignFeedbackSections({
                 </div>
 
                 {/* Feedback content - scrollable */}
-                <div className="flex-1 overflow-y-auto p-4">
-                  <p className="text-sm text-zinc-400 mb-4">Wat vind je van dit onderdeel?</p>
+                <div className="flex-1 overflow-y-auto p-3 sm:p-4">
+                  <p className="text-xs sm:text-sm text-zinc-400 mb-3 sm:mb-4">Wat vind je van dit onderdeel?</p>
                   
-                  <div className="grid grid-cols-2 gap-3 mb-4">
+                  <div className="grid grid-cols-2 gap-2 sm:gap-3 mb-3 sm:mb-4">
                     <button
                       onClick={() => updateFeedback(currentSection.id, { rating: 'good' })}
-                      className={`p-3 md:p-4 rounded-xl border-2 transition-all flex flex-col items-center gap-2 ${
+                      className={`p-2.5 sm:p-3 md:p-4 rounded-xl border-2 transition-all flex flex-col items-center gap-1.5 sm:gap-2 ${
                         currentFeedback?.rating === 'good'
                           ? 'border-green-500 bg-green-500/20 text-green-400'
                           : 'border-zinc-700 bg-zinc-800/50 text-zinc-400 hover:border-zinc-600'
                       }`}
                     >
-                      <ThumbsUp className="w-6 h-6 md:w-8 md:h-8" />
-                      <span className="font-medium text-sm md:text-base">Goed zo!</span>
+                      <ThumbsUp className="w-5 h-5 sm:w-6 sm:h-6 md:w-8 md:h-8" />
+                      <span className="font-medium text-xs sm:text-sm md:text-base">Goed zo!</span>
                     </button>
                     
                     <button
@@ -639,14 +639,14 @@ export default function DesignFeedbackSections({
                         updateFeedback(currentSection.id, { rating: 'change' })
                         setExpandedComment(currentSection.id)
                       }}
-                      className={`p-3 md:p-4 rounded-xl border-2 transition-all flex flex-col items-center gap-2 ${
+                      className={`p-2.5 sm:p-3 md:p-4 rounded-xl border-2 transition-all flex flex-col items-center gap-1.5 sm:gap-2 ${
                         currentFeedback?.rating === 'change'
                           ? 'border-amber-500 bg-amber-500/20 text-amber-400'
                           : 'border-zinc-700 bg-zinc-800/50 text-zinc-400 hover:border-zinc-600'
                       }`}
                     >
-                      <ThumbsDown className="w-6 h-6 md:w-8 md:h-8" />
-                      <span className="font-medium text-sm md:text-base">Aanpassen</span>
+                      <ThumbsDown className="w-5 h-5 sm:w-6 sm:h-6 md:w-8 md:h-8" />
+                      <span className="font-medium text-xs sm:text-sm md:text-base">Aanpassen</span>
                     </button>
                   </div>
 
@@ -660,15 +660,15 @@ export default function DesignFeedbackSections({
                         className="mb-4"
                       >
                         {/* Preset buttons */}
-                        <p className="text-sm text-zinc-400 mb-2">Wat wil je aanpassen?</p>
-                        <div className="flex flex-wrap gap-1.5 md:gap-2 mb-3">
+                        <p className="text-xs sm:text-sm text-zinc-400 mb-2">Wat wil je aanpassen?</p>
+                        <div className="flex flex-wrap gap-1 sm:gap-1.5 md:gap-2 mb-2 sm:mb-3">
                           {FEEDBACK_PRESETS.map(preset => {
                             const isSelected = currentFeedback?.presets.includes(preset.id)
                             return (
                               <button
                                 key={preset.id}
                                 onClick={() => togglePreset(currentSection.id, preset.id)}
-                                className={`px-2 md:px-3 py-1.5 md:py-2 rounded-lg text-xs md:text-sm font-medium transition-all flex items-center gap-1.5 ${
+                                className={`px-2 py-1 sm:px-2.5 sm:py-1.5 md:px-3 md:py-2 rounded-lg text-[11px] sm:text-xs md:text-sm font-medium transition-all flex items-center gap-1 sm:gap-1.5 ${
                                   isSelected
                                     ? 'bg-amber-500/30 border-amber-500 text-amber-300 border'
                                     : 'bg-zinc-800 border-zinc-700 text-zinc-400 border hover:border-zinc-600 hover:text-zinc-300'
@@ -682,14 +682,14 @@ export default function DesignFeedbackSections({
                         </div>
 
                         {/* Custom comment */}
-                        <label className="text-sm text-zinc-400 mb-1.5 block">
+                        <label className="text-xs sm:text-sm text-zinc-400 mb-1 sm:mb-1.5 block">
                           Extra toelichting <span className="text-zinc-600">(optioneel)</span>
                         </label>
                         <textarea
                           value={currentFeedback?.comment || ''}
                           onChange={(e) => updateFeedback(currentSection.id, { comment: e.target.value })}
                           placeholder="Beschrijf hier wat je precies wilt veranderen..."
-                          className="w-full h-16 md:h-20 px-3 py-2 bg-zinc-800 border border-zinc-700 rounded-lg text-white text-sm placeholder-zinc-500 resize-none focus:outline-none focus:ring-2 focus:ring-purple-500"
+                          className="w-full h-14 sm:h-16 md:h-20 px-2.5 sm:px-3 py-2 bg-zinc-800 border border-zinc-700 rounded-lg text-white text-xs sm:text-sm placeholder-zinc-500 resize-none focus:outline-none focus:ring-2 focus:ring-purple-500"
                         />
                       </motion.div>
                     )}
@@ -708,14 +708,14 @@ export default function DesignFeedbackSections({
                 </div>
 
                 {/* Navigation - fixed at bottom */}
-                <div className="flex-shrink-0 p-4 border-t border-zinc-800 bg-zinc-900">
-                  <div className="flex gap-3">
+                <div className="flex-shrink-0 p-3 sm:p-4 border-t border-zinc-800 bg-zinc-900 safe-area-inset-bottom">
+                  <div className="flex gap-2 sm:gap-3">
                     {currentSectionIndex > 0 && (
                       <button
                         onClick={goPrev}
-                        className="px-3 md:px-4 py-3 bg-zinc-800 text-white rounded-xl font-medium hover:bg-zinc-700 transition-colors flex items-center gap-1 md:gap-2"
+                        className="px-2.5 sm:px-3 md:px-4 py-2.5 sm:py-3 bg-zinc-800 text-white rounded-xl font-medium hover:bg-zinc-700 transition-colors flex items-center gap-1 sm:gap-2"
                       >
-                        <ChevronLeft className="w-5 h-5" />
+                        <ChevronLeft className="w-4 h-4 sm:w-5 sm:h-5" />
                         <span className="hidden sm:inline">Vorige</span>
                       </button>
                     )}
@@ -723,17 +723,18 @@ export default function DesignFeedbackSections({
                     <button
                       onClick={goNext}
                       disabled={currentFeedback?.rating === null}
-                      className="flex-1 px-4 py-3 bg-purple-600 text-white rounded-xl font-medium hover:bg-purple-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors flex items-center justify-center gap-2"
+                      className="flex-1 px-3 sm:px-4 py-2.5 sm:py-3 bg-purple-600 text-white rounded-xl font-medium hover:bg-purple-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors flex items-center justify-center gap-1.5 sm:gap-2 text-sm sm:text-base"
                     >
                       {currentSectionIndex < sections.length - 1 ? (
                         <>
-                          Volgende
-                          <ChevronRight className="w-5 h-5" />
+                          <span>Volgende</span>
+                          <ChevronRight className="w-4 h-4 sm:w-5 sm:h-5" />
                         </>
                       ) : (
                         <>
-                          Bekijk overzicht
-                          <Check className="w-5 h-5" />
+                          <span className="hidden sm:inline">Bekijk overzicht</span>
+                          <span className="sm:hidden">Overzicht</span>
+                          <Check className="w-4 h-4 sm:w-5 sm:h-5" />
                         </>
                       )}
                     </button>
@@ -745,50 +746,50 @@ export default function DesignFeedbackSections({
             {/* QUESTIONS STEP */}
             {step === 'questions' && hasQuestions && (
               <div className="flex-1 flex flex-col overflow-hidden">
-                <div className="p-4 border-b border-zinc-800">
-                  <h3 className="text-lg font-semibold text-white flex items-center gap-2">
-                    <HelpCircle className="w-5 h-5 text-purple-400" />
+                <div className="p-3 sm:p-4 border-b border-zinc-800">
+                  <h3 className="text-base sm:text-lg font-semibold text-white flex items-center gap-2">
+                    <HelpCircle className="w-4 h-4 sm:w-5 sm:h-5 text-purple-400" />
                     Nog een paar vragen
                   </h3>
-                  <p className="text-sm text-zinc-400 mt-1">
+                  <p className="text-xs sm:text-sm text-zinc-400 mt-1">
                     Je developer heeft nog een paar specifieke vragen voor je.
                   </p>
                 </div>
 
                 {/* Questions list */}
-                <div className="flex-1 overflow-y-auto p-4 space-y-4">
+                <div className="flex-1 overflow-y-auto p-3 sm:p-4 space-y-3 sm:space-y-4">
                   {allQuestions.map((question, index) => {
                     const answer = questionAnswers.find(qa => qa.questionId === question.id)
                     return (
-                      <div key={question.id} className="bg-zinc-800/50 rounded-xl p-4">
-                        <p className="text-white font-medium mb-3 flex items-start gap-2">
+                      <div key={question.id} className="bg-zinc-800/50 rounded-xl p-3 sm:p-4">
+                        <p className="text-white font-medium mb-2 sm:mb-3 flex items-start gap-1.5 sm:gap-2 text-sm sm:text-base">
                           <span className="text-purple-400">{index + 1}.</span>
                           {question.question}
                         </p>
                         
                         {/* Yes/No buttons */}
-                        <div className="grid grid-cols-2 gap-2 mb-3">
+                        <div className="grid grid-cols-2 gap-2 mb-2 sm:mb-3">
                           <button
                             onClick={() => updateQuestionAnswer(question.id, 'yes')}
-                            className={`p-2 rounded-lg border-2 transition-all flex items-center justify-center gap-2 ${
+                            className={`p-2 rounded-lg border-2 transition-all flex items-center justify-center gap-1.5 sm:gap-2 ${
                               answer?.answer === 'yes'
                                 ? 'border-green-500 bg-green-500/20 text-green-400'
                                 : 'border-zinc-700 bg-zinc-800 text-zinc-400 hover:border-zinc-600'
                             }`}
                           >
-                            <ThumbsUp className="w-4 h-4" />
-                            <span className="text-sm font-medium">Ja, goed</span>
+                            <ThumbsUp className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
+                            <span className="text-xs sm:text-sm font-medium">Ja, goed</span>
                           </button>
                           <button
                             onClick={() => updateQuestionAnswer(question.id, 'no')}
-                            className={`p-2 rounded-lg border-2 transition-all flex items-center justify-center gap-2 ${
+                            className={`p-2 rounded-lg border-2 transition-all flex items-center justify-center gap-1.5 sm:gap-2 ${
                               answer?.answer === 'no'
                                 ? 'border-amber-500 bg-amber-500/20 text-amber-400'
                                 : 'border-zinc-700 bg-zinc-800 text-zinc-400 hover:border-zinc-600'
                             }`}
                           >
-                            <ThumbsDown className="w-4 h-4" />
-                            <span className="text-sm font-medium">Nee, aanpassen</span>
+                            <ThumbsDown className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
+                            <span className="text-xs sm:text-sm font-medium">Nee, aanpassen</span>
                           </button>
                         </div>
                         
@@ -802,7 +803,7 @@ export default function DesignFeedbackSections({
                               value={answer.comment || ''}
                               onChange={(e) => updateQuestionAnswer(question.id, 'no', e.target.value)}
                               placeholder="Wat moet er aangepast worden?"
-                              className="w-full h-16 px-3 py-2 bg-zinc-900 border border-zinc-700 rounded-lg text-white placeholder-zinc-500 resize-none focus:outline-none focus:ring-2 focus:ring-purple-500 text-sm"
+                              className="w-full h-14 sm:h-16 px-2.5 sm:px-3 py-2 bg-zinc-900 border border-zinc-700 rounded-lg text-white placeholder-zinc-500 resize-none focus:outline-none focus:ring-2 focus:ring-purple-500 text-xs sm:text-sm"
                             />
                           </motion.div>
                         )}
@@ -812,23 +813,24 @@ export default function DesignFeedbackSections({
                 </div>
 
                 {/* Navigation */}
-                <div className="p-4 border-t border-zinc-800 flex gap-2">
+                <div className="p-3 sm:p-4 border-t border-zinc-800 flex gap-2 safe-area-inset-bottom">
                   <button
                     onClick={() => {
                       setCurrentSectionIndex(sections.length - 1)
                       setStep('sections')
                     }}
-                    className="px-4 py-2.5 text-zinc-400 hover:text-white transition-colors flex items-center gap-1"
+                    className="px-3 sm:px-4 py-2 sm:py-2.5 text-zinc-400 hover:text-white transition-colors flex items-center gap-1"
                   >
                     <ChevronLeft className="w-4 h-4" />
-                    Terug
+                    <span className="text-sm">Terug</span>
                   </button>
                   <button
                     onClick={() => setStep('summary')}
-                    className="flex-1 py-2.5 bg-purple-600 text-white rounded-xl font-medium hover:bg-purple-700 transition-colors flex items-center justify-center gap-2"
+                    className="flex-1 py-2 sm:py-2.5 bg-purple-600 text-white rounded-xl font-medium hover:bg-purple-700 transition-colors flex items-center justify-center gap-2 text-sm sm:text-base"
                   >
-                    Bekijk overzicht
-                    <ChevronRight className="w-5 h-5" />
+                    <span className="hidden sm:inline">Bekijk overzicht</span>
+                    <span className="sm:hidden">Overzicht</span>
+                    <ChevronRight className="w-4 h-4 sm:w-5 sm:h-5" />
                   </button>
                 </div>
               </div>
@@ -837,12 +839,12 @@ export default function DesignFeedbackSections({
             {/* SUMMARY STEP */}
             {step === 'summary' && (
               <div className="flex-1 flex flex-col overflow-hidden">
-                <div className="p-4 md:p-6 border-b border-zinc-800">
-                  <h3 className="text-lg md:text-xl font-semibold text-white flex items-center gap-2">
-                    <Sparkles className="w-5 h-5 md:w-6 md:h-6 text-purple-400" />
+                <div className="p-3 sm:p-4 md:p-6 border-b border-zinc-800">
+                  <h3 className="text-base sm:text-lg md:text-xl font-semibold text-white flex items-center gap-2">
+                    <Sparkles className="w-4 h-4 sm:w-5 sm:h-5 md:w-6 md:h-6 text-purple-400" />
                     Overzicht
                   </h3>
-                  <p className="text-sm md:text-base text-zinc-400 mt-1">
+                  <p className="text-xs sm:text-sm md:text-base text-zinc-400 mt-1">
                     {allGood 
                       ? 'Alles ziet er goed uit! Je kunt het design goedkeuren.'
                       : `${changeCount} onderdeel${changeCount !== 1 ? 'en' : ''} moet${changeCount === 1 ? '' : 'en'} aangepast worden.`
@@ -851,7 +853,7 @@ export default function DesignFeedbackSections({
                 </div>
 
                 {/* Summary list - improved layout */}
-                <div className="flex-1 overflow-y-auto p-4 md:p-6 space-y-3">
+                <div className="flex-1 overflow-y-auto p-3 sm:p-4 md:p-6 space-y-2 sm:space-y-3">
                   {sections.map((section, index) => {
                     const feedback = sectionFeedback.find(f => f.sectionId === section.id)
                     const hasDetails = (feedback?.presets && feedback.presets.length > 0) || feedback?.comment
@@ -869,21 +871,21 @@ export default function DesignFeedbackSections({
                         }`}
                       >
                         {/* Section header - always visible */}
-                        <div className="p-4 md:p-5 flex items-center gap-3 md:gap-4">
-                          <span className="text-2xl md:text-3xl">{section.icon}</span>
+                        <div className="p-3 sm:p-4 md:p-5 flex items-center gap-2 sm:gap-3 md:gap-4">
+                          <span className="text-xl sm:text-2xl md:text-3xl">{section.icon}</span>
                           <div className="flex-1 min-w-0">
-                            <p className="text-base md:text-lg font-medium text-white">{section.name}</p>
-                            <p className="text-xs md:text-sm text-zinc-500">{section.description}</p>
+                            <p className="text-sm sm:text-base md:text-lg font-medium text-white truncate">{section.name}</p>
+                            <p className="text-[10px] sm:text-xs md:text-sm text-zinc-500 truncate">{section.description}</p>
                           </div>
-                          <div className={`w-10 h-10 md:w-12 md:h-12 rounded-full flex items-center justify-center ${
+                          <div className={`w-8 h-8 sm:w-10 sm:h-10 md:w-12 md:h-12 rounded-full flex items-center justify-center flex-shrink-0 ${
                             feedback?.rating === 'good'
                               ? 'bg-green-500/20 text-green-400'
                               : feedback?.rating === 'change'
                               ? 'bg-amber-500/20 text-amber-400'
                               : 'bg-zinc-700 text-zinc-500'
                           }`}>
-                            {feedback?.rating === 'good' && <ThumbsUp className="w-5 h-5 md:w-6 md:h-6" />}
-                            {feedback?.rating === 'change' && <ThumbsDown className="w-5 h-5 md:w-6 md:h-6" />}
+                            {feedback?.rating === 'good' && <ThumbsUp className="w-4 h-4 sm:w-5 sm:h-5 md:w-6 md:h-6" />}
+                            {feedback?.rating === 'change' && <ThumbsDown className="w-4 h-4 sm:w-5 sm:h-5 md:w-6 md:h-6" />}
                           </div>
                         </div>
                         
@@ -891,13 +893,13 @@ export default function DesignFeedbackSections({
                         {feedback?.rating === 'change' && (
                           <button
                             onClick={() => setExpandedComment(isExpanded ? null : section.id)}
-                            className="w-full px-4 md:px-5 pb-4 md:pb-5 pt-0 text-left"
+                            className="w-full px-3 sm:px-4 md:px-5 pb-3 sm:pb-4 md:pb-5 pt-0 text-left"
                           >
-                            <div className="flex items-center gap-2 text-sm text-amber-400 hover:text-amber-300 transition-colors">
-                              <ChevronRight className={`w-4 h-4 transition-transform ${isExpanded ? 'rotate-90' : ''}`} />
+                            <div className="flex items-center gap-1.5 sm:gap-2 text-xs sm:text-sm text-amber-400 hover:text-amber-300 transition-colors">
+                              <ChevronRight className={`w-3.5 h-3.5 sm:w-4 sm:h-4 transition-transform ${isExpanded ? 'rotate-90' : ''}`} />
                               <span>Toon details</span>
                               {hasDetails && !isExpanded && (
-                                <span className="text-xs text-amber-500/70">
+                                <span className="text-[10px] sm:text-xs text-amber-500/70">
                                   ({feedback.presets?.length || 0} tags{feedback.comment ? ', opmerking' : ''})
                                 </span>
                               )}
@@ -914,14 +916,14 @@ export default function DesignFeedbackSections({
                               exit={{ height: 0, opacity: 0 }}
                               className="overflow-hidden"
                             >
-                              <div className="px-4 md:px-5 pb-4 md:pb-5 border-t border-amber-500/20 pt-4 space-y-3">
+                              <div className="px-3 sm:px-4 md:px-5 pb-3 sm:pb-4 md:pb-5 border-t border-amber-500/20 pt-3 sm:pt-4 space-y-2 sm:space-y-3">
                                 {/* Selected presets */}
                                 {feedback?.presets && feedback.presets.length > 0 && (
-                                  <div className="flex flex-wrap gap-2">
+                                  <div className="flex flex-wrap gap-1.5 sm:gap-2">
                                     {feedback.presets.map(presetId => {
                                       const preset = FEEDBACK_PRESETS.find(p => p.id === presetId)
                                       return preset ? (
-                                        <span key={presetId} className="text-sm px-3 py-1.5 bg-amber-500/20 text-amber-300 rounded-lg">
+                                        <span key={presetId} className="text-xs sm:text-sm px-2 sm:px-3 py-1 sm:py-1.5 bg-amber-500/20 text-amber-300 rounded-lg">
                                           {preset.emoji} {preset.label}
                                         </span>
                                       ) : null
@@ -930,7 +932,7 @@ export default function DesignFeedbackSections({
                                 )}
                                 {/* Comment */}
                                 {feedback?.comment && (
-                                  <p className="text-sm text-zinc-300 bg-zinc-800/50 rounded-lg p-3 italic">
+                                  <p className="text-xs sm:text-sm text-zinc-300 bg-zinc-800/50 rounded-lg p-2 sm:p-3 italic">
                                     "{feedback.comment}"
                                   </p>
                                 )}
@@ -940,7 +942,7 @@ export default function DesignFeedbackSections({
                                     setCurrentSectionIndex(index)
                                     setStep('sections')
                                   }}
-                                  className="text-sm text-purple-400 hover:text-purple-300 font-medium"
+                                  className="text-xs sm:text-sm text-purple-400 hover:text-purple-300 font-medium"
                                 >
                                   ✏️ Aanpassen
                                 </button>
@@ -954,31 +956,31 @@ export default function DesignFeedbackSections({
 
                   {/* Question answers summary - improved */}
                   {hasQuestions && questionAnswers.some(qa => qa.answer !== null) && (
-                    <div className="mt-4 pt-4 border-t border-zinc-700">
-                      <p className="text-base md:text-lg text-zinc-300 mb-3 flex items-center gap-2 font-medium">
-                        <HelpCircle className="w-5 h-5 text-purple-400" />
+                    <div className="mt-3 sm:mt-4 pt-3 sm:pt-4 border-t border-zinc-700">
+                      <p className="text-sm sm:text-base md:text-lg text-zinc-300 mb-2 sm:mb-3 flex items-center gap-2 font-medium">
+                        <HelpCircle className="w-4 h-4 sm:w-5 sm:h-5 text-purple-400" />
                         Extra vragen
                       </p>
-                      <div className="space-y-3">
+                      <div className="space-y-2 sm:space-y-3">
                         {questionAnswers.filter(qa => qa.answer !== null).map(qa => (
                           <div 
                             key={qa.questionId} 
-                            className={`p-4 rounded-xl border ${
+                            className={`p-3 sm:p-4 rounded-xl border ${
                               qa.answer === 'yes' 
                                 ? 'border-green-500/30 bg-green-500/10'
                                 : 'border-amber-500/30 bg-amber-500/10'
                             }`}
                           >
-                            <div className="flex items-start gap-3">
-                              <div className={`w-8 h-8 md:w-10 md:h-10 rounded-full flex items-center justify-center flex-shrink-0 ${
+                            <div className="flex items-start gap-2 sm:gap-3">
+                              <div className={`w-7 h-7 sm:w-8 sm:h-8 md:w-10 md:h-10 rounded-full flex items-center justify-center flex-shrink-0 ${
                                 qa.answer === 'yes' ? 'bg-green-500/20 text-green-400' : 'bg-amber-500/20 text-amber-400'
                               }`}>
-                                {qa.answer === 'yes' ? <ThumbsUp className="w-4 h-4 md:w-5 md:h-5" /> : <ThumbsDown className="w-4 h-4 md:w-5 md:h-5" />}
+                                {qa.answer === 'yes' ? <ThumbsUp className="w-3 h-3 sm:w-4 sm:h-4 md:w-5 md:h-5" /> : <ThumbsDown className="w-3 h-3 sm:w-4 sm:h-4 md:w-5 md:h-5" />}
                               </div>
-                              <div className="flex-1">
-                                <p className="text-sm md:text-base text-white">{qa.question}</p>
+                              <div className="flex-1 min-w-0">
+                                <p className="text-xs sm:text-sm md:text-base text-white">{qa.question}</p>
                                 {qa.comment && (
-                                  <p className="text-xs md:text-sm text-zinc-400 mt-1 italic">"{qa.comment}"</p>
+                                  <p className="text-[10px] sm:text-xs md:text-sm text-zinc-400 mt-1 italic truncate">"{qa.comment}"</p>
                                 )}
                               </div>
                             </div>
@@ -987,7 +989,7 @@ export default function DesignFeedbackSections({
                       </div>
                       <button
                         onClick={() => setStep('questions')}
-                        className="mt-3 text-sm text-purple-400 hover:text-purple-300 font-medium"
+                        className="mt-2 sm:mt-3 text-xs sm:text-sm text-purple-400 hover:text-purple-300 font-medium"
                       >
                         ✏️ Aanpassen
                       </button>
@@ -995,32 +997,32 @@ export default function DesignFeedbackSections({
                   )}
 
                   {/* General comment */}
-                  <div className="mt-6">
-                    <label className="text-sm md:text-base text-zinc-400 mb-2 block">
+                  <div className="mt-4 sm:mt-6">
+                    <label className="text-xs sm:text-sm md:text-base text-zinc-400 mb-1.5 sm:mb-2 block">
                       Algemene opmerkingen <span className="text-zinc-600">(optioneel)</span>
                     </label>
                     <textarea
                       value={generalComment}
                       onChange={(e) => setGeneralComment(e.target.value)}
                       placeholder="Nog iets wat je kwijt wilt?"
-                      className="w-full h-24 md:h-28 px-4 py-3 bg-zinc-800 border border-zinc-700 rounded-xl text-white placeholder-zinc-500 resize-none focus:outline-none focus:ring-2 focus:ring-purple-500 text-sm md:text-base"
+                      className="w-full h-20 sm:h-24 md:h-28 px-3 sm:px-4 py-2 sm:py-3 bg-zinc-800 border border-zinc-700 rounded-xl text-white placeholder-zinc-500 resize-none focus:outline-none focus:ring-2 focus:ring-purple-500 text-xs sm:text-sm md:text-base"
                     />
                   </div>
                 </div>
 
                 {/* Actions - improved */}
-                <div className="p-4 md:p-6 border-t border-zinc-800 space-y-3">
+                <div className="p-3 sm:p-4 md:p-6 border-t border-zinc-800 space-y-2 sm:space-y-3 safe-area-inset-bottom">
                   {changeCount > 0 ? (
                     <button
                       onClick={handleSubmitFeedback}
                       disabled={isSubmitting}
-                      className="w-full py-4 md:py-4 bg-purple-600 text-white rounded-xl font-medium text-base md:text-lg hover:bg-purple-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors flex items-center justify-center gap-2"
+                      className="w-full py-3 sm:py-4 bg-purple-600 text-white rounded-xl font-medium text-sm sm:text-base md:text-lg hover:bg-purple-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors flex items-center justify-center gap-2"
                     >
                       {isSubmitting ? (
-                        <Loader2 className="w-5 h-5 md:w-6 md:h-6 animate-spin" />
+                        <Loader2 className="w-4 h-4 sm:w-5 sm:h-5 md:w-6 md:h-6 animate-spin" />
                       ) : (
                         <>
-                          <Send className="w-5 h-5 md:w-6 md:h-6" />
+                          <Send className="w-4 h-4 sm:w-5 sm:h-5 md:w-6 md:h-6" />
                           Feedback versturen
                         </>
                       )}
@@ -1029,14 +1031,16 @@ export default function DesignFeedbackSections({
                     <button
                       onClick={handleApprove}
                       disabled={isSubmitting}
-                      className="w-full py-4 md:py-4 bg-gradient-to-r from-green-500 to-emerald-600 text-white rounded-xl font-medium text-base md:text-lg hover:from-green-600 hover:to-emerald-700 disabled:opacity-50 disabled:cursor-not-allowed transition-all flex items-center justify-center gap-2"
+                      className="w-full py-3 sm:py-4 bg-gradient-to-r from-green-500 to-emerald-600 text-white rounded-xl font-medium text-sm sm:text-base md:text-lg hover:from-green-600 hover:to-emerald-700 disabled:opacity-50 disabled:cursor-not-allowed transition-all flex items-center justify-center gap-2"
                     >
                       {isSubmitting ? (
-                        <Loader2 className="w-5 h-5 md:w-6 md:h-6 animate-spin" />
+                        <Loader2 className="w-4 h-4 sm:w-5 sm:h-5 md:w-6 md:h-6 animate-spin" />
                       ) : (
                         <>
-                          <ThumbsUp className="w-5 h-5 md:w-6 md:h-6" />
-                          Design goedkeuren! 🎉
+                          <ThumbsUp className="w-4 h-4 sm:w-5 sm:h-5 md:w-6 md:h-6" />
+                          <span className="hidden sm:inline">Design goedkeuren!</span>
+                          <span className="sm:hidden">Goedkeuren!</span>
+                          <span>🎉</span>
                         </>
                       )}
                     </button>
@@ -1046,7 +1050,7 @@ export default function DesignFeedbackSections({
                     <button
                       onClick={handleSubmitFeedback}
                       disabled={isSubmitting}
-                      className="w-full py-3 text-zinc-400 text-sm md:text-base hover:text-white transition-colors"
+                      className="w-full py-2 sm:py-3 text-zinc-400 text-xs sm:text-sm md:text-base hover:text-white transition-colors"
                     >
                       Toch feedback versturen
                     </button>

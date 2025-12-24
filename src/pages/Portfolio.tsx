@@ -115,11 +115,11 @@ export default function Portfolio() {
           </div>
         </section>
 
-        {/* Projects - Carousel on Mobile, Grid on Desktop */}
-        <section className="py-12 lg:py-20">
+        {/* Projects - Carousel on Mobile, Grid on Tablet/Desktop */}
+        <section className="py-8 sm:py-12 lg:py-20">
           <div className="max-w-7xl mx-auto">
-            {/* Mobile Carousel */}
-            <div className="lg:hidden relative">
+            {/* Mobile Carousel - visible only on small screens */}
+            <div className="md:hidden relative">
               {/* Scroll buttons */}
               <button
                 onClick={() => scroll('left')}
@@ -158,8 +158,8 @@ export default function Portfolio() {
               </div>
             </div>
 
-            {/* Desktop Grid */}
-            <div className="hidden lg:grid lg:grid-cols-3 gap-8 px-4 sm:px-6 lg:px-8">
+            {/* Desktop Grid - md:2 cols, lg:3 cols */}
+            <div className="hidden md:grid md:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8 px-4 sm:px-6 lg:px-8">
               {filteredProjects.map((project, index) => (
                 <motion.div
                   key={project.id}

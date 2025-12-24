@@ -83,20 +83,25 @@ export default function ContactModal({ isOpen, onClose, domain }: ContactModalPr
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
           onClick={handleBackdropClick}
-          className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm"
+          className="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-0 sm:p-4 bg-black/60 backdrop-blur-sm"
         >
           <motion.div
-            initial={{ opacity: 0, scale: 0.95, y: 20 }}
-            animate={{ opacity: 1, scale: 1, y: 0 }}
-            exit={{ opacity: 0, scale: 0.95, y: 20 }}
-            transition={{ type: 'spring', duration: 0.5 }}
-            className="relative w-full max-w-md bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 rounded-2xl shadow-2xl overflow-hidden"
+            initial={{ opacity: 0, y: 50 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: 50 }}
+            transition={{ type: 'spring', duration: 0.4, damping: 25 }}
+            className="relative w-full sm:max-w-md bg-white dark:bg-gray-800 border-t sm:border border-gray-100 dark:border-gray-700 rounded-t-2xl sm:rounded-2xl shadow-2xl overflow-hidden max-h-[90vh] overflow-y-auto"
           >
+            {/* Mobile drag handle */}
+            <div className="sm:hidden flex justify-center pt-2">
+              <div className="w-10 h-1 rounded-full bg-gray-300 dark:bg-gray-600" />
+            </div>
+            
             {/* Header */}
-            <div className="relative p-6 pb-4 border-b border-gray-100 dark:border-gray-700">
+            <div className="relative p-4 sm:p-6 sm:pb-4 border-b border-gray-100 dark:border-gray-700">
               <button
                 onClick={onClose}
-                className="absolute top-4 right-4 p-2 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition-colors rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700"
+                className="absolute top-3 sm:top-4 right-3 sm:right-4 p-2 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition-colors rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700"
                 aria-label="Sluiten"
               >
                 <X className="w-5 h-5" />
@@ -115,23 +120,23 @@ export default function ContactModal({ isOpen, onClose, domain }: ContactModalPr
 
             {/* Success State */}
             {isSuccess ? (
-              <div className="p-8 text-center">
+              <div className="p-6 sm:p-8 text-center">
                 <motion.div
                   initial={{ scale: 0 }}
                   animate={{ scale: 1 }}
                   transition={{ type: 'spring', duration: 0.5 }}
-                  className="w-16 h-16 bg-green-100 dark:bg-green-900/30 rounded-full flex items-center justify-center mx-auto mb-4"
+                  className="w-14 h-14 sm:w-16 sm:h-16 bg-green-100 dark:bg-green-900/30 rounded-full flex items-center justify-center mx-auto mb-4"
                 >
-                  <Check className="w-8 h-8 text-green-600 dark:text-green-400" />
+                  <Check className="w-7 h-7 sm:w-8 sm:h-8 text-green-600 dark:text-green-400" />
                 </motion.div>
-                <h4 className="text-gray-900 dark:text-white font-semibold text-xl mb-2">Bedankt!</h4>
-                <p className="text-gray-600 dark:text-gray-400">
+                <h4 className="text-gray-900 dark:text-white font-semibold text-lg sm:text-xl mb-2">Bedankt!</h4>
+                <p className="text-gray-600 dark:text-gray-400 text-sm sm:text-base">
                   We hebben je aanvraag ontvangen en nemen zo snel mogelijk contact met je op.
                 </p>
               </div>
             ) : (
               /* Form */
-              <form onSubmit={handleSubmit} className="p-6 space-y-4">
+              <form onSubmit={handleSubmit} className="p-4 sm:p-6 space-y-4 pb-safe">
                 <p className="text-gray-600 dark:text-gray-300 text-sm mb-4">
                   Laat je gegevens achter en wij nemen binnen 24 uur contact met je op over dit domein.
                 </p>

@@ -31,7 +31,8 @@ import {
   RefreshCw,
   Sparkles,
   Cloud,
-  AlertCircle
+  AlertCircle,
+  Trash2
 } from 'lucide-react'
 
 // Dark Mode Context
@@ -72,13 +73,46 @@ interface SalesAccount {
   id: string
   name: string
   email: string
+  pin: string // 4-digit PIN
+  requirePinChange?: boolean // First login requires PIN change
+  isAdmin?: boolean // Admin can see all leads
 }
 
-const SALES_ACCOUNTS: SalesAccount[] = [
-  { id: 'admin', name: 'Admin', email: 'info@webstability.nl' },
-  { id: 'wesley', name: 'Wesley', email: 'wesley@webstability.nl' },
-  { id: 'laurens', name: 'Laurens', email: 'laurens@webstability.nl' },
+// Default accounts - PINs can be changed and saved to localStorage
+const DEFAULT_salesAccounts: SalesAccount[] = [
+  { id: 'wesley', name: 'Wesley', email: 'wesley@webstability.nl', pin: '4321', requirePinChange: true },
+  { id: 'laurens', name: 'Laurens', email: 'laurens@webstability.nl', pin: '8376', requirePinChange: false, isAdmin: true },
 ]
+
+// Load accounts with saved PINs from localStorage
+const loadSalesAccounts = (): SalesAccount[] => {
+  try {
+    const saved = localStorage.getItem('webstability_account_pins')
+    if (saved) {
+      const savedPins = JSON.parse(saved) as Record<string, { pin: string; requirePinChange: boolean }>
+      return DEFAULT_salesAccounts.map(acc => ({
+        ...acc,
+        pin: savedPins[acc.id]?.pin || acc.pin,
+        requirePinChange: savedPins[acc.id]?.requirePinChange ?? acc.requirePinChange
+      }))
+    }
+  } catch (e) {
+    console.error('Error loading account pins:', e)
+  }
+  return DEFAULT_salesAccounts
+}
+
+// Save account PIN to localStorage
+const saveAccountPin = (accountId: string, newPin: string) => {
+  try {
+    const saved = localStorage.getItem('webstability_account_pins')
+    const current = saved ? JSON.parse(saved) : {}
+    current[accountId] = { pin: newPin, requirePinChange: false }
+    localStorage.setItem('webstability_account_pins', JSON.stringify(current))
+  } catch (e) {
+    console.error('Error saving account pin:', e)
+  }
+}
 
 interface Lead {
   id: string
@@ -102,6 +136,15 @@ interface Lead {
   // Account tracking
   createdBy?: string  // Account ID die lead aanmaakte
   emailedBy?: string[] // Account IDs die emails stuurden
+  // Website analyse (opgeslagen)
+  websiteAnalysis?: {
+    score: number
+    issues: Array<{ type: 'critical' | 'warning' | 'info'; message: string; icon: string }>
+    analyzedAt: string
+  }
+  // Soft delete tracking
+  deletedAt?: string // When the lead was soft-deleted
+  firstContactedAt?: string // First time this business was contacted
 }
 
 interface EmailTemplate {
@@ -240,6 +283,15 @@ const statusColors: Record<Lead['status'], { bg: string; darkBg: string; text: s
 
 export default function MarketingDashboard() {
   const [leads, setLeads] = useState<Lead[]>([])
+  const [contactedHistory, setContactedHistory] = useState<Record<string, { contactedAt: string; contactedBy: string }>>(() => {
+    // Load contact history from localStorage
+    try {
+      const saved = localStorage.getItem('webstability_contacted_history')
+      return saved ? JSON.parse(saved) : {}
+    } catch {
+      return {}
+    }
+  })
   const [statusFilter, setStatusFilter] = useState<string>('alle')
   const [showAddModal, setShowAddModal] = useState(false)
   const [showEmailModal, setShowEmailModal] = useState(false)
@@ -249,15 +301,50 @@ export default function MarketingDashboard() {
   const [emailBody, setEmailBody] = useState('')
   const [sending, setSending] = useState(false)
   
+  // Sales accounts with dynamic PINs
+  const [salesAccounts, setSalesAccounts] = useState<SalesAccount[]>(() => loadSalesAccounts())
+  
   // Current sales account - stored in localStorage
   const [currentAccount, setCurrentAccount] = useState<SalesAccount>(() => {
     const saved = localStorage.getItem('webstability_sales_account')
+    const accounts = loadSalesAccounts()
     if (saved) {
-      const found = SALES_ACCOUNTS.find(a => a.id === saved)
+      const found = accounts.find(a => a.id === saved)
       if (found) return found
     }
-    return SALES_ACCOUNTS[0] // Default to admin
+    return accounts[0] // Default to admin
   })
+  
+  // PIN login state
+  const [isLoggedIn, setIsLoggedIn] = useState(() => {
+    const session = localStorage.getItem('webstability_session')
+    if (session) {
+      const { accountId, expiresAt } = JSON.parse(session)
+      if (new Date(expiresAt) > new Date()) {
+        return accountId
+      }
+    }
+    return null as string | null
+  })
+  const [showPinModal, setShowPinModal] = useState(false)
+  const [pinInput, setPinInput] = useState('')
+  const [pinError, setPinError] = useState('')
+  const [pendingAccount, setPendingAccount] = useState<SalesAccount | null>(null)
+  
+  // PIN change state
+  const [showPinChangeModal, setShowPinChangeModal] = useState(false)
+  const [newPin, setNewPin] = useState('')
+  const [confirmPin, setConfirmPin] = useState('')
+  const [pinChangeError, setPinChangeError] = useState('')
+  const [accountToChangePin, setAccountToChangePin] = useState<SalesAccount | null>(null)
+  
+  // Lead detail modal state (for future website analysis feature)
+  const [_showLeadDetail, _setShowLeadDetail] = useState(false)
+  const [detailLead, setDetailLead] = useState<Lead | null>(null)
+  const [_isAnalyzingLead, _setIsAnalyzingLead] = useState(false)
+  
+  // Leads search
+  const [leadsSearchQuery, setLeadsSearchQuery] = useState('')
   
   // Email inbox state (for future IMAP integration)
   const [emailReplies, _setEmailReplies] = useState<EmailReply[]>([])
@@ -649,9 +736,69 @@ export default function MarketingDashboard() {
     }
   }, [leads])
 
+  // Save contacted history to localStorage
+  useEffect(() => {
+    localStorage.setItem('webstability_contacted_history', JSON.stringify(contactedHistory))
+  }, [contactedHistory])
+
+  // Auto-delete leads after 7 days (soft delete)
+  useEffect(() => {
+    const sevenDaysAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString()
+    
+    setLeads(prev => {
+      const leadsToArchive = prev.filter(lead => {
+        // Don't auto-delete klanten or geïnteresseerden
+        if (lead.status === 'klant' || lead.status === 'geinteresseerd') return false
+        // Check if created more than 7 days ago
+        return lead.createdAt < sevenDaysAgo && !lead.deletedAt
+      })
+      
+      // Add to contact history before removing
+      if (leadsToArchive.length > 0) {
+        const newHistory = { ...contactedHistory }
+        leadsToArchive.forEach(lead => {
+          newHistory[lead.id] = {
+            contactedAt: lead.firstContactedAt || lead.createdAt,
+            contactedBy: lead.createdBy || 'unknown'
+          }
+        })
+        setContactedHistory(newHistory)
+      }
+      
+      // Soft delete by marking with deletedAt
+      return prev.map(lead => {
+        if (leadsToArchive.some(l => l.id === lead.id)) {
+          return { ...lead, deletedAt: new Date().toISOString() }
+        }
+        return lead
+      }).filter(lead => !lead.deletedAt) // Remove soft-deleted leads
+    })
+  }, []) // Run once on mount
+
   const today = new Date().toISOString().split('T')[0]
 
   const filteredLeads = leads.filter(lead => {
+    // Account filter - admins see all, others see only their own leads
+    if (!currentAccount.isAdmin) {
+      // Non-admin users only see leads they created or were assigned to
+      if (lead.createdBy && lead.createdBy !== currentAccount.id) {
+        return false
+      }
+    }
+    
+    // Search filter
+    if (leadsSearchQuery.trim()) {
+      const query = leadsSearchQuery.toLowerCase()
+      const matchesSearch = 
+        lead.companyName?.toLowerCase().includes(query) ||
+        lead.contactPerson?.toLowerCase().includes(query) ||
+        lead.email?.toLowerCase().includes(query) ||
+        lead.city?.toLowerCase().includes(query) ||
+        lead.phone?.includes(query)
+      if (!matchesSearch) return false
+    }
+    
+    // Status filter
     let matchesStatus = false
     if (statusFilter === 'alle') {
       matchesStatus = true
@@ -679,7 +826,7 @@ export default function MarketingDashboard() {
   })
 
   // Per-account stats
-  const accountStats = SALES_ACCOUNTS.map(account => ({
+  const accountStats = salesAccounts.map(account => ({
     account,
     leadsCreated: leads.filter(l => l.createdBy === account.id).length,
     emailsSent: leads.reduce((sum, l) => {
@@ -813,7 +960,8 @@ export default function MarketingDashboard() {
     const newNote: NoteItem = {
       id: Date.now().toString(),
       text: noteText.trim(),
-      createdAt: new Date().toISOString()
+      createdAt: new Date().toISOString(),
+      createdBy: currentAccount.id
     }
     
     setLeads(prev => {
@@ -823,9 +971,213 @@ export default function MarketingDashboard() {
           : l
       )
       const updatedLead = updated.find(l => l.id === leadId)
-      if (updatedLead) syncLeadToAPI(updatedLead, 'update')
+      if (updatedLead) {
+        syncLeadToAPI(updatedLead, 'update')
+        if (detailLead?.id === leadId) setDetailLead(updatedLead)
+      }
       return updated
     })
+  }
+
+  const updateNote = (leadId: string, noteId: string, newText: string) => {
+    if (!newText.trim()) return
+    
+    setLeads(prev => {
+      const updated = prev.map(l =>
+        l.id === leadId
+          ? { 
+              ...l, 
+              notesTimeline: (l.notesTimeline || []).map(n => 
+                n.id === noteId ? { ...n, text: newText.trim() } : n
+              )
+            }
+          : l
+      )
+      const updatedLead = updated.find(l => l.id === leadId)
+      if (updatedLead) {
+        syncLeadToAPI(updatedLead, 'update')
+        if (detailLead?.id === leadId) setDetailLead(updatedLead)
+      }
+      return updated
+    })
+  }
+
+  const deleteNote = (leadId: string, noteId: string) => {
+    setLeads(prev => {
+      const updated = prev.map(l =>
+        l.id === leadId
+          ? { ...l, notesTimeline: (l.notesTimeline || []).filter(n => n.id !== noteId) }
+          : l
+      )
+      const updatedLead = updated.find(l => l.id === leadId)
+      if (updatedLead) {
+        syncLeadToAPI(updatedLead, 'update')
+        if (detailLead?.id === leadId) setDetailLead(updatedLead)
+      }
+      return updated
+    })
+  }
+
+  // PIN login functions
+  const handleAccountSwitch = (account: SalesAccount) => {
+    if (isLoggedIn === account.id) return // Already logged in as this account
+    setPendingAccount(account)
+    setPinInput('')
+    setPinError('')
+    setShowPinModal(true)
+  }
+
+  const verifyPin = () => {
+    if (!pendingAccount) return
+    if (pinInput === pendingAccount.pin) {
+      // Check if PIN change is required (first login)
+      if (pendingAccount.requirePinChange) {
+        setShowPinModal(false)
+        setAccountToChangePin(pendingAccount)
+        setNewPin('')
+        setConfirmPin('')
+        setPinChangeError('')
+        setShowPinChangeModal(true)
+        return
+      }
+      
+      // Normal login
+      completeLogin(pendingAccount)
+    } else {
+      setPinError('Onjuiste PIN')
+      setPinInput('')
+    }
+  }
+
+  const completeLogin = (account: SalesAccount) => {
+    setCurrentAccount(account)
+    setIsLoggedIn(account.id)
+    localStorage.setItem('webstability_sales_account', account.id)
+    // Session expires in 8 hours
+    const expiresAt = new Date(Date.now() + 8 * 60 * 60 * 1000).toISOString()
+    localStorage.setItem('webstability_session', JSON.stringify({ accountId: account.id, expiresAt }))
+    setShowPinModal(false)
+    setPendingAccount(null)
+    setPinInput('')
+  }
+
+  const handlePinChange = () => {
+    if (newPin.length !== 4) {
+      setPinChangeError('PIN moet 4 cijfers zijn')
+      return
+    }
+    if (newPin !== confirmPin) {
+      setPinChangeError('PINs komen niet overeen')
+      return
+    }
+    if (!accountToChangePin) return
+
+    // Save new PIN
+    saveAccountPin(accountToChangePin.id, newPin)
+    
+    // Update local state
+    setSalesAccounts(prev => prev.map(acc => 
+      acc.id === accountToChangePin.id 
+        ? { ...acc, pin: newPin, requirePinChange: false } 
+        : acc
+    ))
+    
+    // Complete login with updated account
+    const updatedAccount = { ...accountToChangePin, pin: newPin, requirePinChange: false }
+    completeLogin(updatedAccount)
+    
+    // Close modal
+    setShowPinChangeModal(false)
+    setAccountToChangePin(null)
+    setNewPin('')
+    setConfirmPin('')
+  }
+
+  // Open PIN change from settings (for logged in user)
+  const openPinChangeForCurrentAccount = () => {
+    if (!currentAccount) return
+    setAccountToChangePin(currentAccount)
+    setNewPin('')
+    setConfirmPin('')
+    setPinChangeError('')
+    setShowPinChangeModal(true)
+  }
+
+  // Lead detail with auto-analyze (reserved for future use)
+  const _openLeadDetail = async (lead: Lead) => {
+    setDetailLead(lead)
+    _setShowLeadDetail(true)
+    
+    // Auto-analyze if has website and no recent analysis
+    if (lead.website && !lead.websiteAnalysis) {
+      _setIsAnalyzingLead(true)
+      try {
+        const response = await fetch('/api/marketing/analyze-website', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ url: lead.website })
+        })
+        const data = await response.json()
+        
+        if (data.success && data.analysis) {
+          const analysis = {
+            score: data.analysis.score,
+            issues: data.analysis.issues,
+            analyzedAt: new Date().toISOString()
+          }
+          
+          // Update lead with analysis
+          setLeads(prev => {
+            const updated = prev.map(l => l.id === lead.id ? { ...l, websiteAnalysis: analysis } : l)
+            const updatedLead = updated.find(l => l.id === lead.id)
+            if (updatedLead) {
+              syncLeadToAPI(updatedLead, 'update')
+              setDetailLead(updatedLead)
+            }
+            return updated
+          })
+        }
+      } catch (error) {
+        console.error('[Analyze] Error:', error)
+      } finally {
+        _setIsAnalyzingLead(false)
+      }
+    }
+  }
+
+  // Analyze website for a lead
+  const analyzeLeadWebsite = async (leadId: string): Promise<void> => {
+    const lead = leads.find(l => l.id === leadId)
+    if (!lead?.website) return
+    
+    try {
+      const response = await fetch('/api/marketing/analyze-website', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ url: lead.website })
+      })
+      const data = await response.json()
+      
+      if (data.success && data.analysis) {
+        const analysis = {
+          score: data.analysis.score,
+          issues: data.analysis.issues || [],
+          analyzedAt: new Date().toISOString()
+        }
+        
+        // Update lead with analysis
+        setLeads(prev => {
+          const updated = prev.map(l => l.id === leadId ? { ...l, websiteAnalysis: analysis } : l)
+          const updatedLead = updated.find(l => l.id === leadId)
+          if (updatedLead) {
+            syncLeadToAPI(updatedLead, 'update')
+          }
+          return updated
+        })
+      }
+    } catch (error) {
+      console.error('[Analyze] Error:', error)
+    }
   }
 
   const setFollowUpDate = (leadId: string, date: string | undefined) => {
@@ -965,30 +1317,42 @@ export default function MarketingDashboard() {
                 
                 {/* Dark Mode & Help - Always visible */}
                 <div className="flex items-center gap-1 ml-2">
-                  {/* Account selector with stats */}
-                  <div className="relative">
-                    <select
-                      value={currentAccount.id}
-                      onChange={(e) => {
-                        const account = SALES_ACCOUNTS.find(a => a.id === e.target.value)
-                        if (account) {
-                          setCurrentAccount(account)
-                          localStorage.setItem('webstability_sales_account', account.id)
-                        }
-                      }}
-                      className={`appearance-none pl-3 pr-8 py-1.5 rounded-lg text-sm font-medium cursor-pointer ${
-                        darkMode 
-                          ? 'bg-purple-900/30 text-purple-300 border border-purple-700/50' 
-                          : 'bg-purple-100 text-purple-700 border border-purple-200'
-                      }`}
-                    >
-                      {SALES_ACCOUNTS.map(account => (
-                        <option key={account.id} value={account.id}>
-                          {account.name}
-                        </option>
-                      ))}
-                    </select>
-                    <ChevronDown className="absolute right-2 top-1/2 -translate-y-1/2 w-4 h-4 pointer-events-none text-purple-500" />
+                  {/* Account selector with PIN protection */}
+                  <div className="relative flex items-center gap-1">
+                    {salesAccounts.map(account => (
+                      <button
+                        key={account.id}
+                        onClick={() => handleAccountSwitch(account)}
+                        className={`px-2.5 py-1.5 rounded-lg text-xs font-medium transition-all ${
+                          currentAccount.id === account.id
+                            ? darkMode 
+                              ? 'bg-purple-600 text-white shadow-lg shadow-purple-500/25' 
+                              : 'bg-purple-600 text-white shadow-lg shadow-purple-500/25'
+                            : darkMode
+                              ? 'bg-gray-800 text-gray-400 hover:bg-gray-700 hover:text-white'
+                              : 'bg-gray-100 text-gray-600 hover:bg-gray-200 hover:text-gray-900'
+                        }`}
+                      >
+                        {account.name}
+                      </button>
+                    ))}
+                    
+                    {/* PIN change button */}
+                    {isLoggedIn && (
+                      <button
+                        onClick={openPinChangeForCurrentAccount}
+                        title="PIN wijzigen"
+                        className={`p-1.5 rounded-lg transition-all ${
+                          darkMode
+                            ? 'text-gray-500 hover:bg-gray-700 hover:text-gray-300'
+                            : 'text-gray-400 hover:bg-gray-100 hover:text-gray-600'
+                        }`}
+                      >
+                        <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1121 9z" />
+                        </svg>
+                      </button>
+                    )}
                   </div>
                   
                   {/* My stats badge */}
@@ -1122,32 +1486,47 @@ export default function MarketingDashboard() {
             </button>
           </div>
           
-          {/* Account stats leaderboard */}
-          <div className={`flex items-center gap-3 px-4 py-2 rounded-xl ${
-            darkMode ? 'bg-gray-800/50' : 'bg-gray-100/50'
+          {/* Leaderboard */}
+          <div className={`rounded-xl overflow-hidden ${
+            darkMode ? 'bg-gray-800/50 border border-gray-700/50' : 'bg-white/80 border border-gray-200/50'
           }`}>
-            {accountStats.map((stat, idx) => (
-              <div 
-                key={stat.account.id} 
-                className={`flex items-center gap-2 px-3 py-1 rounded-lg ${
-                  stat.account.id === currentAccount.id 
-                    ? darkMode ? 'bg-purple-900/50 text-purple-300' : 'bg-purple-100 text-purple-700'
-                    : ''
-                }`}
-              >
-                <span className={`text-sm font-medium ${
-                  idx === 0 ? 'text-yellow-500' : idx === 1 ? 'text-gray-400' : 'text-amber-600'
-                }`}>
-                  {idx === 0 ? '🥇' : idx === 1 ? '🥈' : '🥉'}
-                </span>
-                <span className={`text-sm ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>
-                  {stat.account.name}
-                </span>
-                <span className={`text-xs font-bold ${darkMode ? 'text-emerald-400' : 'text-emerald-600'}`}>
-                  {stat.emailsSent}
-                </span>
-              </div>
-            ))}
+            <div className={`px-4 py-2.5 border-b ${darkMode ? 'border-gray-700/50 bg-gray-800/80' : 'border-gray-200/50 bg-gray-50/80'}`}>
+              <h3 className={`text-sm font-semibold flex items-center gap-2 ${darkMode ? 'text-gray-200' : 'text-gray-700'}`}>
+                🏆 Leaderboard
+              </h3>
+            </div>
+            <div className="flex items-center gap-2 p-3">
+              {accountStats.sort((a, b) => b.emailsSent - a.emailsSent).map((stat, idx) => (
+                <div 
+                  key={stat.account.id} 
+                  className={`relative flex items-center gap-2 px-3 py-2 rounded-lg transition-all ${
+                    stat.account.id === currentAccount.id 
+                      ? darkMode ? 'bg-purple-900/50 ring-2 ring-purple-500/50' : 'bg-purple-100 ring-2 ring-purple-300'
+                      : darkMode ? 'bg-gray-700/50' : 'bg-gray-100'
+                  }`}
+                >
+                  {/* Confetti effect for #1 */}
+                  {idx === 0 && stat.emailsSent > 0 && (
+                    <div className="absolute -top-1 -left-1 -right-1 flex justify-center pointer-events-none">
+                      <span className="text-xs animate-bounce">🎉</span>
+                    </div>
+                  )}
+                  <span className={`text-lg ${
+                    idx === 0 ? '' : idx === 1 ? '' : ''
+                  }`}>
+                    {idx === 0 ? '🥇' : idx === 1 ? '🥈' : '🥉'}
+                  </span>
+                  <div className="flex flex-col">
+                    <span className={`text-sm font-medium ${darkMode ? 'text-gray-200' : 'text-gray-800'}`}>
+                      {stat.account.name}
+                    </span>
+                    <span className={`text-xs ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>
+                      {stat.emailsSent} emails
+                    </span>
+                  </div>
+                </div>
+              ))}
+            </div>
           </div>
         </div>
 
@@ -1340,16 +1719,35 @@ export default function MarketingDashboard() {
                     const analysis = websiteAnalyses[business.id]
                     const isAnalyzing = analyzingWebsites[business.id]
                     
+                    // Check if this business was previously contacted (from history)
+                    const previousContact = contactedHistory[business.id]
+                    const wasPreviouslyContacted = !!previousContact
+                    
                     return (
-                      <div key={business.id} className={`p-4 transition-colors ${hasBeenEmailed ? (darkMode ? 'bg-emerald-900/10' : 'bg-emerald-50/50') : ''} ${darkMode ? 'hover:bg-gray-700/50' : 'hover:bg-gray-50'}`}>
+                      <div key={business.id} className={`p-4 transition-colors ${
+                        wasPreviouslyContacted 
+                          ? darkMode ? 'bg-amber-900/10 border-l-2 border-amber-500' : 'bg-amber-50/50 border-l-2 border-amber-400'
+                          : hasBeenEmailed 
+                            ? darkMode ? 'bg-emerald-900/10' : 'bg-emerald-50/50' 
+                            : ''
+                      } ${darkMode ? 'hover:bg-gray-700/50' : 'hover:bg-gray-50'}`}>
                         <div className="flex items-start justify-between gap-4">
                           <div className="flex-1 min-w-0">
-                            <div className="flex items-center gap-2">
+                            <div className="flex items-center gap-2 flex-wrap">
                               <h5 className={`font-medium truncate ${darkMode ? 'text-white' : 'text-gray-900'}`}>
                                 {business.name}
                               </h5>
+                              {/* Previously contacted indicator */}
+                              {wasPreviouslyContacted && (
+                                <span className={`flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium ${
+                                  darkMode ? 'bg-amber-500/20 text-amber-400' : 'bg-amber-100 text-amber-700'
+                                }`}>
+                                  <Clock className="w-3 h-3" />
+                                  Benaderd op {new Date(previousContact.contactedAt).toLocaleDateString('nl-NL')}
+                                </span>
+                              )}
                               {/* Email sent indicator */}
-                              {hasBeenEmailed && (
+                              {hasBeenEmailed && !wasPreviouslyContacted && (
                                 <span className={`flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium ${
                                   darkMode ? 'bg-emerald-500/20 text-emerald-400' : 'bg-emerald-100 text-emerald-700'
                                 }`}>
@@ -1551,6 +1949,32 @@ Webstability`
         ) : mainTab === 'leads' ? (
           /* Leads View */
           <>
+          {/* Search Bar */}
+          <div className="mb-4">
+            <div className="relative">
+              <Search className={`absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 ${darkMode ? 'text-gray-500' : 'text-gray-400'}`} />
+              <input
+                type="text"
+                placeholder="Zoek op bedrijfsnaam, email of plaats..."
+                value={leadsSearchQuery}
+                onChange={(e) => setLeadsSearchQuery(e.target.value)}
+                className={`w-full pl-10 pr-4 py-2.5 rounded-xl text-sm transition-all ${
+                  darkMode 
+                    ? 'bg-gray-800 text-white placeholder-gray-500 border border-gray-700 focus:border-emerald-500' 
+                    : 'bg-white text-gray-900 placeholder-gray-400 border border-gray-200 focus:border-emerald-500'
+                } focus:outline-none focus:ring-2 focus:ring-emerald-500/20`}
+              />
+              {leadsSearchQuery && (
+                <button
+                  onClick={() => setLeadsSearchQuery('')}
+                  className={`absolute right-3 top-1/2 -translate-y-1/2 p-1 rounded-full ${darkMode ? 'hover:bg-gray-700' : 'hover:bg-gray-100'}`}
+                >
+                  <X className="w-4 h-4" />
+                </button>
+              )}
+            </div>
+          </div>
+
           <div className="flex gap-2 mb-4 sm:mb-6 overflow-x-auto pb-2 sm:pb-0 -mx-4 px-4 sm:mx-0 sm:px-0 sm:flex-wrap scrollbar-hide">
           {['alle', 'nieuw', 'gecontacteerd', 'geinteresseerd', 'offerte', 'klant', 'afgewezen'].map((status) => {
             const count = status === 'alle' ? leads.length : leads.filter(l => l.status === status).length
@@ -1620,7 +2044,10 @@ Webstability`
                     onTogglePriority={() => togglePriority(lead.id)}
                     onDelete={() => deleteLead(lead.id)}
                     onAddNote={(note) => addNote(lead.id, note)}
+                    onUpdateNote={(noteId, newText) => updateNote(lead.id, noteId, newText)}
+                    onDeleteNote={(noteId) => deleteNote(lead.id, noteId)}
                     onSetFollowUp={(date) => setFollowUpDate(lead.id, date)}
+                    onAnalyzeWebsite={() => analyzeLeadWebsite(lead.id)}
                     templates={emailTemplates}
                     darkMode={darkMode}
                   />
@@ -1666,7 +2093,7 @@ Webstability`
                     }}
                   >
                     <option value="all">Iedereen</option>
-                    {SALES_ACCOUNTS.map(acc => (
+                    {salesAccounts.map(acc => (
                       <option key={acc.id} value={acc.id}>{acc.name}</option>
                     ))}
                   </select>
@@ -1701,7 +2128,7 @@ Webstability`
               return (
                 <div className={`divide-y ${darkMode ? 'divide-gray-700' : 'divide-gray-100'} max-h-[60vh] overflow-y-auto`}>
                   {allEmails.map((email) => {
-                    const sentByAccount = SALES_ACCOUNTS.find(a => a.id === email.sentBy)
+                    const sentByAccount = salesAccounts.find(a => a.id === email.sentBy)
                     return (
                       <div 
                         key={email.id}
@@ -1761,13 +2188,272 @@ Webstability`
         )}
       </main>
 
+      {/* PIN Modal */}
+      <AnimatePresence>
+        {showPinModal && pendingAccount && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-[100] flex items-center justify-center p-4"
+          >
+            <motion.div 
+              className="absolute inset-0 bg-black/60 backdrop-blur-sm"
+              onClick={() => {
+                setShowPinModal(false)
+                setPendingAccount(null)
+                setPinInput('')
+                setPinError('')
+              }}
+            />
+            <motion.div
+              initial={{ scale: 0.95, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.95, opacity: 0 }}
+              className={`relative w-full max-w-sm p-6 rounded-2xl shadow-2xl ${
+                darkMode ? 'bg-gray-800' : 'bg-white'
+              }`}
+            >
+              <div className="text-center mb-6">
+                <div className="w-16 h-16 mx-auto mb-4 rounded-2xl bg-gradient-to-br from-emerald-500 to-emerald-600 flex items-center justify-center">
+                  <User className="w-8 h-8 text-white" />
+                </div>
+                <h3 className={`text-lg font-semibold ${darkMode ? 'text-white' : 'text-gray-900'}`}>
+                  Inloggen als {pendingAccount.name}
+                </h3>
+                <p className={`text-sm mt-1 ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>
+                  Voer de PIN code in om door te gaan
+                </p>
+              </div>
+
+              <div className="space-y-4">
+                <div>
+                  <input
+                    type="password"
+                    inputMode="numeric"
+                    pattern="[0-9]*"
+                    maxLength={4}
+                    placeholder="••••"
+                    value={pinInput}
+                    onChange={(e) => {
+                      setPinInput(e.target.value.replace(/\D/g, ''))
+                      setPinError('')
+                    }}
+                    onKeyDown={(e) => {
+                      if (e.key === 'Enter') verifyPin()
+                    }}
+                    className={`w-full text-center text-2xl tracking-[0.5em] py-3 rounded-xl border-2 transition-all ${
+                      pinError
+                        ? 'border-red-500 bg-red-500/10'
+                        : darkMode 
+                          ? 'bg-gray-700 border-gray-600 text-white focus:border-emerald-500' 
+                          : 'bg-gray-50 border-gray-200 text-gray-900 focus:border-emerald-500'
+                    } focus:outline-none`}
+                    autoFocus
+                  />
+                  {pinError && (
+                    <p className="text-red-500 text-sm text-center mt-2">{pinError}</p>
+                  )}
+                </div>
+
+                <div className="flex gap-3">
+                  <button
+                    onClick={() => {
+                      setShowPinModal(false)
+                      setPendingAccount(null)
+                      setPinInput('')
+                      setPinError('')
+                    }}
+                    className={`flex-1 py-2.5 rounded-xl font-medium transition-colors ${
+                      darkMode 
+                        ? 'bg-gray-700 text-gray-300 hover:bg-gray-600' 
+                        : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                    }`}
+                  >
+                    Annuleren
+                  </button>
+                  <button
+                    onClick={verifyPin}
+                    disabled={pinInput.length !== 4}
+                    className={`flex-1 py-2.5 rounded-xl font-medium transition-all ${
+                      pinInput.length === 4
+                        ? 'bg-emerald-500 text-white hover:bg-emerald-600'
+                        : darkMode 
+                          ? 'bg-gray-600 text-gray-400 cursor-not-allowed' 
+                          : 'bg-gray-200 text-gray-400 cursor-not-allowed'
+                    }`}
+                  >
+                    Inloggen
+                  </button>
+                </div>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* PIN Change Modal */}
+      <AnimatePresence>
+        {showPinChangeModal && accountToChangePin && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-[100] flex items-center justify-center p-4"
+          >
+            <motion.div 
+              className="absolute inset-0 bg-black/60 backdrop-blur-sm"
+              onClick={() => {
+                // Don't allow closing if it's first login requirement
+                if (!accountToChangePin.requirePinChange) {
+                  setShowPinChangeModal(false)
+                  setAccountToChangePin(null)
+                  setNewPin('')
+                  setConfirmPin('')
+                  setPinChangeError('')
+                }
+              }}
+            />
+            <motion.div
+              initial={{ scale: 0.95, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.95, opacity: 0 }}
+              className={`relative w-full max-w-sm p-6 rounded-2xl shadow-2xl ${
+                darkMode ? 'bg-gray-800' : 'bg-white'
+              }`}
+            >
+              <div className="text-center mb-6">
+                <div className="w-16 h-16 mx-auto mb-4 rounded-2xl bg-gradient-to-br from-blue-500 to-blue-600 flex items-center justify-center">
+                  <svg className="w-8 h-8 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1121 9z" />
+                  </svg>
+                </div>
+                <h3 className={`text-lg font-semibold ${darkMode ? 'text-white' : 'text-gray-900'}`}>
+                  {accountToChangePin.requirePinChange ? 'Stel je eigen PIN in' : 'PIN wijzigen'}
+                </h3>
+                <p className={`text-sm mt-1 ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>
+                  {accountToChangePin.requirePinChange 
+                    ? `Welkom ${accountToChangePin.name}! Kies een persoonlijke 4-cijferige PIN.`
+                    : 'Voer een nieuwe 4-cijferige PIN in'}
+                </p>
+              </div>
+
+              <div className="space-y-4">
+                <div>
+                  <label className={`block text-sm font-medium mb-1.5 ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>
+                    Nieuwe PIN
+                  </label>
+                  <input
+                    type="password"
+                    inputMode="numeric"
+                    pattern="[0-9]*"
+                    maxLength={4}
+                    placeholder="••••"
+                    value={newPin}
+                    onChange={(e) => {
+                      setNewPin(e.target.value.replace(/\D/g, ''))
+                      setPinChangeError('')
+                    }}
+                    className={`w-full text-center text-2xl tracking-[0.5em] py-3 rounded-xl border-2 transition-all ${
+                      darkMode 
+                        ? 'bg-gray-700 border-gray-600 text-white focus:border-blue-500' 
+                        : 'bg-gray-50 border-gray-200 text-gray-900 focus:border-blue-500'
+                    } focus:outline-none`}
+                    autoFocus
+                  />
+                </div>
+
+                <div>
+                  <label className={`block text-sm font-medium mb-1.5 ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>
+                    Bevestig PIN
+                  </label>
+                  <input
+                    type="password"
+                    inputMode="numeric"
+                    pattern="[0-9]*"
+                    maxLength={4}
+                    placeholder="••••"
+                    value={confirmPin}
+                    onChange={(e) => {
+                      setConfirmPin(e.target.value.replace(/\D/g, ''))
+                      setPinChangeError('')
+                    }}
+                    onKeyDown={(e) => {
+                      if (e.key === 'Enter' && newPin.length === 4 && confirmPin.length === 4) {
+                        handlePinChange()
+                      }
+                    }}
+                    className={`w-full text-center text-2xl tracking-[0.5em] py-3 rounded-xl border-2 transition-all ${
+                      confirmPin.length === 4 && newPin === confirmPin
+                        ? 'border-green-500 bg-green-500/10'
+                        : confirmPin.length === 4 && newPin !== confirmPin
+                          ? 'border-red-500 bg-red-500/10'
+                          : darkMode 
+                            ? 'bg-gray-700 border-gray-600 text-white focus:border-blue-500' 
+                            : 'bg-gray-50 border-gray-200 text-gray-900 focus:border-blue-500'
+                    } focus:outline-none`}
+                  />
+                </div>
+
+                {pinChangeError && (
+                  <p className="text-red-500 text-sm text-center">{pinChangeError}</p>
+                )}
+
+                {newPin.length === 4 && confirmPin.length === 4 && newPin === confirmPin && (
+                  <p className="text-green-500 text-sm text-center flex items-center justify-center gap-1">
+                    <CheckCircle className="w-4 h-4" />
+                    PINs komen overeen
+                  </p>
+                )}
+
+                <div className="flex gap-3 pt-2">
+                  {!accountToChangePin.requirePinChange && (
+                    <button
+                      onClick={() => {
+                        setShowPinChangeModal(false)
+                        setAccountToChangePin(null)
+                        setNewPin('')
+                        setConfirmPin('')
+                        setPinChangeError('')
+                      }}
+                      className={`flex-1 py-2.5 rounded-xl font-medium transition-colors ${
+                        darkMode 
+                          ? 'bg-gray-700 text-gray-300 hover:bg-gray-600' 
+                          : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                      }`}
+                    >
+                      Annuleren
+                    </button>
+                  )}
+                  <button
+                    onClick={handlePinChange}
+                    disabled={newPin.length !== 4 || confirmPin.length !== 4 || newPin !== confirmPin}
+                    className={`flex-1 py-2.5 rounded-xl font-medium transition-all ${
+                      newPin.length === 4 && confirmPin.length === 4 && newPin === confirmPin
+                        ? 'bg-blue-500 text-white hover:bg-blue-600'
+                        : darkMode 
+                          ? 'bg-gray-600 text-gray-400 cursor-not-allowed' 
+                          : 'bg-gray-200 text-gray-400 cursor-not-allowed'
+                    }`}
+                  >
+                    {accountToChangePin.requirePinChange ? 'Instellen & Inloggen' : 'PIN Opslaan'}
+                  </button>
+                </div>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
       {/* Add Lead Modal */}
       <AddLeadModal
         isOpen={showAddModal}
         onClose={() => setShowAddModal(false)}
         darkMode={darkMode}
         onAdd={(lead) => {
-          setLeads(prev => [lead, ...prev])
+          // Add createdBy for the current account
+          const leadWithCreator = { ...lead, createdBy: currentAccount.id }
+          setLeads(prev => [leadWithCreator, ...prev])
           setShowAddModal(false)
         }}
       />
@@ -2162,7 +2848,10 @@ function LeadRow({
   onTogglePriority,
   onDelete,
   onAddNote,
+  onUpdateNote,
+  onDeleteNote,
   onSetFollowUp,
+  onAnalyzeWebsite,
   templates,
   darkMode = false
 }: { 
@@ -2172,7 +2861,10 @@ function LeadRow({
   onTogglePriority: () => void
   onDelete: () => void
   onAddNote: (note: string) => void
+  onUpdateNote: (noteId: string, newText: string) => void
+  onDeleteNote: (noteId: string) => void
   onSetFollowUp: (date: string | undefined) => void
+  onAnalyzeWebsite: () => Promise<void>
   templates: EmailTemplate[]
   darkMode?: boolean
 }) {
@@ -2180,6 +2872,9 @@ function LeadRow({
   const [showTemplates, setShowTemplates] = useState(false)
   const [showDetails, setShowDetails] = useState(false)
   const [newNote, setNewNote] = useState('')
+  const [editingNoteId, setEditingNoteId] = useState<string | null>(null)
+  const [editNoteText, setEditNoteText] = useState('')
+  const [isAnalyzing, setIsAnalyzing] = useState(false)
   const menuButtonRef = React.useRef<HTMLButtonElement>(null)
   const [menuPosition, setMenuPosition] = useState({ top: 0, right: 0 })
   const status = statusColors[lead.status]
@@ -2284,6 +2979,39 @@ function LeadRow({
               </div>
               {lead.notes && (
                 <p className={`text-xs sm:text-sm mt-2 line-clamp-1 ${darkMode ? 'text-gray-500' : 'text-gray-600'}`}>{lead.notes}</p>
+              )}
+              
+              {/* Website Analysis Issues - show when lead has analysis */}
+              {lead.websiteAnalysis && lead.websiteAnalysis.issues && lead.websiteAnalysis.issues.length > 0 && (
+                <div className={`mt-2 p-2 rounded-lg text-xs ${darkMode ? 'bg-orange-500/10 border border-orange-500/20' : 'bg-orange-50 border border-orange-100'}`}>
+                  <div className="flex items-center gap-1.5 mb-1">
+                    <Search className={`w-3 h-3 ${darkMode ? 'text-orange-400' : 'text-orange-600'}`} />
+                    <span className={`font-medium ${darkMode ? 'text-orange-400' : 'text-orange-700'}`}>
+                      Analyse ({lead.websiteAnalysis.score}/100)
+                    </span>
+                  </div>
+                  <div className="flex flex-wrap gap-1">
+                    {lead.websiteAnalysis.issues.slice(0, 3).map((issue, i) => (
+                      <span 
+                        key={i} 
+                        className={`px-1.5 py-0.5 rounded ${
+                          issue.type === 'critical' 
+                            ? darkMode ? 'bg-red-500/20 text-red-400' : 'bg-red-100 text-red-700'
+                            : issue.type === 'warning'
+                              ? darkMode ? 'bg-yellow-500/20 text-yellow-400' : 'bg-yellow-100 text-yellow-700'
+                              : darkMode ? 'bg-blue-500/20 text-blue-400' : 'bg-blue-100 text-blue-700'
+                        }`}
+                      >
+                        {issue.icon} {issue.message.slice(0, 25)}{issue.message.length > 25 ? '...' : ''}
+                      </span>
+                    ))}
+                    {lead.websiteAnalysis.issues.length > 3 && (
+                      <span className={`px-1.5 py-0.5 rounded ${darkMode ? 'bg-gray-700 text-gray-400' : 'bg-gray-100 text-gray-500'}`}>
+                        +{lead.websiteAnalysis.issues.length - 3} meer
+                      </span>
+                    )}
+                  </div>
+                </div>
               )}
             </div>
           </div>
@@ -2455,6 +3183,20 @@ function LeadRow({
               document.body
             )}
 
+            {/* Quick delete button */}
+            <button
+              onClick={(e) => {
+                e.stopPropagation()
+                onDelete()
+              }}
+              title="Verwijderen"
+              className={`p-2 rounded-lg transition-colors ${
+                darkMode ? 'text-gray-500 hover:text-red-400 hover:bg-red-500/10' : 'text-gray-300 hover:text-red-500 hover:bg-red-50'
+              }`}
+            >
+              <Trash2 className="w-4 h-4" />
+            </button>
+
             {/* More menu */}
             <div className="relative">
               <button
@@ -2568,13 +3310,14 @@ function LeadRow({
                     {lead.emailHistory && lead.emailHistory.length > 0 ? (
                       <div className="space-y-2 max-h-32 sm:max-h-40 overflow-y-auto">
                         {lead.emailHistory.slice().reverse().map((email) => (
-                          <div key={email.id} className={`rounded-lg p-2.5 text-xs ${darkMode ? 'bg-gray-800/50' : 'bg-white shadow-sm'}`}>
+                          <div key={email.id} className={`rounded-lg p-2.5 text-xs cursor-pointer hover:ring-2 hover:ring-emerald-500/50 transition-all ${darkMode ? 'bg-gray-800/50' : 'bg-white shadow-sm'}`}>
                             <p className={`font-medium truncate ${darkMode ? 'text-white' : 'text-gray-900'}`}>{email.subject}</p>
                             {email.templateName && (
                               <p className={`truncate ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>Template: {email.templateName}</p>
                             )}
                             <p className={darkMode ? 'text-gray-500' : 'text-gray-400'}>
-                              {new Date(email.sentAt).toLocaleDateString('nl-NL')}
+                              {new Date(email.sentAt).toLocaleDateString('nl-NL', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' })}
+                              {email.sentBy && ` • ${email.sentBy}`}
                             </p>
                           </div>
                         ))}
@@ -2603,13 +3346,78 @@ function LeadRow({
                       </span>
                     </h4>
                     {lead.notesTimeline && lead.notesTimeline.length > 0 ? (
-                      <div className="space-y-2 max-h-24 sm:max-h-28 overflow-y-auto mb-2 sm:mb-3">
+                      <div className="space-y-2 max-h-32 sm:max-h-36 overflow-y-auto mb-2 sm:mb-3">
                         {lead.notesTimeline.slice().reverse().map((note) => (
-                          <div key={note.id} className={`rounded-lg p-2.5 text-xs ${darkMode ? 'bg-gray-800/50' : 'bg-white shadow-sm'}`}>
-                            <p className={darkMode ? 'text-white' : 'text-gray-900'}>{note.text}</p>
-                            <p className={`mt-1 ${darkMode ? 'text-gray-500' : 'text-gray-400'}`}>
-                              {new Date(note.createdAt).toLocaleDateString('nl-NL')}
-                            </p>
+                          <div key={note.id} className={`rounded-lg p-2.5 text-xs group ${darkMode ? 'bg-gray-800/50' : 'bg-white shadow-sm'}`}>
+                            {editingNoteId === note.id ? (
+                              <div className="space-y-2">
+                                <textarea
+                                  value={editNoteText}
+                                  onChange={(e) => setEditNoteText(e.target.value)}
+                                  className={`w-full px-2 py-1.5 text-xs border rounded-lg resize-none ${
+                                    darkMode ? 'bg-gray-700 border-gray-600 text-white' : 'bg-gray-50 border-gray-200'
+                                  }`}
+                                  rows={2}
+                                  autoFocus
+                                />
+                                <div className="flex gap-1.5">
+                                  <button
+                                    onClick={() => {
+                                      onUpdateNote(note.id, editNoteText)
+                                      setEditingNoteId(null)
+                                      setEditNoteText('')
+                                    }}
+                                    className="px-2 py-1 bg-purple-600 text-white rounded text-[10px] font-medium hover:bg-purple-700"
+                                  >
+                                    Opslaan
+                                  </button>
+                                  <button
+                                    onClick={() => {
+                                      setEditingNoteId(null)
+                                      setEditNoteText('')
+                                    }}
+                                    className={`px-2 py-1 rounded text-[10px] font-medium ${darkMode ? 'bg-gray-700 text-gray-300 hover:bg-gray-600' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'}`}
+                                  >
+                                    Annuleren
+                                  </button>
+                                </div>
+                              </div>
+                            ) : (
+                              <>
+                                <div className="flex items-start justify-between gap-2">
+                                  <p className={`flex-1 ${darkMode ? 'text-white' : 'text-gray-900'}`}>{note.text}</p>
+                                  <div className="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                                    <button
+                                      onClick={() => {
+                                        setEditingNoteId(note.id)
+                                        setEditNoteText(note.text)
+                                      }}
+                                      className={`p-1 rounded ${darkMode ? 'hover:bg-gray-700 text-gray-400' : 'hover:bg-gray-100 text-gray-400'}`}
+                                      title="Bewerken"
+                                    >
+                                      <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                                      </svg>
+                                    </button>
+                                    <button
+                                      onClick={() => {
+                                        if (confirm('Weet je zeker dat je deze notitie wilt verwijderen?')) {
+                                          onDeleteNote(note.id)
+                                        }
+                                      }}
+                                      className={`p-1 rounded ${darkMode ? 'hover:bg-red-500/20 text-red-400' : 'hover:bg-red-50 text-red-400'}`}
+                                      title="Verwijderen"
+                                    >
+                                      <XCircle className="w-3 h-3" />
+                                    </button>
+                                  </div>
+                                </div>
+                                <p className={`mt-1 ${darkMode ? 'text-gray-500' : 'text-gray-400'}`}>
+                                  {new Date(note.createdAt).toLocaleDateString('nl-NL')}
+                                  {note.createdBy && ` • ${note.createdBy}`}
+                                </p>
+                              </>
+                            )}
                           </div>
                         ))}
                       </div>
@@ -2739,6 +3547,130 @@ function LeadRow({
                       )}
                     </div>
                   </div>
+
+                  {/* Website Analysis */}
+                  {lead.website && (
+                    <div className={`rounded-xl p-3 sm:p-4 border ${
+                      lead.websiteAnalysis 
+                        ? lead.websiteAnalysis.score >= 70
+                          ? darkMode ? 'bg-green-500/5 border-green-500/30' : 'bg-green-50/50 border-green-200'
+                          : lead.websiteAnalysis.score >= 40
+                            ? darkMode ? 'bg-yellow-500/5 border-yellow-500/30' : 'bg-yellow-50/50 border-yellow-200'
+                            : darkMode ? 'bg-red-500/5 border-red-500/30' : 'bg-red-50/50 border-red-200'
+                        : darkMode ? 'bg-blue-500/5 border-blue-500/30' : 'bg-blue-50/50 border-blue-200'
+                    }`}>
+                      <h4 className={`text-xs sm:text-sm font-semibold mb-2 sm:mb-3 flex items-center gap-2`}>
+                        <div className={`p-1.5 rounded-lg ${
+                          lead.websiteAnalysis
+                            ? lead.websiteAnalysis.score >= 70
+                              ? darkMode ? 'bg-green-500/20' : 'bg-green-100'
+                              : lead.websiteAnalysis.score >= 40
+                                ? darkMode ? 'bg-yellow-500/20' : 'bg-yellow-100'
+                                : darkMode ? 'bg-red-500/20' : 'bg-red-100'
+                            : darkMode ? 'bg-blue-500/20' : 'bg-blue-100'
+                        }`}>
+                          <Globe className={`w-3.5 h-3.5 ${
+                            lead.websiteAnalysis
+                              ? lead.websiteAnalysis.score >= 70
+                                ? darkMode ? 'text-green-400' : 'text-green-600'
+                                : lead.websiteAnalysis.score >= 40
+                                  ? darkMode ? 'text-yellow-400' : 'text-yellow-600'
+                                  : darkMode ? 'text-red-400' : 'text-red-600'
+                              : darkMode ? 'text-blue-400' : 'text-blue-600'
+                          }`} />
+                        </div>
+                        <span className={darkMode ? 'text-gray-200' : 'text-gray-700'}>Website Analyse</span>
+                        {lead.websiteAnalysis && (
+                          <span className={`ml-auto px-2 py-0.5 text-[10px] font-bold rounded-full ${
+                            lead.websiteAnalysis.score >= 70
+                              ? 'bg-green-500 text-white'
+                              : lead.websiteAnalysis.score >= 40
+                                ? 'bg-yellow-500 text-white'
+                                : 'bg-red-500 text-white'
+                          }`}>
+                            {lead.websiteAnalysis.score}/100
+                          </span>
+                        )}
+                      </h4>
+                      
+                      {lead.websiteAnalysis ? (
+                        <div className="space-y-2">
+                          {lead.websiteAnalysis.issues && lead.websiteAnalysis.issues.length > 0 ? (
+                            <div className="space-y-1.5 max-h-32 overflow-y-auto">
+                              {lead.websiteAnalysis.issues.slice(0, 5).map((issue, i) => (
+                                <div key={i} className={`flex items-start gap-2 text-xs ${darkMode ? 'text-gray-300' : 'text-gray-600'}`}>
+                                  <span className={`mt-0.5 ${
+                                    issue.type === 'critical' ? 'text-red-500' : 
+                                    issue.type === 'warning' ? 'text-yellow-500' : 'text-blue-500'
+                                  }`}>{issue.icon || '•'}</span>
+                                  <span>{issue.message}</span>
+                                </div>
+                              ))}
+                              {lead.websiteAnalysis.issues.length > 5 && (
+                                <p className={`text-xs ${darkMode ? 'text-gray-500' : 'text-gray-400'}`}>
+                                  +{lead.websiteAnalysis.issues.length - 5} meer problemen
+                                </p>
+                              )}
+                            </div>
+                          ) : (
+                            <p className={`text-xs ${darkMode ? 'text-green-400' : 'text-green-600'}`}>
+                              ✓ Geen problemen gevonden
+                            </p>
+                          )}
+                          <p className={`text-[10px] mt-2 ${darkMode ? 'text-gray-500' : 'text-gray-400'}`}>
+                            Geanalyseerd: {new Date(lead.websiteAnalysis.analyzedAt).toLocaleDateString('nl-NL')}
+                          </p>
+                          <button
+                            onClick={async () => {
+                              setIsAnalyzing(true)
+                              await onAnalyzeWebsite()
+                              setIsAnalyzing(false)
+                            }}
+                            disabled={isAnalyzing}
+                            className={`w-full mt-2 px-2 py-1.5 text-xs rounded-lg transition-colors flex items-center justify-center gap-1 ${
+                              isAnalyzing
+                                ? darkMode ? 'bg-gray-700 text-gray-400' : 'bg-gray-100 text-gray-400'
+                                : darkMode ? 'text-blue-400 hover:bg-blue-500/20' : 'text-blue-500 hover:bg-blue-50'
+                            }`}
+                          >
+                            <RefreshCw className={`w-3 h-3 ${isAnalyzing ? 'animate-spin' : ''}`} />
+                            {isAnalyzing ? 'Analyseren...' : 'Opnieuw analyseren'}
+                          </button>
+                        </div>
+                      ) : (
+                        <div className="space-y-2">
+                          <p className={`text-xs ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>
+                            Nog niet geanalyseerd
+                          </p>
+                          <button
+                            onClick={async () => {
+                              setIsAnalyzing(true)
+                              await onAnalyzeWebsite()
+                              setIsAnalyzing(false)
+                            }}
+                            disabled={isAnalyzing}
+                            className={`w-full px-3 py-2 text-xs rounded-lg font-medium transition-all flex items-center justify-center gap-2 ${
+                              isAnalyzing
+                                ? 'bg-blue-400 text-white cursor-wait'
+                                : 'bg-blue-500 text-white hover:bg-blue-600'
+                            }`}
+                          >
+                            {isAnalyzing ? (
+                              <>
+                                <RefreshCw className="w-3 h-3 animate-spin" />
+                                Analyseren...
+                              </>
+                            ) : (
+                              <>
+                                <Sparkles className="w-3 h-3" />
+                                Website analyseren
+                              </>
+                            )}
+                          </button>
+                        </div>
+                      )}
+                    </div>
+                  )}
                 </div>
               </motion.div>
             )}

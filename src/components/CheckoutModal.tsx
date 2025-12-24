@@ -162,16 +162,21 @@ export default function CheckoutModal(){
   // Success scherm na aanvraag
   if (success && projectId) {
     return (
-      <div className="fixed inset-0 z-60 flex items-center justify-center">
+      <div className="fixed inset-0 z-60 flex items-end sm:items-center justify-center p-0 sm:p-4">
         <div className="absolute inset-0 bg-black/40" onClick={()=>{setOpen(false); setSuccess(false); setProjectId(null)}} />
         <motion.div 
-          className="relative bg-white dark:bg-gray-800 rounded-2xl p-8 max-w-lg w-full shadow-card text-center" 
-          initial={{opacity:0,scale:0.98,y:8}} 
-          animate={{opacity:1,scale:1,y:0}} 
+          className="relative bg-white dark:bg-gray-800 rounded-t-2xl sm:rounded-2xl p-6 sm:p-8 max-w-lg w-full shadow-card text-center max-h-[90vh] overflow-y-auto" 
+          initial={{opacity:0, y: 20}} 
+          animate={{opacity:1, y: 0}} 
           transition={{duration:0.18}}
         >
-          <div className="w-16 h-16 bg-green-100 dark:bg-green-900/30 rounded-full flex items-center justify-center mx-auto mb-4">
-            <svg className="w-8 h-8 text-green-600 dark:text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          {/* Mobile drag handle */}
+          <div className="sm:hidden flex justify-center -mt-2 mb-4">
+            <div className="w-10 h-1 rounded-full bg-gray-300 dark:bg-gray-600" />
+          </div>
+          
+          <div className="w-14 h-14 sm:w-16 sm:h-16 bg-green-100 dark:bg-green-900/30 rounded-full flex items-center justify-center mx-auto mb-4">
+            <svg className="w-7 h-7 sm:w-8 sm:h-8 text-green-600 dark:text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7" />
             </svg>
           </div>
@@ -230,9 +235,19 @@ export default function CheckoutModal(){
   }
 
   return (
-    <div className="fixed inset-0 z-60 flex items-center justify-center">
+    <div className="fixed inset-0 z-60 flex items-end sm:items-center justify-center p-0 sm:p-4">
       <div className="absolute inset-0 bg-black/40" onClick={()=>setOpen(false)} />
-      <motion.div className="relative bg-white dark:bg-gray-800 rounded-2xl p-6 max-w-lg w-full shadow-card max-h-[90vh] overflow-y-auto" initial={{opacity:0,scale:0.98,y:8}} animate={{opacity:1,scale:1,y:0}} transition={{duration:0.18}}>
+      <motion.div 
+        className="relative bg-white dark:bg-gray-800 rounded-t-2xl sm:rounded-2xl p-4 sm:p-6 max-w-lg w-full shadow-card max-h-[90vh] overflow-y-auto" 
+        initial={{opacity:0, y: 20}} 
+        animate={{opacity:1, y: 0}} 
+        transition={{duration:0.18}}
+      >
+        {/* Mobile drag handle */}
+        <div className="sm:hidden flex justify-center -mt-1 mb-3">
+          <div className="w-10 h-1 rounded-full bg-gray-300 dark:bg-gray-600" />
+        </div>
+        
         <h3 className="text-lg font-semibold text-gray-900 dark:text-white">Gratis aanvragen: {isWebshop ? 'Webshop' : plan}</h3>
         <p className="text-sm text-slate-600 dark:text-gray-300 mt-1">Vul je gegevens in. Betaling pas na design-goedkeuring.</p>
 
