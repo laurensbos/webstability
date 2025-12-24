@@ -1666,6 +1666,11 @@ export default function ProjectStatusNew() {
 
       {/* Design Preview Modal */}
       {project && project.designPreviewUrl && (
+        <>
+        {console.log('[ProjectStatusNew] Passing to DesignPreviewModal:', {
+          feedbackQuestions: project.feedbackQuestions,
+          customQuestions: project.customQuestions
+        })}
         <DesignPreviewModal
           isOpen={showDesignPreview}
           onClose={() => setShowDesignPreview(false)}
@@ -1689,6 +1694,7 @@ export default function ProjectStatusNew() {
             } : null)
           }}
         />
+        </>
       )}
     </div>
   )

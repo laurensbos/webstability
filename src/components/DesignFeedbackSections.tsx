@@ -86,8 +86,10 @@ export default function DesignFeedbackSections({
   customQuestions = []
 }: DesignFeedbackSectionsProps) {
   // Debug: log incoming questions
-  console.log('[DesignFeedbackSections] feedbackQuestionIds:', feedbackQuestionIds)
-  console.log('[DesignFeedbackSections] customQuestions:', customQuestions)
+  console.log('[DesignFeedbackSections] RECEIVED PROPS:')
+  console.log('  - feedbackQuestionIds:', JSON.stringify(feedbackQuestionIds))
+  console.log('  - customQuestions:', JSON.stringify(customQuestions))
+  console.log('  - AVAILABLE_FEEDBACK_QUESTIONS:', AVAILABLE_FEEDBACK_QUESTIONS.map(q => q.id))
   
   // Device state
   const [device, setDevice] = useState<'desktop' | 'mobile'>('desktop')

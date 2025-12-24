@@ -41,6 +41,11 @@ export default function DesignPreviewModal({
 }: DesignPreviewModalProps) {
   const [mode, setMode] = useState<'feedback' | 'preview'>('feedback')
 
+  // Debug logging
+  console.log('[DesignPreviewModal] PROPS RECEIVED:')
+  console.log('  - feedbackQuestionIds:', JSON.stringify(feedbackQuestionIds))
+  console.log('  - customQuestions:', JSON.stringify(customQuestions))
+
   if (!isOpen) return null
 
   return (
