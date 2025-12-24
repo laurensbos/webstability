@@ -300,6 +300,9 @@ export default function MarketingDashboard() {
     type?: string
   } | null>(null)
   const [sendingProspect, setSendingProspect] = useState(false)
+  
+  // Mobile search collapse state - collapsed by default when results exist
+  const [mobileSearchExpanded, setMobileSearchExpanded] = useState(true)
 
   // Dark mode effect
   useEffect(() => {
@@ -435,6 +438,11 @@ export default function MarketingDashboard() {
 
       if (data.success) {
         setSearchResults(data.businesses || [])
+        
+        // Collapse search form on mobile when results are found
+        if (data.businesses && data.businesses.length > 0) {
+          setMobileSearchExpanded(false)
+        }
         
         // Save last search
         const searchData = { city: city.trim(), query: query.trim(), type, radius }
@@ -912,14 +920,39 @@ export default function MarketingDashboard() {
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            className={`rounded-xl sm:rounded-2xl p-4 sm:p-6 border backdrop-blur-xl mb-4 ${
+            className={`rounded-xl sm:rounded-2xl border backdrop-blur-xl mb-4 ${
               darkMode ? 'bg-gray-800/60 border-gray-700/50' : 'bg-white/80 border-gray-200/50'
             }`}
           >
-            <h3 className={`text-base sm:text-lg font-semibold mb-3 sm:mb-4 flex items-center gap-2 ${darkMode ? 'text-white' : 'text-gray-900'}`}>
-              <MapPin className="w-4 h-4 sm:w-5 sm:h-5 text-emerald-500" />
-              Zoek bedrijven
-            </h3>
+            {/* Mobile collapsible header */}
+            <button
+              onClick={() => setMobileSearchExpanded(!mobileSearchExpanded)}
+              className={`w-full p-4 sm:hidden flex items-center justify-between ${
+                !mobileSearchExpanded && searchResults.length > 0 ? '' : 'border-b'
+              } ${darkMode ? 'border-gray-700/50' : 'border-gray-200/50'}`}
+            >
+              <div className="flex items-center gap-2">
+                <MapPin className="w-4 h-4 text-emerald-500" />
+                <span className={`font-semibold ${darkMode ? 'text-white' : 'text-gray-900'}`}>
+                  {mobileSearchExpanded ? 'Zoek bedrijven' : (searchResults.length > 0 ? `${searchResults.length} resultaten` : 'Zoek bedrijven')}
+                </span>
+              </div>
+              <ChevronDown className={`w-5 h-5 transition-transform ${mobileSearchExpanded ? 'rotate-180' : ''} ${darkMode ? 'text-gray-400' : 'text-gray-500'}`} />
+            </button>
+
+            {/* Desktop header - always visible */}
+            <div className={`hidden sm:block p-4 sm:p-6 ${searchResults.length > 0 ? 'pb-0' : ''}`}>
+              <h3 className={`text-base sm:text-lg font-semibold mb-3 sm:mb-4 flex items-center gap-2 ${darkMode ? 'text-white' : 'text-gray-900'}`}>
+                <MapPin className="w-4 h-4 sm:w-5 sm:h-5 text-emerald-500" />
+                Zoek bedrijven
+              </h3>
+            </div>
+            
+            {/* Collapsible search form - always visible on desktop, collapsible on mobile */}
+            <div className={`overflow-hidden transition-all duration-200 sm:!max-h-none ${
+              mobileSearchExpanded ? 'max-h-[1000px] opacity-100' : 'max-h-0 opacity-0 sm:opacity-100'
+            }`}>
+                  <div className="p-4 sm:p-6 sm:pt-0">
             
             <div className="grid grid-cols-2 md:grid-cols-5 gap-2 sm:gap-4 mb-3 sm:mb-4">
               <div className="col-span-1">
@@ -1037,21 +1070,32 @@ export default function MarketingDashboard() {
                 </span>
               </motion.button>
             )}
+                  </div>
+            </div>
 
             {searchError && (
-              <p className={`text-sm mb-4 ${darkMode ? 'text-red-400' : 'text-red-600'}`}>{searchError}</p>
+              <p className={`text-sm p-4 pt-0 ${darkMode ? 'text-red-400' : 'text-red-600'}`}>{searchError}</p>
             )}
 
             {/* Search Results */}
             {searchResults.length > 0 && (
-              <div className={`rounded-xl border ${darkMode ? 'border-gray-700' : 'border-gray-200'}`}>
-                <div className={`p-4 border-b ${darkMode ? 'border-gray-700 bg-gray-700/50' : 'border-gray-200 bg-gray-50'}`}>
+              <div className={`rounded-xl border mx-4 mb-4 sm:mx-0 sm:m-4 ${darkMode ? 'border-gray-700' : 'border-gray-200'}`}>
+                <div className={`p-4 border-b flex items-center justify-between ${darkMode ? 'border-gray-700 bg-gray-700/50' : 'border-gray-200 bg-gray-50'}`}>
                   <h4 className={`font-semibold ${darkMode ? 'text-white' : 'text-gray-900'}`}>
                     {searchResults.length} bedrijven gevonden
                   </h4>
+                  {/* Mobile: button to expand search again */}
+                  <button
+                    onClick={() => setMobileSearchExpanded(true)}
+                    className={`sm:hidden text-sm flex items-center gap-1 ${darkMode ? 'text-emerald-400' : 'text-emerald-600'}`}
+                  >
+                    <Search className="w-3 h-3" />
+                    Nieuwe zoekopdracht
+                  </button>
                 </div>
                 
-                <div className={`divide-y ${darkMode ? 'divide-gray-700' : 'divide-gray-100'} max-h-96 overflow-y-auto`}>
+                {/* More height on mobile when search is collapsed */}
+                <div className={`divide-y ${darkMode ? 'divide-gray-700' : 'divide-gray-100'} ${mobileSearchExpanded ? 'max-h-96' : 'max-h-[60vh] sm:max-h-96'} overflow-y-auto`}>
                   {searchResults.map((business) => {
                     const isAdded = leads.some(l => l.id === business.id)
                     const analysis = websiteAnalyses[business.id]
@@ -1122,9 +1166,9 @@ ${issuesList}
 
 Dit zijn dingen die soms simpel op te lossen zijn, maar die wel verschil kunnen maken voor hoe bezoekers jullie website ervaren.
 
-Ik help ondernemers met dit soort dingen. Mocht je nieuwsgierig zijn wat er mogelijk is, ik denk graag even mee. Helemaal vrijblijvend, gewoon een praatje.
+Wij helpen ondernemers dagelijks met precies dit soort verbeteringen - vaak simpeler en betaalbaarder dan je zou verwachten. Op onze website staat meer informatie: webstability.nl
 
-Je kunt me mailen of bellen op 06-44712573.
+Als jullie vrijblijvend eens willen sparren, denk ik graag (geheel kosteloos) mee. Je kunt reageren via deze mail, bellen of whatsappen via 06-44712573.
 
 Groetjes,
 
