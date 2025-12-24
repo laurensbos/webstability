@@ -3946,6 +3946,136 @@ function ProjectDetailModal({ project, darkMode, onClose, onUpdate, phases }: Om
                       </div>
                     )}
                   </div>
+                  
+                  {/* Extra Vragen Selectie */}
+                  {designPreviewUrl && (
+                    <div className="mt-4">
+                      <button
+                        onClick={() => setShowQuestionsPanel(!showQuestionsPanel)}
+                        className={`w-full flex items-center justify-between px-4 py-3 rounded-xl border ${
+                          darkMode 
+                            ? 'bg-gray-700/50 border-gray-600 hover:bg-gray-700' 
+                            : 'bg-gray-50 border-gray-200 hover:bg-gray-100'
+                        } transition-colors`}
+                      >
+                        <div className="flex items-center gap-3">
+                          <HelpCircle className={`w-5 h-5 ${darkMode ? 'text-purple-400' : 'text-purple-500'}`} />
+                          <div className="text-left">
+                            <p className={`font-medium ${darkMode ? 'text-white' : 'text-gray-900'}`}>
+                              Extra vragen voor feedback
+                            </p>
+                            <p className={`text-sm ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>
+                              {selectedQuestionIds.length + customQuestions.length} vragen geselecteerd
+                            </p>
+                          </div>
+                        </div>
+                        <ChevronRight className={`w-5 h-5 transition-transform ${showQuestionsPanel ? 'rotate-90' : ''} ${darkMode ? 'text-gray-400' : 'text-gray-500'}`} />
+                      </button>
+                      
+                      <AnimatePresence>
+                        {showQuestionsPanel && (
+                          <motion.div
+                            initial={{ height: 0, opacity: 0 }}
+                            animate={{ height: 'auto', opacity: 1 }}
+                            exit={{ height: 0, opacity: 0 }}
+                            className="overflow-hidden"
+                          >
+                            <div className={`mt-3 p-4 rounded-xl border ${darkMode ? 'bg-gray-700/30 border-gray-700' : 'bg-white border-gray-200'} max-h-64 overflow-y-auto`}>
+                              {/* Predefined Questions by Category */}
+                              {Object.entries(FEEDBACK_QUESTION_CATEGORIES).filter(([key]) => key !== 'custom').map(([categoryKey, categoryLabel]) => {
+                                const categoryQuestions = AVAILABLE_FEEDBACK_QUESTIONS.filter(q => q.category === categoryKey)
+                                if (categoryQuestions.length === 0) return null
+                                
+                                return (
+                                  <div key={categoryKey} className="mb-4 last:mb-0">
+                                    <h4 className={`text-xs font-semibold uppercase tracking-wide mb-2 ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>
+                                      {categoryLabel}
+                                    </h4>
+                                    <div className="space-y-1">
+                                      {categoryQuestions.map(q => (
+                                        <label
+                                          key={q.id}
+                                          className={`flex items-start gap-3 p-2 rounded-lg cursor-pointer transition-colors ${
+                                            selectedQuestionIds.includes(q.id)
+                                              ? darkMode ? 'bg-purple-500/20' : 'bg-purple-50'
+                                              : darkMode ? 'hover:bg-gray-700' : 'hover:bg-gray-50'
+                                          }`}
+                                        >
+                                          <input
+                                            type="checkbox"
+                                            checked={selectedQuestionIds.includes(q.id)}
+                                            onChange={() => toggleQuestionSelection(q.id)}
+                                            className="mt-0.5 rounded border-gray-300 text-purple-500 focus:ring-purple-500"
+                                          />
+                                          <span className={`text-sm ${darkMode ? 'text-gray-200' : 'text-gray-700'}`}>
+                                            {q.question}
+                                          </span>
+                                        </label>
+                                      ))}
+                                    </div>
+                                  </div>
+                                )
+                              })}
+                              
+                              {/* Custom Questions */}
+                              <div className={`pt-3 border-t ${darkMode ? 'border-gray-600' : 'border-gray-200'}`}>
+                                <h4 className={`text-xs font-semibold uppercase tracking-wide mb-2 ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>
+                                  {FEEDBACK_QUESTION_CATEGORIES.custom}
+                                </h4>
+                                
+                                {customQuestions.length > 0 && (
+                                  <div className="space-y-1 mb-2">
+                                    {customQuestions.map((q, index) => (
+                                      <div
+                                        key={index}
+                                        className={`flex items-start justify-between gap-2 p-2 rounded-lg ${
+                                          darkMode ? 'bg-purple-500/20' : 'bg-purple-50'
+                                        }`}
+                                      >
+                                        <span className={`text-sm ${darkMode ? 'text-gray-200' : 'text-gray-700'}`}>
+                                          {q}
+                                        </span>
+                                        <button
+                                          onClick={() => removeCustomQuestion(index)}
+                                          className={`p-1 rounded-lg transition-colors flex-shrink-0 ${
+                                            darkMode ? 'hover:bg-red-500/20 text-red-400' : 'hover:bg-red-50 text-red-500'
+                                          }`}
+                                        >
+                                          <X className="w-3 h-3" />
+                                        </button>
+                                      </div>
+                                    ))}
+                                  </div>
+                                )}
+                                
+                                <div className="flex gap-2">
+                                  <input
+                                    type="text"
+                                    value={newCustomQuestion}
+                                    onChange={(e) => setNewCustomQuestion(e.target.value)}
+                                    onKeyDown={(e) => e.key === 'Enter' && addCustomQuestion()}
+                                    placeholder="Stel een eigen vraag..."
+                                    className={`flex-1 px-3 py-2 rounded-lg border text-sm ${
+                                      darkMode 
+                                        ? 'bg-gray-700 border-gray-600 text-white placeholder-gray-500' 
+                                        : 'bg-white border-gray-300 text-gray-900 placeholder-gray-400'
+                                    } focus:outline-none focus:ring-2 focus:ring-purple-500/20`}
+                                  />
+                                  <button
+                                    onClick={addCustomQuestion}
+                                    disabled={!newCustomQuestion.trim()}
+                                    className="px-3 py-2 bg-purple-500 text-white rounded-lg hover:bg-purple-600 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                                  >
+                                    <Plus className="w-4 h-4" />
+                                  </button>
+                                </div>
+                              </div>
+                            </div>
+                          </motion.div>
+                        )}
+                      </AnimatePresence>
+                    </div>
+                  )}
                 </div>
               )}
 
