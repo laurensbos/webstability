@@ -46,11 +46,12 @@ interface LiveApprovalSectionProps {
 
 interface ChangeRequest {
   id?: string
+  title?: string
   description: string
   priority: 'low' | 'normal' | 'urgent'
   category: 'text' | 'design' | 'functionality' | 'other'
   attachments?: string[]
-  status?: 'pending' | 'in_progress' | 'completed'
+  status?: 'pending' | 'in_progress' | 'done' | 'completed'
   createdAt?: string
 }
 

@@ -25,12 +25,13 @@ export interface ProjectMessage {
 
 export interface ChangeRequest {
   id?: string
+  title?: string
   date?: string
   description: string
   request?: string              // Legacy field, use description instead
   priority: 'low' | 'normal' | 'urgent'
   category: 'text' | 'design' | 'functionality' | 'other'
-  status?: 'pending' | 'in_progress' | 'completed'
+  status?: 'pending' | 'in_progress' | 'done' | 'completed'
   response?: string
   createdAt?: string
   attachments?: string[]

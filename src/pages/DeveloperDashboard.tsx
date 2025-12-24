@@ -56,6 +56,7 @@ import {
   Download,
   ThumbsUp,
   ThumbsDown,
+  Hammer,
 } from 'lucide-react'
 import Logo from '../components/Logo'
 import { AVAILABLE_FEEDBACK_QUESTIONS, FEEDBACK_QUESTION_CATEGORIES } from '../types/project'
@@ -94,6 +95,7 @@ interface Project {
   estimatedCompletion?: string
   stagingUrl?: string
   liveUrl?: string
+  websiteUrl?: string            // Alias for liveUrl
   designPreviewUrl?: string
   designApproved?: boolean
   designApprovedAt?: string
@@ -108,6 +110,18 @@ interface Project {
   // Custom feedback questions (synced with types/project.ts)
   feedbackQuestions?: string[]       // Array van question IDs
   customQuestions?: string[]         // Eigen vragen als strings
+  // Change requests for live projects
+  changeRequests?: ChangeRequest[]
+}
+
+interface ChangeRequest {
+  id?: string
+  title?: string
+  description: string
+  priority: 'low' | 'normal' | 'urgent'
+  category: 'text' | 'design' | 'functionality' | 'other'
+  status?: 'pending' | 'in_progress' | 'done' | 'completed'
+  createdAt?: string
 }
 
 interface ChatMessage {
@@ -2121,6 +2135,7 @@ interface ProjectsViewProps {
 }
 
 function ProjectsView({ darkMode, projects, onUpdateProject, onDeleteProject: _onDeleteProject, onSelectProject, onNavigateToPayments }: ProjectsViewProps) {
+  const [projectsTab, setProjectsTab] = useState<'development' | 'live'>('development')
   const [viewMode, setViewMode] = useState<'kanban' | 'list'>('kanban')
   const [filterPhase, setFilterPhase] = useState<ProjectPhase | 'all'>('all')
   const [filterPayment, setFilterPayment] = useState<PaymentStatus | 'all'>('all')
@@ -2133,7 +2148,7 @@ function ProjectsView({ darkMode, projects, onUpdateProject, onDeleteProject: _o
   const [phaseChangeDirection, setPhaseChangeDirection] = useState<'next' | 'previous'>('next')
   const [phaseChangeLoading, setPhaseChangeLoading] = useState(false)
 
-  const phases: { key: ProjectPhase; label: string; color: string; bgColor: string }[] = [
+  const allPhases: { key: ProjectPhase; label: string; color: string; bgColor: string }[] = [
     { key: 'onboarding', label: 'Onboarding', color: 'bg-yellow-500', bgColor: darkMode ? 'bg-yellow-900/20' : 'bg-yellow-50' },
     { key: 'design', label: 'Design', color: 'bg-emerald-500', bgColor: darkMode ? 'bg-emerald-900/20' : 'bg-emerald-50' },
     { key: 'feedback', label: 'Feedback', color: 'bg-blue-500', bgColor: darkMode ? 'bg-blue-900/20' : 'bg-blue-50' },
@@ -2141,6 +2156,15 @@ function ProjectsView({ darkMode, projects, onUpdateProject, onDeleteProject: _o
     { key: 'payment', label: 'Betaling', color: 'bg-purple-500', bgColor: darkMode ? 'bg-purple-900/20' : 'bg-purple-50' },
     { key: 'live', label: 'Live', color: 'bg-green-500', bgColor: darkMode ? 'bg-green-900/20' : 'bg-green-50' },
   ]
+
+  // Filter phases based on active tab - development excludes 'live'
+  const phases = projectsTab === 'development' 
+    ? allPhases.filter(p => p.key !== 'live')
+    : allPhases
+
+  // Count projects per tab
+  const developmentProjects = projects.filter(p => p.phase !== 'live')
+  const liveProjects = projects.filter(p => p.phase === 'live')
 
   // Phase-specific checklists for confirmation - now package-aware
   const getPhaseChecklists = (packageType: string): Record<ProjectPhase, { id: string; label: string }[]> => {
@@ -2813,95 +2837,145 @@ function ProjectsView({ darkMode, projects, onUpdateProject, onDeleteProject: _o
 
   return (
     <div className="space-y-6">
+      {/* Tab Toggle - In Ontwikkeling / Live Projecten */}
+      <div className={`flex items-center gap-1 p-1 rounded-xl w-fit ${darkMode ? 'bg-gray-800' : 'bg-gray-100'}`}>
+        <button
+          onClick={() => setProjectsTab('development')}
+          className={`flex items-center gap-2 px-4 py-2.5 rounded-lg font-medium transition-all ${
+            projectsTab === 'development'
+              ? 'bg-emerald-500 text-white shadow-lg shadow-emerald-500/25'
+              : darkMode 
+                ? 'text-gray-400 hover:text-white hover:bg-gray-700' 
+                : 'text-gray-600 hover:text-gray-900 hover:bg-gray-200'
+          }`}
+        >
+          <Hammer className="w-4 h-4" />
+          In Ontwikkeling
+          <span className={`px-2 py-0.5 rounded-full text-xs ${
+            projectsTab === 'development'
+              ? 'bg-white/20 text-white'
+              : darkMode ? 'bg-gray-700 text-gray-400' : 'bg-gray-200 text-gray-500'
+          }`}>
+            {developmentProjects.length}
+          </span>
+        </button>
+        <button
+          onClick={() => setProjectsTab('live')}
+          className={`flex items-center gap-2 px-4 py-2.5 rounded-lg font-medium transition-all ${
+            projectsTab === 'live'
+              ? 'bg-green-500 text-white shadow-lg shadow-green-500/25'
+              : darkMode 
+                ? 'text-gray-400 hover:text-white hover:bg-gray-700' 
+                : 'text-gray-600 hover:text-gray-900 hover:bg-gray-200'
+          }`}
+        >
+          <Globe className="w-4 h-4" />
+          Live Projecten
+          <span className={`px-2 py-0.5 rounded-full text-xs ${
+            projectsTab === 'live'
+              ? 'bg-white/20 text-white'
+              : darkMode ? 'bg-gray-700 text-gray-400' : 'bg-gray-200 text-gray-500'
+          }`}>
+            {liveProjects.length}
+          </span>
+        </button>
+      </div>
+
       {/* Header */}
       <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
         <div>
           <h1 className={`text-2xl font-bold ${darkMode ? 'text-white' : 'text-gray-900'}`}>
-            Projecten
+            {projectsTab === 'development' ? 'Projecten in Ontwikkeling' : 'Live Projecten'}
           </h1>
           <p className={`${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>
-            {filteredProjects.length} project{filteredProjects.length !== 1 ? 'en' : ''} gevonden
+            {projectsTab === 'development' 
+              ? `${filteredProjects.filter(p => p.phase !== 'live').length} project${filteredProjects.filter(p => p.phase !== 'live').length !== 1 ? 'en' : ''} in ontwikkeling`
+              : `${liveProjects.length} live project${liveProjects.length !== 1 ? 'en' : ''}`
+            }
           </p>
         </div>
 
-        <div className="flex flex-wrap items-center gap-3">
-          {/* Search */}
-          <div className="relative">
-            <Search className={`absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 ${darkMode ? 'text-gray-500' : 'text-gray-400'}`} />
-            <input
-              type="text"
-              placeholder="Zoeken..."
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              className={`pl-9 pr-4 py-2 rounded-xl border w-48 ${
+        {/* Controls - Only show in development tab */}
+        {projectsTab === 'development' && (
+          <div className="flex flex-wrap items-center gap-3">
+            {/* Search */}
+            <div className="relative">
+              <Search className={`absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 ${darkMode ? 'text-gray-500' : 'text-gray-400'}`} />
+              <input
+                type="text"
+                placeholder="Zoeken..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className={`pl-9 pr-4 py-2 rounded-xl border w-48 ${
+                  darkMode 
+                    ? 'bg-gray-800 border-gray-700 text-white placeholder-gray-500' 
+                    : 'bg-white border-gray-200 text-gray-900 placeholder-gray-400'
+                } focus:outline-none focus:ring-2 focus:ring-emerald-500/50`}
+              />
+            </div>
+
+            {/* Phase Filter */}
+            <select
+              value={filterPhase}
+              onChange={(e) => setFilterPhase(e.target.value as ProjectPhase | 'all')}
+              className={`px-3 py-2 rounded-xl border ${
                 darkMode 
-                  ? 'bg-gray-800 border-gray-700 text-white placeholder-gray-500' 
-                  : 'bg-white border-gray-200 text-gray-900 placeholder-gray-400'
+                  ? 'bg-gray-800 border-gray-700 text-white' 
+                  : 'bg-white border-gray-200 text-gray-900'
               } focus:outline-none focus:ring-2 focus:ring-emerald-500/50`}
-            />
-          </div>
-
-          {/* Phase Filter */}
-          <select
-            value={filterPhase}
-            onChange={(e) => setFilterPhase(e.target.value as ProjectPhase | 'all')}
-            className={`px-3 py-2 rounded-xl border ${
-              darkMode 
-                ? 'bg-gray-800 border-gray-700 text-white' 
-                : 'bg-white border-gray-200 text-gray-900'
-            } focus:outline-none focus:ring-2 focus:ring-emerald-500/50`}
-          >
-            <option value="all">Alle fases</option>
-            {phases.map(p => (
-              <option key={p.key} value={p.key}>{p.label}</option>
-            ))}
-          </select>
-
-          {/* Payment Filter */}
-          <select
-            value={filterPayment}
-            onChange={(e) => setFilterPayment(e.target.value as PaymentStatus | 'all')}
-            className={`px-3 py-2 rounded-xl border ${
-              darkMode 
-                ? 'bg-gray-800 border-gray-700 text-white' 
-                : 'bg-white border-gray-200 text-gray-900'
-            } focus:outline-none focus:ring-2 focus:ring-emerald-500/50`}
-          >
-            <option value="all">Alle betalingen</option>
-            <option value="pending">In afwachting</option>
-            <option value="awaiting_payment">Wacht op betaling</option>
-            <option value="paid">Betaald</option>
-            <option value="failed">Mislukt</option>
-          </select>
-
-          {/* View Toggle */}
-          <div className={`flex rounded-xl border p-1 ${darkMode ? 'bg-gray-800 border-gray-700' : 'bg-gray-100 border-gray-200'}`}>
-            <button
-              onClick={() => setViewMode('kanban')}
-              className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-colors ${
-                viewMode === 'kanban'
-                  ? 'bg-emerald-500 text-white'
-                  : darkMode ? 'text-gray-400 hover:text-white' : 'text-gray-600 hover:text-gray-900'
-              }`}
             >
-              <LayoutGrid className="w-4 h-4" />
-            </button>
-            <button
-              onClick={() => setViewMode('list')}
-              className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-colors ${
-                viewMode === 'list'
-                  ? 'bg-emerald-500 text-white'
-                  : darkMode ? 'text-gray-400 hover:text-white' : 'text-gray-600 hover:text-gray-900'
-              }`}
+              <option value="all">Alle fases</option>
+              {phases.map(p => (
+                <option key={p.key} value={p.key}>{p.label}</option>
+              ))}
+            </select>
+
+            {/* Payment Filter */}
+            <select
+              value={filterPayment}
+              onChange={(e) => setFilterPayment(e.target.value as PaymentStatus | 'all')}
+              className={`px-3 py-2 rounded-xl border ${
+                darkMode 
+                  ? 'bg-gray-800 border-gray-700 text-white' 
+                  : 'bg-white border-gray-200 text-gray-900'
+              } focus:outline-none focus:ring-2 focus:ring-emerald-500/50`}
             >
-              <List className="w-4 h-4" />
-            </button>
+              <option value="all">Alle betalingen</option>
+              <option value="pending">In afwachting</option>
+              <option value="awaiting_payment">Wacht op betaling</option>
+              <option value="paid">Betaald</option>
+              <option value="failed">Mislukt</option>
+            </select>
+
+            {/* View Toggle */}
+            <div className={`flex rounded-xl border p-1 ${darkMode ? 'bg-gray-800 border-gray-700' : 'bg-gray-100 border-gray-200'}`}>
+              <button
+                onClick={() => setViewMode('kanban')}
+                className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-colors ${
+                  viewMode === 'kanban'
+                    ? 'bg-emerald-500 text-white'
+                    : darkMode ? 'text-gray-400 hover:text-white' : 'text-gray-600 hover:text-gray-900'
+                }`}
+              >
+                <LayoutGrid className="w-4 h-4" />
+              </button>
+              <button
+                onClick={() => setViewMode('list')}
+                className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-colors ${
+                  viewMode === 'list'
+                    ? 'bg-emerald-500 text-white'
+                    : darkMode ? 'text-gray-400 hover:text-white' : 'text-gray-600 hover:text-gray-900'
+                }`}
+              >
+                <List className="w-4 h-4" />
+              </button>
+            </div>
           </div>
-        </div>
+        )}
       </div>
 
-      {/* Kanban View */}
-      {viewMode === 'kanban' && (
+      {/* Kanban View - Only in development tab */}
+      {projectsTab === 'development' && viewMode === 'kanban' && (
         <div className="overflow-x-auto pb-4 -mx-4 px-4 md:mx-0 md:px-0">
           <div className="flex md:grid md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-4 min-w-max md:min-w-0">
             {phases.map(phase => (
@@ -2913,8 +2987,8 @@ function ProjectsView({ darkMode, projects, onUpdateProject, onDeleteProject: _o
         </div>
       )}
 
-      {/* List View */}
-      {viewMode === 'list' && (
+      {/* List View - Only in development tab */}
+      {projectsTab === 'development' && viewMode === 'list' && (
         <div className={`rounded-2xl border overflow-hidden ${
           darkMode ? 'bg-gray-800/50 border-gray-700' : 'bg-white border-gray-200'
         }`}>
@@ -3088,6 +3162,268 @@ function ProjectsView({ darkMode, projects, onUpdateProject, onDeleteProject: _o
             <div className={`p-12 text-center ${darkMode ? 'text-gray-500' : 'text-gray-400'}`}>
               <FolderKanban className="w-12 h-12 mx-auto mb-4 opacity-50" />
               <p>Geen projecten gevonden</p>
+            </div>
+          )}
+        </div>
+      )}
+
+      {/* Live Projects Grid - Only in live tab */}
+      {projectsTab === 'live' && (
+        <div className="space-y-6">
+          {/* MRR Stats */}
+          <div className={`p-6 rounded-2xl border ${darkMode ? 'bg-gray-800/50 border-gray-700' : 'bg-white border-gray-200'}`}>
+            <div className="flex items-center justify-between mb-4">
+              <h3 className={`font-semibold ${darkMode ? 'text-white' : 'text-gray-900'}`}>
+                Maandelijkse Recurring Revenue (MRR)
+              </h3>
+              <span className={`text-2xl font-bold ${darkMode ? 'text-emerald-400' : 'text-emerald-600'}`}>
+                €{liveProjects.reduce((total, p) => {
+                  // Estimate MRR based on package
+                  const packageMRR: Record<string, number> = {
+                    starter: 29,
+                    business: 49,
+                    professional: 79,
+                    webshop: 99
+                  }
+                  return total + (packageMRR[p.package] || 0)
+                }, 0).toLocaleString('nl-NL')}
+              </span>
+            </div>
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+              <div className={`p-3 rounded-xl ${darkMode ? 'bg-gray-700/50' : 'bg-gray-50'}`}>
+                <div className="flex items-center gap-2 mb-1">
+                  <div className="w-2 h-2 rounded-full bg-green-500"></div>
+                  <span className={`text-xs ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>Gezond</span>
+                </div>
+                <span className={`text-lg font-bold ${darkMode ? 'text-white' : 'text-gray-900'}`}>
+                  {liveProjects.filter(p => !p.changeRequests?.length).length}
+                </span>
+              </div>
+              <div className={`p-3 rounded-xl ${darkMode ? 'bg-gray-700/50' : 'bg-gray-50'}`}>
+                <div className="flex items-center gap-2 mb-1">
+                  <div className="w-2 h-2 rounded-full bg-yellow-500"></div>
+                  <span className={`text-xs ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>Open aanvraag</span>
+                </div>
+                <span className={`text-lg font-bold ${darkMode ? 'text-white' : 'text-gray-900'}`}>
+                  {liveProjects.filter(p => p.changeRequests?.some(r => r.status === 'pending')).length}
+                </span>
+              </div>
+              <div className={`p-3 rounded-xl ${darkMode ? 'bg-gray-700/50' : 'bg-gray-50'}`}>
+                <div className="flex items-center gap-2 mb-1">
+                  <div className="w-2 h-2 rounded-full bg-orange-500"></div>
+                  <span className={`text-xs ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>In behandeling</span>
+                </div>
+                <span className={`text-lg font-bold ${darkMode ? 'text-white' : 'text-gray-900'}`}>
+                  {liveProjects.filter(p => p.changeRequests?.some(r => r.status === 'in_progress')).length}
+                </span>
+              </div>
+              <div className={`p-3 rounded-xl ${darkMode ? 'bg-gray-700/50' : 'bg-gray-50'}`}>
+                <div className="flex items-center gap-2 mb-1">
+                  <div className="w-2 h-2 rounded-full bg-red-500"></div>
+                  <span className={`text-xs ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>Urgent</span>
+                </div>
+                <span className={`text-lg font-bold ${darkMode ? 'text-white' : 'text-gray-900'}`}>
+                  {liveProjects.filter(p => p.changeRequests?.some(r => r.priority === 'urgent' && r.status !== 'done')).length}
+                </span>
+              </div>
+            </div>
+          </div>
+
+          {/* Live Projects Grid */}
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            {liveProjects.map(project => {
+              const pendingRequests = project.changeRequests?.filter(r => r.status === 'pending') || []
+              const inProgressRequests = project.changeRequests?.filter(r => r.status === 'in_progress') || []
+              const hasUrgent = project.changeRequests?.some(r => r.priority === 'urgent' && r.status !== 'done')
+              
+              // Determine project health status
+              let healthStatus: 'green' | 'yellow' | 'orange' | 'red' = 'green'
+              if (hasUrgent) healthStatus = 'red'
+              else if (inProgressRequests.length > 0) healthStatus = 'orange'
+              else if (pendingRequests.length > 0) healthStatus = 'yellow'
+              
+              const healthColors = {
+                green: 'border-green-500/50 bg-green-500/5',
+                yellow: 'border-yellow-500/50 bg-yellow-500/5',
+                orange: 'border-orange-500/50 bg-orange-500/5',
+                red: 'border-red-500/50 bg-red-500/5'
+              }
+              
+              const healthDots = {
+                green: 'bg-green-500',
+                yellow: 'bg-yellow-500',
+                orange: 'bg-orange-500',
+                red: 'bg-red-500 animate-pulse'
+              }
+              
+              const packageLabels: Record<string, string> = {
+                starter: 'Starter',
+                business: 'Business',
+                professional: 'Professional',
+                webshop: 'Webshop'
+              }
+              
+              return (
+                <motion.div
+                  key={project.id}
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  className={`rounded-2xl border-2 overflow-hidden cursor-pointer transition-all hover:scale-[1.02] ${
+                    darkMode ? 'bg-gray-800/50' : 'bg-white'
+                  } ${healthColors[healthStatus]}`}
+                  onClick={() => {
+                    setSelectedProject(project)
+                    setShowProjectModal(true)
+                  }}
+                >
+                  {/* Header */}
+                  <div className="p-4 border-b border-gray-200 dark:border-gray-700">
+                    <div className="flex items-start justify-between mb-2">
+                      <div className="flex items-center gap-2">
+                        <div className={`w-3 h-3 rounded-full ${healthDots[healthStatus]}`}></div>
+                        <h4 className={`font-semibold ${darkMode ? 'text-white' : 'text-gray-900'}`}>
+                          {project.businessName}
+                        </h4>
+                      </div>
+                      <span className={`px-2 py-0.5 text-xs font-medium rounded-full ${
+                        project.package === 'webshop' ? 'bg-indigo-500 text-white' :
+                        project.package === 'professional' ? 'bg-purple-500 text-white' :
+                        project.package === 'business' ? 'bg-blue-500 text-white' :
+                        'bg-gray-500 text-white'
+                      }`}>
+                        {packageLabels[project.package] || project.package}
+                      </span>
+                    </div>
+                    <div className="flex items-center gap-4 text-xs">
+                      {(project.liveUrl || project.websiteUrl) && (
+                        <a
+                          href={project.liveUrl || project.websiteUrl}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          onClick={(e) => e.stopPropagation()}
+                          className={`flex items-center gap-1 ${darkMode ? 'text-emerald-400 hover:text-emerald-300' : 'text-emerald-600 hover:text-emerald-700'}`}
+                        >
+                          <Globe className="w-3 h-3" />
+                          Website
+                          <ExternalLink className="w-3 h-3" />
+                        </a>
+                      )}
+                      <span className={darkMode ? 'text-gray-400' : 'text-gray-500'}>
+                        Live sinds {project.liveDate ? new Date(project.liveDate).toLocaleDateString('nl-NL', { day: 'numeric', month: 'short', year: 'numeric' }) : 'N/A'}
+                      </span>
+                    </div>
+                  </div>
+                  
+                  {/* Change Requests Mini Kanban */}
+                  <div className="p-4">
+                    {(pendingRequests.length > 0 || inProgressRequests.length > 0) ? (
+                      <div className="space-y-3">
+                        <div className="flex items-center justify-between">
+                          <span className={`text-xs font-medium ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>
+                            Wijzigingsverzoeken
+                          </span>
+                          <span className={`text-xs ${darkMode ? 'text-gray-500' : 'text-gray-400'}`}>
+                            {pendingRequests.length + inProgressRequests.length} open
+                          </span>
+                        </div>
+                        
+                        <div className="flex gap-2">
+                          {/* Pending Column */}
+                          <div className={`flex-1 p-2 rounded-lg ${darkMode ? 'bg-yellow-900/20' : 'bg-yellow-50'}`}>
+                            <div className="flex items-center gap-1 mb-2">
+                              <div className="w-2 h-2 rounded-full bg-yellow-500"></div>
+                              <span className="text-[10px] font-medium text-yellow-600">Nieuw</span>
+                            </div>
+                            {pendingRequests.slice(0, 2).map((req, i) => (
+                              <div key={i} className={`p-1.5 rounded text-xs mb-1 ${darkMode ? 'bg-gray-700/50 text-gray-300' : 'bg-white text-gray-700'}`}>
+                                {req.title || req.description?.substring(0, 30) || 'Wijzigingsverzoek'}
+                              </div>
+                            ))}
+                            {pendingRequests.length > 2 && (
+                              <span className="text-[10px] text-yellow-600">+{pendingRequests.length - 2} meer</span>
+                            )}
+                          </div>
+                          
+                          {/* In Progress Column */}
+                          <div className={`flex-1 p-2 rounded-lg ${darkMode ? 'bg-orange-900/20' : 'bg-orange-50'}`}>
+                            <div className="flex items-center gap-1 mb-2">
+                              <div className="w-2 h-2 rounded-full bg-orange-500"></div>
+                              <span className="text-[10px] font-medium text-orange-600">Bezig</span>
+                            </div>
+                            {inProgressRequests.slice(0, 2).map((req, i) => (
+                              <div key={i} className={`p-1.5 rounded text-xs mb-1 ${darkMode ? 'bg-gray-700/50 text-gray-300' : 'bg-white text-gray-700'}`}>
+                                {req.title || req.description?.substring(0, 30) || 'Wijzigingsverzoek'}
+                              </div>
+                            ))}
+                            {inProgressRequests.length > 2 && (
+                              <span className="text-[10px] text-orange-600">+{inProgressRequests.length - 2} meer</span>
+                            )}
+                          </div>
+                        </div>
+                      </div>
+                    ) : (
+                      <div className="flex items-center justify-center py-6">
+                        <div className="text-center">
+                          <CheckCircle className={`w-8 h-8 mx-auto mb-2 ${darkMode ? 'text-green-400' : 'text-green-500'}`} />
+                          <span className={`text-sm ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>
+                            Alles up-to-date
+                          </span>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                  
+                  {/* Footer Actions */}
+                  <div className={`px-4 py-3 border-t flex items-center justify-between ${darkMode ? 'border-gray-700 bg-gray-800/30' : 'border-gray-100 bg-gray-50/50'}`}>
+                    <div className="flex items-center gap-2">
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation()
+                          // Open WhatsApp
+                          if (project.contactPhone) {
+                            window.open(`https://wa.me/31${project.contactPhone.replace(/^0/, '')}`, '_blank')
+                          }
+                        }}
+                        className={`p-1.5 rounded-lg transition-colors ${darkMode ? 'hover:bg-gray-700 text-gray-400' : 'hover:bg-gray-200 text-gray-500'}`}
+                        title="WhatsApp"
+                      >
+                        <MessageCircle className="w-4 h-4" />
+                      </button>
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation()
+                          if (project.contactEmail) {
+                            window.open(`mailto:${project.contactEmail}`, '_blank')
+                          }
+                        }}
+                        className={`p-1.5 rounded-lg transition-colors ${darkMode ? 'hover:bg-gray-700 text-gray-400' : 'hover:bg-gray-200 text-gray-500'}`}
+                        title="E-mail"
+                      >
+                        <Mail className="w-4 h-4" />
+                      </button>
+                    </div>
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation()
+                        setSelectedProject(project)
+                        setShowProjectModal(true)
+                      }}
+                      className={`text-xs font-medium flex items-center gap-1 ${darkMode ? 'text-emerald-400 hover:text-emerald-300' : 'text-emerald-600 hover:text-emerald-700'}`}
+                    >
+                      Beheren
+                      <ChevronRight className="w-3 h-3" />
+                    </button>
+                  </div>
+                </motion.div>
+              )
+            })}
+          </div>
+          
+          {liveProjects.length === 0 && (
+            <div className={`p-12 text-center rounded-2xl border ${darkMode ? 'bg-gray-800/50 border-gray-700 text-gray-500' : 'bg-white border-gray-200 text-gray-400'}`}>
+              <Globe className="w-12 h-12 mx-auto mb-4 opacity-50" />
+              <p className="font-medium mb-1">Nog geen live projecten</p>
+              <p className="text-sm">Projecten verschijnen hier zodra ze live gaan</p>
             </div>
           )}
         </div>
