@@ -83,6 +83,9 @@ interface ProjectData {
   paymentStatus?: string
   paymentUrl?: string
   designPreviewUrl?: string
+  feedbackReceivedAt?: string
+  feedbackStatus?: string
+  feedbackQuestionAnswers?: QuestionAnswerItem[]
   [key: string]: unknown
 }
 
@@ -113,6 +116,13 @@ interface SectionFeedbackItem {
   presets?: string[] // NEW: selected preset IDs like 'colors', 'text', 'image', etc.
 }
 
+interface QuestionAnswerItem {
+  questionId: string
+  question: string
+  answer: 'yes' | 'no' | null
+  comment?: string
+}
+
 // Preset labels for the summary
 const PRESET_LABELS: Record<string, { emoji: string; label: string }> = {
   'colors': { emoji: '🎨', label: 'Kleuren' },
@@ -140,6 +150,8 @@ interface FeedbackRequest {
   // Section-based feedback
   sectionFeedback?: SectionFeedbackItem[]
   generalComment?: string
+  // Question answers
+  questionAnswers?: QuestionAnswerItem[]
 }
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
@@ -158,7 +170,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   
   try {
     const body = req.body as FeedbackRequest
-    const { projectId, approved, feedback, feedbackItems, type, severity, quickTags, category, details, markers, sectionFeedback, generalComment } = body
+    const { projectId, approved, feedback, feedbackItems, type, severity, quickTags, category, details, markers, sectionFeedback, generalComment, questionAnswers } = body
     
     if (!projectId) {
       return res.status(400).json({ success: false, error: 'Project ID is vereist' })
@@ -217,6 +229,10 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       // Update status back to design phase
       projectData.status = 'design'
       
+      // Mark that feedback was received - so we can show status to client
+      projectData.feedbackReceivedAt = new Date().toISOString()
+      projectData.feedbackStatus = 'processing' // processing | completed
+      
       // Voeg feedback toe aan project
       const existingFeedback = (projectData as any).feedbackHistory || []
       
@@ -254,6 +270,31 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         if (goodSections.length > 0) {
           feedbackSummary += `**✅ Goedgekeurd (${goodSections.length}):** ${goodSections.map(s => s.sectionId).join(', ')}\n\n`
         }
+      }
+      
+      // Add question answers (NEW)
+      if (questionAnswers && questionAnswers.length > 0) {
+        const noAnswers = questionAnswers.filter(q => q.answer === 'no')
+        const yesAnswers = questionAnswers.filter(q => q.answer === 'yes')
+        
+        if (noAnswers.length > 0) {
+          feedbackSummary += `**❌ Nee-antwoorden (${noAnswers.length}):**\n`
+          noAnswers.forEach(q => {
+            feedbackSummary += `• ${q.question}`
+            if (q.comment) {
+              feedbackSummary += `\n  💬 "${q.comment}"`
+            }
+            feedbackSummary += '\n'
+          })
+          feedbackSummary += '\n'
+        }
+        
+        if (yesAnswers.length > 0) {
+          feedbackSummary += `**✅ Ja-antwoorden (${yesAnswers.length}):** ${yesAnswers.map(q => q.question.substring(0, 30) + '...').join(', ')}\n\n`
+        }
+        
+        // Store question answers on project
+        projectData.feedbackQuestionAnswers = questionAnswers
       }
       
       // Add general comment

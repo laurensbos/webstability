@@ -24,8 +24,12 @@ import {
   Check,
   ChevronRight,
   ChevronLeft,
-  Sparkles
+  Sparkles,
+  Clock,
+  HelpCircle
 } from 'lucide-react'
+import { AVAILABLE_FEEDBACK_QUESTIONS } from '../types/project'
+import type { FeedbackQuestionAnswer } from '../types/project'
 
 // Standaard secties voor een website
 const DEFAULT_SECTIONS = [
@@ -65,6 +69,9 @@ interface DesignFeedbackSectionsProps {
   sections?: typeof DEFAULT_SECTIONS
   onFeedbackSubmit?: () => Promise<void>
   onApprove?: () => Promise<void>
+  // Custom questions from developer
+  feedbackQuestionIds?: string[]  // IDs from AVAILABLE_FEEDBACK_QUESTIONS
+  customQuestions?: string[]      // Free-form custom questions
 }
 
 export default function DesignFeedbackSections({
@@ -74,7 +81,9 @@ export default function DesignFeedbackSections({
   designPreviewUrl,
   sections = DEFAULT_SECTIONS,
   onFeedbackSubmit,
-  onApprove
+  onApprove,
+  feedbackQuestionIds = [],
+  customQuestions = []
 }: DesignFeedbackSectionsProps) {
   // Device state
   const [device, setDevice] = useState<'desktop' | 'mobile'>('desktop')
@@ -88,8 +97,21 @@ export default function DesignFeedbackSections({
   const [currentSectionIndex, setCurrentSectionIndex] = useState(0)
   const [generalComment, setGeneralComment] = useState('')
   
-  // UI state
-  const [step, setStep] = useState<'intro' | 'sections' | 'summary'>('intro')
+  // Question answers state
+  const [questionAnswers, setQuestionAnswers] = useState<FeedbackQuestionAnswer[]>([])
+  
+  // Get all questions to show (from predefined + custom)
+  const allQuestions = [
+    ...feedbackQuestionIds
+      .map(id => AVAILABLE_FEEDBACK_QUESTIONS.find(q => q.id === id))
+      .filter(Boolean)
+      .map(q => ({ id: q!.id, question: q!.question, isCustom: false })),
+    ...customQuestions.map((q, i) => ({ id: `custom-${i}`, question: q, isCustom: true }))
+  ]
+  const hasQuestions = allQuestions.length > 0
+  
+  // UI state - now includes 'questions' step
+  const [step, setStep] = useState<'intro' | 'sections' | 'questions' | 'summary'>('intro')
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [showSuccess, setShowSuccess] = useState<'approved' | 'feedback' | null>(null)
   const [expandedComment, setExpandedComment] = useState<string | null>(null)
@@ -112,8 +134,15 @@ export default function DesignFeedbackSections({
       setStep('intro')
       setIframeLoaded(false)
       setShowSuccess(null)
+      // Initialize question answers
+      setQuestionAnswers(allQuestions.map(q => ({
+        questionId: q.id,
+        question: q.question,
+        answer: null,
+        comment: ''
+      })))
     }
-  }, [isOpen, isMobile, sections])
+  }, [isOpen, isMobile, sections, allQuestions.length])
 
   // Ensure URL is absolute
   const ensureAbsoluteUrl = (url: string): string => {
@@ -154,7 +183,12 @@ export default function DesignFeedbackSections({
     if (currentSectionIndex < sections.length - 1) {
       setCurrentSectionIndex(prev => prev + 1)
     } else {
-      setStep('summary')
+      // Go to questions step if there are questions, otherwise summary
+      if (hasQuestions) {
+        setStep('questions')
+      } else {
+        setStep('summary')
+      }
     }
   }
 
@@ -163,12 +197,23 @@ export default function DesignFeedbackSections({
       setCurrentSectionIndex(prev => prev - 1)
     }
   }
+  
+  // Update question answer
+  const updateQuestionAnswer = (questionId: string, answer: 'yes' | 'no' | null, comment?: string) => {
+    setQuestionAnswers(prev => prev.map(qa => 
+      qa.questionId === questionId
+        ? { ...qa, answer, comment: comment !== undefined ? comment : qa.comment }
+        : qa
+    ))
+  }
 
   // Count feedback
-  const changeCount = sectionFeedback.filter(f => f.rating === 'change').length
+  const sectionChangeCount = sectionFeedback.filter(f => f.rating === 'change').length
+  const questionChangeCount = questionAnswers.filter(qa => qa.answer === 'no').length
+  const changeCount = sectionChangeCount + questionChangeCount
   const answeredCount = sectionFeedback.filter(f => f.rating !== null).length
 
-  // Check if all sections are good
+  // Check if all sections are good (and all questions answered positively)
   const allGood = answeredCount === sections.length && changeCount === 0
 
   // Trigger confetti
@@ -208,7 +253,8 @@ export default function DesignFeedbackSections({
           approved: true,
           type: 'design',
           sectionFeedback: sectionFeedback.filter(f => f.rating !== null),
-          generalComment
+          generalComment,
+          questionAnswers: questionAnswers.filter(qa => qa.answer !== null)
         })
       })
       
@@ -236,7 +282,8 @@ export default function DesignFeedbackSections({
           approved: false,
           type: 'design',
           sectionFeedback: sectionFeedback.filter(f => f.rating !== null),
-          generalComment
+          generalComment,
+          questionAnswers: questionAnswers.filter(qa => qa.answer !== null)
         })
       })
       
@@ -255,23 +302,37 @@ export default function DesignFeedbackSections({
   // Success overlay
   if (showSuccess) {
     return (
-      <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/90">
+      <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/95">
         <motion.div
           initial={{ scale: 0.8, opacity: 0 }}
           animate={{ scale: 1, opacity: 1 }}
-          className="text-center px-6"
+          className="text-center px-6 max-w-md"
         >
-          <div className="text-7xl mb-4">
-            {showSuccess === 'approved' ? '🎉' : '📨'}
+          <div className="text-8xl mb-6">
+            {showSuccess === 'approved' ? '🎉' : '✨'}
           </div>
-          <h2 className="text-2xl font-bold text-white mb-2">
-            {showSuccess === 'approved' ? 'Design goedgekeurd!' : 'Feedback verzonden!'}
+          <h2 className="text-3xl font-bold text-white mb-3">
+            {showSuccess === 'approved' ? 'Design goedgekeurd!' : 'Bedankt voor je feedback!'}
           </h2>
-          <p className="text-zinc-400">
+          <p className="text-lg text-zinc-300 mb-6">
             {showSuccess === 'approved'
-              ? 'Geweldig! We gaan verder met de volgende stap.'
-              : 'Bedankt! We gaan aan de slag met je feedback.'}
+              ? 'Geweldig! Je ontvangt zo een e-mail met de volgende stappen.'
+              : 'We gaan direct aan de slag met je aanpassingen. Je ziet de status terug op je projectpagina.'}
           </p>
+          
+          {showSuccess === 'feedback' && (
+            <div className="bg-zinc-800/50 rounded-xl p-4 border border-zinc-700">
+              <div className="flex items-center gap-3 text-left">
+                <div className="w-10 h-10 rounded-full bg-purple-500/20 flex items-center justify-center flex-shrink-0">
+                  <Clock className="w-5 h-5 text-purple-400" />
+                </div>
+                <div>
+                  <p className="text-sm font-medium text-white">Wat gebeurt er nu?</p>
+                  <p className="text-xs text-zinc-400">We verwerken je feedback en sturen een nieuwe preview zodra deze klaar is.</p>
+                </div>
+              </div>
+            </div>
+          )}
         </motion.div>
       </div>
     )
@@ -285,6 +346,15 @@ export default function DesignFeedbackSections({
         exit={{ opacity: 0 }}
         className="fixed inset-0 z-50 bg-black/95 flex flex-col"
       >
+        {/* Mobile hint - only visible on mobile */}
+        {isMobile && step === 'intro' && (
+          <div className="flex-shrink-0 bg-purple-600/20 border-b border-purple-500/30 px-4 py-2 text-center">
+            <p className="text-xs text-purple-300">
+              💻 Tip: Voor de beste ervaring, open dit op een desktop of laptop
+            </p>
+          </div>
+        )}
+
         {/* Header */}
         <div className="flex-shrink-0 h-14 bg-zinc-900/90 backdrop-blur-sm border-b border-zinc-800 flex items-center justify-between px-4">
           <div className="flex items-center gap-4">
@@ -349,19 +419,80 @@ export default function DesignFeedbackSections({
           
           {/* Preview area - hidden on intro, smaller on desktop */}
           <div className={`${step === 'intro' ? 'hidden md:flex md:w-1/3' : isMobile ? 'h-[30vh] flex-shrink-0' : 'flex-1'} bg-zinc-950 p-2 md:p-4 flex items-center justify-center`}>
-            <div className={`relative w-full h-full ${device === 'mobile' ? 'max-w-[375px]' : ''} bg-white rounded-lg overflow-hidden shadow-2xl`}>
-              {!iframeLoaded && (
-                <div className="absolute inset-0 flex items-center justify-center bg-zinc-900">
-                  <Loader2 className="w-8 h-8 text-purple-500 animate-spin" />
+            
+            {/* Desktop/Laptop Mockup */}
+            {device === 'desktop' && (
+              <div className="relative w-full h-full max-w-4xl flex flex-col">
+                {/* Laptop top bezel / Browser chrome */}
+                <div className="bg-zinc-800 rounded-t-xl px-3 py-2 flex items-center gap-2 flex-shrink-0">
+                  {/* Traffic lights */}
+                  <div className="flex items-center gap-1.5">
+                    <div className="w-3 h-3 rounded-full bg-red-500/80"></div>
+                    <div className="w-3 h-3 rounded-full bg-yellow-500/80"></div>
+                    <div className="w-3 h-3 rounded-full bg-green-500/80"></div>
+                  </div>
+                  {/* URL bar */}
+                  <div className="flex-1 mx-2">
+                    <div className="bg-zinc-700 rounded-md px-3 py-1 text-xs text-zinc-400 truncate max-w-xs mx-auto text-center">
+                      {absoluteUrl}
+                    </div>
+                  </div>
                 </div>
-              )}
-              <iframe
-                src={absoluteUrl}
-                className="w-full h-full border-0"
-                onLoad={() => setIframeLoaded(true)}
-                title="Design Preview"
-              />
-            </div>
+                
+                {/* Screen content */}
+                <div className="relative flex-1 bg-white rounded-b-xl overflow-hidden shadow-2xl">
+                  {!iframeLoaded && (
+                    <div className="absolute inset-0 flex items-center justify-center bg-zinc-900">
+                      <Loader2 className="w-8 h-8 text-purple-500 animate-spin" />
+                    </div>
+                  )}
+                  <iframe
+                    src={absoluteUrl}
+                    className="w-full h-full border-0"
+                    onLoad={() => setIframeLoaded(true)}
+                    title="Design Preview"
+                  />
+                </div>
+                
+                {/* Laptop base/stand */}
+                <div className="h-3 bg-gradient-to-b from-zinc-700 to-zinc-800 rounded-b-sm mx-8"></div>
+                <div className="h-1.5 bg-zinc-700 rounded-b-lg mx-16"></div>
+              </div>
+            )}
+
+            {/* Mobile/Phone Mockup */}
+            {device === 'mobile' && (
+              <div className="relative h-full max-h-[600px] aspect-[9/19] flex flex-col">
+                {/* Phone frame */}
+                <div className="absolute inset-0 bg-zinc-800 rounded-[2.5rem] shadow-2xl p-2">
+                  {/* Inner bezel */}
+                  <div className="relative w-full h-full bg-black rounded-[2rem] overflow-hidden">
+                    {/* Dynamic Island / Notch */}
+                    <div className="absolute top-2 left-1/2 -translate-x-1/2 w-20 h-6 bg-black rounded-full z-10 flex items-center justify-center">
+                      <div className="w-2 h-2 rounded-full bg-zinc-700"></div>
+                    </div>
+                    
+                    {/* Screen content */}
+                    <div className="relative w-full h-full bg-white overflow-hidden">
+                      {!iframeLoaded && (
+                        <div className="absolute inset-0 flex items-center justify-center bg-zinc-900">
+                          <Loader2 className="w-8 h-8 text-purple-500 animate-spin" />
+                        </div>
+                      )}
+                      <iframe
+                        src={absoluteUrl}
+                        className="w-full h-full border-0"
+                        onLoad={() => setIframeLoaded(true)}
+                        title="Design Preview"
+                      />
+                    </div>
+                    
+                    {/* Home indicator */}
+                    <div className="absolute bottom-2 left-1/2 -translate-x-1/2 w-28 h-1 bg-zinc-600 rounded-full"></div>
+                  </div>
+                </div>
+              </div>
+            )}
           </div>
 
           {/* Feedback panel - larger on intro, scrollable on mobile */}
@@ -559,6 +690,98 @@ export default function DesignFeedbackSections({
               </div>
             )}
 
+            {/* QUESTIONS STEP */}
+            {step === 'questions' && hasQuestions && (
+              <div className="flex-1 flex flex-col overflow-hidden">
+                <div className="p-4 border-b border-zinc-800">
+                  <h3 className="text-lg font-semibold text-white flex items-center gap-2">
+                    <HelpCircle className="w-5 h-5 text-purple-400" />
+                    Nog een paar vragen
+                  </h3>
+                  <p className="text-sm text-zinc-400 mt-1">
+                    Je developer heeft nog een paar specifieke vragen voor je.
+                  </p>
+                </div>
+
+                {/* Questions list */}
+                <div className="flex-1 overflow-y-auto p-4 space-y-4">
+                  {allQuestions.map((question, index) => {
+                    const answer = questionAnswers.find(qa => qa.questionId === question.id)
+                    return (
+                      <div key={question.id} className="bg-zinc-800/50 rounded-xl p-4">
+                        <p className="text-white font-medium mb-3 flex items-start gap-2">
+                          <span className="text-purple-400">{index + 1}.</span>
+                          {question.question}
+                        </p>
+                        
+                        {/* Yes/No buttons */}
+                        <div className="grid grid-cols-2 gap-2 mb-3">
+                          <button
+                            onClick={() => updateQuestionAnswer(question.id, 'yes')}
+                            className={`p-2 rounded-lg border-2 transition-all flex items-center justify-center gap-2 ${
+                              answer?.answer === 'yes'
+                                ? 'border-green-500 bg-green-500/20 text-green-400'
+                                : 'border-zinc-700 bg-zinc-800 text-zinc-400 hover:border-zinc-600'
+                            }`}
+                          >
+                            <ThumbsUp className="w-4 h-4" />
+                            <span className="text-sm font-medium">Ja, goed</span>
+                          </button>
+                          <button
+                            onClick={() => updateQuestionAnswer(question.id, 'no')}
+                            className={`p-2 rounded-lg border-2 transition-all flex items-center justify-center gap-2 ${
+                              answer?.answer === 'no'
+                                ? 'border-amber-500 bg-amber-500/20 text-amber-400'
+                                : 'border-zinc-700 bg-zinc-800 text-zinc-400 hover:border-zinc-600'
+                            }`}
+                          >
+                            <ThumbsDown className="w-4 h-4" />
+                            <span className="text-sm font-medium">Nee, aanpassen</span>
+                          </button>
+                        </div>
+                        
+                        {/* Comment field - show when 'no' is selected */}
+                        {answer?.answer === 'no' && (
+                          <motion.div
+                            initial={{ opacity: 0, height: 0 }}
+                            animate={{ opacity: 1, height: 'auto' }}
+                          >
+                            <textarea
+                              value={answer.comment || ''}
+                              onChange={(e) => updateQuestionAnswer(question.id, 'no', e.target.value)}
+                              placeholder="Wat moet er aangepast worden?"
+                              className="w-full h-16 px-3 py-2 bg-zinc-900 border border-zinc-700 rounded-lg text-white placeholder-zinc-500 resize-none focus:outline-none focus:ring-2 focus:ring-purple-500 text-sm"
+                            />
+                          </motion.div>
+                        )}
+                      </div>
+                    )
+                  })}
+                </div>
+
+                {/* Navigation */}
+                <div className="p-4 border-t border-zinc-800 flex gap-2">
+                  <button
+                    onClick={() => {
+                      setCurrentSectionIndex(sections.length - 1)
+                      setStep('sections')
+                    }}
+                    className="px-4 py-2.5 text-zinc-400 hover:text-white transition-colors flex items-center gap-1"
+                  >
+                    <ChevronLeft className="w-4 h-4" />
+                    Terug
+                  </button>
+                  <button
+                    onClick={() => setStep('summary')}
+                    className="flex-1 py-2.5 bg-purple-600 text-white rounded-xl font-medium hover:bg-purple-700 transition-colors flex items-center justify-center gap-2"
+                  >
+                    Bekijk overzicht
+                    <ChevronRight className="w-5 h-5" />
+                  </button>
+                </div>
+              </div>
+            )}
+
             {/* SUMMARY STEP */}
             {step === 'summary' && (
               <div className="flex-1 flex flex-col overflow-hidden">
@@ -636,6 +859,37 @@ export default function DesignFeedbackSections({
                       </div>
                     )
                   })}
+
+                  {/* Question answers summary */}
+                  {hasQuestions && questionAnswers.some(qa => qa.answer !== null) && (
+                    <div className="mt-4 pt-4 border-t border-zinc-700">
+                      <p className="text-sm text-zinc-400 mb-2 flex items-center gap-2">
+                        <HelpCircle className="w-4 h-4" />
+                        Extra vragen
+                      </p>
+                      <div className="space-y-2">
+                        {questionAnswers.filter(qa => qa.answer !== null).map(qa => (
+                          <div key={qa.questionId} className="flex items-start gap-2 text-sm">
+                            <div className={`w-5 h-5 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5 ${
+                              qa.answer === 'yes' ? 'bg-green-500/20 text-green-400' : 'bg-amber-500/20 text-amber-400'
+                            }`}>
+                              {qa.answer === 'yes' ? <ThumbsUp className="w-3 h-3" /> : <ThumbsDown className="w-3 h-3" />}
+                            </div>
+                            <div className="flex-1">
+                              <p className="text-zinc-300">{qa.question}</p>
+                              {qa.comment && <p className="text-xs text-zinc-500 mt-0.5">"{qa.comment}"</p>}
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                      <button
+                        onClick={() => setStep('questions')}
+                        className="mt-2 text-xs text-purple-400 hover:text-purple-300"
+                      >
+                        Aanpassen
+                      </button>
+                    </div>
+                  )}
 
                   {/* General comment */}
                   <div className="mt-4">

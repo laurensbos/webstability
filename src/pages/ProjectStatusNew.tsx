@@ -963,6 +963,8 @@ export default function ProjectStatusNew() {
               <div className="w-12 h-12 bg-white/20 backdrop-blur-sm rounded-xl flex items-center justify-center flex-shrink-0">
                 {project.status === 'live' ? (
                   <span className="text-2xl">🎉</span>
+                ) : project.feedbackReceivedAt && project.feedbackStatus === 'processing' ? (
+                  <span className="text-2xl">✨</span>
                 ) : (() => {
                   const currentPhase = PHASES.find(p => p.key === project.status) || PHASES[0]
                   const PhaseIcon = currentPhase?.icon || FileText
@@ -970,13 +972,35 @@ export default function ProjectStatusNew() {
                 })()}
               </div>
               <div className="flex-1">
-                <h2 className="font-bold text-lg sm:text-xl mb-1">{PHASE_INFO[project.status]?.title}</h2>
-                <p className="text-sm text-white/80 leading-relaxed">{PHASE_INFO[project.status]?.description}</p>
+                {/* Show special feedback received message */}
+                {project.feedbackReceivedAt && project.feedbackStatus === 'processing' && project.status === 'design' ? (
+                  <>
+                    <h2 className="font-bold text-lg sm:text-xl mb-1">Je feedback is ontvangen!</h2>
+                    <p className="text-sm text-white/80 leading-relaxed">
+                      Bedankt voor je feedback! We zijn je aanpassingen aan het verwerken. Je ontvangt binnenkort een nieuwe preview.
+                    </p>
+                  </>
+                ) : (
+                  <>
+                    <h2 className="font-bold text-lg sm:text-xl mb-1">{PHASE_INFO[project.status]?.title}</h2>
+                    <p className="text-sm text-white/80 leading-relaxed">{PHASE_INFO[project.status]?.description}</p>
+                  </>
+                )}
               </div>
             </div>
 
+            {/* Feedback received timestamp */}
+            {project.feedbackReceivedAt && project.feedbackStatus === 'processing' && project.status === 'design' && (
+              <div className="mt-4 pt-4 border-t border-white/20 flex items-center gap-2">
+                <CheckCircle2 className="w-4 h-4 text-green-300" />
+                <span className="text-sm text-white/70">
+                  Feedback ontvangen op <span className="font-medium text-white">{new Date(project.feedbackReceivedAt).toLocaleDateString('nl-NL', { day: 'numeric', month: 'long', hour: '2-digit', minute: '2-digit' })}</span>
+                </span>
+              </div>
+            )}
+
             {/* Countdown timer */}
-            {countdown && project.status !== 'live' && (
+            {countdown && project.status !== 'live' && !project.feedbackReceivedAt && (
               <div className="mt-4 pt-4 border-t border-white/20 flex items-center gap-2">
                 <Timer className="w-4 h-4 text-white/70" />
                 <span className="text-sm text-white/70">
@@ -1639,6 +1663,8 @@ export default function ProjectStatusNew() {
           onClose={() => setShowDesignPreview(false)}
           projectId={project.projectId}
           designPreviewUrl={ensureAbsoluteUrl(project.designPreviewUrl)}
+          feedbackQuestionIds={project.feedbackQuestions}
+          customQuestions={project.customQuestions?.map(q => ({ id: `custom-${q}`, category: 'custom' as const, question: q }))}
           onApprove={async () => {
             // Design approved - move to payment phase
             setProject(prev => prev ? { 

@@ -36,6 +36,61 @@ export interface ChangeRequest {
   attachments?: string[]
 }
 
+// ===========================================
+// FEEDBACK QUESTIONS TYPES
+// ===========================================
+
+export type FeedbackQuestionCategory = 'branding' | 'content' | 'functionality' | 'images' | 'custom'
+
+export interface FeedbackQuestion {
+  id: string
+  category: FeedbackQuestionCategory
+  question: string
+  isDefault?: boolean              // Of het een standaard vraag is
+}
+
+export interface FeedbackQuestionAnswer {
+  questionId: string
+  question: string
+  answer: 'yes' | 'no' | null
+  comment?: string
+}
+
+// Beschikbare vragen die developer kan kiezen
+export const AVAILABLE_FEEDBACK_QUESTIONS: FeedbackQuestion[] = [
+  // Branding & Stijl
+  { id: 'branding-style', category: 'branding', question: 'Past de stijl bij je merk?', isDefault: false },
+  { id: 'branding-colors', category: 'branding', question: 'Zijn de kleuren goed?', isDefault: true },
+  { id: 'branding-professional', category: 'branding', question: 'Is de sfeer professioneel genoeg?', isDefault: false },
+  { id: 'branding-friendly', category: 'branding', question: 'Is de sfeer vriendelijk/toegankelijk genoeg?', isDefault: false },
+  { id: 'branding-logo', category: 'branding', question: 'Spreekt het logo je aan op deze plek?', isDefault: false },
+  
+  // Content & Tekst
+  { id: 'content-text', category: 'content', question: 'Kloppen alle teksten en zijn er geen tikfouten?', isDefault: true },
+  { id: 'content-tone', category: 'content', question: 'Is de tone-of-voice goed?', isDefault: false },
+  { id: 'content-prices', category: 'content', question: 'Zijn de prijzen correct?', isDefault: false },
+  { id: 'content-services', category: 'content', question: 'Staan alle diensten/producten erbij?', isDefault: false },
+  
+  // Functionaliteit
+  { id: 'func-mobile', category: 'functionality', question: 'Werkt de website goed op je telefoon?', isDefault: true },
+  { id: 'func-navigation', category: 'functionality', question: 'Is de navigatie logisch?', isDefault: false },
+  { id: 'func-contact', category: 'functionality', question: 'Werkt het contactformulier naar wens?', isDefault: false },
+  { id: 'func-speed', category: 'functionality', question: 'Laadt de website snel genoeg?', isDefault: false },
+  
+  // Afbeeldingen
+  { id: 'images-representative', category: 'images', question: 'Zijn de foto\'s representatief voor je bedrijf?', isDefault: false },
+  { id: 'images-quality', category: 'images', question: 'Is de kwaliteit van de afbeeldingen goed?', isDefault: false },
+  { id: 'images-other', category: 'images', question: 'Moeten er andere afbeeldingen gebruikt worden?', isDefault: false },
+]
+
+export const FEEDBACK_QUESTION_CATEGORIES: Record<FeedbackQuestionCategory, string> = {
+  branding: 'Branding & Stijl',
+  content: 'Content & Tekst',
+  functionality: 'Functionaliteit',
+  images: 'Afbeeldingen',
+  custom: 'Eigen vragen'
+}
+
 export interface FeedbackItem {
   id: string
   date: string
@@ -153,6 +208,13 @@ export interface Project {
   paymentUrl?: string           // Mollie checkout URL
   paymentCompletedAt?: string   // Wanneer betaald
   designApprovedAt?: string     // Wanneer design goedgekeurd
+  // Feedback status tracking
+  feedbackReceivedAt?: string   // Wanneer feedback ontvangen
+  feedbackStatus?: 'processing' | 'completed'  // Verwerking status
+  // Custom feedback questions voor dit project
+  feedbackQuestions?: string[]  // Array van question IDs die developer heeft geselecteerd
+  customQuestions?: string[]    // Eigen vragen van developer
+  feedbackQuestionAnswers?: FeedbackQuestionAnswer[]  // Antwoorden van klant
   // Nieuwe velden voor communicatie
   messages?: ProjectMessage[]
   changeRequests?: ChangeRequest[]
