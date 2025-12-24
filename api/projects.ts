@@ -339,6 +339,11 @@ async function createProject(req: VercelRequest, res: VercelResponse) {
 async function updateProject(req: VercelRequest, res: VercelResponse) {
   const body = req.body
   
+  // Debug: log incoming feedbackQuestions
+  console.log(`[updateProject] Incoming body keys:`, Object.keys(body))
+  console.log(`[updateProject] feedbackQuestions:`, body.feedbackQuestions)
+  console.log(`[updateProject] customQuestions:`, body.customQuestions)
+  
   if (!body.id) {
     return res.status(400).json({ error: 'Project ID is verplicht' })
   }

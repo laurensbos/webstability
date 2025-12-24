@@ -107,14 +107,24 @@ export default function DesignFeedbackSections({
   const [questionAnswers, setQuestionAnswers] = useState<FeedbackQuestionAnswer[]>([])
   
   // Get all questions to show (from predefined + custom)
+  // If no questions were selected by developer, use default questions
+  const effectiveQuestionIds = feedbackQuestionIds.length > 0 
+    ? feedbackQuestionIds 
+    : AVAILABLE_FEEDBACK_QUESTIONS.filter(q => q.isDefault).map(q => q.id)
+  
   const allQuestions = [
-    ...feedbackQuestionIds
+    ...effectiveQuestionIds
       .map(id => AVAILABLE_FEEDBACK_QUESTIONS.find(q => q.id === id))
       .filter(Boolean)
       .map(q => ({ id: q!.id, question: q!.question, isCustom: false })),
     ...customQuestions.map((q, i) => ({ id: `custom-${i}`, question: q, isCustom: true }))
   ]
   const hasQuestions = allQuestions.length > 0
+  
+  // Debug: log computed questions
+  console.log('[DesignFeedbackSections] effectiveQuestionIds:', effectiveQuestionIds)
+  console.log('[DesignFeedbackSections] allQuestions:', allQuestions)
+  console.log('[DesignFeedbackSections] hasQuestions:', hasQuestions)
   
   // UI state - now includes 'questions' step
   const [step, setStep] = useState<'intro' | 'sections' | 'questions' | 'summary'>('intro')
