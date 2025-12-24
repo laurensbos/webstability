@@ -29,7 +29,9 @@ import {
   MousePointer,
   ArrowRight,
   RefreshCw,
-  Sparkles
+  Sparkles,
+  Cloud,
+  AlertCircle
 } from 'lucide-react'
 
 // Dark Mode Context
@@ -316,20 +318,48 @@ export default function MarketingDashboard() {
 
   const toggleDarkMode = () => setDarkMode(!darkMode)
 
-  // Sync status (kept for future use)
-  const [_syncStatus, setSyncStatus] = useState<'idle' | 'syncing' | 'synced' | 'error'>('idle')
-  const [_lastSyncTime, setLastSyncTime] = useState<string | null>(null)
+  // Sync status
+  const [syncStatus, setSyncStatus] = useState<'idle' | 'syncing' | 'synced' | 'error'>('idle')
+  const [lastSyncTime, setLastSyncTime] = useState<string | null>(null)
 
-  // Sync leads to API (background) - silently fail if API not available
-  const syncToAPI = async (_leadsToSync: Lead[]) => {
-    // Skip API sync entirely - localStorage is the only storage
-    // The /api/leads endpoint is not deployed
-    setSyncStatus('synced')
-    setLastSyncTime(new Date().toLocaleTimeString('nl-NL'))
-    localStorage.setItem('webstability_last_sync', new Date().toISOString())
+  // Sync single lead to API (for updates)
+  const syncLeadToAPI = async (lead: Lead, action: 'create' | 'update' | 'delete') => {
+    try {
+      const method = action === 'delete' ? 'DELETE' : action === 'create' ? 'POST' : 'PUT'
+      const url = action === 'delete' ? `/api/leads?id=${lead.id}` : '/api/leads'
+      
+      const response = await fetch(url, {
+        method,
+        headers: { 'Content-Type': 'application/json' },
+        body: action !== 'delete' ? JSON.stringify(lead) : undefined
+      })
+      
+      if (!response.ok) {
+        console.warn(`[Sync] ${action} failed for lead ${lead.id}`)
+      }
+    } catch (error) {
+      console.warn('[Sync] API not available, using localStorage only')
+    }
   }
 
-  // Load leads - first from localStorage, then try API
+  // Full sync to API (for initial load merge)
+  const syncToAPI = async (leadsToSync: Lead[]) => {
+    setSyncStatus('syncing')
+    try {
+      // Sync each lead individually
+      for (const lead of leadsToSync) {
+        await syncLeadToAPI(lead, 'update')
+      }
+      setSyncStatus('synced')
+      setLastSyncTime(new Date().toLocaleTimeString('nl-NL'))
+      localStorage.setItem('webstability_last_sync', new Date().toISOString())
+    } catch (error) {
+      console.warn('[Sync] Full sync failed')
+      setSyncStatus('error')
+    }
+  }
+
+  // Load leads - first from localStorage, then merge with API
   useEffect(() => {
     const loadLeads = async () => {
       // Version check - clear old mockdata
@@ -343,33 +373,63 @@ export default function MarketingDashboard() {
         localStorage.setItem('webstability_leads_version', CURRENT_VERSION)
       }
       
-      // Always load from localStorage first (instant)
+      // Load from localStorage first (instant)
+      let localLeads: Lead[] = []
       const saved = localStorage.getItem('webstability_leads')
       if (saved) {
         try {
           const parsed = JSON.parse(saved)
           // Filter out any remaining mockdata by known IDs
-          const filtered = parsed.filter((l: Lead) => 
+          localLeads = parsed.filter((l: Lead) => 
             l.id !== '1' && l.id !== '2' && 
             !l.companyName?.includes('Schildersbedrijf Jansen') &&
             !l.companyName?.includes('Bakkerij De Gouden Korrel')
           )
-          setLeads(filtered)
-          
-          // Update localStorage if we filtered anything
-          if (filtered.length !== parsed.length) {
-            localStorage.setItem('webstability_leads', JSON.stringify(filtered))
-          }
+          setLeads(localLeads)
         } catch {
           console.log('Invalid leads data, starting fresh')
-          setLeads([])
         }
       }
       
-      // Skip API fetch - only use localStorage
-      // The /api/leads endpoint is not deployed
-      setSyncStatus('synced')
-      setLastSyncTime(new Date().toLocaleTimeString('nl-NL'))
+      // Now try to fetch from API and merge
+      setSyncStatus('syncing')
+      try {
+        const response = await fetch('/api/leads')
+        if (response.ok) {
+          const data = await response.json()
+          const apiLeads: Lead[] = data.leads || []
+          
+          if (apiLeads.length > 0 || localLeads.length > 0) {
+            // Merge: API is source of truth, but add any local-only leads
+            const mergedLeads = [...apiLeads]
+            
+            // Add local leads that don't exist in API
+            for (const localLead of localLeads) {
+              const existsInApi = apiLeads.some(a => a.id === localLead.id)
+              if (!existsInApi) {
+                mergedLeads.push(localLead)
+                // Sync this local-only lead to API
+                syncLeadToAPI(localLead, 'create')
+              }
+            }
+            
+            // Sort by createdAt descending
+            mergedLeads.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
+            
+            setLeads(mergedLeads)
+            localStorage.setItem('webstability_leads', JSON.stringify(mergedLeads))
+          }
+          
+          setSyncStatus('synced')
+          setLastSyncTime(new Date().toLocaleTimeString('nl-NL'))
+        } else {
+          console.warn('[Leads] API returned error, using localStorage only')
+          setSyncStatus('error')
+        }
+      } catch (error) {
+        console.warn('[Leads] API not available, using localStorage only')
+        setSyncStatus('error')
+      }
     }
     
     loadLeads()
@@ -489,6 +549,8 @@ export default function MarketingDashboard() {
     }
 
     setLeads(prev => [newLead, ...prev])
+    // Sync new lead to API immediately
+    syncLeadToAPI(newLead, 'create')
   }
 
   // Analyze website for outdated indicators
@@ -626,17 +688,18 @@ export default function MarketingDashboard() {
           sentAt: new Date().toISOString()
         }
 
-        setLeads(prev => prev.map(l => 
-          l.id === selectedLead.id
-            ? { 
-                ...l, 
-                status: l.status === 'nieuw' ? 'gecontacteerd' : l.status,
-                emailsSent: l.emailsSent + 1,
-                lastContact: new Date().toISOString(),
-                emailHistory: [...(l.emailHistory || []), newEmailHistoryItem]
-              }
-            : l
-        ))
+        const updatedLead = { 
+          ...selectedLead, 
+          status: selectedLead.status === 'nieuw' ? 'gecontacteerd' as const : selectedLead.status,
+          emailsSent: selectedLead.emailsSent + 1,
+          lastContact: new Date().toISOString(),
+          emailHistory: [...(selectedLead.emailHistory || []), newEmailHistoryItem]
+        }
+
+        setLeads(prev => prev.map(l => l.id === selectedLead.id ? updatedLead : l))
+        
+        // Sync updated lead to API immediately
+        syncLeadToAPI(updatedLead, 'update')
         
         setShowEmailModal(false)
         setSelectedLead(null)
@@ -653,15 +716,21 @@ export default function MarketingDashboard() {
   }
 
   const updateLeadStatus = (leadId: string, status: Lead['status']) => {
-    setLeads(prev => prev.map(l =>
-      l.id === leadId ? { ...l, status } : l
-    ))
+    setLeads(prev => {
+      const updated = prev.map(l => l.id === leadId ? { ...l, status } : l)
+      const updatedLead = updated.find(l => l.id === leadId)
+      if (updatedLead) syncLeadToAPI(updatedLead, 'update')
+      return updated
+    })
   }
 
   const togglePriority = (leadId: string) => {
-    setLeads(prev => prev.map(l =>
-      l.id === leadId ? { ...l, priority: !l.priority } : l
-    ))
+    setLeads(prev => {
+      const updated = prev.map(l => l.id === leadId ? { ...l, priority: !l.priority } : l)
+      const updatedLead = updated.find(l => l.id === leadId)
+      if (updatedLead) syncLeadToAPI(updatedLead, 'update')
+      return updated
+    })
   }
 
   const addNote = (leadId: string, noteText: string) => {
@@ -673,22 +742,32 @@ export default function MarketingDashboard() {
       createdAt: new Date().toISOString()
     }
     
-    setLeads(prev => prev.map(l =>
-      l.id === leadId
-        ? { ...l, notesTimeline: [...(l.notesTimeline || []), newNote] }
-        : l
-    ))
+    setLeads(prev => {
+      const updated = prev.map(l =>
+        l.id === leadId
+          ? { ...l, notesTimeline: [...(l.notesTimeline || []), newNote] }
+          : l
+      )
+      const updatedLead = updated.find(l => l.id === leadId)
+      if (updatedLead) syncLeadToAPI(updatedLead, 'update')
+      return updated
+    })
   }
 
   const setFollowUpDate = (leadId: string, date: string | undefined) => {
-    setLeads(prev => prev.map(l =>
-      l.id === leadId ? { ...l, followUpDate: date } : l
-    ))
+    setLeads(prev => {
+      const updated = prev.map(l => l.id === leadId ? { ...l, followUpDate: date } : l)
+      const updatedLead = updated.find(l => l.id === leadId)
+      if (updatedLead) syncLeadToAPI(updatedLead, 'update')
+      return updated
+    })
   }
 
   const deleteLead = (leadId: string) => {
     if (confirm('Weet je zeker dat je deze lead wilt verwijderen?')) {
+      const leadToDelete = leads.find(l => l.id === leadId)
       setLeads(prev => prev.filter(l => l.id !== leadId))
+      if (leadToDelete) syncLeadToAPI(leadToDelete, 'delete')
     }
   }
 
@@ -812,6 +891,28 @@ export default function MarketingDashboard() {
                 
                 {/* Dark Mode & Help - Always visible */}
                 <div className="flex items-center gap-1 ml-2">
+                  {/* Sync status indicator */}
+                  <div className={`hidden sm:flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-xs font-medium ${
+                    syncStatus === 'synced' 
+                      ? darkMode ? 'bg-emerald-900/30 text-emerald-400' : 'bg-emerald-100 text-emerald-700'
+                      : syncStatus === 'syncing'
+                      ? darkMode ? 'bg-blue-900/30 text-blue-400' : 'bg-blue-100 text-blue-700'
+                      : syncStatus === 'error'
+                      ? darkMode ? 'bg-red-900/30 text-red-400' : 'bg-red-100 text-red-700'
+                      : darkMode ? 'bg-gray-800 text-gray-400' : 'bg-gray-100 text-gray-600'
+                  }`}>
+                    {syncStatus === 'syncing' && (
+                      <div className="w-3 h-3 border-2 border-current border-t-transparent rounded-full animate-spin" />
+                    )}
+                    {syncStatus === 'synced' && <Cloud className="w-3.5 h-3.5" />}
+                    {syncStatus === 'error' && <AlertCircle className="w-3.5 h-3.5" />}
+                    <span>
+                      {syncStatus === 'synced' && lastSyncTime ? `Gesync ${lastSyncTime}` : 
+                       syncStatus === 'syncing' ? 'Syncen...' :
+                       syncStatus === 'error' ? 'Offline' : 'Laden...'}
+                    </span>
+                  </div>
+                  
                   <motion.button
                     whileHover={{ scale: 1.05 }}
                     whileTap={{ scale: 0.95 }}
@@ -1739,16 +1840,14 @@ Webstability`
                         
                         if (existingLead) {
                           // Update bestaande lead met nieuwe email
-                          setLeads(prev => prev.map(l => 
-                            l.id === existingLead.id 
-                              ? { 
-                                  ...l, 
-                                  emailsSent: (l.emailsSent || 0) + 1,
-                                  emailHistory: [...(l.emailHistory || []), emailHistoryItem],
-                                  status: l.status === 'nieuw' ? 'gecontacteerd' : l.status
-                                }
-                              : l
-                          ))
+                          const updatedLead = { 
+                            ...existingLead, 
+                            emailsSent: (existingLead.emailsSent || 0) + 1,
+                            emailHistory: [...(existingLead.emailHistory || []), emailHistoryItem],
+                            status: existingLead.status === 'nieuw' ? 'gecontacteerd' as const : existingLead.status
+                          }
+                          setLeads(prev => prev.map(l => l.id === existingLead.id ? updatedLead : l))
+                          syncLeadToAPI(updatedLead, 'update')
                         } else {
                           // Maak nieuwe lead aan
                           const newLead: Lead = {
@@ -1769,6 +1868,7 @@ Webstability`
                             notesTimeline: []
                           }
                           setLeads(prev => [newLead, ...prev])
+                          syncLeadToAPI(newLead, 'create')
                         }
                         
                         setShowProspectEmailModal(false)

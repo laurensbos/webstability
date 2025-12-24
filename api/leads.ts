@@ -167,7 +167,7 @@ async function createLead(req: VercelRequest, res: VercelResponse) {
   return res.status(201).json({ success: true, lead })
 }
 
-// PUT - Lead updaten
+// PUT - Lead updaten (of aanmaken als niet bestaat - upsert)
 async function updateLead(req: VercelRequest, res: VercelResponse) {
   if (!kv) {
     return res.status(200).json({ success: true, message: 'Offline mode' })
@@ -181,20 +181,38 @@ async function updateLead(req: VercelRequest, res: VercelResponse) {
   
   const existing = await kv.get<Lead>(`lead:${body.id}`)
   
-  if (!existing) {
-    return res.status(404).json({ error: 'Lead niet gevonden' })
-  }
-  
-  const updated: Lead = {
-    ...existing,
-    ...body,
-    id: existing.id, // ID mag niet veranderen
-    createdAt: existing.createdAt // createdAt mag niet veranderen
-  }
+  // Upsert: als niet bestaat, maak nieuwe aan
+  const updated: Lead = existing 
+    ? {
+        ...existing,
+        ...body,
+        id: existing.id, // ID mag niet veranderen
+        createdAt: existing.createdAt // createdAt mag niet veranderen
+      }
+    : {
+        id: body.id,
+        companyName: body.companyName || '',
+        contactPerson: body.contactPerson || '',
+        email: body.email || '',
+        phone: body.phone || '',
+        website: body.website,
+        address: body.address,
+        city: body.city || '',
+        notes: body.notes,
+        status: body.status || 'nieuw',
+        priority: body.priority || false,
+        followUpDate: body.followUpDate,
+        emailsSent: body.emailsSent || 0,
+        emailHistory: body.emailHistory || [],
+        notesTimeline: body.notesTimeline || [],
+        createdAt: body.createdAt || new Date().toISOString(),
+        lastContact: body.lastContact
+      }
   
   await kv.set(`lead:${updated.id}`, updated)
+  await kv.sadd('leads', updated.id)
   
-  console.log(`Lead updated: ${updated.id} - ${updated.companyName}`)
+  console.log(`Lead ${existing ? 'updated' : 'created'}: ${updated.id} - ${updated.companyName}`)
   
   return res.status(200).json({ success: true, lead: updated })
 }

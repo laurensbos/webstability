@@ -439,13 +439,13 @@ export default function DesignFeedbackSections({
 
             {/* Desktop/Laptop Mockup - only on desktop */}
             {!isMobile && device === 'desktop' && (
-              <div className="relative w-full h-full max-w-4xl flex flex-col justify-center">
+              <div className="relative w-full h-full flex flex-col items-center justify-center p-4">
                 {/* MacBook Pro style mockup */}
-                <div className="relative">
+                <div className="relative w-full max-w-5xl" style={{ height: 'calc(100% - 40px)', maxHeight: '75vh' }}>
                   {/* Screen bezel - dark frame around screen */}
-                  <div className="bg-zinc-900 rounded-2xl p-3 shadow-2xl">
+                  <div className="bg-zinc-900 rounded-2xl p-3 shadow-2xl h-full flex flex-col">
                     {/* Browser chrome inside bezel */}
-                    <div className="bg-zinc-800 rounded-t-lg">
+                    <div className="bg-zinc-800 rounded-t-lg flex-shrink-0">
                       <div className="px-3 py-2 flex items-center gap-2">
                         {/* Traffic lights */}
                         <div className="flex items-center gap-1.5">
@@ -467,8 +467,8 @@ export default function DesignFeedbackSections({
                       </div>
                     </div>
                     
-                    {/* Screen content */}
-                    <div className="relative bg-white overflow-hidden" style={{ height: 'calc(100% - 40px)', minHeight: '300px', maxHeight: '500px' }}>
+                    {/* Screen content - takes remaining space */}
+                    <div className="relative bg-white overflow-hidden flex-1 min-h-0">
                       {!iframeLoaded && (
                         <div className="absolute inset-0 flex items-center justify-center bg-zinc-100">
                           <Loader2 className="w-8 h-8 text-purple-500 animate-spin" />
