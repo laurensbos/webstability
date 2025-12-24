@@ -41,7 +41,7 @@ export interface Project {
   feedbackHistory?: FeedbackEntry[]
   // Feedback questions selection
   feedbackQuestions?: string[]
-  customFeedbackQuestions?: string[]
+  customQuestions?: string[]
   // Domain & Email for live going
   domainInfo?: DomainInfo
   emailInfo?: EmailInfo

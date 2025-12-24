@@ -833,12 +833,12 @@ export default function DesignFeedbackSections({
             {/* SUMMARY STEP */}
             {step === 'summary' && (
               <div className="flex-1 flex flex-col overflow-hidden">
-                <div className="p-4 border-b border-zinc-800">
-                  <h3 className="text-lg font-semibold text-white flex items-center gap-2">
-                    <Sparkles className="w-5 h-5 text-purple-400" />
+                <div className="p-4 md:p-6 border-b border-zinc-800">
+                  <h3 className="text-lg md:text-xl font-semibold text-white flex items-center gap-2">
+                    <Sparkles className="w-5 h-5 md:w-6 md:h-6 text-purple-400" />
                     Overzicht
                   </h3>
-                  <p className="text-sm text-zinc-400 mt-1">
+                  <p className="text-sm md:text-base text-zinc-400 mt-1">
                     {allGood 
                       ? 'Alles ziet er goed uit! Je kunt het design goedkeuren.'
                       : `${changeCount} onderdeel${changeCount !== 1 ? 'en' : ''} moet${changeCount === 1 ? '' : 'en'} aangepast worden.`
@@ -846,14 +846,17 @@ export default function DesignFeedbackSections({
                   </p>
                 </div>
 
-                {/* Summary list */}
-                <div className="flex-1 overflow-y-auto p-4 space-y-2">
+                {/* Summary list - improved layout */}
+                <div className="flex-1 overflow-y-auto p-4 md:p-6 space-y-3">
                   {sections.map((section, index) => {
                     const feedback = sectionFeedback.find(f => f.sectionId === section.id)
+                    const hasDetails = (feedback?.presets && feedback.presets.length > 0) || feedback?.comment
+                    const isExpanded = expandedComment === section.id
+                    
                     return (
                       <div
                         key={section.id}
-                        className={`p-3 rounded-lg border ${
+                        className={`rounded-xl border transition-all ${
                           feedback?.rating === 'good'
                             ? 'border-green-500/30 bg-green-500/10'
                             : feedback?.rating === 'change'
@@ -861,111 +864,159 @@ export default function DesignFeedbackSections({
                             : 'border-zinc-700 bg-zinc-800/50'
                         }`}
                       >
-                        <div className="flex items-center gap-3">
-                          <span className="text-xl">{section.icon}</span>
-                          <div className="flex-1">
-                            <p className="text-sm font-medium text-white">{section.name}</p>
-                            {/* Show selected presets */}
-                            {feedback?.presets && feedback.presets.length > 0 && (
-                              <div className="flex flex-wrap gap-1 mt-1">
-                                {feedback.presets.map(presetId => {
-                                  const preset = FEEDBACK_PRESETS.find(p => p.id === presetId)
-                                  return preset ? (
-                                    <span key={presetId} className="text-xs px-2 py-0.5 bg-amber-500/20 text-amber-300 rounded-full">
-                                      {preset.emoji} {preset.label}
-                                    </span>
-                                  ) : null
-                                })}
-                              </div>
-                            )}
-                            {feedback?.comment && (
-                              <p className="text-xs text-zinc-400 mt-1">"{feedback.comment}"</p>
-                            )}
+                        {/* Section header - always visible */}
+                        <div className="p-4 md:p-5 flex items-center gap-3 md:gap-4">
+                          <span className="text-2xl md:text-3xl">{section.icon}</span>
+                          <div className="flex-1 min-w-0">
+                            <p className="text-base md:text-lg font-medium text-white">{section.name}</p>
+                            <p className="text-xs md:text-sm text-zinc-500">{section.description}</p>
                           </div>
-                          <div className={`w-8 h-8 rounded-full flex items-center justify-center ${
+                          <div className={`w-10 h-10 md:w-12 md:h-12 rounded-full flex items-center justify-center ${
                             feedback?.rating === 'good'
                               ? 'bg-green-500/20 text-green-400'
                               : feedback?.rating === 'change'
                               ? 'bg-amber-500/20 text-amber-400'
                               : 'bg-zinc-700 text-zinc-500'
                           }`}>
-                            {feedback?.rating === 'good' && <ThumbsUp className="w-4 h-4" />}
-                            {feedback?.rating === 'change' && <ThumbsDown className="w-4 h-4" />}
+                            {feedback?.rating === 'good' && <ThumbsUp className="w-5 h-5 md:w-6 md:h-6" />}
+                            {feedback?.rating === 'change' && <ThumbsDown className="w-5 h-5 md:w-6 md:h-6" />}
                           </div>
                         </div>
                         
-                        {/* Edit button */}
-                        <button
-                          onClick={() => {
-                            setCurrentSectionIndex(index)
-                            setStep('sections')
-                          }}
-                          className="mt-2 text-xs text-purple-400 hover:text-purple-300"
-                        >
-                          Aanpassen
-                        </button>
+                        {/* Expand button - only show for items with "change" rating */}
+                        {feedback?.rating === 'change' && (
+                          <button
+                            onClick={() => setExpandedComment(isExpanded ? null : section.id)}
+                            className="w-full px-4 md:px-5 pb-4 md:pb-5 pt-0 text-left"
+                          >
+                            <div className="flex items-center gap-2 text-sm text-amber-400 hover:text-amber-300 transition-colors">
+                              <ChevronRight className={`w-4 h-4 transition-transform ${isExpanded ? 'rotate-90' : ''}`} />
+                              <span>Toon details</span>
+                              {hasDetails && !isExpanded && (
+                                <span className="text-xs text-amber-500/70">
+                                  ({feedback.presets?.length || 0} tags{feedback.comment ? ', opmerking' : ''})
+                                </span>
+                              )}
+                            </div>
+                          </button>
+                        )}
+                        
+                        {/* Collapsible details */}
+                        <AnimatePresence>
+                          {isExpanded && feedback?.rating === 'change' && (
+                            <motion.div
+                              initial={{ height: 0, opacity: 0 }}
+                              animate={{ height: 'auto', opacity: 1 }}
+                              exit={{ height: 0, opacity: 0 }}
+                              className="overflow-hidden"
+                            >
+                              <div className="px-4 md:px-5 pb-4 md:pb-5 border-t border-amber-500/20 pt-4 space-y-3">
+                                {/* Selected presets */}
+                                {feedback?.presets && feedback.presets.length > 0 && (
+                                  <div className="flex flex-wrap gap-2">
+                                    {feedback.presets.map(presetId => {
+                                      const preset = FEEDBACK_PRESETS.find(p => p.id === presetId)
+                                      return preset ? (
+                                        <span key={presetId} className="text-sm px-3 py-1.5 bg-amber-500/20 text-amber-300 rounded-lg">
+                                          {preset.emoji} {preset.label}
+                                        </span>
+                                      ) : null
+                                    })}
+                                  </div>
+                                )}
+                                {/* Comment */}
+                                {feedback?.comment && (
+                                  <p className="text-sm text-zinc-300 bg-zinc-800/50 rounded-lg p-3 italic">
+                                    "{feedback.comment}"
+                                  </p>
+                                )}
+                                {/* Edit button */}
+                                <button
+                                  onClick={() => {
+                                    setCurrentSectionIndex(index)
+                                    setStep('sections')
+                                  }}
+                                  className="text-sm text-purple-400 hover:text-purple-300 font-medium"
+                                >
+                                  ✏️ Aanpassen
+                                </button>
+                              </div>
+                            </motion.div>
+                          )}
+                        </AnimatePresence>
                       </div>
                     )
                   })}
 
-                  {/* Question answers summary */}
+                  {/* Question answers summary - improved */}
                   {hasQuestions && questionAnswers.some(qa => qa.answer !== null) && (
                     <div className="mt-4 pt-4 border-t border-zinc-700">
-                      <p className="text-sm text-zinc-400 mb-2 flex items-center gap-2">
-                        <HelpCircle className="w-4 h-4" />
+                      <p className="text-base md:text-lg text-zinc-300 mb-3 flex items-center gap-2 font-medium">
+                        <HelpCircle className="w-5 h-5 text-purple-400" />
                         Extra vragen
                       </p>
-                      <div className="space-y-2">
+                      <div className="space-y-3">
                         {questionAnswers.filter(qa => qa.answer !== null).map(qa => (
-                          <div key={qa.questionId} className="flex items-start gap-2 text-sm">
-                            <div className={`w-5 h-5 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5 ${
-                              qa.answer === 'yes' ? 'bg-green-500/20 text-green-400' : 'bg-amber-500/20 text-amber-400'
-                            }`}>
-                              {qa.answer === 'yes' ? <ThumbsUp className="w-3 h-3" /> : <ThumbsDown className="w-3 h-3" />}
-                            </div>
-                            <div className="flex-1">
-                              <p className="text-zinc-300">{qa.question}</p>
-                              {qa.comment && <p className="text-xs text-zinc-500 mt-0.5">"{qa.comment}"</p>}
+                          <div 
+                            key={qa.questionId} 
+                            className={`p-4 rounded-xl border ${
+                              qa.answer === 'yes' 
+                                ? 'border-green-500/30 bg-green-500/10'
+                                : 'border-amber-500/30 bg-amber-500/10'
+                            }`}
+                          >
+                            <div className="flex items-start gap-3">
+                              <div className={`w-8 h-8 md:w-10 md:h-10 rounded-full flex items-center justify-center flex-shrink-0 ${
+                                qa.answer === 'yes' ? 'bg-green-500/20 text-green-400' : 'bg-amber-500/20 text-amber-400'
+                              }`}>
+                                {qa.answer === 'yes' ? <ThumbsUp className="w-4 h-4 md:w-5 md:h-5" /> : <ThumbsDown className="w-4 h-4 md:w-5 md:h-5" />}
+                              </div>
+                              <div className="flex-1">
+                                <p className="text-sm md:text-base text-white">{qa.question}</p>
+                                {qa.comment && (
+                                  <p className="text-xs md:text-sm text-zinc-400 mt-1 italic">"{qa.comment}"</p>
+                                )}
+                              </div>
                             </div>
                           </div>
                         ))}
                       </div>
                       <button
                         onClick={() => setStep('questions')}
-                        className="mt-2 text-xs text-purple-400 hover:text-purple-300"
+                        className="mt-3 text-sm text-purple-400 hover:text-purple-300 font-medium"
                       >
-                        Aanpassen
+                        ✏️ Aanpassen
                       </button>
                     </div>
                   )}
 
                   {/* General comment */}
-                  <div className="mt-4">
-                    <label className="text-sm text-zinc-400 mb-2 block">
+                  <div className="mt-6">
+                    <label className="text-sm md:text-base text-zinc-400 mb-2 block">
                       Algemene opmerkingen <span className="text-zinc-600">(optioneel)</span>
                     </label>
                     <textarea
                       value={generalComment}
                       onChange={(e) => setGeneralComment(e.target.value)}
                       placeholder="Nog iets wat je kwijt wilt?"
-                      className="w-full h-20 px-3 py-2 bg-zinc-800 border border-zinc-700 rounded-lg text-white placeholder-zinc-500 resize-none focus:outline-none focus:ring-2 focus:ring-purple-500"
+                      className="w-full h-24 md:h-28 px-4 py-3 bg-zinc-800 border border-zinc-700 rounded-xl text-white placeholder-zinc-500 resize-none focus:outline-none focus:ring-2 focus:ring-purple-500 text-sm md:text-base"
                     />
                   </div>
                 </div>
 
-                {/* Actions */}
-                <div className="p-4 border-t border-zinc-800 space-y-2">
+                {/* Actions - improved */}
+                <div className="p-4 md:p-6 border-t border-zinc-800 space-y-3">
                   {changeCount > 0 ? (
                     <button
                       onClick={handleSubmitFeedback}
                       disabled={isSubmitting}
-                      className="w-full py-3 bg-purple-600 text-white rounded-xl font-medium hover:bg-purple-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors flex items-center justify-center gap-2"
+                      className="w-full py-4 md:py-4 bg-purple-600 text-white rounded-xl font-medium text-base md:text-lg hover:bg-purple-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors flex items-center justify-center gap-2"
                     >
                       {isSubmitting ? (
-                        <Loader2 className="w-5 h-5 animate-spin" />
+                        <Loader2 className="w-5 h-5 md:w-6 md:h-6 animate-spin" />
                       ) : (
                         <>
-                          <Send className="w-5 h-5" />
+                          <Send className="w-5 h-5 md:w-6 md:h-6" />
                           Feedback versturen
                         </>
                       )}
@@ -974,13 +1025,13 @@ export default function DesignFeedbackSections({
                     <button
                       onClick={handleApprove}
                       disabled={isSubmitting}
-                      className="w-full py-3 bg-gradient-to-r from-green-500 to-emerald-600 text-white rounded-xl font-medium hover:from-green-600 hover:to-emerald-700 disabled:opacity-50 disabled:cursor-not-allowed transition-all flex items-center justify-center gap-2"
+                      className="w-full py-4 md:py-4 bg-gradient-to-r from-green-500 to-emerald-600 text-white rounded-xl font-medium text-base md:text-lg hover:from-green-600 hover:to-emerald-700 disabled:opacity-50 disabled:cursor-not-allowed transition-all flex items-center justify-center gap-2"
                     >
                       {isSubmitting ? (
-                        <Loader2 className="w-5 h-5 animate-spin" />
+                        <Loader2 className="w-5 h-5 md:w-6 md:h-6 animate-spin" />
                       ) : (
                         <>
-                          <ThumbsUp className="w-5 h-5" />
+                          <ThumbsUp className="w-5 h-5 md:w-6 md:h-6" />
                           Design goedkeuren! 🎉
                         </>
                       )}
@@ -991,7 +1042,7 @@ export default function DesignFeedbackSections({
                     <button
                       onClick={handleSubmitFeedback}
                       disabled={isSubmitting}
-                      className="w-full py-2 text-zinc-400 text-sm hover:text-white transition-colors"
+                      className="w-full py-3 text-zinc-400 text-sm md:text-base hover:text-white transition-colors"
                     >
                       Toch feedback versturen
                     </button>

@@ -77,7 +77,7 @@ export default function ProjectDetailModal({
   // Feedback questions state
   const [showQuestionsPanel, setShowQuestionsPanel] = useState(false)
   const [selectedQuestionIds, setSelectedQuestionIds] = useState<string[]>(project.feedbackQuestions || [])
-  const [customQuestions, setCustomQuestions] = useState<string[]>(project.customFeedbackQuestions || [])
+  const [customQuestions, setCustomQuestions] = useState<string[]>(project.customQuestions || [])
   const [newCustomQuestion, setNewCustomQuestion] = useState('')
 
   const packageInfo = PACKAGE_CONFIG[project.package]
@@ -245,7 +245,7 @@ export default function ProjectDetailModal({
     setNewCustomQuestion('')
     onUpdate({
       ...project,
-      customFeedbackQuestions: newQuestions,
+      customQuestions: newQuestions,
       updatedAt: new Date().toISOString()
     })
   }
@@ -255,7 +255,7 @@ export default function ProjectDetailModal({
     setCustomQuestions(newQuestions)
     onUpdate({
       ...project,
-      customFeedbackQuestions: newQuestions,
+      customQuestions: newQuestions,
       updatedAt: new Date().toISOString()
     })
   }
