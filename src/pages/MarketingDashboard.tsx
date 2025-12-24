@@ -126,7 +126,7 @@ interface Lead {
   address: string
   city: string
   notes: string
-  status: 'nieuw' | 'gecontacteerd' | 'geinteresseerd' | 'offerte' | 'klant' | 'afgewezen'
+  status: 'nieuw' | 'gecontacteerd' | 'geinteresseerd' | 'retentie' | 'klant' | 'afgewezen'
   priority: boolean
   createdAt: string
   lastContact?: string
@@ -276,16 +276,16 @@ Webstability`
 
 const statusColors: Record<Lead['status'], { bg: string; darkBg: string; text: string; darkText: string; label: string }> = {
   nieuw: { bg: 'bg-blue-100', darkBg: 'bg-blue-500/20', text: 'text-blue-700', darkText: 'text-blue-400', label: 'Nieuw' },
-  gecontacteerd: { bg: 'bg-yellow-100', darkBg: 'bg-yellow-500/20', text: 'text-yellow-700', darkText: 'text-yellow-400', label: 'Gecontacteerd' },
+  gecontacteerd: { bg: 'bg-yellow-100', darkBg: 'bg-yellow-500/20', text: 'text-yellow-700', darkText: 'text-yellow-400', label: 'Mail gestuurd' },
   geinteresseerd: { bg: 'bg-purple-100', darkBg: 'bg-purple-500/20', text: 'text-purple-700', darkText: 'text-purple-400', label: 'Geïnteresseerd' },
-  offerte: { bg: 'bg-orange-100', darkBg: 'bg-orange-500/20', text: 'text-orange-700', darkText: 'text-orange-400', label: 'Offerte verstuurd' },
+  retentie: { bg: 'bg-orange-100', darkBg: 'bg-orange-500/20', text: 'text-orange-700', darkText: 'text-orange-400', label: 'Retentie' },
   klant: { bg: 'bg-green-100', darkBg: 'bg-green-500/20', text: 'text-green-700', darkText: 'text-green-400', label: 'Klant!' },
   afgewezen: { bg: 'bg-gray-100', darkBg: 'bg-gray-700/50', text: 'text-gray-500', darkText: 'text-gray-400', label: 'Afgewezen' }
 }
 
 export default function MarketingDashboard() {
   const [leads, setLeads] = useState<Lead[]>([])
-  const [contactedHistory, setContactedHistory] = useState<Record<string, { contactedAt: string; contactedBy: string }>>(() => {
+  const [contactedHistory] = useState<Record<string, { contactedAt: string; contactedBy: string }>>(() => {
     // Load contact history from localStorage
     try {
       const saved = localStorage.getItem('webstability_contacted_history')
@@ -744,38 +744,30 @@ export default function MarketingDashboard() {
     localStorage.setItem('webstability_contacted_history', JSON.stringify(contactedHistory))
   }, [contactedHistory])
 
-  // Auto-delete gecontacteerde leads after 5 days without response (soft delete)
+  // Auto-move gecontacteerde leads to 'retentie' after 5 days without response
   useEffect(() => {
     const fiveDaysAgo = new Date(Date.now() - 5 * 24 * 60 * 60 * 1000).toISOString()
     
     setLeads(prev => {
-      const leadsToArchive = prev.filter(lead => {
-        // Only auto-delete "gecontacteerd" status leads after 5 days
+      const leadsToRetention = prev.filter(lead => {
+        // Only move "gecontacteerd" (mail gestuurd) status leads after 5 days
         if (lead.status !== 'gecontacteerd') return false
         // Check if first contacted more than 5 days ago
         const contactDate = lead.firstContactedAt || lead.createdAt
-        return contactDate < fiveDaysAgo && !lead.deletedAt
+        return contactDate < fiveDaysAgo
       })
       
-      // Add to contact history before removing
-      if (leadsToArchive.length > 0) {
-        const newHistory = { ...contactedHistory }
-        leadsToArchive.forEach(lead => {
-          newHistory[lead.id] = {
-            contactedAt: lead.firstContactedAt || lead.createdAt,
-            contactedBy: lead.createdBy || 'unknown'
+      // Move to retentie status instead of deleting
+      if (leadsToRetention.length > 0) {
+        return prev.map(lead => {
+          if (leadsToRetention.some(l => l.id === lead.id)) {
+            return { ...lead, status: 'retentie' as const }
           }
+          return lead
         })
-        setContactedHistory(newHistory)
       }
       
-      // Soft delete by marking with deletedAt
-      return prev.map(lead => {
-        if (leadsToArchive.some(l => l.id === lead.id)) {
-          return { ...lead, deletedAt: new Date().toISOString() }
-        }
-        return lead
-      }).filter(lead => !lead.deletedAt) // Remove soft-deleted leads
+      return prev
     })
   }, []) // Run once on mount
 
@@ -845,7 +837,7 @@ export default function MarketingDashboard() {
     teMailen: leads.filter(l => l.emailsSent === 0).length, // Leads die nog nooit email hebben gehad
     gecontacteerd: leads.filter(l => l.status === 'gecontacteerd').length,
     geinteresseerd: leads.filter(l => l.status === 'geinteresseerd').length,
-    offerte: leads.filter(l => l.status === 'offerte').length,
+    retentie: leads.filter(l => l.status === 'retentie').length,
     klanten: leads.filter(l => l.status === 'klant').length,
     afgewezen: leads.filter(l => l.status === 'afgewezen').length,
     emailsSent: leads.reduce((sum, l) => sum + l.emailsSent, 0),
@@ -2024,7 +2016,7 @@ Webstability`
           </div>
 
           <div className="flex gap-2 mb-4 sm:mb-6 overflow-x-auto pb-2 sm:pb-0 -mx-4 px-4 sm:mx-0 sm:px-0 sm:flex-wrap scrollbar-hide">
-          {['alle', 'nieuw', 'gecontacteerd', 'geinteresseerd', 'offerte', 'klant', 'afgewezen'].map((status) => {
+          {['alle', 'nieuw', 'gecontacteerd', 'geinteresseerd', 'retentie', 'klant', 'afgewezen'].map((status) => {
             const count = status === 'alle' ? leads.length : leads.filter(l => l.status === status).length
             return (
               <motion.button
