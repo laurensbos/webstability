@@ -16,12 +16,15 @@ import {
   MessageSquare
 } from 'lucide-react'
 import DesignFeedbackSections from './DesignFeedbackSections'
+import type { FeedbackQuestion } from '../types/project'
 
 interface DesignPreviewModalProps {
   isOpen: boolean
   onClose: () => void
   projectId: string
   designPreviewUrl: string
+  feedbackQuestionIds?: string[]
+  customQuestions?: FeedbackQuestion[]
   onFeedbackSubmit?: () => Promise<void>
   onApprove?: () => Promise<void>
 }
@@ -31,6 +34,8 @@ export default function DesignPreviewModal({
   onClose,
   projectId,
   designPreviewUrl,
+  feedbackQuestionIds = [],
+  customQuestions = [],
   onFeedbackSubmit,
   onApprove,
 }: DesignPreviewModalProps) {
@@ -104,6 +109,8 @@ export default function DesignPreviewModal({
                 isOpen={true}
                 projectId={projectId}
                 designPreviewUrl={designPreviewUrl}
+                feedbackQuestionIds={feedbackQuestionIds}
+                customQuestions={customQuestions.map(q => q.question)}
                 onFeedbackSubmit={async () => {
                   await onFeedbackSubmit?.()
                   onClose()
@@ -128,7 +135,7 @@ export default function DesignPreviewModal({
                 <div className="absolute bottom-6 left-1/2 -translate-x-1/2 bg-blue-600 text-white px-6 py-3 rounded-full shadow-lg flex items-center gap-2">
                   <MessageSquare className="w-5 h-5" />
                   <span className="text-sm font-medium">
-                    Scroll door je website. Klaar? Klik op Feedback geven
+                    Scroll door je website. Klaar? Klik op &quot;Feedback geven&quot;
                   </span>
                 </div>
               </div>
