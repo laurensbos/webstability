@@ -34,7 +34,8 @@ import {
   AlertCircle,
   Trash2,
   Square,
-  CheckSquare
+  CheckSquare,
+  Wrench
 } from 'lucide-react'
 
 // Dark Mode Context
@@ -147,6 +148,10 @@ interface Lead {
   // Soft delete tracking
   deletedAt?: string // When the lead was soft-deleted
   firstContactedAt?: string // First time this business was contacted
+  // Technische vraag aan Laurens
+  technicalQuestion?: string // Question for Laurens
+  technicalQuestionAt?: string // When question was asked
+  technicalQuestionBy?: string // Who asked (account name)
 }
 
 interface EmailTemplate {
@@ -802,6 +807,8 @@ export default function MarketingDashboard() {
       matchesStatus = lead.followUpDate !== undefined && lead.followUpDate <= today
     } else if (statusFilter === 'temailen') {
       matchesStatus = lead.emailsSent === 0 // Leads die nog nooit email hebben gehad
+    } else if (statusFilter === 'technisch') {
+      matchesStatus = lead.technicalQuestion !== undefined && lead.technicalQuestion.trim() !== ''
     } else {
       matchesStatus = lead.status === statusFilter
     }
@@ -848,6 +855,8 @@ export default function MarketingDashboard() {
       return sum + (l.emailHistory?.filter(e => e.sentBy === currentAccount.id).length || 0)
     }, 0),
     myLeadsEmailed: leads.filter(l => l.emailedBy?.includes(currentAccount.id)).length,
+    // Technische vragen (alleen relevant voor Laurens)
+    technicalQuestions: leads.filter(l => l.technicalQuestion && l.technicalQuestion.trim() !== '').length,
   }
 
   const openEmailModal = (lead: Lead, template?: EmailTemplate) => {
@@ -1179,6 +1188,20 @@ export default function MarketingDashboard() {
   const setFollowUpDate = (leadId: string, date: string | undefined) => {
     setLeads(prev => {
       const updated = prev.map(l => l.id === leadId ? { ...l, followUpDate: date } : l)
+      const updatedLead = updated.find(l => l.id === leadId)
+      if (updatedLead) syncLeadToAPI(updatedLead, 'update')
+      return updated
+    })
+  }
+
+  const setTechnicalQuestion = (leadId: string, question: string | undefined) => {
+    setLeads(prev => {
+      const updated = prev.map(l => l.id === leadId ? { 
+        ...l, 
+        technicalQuestion: question,
+        technicalQuestionAt: question ? new Date().toISOString() : undefined,
+        technicalQuestionBy: question ? currentAccount.name : undefined
+      } : l)
       const updatedLead = updated.find(l => l.id === leadId)
       if (updatedLead) syncLeadToAPI(updatedLead, 'update')
       return updated
@@ -2016,8 +2039,12 @@ Webstability`
           </div>
 
           <div className="flex gap-2 mb-4 sm:mb-6 overflow-x-auto pb-2 sm:pb-0 -mx-4 px-4 sm:mx-0 sm:px-0 sm:flex-wrap scrollbar-hide">
-          {['alle', 'nieuw', 'gecontacteerd', 'geinteresseerd', 'retentie', 'klant', 'afgewezen'].map((status) => {
-            const count = status === 'alle' ? leads.length : leads.filter(l => l.status === status).length
+          {['alle', 'nieuw', 'gecontacteerd', 'geinteresseerd', 'retentie', 'klant', 'afgewezen', ...(currentAccount.isAdmin ? ['technisch'] : [])].map((status) => {
+            const count = status === 'alle' 
+              ? leads.length 
+              : status === 'technisch'
+                ? leads.filter(l => l.technicalQuestion && l.technicalQuestion.trim() !== '').length
+                : leads.filter(l => l.status === status).length
             return (
               <motion.button
                 key={status}
@@ -2026,13 +2053,15 @@ Webstability`
                 onClick={() => setStatusFilter(status)}
                 className={`px-3 sm:px-4 py-1.5 sm:py-2 rounded-xl text-xs sm:text-sm font-medium transition-all whitespace-nowrap flex-shrink-0 ${
                   statusFilter === status
-                    ? 'bg-emerald-500 text-white shadow-lg shadow-emerald-500/25'
+                    ? status === 'technisch' 
+                      ? 'bg-purple-500 text-white shadow-lg shadow-purple-500/25'
+                      : 'bg-emerald-500 text-white shadow-lg shadow-emerald-500/25'
                     : darkMode
                       ? 'bg-gray-800 text-gray-400 hover:bg-gray-700'
                       : 'bg-white text-gray-600 hover:bg-gray-50 border border-gray-200'
                 }`}
               >
-                {status === 'alle' ? 'Alle' : statusColors[status as Lead['status']]?.label || status}
+                {status === 'alle' ? 'Alle' : status === 'technisch' ? '🔧 Technisch' : statusColors[status as Lead['status']]?.label || status}
                 <span className={`ml-1.5 sm:ml-2 px-1 sm:px-1.5 py-0.5 rounded-md text-[10px] sm:text-xs ${
                   statusFilter === status
                     ? 'bg-white/20'
@@ -2139,11 +2168,13 @@ Webstability`
                     onDeleteNote={(noteId) => deleteNote(lead.id, noteId)}
                     onSetFollowUp={(date) => setFollowUpDate(lead.id, date)}
                     onAnalyzeWebsite={() => analyzeLeadWebsite(lead.id)}
+                    onSetTechnicalQuestion={(question) => setTechnicalQuestion(lead.id, question)}
                     templates={emailTemplates}
                     darkMode={darkMode}
                     showCheckbox={statusFilter === 'gecontacteerd' || selectedLeadIds.size > 0}
                     isSelected={selectedLeadIds.has(lead.id)}
                     onToggleSelect={() => toggleLeadSelection(lead.id)}
+                    isAdmin={currentAccount.isAdmin}
                   />
                 </motion.div>
               ))}
@@ -2946,11 +2977,13 @@ function LeadRow({
   onDeleteNote,
   onSetFollowUp,
   onAnalyzeWebsite,
+  onSetTechnicalQuestion,
   templates,
   darkMode = false,
   isSelected = false,
   onToggleSelect,
-  showCheckbox = false
+  showCheckbox = false,
+  isAdmin = false
 }: { 
   lead: Lead
   onEmail: (template?: EmailTemplate) => void
@@ -2962,11 +2995,13 @@ function LeadRow({
   onDeleteNote: (noteId: string) => void
   onSetFollowUp: (date: string | undefined) => void
   onAnalyzeWebsite: () => Promise<void>
+  onSetTechnicalQuestion: (question: string | undefined) => void
   templates: EmailTemplate[]
   darkMode?: boolean
   isSelected?: boolean
   onToggleSelect?: () => void
   showCheckbox?: boolean
+  isAdmin?: boolean
 }) {
   const [showMenu, setShowMenu] = useState(false)
   const [showTemplates, setShowTemplates] = useState(false)
@@ -2975,6 +3010,8 @@ function LeadRow({
   const [editingNoteId, setEditingNoteId] = useState<string | null>(null)
   const [editNoteText, setEditNoteText] = useState('')
   const [isAnalyzing, setIsAnalyzing] = useState(false)
+  const [showTechQuestionInput, setShowTechQuestionInput] = useState(false)
+  const [techQuestion, setTechQuestion] = useState(lead.technicalQuestion || '')
   const menuButtonRef = React.useRef<HTMLButtonElement>(null)
   const [menuPosition, setMenuPosition] = useState({ top: 0, right: 0 })
   const status = statusColors[lead.status]
@@ -3032,6 +3069,15 @@ function LeadRow({
             <div className="min-w-0 flex-1">
               <div className="flex items-center gap-2 flex-wrap">
                 <h3 className={`font-semibold truncate text-sm sm:text-base ${darkMode ? 'text-white' : 'text-gray-900'}`}>{lead.companyName}</h3>
+                {/* Technical question indicator */}
+                {lead.technicalQuestion && (
+                  <span className={`px-2 py-0.5 rounded-full text-[10px] font-medium flex items-center gap-1 ${
+                    darkMode ? 'bg-purple-500/20 text-purple-400' : 'bg-purple-100 text-purple-700'
+                  }`}>
+                    <Wrench className="w-3 h-3" />
+                    <span className="hidden sm:inline">Vraag</span>
+                  </span>
+                )}
                 {/* Status badge - visible on larger screens */}
                 <span className={`hidden sm:inline-flex px-2 sm:px-3 py-0.5 sm:py-1 rounded-full text-[10px] sm:text-xs font-medium ${status.bg} ${status.text}`}>
                   {status.label}
@@ -3200,6 +3246,22 @@ function LeadRow({
 
             <div className="flex-1" />
 
+            {/* More menu - moved before email button for mobile */}
+            <div className="relative sm:order-last">
+              <button
+                ref={menuButtonRef}
+                onClick={(e) => {
+                  e.stopPropagation()
+                  handleMenuToggle()
+                }}
+                className={`p-2 rounded-lg transition-colors ${
+                  darkMode ? 'text-gray-400 hover:text-gray-200 hover:bg-gray-700' : 'text-gray-400 hover:text-gray-600 hover:bg-gray-100'
+                }`}
+              >
+                <MoreVertical className="w-5 h-5" />
+              </button>
+            </div>
+
             {/* Email button - opens template modal */}
             <button
               onClick={(e) => {
@@ -3311,22 +3373,6 @@ function LeadRow({
               <Trash2 className="w-4 h-4" />
             </button>
 
-            {/* More menu */}
-            <div className="relative">
-              <button
-                ref={menuButtonRef}
-                onClick={(e) => {
-                  e.stopPropagation()
-                  handleMenuToggle()
-                }}
-                className={`p-2 rounded-lg transition-colors ${
-                  darkMode ? 'text-gray-400 hover:text-gray-200 hover:bg-gray-700' : 'text-gray-400 hover:text-gray-600 hover:bg-gray-100'
-                }`}
-              >
-                <MoreVertical className="w-5 h-5" />
-              </button>
-            </div>
-
             {/* More menu portal */}
             {createPortal(
               <AnimatePresence>
@@ -3375,6 +3421,41 @@ function LeadRow({
                           </button>
                         ))}
                         <hr className={`my-2 ${darkMode ? 'border-gray-700' : 'border-gray-200'}`} />
+                        
+                        {/* Technical question option - only for non-admins (Wesley) */}
+                        {!isAdmin && (
+                          <button
+                            onClick={() => {
+                              setShowTechQuestionInput(true)
+                              setShowMenu(false)
+                            }}
+                            className={`w-full flex items-center gap-2 p-2 text-left rounded-lg ${
+                              lead.technicalQuestion
+                                ? darkMode ? 'text-purple-400 hover:bg-purple-500/20' : 'text-purple-600 hover:bg-purple-50'
+                                : darkMode ? 'text-gray-300 hover:bg-gray-700' : 'text-gray-600 hover:bg-gray-50'
+                            }`}
+                          >
+                            <Wrench className="w-4 h-4" />
+                            <span className="text-sm">{lead.technicalQuestion ? 'Vraag bewerken' : 'Technische vraag'}</span>
+                          </button>
+                        )}
+                        
+                        {/* Admin can clear technical question */}
+                        {isAdmin && lead.technicalQuestion && (
+                          <button
+                            onClick={() => {
+                              onSetTechnicalQuestion(undefined)
+                              setShowMenu(false)
+                            }}
+                            className={`w-full flex items-center gap-2 p-2 text-left rounded-lg ${
+                              darkMode ? 'text-purple-400 hover:bg-purple-500/20' : 'text-purple-600 hover:bg-purple-50'
+                            }`}
+                          >
+                            <CheckCircle className="w-4 h-4" />
+                            <span className="text-sm">Vraag afgehandeld</span>
+                          </button>
+                        )}
+                        
                         <button
                           onClick={() => {
                             onDelete()
@@ -3391,6 +3472,86 @@ function LeadRow({
                     </motion.div>
                   </>
                 )}
+              </AnimatePresence>,
+              document.body
+            )}
+
+            {/* Technical question modal */}
+            {showTechQuestionInput && createPortal(
+              <AnimatePresence>
+                <motion.div
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  exit={{ opacity: 0 }}
+                  className="fixed inset-0 z-[9999] flex items-end sm:items-center justify-center bg-black/50 backdrop-blur-sm"
+                  onClick={() => setShowTechQuestionInput(false)}
+                >
+                  <motion.div
+                    initial={{ scale: 0.95, opacity: 0, y: 100 }}
+                    animate={{ scale: 1, opacity: 1, y: 0 }}
+                    exit={{ scale: 0.95, opacity: 0, y: 100 }}
+                    onClick={(e) => e.stopPropagation()}
+                    className={`w-full sm:max-w-md mx-4 sm:mx-0 rounded-2xl overflow-hidden ${
+                      darkMode ? 'bg-gray-800' : 'bg-white'
+                    } shadow-2xl`}
+                  >
+                    <div className={`flex items-center justify-between p-4 border-b ${
+                      darkMode ? 'border-gray-700' : 'border-gray-200'
+                    }`}>
+                      <h3 className={`text-lg font-semibold flex items-center gap-2 ${darkMode ? 'text-white' : 'text-gray-900'}`}>
+                        <Wrench className="w-5 h-5 text-purple-500" />
+                        Technische vraag voor Laurens
+                      </h3>
+                      <button
+                        onClick={() => setShowTechQuestionInput(false)}
+                        className={`p-2 rounded-lg ${darkMode ? 'hover:bg-gray-700 text-gray-400' : 'hover:bg-gray-100 text-gray-500'}`}
+                      >
+                        <X className="w-5 h-5" />
+                      </button>
+                    </div>
+                    
+                    <div className="p-4">
+                      <p className={`text-sm mb-3 ${darkMode ? 'text-gray-400' : 'text-gray-600'}`}>
+                        Stel een vraag over {lead.companyName}. Laurens ziet dit in zijn Technisch tabblad.
+                      </p>
+                      <textarea
+                        value={techQuestion}
+                        onChange={(e) => setTechQuestion(e.target.value)}
+                        placeholder="Bijv. Kun je checken of hun huidige website WordPress is?"
+                        className={`w-full px-4 py-3 border rounded-xl resize-none ${
+                          darkMode 
+                            ? 'bg-gray-700 border-gray-600 text-white placeholder-gray-400' 
+                            : 'bg-gray-50 border-gray-200 placeholder-gray-400'
+                        }`}
+                        rows={4}
+                        autoFocus
+                      />
+                      <div className="flex gap-3 mt-4">
+                        <button
+                          onClick={() => {
+                            if (techQuestion.trim()) {
+                              onSetTechnicalQuestion(techQuestion.trim())
+                            } else {
+                              onSetTechnicalQuestion(undefined)
+                            }
+                            setShowTechQuestionInput(false)
+                          }}
+                          className="flex-1 py-2.5 bg-purple-600 text-white font-medium rounded-xl hover:bg-purple-700 transition-colors"
+                        >
+                          {techQuestion.trim() ? 'Vraag versturen' : 'Vraag verwijderen'}
+                        </button>
+                        <button
+                          onClick={() => setShowTechQuestionInput(false)}
+                          className={`px-4 py-2.5 rounded-xl font-medium ${
+                            darkMode ? 'bg-gray-700 text-gray-300 hover:bg-gray-600' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                          }`}
+                        >
+                          Annuleren
+                        </button>
+                      </div>
+                    </div>
+                  </motion.div>
+                </motion.div>
               </AnimatePresence>,
               document.body
             )}
@@ -3661,6 +3822,44 @@ function LeadRow({
                       )}
                     </div>
                   </div>
+
+                  {/* Technical Question - shown if there is one */}
+                  {lead.technicalQuestion && (
+                    <div className={`rounded-xl p-3 sm:p-4 border ${darkMode ? 'bg-purple-500/10 border-purple-500/30' : 'bg-purple-50 border-purple-200'}`}>
+                      <h4 className={`text-xs sm:text-sm font-semibold mb-2 sm:mb-3 flex items-center gap-2`}>
+                        <div className={`p-1.5 rounded-lg ${darkMode ? 'bg-purple-500/20' : 'bg-purple-100'}`}>
+                          <Wrench className={`w-3.5 h-3.5 ${darkMode ? 'text-purple-400' : 'text-purple-600'}`} />
+                        </div>
+                        <span className={darkMode ? 'text-gray-200' : 'text-gray-700'}>
+                          Technische vraag
+                        </span>
+                        {lead.technicalQuestionBy && (
+                          <span className={`ml-auto text-[10px] ${darkMode ? 'text-gray-500' : 'text-gray-400'}`}>
+                            door {lead.technicalQuestionBy}
+                          </span>
+                        )}
+                      </h4>
+                      <div className={`text-sm p-3 rounded-lg ${darkMode ? 'bg-gray-800/50 text-gray-300' : 'bg-white text-gray-700 shadow-sm'}`}>
+                        {lead.technicalQuestion}
+                      </div>
+                      {lead.technicalQuestionAt && (
+                        <p className={`text-[10px] mt-2 ${darkMode ? 'text-gray-500' : 'text-gray-400'}`}>
+                          {new Date(lead.technicalQuestionAt).toLocaleDateString('nl-NL', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' })}
+                        </p>
+                      )}
+                      {isAdmin && (
+                        <button
+                          onClick={() => onSetTechnicalQuestion(undefined)}
+                          className={`w-full mt-3 px-3 py-2 text-xs rounded-lg font-medium flex items-center justify-center gap-1.5 transition-colors ${
+                            darkMode ? 'bg-emerald-500/20 text-emerald-400 hover:bg-emerald-500/30' : 'bg-emerald-100 text-emerald-700 hover:bg-emerald-200'
+                          }`}
+                        >
+                          <CheckCircle className="w-3.5 h-3.5" />
+                          Markeer als afgehandeld
+                        </button>
+                      )}
+                    </div>
+                  )}
 
                   {/* Website Analysis */}
                   {lead.website && (
