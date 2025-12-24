@@ -348,7 +348,7 @@ export default function DesignFeedbackSections({
         <div className="flex-1 overflow-hidden flex flex-col md:flex-row">
           
           {/* Preview area - hidden on intro, smaller on desktop */}
-          <div className={`${step === 'intro' ? 'hidden md:flex md:w-1/3' : isMobile ? 'h-[45vh]' : 'flex-1'} bg-zinc-950 p-4 flex items-center justify-center`}>
+          <div className={`${step === 'intro' ? 'hidden md:flex md:w-1/3' : isMobile ? 'h-[30vh] flex-shrink-0' : 'flex-1'} bg-zinc-950 p-2 md:p-4 flex items-center justify-center`}>
             <div className={`relative w-full h-full ${device === 'mobile' ? 'max-w-[375px]' : ''} bg-white rounded-lg overflow-hidden shadow-2xl`}>
               {!iframeLoaded && (
                 <div className="absolute inset-0 flex items-center justify-center bg-zinc-900">
@@ -364,8 +364,8 @@ export default function DesignFeedbackSections({
             </div>
           </div>
 
-          {/* Feedback panel - larger on intro */}
-          <div className={`${step === 'intro' ? 'flex-1 md:w-2/3' : isMobile ? 'flex-1' : 'w-full md:w-[450px] lg:w-[500px]'} bg-zinc-900 border-t md:border-t-0 md:border-l border-zinc-800 flex flex-col overflow-hidden`}>
+          {/* Feedback panel - larger on intro, scrollable on mobile */}
+          <div className={`${step === 'intro' ? 'flex-1 md:w-2/3' : isMobile ? 'flex-1 min-h-0' : 'w-full md:w-[450px] lg:w-[500px]'} bg-zinc-900 border-t md:border-t-0 md:border-l border-zinc-800 flex flex-col overflow-hidden`}>
             
             {/* INTRO STEP */}
             {step === 'intro' && (
@@ -413,9 +413,9 @@ export default function DesignFeedbackSections({
 
             {/* SECTIONS STEP */}
             {step === 'sections' && currentSection && (
-              <div className="flex-1 flex flex-col">
-                {/* Section header */}
-                <div className="p-4 border-b border-zinc-800">
+              <div className="flex-1 flex flex-col min-h-0 overflow-hidden">
+                {/* Section header - fixed */}
+                <div className="p-4 border-b border-zinc-800 flex-shrink-0">
                   <div className="flex items-center gap-3 mb-2">
                     <span className="text-2xl">{currentSection.icon}</span>
                     <div>
@@ -434,21 +434,21 @@ export default function DesignFeedbackSections({
                   </div>
                 </div>
 
-                {/* Feedback buttons */}
-                <div className="flex-1 p-4 flex flex-col">
+                {/* Feedback content - scrollable */}
+                <div className="flex-1 overflow-y-auto p-4">
                   <p className="text-sm text-zinc-400 mb-4">Wat vind je van dit onderdeel?</p>
                   
                   <div className="grid grid-cols-2 gap-3 mb-4">
                     <button
                       onClick={() => updateFeedback(currentSection.id, { rating: 'good' })}
-                      className={`p-4 rounded-xl border-2 transition-all flex flex-col items-center gap-2 ${
+                      className={`p-3 md:p-4 rounded-xl border-2 transition-all flex flex-col items-center gap-2 ${
                         currentFeedback?.rating === 'good'
                           ? 'border-green-500 bg-green-500/20 text-green-400'
                           : 'border-zinc-700 bg-zinc-800/50 text-zinc-400 hover:border-zinc-600'
                       }`}
                     >
-                      <ThumbsUp className="w-8 h-8" />
-                      <span className="font-medium">Goed zo!</span>
+                      <ThumbsUp className="w-6 h-6 md:w-8 md:h-8" />
+                      <span className="font-medium text-sm md:text-base">Goed zo!</span>
                     </button>
                     
                     <button
@@ -456,14 +456,14 @@ export default function DesignFeedbackSections({
                         updateFeedback(currentSection.id, { rating: 'change' })
                         setExpandedComment(currentSection.id)
                       }}
-                      className={`p-4 rounded-xl border-2 transition-all flex flex-col items-center gap-2 ${
+                      className={`p-3 md:p-4 rounded-xl border-2 transition-all flex flex-col items-center gap-2 ${
                         currentFeedback?.rating === 'change'
                           ? 'border-amber-500 bg-amber-500/20 text-amber-400'
                           : 'border-zinc-700 bg-zinc-800/50 text-zinc-400 hover:border-zinc-600'
                       }`}
                     >
-                      <ThumbsDown className="w-8 h-8" />
-                      <span className="font-medium">Aanpassen</span>
+                      <ThumbsDown className="w-6 h-6 md:w-8 md:h-8" />
+                      <span className="font-medium text-sm md:text-base">Aanpassen</span>
                     </button>
                   </div>
 
@@ -477,15 +477,15 @@ export default function DesignFeedbackSections({
                         className="mb-4"
                       >
                         {/* Preset buttons */}
-                        <p className="text-sm text-zinc-400 mb-3">Wat wil je aanpassen?</p>
-                        <div className="flex flex-wrap gap-2 mb-4">
+                        <p className="text-sm text-zinc-400 mb-2">Wat wil je aanpassen?</p>
+                        <div className="flex flex-wrap gap-1.5 md:gap-2 mb-3">
                           {FEEDBACK_PRESETS.map(preset => {
                             const isSelected = currentFeedback?.presets.includes(preset.id)
                             return (
                               <button
                                 key={preset.id}
                                 onClick={() => togglePreset(currentSection.id, preset.id)}
-                                className={`px-3 py-2 rounded-lg text-sm font-medium transition-all flex items-center gap-2 ${
+                                className={`px-2 md:px-3 py-1.5 md:py-2 rounded-lg text-xs md:text-sm font-medium transition-all flex items-center gap-1.5 ${
                                   isSelected
                                     ? 'bg-amber-500/30 border-amber-500 text-amber-300 border'
                                     : 'bg-zinc-800 border-zinc-700 text-zinc-400 border hover:border-zinc-600 hover:text-zinc-300'
@@ -499,14 +499,14 @@ export default function DesignFeedbackSections({
                         </div>
 
                         {/* Custom comment */}
-                        <label className="text-sm text-zinc-400 mb-2 block">
+                        <label className="text-sm text-zinc-400 mb-1.5 block">
                           Extra toelichting <span className="text-zinc-600">(optioneel)</span>
                         </label>
                         <textarea
                           value={currentFeedback?.comment || ''}
                           onChange={(e) => updateFeedback(currentSection.id, { comment: e.target.value })}
                           placeholder="Beschrijf hier wat je precies wilt veranderen..."
-                          className="w-full h-20 px-3 py-2 bg-zinc-800 border border-zinc-700 rounded-lg text-white placeholder-zinc-500 resize-none focus:outline-none focus:ring-2 focus:ring-purple-500"
+                          className="w-full h-16 md:h-20 px-3 py-2 bg-zinc-800 border border-zinc-700 rounded-lg text-white text-sm placeholder-zinc-500 resize-none focus:outline-none focus:ring-2 focus:ring-purple-500"
                         />
                       </motion.div>
                     )}
@@ -522,18 +522,18 @@ export default function DesignFeedbackSections({
                       Toch een opmerking toevoegen?
                     </button>
                   )}
+                </div>
 
-                  <div className="flex-1" />
-
-                  {/* Navigation */}
+                {/* Navigation - fixed at bottom */}
+                <div className="flex-shrink-0 p-4 border-t border-zinc-800 bg-zinc-900">
                   <div className="flex gap-3">
                     {currentSectionIndex > 0 && (
                       <button
                         onClick={goPrev}
-                        className="px-4 py-3 bg-zinc-800 text-white rounded-xl font-medium hover:bg-zinc-700 transition-colors flex items-center gap-2"
+                        className="px-3 md:px-4 py-3 bg-zinc-800 text-white rounded-xl font-medium hover:bg-zinc-700 transition-colors flex items-center gap-1 md:gap-2"
                       >
                         <ChevronLeft className="w-5 h-5" />
-                        Vorige
+                        <span className="hidden sm:inline">Vorige</span>
                       </button>
                     )}
                     
