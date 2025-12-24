@@ -86,17 +86,17 @@ const emailTemplates: EmailTemplate[] = [
   {
     id: 'intro',
     name: 'Eerste kennismaking',
-    subject: 'Even voorstellen - vraagje over {{bedrijf}}',
+    subject: 'Even voorstellen',
     description: 'Eerste contact, persoonlijk en laagdrempelig',
     body: `Hoi {{naam}},
 
-Ik kwam {{bedrijf}} tegen en zag dat jullie nog geen website hebben. Dat viel me op, want ik zie vaak dat bedrijven zoals die van jullie daar best wat aan zouden kunnen hebben.
+Ik ben Laurens, en ik help ondernemers met hun website. Ik kwam {{bedrijf}} tegen en dacht: laat ik even een berichtje sturen.
 
-Ik ben Laurens van Webstability - wij maken websites voor ondernemers. Geen ingewikkeld gedoe, gewoon een nette site die werkt.
+Ik zag dat jullie nog geen website hebben, of in ieder geval niet eentje die ik kon vinden. Dat hoeft natuurlijk helemaal geen probleem te zijn - niet elk bedrijf heeft dat nodig.
 
-Geen idee of dit iets voor jullie is, maar als je er eens over wilt sparren: ik denk graag mee. Vrijblijvend uiteraard.
+Maar mocht je er ooit eens over willen sparren, ik denk graag mee. Geheel vrijblijvend, gewoon even een gesprekje.
 
-Groet,
+Fijne dag!
 
 {{afzender}}
 Webstability`
@@ -104,17 +104,17 @@ Webstability`
   {
     id: 'geen-website',
     name: 'Geen website',
-    subject: 'Vraagje voor {{bedrijf}}',
+    subject: 'Vraagje',
     description: 'Voor bedrijven zonder online aanwezigheid',
     body: `Hoi {{naam}},
 
-Ik zag dat {{bedrijf}} geen website heeft. Eerlijk: niet elk bedrijf heeft dat nodig. Maar ik was benieuwd of jullie daar weleens over nagedacht hebben?
+Ik kwam {{bedrijf}} tegen en was benieuwd: hebben jullie bewust geen website, of is het er gewoon nooit van gekomen?
 
-Wij helpen ondernemers met hun website - van ontwerp tot onderhoud. Niks moeilijks, gewoon iets dat er goed uitziet en doet wat het moet doen.
+Ik vraag het omdat ik veel ondernemers spreek die eigenlijk wel willen maar het steeds uitstellen. Als dat herkenbaar is, wil ik best eens meedenken over hoe het simpel en betaalbaar kan.
 
-Als je vragen hebt of gewoon eens wilt horen wat de mogelijkheden zijn, laat gerust weten.
+Niks verplichtends hoor, gewoon even laten weten als je vragen hebt.
 
-Groet,
+Groetjes,
 
 {{afzender}}
 Webstability`
@@ -122,15 +122,15 @@ Webstability`
   {
     id: 'verouderd',
     name: 'Verouderde website',
-    subject: 'Opvallinkje over jullie website',
+    subject: 'Even een tipje',
     description: 'Voor bedrijven met oude/slechte website',
     body: `Hoi {{naam}},
 
-Ik bekeek de website van {{bedrijf}} en dacht: die zou best een opfrisbeurt kunnen gebruiken. Niet om flauw te doen hoor, maar een moderne site kan echt verschil maken.
+Ik bekeek de website van {{bedrijf}} en zag een paar dingetjes die beter zouden kunnen. Niet om vervelend te doen, maar ik denk dat een frissere uitstraling jullie zou kunnen helpen.
 
-Wij helpen ondernemers met websites die er strak uitzien en goed werken op telefoon. Geen grote investering vooraf - wij werken met een abonnement.
+Tegenwoordig bekijkt meer dan de helft van de mensen websites op hun telefoon. Als een site daar niet lekker werkt, klikken ze vaak snel weg.
 
-Benieuwd wat er mogelijk is? Ik kijk graag even mee, geheel vrijblijvend.
+Mocht je nieuwsgierig zijn wat er mogelijk is, ik kijk graag even mee. Geen verkooppraatje, gewoon eerlijk advies.
 
 Groet,
 
@@ -140,15 +140,17 @@ Webstability`
   {
     id: 'followup',
     name: 'Follow-up',
-    subject: 'Nog even terugkomen op mijn mailtje',
+    subject: 'Nog even dit',
     description: 'Na eerste contact geen reactie',
     body: `Hoi {{naam}},
 
-Even een vriendelijke reminder - ik stuurde vorige week een berichtje over een website voor {{bedrijf}}.
+Even een kort berichtje - ik stuurde vorige week iets over jullie website.
 
-Snap helemaal als je er geen tijd voor hebt gehad of als het gewoon niets voor jullie is. Maar mocht je nog vragen hebben, laat gerust weten.
+Helemaal niet erg als het niks voor jullie is of als je er simpelweg geen tijd voor had. Ik wilde alleen even checken of je mijn bericht had gezien.
 
-Groet,
+Als je vragen hebt, hoor ik het graag!
+
+Fijne dag,
 
 {{afzender}}
 Webstability`
@@ -156,39 +158,40 @@ Webstability`
   {
     id: 'lokaal',
     name: 'Lokale benadering',
-    subject: 'Mede-ondernemer uit de buurt',
+    subject: 'Van ondernemer tot ondernemer',
     description: 'Nadruk op lokale samenwerking',
     body: `Hoi {{naam}},
 
-Als ondernemer uit de regio wilde ik me even voorstellen. Ik ben {{afzender}} van Webstability - wij maken websites voor ondernemers.
+Ik ben {{afzender}}, ook ondernemer hier in de buurt. Ik maak websites voor lokale bedrijven en dacht: laat ik me eens voorstellen.
 
-Ik werk graag lokaal. Lekker persoonlijk, even langskomen als dat nodig is, en je weet wie je belt als er iets is.
+Ik werk het liefst met ondernemers uit de regio. Lekker persoonlijk, je weet wie je belt als er iets is, en een bakkie koffie doen is zo geregeld.
 
-Zin om eens kennis te maken? Koffie is van mij.
+Zin om eens kennis te maken? Geen agenda, gewoon even buurten.
 
 Groet,
 
 {{afzender}}
-Webstability
-Julianalaan 41, Kaag`
+Webstability`
   },
   {
     id: 'actie',
     name: 'Actie/Aanbieding',
-    subject: 'Iets leuks voor {{bedrijf}} (eindejaarsactie)',
+    subject: 'Cadeautje van ons',
     description: 'Seizoensgebonden aanbieding',
     body: `Hoi {{naam}},
 
-Even een berichtje over onze eindejaarsactie: wij maken gratis een website-ontwerp op maat voor {{bedrijf}}.
+Even een leuk berichtje: wij maken deze maand gratis een website-ontwerp op maat voor een aantal ondernemers.
 
 Hoe het werkt:
-- Wij maken een ontwerp, geen verplichtingen
-- Vind je het wat? Dan gaan we verder
-- Niet tevreden? Niks aan de hand
+• Wij maken een ontwerp speciaal voor {{bedrijf}}
+• Vind je het wat? Dan kunnen we verder praten
+• Niet helemaal jouw ding? Dan stoppen we, geen probleem
 
-Geldt nog tot eind december. Interesse? Stuur even een berichtje terug.
+Geen addertje onder het gras, gewoon een manier om te laten zien wat we kunnen.
 
-Fijne feestdagen!
+Interesse? Stuur even een berichtje terug!
+
+Groetjes,
 
 {{afzender}}
 Webstability`
@@ -1087,7 +1090,7 @@ export default function MarketingDashboard() {
                                 animate={{ opacity: 1, height: 'auto' }}
                                 onClick={() => {
                                   if (analysis.issues.length > 0 && business.email) {
-                                    // Genereer verbeterpunten tekst
+                                    // Genereer verbeterpunten tekst in vriendelijke taal
                                     const issuesList = analysis.issues
                                       .map(issue => `• ${issue.message}`)
                                       .join('\n')
@@ -1095,23 +1098,23 @@ export default function MarketingDashboard() {
                                     // Open prospect email modal
                                     setProspectEmail(business.email)
                                     setProspectBusinessName(business.name || 'jullie bedrijf')
-                                    setProspectSubject(`Tip voor ${business.name || 'jullie website'}`)
+                                    setProspectSubject(`Even een tipje`)
                                     setProspectBody(
-`Beste ondernemer,
+`Hoi,
 
-Ik kwam jullie website tegen en zag een paar dingen die mij opvielen:
+Ik bekeek jullie website en zag een paar dingetjes waarvan ik dacht: dat zou ik even laten weten.
 
 ${issuesList}
 
-Dit zijn vaak kleinere aanpassingen die een groot verschil kunnen maken voor jullie online zichtbaarheid en klantervaring.
+Dit zijn dingen die soms simpel op te lossen zijn, maar die wel verschil kunnen maken voor hoe bezoekers jullie website ervaren.
 
-Ik help ondernemers met precies dit soort verbeteringen - vaak simpeler en betaalbaarder dan je zou verwachten. Als je hier eens vrijblijvend over wilt sparren, neem dan gerust contact op.
+Ik help ondernemers met dit soort dingen. Mocht je nieuwsgierig zijn wat er mogelijk is, ik denk graag even mee. Helemaal vrijblijvend, gewoon een praatje.
 
-Je kunt me bereiken via dit emailadres of bellen: 06-44712573
+Je kunt me mailen of bellen op 06-44712573.
 
-Met vriendelijke groet,
+Groetjes,
 
-Laurens Bos
+Laurens
 Webstability`
                                     )
                                     setShowProspectEmailModal(true)
@@ -1149,14 +1152,14 @@ Webstability`
                                     ))}
                                     {analysis.issues.length > 3 && (
                                       <li className={`${darkMode ? 'text-gray-500' : 'text-gray-400'}`}>
-                                        +{analysis.issues.length - 3} meer problemen
+                                        +{analysis.issues.length - 3} andere punten
                                       </li>
                                     )}
                                   </ul>
                                 )}
                                 {analysis.issues.length > 0 && business.email ? (
                                   <p className={`mt-2 text-xs italic flex items-center gap-1 ${darkMode ? 'text-yellow-400' : 'text-yellow-600'}`}>
-                                    💡 Deze website heeft enkele verbeterpunten.
+                                    💡 Klik om een vriendelijk tipje te sturen
                                     <Mail className="w-3 h-3 inline" />
                                   </p>
                                 ) : (

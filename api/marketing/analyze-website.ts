@@ -82,7 +82,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     if (!hasHttps) {
       issues.push({
         type: 'critical',
-        message: 'Geen HTTPS - Onveilige verbinding',
+        message: 'Geen beveiligde verbinding (het slotje in de browser ontbreekt)',
         icon: 'shield-off',
       })
       score -= 25
@@ -120,10 +120,10 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
           redirect: 'follow',
         })
         details.hasHttps = false
-        if (!issues.find(i => i.message.includes('HTTPS'))) {
+        if (!issues.find(i => i.message.includes('beveiligde verbinding'))) {
           issues.push({
             type: 'critical',
-            message: 'Geen HTTPS - Onveilige verbinding',
+            message: 'Geen beveiligde verbinding (het slotje in de browser ontbreekt)',
             icon: 'shield-off',
           })
           score -= 25
@@ -140,14 +140,14 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       if (loadTime > 5000) {
         issues.push({
           type: 'critical',
-          message: `Zeer trage website: ${(loadTime / 1000).toFixed(1)} seconden`,
+          message: `Website laadt langzaam (${(loadTime / 1000).toFixed(1)} sec) - bezoekers haken snel af`,
           icon: 'clock',
         })
         score -= 20
       } else if (loadTime > 3000) {
         issues.push({
           type: 'warning',
-          message: `Trage laadtijd: ${(loadTime / 1000).toFixed(1)} seconden`,
+          message: `Laadtijd kan sneller (${(loadTime / 1000).toFixed(1)} sec) - snellere sites scoren beter`,
           icon: 'clock',
         })
         score -= 10
@@ -162,7 +162,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       if (!hasViewport) {
         issues.push({
           type: 'critical',
-          message: 'Niet mobiel-vriendelijk',
+          message: 'Werkt niet goed op telefoons - veel bezoekers zien de site op mobiel',
           icon: 'smartphone',
         })
         details.missingFeatures.push('Responsive design')
@@ -199,7 +199,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         score -= techScore
         issues.push({
           type: 'warning',
-          message: `Verouderde technologie: ${details.oldTechnologies.slice(0, 3).join(', ')}`,
+          message: `Oudere technieken gebruikt - website kan moderner`,
           icon: 'alert-triangle',
         })
       }
@@ -214,7 +214,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         if (/wordpress\s*[0-3]\./i.test(html) || /wp-includes.*version.*[0-3]\./i.test(html)) {
           issues.push({
             type: 'warning',
-            message: 'Mogelijk verouderde WordPress versie',
+            message: 'WordPress lijkt niet up-to-date - updates zijn belangrijk voor veiligheid',
             icon: 'alert-circle',
           })
           score -= 10
@@ -233,33 +233,25 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         /tailwind/i,
       ]
       details.hasModernFramework = modernFrameworks.some(pattern => pattern.test(html))
-      
-      if (!details.hasModernFramework && !details.hasWordPress) {
-        issues.push({
-          type: 'info',
-          message: 'Geen modern framework gedetecteerd',
-          icon: 'code',
-        })
-      }
 
       // Check 8: Ontbrekende moderne features
       if (!htmlLower.includes('charset') && !htmlLower.includes('utf-8')) {
-        details.missingFeatures.push('Character encoding')
+        details.missingFeatures.push('Tekencodering')
         score -= 5
       }
       
       if (!htmlLower.includes('<meta name="description"') && !htmlLower.includes("<meta name='description'")) {
-        details.missingFeatures.push('Meta description (SEO)')
+        details.missingFeatures.push('Beschrijving voor Google')
         score -= 5
       }
 
       if (!htmlLower.includes('favicon') && !htmlLower.includes('icon')) {
-        details.missingFeatures.push('Favicon')
+        details.missingFeatures.push('Icoontje in browsertab')
         score -= 3
       }
 
       if (!htmlLower.includes('og:') && !htmlLower.includes('twitter:')) {
-        details.missingFeatures.push('Social media tags')
+        details.missingFeatures.push('Preview bij delen op social media')
         score -= 3
       }
 
@@ -296,7 +288,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       console.error('[WebsiteAnalysis] Fetch error:', fetchError)
       issues.push({
         type: 'critical',
-        message: 'Website niet bereikbaar of zeer traag',
+        message: 'Website moeilijk te bereiken - bezoekers kunnen dit ook ervaren',
         icon: 'wifi-off',
       })
       score -= 30
@@ -319,17 +311,17 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     let salesTip = ''
 
     if (score >= 80) {
-      recommendation = 'Deze website is redelijk up-to-date.'
-      salesTip = 'Focus op specifieke verbeteringen zoals snelheid of nieuwe features.'
+      recommendation = 'Deze website ziet er prima uit.'
+      salesTip = 'Vraag of ze tevreden zijn en of er wensen zijn voor verbeteringen.'
     } else if (score >= 60) {
-      recommendation = 'Deze website heeft enkele verbeterpunten.'
-      salesTip = 'Benadruk mobiele optimalisatie en moderne uitstraling.'
+      recommendation = 'Deze website heeft een paar verbeterpunten.'
+      salesTip = 'Benader vriendelijk, focus op hoe de site beter kan werken op telefoons.'
     } else if (score >= 40) {
-      recommendation = 'Deze website is verouderd en heeft een update nodig.'
-      salesTip = 'Perfecte kandidaat! Benadruk dat hun website klanten kost door slechte mobiele ervaring.'
+      recommendation = 'Deze website zou wel een update kunnen gebruiken.'
+      salesTip = 'Goede kans om te helpen. Leg uit dat veel bezoekers op mobiel kijken.'
     } else {
-      recommendation = 'Deze website is ernstig verouderd en schaadt waarschijnlijk het bedrijf.'
-      salesTip = 'Uitstekende lead! Wijs op veiligheidsrisico\'s (geen HTTPS) en verloren klanten door slechte ervaring.'
+      recommendation = 'Deze website is toe aan vernieuwing.'
+      salesTip = 'Leg vriendelijk uit dat een moderne site bezoekers helpt vertrouwen te krijgen.'
     }
 
     const analysis: WebsiteAnalysis = {
