@@ -30,7 +30,7 @@ export interface ChangeRequest {
   description: string
   request?: string              // Legacy field, use description instead
   priority: 'low' | 'normal' | 'urgent'
-  category: 'text' | 'design' | 'functionality' | 'other'
+  category: 'text' | 'design' | 'images' | 'functionality' | 'other'
   status?: 'pending' | 'in_progress' | 'done' | 'completed'
   response?: string
   createdAt?: string
@@ -250,6 +250,7 @@ export interface Project {
   // Change requests tracking
   changesThisMonth?: number      // Aantal aanpassingen deze maand
   changesResetAt?: string        // Wanneer teller reset
+  analyticsUrl?: string          // URL naar analytics dashboard (bv. Plausible/GA embed)
   // Review status
   reviewRequested?: boolean      // Is review gevraagd?
   reviewRequestedAt?: string     // Wanneer gevraagd

@@ -49,7 +49,7 @@ interface ChangeRequest {
   title?: string
   description: string
   priority: 'low' | 'normal' | 'urgent'
-  category: 'text' | 'design' | 'functionality' | 'other'
+  category: 'text' | 'design' | 'images' | 'functionality' | 'other'
   attachments?: string[]
   status?: 'pending' | 'in_progress' | 'done' | 'completed'
   createdAt?: string

@@ -96,6 +96,7 @@ interface Project {
   stagingUrl?: string
   liveUrl?: string
   websiteUrl?: string            // Alias for liveUrl
+  analyticsUrl?: string          // URL naar analytics dashboard
   designPreviewUrl?: string
   designApproved?: boolean
   designApprovedAt?: string
@@ -107,6 +108,7 @@ interface Project {
   phaseChecklist?: Record<string, boolean>
   lastActivityAt?: string  // Voor churn detection
   liveDate?: string        // Wanneer live gegaan
+  changesThisMonth?: number      // Aantal aanpassingen deze maand
   // Custom feedback questions (synced with types/project.ts)
   feedbackQuestions?: string[]       // Array van question IDs
   customQuestions?: string[]         // Eigen vragen als strings
@@ -119,7 +121,7 @@ interface ChangeRequest {
   title?: string
   description: string
   priority: 'low' | 'normal' | 'urgent'
-  category: 'text' | 'design' | 'functionality' | 'other'
+  category: 'text' | 'design' | 'images' | 'functionality' | 'other'
   status?: 'pending' | 'in_progress' | 'done' | 'completed'
   createdAt?: string
 }
@@ -3616,7 +3618,7 @@ interface ProjectDetailModalProps {
 }
 
 function ProjectDetailModal({ project, darkMode, onClose, onUpdate, phases }: Omit<ProjectDetailModalProps, 'onDelete' | 'onPaymentClick'>) {
-  const [activeTab, setActiveTab] = useState<'overview' | 'messages' | 'payment' | 'onboarding' | 'feedback'>('overview')
+  const [activeTab, setActiveTab] = useState<'overview' | 'messages' | 'payment' | 'onboarding' | 'feedback' | 'changes'>('overview')
   const [paymentLoading, setPaymentLoading] = useState(false)
   const [generatedPaymentUrl, setGeneratedPaymentUrl] = useState('')
   const [paymentEmailSent, setPaymentEmailSent] = useState(false)
@@ -3627,6 +3629,7 @@ function ProjectDetailModal({ project, darkMode, onClose, onUpdate, phases }: Om
   const [internalNotes, setInternalNotes] = useState(project.internalNotes || '')
   const [stagingUrl, setStagingUrl] = useState(project.stagingUrl || '')
   const [liveUrl, setLiveUrl] = useState(project.liveUrl || '')
+  const [analyticsUrl, setAnalyticsUrl] = useState(project.analyticsUrl || '')
   const [designPreviewUrl, setDesignPreviewUrl] = useState(project.designPreviewUrl || '')
   const [newMessage, setNewMessage] = useState('')
   const [isSaving, setIsSaving] = useState(false)
@@ -3742,6 +3745,7 @@ function ProjectDetailModal({ project, darkMode, onClose, onUpdate, phases }: Om
       paymentStatus: editPaymentStatus,
       stagingUrl,
       liveUrl,
+      analyticsUrl,
       designPreviewUrl,
       internalNotes,
       phaseChecklist: checklist,
@@ -4048,12 +4052,12 @@ function ProjectDetailModal({ project, darkMode, onClose, onUpdate, phases }: Om
             </div>
           )}
 
-          {/* Tabs - Vereenvoudigd naar 4 */}
+          {/* Tabs - Vereenvoudigd naar 4 + changes voor live */}
           <div className="flex gap-2 mt-4 overflow-x-auto pb-1">
-            {(['overview', 'messages', 'payment', 'onboarding', 'feedback'] as const).map(tab => (
+            {(['overview', 'messages', 'payment', 'onboarding', 'feedback', ...(project.phase === 'live' ? ['changes'] : [])] as const).map(tab => (
               <button
                 key={tab}
-                onClick={() => setActiveTab(tab)}
+                onClick={() => setActiveTab(tab as typeof activeTab)}
                 className={`px-4 py-2 rounded-xl text-sm font-medium transition-colors whitespace-nowrap flex items-center gap-2 ${
                   activeTab === tab
                     ? 'bg-emerald-500 text-white'
@@ -4094,6 +4098,19 @@ function ProjectDetailModal({ project, darkMode, onClose, onUpdate, phases }: Om
                     Feedback
                     {project.onboardingData?.sectionFeedback && (
                       <span className={`w-2 h-2 rounded-full bg-blue-500`} />
+                    )}
+                  </>
+                )}
+                {tab === 'changes' && (
+                  <>
+                    <RefreshCw className="w-4 h-4" />
+                    Wijzigingen
+                    {project.changeRequests && project.changeRequests.filter(r => r.status === 'pending' || r.status === 'in_progress').length > 0 && (
+                      <span className={`px-1.5 py-0.5 text-xs font-bold rounded-full ${
+                        activeTab === tab ? 'bg-white/20' : 'bg-orange-500 text-white'
+                      }`}>
+                        {project.changeRequests.filter(r => r.status === 'pending' || r.status === 'in_progress').length}
+                      </span>
                     )}
                   </>
                 )}
@@ -4486,6 +4503,25 @@ function ProjectDetailModal({ project, darkMode, onClose, onUpdate, phases }: Om
                             : 'bg-white border-gray-300 text-gray-900 placeholder-gray-400'
                         } focus:outline-none focus:ring-2 focus:ring-green-500/20 focus:border-green-500`}
                       />
+                    </div>
+                    <div>
+                      <label className={`block text-sm font-medium mb-1 ${darkMode ? 'text-gray-400' : 'text-gray-600'}`}>
+                        Analytics URL (optioneel)
+                      </label>
+                      <input
+                        type="url"
+                        value={analyticsUrl}
+                        onChange={(e) => setAnalyticsUrl(e.target.value)}
+                        placeholder="https://plausible.io/klantnaam.nl"
+                        className={`w-full px-4 py-2 rounded-lg border ${
+                          darkMode 
+                            ? 'bg-gray-800 border-gray-600 text-white placeholder-gray-500' 
+                            : 'bg-white border-gray-300 text-gray-900 placeholder-gray-400'
+                        } focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500`}
+                      />
+                      <p className={`text-xs mt-1 ${darkMode ? 'text-gray-500' : 'text-gray-400'}`}>
+                        Plausible/GA embed URL - zichtbaar voor klant in live dashboard
+                      </p>
                     </div>
                   </div>
                 </div>
@@ -5420,6 +5456,102 @@ function ProjectDetailModal({ project, darkMode, onClose, onUpdate, phases }: Om
                       Design preview is beschikbaar: <a href={project.designPreviewUrl} target="_blank" rel="noopener noreferrer" className="text-blue-500 hover:underline">bekijk</a>
                     </p>
                   )}
+                </div>
+              )}
+            </div>
+          )}
+
+          {/* Changes Tab - Only for live projects */}
+          {activeTab === 'changes' && project.phase === 'live' && (
+            <div className="space-y-4">
+              <div className="flex items-center justify-between">
+                <div>
+                  <h3 className={`font-semibold ${darkMode ? 'text-white' : 'text-gray-900'}`}>
+                    Wijzigingsverzoeken
+                  </h3>
+                  <p className={`text-sm ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>
+                    {project.changeRequests?.length || 0} verzoeken • {project.changesThisMonth || 0} deze maand
+                  </p>
+                </div>
+              </div>
+
+              {/* Change requests list */}
+              {project.changeRequests && project.changeRequests.length > 0 ? (
+                <div className="space-y-3">
+                  {project.changeRequests.map((request, index) => (
+                    <div
+                      key={request.id || index}
+                      className={`p-4 rounded-xl border ${
+                        request.status === 'pending' 
+                          ? darkMode ? 'bg-yellow-900/10 border-yellow-500/30' : 'bg-yellow-50 border-yellow-200'
+                          : request.status === 'in_progress'
+                            ? darkMode ? 'bg-blue-900/10 border-blue-500/30' : 'bg-blue-50 border-blue-200'
+                            : darkMode ? 'bg-gray-700/30 border-gray-600' : 'bg-gray-50 border-gray-200'
+                      }`}
+                    >
+                      <div className="flex items-start justify-between gap-4">
+                        <div className="flex-1 min-w-0">
+                          <div className="flex items-center gap-2 mb-2">
+                            <span className={`font-medium ${darkMode ? 'text-white' : 'text-gray-900'}`}>
+                              {request.title || request.description.substring(0, 50)}
+                            </span>
+                            <span className={`px-2 py-0.5 text-xs rounded-full ${
+                              request.priority === 'urgent' 
+                                ? 'bg-red-500/20 text-red-400' 
+                                : request.priority === 'low'
+                                  ? 'bg-gray-500/20 text-gray-400'
+                                  : 'bg-blue-500/20 text-blue-400'
+                            }`}>
+                              {request.priority === 'urgent' ? 'Urgent' : request.priority === 'low' ? 'Laag' : 'Normaal'}
+                            </span>
+                          </div>
+                          <p className={`text-sm mb-3 ${darkMode ? 'text-gray-400' : 'text-gray-600'}`}>
+                            {request.description}
+                          </p>
+                          <div className={`text-xs ${darkMode ? 'text-gray-500' : 'text-gray-400'}`}>
+                            {request.category} • {request.createdAt ? new Date(request.createdAt).toLocaleDateString('nl-NL') : 'Onbekend'}
+                          </div>
+                        </div>
+                        
+                        {/* Status selector */}
+                        <select
+                          value={request.status || 'pending'}
+                          onChange={(e) => {
+                            const newStatus = e.target.value as 'pending' | 'in_progress' | 'done'
+                            const updatedRequests = project.changeRequests?.map((r, i) => 
+                              i === index ? { ...r, status: newStatus } : r
+                            )
+                            onUpdate({
+                              ...project,
+                              changeRequests: updatedRequests,
+                              updatedAt: new Date().toISOString()
+                            })
+                          }}
+                          className={`px-3 py-1.5 rounded-lg text-sm font-medium ${
+                            request.status === 'pending'
+                              ? 'bg-yellow-500 text-white'
+                              : request.status === 'in_progress'
+                                ? 'bg-blue-500 text-white'
+                                : 'bg-emerald-500 text-white'
+                          }`}
+                        >
+                          <option value="pending">Nieuw</option>
+                          <option value="in_progress">In behandeling</option>
+                          <option value="done">Afgerond</option>
+                        </select>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <div className={`p-8 text-center rounded-xl border ${darkMode ? 'bg-gray-700/30 border-gray-600' : 'bg-gray-50 border-gray-200'}`}>
+                  <RefreshCw className={`w-10 h-10 mx-auto mb-3 ${darkMode ? 'text-gray-500' : 'text-gray-400'}`} />
+                  <p className={`font-medium ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>
+                    Geen wijzigingsverzoeken
+                  </p>
+                  <p className={`text-sm mt-1 ${darkMode ? 'text-gray-500' : 'text-gray-400'}`}>
+                    De klant heeft nog geen wijzigingen aangevraagd
+                  </p>
                 </div>
               )}
             </div>

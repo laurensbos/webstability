@@ -33,6 +33,7 @@ import Logo from '../components/Logo'
 import ClientAccountModal from '../components/ClientAccountModal'
 import DesignPreviewModal from '../components/DesignPreviewModalNew'
 import PreLiveChecklist from '../components/PreLiveChecklist'
+import ClientLiveDashboard from '../components/ClientLiveDashboard'
 import type { Project, ProjectPhase, ProjectMessage } from '../types/project'
 import { getProgressPercentage } from '../types/project'
 
@@ -564,6 +565,48 @@ export default function ProjectStatusNew() {
       // Ignore
     }
     setReadyForDesignLoading(false)
+  }
+
+  // Handle change request submission (for live projects)
+  const handleChangeRequest = async (request: {
+    title?: string
+    description: string
+    priority: 'low' | 'normal' | 'urgent'
+    category: 'text' | 'design' | 'images' | 'functionality' | 'other'
+    status?: string
+    createdAt?: string
+  }) => {
+    if (!projectId || !project) throw new Error('No project')
+    
+    const newRequest = {
+      id: `cr_${Date.now()}`,
+      ...request,
+      status: 'pending' as const,
+      createdAt: new Date().toISOString()
+    }
+    
+    const updatedChangeRequests = [...(project.changeRequests || []), newRequest]
+    const updatedChangesThisMonth = (project.changesThisMonth || 0) + 1
+    
+    const response = await fetch(`/api/projects?id=${projectId}`, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        changeRequests: updatedChangeRequests,
+        changesThisMonth: updatedChangesThisMonth
+      })
+    })
+    
+    if (!response.ok) {
+      throw new Error('Failed to submit change request')
+    }
+    
+    // Update local state
+    setProject(prev => prev ? {
+      ...prev,
+      changeRequests: updatedChangeRequests,
+      changesThisMonth: updatedChangesThisMonth
+    } : null)
   }
 
   // Get phase status for stepper visualization
@@ -1442,28 +1485,26 @@ export default function ProjectStatusNew() {
           </motion.div>
         )}
 
-        {/* Live website link */}
-        {project.status === 'live' && project.liveUrl && (
-          <motion.a
+        {/* Live Dashboard - Full featured dashboard for live projects */}
+        {project.status === 'live' && (
+          <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.2 }}
-            href={project.liveUrl}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="block p-4 rounded-xl bg-green-500/10 border border-green-500/30 hover:border-green-500/50 transition group"
           >
-            <div className="flex items-center gap-4">
-              <div className="w-10 h-10 rounded-lg bg-green-500/20 flex items-center justify-center">
-                <Rocket className="w-5 h-5 text-green-400" />
-              </div>
-              <div className="flex-1">
-                <p className="font-medium text-white">Je live website</p>
-                <p className="text-sm text-green-400">{project.liveUrl}</p>
-              </div>
-              <ExternalLink className="w-5 h-5 text-green-400 group-hover:translate-x-1 transition" />
-            </div>
-          </motion.a>
+            <ClientLiveDashboard
+              businessName={project.businessName}
+              projectPackage={project.package}
+              liveUrl={project.liveUrl}
+              liveDate={project.liveDate}
+              googleDriveUrl={project.googleDriveUrl}
+              analyticsUrl={project.analyticsUrl}
+              changeRequests={project.changeRequests}
+              changesThisMonth={project.changesThisMonth}
+              onRequestChange={handleChangeRequest}
+              onContactDeveloper={() => setShowChat(true)}
+            />
+          </motion.div>
         )}
 
         {/* Payment Section */}
