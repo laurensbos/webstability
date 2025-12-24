@@ -2,7 +2,7 @@
  * Project status types voor het klantportaal
  */
 
-export type ProjectPhase = 'onboarding' | 'design' | 'feedback' | 'revisie' | 'payment' | 'live'
+export type ProjectPhase = 'onboarding' | 'design' | 'feedback' | 'revisie' | 'payment' | 'approval' | 'live'
 
 export type PackageType = 'starter' | 'professional' | 'premium' | 'webshop'
 
@@ -317,6 +317,13 @@ export interface Project {
     emailPreferenceConfirmed?: boolean
     analyticsAgreed?: boolean
     finalApprovalGiven?: boolean
+    // Klant approval velden
+    contentApproved?: boolean          // Alle teksten en content zijn correct
+    contactInfoCorrect?: boolean       // Contactgegevens kloppen
+    termsAccepted?: boolean            // Algemene voorwaarden geaccepteerd
+    domainConfirmed?: boolean          // Domein informatie correct
+    approvedAt?: string                // Wanneer goedgekeurd
+    approvedByName?: string            // Naam van wie goedkeurde
   }
 }
 
@@ -458,6 +465,7 @@ export const getProgressPercentage = (status: ProjectPhase): number => {
     feedback: 50,
     revisie: 60,
     payment: 75,
+    approval: 90,
     live: 100
   }
   return percentages[status] ?? 0
@@ -536,6 +544,12 @@ export const PHASE_FAQS: Record<ProjectPhase, PhaseFAQ[]> = {
     { question: 'Wat gebeurt er na betaling?', answer: 'Zodra we je betaling hebben ontvangen, configureren we je domein en zetten we je website live!' },
     { question: 'Hoe lang duurt het tot mijn site live is?', answer: 'Na betaling duurt het meestal 1-2 werkdagen voordat je website volledig live is.' },
     { question: 'Wat als ik nog iets wil aanpassen?', answer: 'Kleine wijzigingen zijn altijd mogelijk. Neem contact met ons op via de chat.' }
+  ],
+  approval: [
+    { question: 'Wat moet ik controleren?', answer: 'Controleer of alle teksten kloppen, contactgegevens correct zijn, en je akkoord gaat met de voorwaarden.' },
+    { question: 'Wat zijn de algemene voorwaarden?', answer: 'Dit betreft het abonnement, betalingsvoorwaarden, en afspraken over wijzigingen en hosting.' },
+    { question: 'Kan ik nog iets aanpassen?', answer: 'Ja! Voordat je goedkeurt kun je kleine aanpassingen doorgeven. Na goedkeuring gaat je site live.' },
+    { question: 'Hoe lang duurt het tot mijn site live is?', answer: 'Na je goedkeuring zetten we je website binnen 24 uur live!' }
   ],
   live: [
     { question: 'Mijn website is live! Wat nu?', answer: 'Gefeliciteerd! Je kunt nu je website delen. Wij zorgen voor hosting, SSL en technisch onderhoud.' },

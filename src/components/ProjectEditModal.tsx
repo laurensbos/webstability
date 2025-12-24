@@ -5,6 +5,7 @@ import {
   Save,
   ChevronRight,
   Check,
+  CheckCircle,
   FileText,
   Palette,
   MessageSquare,
@@ -38,6 +39,7 @@ const PHASE_ICONS: Record<ProjectPhase, typeof FileText> = {
   feedback: MessageSquare,
   revisie: RefreshCw,
   payment: CreditCard,
+  approval: CheckCircle,
   live: Rocket
 }
 

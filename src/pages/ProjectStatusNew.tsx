@@ -4,6 +4,7 @@ import { motion, AnimatePresence } from 'framer-motion'
 import { ProjectStatusSkeleton } from '../components/LoadingSkeletons'
 import {
   CheckCircle2,
+  CheckCircle,
   Circle,
   Clock,
   Loader2,
@@ -33,6 +34,7 @@ import Logo from '../components/Logo'
 import ClientAccountModal from '../components/ClientAccountModal'
 import DesignPreviewModal from '../components/DesignPreviewModalNew'
 import PreLiveChecklist from '../components/PreLiveChecklist'
+import PreLiveApproval from '../components/PreLiveApproval'
 import ClientLiveDashboard from '../components/ClientLiveDashboard'
 import type { Project, ProjectPhase, ProjectMessage } from '../types/project'
 import { getProgressPercentage } from '../types/project'
@@ -48,13 +50,14 @@ const ensureAbsoluteUrl = (url: string | undefined): string => {
 }
 
 // Phase configuration - Visual stepper phases
-// Flow: Onboarding → Design → Feedback → Revisie → Betaling → Live
+// Flow: Onboarding → Design → Feedback → Revisie → Betaling → Goedkeuring → Live
 const PHASES: { key: ProjectPhase; label: string; icon: typeof FileText }[] = [
   { key: 'onboarding', label: 'Onboarding', icon: FileText },
   { key: 'design', label: 'Design', icon: Palette },
   { key: 'feedback', label: 'Feedback', icon: MessageSquare },
   { key: 'revisie', label: 'Revisie', icon: RefreshCw },
   { key: 'payment', label: 'Betaling', icon: CreditCard },
+  { key: 'approval', label: 'Goedkeuring', icon: CheckCircle },
   { key: 'live', label: 'Live', icon: Rocket }
 ]
 
@@ -117,6 +120,15 @@ const PHASE_ACTIONS: Record<ProjectPhase, {
       urgent: true
     }
   ],
+  approval: [
+    { 
+      title: 'Goedkeuring geven', 
+      description: 'Controleer alles en geef je akkoord',
+      buttonText: 'Goedkeuren',
+      type: 'action',
+      urgent: true
+    }
+  ],
   live: []
 }
 
@@ -142,6 +154,10 @@ const PHASE_INFO: Record<ProjectPhase, { title: string; description: string }> =
     title: 'Wachten op betaling',
     description: 'Je design is goedgekeurd! Na de betaling zetten we je website live.'
   },
+  approval: {
+    title: 'Laatste check voor livegang',
+    description: 'Je betaling is ontvangen! Controleer nog even of alles klopt en geef je goedkeuring. Dan zetten we je site live!'
+  },
   live: {
     title: 'Gefeliciteerd! 🎉',
     description: 'Je website is live en bereikbaar voor de wereld. Welkom!'
@@ -156,6 +172,7 @@ const getPhaseColors = (phase: ProjectPhase) => {
     feedback: { bg: 'bg-indigo-500', gradient: 'from-indigo-500 to-purple-500', text: 'text-indigo-400' },
     revisie: { bg: 'bg-cyan-500', gradient: 'from-cyan-500 to-blue-500', text: 'text-cyan-400' },
     payment: { bg: 'bg-purple-500', gradient: 'from-purple-600 to-indigo-500', text: 'text-purple-400' },
+    approval: { bg: 'bg-pink-500', gradient: 'from-pink-500 to-rose-500', text: 'text-pink-400' },
     live: { bg: 'bg-green-500', gradient: 'from-green-500 to-emerald-500', text: 'text-green-400' }
   }
   return colors[phase] || colors.onboarding
@@ -1541,7 +1558,7 @@ export default function ProjectStatusNew() {
         )}
 
         {/* Pre-Live Checklist - Show after payment is received */}
-        {project.paymentStatus === 'paid' && project.status !== 'live' && (
+        {project.paymentStatus === 'paid' && project.status !== 'live' && project.status !== 'approval' && (
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -1578,6 +1595,51 @@ export default function ProjectStatusNew() {
                   }
                 } catch (error) {
                   console.error('Error updating pre-live data:', error)
+                }
+              }}
+            />
+          </motion.div>
+        )}
+
+        {/* Pre-Live Approval - Final approval before going live */}
+        {project.status === 'approval' && (
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.25 }}
+          >
+            <PreLiveApproval
+              businessName={project.businessName}
+              projectPackage={project.package || 'starter'}
+              designPreviewUrl={project.designPreviewUrl}
+              liveUrl={project.liveUrl}
+              domainInfo={project.domainInfo}
+              preLiveChecklist={project.preLiveChecklist}
+              monthlyAmount={49}
+              onApprove={async (checklist) => {
+                try {
+                  const response = await fetch(`/api/projects?id=${project.projectId}`, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                      preLiveChecklist: {
+                        ...project.preLiveChecklist,
+                        ...checklist,
+                        approvedAt: new Date().toISOString()
+                      }
+                    })
+                  })
+                  if (response.ok) {
+                    // Refresh project data
+                    const result = await response.json()
+                    setProject(prev => prev ? {
+                      ...prev,
+                      preLiveChecklist: result.preLiveChecklist
+                    } : null)
+                  }
+                } catch (error) {
+                  console.error('Error submitting approval:', error)
+                  throw error
                 }
               }}
             />

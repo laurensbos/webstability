@@ -112,6 +112,15 @@ const PHASE_ACTIONS: Record<ProjectPhase, {
       urgent: true
     }
   ],
+  approval: [
+    { 
+      title: 'Goedkeuring geven', 
+      description: 'Controleer alles en geef je akkoord',
+      buttonText: 'Goedkeuren',
+      type: 'action',
+      urgent: true
+    }
+  ],
   live: []
 }
 
@@ -136,6 +145,10 @@ const PHASE_INFO: Record<ProjectPhase, { title: string; description: string }> =
   payment: {
     title: 'Wachten op betaling',
     description: 'Je design is goedgekeurd! Na de betaling zetten we je website live.'
+  },
+  approval: {
+    title: 'Laatste check voor livegang',
+    description: 'Je betaling is ontvangen! Controleer nog even of alles klopt en geef je goedkeuring. Dan zetten we je site live!'
   },
   live: {
     title: 'Gefeliciteerd! 🎉',
@@ -213,6 +226,7 @@ const getPhaseColors = (phase: ProjectPhase) => {
     feedback: { bg: 'bg-indigo-500', gradient: 'from-indigo-500 to-purple-500', text: 'text-indigo-400' },
     revisie: { bg: 'bg-cyan-500', gradient: 'from-cyan-500 to-blue-500', text: 'text-cyan-400' },
     payment: { bg: 'bg-purple-500', gradient: 'from-purple-600 to-indigo-500', text: 'text-purple-400' },
+    approval: { bg: 'bg-pink-500', gradient: 'from-pink-500 to-rose-500', text: 'text-pink-400' },
     live: { bg: 'bg-green-500', gradient: 'from-green-500 to-emerald-500', text: 'text-green-400' }
   }
   return colors[phase] || colors.onboarding
