@@ -417,11 +417,28 @@ export default function DesignFeedbackSections({
         {/* Main content */}
         <div className="flex-1 overflow-hidden flex flex-col md:flex-row">
           
-          {/* Preview area - hidden on intro, smaller on desktop */}
-          <div className={`${step === 'intro' ? 'hidden md:flex md:w-1/3' : isMobile ? 'h-[30vh] flex-shrink-0' : 'flex-1'} bg-zinc-950 p-2 md:p-4 flex items-center justify-center`}>
+          {/* Preview area - hidden on intro, adjusted for mobile */}
+          <div className={`${step === 'intro' ? 'hidden md:flex md:w-1/3' : isMobile ? 'h-[35vh] flex-shrink-0' : 'flex-1'} bg-zinc-950 p-2 md:p-4 flex items-center justify-center`}>
             
-            {/* Desktop/Laptop Mockup */}
-            {device === 'desktop' && (
+            {/* On mobile: show simple framed preview without device mockup */}
+            {isMobile && step !== 'intro' && (
+              <div className="relative w-full h-full rounded-xl overflow-hidden border-2 border-zinc-700 bg-white">
+                {!iframeLoaded && (
+                  <div className="absolute inset-0 flex items-center justify-center bg-zinc-900">
+                    <Loader2 className="w-8 h-8 text-purple-500 animate-spin" />
+                  </div>
+                )}
+                <iframe
+                  src={absoluteUrl}
+                  className="w-full h-full border-0"
+                  onLoad={() => setIframeLoaded(true)}
+                  title="Design Preview"
+                />
+              </div>
+            )}
+
+            {/* Desktop/Laptop Mockup - only on desktop */}
+            {!isMobile && device === 'desktop' && (
               <div className="relative w-full h-full max-w-4xl flex flex-col">
                 {/* Laptop top bezel / Browser chrome */}
                 <div className="bg-zinc-800 rounded-t-xl px-3 py-2 flex items-center gap-2 flex-shrink-0">
@@ -460,8 +477,8 @@ export default function DesignFeedbackSections({
               </div>
             )}
 
-            {/* Mobile/Phone Mockup */}
-            {device === 'mobile' && (
+            {/* Mobile/Phone Mockup - only on desktop when viewing mobile preview */}
+            {!isMobile && device === 'mobile' && (
               <div className="relative h-full max-h-[600px] aspect-[9/19] flex flex-col">
                 {/* Phone frame */}
                 <div className="absolute inset-0 bg-zinc-800 rounded-[2.5rem] shadow-2xl p-2">
