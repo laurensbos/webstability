@@ -1104,46 +1104,46 @@ export default function MarketingDashboard() {
   }
 
   // Lead detail with auto-analyze (reserved for future use)
-  const _openLeadDetail = async (lead: Lead) => {
-    setDetailLead(lead)
-    _setShowLeadDetail(true)
-    
-    // Auto-analyze if has website and no recent analysis
-    if (lead.website && !lead.websiteAnalysis) {
-      _setIsAnalyzingLead(true)
-      try {
-        const response = await fetch('/api/marketing/analyze-website', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ url: lead.website })
-        })
-        const data = await response.json()
-        
-        if (data.success && data.analysis) {
-          const analysis = {
-            score: data.analysis.score,
-            issues: data.analysis.issues,
-            analyzedAt: new Date().toISOString()
-          }
-          
-          // Update lead with analysis
-          setLeads(prev => {
-            const updated = prev.map(l => l.id === lead.id ? { ...l, websiteAnalysis: analysis } : l)
-            const updatedLead = updated.find(l => l.id === lead.id)
-            if (updatedLead) {
-              syncLeadToAPI(updatedLead, 'update')
-              setDetailLead(updatedLead)
-            }
-            return updated
-          })
-        }
-      } catch (error) {
-        console.error('[Analyze] Error:', error)
-      } finally {
-        _setIsAnalyzingLead(false)
-      }
-    }
-  }
+  // const _openLeadDetail = async (lead: Lead) => {
+  //   setDetailLead(lead)
+  //   _setShowLeadDetail(true)
+  //   
+  //   // Auto-analyze if has website and no recent analysis
+  //   if (lead.website && !lead.websiteAnalysis) {
+  //     _setIsAnalyzingLead(true)
+  //     try {
+  //       const response = await fetch('/api/marketing/analyze-website', {
+  //         method: 'POST',
+  //         headers: { 'Content-Type': 'application/json' },
+  //         body: JSON.stringify({ url: lead.website })
+  //       })
+  //       const data = await response.json()
+  //       
+  //       if (data.success && data.analysis) {
+  //         const analysis = {
+  //           score: data.analysis.score,
+  //           issues: data.analysis.issues,
+  //           analyzedAt: new Date().toISOString()
+  //         }
+  //         
+  //         // Update lead with analysis
+  //         setLeads(prev => {
+  //           const updated = prev.map(l => l.id === lead.id ? { ...l, websiteAnalysis: analysis } : l)
+  //           const updatedLead = updated.find(l => l.id === lead.id)
+  //           if (updatedLead) {
+  //             syncLeadToAPI(updatedLead, 'update')
+  //             setDetailLead(updatedLead)
+  //           }
+  //           return updated
+  //         })
+  //       }
+  //     } catch (error) {
+  //       console.error('[Analyze] Error:', error)
+  //     } finally {
+  //       _setIsAnalyzingLead(false)
+  //     }
+  //   }
+  // }
 
   // Analyze website for a lead
   const analyzeLeadWebsite = async (leadId: string): Promise<void> => {
