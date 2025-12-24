@@ -3497,8 +3497,8 @@ function ProjectDetailModal({ project, darkMode, onClose, onUpdate, phases }: Om
             </button>
           </div>
 
-          {/* 🎨 DESIGN PREVIEW URL - Prominent in design phase */}
-          {editPhase === 'design' && (
+          {/* 🎨 DESIGN PREVIEW URL - Prominent in design and feedback phase */}
+          {(editPhase === 'design' || editPhase === 'feedback') && (
             <div className={`mt-4 p-4 rounded-xl border-2 ${
               designPreviewUrl 
                 ? 'bg-emerald-500/10 border-emerald-500' 
@@ -3547,17 +3547,16 @@ function ProjectDetailModal({ project, darkMode, onClose, onUpdate, phases }: Om
                 </p>
               )}
               
-              {/* Extra Vragen Selectie */}
-              {designPreviewUrl && (
-                <div className="mt-4">
-                  <button
-                    onClick={() => setShowQuestionsPanel(!showQuestionsPanel)}
-                    className={`w-full flex items-center justify-between px-4 py-3 rounded-xl border ${
-                      darkMode 
-                        ? 'bg-gray-700/50 border-gray-600 hover:bg-gray-700' 
-                        : 'bg-gray-50 border-gray-200 hover:bg-gray-100'
-                    } transition-colors`}
-                  >
+              {/* Extra Vragen Selectie - altijd zichtbaar */}
+              <div className="mt-4">
+                <button
+                  onClick={() => setShowQuestionsPanel(!showQuestionsPanel)}
+                  className={`w-full flex items-center justify-between px-4 py-3 rounded-xl border ${
+                    darkMode 
+                      ? 'bg-gray-700/50 border-gray-600 hover:bg-gray-700' 
+                      : 'bg-gray-50 border-gray-200 hover:bg-gray-100'
+                  } transition-colors`}
+                >
                     <div className="flex items-center gap-3">
                       <HelpCircle className={`w-5 h-5 ${darkMode ? 'text-purple-400' : 'text-purple-500'}`} />
                       <div className="text-left">
@@ -3675,7 +3674,6 @@ function ProjectDetailModal({ project, darkMode, onClose, onUpdate, phases }: Om
                     )}
                   </AnimatePresence>
                 </div>
-              )}
             </div>
           )}
 
