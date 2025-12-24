@@ -3404,23 +3404,44 @@ function ProjectDetailModal({ project, darkMode, onClose, onUpdate, phases }: Om
   
   // Toggle question selection
   const toggleQuestionSelection = (questionId: string) => {
-    setSelectedQuestionIds(prev => 
-      prev.includes(questionId) 
-        ? prev.filter(id => id !== questionId)
-        : [...prev, questionId]
-    )
+    const newQuestionIds = selectedQuestionIds.includes(questionId)
+      ? selectedQuestionIds.filter(id => id !== questionId)
+      : [...selectedQuestionIds, questionId]
+    
+    setSelectedQuestionIds(newQuestionIds)
+    
+    // Save to API
+    onUpdate({
+      ...project,
+      feedbackQuestions: newQuestionIds,
+      updatedAt: new Date().toISOString(),
+    })
   }
   
   // Add custom question
   const addCustomQuestion = () => {
     if (!newCustomQuestion.trim()) return
-    setCustomQuestions(prev => [...prev, newCustomQuestion.trim()])
+    const newQuestions = [...customQuestions, newCustomQuestion.trim()]
+    setCustomQuestions(newQuestions)
     setNewCustomQuestion('')
+    // Save to API
+    onUpdate({
+      ...project,
+      customQuestions: newQuestions,
+      updatedAt: new Date().toISOString()
+    })
   }
   
   // Remove custom question
   const removeCustomQuestion = (index: number) => {
-    setCustomQuestions(prev => prev.filter((_, i) => i !== index))
+    const newQuestions = customQuestions.filter((_, i) => i !== index)
+    setCustomQuestions(newQuestions)
+    // Save to API
+    onUpdate({
+      ...project,
+      customQuestions: newQuestions,
+      updatedAt: new Date().toISOString()
+    })
   }
 
   const handleSendMessage = () => {
