@@ -30,8 +30,11 @@ import {
   RefreshCw,
   Zap
 } from 'lucide-react'
+import { useDarkMode } from '../contexts/DarkModeContext'
+import { PACKAGES } from '../config/packages'
+import type { PackageType } from '../config/packages'
 
-// Package configuration with limits
+// Package configuration with limits - now using centralized config
 const PACKAGE_CONFIG: Record<string, { 
   changes: number
   label: string
@@ -39,30 +42,31 @@ const PACKAGE_CONFIG: Record<string, {
   features: string[]
 }> = {
   starter: { 
-    changes: 2, 
-    label: 'Starter',
-    color: 'bg-gray-500',
+    changes: PACKAGES.starter.changesPerMonth, 
+    label: PACKAGES.starter.name,
+    color: 'bg-blue-500',
     features: ['2 wijzigingen/maand', 'E-mail support']
   },
   professional: { 
-    changes: 5, 
-    label: 'Professioneel',
-    color: 'bg-blue-500',
+    changes: PACKAGES.professional.changesPerMonth, 
+    label: PACKAGES.professional.name,
+    color: 'bg-purple-500',
     features: ['5 wijzigingen/maand', 'Priority support', 'Analytics']
   },
   business: { 
-    changes: 999, 
-    label: 'Business',
-    color: 'bg-purple-500',
+    changes: PACKAGES.business.changesPerMonth, 
+    label: PACKAGES.business.name,
+    color: 'bg-amber-500',
     features: ['Onbeperkte wijzigingen', 'WhatsApp support', 'Analytics', 'Priority']
   },
   webshop: { 
-    changes: 999, 
-    label: 'Webshop',
-    color: 'bg-indigo-500',
+    changes: PACKAGES.webshop.changesPerMonth, 
+    label: PACKAGES.webshop.name,
+    color: 'bg-emerald-500',
     features: ['Onbeperkte wijzigingen', 'WhatsApp support', 'Analytics', 'E-commerce']
   }
 }
+void (0 as unknown as PackageType) // Ensure PackageType is used
 
 // Change request categories
 const CHANGE_CATEGORIES = [
@@ -125,6 +129,7 @@ export default function ClientLiveDashboard({
   onRequestChange,
   onContactDeveloper
 }: ClientLiveDashboardProps) {
+  const { darkMode } = useDarkMode()
   const [activeTab, setActiveTab] = useState<'overview' | 'changes' | 'analytics'>('overview')
   const [showChangeForm, setShowChangeForm] = useState(false)
   const [loading, setLoading] = useState(false)
@@ -243,7 +248,11 @@ export default function ClientLiveDashboard({
   return (
     <div className="space-y-6">
       {/* Header with Website Status */}
-      <div className="bg-gradient-to-br from-emerald-500/20 via-green-500/15 to-teal-500/10 border border-emerald-500/30 rounded-2xl p-6">
+      <div className={`border rounded-2xl p-6 ${
+        darkMode 
+          ? 'bg-gradient-to-br from-emerald-500/20 via-green-500/15 to-teal-500/10 border-emerald-500/30' 
+          : 'bg-gradient-to-br from-emerald-50 via-green-50 to-teal-50 border-emerald-200'
+      }`}>
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
           <div className="flex items-center gap-4">
             <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-emerald-500 to-green-600 flex items-center justify-center shadow-lg shadow-emerald-500/25">
@@ -251,13 +260,15 @@ export default function ClientLiveDashboard({
             </div>
             <div>
               <div className="flex items-center gap-2 mb-1">
-                <h2 className="text-2xl font-bold text-white">{businessName}</h2>
-                <span className="px-2 py-0.5 bg-emerald-500/20 text-emerald-400 text-xs font-medium rounded-full flex items-center gap-1">
+                <h2 className={`text-2xl font-bold ${darkMode ? 'text-white' : 'text-gray-900'}`}>{businessName}</h2>
+                <span className={`px-2 py-0.5 text-xs font-medium rounded-full flex items-center gap-1 ${
+                  darkMode ? 'bg-emerald-500/20 text-emerald-400' : 'bg-emerald-100 text-emerald-700'
+                }`}>
                   <span className="w-1.5 h-1.5 bg-emerald-400 rounded-full animate-pulse"></span>
                   Live
                 </span>
               </div>
-              <p className="text-gray-400 text-sm">
+              <p className={`text-sm ${darkMode ? 'text-gray-400' : 'text-gray-600'}`}>
                 Online sinds {formatDate(liveDate)}
               </p>
             </div>
@@ -281,7 +292,9 @@ export default function ClientLiveDashboard({
                 href={googleDriveUrl}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="flex items-center gap-2 px-4 py-2.5 bg-gray-700 hover:bg-gray-600 text-white font-medium rounded-xl transition"
+                className={`flex items-center gap-2 px-4 py-2.5 font-medium rounded-xl transition ${
+                  darkMode ? 'bg-gray-700 hover:bg-gray-600 text-white' : 'bg-gray-200 hover:bg-gray-300 text-gray-900'
+                }`}
               >
                 <FolderOpen className="w-4 h-4" />
                 Bestanden
@@ -291,7 +304,7 @@ export default function ClientLiveDashboard({
         </div>
 
         {/* Package Info */}
-        <div className="mt-6 pt-6 border-t border-emerald-500/20">
+        <div className={`mt-6 pt-6 border-t ${darkMode ? 'border-emerald-500/20' : 'border-emerald-200'}`}>
           <div className="flex flex-wrap items-center gap-4">
             <div className="flex items-center gap-2">
               <span className={`px-3 py-1 ${packageConfig.color} text-white text-sm font-medium rounded-full`}>
@@ -300,7 +313,7 @@ export default function ClientLiveDashboard({
             </div>
             <div className="flex items-center gap-6 text-sm">
               {packageConfig.features.map((feature, i) => (
-                <div key={i} className="flex items-center gap-1.5 text-gray-400">
+                <div key={i} className={`flex items-center gap-1.5 ${darkMode ? 'text-gray-400' : 'text-gray-600'}`}>
                   <CheckCircle2 className="w-4 h-4 text-emerald-400" />
                   {feature}
                 </div>
@@ -311,13 +324,15 @@ export default function ClientLiveDashboard({
       </div>
 
       {/* Tab Navigation */}
-      <div className="flex items-center gap-1 p-1 bg-gray-800/50 rounded-xl w-fit">
+      <div className={`flex items-center gap-1 p-1 rounded-xl w-fit ${
+        darkMode ? 'bg-gray-800/50' : 'bg-gray-100'
+      }`}>
         <button
           onClick={() => setActiveTab('overview')}
           className={`flex items-center gap-2 px-4 py-2.5 rounded-lg font-medium transition-all ${
             activeTab === 'overview'
               ? 'bg-emerald-500 text-white shadow-lg shadow-emerald-500/25'
-              : 'text-gray-400 hover:text-white hover:bg-gray-700'
+              : darkMode ? 'text-gray-400 hover:text-white hover:bg-gray-700' : 'text-gray-600 hover:text-gray-900 hover:bg-gray-200'
           }`}
         >
           <Sparkles className="w-4 h-4" />
@@ -328,13 +343,15 @@ export default function ClientLiveDashboard({
           className={`flex items-center gap-2 px-4 py-2.5 rounded-lg font-medium transition-all ${
             activeTab === 'changes'
               ? 'bg-emerald-500 text-white shadow-lg shadow-emerald-500/25'
-              : 'text-gray-400 hover:text-white hover:bg-gray-700'
+              : darkMode ? 'text-gray-400 hover:text-white hover:bg-gray-700' : 'text-gray-600 hover:text-gray-900 hover:bg-gray-200'
           }`}
         >
           <Edit3 className="w-4 h-4" />
           Wijzigingen
           {pendingRequests.length + inProgressRequests.length > 0 && (
-            <span className="px-1.5 py-0.5 bg-white/20 text-xs rounded-full">
+            <span className={`px-1.5 py-0.5 text-xs rounded-full ${
+              activeTab === 'changes' ? 'bg-white/20' : darkMode ? 'bg-gray-600' : 'bg-gray-300'
+            }`}>
               {pendingRequests.length + inProgressRequests.length}
             </span>
           )}
@@ -366,19 +383,23 @@ export default function ClientLiveDashboard({
             className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4"
           >
             {/* Quick Stats */}
-            <div className="bg-gray-800/50 border border-gray-700 rounded-xl p-5">
+            <div className={`border rounded-xl p-5 ${
+              darkMode ? 'bg-gray-800/50 border-gray-700' : 'bg-white border-gray-200 shadow-sm'
+            }`}>
               <div className="flex items-center gap-3 mb-4">
-                <div className="w-10 h-10 rounded-xl bg-blue-500/20 flex items-center justify-center">
-                  <Edit3 className="w-5 h-5 text-blue-400" />
+                <div className={`w-10 h-10 rounded-xl flex items-center justify-center ${
+                  darkMode ? 'bg-blue-500/20' : 'bg-blue-100'
+                }`}>
+                  <Edit3 className={`w-5 h-5 ${darkMode ? 'text-blue-400' : 'text-blue-600'}`} />
                 </div>
                 <div>
-                  <h3 className="font-semibold text-white">Wijzigingen</h3>
+                  <h3 className={`font-semibold ${darkMode ? 'text-white' : 'text-gray-900'}`}>Wijzigingen</h3>
                   <p className="text-xs text-gray-500">Deze maand</p>
                 </div>
               </div>
               <div className="flex items-end justify-between">
                 <div>
-                  <span className="text-3xl font-bold text-white">
+                  <span className={`text-3xl font-bold ${darkMode ? 'text-white' : 'text-gray-900'}`}>
                     {isUnlimited ? '∞' : changesLeft}
                   </span>
                   <span className="text-gray-500 ml-2">
@@ -386,7 +407,7 @@ export default function ClientLiveDashboard({
                   </span>
                 </div>
                 {!isUnlimited && (
-                  <div className="w-16 h-2 bg-gray-700 rounded-full overflow-hidden">
+                  <div className={`w-16 h-2 rounded-full overflow-hidden ${darkMode ? 'bg-gray-700' : 'bg-gray-200'}`}>
                     <div 
                       className="h-full bg-blue-500 rounded-full"
                       style={{ width: `${(changesLeft / packageConfig.changes) * 100}%` }}
@@ -397,18 +418,22 @@ export default function ClientLiveDashboard({
             </div>
 
             {/* Pending Requests */}
-            <div className="bg-gray-800/50 border border-gray-700 rounded-xl p-5">
+            <div className={`border rounded-xl p-5 ${
+              darkMode ? 'bg-gray-800/50 border-gray-700' : 'bg-white border-gray-200 shadow-sm'
+            }`}>
               <div className="flex items-center gap-3 mb-4">
-                <div className="w-10 h-10 rounded-xl bg-yellow-500/20 flex items-center justify-center">
-                  <Clock className="w-5 h-5 text-yellow-400" />
+                <div className={`w-10 h-10 rounded-xl flex items-center justify-center ${
+                  darkMode ? 'bg-yellow-500/20' : 'bg-yellow-100'
+                }`}>
+                  <Clock className={`w-5 h-5 ${darkMode ? 'text-yellow-400' : 'text-yellow-600'}`} />
                 </div>
                 <div>
-                  <h3 className="font-semibold text-white">Open aanvragen</h3>
+                  <h3 className={`font-semibold ${darkMode ? 'text-white' : 'text-gray-900'}`}>Open aanvragen</h3>
                   <p className="text-xs text-gray-500">Wachtend op verwerking</p>
                 </div>
               </div>
               <div className="flex items-end justify-between">
-                <span className="text-3xl font-bold text-white">{pendingRequests.length + inProgressRequests.length}</span>
+                <span className={`text-3xl font-bold ${darkMode ? 'text-white' : 'text-gray-900'}`}>{pendingRequests.length + inProgressRequests.length}</span>
                 {inProgressRequests.length > 0 && (
                   <span className="text-sm text-blue-400">{inProgressRequests.length} in behandeling</span>
                 )}
@@ -416,22 +441,28 @@ export default function ClientLiveDashboard({
             </div>
 
             {/* Completed */}
-            <div className="bg-gray-800/50 border border-gray-700 rounded-xl p-5">
+            <div className={`border rounded-xl p-5 ${
+              darkMode ? 'bg-gray-800/50 border-gray-700' : 'bg-white border-gray-200 shadow-sm'
+            }`}>
               <div className="flex items-center gap-3 mb-4">
-                <div className="w-10 h-10 rounded-xl bg-emerald-500/20 flex items-center justify-center">
-                  <CheckCircle2 className="w-5 h-5 text-emerald-400" />
+                <div className={`w-10 h-10 rounded-xl flex items-center justify-center ${
+                  darkMode ? 'bg-emerald-500/20' : 'bg-emerald-100'
+                }`}>
+                  <CheckCircle2 className={`w-5 h-5 ${darkMode ? 'text-emerald-400' : 'text-emerald-600'}`} />
                 </div>
                 <div>
-                  <h3 className="font-semibold text-white">Afgerond</h3>
+                  <h3 className={`font-semibold ${darkMode ? 'text-white' : 'text-gray-900'}`}>Afgerond</h3>
                   <p className="text-xs text-gray-500">Totaal verwerkt</p>
                 </div>
               </div>
-              <span className="text-3xl font-bold text-white">{completedRequests.length}</span>
+              <span className={`text-3xl font-bold ${darkMode ? 'text-white' : 'text-gray-900'}`}>{completedRequests.length}</span>
             </div>
 
             {/* Quick Actions */}
-            <div className="md:col-span-2 lg:col-span-3 bg-gray-800/50 border border-gray-700 rounded-xl p-5">
-              <h3 className="font-semibold text-white mb-4">Snelle acties</h3>
+            <div className={`md:col-span-2 lg:col-span-3 border rounded-xl p-5 ${
+              darkMode ? 'bg-gray-800/50 border-gray-700' : 'bg-white border-gray-200 shadow-sm'
+            }`}>
+              <h3 className={`font-semibold mb-4 ${darkMode ? 'text-white' : 'text-gray-900'}`}>Snelle acties</h3>
               <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
                 <button
                   onClick={() => {
@@ -442,7 +473,7 @@ export default function ClientLiveDashboard({
                   className={`flex flex-col items-center gap-2 p-4 rounded-xl transition ${
                     canRequestChange
                       ? 'bg-emerald-500/10 border border-emerald-500/30 hover:bg-emerald-500/20 text-emerald-400'
-                      : 'bg-gray-700/50 border border-gray-600 text-gray-500 cursor-not-allowed'
+                      : darkMode ? 'bg-gray-700/50 border border-gray-600 text-gray-500 cursor-not-allowed' : 'bg-gray-100 border border-gray-200 text-gray-400 cursor-not-allowed'
                   }`}
                 >
                   <Plus className="w-6 h-6" />

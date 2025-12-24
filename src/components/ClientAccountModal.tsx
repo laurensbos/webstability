@@ -30,9 +30,7 @@ import {
 } from 'lucide-react'
 import Logo from './Logo'
 import type { Project } from '../types/project'
-
-// WhatsApp nummer
-const WHATSAPP_NUMBER = '31612345678'
+import { getWhatsAppLink, WHATSAPP_MESSAGES } from '../lib/constants'
 
 interface ClientAccountModalProps {
   isOpen: boolean
@@ -260,7 +258,7 @@ export default function ClientAccountModal({
                   <div className="flex items-center gap-2">
                     {/* WhatsApp Button */}
                     <a
-                      href={`https://wa.me/${WHATSAPP_NUMBER}?text=Hoi! Vraag over project ${project.projectId}`}
+                      href={getWhatsAppLink(WHATSAPP_MESSAGES.PROJECT(project.projectId))}
                       target="_blank"
                       rel="noopener noreferrer"
                       className={`flex items-center gap-2 px-3 py-2 rounded-xl text-sm font-medium transition-colors ${

@@ -26,7 +26,10 @@ import {
   ChevronLeft,
   Sparkles,
   Clock,
-  HelpCircle
+  HelpCircle,
+  ZoomIn,
+  ZoomOut,
+  RotateCcw
 } from 'lucide-react'
 import { AVAILABLE_FEEDBACK_QUESTIONS } from '../types/project'
 import type { FeedbackQuestionAnswer } from '../types/project'
@@ -96,6 +99,28 @@ export default function DesignFeedbackSections({
   const [isMobile, setIsMobile] = useState(false)
   const [iframeLoaded, setIframeLoaded] = useState(false)
   
+  // Zoom state for preview
+  const [zoomLevel, setZoomLevel] = useState(100)
+  const zoomLevels = [50, 75, 100, 125, 150, 200]
+  
+  const handleZoomIn = () => {
+    const currentIndex = zoomLevels.indexOf(zoomLevel)
+    if (currentIndex < zoomLevels.length - 1) {
+      setZoomLevel(zoomLevels[currentIndex + 1])
+    }
+  }
+  
+  const handleZoomOut = () => {
+    const currentIndex = zoomLevels.indexOf(zoomLevel)
+    if (currentIndex > 0) {
+      setZoomLevel(zoomLevels[currentIndex - 1])
+    }
+  }
+  
+  const handleResetZoom = () => {
+    setZoomLevel(100)
+  }
+  
   // Feedback state
   const [sectionFeedback, setSectionFeedback] = useState<SectionFeedback[]>(
     sections.map(s => ({ sectionId: s.id, rating: null, comment: '', presets: [] }))
@@ -116,8 +141,8 @@ export default function DesignFeedbackSections({
     ...effectiveQuestionIds
       .map(id => AVAILABLE_FEEDBACK_QUESTIONS.find(q => q.id === id))
       .filter(Boolean)
-      .map(q => ({ id: q!.id, question: q!.question, isCustom: false })),
-    ...customQuestions.map((q, i) => ({ id: `custom-${i}`, question: q, isCustom: true }))
+      .map(q => ({ id: q!.id, question: q!.question, helpText: q!.helpText, icon: q!.icon, isCustom: false })),
+    ...customQuestions.map((q, i) => ({ id: `custom-${i}`, question: q, helpText: undefined, icon: undefined, isCustom: true }))
   ]
   const hasQuestions = allQuestions.length > 0
   
@@ -418,6 +443,40 @@ export default function DesignFeedbackSections({
               </div>
             )}
             
+            {/* Zoom controls - only on desktop when not in intro */}
+            {!isMobile && step !== 'intro' && (
+              <div className="flex bg-zinc-800 rounded-lg p-0.5 sm:p-1 items-center gap-0.5">
+                <button
+                  onClick={handleZoomOut}
+                  disabled={zoomLevel <= 50}
+                  className="p-1.5 rounded-md text-zinc-400 hover:text-white hover:bg-zinc-700 transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
+                  title="Uitzoomen"
+                >
+                  <ZoomOut className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
+                </button>
+                <span className="px-1.5 text-xs text-zinc-300 font-medium min-w-[40px] text-center">
+                  {zoomLevel}%
+                </span>
+                <button
+                  onClick={handleZoomIn}
+                  disabled={zoomLevel >= 200}
+                  className="p-1.5 rounded-md text-zinc-400 hover:text-white hover:bg-zinc-700 transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
+                  title="Inzoomen"
+                >
+                  <ZoomIn className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
+                </button>
+                {zoomLevel !== 100 && (
+                  <button
+                    onClick={handleResetZoom}
+                    className="p-1.5 rounded-md text-zinc-400 hover:text-white hover:bg-zinc-700 transition-colors"
+                    title="Reset zoom"
+                  >
+                    <RotateCcw className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
+                  </button>
+                )}
+              </div>
+            )}
+            
             {/* External link */}
             <a
               href={absoluteUrl}
@@ -434,7 +493,21 @@ export default function DesignFeedbackSections({
         <div className="flex-1 overflow-hidden flex flex-col md:flex-row">
           
           {/* Preview area - hidden on intro, adjusted for mobile */}
-          <div className={`${step === 'intro' ? 'hidden md:flex md:w-1/3' : isMobile ? 'h-[30vh] min-h-[180px] flex-shrink-0' : 'flex-1'} bg-zinc-950 p-1.5 sm:p-2 md:p-4 flex items-center justify-center`}>
+          <div className={`${step === 'intro' ? 'hidden md:flex md:w-1/3' : isMobile ? 'h-[30vh] min-h-[180px] flex-shrink-0' : 'flex-1'} bg-zinc-950 p-1.5 sm:p-2 md:p-4 flex items-center justify-center relative`}>
+            
+            {/* Floating zoom indicator when zoomed */}
+            {!isMobile && step !== 'intro' && zoomLevel !== 100 && (
+              <div className="absolute top-6 left-6 z-20 bg-black/80 backdrop-blur-sm rounded-lg px-3 py-1.5 flex items-center gap-2 text-sm">
+                <span className="text-purple-400 font-medium">{zoomLevel}%</span>
+                <button
+                  onClick={handleResetZoom}
+                  className="text-zinc-400 hover:text-white transition-colors flex items-center gap-1 text-xs"
+                >
+                  <RotateCcw className="w-3 h-3" />
+                  Reset
+                </button>
+              </div>
+            )}
             
             {/* On mobile: show simple framed preview without device mockup */}
             {isMobile && step !== 'intro' && (
@@ -483,19 +556,28 @@ export default function DesignFeedbackSections({
                       </div>
                     </div>
                     
-                    {/* Screen content - takes remaining space */}
-                    <div className="relative bg-white overflow-hidden flex-1 min-h-0">
+                    {/* Screen content - takes remaining space with zoom support */}
+                    <div className="relative bg-white overflow-auto flex-1 min-h-0">
                       {!iframeLoaded && (
                         <div className="absolute inset-0 flex items-center justify-center bg-zinc-100">
                           <Loader2 className="w-8 h-8 text-purple-500 animate-spin" />
                         </div>
                       )}
-                      <iframe
-                        src={absoluteUrl}
-                        className="w-full h-full border-0"
-                        onLoad={() => setIframeLoaded(true)}
-                        title="Design Preview"
-                      />
+                      <div 
+                        className="origin-top-left transition-transform duration-200"
+                        style={{ 
+                          transform: `scale(${zoomLevel / 100})`,
+                          width: `${10000 / zoomLevel}%`,
+                          height: `${10000 / zoomLevel}%`
+                        }}
+                      >
+                        <iframe
+                          src={absoluteUrl}
+                          className="w-full h-full border-0"
+                          onLoad={() => setIframeLoaded(true)}
+                          title="Design Preview"
+                        />
+                      </div>
                     </div>
                   </div>
                   
@@ -527,19 +609,28 @@ export default function DesignFeedbackSections({
                         <div className="w-3 h-3 rounded-full bg-zinc-900 ring-1 ring-zinc-800"></div>
                       </div>
                       
-                      {/* Screen content */}
-                      <div className="absolute inset-0 bg-white overflow-hidden rounded-[2.5rem]">
+                      {/* Screen content with zoom support */}
+                      <div className="absolute inset-0 bg-white overflow-auto rounded-[2.5rem]">
                         {!iframeLoaded && (
                           <div className="absolute inset-0 flex items-center justify-center bg-zinc-100">
                             <Loader2 className="w-8 h-8 text-purple-500 animate-spin" />
                           </div>
                         )}
-                        <iframe
-                          src={absoluteUrl}
-                          className="w-full h-full border-0"
-                          onLoad={() => setIframeLoaded(true)}
-                          title="Design Preview"
-                        />
+                        <div 
+                          className="origin-top-left transition-transform duration-200"
+                          style={{ 
+                            transform: `scale(${zoomLevel / 100})`,
+                            width: `${10000 / zoomLevel}%`,
+                            height: `${10000 / zoomLevel}%`
+                          }}
+                        >
+                          <iframe
+                            src={absoluteUrl}
+                            className="w-full h-full border-0"
+                            onLoad={() => setIframeLoaded(true)}
+                            title="Design Preview"
+                          />
+                        </div>
                       </div>
                       
                       {/* Home indicator */}
@@ -774,10 +865,22 @@ export default function DesignFeedbackSections({
                     const answer = questionAnswers.find(qa => qa.questionId === question.id)
                     return (
                       <div key={question.id} className="bg-zinc-800/50 rounded-xl p-3 sm:p-4">
-                        <p className="text-white font-medium mb-2 sm:mb-3 flex items-start gap-1.5 sm:gap-2 text-sm sm:text-base">
-                          <span className="text-purple-400">{index + 1}.</span>
-                          {question.question}
-                        </p>
+                        <div className="flex items-start gap-2 sm:gap-3 mb-2 sm:mb-3">
+                          {question.icon && (
+                            <span className="text-xl sm:text-2xl mt-0.5">{question.icon}</span>
+                          )}
+                          <div className="flex-1">
+                            <p className="text-white font-medium text-sm sm:text-base">
+                              <span className="text-purple-400 mr-1.5">{index + 1}.</span>
+                              {question.question}
+                            </p>
+                            {question.helpText && (
+                              <p className="text-xs sm:text-sm text-zinc-400 mt-1">
+                                💡 {question.helpText}
+                              </p>
+                            )}
+                          </div>
+                        </div>
                         
                         {/* Yes/No buttons */}
                         <div className="grid grid-cols-2 gap-2 mb-2 sm:mb-3">

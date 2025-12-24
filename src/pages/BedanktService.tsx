@@ -143,11 +143,11 @@ export default function BedanktService() {
             </p>
             <div className="flex flex-wrap items-center justify-center gap-4">
               <a 
-                href="mailto:hallo@webstability.nl"
+                href="mailto:info@webstability.nl"
                 className="flex items-center gap-2 text-primary-600 hover:text-primary-700 font-medium"
               >
                 <Mail className="w-4 h-4" />
-                hallo@webstability.nl
+                info@webstability.nl
               </a>
               <a 
                 href="tel:+31644712573"

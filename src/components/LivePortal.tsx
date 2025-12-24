@@ -825,7 +825,7 @@ export default function LivePortal({
                 </a>
                 
                 <a
-                  href="https://wa.me/31612345678"
+                  href="https://wa.me/31644712573"
                   target="_blank"
                   rel="noopener noreferrer"
                   className="flex items-center gap-3 p-3 bg-gray-900/50 rounded-xl hover:bg-gray-700/50 transition"
@@ -839,7 +839,7 @@ export default function LivePortal({
                 </a>
                 
                 <a
-                  href="tel:+31612345678"
+                  href="tel:+31644712573"
                   className="flex items-center gap-3 p-3 bg-gray-900/50 rounded-xl hover:bg-gray-700/50 transition"
                 >
                   <Phone className="w-5 h-5 text-amber-400" />

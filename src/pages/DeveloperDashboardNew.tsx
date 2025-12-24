@@ -32,9 +32,13 @@ import {
   Palette,
   Camera,
   Plane,
-  PenTool
+  PenTool,
+  Send
 } from 'lucide-react'
 import Logo from '../components/Logo'
+import ClientActivityFeed from '../components/developer/ClientActivityFeed'
+import ProjectPhaseInfo from '../components/developer/ProjectPhaseInfo'
+import { PACKAGES } from '../config/packages'
 
 // ===========================================
 // TYPES
@@ -714,9 +718,11 @@ interface OverviewViewProps {
   clients: Client[]
   serviceRequests: ServiceRequest[]
   setActiveView: (view: DashboardView) => void
+  authToken: string
+  onProjectClick?: (projectId: string) => void
 }
 
-function OverviewView({ darkMode, projects, clients, serviceRequests, setActiveView }: OverviewViewProps) {
+function OverviewView({ darkMode, projects, clients, serviceRequests, setActiveView, authToken, onProjectClick }: OverviewViewProps) {
   const stats = {
     totalProjects: projects.length,
     activeProjects: projects.filter(p => p.phase !== 'live').length,
@@ -993,6 +999,25 @@ function OverviewView({ darkMode, projects, clients, serviceRequests, setActiveV
           </div>
         </motion.div>
       </div>
+
+      {/* Client Activity Feed */}
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.4 }}
+        className={`p-6 rounded-2xl border ${
+          darkMode ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-200'
+        }`}
+      >
+        <ClientActivityFeed
+          authToken={authToken}
+          onProjectClick={onProjectClick}
+          maxItems={10}
+          showFilters={true}
+          compact={false}
+          darkMode={darkMode}
+        />
+      </motion.div>
     </div>
   )
 }
@@ -1001,14 +1026,347 @@ function OverviewView({ darkMode, projects, clients, serviceRequests, setActiveV
 // PLACEHOLDER VIEWS (will be expanded in next steps)
 // ===========================================
 
-function ProjectsView({ darkMode }: { darkMode: boolean }) {
+// ===========================================
+// PROJECTS VIEW - Full featured
+// ===========================================
+
+interface ProjectsViewProps {
+  darkMode: boolean
+  projects: Project[]
+  searchTerm: string
+}
+
+function ProjectsView({ darkMode, projects, searchTerm }: ProjectsViewProps) {
+  const [filter, setFilter] = useState<ProjectPhase | 'all'>('all')
+  const [selectedProject, setSelectedProject] = useState<Project | null>(null)
+
+  const filteredProjects = projects.filter(p => {
+    const matchesSearch = p.businessName.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      p.contactName.toLowerCase().includes(searchTerm.toLowerCase())
+    const matchesFilter = filter === 'all' || p.phase === filter
+    return matchesSearch && matchesFilter
+  })
+
+  const phases: (ProjectPhase | 'all')[] = ['all', 'onboarding', 'design', 'feedback', 'payment', 'live']
+
+  if (selectedProject) {
+    return (
+      <ProjectDetailView
+        project={selectedProject}
+        darkMode={darkMode}
+        onBack={() => setSelectedProject(null)}
+      />
+    )
+  }
+
   return (
-    <div className={`p-8 text-center ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>
-      <FolderKanban className="w-12 h-12 mx-auto mb-4 opacity-50" />
-      <h2 className={`text-xl font-semibold mb-2 ${darkMode ? 'text-white' : 'text-gray-900'}`}>
-        Projecten
-      </h2>
-      <p>Wordt uitgebreid in stap 4...</p>
+    <div className="space-y-4">
+      {/* Header */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <div>
+          <h1 className={`text-xl font-bold ${darkMode ? 'text-white' : 'text-gray-900'}`}>
+            Projecten
+          </h1>
+          <p className={`text-sm ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>
+            {filteredProjects.length} van {projects.length} projecten
+          </p>
+        </div>
+      </div>
+
+      {/* Filters - Horizontal scroll on mobile */}
+      <div className="flex gap-2 overflow-x-auto pb-2 -mx-4 px-4 sm:mx-0 sm:px-0 scrollbar-hide">
+        {phases.map(phase => {
+          const config = phase === 'all' 
+            ? { label: 'Alle', color: 'text-gray-600', bg: 'bg-gray-100' }
+            : PHASE_CONFIG[phase]
+          const count = phase === 'all' 
+            ? projects.length 
+            : projects.filter(p => p.phase === phase).length
+          
+          return (
+            <button
+              key={phase}
+              onClick={() => setFilter(phase)}
+              className={`flex items-center gap-2 px-3 py-2 rounded-xl text-sm font-medium whitespace-nowrap transition-all ${
+                filter === phase
+                  ? darkMode
+                    ? 'bg-blue-600 text-white'
+                    : 'bg-blue-500 text-white'
+                  : darkMode
+                    ? 'bg-gray-800 text-gray-400 hover:bg-gray-700'
+                    : 'bg-white text-gray-600 hover:bg-gray-100 border border-gray-200'
+              }`}
+            >
+              {config.label}
+              <span className={`px-1.5 py-0.5 rounded-md text-xs ${
+                filter === phase
+                  ? 'bg-white/20'
+                  : darkMode ? 'bg-gray-700' : 'bg-gray-100'
+              }`}>
+                {count}
+              </span>
+            </button>
+          )
+        })}
+      </div>
+
+      {/* Projects Grid */}
+      {filteredProjects.length === 0 ? (
+        <div className={`p-12 text-center rounded-2xl border ${
+          darkMode ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-200'
+        }`}>
+          <FolderKanban className={`w-12 h-12 mx-auto mb-4 ${darkMode ? 'text-gray-600' : 'text-gray-300'}`} />
+          <p className={darkMode ? 'text-gray-400' : 'text-gray-500'}>
+            Geen projecten gevonden
+          </p>
+        </div>
+      ) : (
+        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+          {filteredProjects.map((project, index) => {
+            const phase = PHASE_CONFIG[project.phase]
+            const PhaseIcon = phase.icon
+            const unread = project.messages.filter(m => !m.read && m.from === 'client').length
+
+            return (
+              <motion.div
+                key={project.id}
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: index * 0.05 }}
+                onClick={() => setSelectedProject(project)}
+                className={`p-4 rounded-2xl border cursor-pointer transition-all hover:shadow-lg ${
+                  darkMode 
+                    ? 'bg-gray-800 border-gray-700 hover:border-gray-600' 
+                    : 'bg-white border-gray-200 hover:border-gray-300'
+                }`}
+              >
+                {/* Header */}
+                <div className="flex items-start justify-between mb-3">
+                  <div className={`p-2 rounded-xl ${phase.bg}`}>
+                    <PhaseIcon className={`w-5 h-5 ${phase.color}`} />
+                  </div>
+                  {unread > 0 && (
+                    <span className="px-2 py-0.5 bg-red-500 text-white text-xs font-bold rounded-full">
+                      {unread}
+                    </span>
+                  )}
+                </div>
+
+                {/* Info */}
+                <h3 className={`font-semibold mb-1 truncate ${darkMode ? 'text-white' : 'text-gray-900'}`}>
+                  {project.businessName}
+                </h3>
+                <p className={`text-sm mb-3 truncate ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>
+                  {project.contactName}
+                </p>
+
+                {/* Footer */}
+                <div className="flex items-center justify-between">
+                  <span className={`px-2 py-1 rounded-lg text-xs font-medium ${phase.bg} ${phase.color}`}>
+                    {phase.label}
+                  </span>
+                  <span className={`text-xs ${darkMode ? 'text-gray-500' : 'text-gray-400'}`}>
+                    {PACKAGE_CONFIG[project.package]?.name}
+                  </span>
+                </div>
+              </motion.div>
+            )
+          })}
+        </div>
+      )}
+    </div>
+  )
+}
+
+// ===========================================
+// PROJECT DETAIL VIEW
+// ===========================================
+
+interface ProjectDetailViewProps {
+  project: Project
+  darkMode: boolean
+  onBack: () => void
+}
+
+function ProjectDetailView({ project, darkMode, onBack }: ProjectDetailViewProps) {
+  const [activeTab, setActiveTab] = useState<'overview' | 'messages' | 'settings'>('overview')
+  const phase = PHASE_CONFIG[project.phase]
+
+  return (
+    <div className="space-y-4">
+      {/* Back button */}
+      <button
+        onClick={onBack}
+        className={`flex items-center gap-2 text-sm font-medium ${
+          darkMode ? 'text-gray-400 hover:text-white' : 'text-gray-500 hover:text-gray-900'
+        }`}
+      >
+        <ChevronRight className="w-4 h-4 rotate-180" />
+        Terug naar projecten
+      </button>
+
+      {/* Header */}
+      <div className={`p-4 sm:p-6 rounded-2xl border ${
+        darkMode ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-200'
+      }`}>
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+          <div className="flex items-center gap-4">
+            <div className={`p-3 rounded-xl ${phase.bg}`}>
+              <phase.icon className={`w-6 h-6 ${phase.color}`} />
+            </div>
+            <div>
+              <h1 className={`text-xl font-bold ${darkMode ? 'text-white' : 'text-gray-900'}`}>
+                {project.businessName}
+              </h1>
+              <p className={`text-sm ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>
+                {project.contactName} · {project.contactEmail}
+              </p>
+            </div>
+          </div>
+          <span className={`inline-flex items-center gap-2 px-3 py-1.5 rounded-xl text-sm font-medium ${phase.bg} ${phase.color}`}>
+            <phase.icon className="w-4 h-4" />
+            {phase.label}
+          </span>
+        </div>
+      </div>
+
+      {/* Tabs */}
+      <div className="flex gap-2 overflow-x-auto">
+        {(['overview', 'messages', 'settings'] as const).map(tab => (
+          <button
+            key={tab}
+            onClick={() => setActiveTab(tab)}
+            className={`px-4 py-2 rounded-xl text-sm font-medium transition-colors ${
+              activeTab === tab
+                ? darkMode ? 'bg-blue-600 text-white' : 'bg-blue-500 text-white'
+                : darkMode ? 'bg-gray-800 text-gray-400 hover:bg-gray-700' : 'bg-white text-gray-600 hover:bg-gray-100'
+            }`}
+          >
+            {tab === 'overview' ? 'Overzicht' : tab === 'messages' ? 'Berichten' : 'Instellingen'}
+          </button>
+        ))}
+      </div>
+
+      {/* Tab Content */}
+      {activeTab === 'overview' && (
+        <div className="space-y-4">
+          {/* Project Phase Info Card */}
+          <ProjectPhaseInfo
+            project={{
+              businessName: project.businessName,
+              contactName: project.contactName,
+              contactEmail: project.contactEmail,
+              contactPhone: project.contactPhone,
+              package: project.package,
+              phase: project.phase,
+              revisionsUsed: 0,
+              createdAt: project.createdAt
+            }}
+            darkMode={darkMode}
+          />
+
+          <div className="grid gap-4 sm:grid-cols-2">
+            {/* Quick Info */}
+            <div className={`p-4 rounded-2xl border ${
+              darkMode ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-200'
+            }`}>
+              <h3 className={`font-semibold mb-3 ${darkMode ? 'text-white' : 'text-gray-900'}`}>Details</h3>
+              <div className="space-y-3">
+                {[
+                  { label: 'Pakket', value: PACKAGES[project.package]?.name || PACKAGE_CONFIG[project.package]?.name },
+                  { label: 'Prijs', value: `€${PACKAGES[project.package]?.price || PACKAGE_CONFIG[project.package]?.price}/maand` },
+                  { label: 'Revisies', value: `${PACKAGES[project.package]?.revisions || 1} inclusief` },
+                  { label: 'Features', value: `${PACKAGES[project.package]?.features?.length || 0} items` },
+                ].map(item => (
+                  <div key={item.label} className="flex justify-between">
+                    <span className={`text-sm ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>{item.label}</span>
+                    <span className={`text-sm font-medium ${darkMode ? 'text-white' : 'text-gray-900'}`}>{item.value}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* Links */}
+            <div className={`p-4 rounded-2xl border ${
+              darkMode ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-200'
+            }`}>
+              <h3 className={`font-semibold mb-3 ${darkMode ? 'text-white' : 'text-gray-900'}`}>Links</h3>
+              <div className="space-y-2">
+                {project.stagingUrl && (
+                  <a
+                    href={project.stagingUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className={`flex items-center justify-between p-3 rounded-xl transition-colors ${
+                      darkMode ? 'bg-gray-700 hover:bg-gray-600' : 'bg-gray-50 hover:bg-gray-100'
+                    }`}
+                  >
+                    <span className={`text-sm ${darkMode ? 'text-white' : 'text-gray-900'}`}>Staging URL</span>
+                    <Link2 className={`w-4 h-4 ${darkMode ? 'text-gray-400' : 'text-gray-500'}`} />
+                  </a>
+                )}
+                {project.liveUrl && (
+                  <a
+                    href={project.liveUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className={`flex items-center justify-between p-3 rounded-xl transition-colors ${
+                      darkMode ? 'bg-gray-700 hover:bg-gray-600' : 'bg-gray-50 hover:bg-gray-100'
+                    }`}
+                  >
+                    <span className={`text-sm ${darkMode ? 'text-white' : 'text-gray-900'}`}>Live URL</span>
+                    <Rocket className={`w-4 h-4 ${darkMode ? 'text-green-400' : 'text-green-500'}`} />
+                  </a>
+                )}
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {activeTab === 'messages' && (
+        <div className={`p-4 rounded-2xl border ${
+          darkMode ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-200'
+        }`}>
+          <h3 className={`font-semibold mb-4 ${darkMode ? 'text-white' : 'text-gray-900'}`}>
+            Berichten ({project.messages.length})
+          </h3>
+          {project.messages.length === 0 ? (
+            <p className={`text-center py-8 ${darkMode ? 'text-gray-500' : 'text-gray-400'}`}>
+              Nog geen berichten
+            </p>
+          ) : (
+            <div className="space-y-3 max-h-96 overflow-y-auto">
+              {project.messages.map(msg => (
+                <div
+                  key={msg.id}
+                  className={`p-3 rounded-xl ${
+                    msg.from === 'client'
+                      ? darkMode ? 'bg-gray-700' : 'bg-gray-100'
+                      : darkMode ? 'bg-blue-900/30' : 'bg-blue-50'
+                  }`}
+                >
+                  <div className="flex items-center justify-between mb-1">
+                    <span className={`text-xs font-medium ${
+                      msg.from === 'client'
+                        ? darkMode ? 'text-gray-400' : 'text-gray-500'
+                        : 'text-blue-500'
+                    }`}>
+                      {msg.from === 'client' ? project.contactName : 'Jij'}
+                    </span>
+                    <span className={`text-xs ${darkMode ? 'text-gray-500' : 'text-gray-400'}`}>
+                      {new Date(msg.date).toLocaleDateString('nl-NL')}
+                    </span>
+                  </div>
+                  <p className={`text-sm ${darkMode ? 'text-white' : 'text-gray-900'}`}>
+                    {msg.message}
+                  </p>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+      )}
     </div>
   )
 }
@@ -1025,14 +1383,164 @@ function ClientsView({ darkMode }: { darkMode: boolean }) {
   )
 }
 
-function MessagesView({ darkMode }: { darkMode: boolean }) {
+// ===========================================
+// MESSAGES VIEW - Full chat interface
+// ===========================================
+
+interface MessagesViewProps {
+  darkMode: boolean
+  projects: Project[]
+}
+
+function MessagesView({ darkMode, projects }: MessagesViewProps) {
+  const [selectedProjectId, setSelectedProjectId] = useState<string | null>(null)
+  const [message, setMessage] = useState('')
+
+  const projectsWithMessages = projects.filter(p => p.messages.length > 0 || true)
+  const selectedProject = projectsWithMessages.find(p => p.id === selectedProjectId)
+
+  const getUnreadCount = (project: Project) =>
+    project.messages.filter(m => !m.read && m.from === 'client').length
+
   return (
-    <div className={`p-8 text-center ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>
-      <MessageSquare className="w-12 h-12 mx-auto mb-4 opacity-50" />
-      <h2 className={`text-xl font-semibold mb-2 ${darkMode ? 'text-white' : 'text-gray-900'}`}>
-        Berichten
-      </h2>
-      <p>Wordt uitgebreid in stap 5...</p>
+    <div className={`flex rounded-2xl border overflow-hidden h-[calc(100vh-180px)] ${
+      darkMode ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-200'
+    }`}>
+      {/* Conversation List */}
+      <div className={`w-full sm:w-80 border-r flex-shrink-0 flex flex-col ${
+        selectedProject ? 'hidden sm:flex' : 'flex'
+      } ${darkMode ? 'border-gray-700' : 'border-gray-200'}`}>
+        <div className={`p-4 border-b ${darkMode ? 'border-gray-700' : 'border-gray-200'}`}>
+          <h2 className={`font-semibold ${darkMode ? 'text-white' : 'text-gray-900'}`}>Berichten</h2>
+        </div>
+        <div className="flex-1 overflow-y-auto">
+          {projectsWithMessages.length === 0 ? (
+            <div className={`p-8 text-center ${darkMode ? 'text-gray-500' : 'text-gray-400'}`}>
+              <MessageSquare className="w-8 h-8 mx-auto mb-2 opacity-50" />
+              <p className="text-sm">Geen gesprekken</p>
+            </div>
+          ) : (
+            projectsWithMessages.map(project => {
+              const unread = getUnreadCount(project)
+              const lastMessage = project.messages[project.messages.length - 1]
+              const isSelected = project.id === selectedProjectId
+
+              return (
+                <button
+                  key={project.id}
+                  onClick={() => setSelectedProjectId(project.id)}
+                  className={`w-full p-4 text-left transition-colors border-b ${
+                    isSelected
+                      ? darkMode ? 'bg-gray-700 border-gray-600' : 'bg-blue-50 border-gray-200'
+                      : darkMode ? 'hover:bg-gray-750 border-gray-700' : 'hover:bg-gray-50 border-gray-100'
+                  }`}
+                >
+                  <div className="flex items-start justify-between gap-2">
+                    <div className="flex-1 min-w-0">
+                      <p className={`font-medium truncate ${darkMode ? 'text-white' : 'text-gray-900'}`}>
+                        {project.businessName}
+                      </p>
+                      <p className={`text-sm truncate mt-0.5 ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>
+                        {lastMessage ? lastMessage.message : 'Geen berichten'}
+                      </p>
+                    </div>
+                    {unread > 0 && (
+                      <span className="px-2 py-0.5 bg-red-500 text-white text-xs font-bold rounded-full">
+                        {unread}
+                      </span>
+                    )}
+                  </div>
+                </button>
+              )
+            })
+          )}
+        </div>
+      </div>
+
+      {/* Chat Area */}
+      <div className={`flex-1 flex flex-col ${!selectedProject ? 'hidden sm:flex' : 'flex'}`}>
+        {selectedProject ? (
+          <>
+            {/* Chat Header */}
+            <div className={`p-4 border-b flex items-center gap-3 ${darkMode ? 'border-gray-700' : 'border-gray-200'}`}>
+              <button
+                onClick={() => setSelectedProjectId(null)}
+                className={`sm:hidden p-2 -ml-2 rounded-lg ${darkMode ? 'hover:bg-gray-700' : 'hover:bg-gray-100'}`}
+              >
+                <ChevronRight className="w-5 h-5 rotate-180" />
+              </button>
+              <div className="flex-1 min-w-0">
+                <p className={`font-semibold truncate ${darkMode ? 'text-white' : 'text-gray-900'}`}>
+                  {selectedProject.businessName}
+                </p>
+                <p className={`text-sm truncate ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>
+                  {selectedProject.contactEmail}
+                </p>
+              </div>
+            </div>
+
+            {/* Messages */}
+            <div className="flex-1 overflow-y-auto p-4 space-y-3">
+              {selectedProject.messages.length === 0 ? (
+                <div className={`text-center py-12 ${darkMode ? 'text-gray-500' : 'text-gray-400'}`}>
+                  <MessageSquare className="w-10 h-10 mx-auto mb-3 opacity-50" />
+                  <p>Begin het gesprek</p>
+                </div>
+              ) : (
+                selectedProject.messages.map(msg => (
+                  <div
+                    key={msg.id}
+                    className={`flex ${msg.from === 'developer' ? 'justify-end' : 'justify-start'}`}
+                  >
+                    <div className={`max-w-[80%] p-3 rounded-2xl ${
+                      msg.from === 'developer'
+                        ? 'bg-blue-500 text-white rounded-br-md'
+                        : darkMode 
+                          ? 'bg-gray-700 text-white rounded-bl-md' 
+                          : 'bg-gray-100 text-gray-900 rounded-bl-md'
+                    }`}>
+                      <p className="text-sm">{msg.message}</p>
+                      <p className={`text-xs mt-1 ${
+                        msg.from === 'developer' ? 'text-blue-100' : darkMode ? 'text-gray-400' : 'text-gray-500'
+                      }`}>
+                        {new Date(msg.date).toLocaleTimeString('nl-NL', { hour: '2-digit', minute: '2-digit' })}
+                      </p>
+                    </div>
+                  </div>
+                ))
+              )}
+            </div>
+
+            {/* Input */}
+            <div className={`p-4 border-t ${darkMode ? 'border-gray-700' : 'border-gray-200'}`}>
+              <div className="flex gap-2">
+                <input
+                  type="text"
+                  value={message}
+                  onChange={(e) => setMessage(e.target.value)}
+                  placeholder="Typ een bericht..."
+                  className={`flex-1 px-4 py-3 rounded-xl border-0 focus:ring-2 focus:ring-blue-500 ${
+                    darkMode ? 'bg-gray-700 text-white placeholder-gray-400' : 'bg-gray-100 text-gray-900'
+                  }`}
+                />
+                <button
+                  disabled={!message.trim()}
+                  className="p-3 bg-blue-500 text-white rounded-xl hover:bg-blue-600 transition-colors disabled:opacity-50"
+                >
+                  <Send className="w-5 h-5" />
+                </button>
+              </div>
+            </div>
+          </>
+        ) : (
+          <div className={`flex-1 flex items-center justify-center ${darkMode ? 'text-gray-500' : 'text-gray-400'}`}>
+            <div className="text-center">
+              <MessageSquare className="w-12 h-12 mx-auto mb-3 opacity-50" />
+              <p>Selecteer een gesprek</p>
+            </div>
+          </div>
+        )}
+      </div>
     </div>
   )
 }
@@ -1073,14 +1581,98 @@ function ServicesView({ darkMode }: { darkMode: boolean }) {
   )
 }
 
-function SettingsView({ darkMode }: { darkMode: boolean }) {
+// ===========================================
+// SETTINGS VIEW
+// ===========================================
+
+interface SettingsViewProps {
+  darkMode: boolean
+  setDarkMode: (dark: boolean) => void
+}
+
+function SettingsView({ darkMode, setDarkMode }: SettingsViewProps) {
   return (
-    <div className={`p-8 text-center ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>
-      <Settings className="w-12 h-12 mx-auto mb-4 opacity-50" />
-      <h2 className={`text-xl font-semibold mb-2 ${darkMode ? 'text-white' : 'text-gray-900'}`}>
-        Instellingen
-      </h2>
-      <p>Wordt uitgebreid in stap 7...</p>
+    <div className="space-y-6 max-w-2xl">
+      <div>
+        <h1 className={`text-xl font-bold ${darkMode ? 'text-white' : 'text-gray-900'}`}>Instellingen</h1>
+        <p className={`text-sm ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>Pas je voorkeuren aan</p>
+      </div>
+
+      {/* Appearance */}
+      <div className={`p-4 rounded-2xl border ${darkMode ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-200'}`}>
+        <h3 className={`font-semibold mb-4 ${darkMode ? 'text-white' : 'text-gray-900'}`}>Weergave</h3>
+        
+        <div className="flex items-center justify-between">
+          <div>
+            <p className={`font-medium ${darkMode ? 'text-white' : 'text-gray-900'}`}>Donkere modus</p>
+            <p className={`text-sm ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>
+              Schakel tussen licht en donker thema
+            </p>
+          </div>
+          <button
+            onClick={() => setDarkMode(!darkMode)}
+            className={`relative w-14 h-8 rounded-full transition-colors ${
+              darkMode ? 'bg-blue-500' : 'bg-gray-300'
+            }`}
+          >
+            <motion.div
+              animate={{ x: darkMode ? 24 : 4 }}
+              className="absolute top-1 w-6 h-6 bg-white rounded-full shadow-md flex items-center justify-center"
+            >
+              {darkMode ? <Moon className="w-3 h-3 text-blue-500" /> : <Sun className="w-3 h-3 text-amber-500" />}
+            </motion.div>
+          </button>
+        </div>
+      </div>
+
+      {/* Notifications */}
+      <div className={`p-4 rounded-2xl border ${darkMode ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-200'}`}>
+        <h3 className={`font-semibold mb-4 ${darkMode ? 'text-white' : 'text-gray-900'}`}>Notificaties</h3>
+        
+        <div className="space-y-4">
+          {[
+            { label: 'Nieuwe berichten', desc: 'Ontvang meldingen bij nieuwe klantberichten', enabled: true },
+            { label: 'Betalingen', desc: 'Meldingen bij nieuwe betalingen', enabled: true },
+            { label: 'Onboarding', desc: 'Meldingen bij nieuwe intake aanvragen', enabled: true },
+          ].map((item, i) => (
+            <div key={i} className="flex items-center justify-between">
+              <div>
+                <p className={`font-medium ${darkMode ? 'text-white' : 'text-gray-900'}`}>{item.label}</p>
+                <p className={`text-sm ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>{item.desc}</p>
+              </div>
+              <div className={`w-10 h-6 rounded-full ${item.enabled ? 'bg-blue-500' : 'bg-gray-300'}`}>
+                <motion.div
+                  animate={{ x: item.enabled ? 16 : 2 }}
+                  className="w-5 h-5 mt-0.5 bg-white rounded-full shadow-sm"
+                />
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* Keyboard Shortcuts */}
+      <div className={`p-4 rounded-2xl border ${darkMode ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-200'}`}>
+        <h3 className={`font-semibold mb-4 ${darkMode ? 'text-white' : 'text-gray-900'}`}>Sneltoetsen</h3>
+        <div className="space-y-2">
+          {[
+            { key: 'D', action: 'Donkere modus schakelen' },
+            { key: 'Esc', action: 'Sluit sidebar' },
+          ].map((item, i) => (
+            <div key={i} className="flex items-center justify-between">
+              <span className={`text-sm ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>{item.action}</span>
+              <kbd className={`px-2 py-1 rounded text-xs font-mono ${
+                darkMode ? 'bg-gray-700 text-gray-300' : 'bg-gray-100 text-gray-600'
+              }`}>{item.key}</kbd>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* Version */}
+      <div className={`text-center text-sm ${darkMode ? 'text-gray-500' : 'text-gray-400'}`}>
+        Developer Dashboard v2.0 · © {new Date().getFullYear()} Webstability
+      </div>
     </div>
   )
 }
@@ -1294,7 +1886,7 @@ export default function DeveloperDashboardNew() {
         />
 
         {/* Main content */}
-        <main className="flex-1 p-4 lg:p-6 overflow-auto">
+        <main className="flex-1 p-4 lg:p-6 overflow-auto pb-20 lg:pb-6">
           <AnimatePresence mode="wait">
             <motion.div
               key={activeView}
@@ -1310,18 +1902,69 @@ export default function DeveloperDashboardNew() {
                   clients={clients}
                   serviceRequests={serviceRequests}
                   setActiveView={setActiveView}
+                  authToken={sessionStorage.getItem(TOKEN_KEY) || ''}
+                  onProjectClick={(projectId) => {
+                    // Navigate to project detail or set selected project
+                    console.log('Navigate to project:', projectId)
+                    setActiveView('projects')
+                  }}
                 />
               )}
-              {activeView === 'projects' && <ProjectsView darkMode={darkMode} />}
+              {activeView === 'projects' && <ProjectsView darkMode={darkMode} projects={projects} searchTerm={searchTerm} />}
               {activeView === 'clients' && <ClientsView darkMode={darkMode} />}
-              {activeView === 'messages' && <MessagesView darkMode={darkMode} />}
+              {activeView === 'messages' && <MessagesView darkMode={darkMode} projects={projects} />}
               {activeView === 'onboarding' && <OnboardingView darkMode={darkMode} />}
               {activeView === 'payments' && <PaymentsView darkMode={darkMode} />}
               {activeView === 'services' && <ServicesView darkMode={darkMode} />}
-              {activeView === 'settings' && <SettingsView darkMode={darkMode} />}
+              {activeView === 'settings' && <SettingsView darkMode={darkMode} setDarkMode={setDarkMode} />}
             </motion.div>
           </AnimatePresence>
         </main>
+
+        {/* Mobile Bottom Navigation */}
+        <nav className={`lg:hidden fixed bottom-0 left-0 right-0 z-40 border-t ${
+          darkMode 
+            ? 'bg-gray-900/95 border-gray-800 backdrop-blur-xl' 
+            : 'bg-white/95 border-gray-200 backdrop-blur-xl'
+        }`}>
+          <div className="flex items-center justify-around h-16 px-2">
+            {[
+              { id: 'overview' as DashboardView, icon: LayoutDashboard, label: 'Home' },
+              { id: 'projects' as DashboardView, icon: FolderKanban, label: 'Projecten' },
+              { id: 'messages' as DashboardView, icon: MessageSquare, label: 'Berichten', badge: unreadMessages },
+              { id: 'settings' as DashboardView, icon: Settings, label: 'Instellingen' },
+            ].map(item => {
+              const isActive = activeView === item.id
+              return (
+                <button
+                  key={item.id}
+                  onClick={() => setActiveView(item.id)}
+                  className="relative flex flex-col items-center justify-center w-16 h-full"
+                >
+                  <div className={`relative ${isActive ? 'text-blue-500' : darkMode ? 'text-gray-500' : 'text-gray-400'}`}>
+                    <item.icon className="w-6 h-6" />
+                    {item.badge !== undefined && item.badge > 0 && (
+                      <span className="absolute -top-1 -right-1 w-4 h-4 bg-red-500 text-white text-[10px] font-bold rounded-full flex items-center justify-center">
+                        {item.badge > 9 ? '9+' : item.badge}
+                      </span>
+                    )}
+                  </div>
+                  <span className={`text-[10px] mt-1 font-medium ${
+                    isActive ? 'text-blue-500' : darkMode ? 'text-gray-500' : 'text-gray-400'
+                  }`}>
+                    {item.label}
+                  </span>
+                  {isActive && (
+                    <motion.div
+                      layoutId="bottomNavIndicator"
+                      className="absolute -top-0.5 w-8 h-1 bg-blue-500 rounded-full"
+                    />
+                  )}
+                </button>
+              )
+            })}
+          </div>
+        </nav>
       </div>
     </div>
   )

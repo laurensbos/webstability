@@ -18,6 +18,7 @@ import {
 } from 'lucide-react'
 import { useState } from 'react'
 import { packages } from '../config/company'
+import { getWhatsAppLink, WHATSAPP_MESSAGES } from '../lib/constants'
 
 interface PaymentSectionProps {
   projectId: string
@@ -220,7 +221,7 @@ export default function PaymentSection({
                 </ul>
 
                 <a
-                  href="https://wa.me/31612345678?text=Hoi, ik heb problemen met de betaling voor mijn website."
+                  href={getWhatsAppLink(WHATSAPP_MESSAGES.PAYMENT_ISSUE)}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="mt-4 flex items-center justify-center gap-2 w-full px-4 py-2 bg-green-500 hover:bg-green-600 text-white rounded-lg text-sm font-medium transition"

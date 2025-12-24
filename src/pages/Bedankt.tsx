@@ -395,7 +395,7 @@ export default function Bedankt() {
                 Vragen? Neem direct contact op!
               </p>
               <a
-                href="https://wa.me/31612345678"
+                href="https://wa.me/31644712573"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="inline-flex items-center justify-center gap-2 px-6 py-3 bg-green-500 hover:bg-green-600 text-white rounded-xl font-semibold transition-colors"

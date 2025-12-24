@@ -47,6 +47,8 @@ export interface FeedbackQuestion {
   id: string
   category: FeedbackQuestionCategory
   question: string
+  helpText?: string                // Extra uitleg voor leken
+  icon?: string                    // Emoji icon voor visuele herkenning
   isDefault?: boolean              // Of het een standaard vraag is
 }
 
@@ -58,30 +60,148 @@ export interface FeedbackQuestionAnswer {
 }
 
 // Beschikbare vragen die developer kan kiezen
+// Vragen zijn leek-vriendelijk geschreven met hulptekst
 export const AVAILABLE_FEEDBACK_QUESTIONS: FeedbackQuestion[] = [
-  // Branding & Stijl
-  { id: 'branding-style', category: 'branding', question: 'Past de stijl bij je merk?', isDefault: false },
-  { id: 'branding-colors', category: 'branding', question: 'Zijn de kleuren goed?', isDefault: true },
-  { id: 'branding-professional', category: 'branding', question: 'Is de sfeer professioneel genoeg?', isDefault: false },
-  { id: 'branding-friendly', category: 'branding', question: 'Is de sfeer vriendelijk/toegankelijk genoeg?', isDefault: false },
-  { id: 'branding-logo', category: 'branding', question: 'Spreekt het logo je aan op deze plek?', isDefault: false },
+  // Branding & Stijl - Eerste indruk
+  { 
+    id: 'branding-firstimpression', 
+    category: 'branding', 
+    question: '🎨 Wat vind je van de eerste indruk?',
+    helpText: 'Bekijk de website 5 seconden en geef je gevoel.',
+    isDefault: true 
+  },
+  { 
+    id: 'branding-colors', 
+    category: 'branding', 
+    question: '🌈 Vind je de kleuren mooi?',
+    helpText: 'Passen de kleuren bij je bedrijf en huisstijl?',
+    isDefault: true 
+  },
+  { 
+    id: 'branding-style', 
+    category: 'branding', 
+    question: '✨ Past de stijl bij je merk?',
+    helpText: 'Is dit hoe je wilt dat klanten je zien?',
+    isDefault: false 
+  },
+  { 
+    id: 'branding-professional', 
+    category: 'branding', 
+    question: '👔 Ziet het er professioneel genoeg uit?',
+    helpText: 'Zou je dit vertrouwen als klant?',
+    isDefault: false 
+  },
+  { 
+    id: 'branding-friendly', 
+    category: 'branding', 
+    question: '😊 Is de sfeer vriendelijk/toegankelijk?',
+    helpText: 'Voelt de website uitnodigend aan?',
+    isDefault: false 
+  },
+  { 
+    id: 'branding-logo', 
+    category: 'branding', 
+    question: '🏷️ Staat je logo goed in beeld?',
+    helpText: 'Is het groot genoeg en op de juiste plek?',
+    isDefault: false 
+  },
   
   // Content & Tekst
-  { id: 'content-text', category: 'content', question: 'Kloppen alle teksten en zijn er geen tikfouten?', isDefault: true },
-  { id: 'content-tone', category: 'content', question: 'Is de tone-of-voice goed?', isDefault: false },
-  { id: 'content-prices', category: 'content', question: 'Zijn de prijzen correct?', isDefault: false },
-  { id: 'content-services', category: 'content', question: 'Staan alle diensten/producten erbij?', isDefault: false },
+  { 
+    id: 'content-text', 
+    category: 'content', 
+    question: '📝 Kloppen alle teksten?',
+    helpText: 'Geen tikfouten? Alle informatie correct?',
+    isDefault: true 
+  },
+  { 
+    id: 'content-tone', 
+    category: 'content', 
+    question: '💬 Spreekt de tekst je aan?',
+    helpText: 'Is dit hoe je tegen klanten wilt praten?',
+    isDefault: false 
+  },
+  { 
+    id: 'content-prices', 
+    category: 'content', 
+    question: '💰 Zijn de prijzen correct?',
+    helpText: 'Controleer alle bedragen en tarieven.',
+    isDefault: false 
+  },
+  { 
+    id: 'content-services', 
+    category: 'content', 
+    question: '📋 Staan al je diensten erbij?',
+    helpText: 'Missen er diensten of producten?',
+    isDefault: false 
+  },
+  { 
+    id: 'content-contact', 
+    category: 'content', 
+    question: '📞 Kloppen je contactgegevens?',
+    helpText: 'Check telefoonnummer, email en adres.',
+    isDefault: false 
+  },
   
   // Functionaliteit
-  { id: 'func-mobile', category: 'functionality', question: 'Werkt de website goed op je telefoon?', isDefault: true },
-  { id: 'func-navigation', category: 'functionality', question: 'Is de navigatie logisch?', isDefault: false },
-  { id: 'func-contact', category: 'functionality', question: 'Werkt het contactformulier naar wens?', isDefault: false },
-  { id: 'func-speed', category: 'functionality', question: 'Laadt de website snel genoeg?', isDefault: false },
+  { 
+    id: 'func-mobile', 
+    category: 'functionality', 
+    question: '📱 Werkt het goed op je telefoon?',
+    helpText: 'Bekijk de website op je mobiel.',
+    isDefault: true 
+  },
+  { 
+    id: 'func-navigation', 
+    category: 'functionality', 
+    question: '🧭 Is de navigatie logisch?',
+    helpText: 'Kun je makkelijk vinden wat je zoekt?',
+    isDefault: false 
+  },
+  { 
+    id: 'func-buttons', 
+    category: 'functionality', 
+    question: '👆 Zijn de knoppen duidelijk?',
+    helpText: 'Weet je waar je moet klikken?',
+    isDefault: false 
+  },
+  { 
+    id: 'func-contact', 
+    category: 'functionality', 
+    question: '✉️ Werkt het contactformulier?',
+    helpText: 'Probeer een testbericht te sturen.',
+    isDefault: false 
+  },
+  { 
+    id: 'func-speed', 
+    category: 'functionality', 
+    question: '⚡ Laadt de website snel genoeg?',
+    helpText: 'Moet je lang wachten op pagina\'s?',
+    isDefault: false 
+  },
   
   // Afbeeldingen
-  { id: 'images-representative', category: 'images', question: 'Zijn de foto\'s representatief voor je bedrijf?', isDefault: false },
-  { id: 'images-quality', category: 'images', question: 'Is de kwaliteit van de afbeeldingen goed?', isDefault: false },
-  { id: 'images-other', category: 'images', question: 'Moeten er andere afbeeldingen gebruikt worden?', isDefault: false },
+  { 
+    id: 'images-representative', 
+    category: 'images', 
+    question: '📷 Passen de foto\'s bij je bedrijf?',
+    helpText: 'Representeren ze wat je doet?',
+    isDefault: false 
+  },
+  { 
+    id: 'images-quality', 
+    category: 'images', 
+    question: '🖼️ Is de kwaliteit van foto\'s goed?',
+    helpText: 'Zijn ze scherp en niet wazig?',
+    isDefault: false 
+  },
+  { 
+    id: 'images-other', 
+    category: 'images', 
+    question: '🔄 Wil je andere foto\'s gebruiken?',
+    helpText: 'Heb je betere of andere beelden?',
+    isDefault: false 
+  },
 ]
 
 export const FEEDBACK_QUESTION_CATEGORIES: Record<FeedbackQuestionCategory, string> = {

@@ -36,6 +36,25 @@ import DesignPreviewModal from '../components/DesignPreviewModalNew'
 import PreLiveChecklist from '../components/PreLiveChecklist'
 import PreLiveApproval from '../components/PreLiveApproval'
 import ClientLiveDashboard from '../components/ClientLiveDashboard'
+import DeveloperUpdates from '../components/DeveloperUpdates'
+import PackagePhaseCard from '../components/PackagePhaseCard'
+import CustomerTaskChecklist from '../components/CustomerTaskChecklist'
+import HelpCenter from '../components/HelpCenter'
+import NotificationBell, { generateProjectNotifications } from '../components/NotificationBell'
+import OnboardingTour, { useOnboardingTour } from '../components/OnboardingTour'
+import ProjectTimeline from '../components/ProjectTimeline'
+import MilestoneCelebration, { useMilestoneCelebration } from '../components/MilestoneCelebration'
+import { ReferralWidget } from '../components/GrowthTools'
+import MobileBottomNav from '../components/MobileBottomNav'
+import QuickActions from '../components/QuickActions'
+import { DarkModeButton } from '../components/DarkModeToggle'
+import { useKeyboardShortcuts, KeyboardShortcutsModal, KeyboardShortcutHint } from '../hooks/useKeyboardShortcuts'
+import PWAInstallPrompt from '../components/PWAInstallPrompt'
+import type { Notification } from '../components/NotificationBell'
+import { useDarkMode } from '../contexts/DarkModeContext'
+import { useSEO } from '../hooks/useSEO'
+import { getPhaseInfo as getPackagePhaseInfo, PACKAGES } from '../config/packages'
+import type { PackageType } from '../config/packages'
 import type { Project, ProjectPhase, ProjectMessage } from '../types/project'
 import { getProgressPercentage } from '../types/project'
 
@@ -132,7 +151,7 @@ const PHASE_ACTIONS: Record<ProjectPhase, {
   live: []
 }
 
-// Phase expectations text
+// Phase expectations text - now dynamically based on package
 const PHASE_INFO: Record<ProjectPhase, { title: string; description: string }> = {
   onboarding: {
     title: 'We verzamelen je informatie',
@@ -162,6 +181,38 @@ const PHASE_INFO: Record<ProjectPhase, { title: string; description: string }> =
     title: 'Gefeliciteerd! 🎉',
     description: 'Je website is live en bereikbaar voor de wereld. Welkom!'
   }
+}
+
+// Get dynamic phase info based on package
+const getDynamicPhaseInfo = (phase: ProjectPhase, packageType?: string): { title: string; description: string } => {
+  // If we have a valid package, use the package-specific info
+  if (packageType && ['starter', 'professional', 'business', 'webshop'].includes(packageType)) {
+    const pkgPhaseInfo = getPackagePhaseInfo(packageType as PackageType, phase)
+    const pkg = PACKAGES[packageType as PackageType]
+    
+    // Add package-specific details to descriptions
+    if (phase === 'feedback' && pkg.revisions > 1) {
+      return {
+        title: pkgPhaseInfo.title,
+        description: `${pkgPhaseInfo.description} Je hebt ${pkg.revisions} revisierondes inclusief.`
+      }
+    }
+    
+    if (phase === 'payment') {
+      return {
+        title: pkgPhaseInfo.title,
+        description: `Je design is goedgekeurd! Rond de betaling van €${pkg.price}/maand af om live te gaan.`
+      }
+    }
+    
+    return {
+      title: pkgPhaseInfo.title,
+      description: pkgPhaseInfo.description
+    }
+  }
+  
+  // Fallback to static info
+  return PHASE_INFO[phase]
 }
 
 // Get phase color scheme
@@ -207,12 +258,13 @@ const useDeadlineCountdown = (deadline?: string) => {
   return countdown
 }
 
-const WHATSAPP_NUMBER = '31612345678'
+import { getWhatsAppLink, WHATSAPP_MESSAGES } from '../lib/constants'
 
 export default function ProjectStatusNew() {
   const { projectId } = useParams<{ projectId: string }>()
   const navigate = useNavigate()
   const [searchParams] = useSearchParams()
+  const { darkMode, toggleDarkMode } = useDarkMode()
   
   // State
   const [loading, setLoading] = useState(true)
@@ -250,7 +302,43 @@ export default function ProjectStatusNew() {
   // Design preview modal state
   const [showDesignPreview, setShowDesignPreview] = useState(false)
   
+  // Help center state
+  const [showHelpCenter, setShowHelpCenter] = useState(false)
+  
+  // Onboarding tour
+  const { shouldShowTour, dismissTour, resetTour } = useOnboardingTour()
+  
+  // Milestone celebrations
+  const { currentMilestone, celebrate, closeCelebration } = useMilestoneCelebration(projectId || '')
+  
+  // Keyboard shortcuts
+  const { showShortcutsModal, setShowShortcutsModal, shortcuts } = useKeyboardShortcuts({
+    enabled: isVerified,
+    onOpenChat: () => setShowChat(true),
+    onOpenDrive: () => project?.googleDriveUrl && window.open(project.googleDriveUrl, '_blank'),
+    onOpenHelp: () => setShowHelpCenter(true),
+    onToggleDarkMode: toggleDarkMode,
+    onScrollToTop: () => window.scrollTo({ top: 0, behavior: 'smooth' })
+  })
+  
+  // Notifications state
+  const [notifications, setNotifications] = useState<Notification[]>([])
+  
+  // Task completion state
+  const [completedTasks, setCompletedTasks] = useState<string[]>([])
+  
   const phaseColors = project ? getPhaseColors(project.status) : getPhaseColors('onboarding')
+  
+  // SEO - Set page title and description
+  useSEO({
+    title: project 
+      ? `${project.businessName} - Project Status` 
+      : 'Project Status',
+    description: project 
+      ? `Bekijk de voortgang van het project voor ${project.businessName}. Huidige fase: ${PHASES.find(p => p.key === project.status)?.label || project.status}.`
+      : 'Bekijk de voortgang van je website project bij Webstability.',
+    noindex: true // Klantenpagina's moeten niet geïndexeerd worden
+  })
   
   // Calculate deadline for current phase
   const currentDeadline = project?.phaseDeadlines?.[project.status as keyof typeof project.phaseDeadlines]
@@ -307,6 +395,52 @@ export default function ProjectStatusNew() {
     }, 5000)
     return () => clearInterval(interval)
   }, [isVerified, projectId])
+
+  // Generate notifications when project loads
+  useEffect(() => {
+    if (project) {
+      const generatedNotifications = generateProjectNotifications({
+        status: project.status,
+        businessName: project.businessName,
+        designPreviewUrl: project.designPreviewUrl,
+        paymentStatus: project.paymentStatus,
+        createdAt: project.createdAt
+      })
+      setNotifications(generatedNotifications)
+    }
+  }, [project?.status, project?.businessName])
+
+  // Trigger milestone celebrations based on project status
+  useEffect(() => {
+    if (!project?.status) return
+    
+    // Map project status to milestone type
+    const statusToMilestone: Record<string, 'design_ready' | 'website_live'> = {
+      'feedback': 'design_ready',  // Design is ready when entering feedback phase
+      'live': 'website_live'       // Website is live
+    }
+    
+    const milestone = statusToMilestone[project.status]
+    if (milestone) {
+      // Small delay to let the page render first
+      const timer = setTimeout(() => {
+        celebrate(milestone)
+      }, 500)
+      return () => clearTimeout(timer)
+    }
+  }, [project?.status, celebrate])
+
+  // Load completed tasks from localStorage
+  useEffect(() => {
+    if (project?.projectId && project?.status) {
+      const stored = localStorage.getItem(`tasks-${project.projectId}-${project.status}`)
+      if (stored) {
+        setCompletedTasks(JSON.parse(stored))
+      } else {
+        setCompletedTasks([])
+      }
+    }
+  }, [project?.projectId, project?.status])
 
   const verifyMagicSession = async (id: string, sessionToken: string) => {
     setVerifyLoading(true)
@@ -447,14 +581,17 @@ export default function ProjectStatusNew() {
           referralDiscount: apiProject.referralDiscount,
           referralsCount: apiProject.referralsCount,
           referralRewards: apiProject.referralRewards,
-          // Feedback questions from developer
-          feedbackQuestions: apiProject.feedbackQuestions || [],
+          // Feedback questions - use developer-set questions or fall back to package-specific questions
+          feedbackQuestions: apiProject.feedbackQuestions?.length > 0 
+            ? apiProject.feedbackQuestions 
+            : (PACKAGES[apiProject.package?.toLowerCase() as PackageType]?.feedbackQuestionIds || []),
           customQuestions: apiProject.customQuestions || [],
         }
         
         console.log('[ProjectStatusNew] Loaded project with questions:', {
           feedbackQuestions: transformedProject.feedbackQuestions,
-          customQuestions: transformedProject.customQuestions
+          customQuestions: transformedProject.customQuestions,
+          packageType: apiProject.package
         })
         
         setProject(transformedProject)
@@ -839,18 +976,28 @@ export default function ProjectStatusNew() {
   const unreadMessages = messages.filter(m => !m.read && m.from === 'developer').length
 
   return (
-    <div className="min-h-screen bg-gray-950">
+    <div className={`min-h-screen transition-colors duration-300 ${darkMode ? 'bg-gray-950' : 'bg-gray-50'}`}>
       {/* Header - Improved with business name and quick actions */}
-      <header className="sticky top-0 z-50 border-b border-white/10 bg-gray-950/80 backdrop-blur-xl">
+      <header className={`sticky top-0 z-50 border-b backdrop-blur-xl transition-colors duration-300 ${
+        darkMode 
+          ? 'border-white/10 bg-gray-950/80' 
+          : 'border-gray-200 bg-white/80'
+      }`}>
         <div className="max-w-3xl mx-auto px-4 py-3">
           <div className="flex items-center justify-between">
             <Link to="/" className="hover:opacity-80 transition">
               <Logo variant="white" size="sm" />
             </Link>
             <div className="flex items-center gap-1">
+              {/* Dark mode toggle */}
+              <DarkModeButton
+                darkMode={darkMode}
+                onToggle={toggleDarkMode}
+                size="md"
+              />
               {/* WhatsApp quick action */}
               <a
-                href={`https://wa.me/${WHATSAPP_NUMBER}?text=Hoi! Vraag over project ${projectId}`}
+                href={getWhatsAppLink(WHATSAPP_MESSAGES.PROJECT(projectId || ''))}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="p-2 text-gray-400 hover:text-green-400 transition rounded-lg hover:bg-green-500/10"
@@ -872,10 +1019,44 @@ export default function ProjectStatusNew() {
                   </span>
                 )}
               </button>
+              {/* Notifications */}
+              <div data-tour="notifications">
+                <NotificationBell
+                  notifications={notifications}
+                  onMarkAsRead={(id) => {
+                    setNotifications(prev => 
+                      prev.map(n => n.id === id ? { ...n, read: true } : n)
+                    )
+                  }}
+                  onMarkAllAsRead={() => {
+                    setNotifications(prev => prev.map(n => ({ ...n, read: true })))
+                  }}
+                  darkMode={darkMode}
+                />
+              </div>
+              {/* Help */}
+              <button
+                data-tour="help"
+                onClick={() => setShowHelpCenter(true)}
+                className={`p-2 transition rounded-lg ${
+                  darkMode 
+                    ? 'text-gray-400 hover:text-white hover:bg-gray-800' 
+                    : 'text-gray-500 hover:text-gray-900 hover:bg-gray-100'
+                }`}
+                title="Hulp & FAQ"
+              >
+                <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+              </button>
               {/* Account */}
               <button
                 onClick={() => setShowAccountModal(true)}
-                className="p-2 text-gray-400 hover:text-white transition rounded-lg hover:bg-gray-800"
+                className={`p-2 transition rounded-lg ${
+                  darkMode 
+                    ? 'text-gray-400 hover:text-white hover:bg-gray-800' 
+                    : 'text-gray-500 hover:text-gray-900 hover:bg-gray-100'
+                }`}
                 title="Mijn Account"
               >
                 <FolderOpen className="w-5 h-5" />
@@ -883,15 +1064,15 @@ export default function ProjectStatusNew() {
             </div>
           </div>
           {/* Business name bar */}
-          <div className="flex items-center justify-between mt-2 pt-2 border-t border-white/5">
+          <div className={`flex items-center justify-between mt-2 pt-2 border-t ${darkMode ? 'border-white/5' : 'border-gray-200'}`}>
             <div className="flex items-center gap-2">
-              <span className="text-white font-medium text-sm">{project.businessName}</span>
-              <span className="text-gray-600">•</span>
+              <span className={`font-medium text-sm ${darkMode ? 'text-white' : 'text-gray-900'}`}>{project.businessName}</span>
+              <span className="text-gray-400">•</span>
               <span className="text-xs text-gray-500 font-mono">{projectId}</span>
             </div>
             <div className="flex items-center gap-1.5">
               <div className={`w-2 h-2 rounded-full ${phaseColors.bg}`} />
-              <span className="text-xs text-gray-400">
+              <span className="text-xs text-gray-500">
                 {PHASES.find(p => p.key === project.status)?.label || project.status}
               </span>
             </div>
@@ -937,7 +1118,11 @@ export default function ProjectStatusNew() {
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          className="bg-gray-900/50 rounded-2xl border border-gray-800 p-4 sm:p-6"
+          className={`rounded-2xl border p-4 sm:p-6 ${
+            darkMode 
+              ? 'bg-gray-900/50 border-gray-800' 
+              : 'bg-white border-gray-200 shadow-sm'
+          }`}
         >
           <div className="flex items-center justify-between mb-4">
             {PHASES.map((phase, index) => {
@@ -959,7 +1144,7 @@ export default function ProjectStatusNew() {
                       className={`w-10 h-10 sm:w-12 sm:h-12 rounded-xl flex items-center justify-center transition-colors duration-500 ${
                         status === 'completed' ? 'bg-green-500/20 border-2 border-green-500/50' :
                         status === 'current' ? `bg-gradient-to-br ${phaseColors.gradient}` :
-                        'bg-gray-800 border border-gray-700'
+                        darkMode ? 'bg-gray-800 border border-gray-700' : 'bg-gray-100 border border-gray-200'
                       }`}
                     >
                       <AnimatePresence mode="wait">
@@ -982,7 +1167,7 @@ export default function ProjectStatusNew() {
                             transition={{ duration: 0.2 }}
                           >
                             <Icon className={`w-5 h-5 sm:w-6 sm:h-6 ${
-                              status === 'current' ? 'text-white' : 'text-gray-500'
+                              status === 'current' ? 'text-white' : darkMode ? 'text-gray-500' : 'text-gray-400'
                             }`} />
                           </motion.div>
                         )}
@@ -992,7 +1177,8 @@ export default function ProjectStatusNew() {
                       initial={false}
                       animate={{ 
                         color: status === 'completed' ? '#4ade80' : 
-                               status === 'current' ? '#ffffff' : '#6b7280'
+                               status === 'current' ? (darkMode ? '#ffffff' : '#1f2937') : 
+                               (darkMode ? '#6b7280' : '#9ca3af')
                       }}
                       transition={{ duration: 0.5 }}
                       className="text-[10px] sm:text-xs mt-2 font-medium text-center"
@@ -1001,7 +1187,7 @@ export default function ProjectStatusNew() {
                     </motion.span>
                   </div>
                   {!isLast && (
-                    <div className="flex-1 h-0.5 mx-2 sm:mx-3 bg-gray-800 overflow-hidden">
+                    <div className={`flex-1 h-0.5 mx-2 sm:mx-3 overflow-hidden ${darkMode ? 'bg-gray-800' : 'bg-gray-200'}`}>
                       <motion.div
                         initial={{ width: '0%' }}
                         animate={{ width: status === 'completed' ? '100%' : '0%' }}
@@ -1017,7 +1203,7 @@ export default function ProjectStatusNew() {
           
           {/* Progress percentage */}
           <div className="flex items-center gap-3">
-            <div className="flex-1 h-2 bg-gray-800 rounded-full overflow-hidden">
+            <div className={`flex-1 h-2 rounded-full overflow-hidden ${darkMode ? 'bg-gray-800' : 'bg-gray-200'}`}>
               <motion.div
                 initial={{ width: 0 }}
                 animate={{ width: `${progress}%` }}
@@ -1025,7 +1211,7 @@ export default function ProjectStatusNew() {
                 className={`h-full rounded-full bg-gradient-to-r ${phaseColors.gradient}`}
               />
             </div>
-            <span className="text-sm font-medium text-white">{progress}%</span>
+            <span className={`text-sm font-medium ${darkMode ? 'text-white' : 'text-gray-900'}`}>{progress}%</span>
           </div>
         </motion.div>
 
@@ -1055,8 +1241,8 @@ export default function ProjectStatusNew() {
                 })()}
               </div>
               <div className="flex-1">
-                <h2 className="font-bold text-lg sm:text-xl mb-1">{PHASE_INFO[project.status]?.title}</h2>
-                <p className="text-sm text-white/80 leading-relaxed">{PHASE_INFO[project.status]?.description}</p>
+                <h2 className="font-bold text-lg sm:text-xl mb-1">{getDynamicPhaseInfo(project.status, project.package)?.title}</h2>
+                <p className="text-sm text-white/80 leading-relaxed">{getDynamicPhaseInfo(project.status, project.package)?.description}</p>
               </div>
             </div>
 
@@ -1082,13 +1268,72 @@ export default function ProjectStatusNew() {
           </div>
         </motion.div>
 
+        {/* Package-specific Phase Card - Shows tasks and tips per package */}
+        {project.package && project.status !== 'live' && (
+          <div data-tour="status">
+            <PackagePhaseCard
+              packageType={project.package as 'starter' | 'professional' | 'business' | 'webshop'}
+              currentPhase={project.status as 'onboarding' | 'design' | 'feedback' | 'revisie' | 'payment' | 'approval' | 'live'}
+              usedRevisions={project.revisionsUsed || 0}
+              darkMode={darkMode}
+            />
+          </div>
+        )}
+
+        {/* Quick Actions - Context-aware shortcuts */}
+        <QuickActions
+          phase={project.status as 'onboarding' | 'design' | 'feedback' | 'revisie' | 'payment' | 'approval' | 'live'}
+          onViewDesign={() => setShowDesignPreview(true)}
+          onSendMessage={() => setShowChat(true)}
+          onApprove={() => setShowDesignPreview(true)}
+          onRequestChanges={() => setShowDesignPreview(true)}
+          onLeaveReview={() => window.open('https://g.page/r/review', '_blank')}
+          hasDesignPreview={!!project.designPreviewUrl}
+          hasUnpaidInvoice={project.paymentStatus !== 'paid'}
+          paymentUrl={project.paymentUrl}
+          liveUrl={project.liveUrl}
+          googleDriveUrl={project.googleDriveUrl}
+          darkMode={darkMode}
+        />
+
+        {/* Customer Task Checklist - Interactive tasks for current phase */}
+        {project.status !== 'live' && (
+          <div data-tour="tasks">
+            <CustomerTaskChecklist
+              projectId={project.projectId}
+              currentPhase={project.status as 'onboarding' | 'design' | 'feedback' | 'revisie' | 'payment' | 'approval' | 'live'}
+              completedTasks={completedTasks}
+              onTaskComplete={async (taskId, completed) => {
+                if (completed) {
+                  setCompletedTasks(prev => [...prev, taskId])
+                } else {
+                  setCompletedTasks(prev => prev.filter(id => id !== taskId))
+                }
+              }}
+              darkMode={darkMode}
+            />
+          </div>
+        )}
+
+        {/* Project Timeline - Visual progress overview */}
+        {project.status !== 'live' && (
+          <ProjectTimeline
+            currentPhase={project.status as 'onboarding' | 'design' | 'feedback' | 'revisie' | 'payment' | 'approval' | 'live'}
+            startDate={project.createdAt ? new Date(project.createdAt) : new Date()}
+            darkMode={darkMode}
+            compact={true}
+          />
+        )}
+
         {/* Special Revisie Status Card - shown when feedback is being processed */}
         {project.status === 'revisie' && (
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.1 }}
-            className="bg-gray-900 rounded-2xl p-5 border border-cyan-500/30"
+            className={`rounded-2xl p-5 border border-cyan-500/30 ${
+              darkMode ? 'bg-gray-900' : 'bg-white shadow-sm'
+            }`}
           >
             <div className="flex items-start gap-4">
               <div className="w-12 h-12 bg-cyan-500/20 rounded-xl flex items-center justify-center flex-shrink-0">
@@ -1100,8 +1345,8 @@ export default function ProjectStatusNew() {
                 </motion.div>
               </div>
               <div className="flex-1">
-                <h3 className="font-semibold text-white mb-1">We verwerken je feedback</h3>
-                <p className="text-sm text-gray-400 mb-3">
+                <h3 className={`font-semibold mb-1 ${darkMode ? 'text-white' : 'text-gray-900'}`}>We verwerken je feedback</h3>
+                <p className={`text-sm mb-3 ${darkMode ? 'text-gray-400' : 'text-gray-600'}`}>
                   Ons team is druk bezig met het doorvoeren van je aanpassingen. Je ontvangt binnenkort een nieuwe preview.
                 </p>
                 
@@ -1109,8 +1354,8 @@ export default function ProjectStatusNew() {
                 <div className="flex items-center gap-4 text-sm">
                   <div className="flex items-center gap-2">
                     <CheckCircle2 className="w-4 h-4 text-cyan-400" />
-                    <span className="text-gray-400">
-                      Revisieronde: <span className="text-white font-medium">{project.revisionsUsed || 1}</span>
+                    <span className={darkMode ? 'text-gray-400' : 'text-gray-600'}>
+                      Revisieronde: <span className={`font-medium ${darkMode ? 'text-white' : 'text-gray-900'}`}>{project.revisionsUsed || 1}</span>
                       {project.revisionsTotal && <span className="text-gray-500">/{project.revisionsTotal}</span>}
                     </span>
                   </div>
@@ -1266,16 +1511,20 @@ export default function ProjectStatusNew() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.18 }}
-            className="bg-gray-900 rounded-2xl border border-gray-800 overflow-hidden"
+            className={`rounded-2xl border overflow-hidden ${
+              darkMode ? 'bg-gray-900 border-gray-800' : 'bg-white border-gray-200 shadow-sm'
+            }`}
           >
-            <div className="p-4 sm:p-5 border-b border-gray-800">
+            <div className={`p-4 sm:p-5 border-b ${darkMode ? 'border-gray-800' : 'border-gray-200'}`}>
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 bg-blue-500/20 rounded-xl flex items-center justify-center">
-                    <FolderOpen className="w-5 h-5 text-blue-400" />
+                  <div className={`w-10 h-10 rounded-xl flex items-center justify-center ${
+                    darkMode ? 'bg-blue-500/20' : 'bg-blue-100'
+                  }`}>
+                    <FolderOpen className={`w-5 h-5 ${darkMode ? 'text-blue-400' : 'text-blue-600'}`} />
                   </div>
                   <div>
-                    <h3 className="font-semibold text-white">Projectbestanden</h3>
+                    <h3 className={`font-semibold ${darkMode ? 'text-white' : 'text-gray-900'}`}>Projectbestanden</h3>
                     <p className="text-xs text-gray-500">Upload hier je logo, foto's en teksten</p>
                   </div>
                 </div>
@@ -1283,7 +1532,9 @@ export default function ProjectStatusNew() {
                   href={project.googleDriveUrl}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="p-2 text-blue-400 hover:text-blue-300 hover:bg-blue-500/10 rounded-lg transition"
+                  className={`p-2 rounded-lg transition ${
+                    darkMode ? 'text-blue-400 hover:text-blue-300 hover:bg-blue-500/10' : 'text-blue-600 hover:text-blue-700 hover:bg-blue-50'
+                  }`}
                 >
                   <ExternalLink className="w-5 h-5" />
                 </a>
@@ -1303,9 +1554,14 @@ export default function ProjectStatusNew() {
                   { icon: '📄', label: 'Teksten', desc: 'Website content' },
                   { icon: '🎨', label: 'Huisstijl', desc: 'Kleuren/fonts' },
                 ].map((item, i) => (
-                  <div key={i} className="p-3 bg-gray-800/50 rounded-xl border border-gray-700/50">
+                  <div 
+                    key={i} 
+                    className={`p-3 rounded-xl border ${
+                      darkMode ? 'bg-gray-800/50 border-gray-700/50' : 'bg-gray-50 border-gray-200'
+                    }`}
+                  >
                     <span className="text-lg mb-1 block">{item.icon}</span>
-                    <p className="text-sm font-medium text-white">{item.label}</p>
+                    <p className={`text-sm font-medium ${darkMode ? 'text-white' : 'text-gray-900'}`}>{item.label}</p>
                     <p className="text-xs text-gray-500">{item.desc}</p>
                   </div>
                 ))}
@@ -1468,6 +1724,7 @@ export default function ProjectStatusNew() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.2 }}
             className="p-5 rounded-2xl bg-gradient-to-br from-purple-500/20 to-pink-500/10 border border-purple-500/30"
+            data-tour="design"
           >
             <div className="flex items-center gap-4 mb-4">
               <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center shadow-lg">
@@ -1646,8 +1903,194 @@ export default function ProjectStatusNew() {
           </motion.div>
         )}
 
+        {/* Invoices Section */}
+        {project.invoices && project.invoices.length > 0 && (
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.27 }}
+            className={`rounded-2xl border overflow-hidden ${
+              darkMode 
+                ? 'bg-gray-900 border-gray-800' 
+                : 'bg-white border-gray-200 shadow-sm'
+            }`}
+          >
+            <div className={`p-4 border-b ${darkMode ? 'border-gray-800' : 'border-gray-200'}`}>
+              <div className="flex items-center gap-3">
+                <div className={`w-10 h-10 rounded-xl flex items-center justify-center ${
+                  darkMode ? 'bg-blue-500/20' : 'bg-blue-100'
+                }`}>
+                  <CreditCard className={`w-5 h-5 ${darkMode ? 'text-blue-400' : 'text-blue-600'}`} />
+                </div>
+                <div>
+                  <h3 className={`font-semibold ${darkMode ? 'text-white' : 'text-gray-900'}`}>Facturen</h3>
+                  <p className={`text-xs ${darkMode ? 'text-gray-500' : 'text-gray-500'}`}>
+                    Overzicht van al je facturen
+                  </p>
+                </div>
+              </div>
+            </div>
+            <div className={`divide-y ${darkMode ? 'divide-gray-800' : 'divide-gray-200'}`}>
+              {project.invoices.map((invoice) => (
+                <div 
+                  key={invoice.id} 
+                  className={`p-4 flex items-center justify-between ${
+                    darkMode ? 'hover:bg-gray-800/50' : 'hover:bg-gray-50'
+                  } transition`}
+                >
+                  <div className="flex items-center gap-3">
+                    <div className={`w-10 h-10 rounded-lg flex items-center justify-center ${
+                      invoice.status === 'paid' 
+                        ? 'bg-green-500/20' 
+                        : invoice.status === 'overdue' 
+                          ? 'bg-red-500/20' 
+                          : darkMode ? 'bg-gray-800' : 'bg-gray-100'
+                    }`}>
+                      {invoice.status === 'paid' ? (
+                        <CheckCircle2 className="w-5 h-5 text-green-400" />
+                      ) : invoice.status === 'overdue' ? (
+                        <AlertCircle className="w-5 h-5 text-red-400" />
+                      ) : (
+                        <Clock className={`w-5 h-5 ${darkMode ? 'text-gray-400' : 'text-gray-500'}`} />
+                      )}
+                    </div>
+                    <div>
+                      <p className={`text-sm font-medium ${darkMode ? 'text-white' : 'text-gray-900'}`}>
+                        {invoice.description}
+                      </p>
+                      <p className={`text-xs ${darkMode ? 'text-gray-500' : 'text-gray-500'}`}>
+                        {new Date(invoice.date).toLocaleDateString('nl-NL', { 
+                          day: 'numeric', 
+                          month: 'long', 
+                          year: 'numeric' 
+                        })}
+                        {invoice.dueDate && invoice.status !== 'paid' && (
+                          <span className="ml-2">
+                            · Vervaldatum: {new Date(invoice.dueDate).toLocaleDateString('nl-NL', { 
+                              day: 'numeric', 
+                              month: 'short' 
+                            })}
+                          </span>
+                        )}
+                      </p>
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-4">
+                    <div className="text-right">
+                      <p className={`font-semibold ${darkMode ? 'text-white' : 'text-gray-900'}`}>
+                        €{invoice.amount.toFixed(2)}
+                      </p>
+                      <p className={`text-xs font-medium ${
+                        invoice.status === 'paid' 
+                          ? 'text-green-500' 
+                          : invoice.status === 'overdue' 
+                            ? 'text-red-500' 
+                            : invoice.status === 'sent' 
+                              ? 'text-amber-500' 
+                              : darkMode ? 'text-gray-500' : 'text-gray-400'
+                      }`}>
+                        {invoice.status === 'paid' ? '✓ Betaald' :
+                         invoice.status === 'overdue' ? '⚠ Vervallen' :
+                         invoice.status === 'sent' ? 'Openstaand' : 'Concept'}
+                      </p>
+                      {invoice.paidAt && invoice.status === 'paid' && (
+                        <p className={`text-xs ${darkMode ? 'text-gray-600' : 'text-gray-400'}`}>
+                          {new Date(invoice.paidAt).toLocaleDateString('nl-NL', { 
+                            day: 'numeric', 
+                            month: 'short' 
+                          })}
+                        </p>
+                      )}
+                    </div>
+                    {invoice.paymentUrl && invoice.status !== 'paid' && (
+                      <a
+                        href={invoice.paymentUrl}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className={`px-4 py-2 font-medium text-sm rounded-xl transition flex items-center gap-2 ${
+                          invoice.status === 'overdue'
+                            ? 'bg-red-500 hover:bg-red-600 text-white'
+                            : 'bg-blue-500 hover:bg-blue-600 text-white'
+                        }`}
+                      >
+                        <CreditCard className="w-4 h-4" />
+                        Betalen
+                      </a>
+                    )}
+                  </div>
+                </div>
+              ))}
+            </div>
+            
+            {/* Summary footer */}
+            {project.invoices.length > 1 && (
+              <div className={`p-4 border-t ${
+                darkMode ? 'border-gray-800 bg-gray-800/30' : 'border-gray-200 bg-gray-50'
+              }`}>
+                <div className="flex justify-between items-center">
+                  <div>
+                    <p className={`text-sm ${darkMode ? 'text-gray-400' : 'text-gray-600'}`}>
+                      {project.invoices.filter(i => i.status === 'paid').length} van {project.invoices.length} facturen betaald
+                    </p>
+                  </div>
+                  <div className="flex gap-4">
+                    {project.invoices.some(i => i.status !== 'paid' && i.status !== 'cancelled') && (
+                      <div className="text-right">
+                        <p className={`text-xs ${darkMode ? 'text-gray-500' : 'text-gray-500'}`}>Openstaand</p>
+                        <p className="font-semibold text-amber-500">
+                          €{project.invoices
+                            .filter(i => i.status !== 'paid' && i.status !== 'cancelled')
+                            .reduce((sum, i) => sum + i.amount, 0)
+                            .toFixed(2)}
+                        </p>
+                      </div>
+                    )}
+                    <div className="text-right">
+                      <p className={`text-xs ${darkMode ? 'text-gray-500' : 'text-gray-500'}`}>Totaal betaald</p>
+                      <p className="font-semibold text-green-500">
+                        €{project.invoices
+                          .filter(i => i.status === 'paid')
+                          .reduce((sum, i) => sum + i.amount, 0)
+                          .toFixed(2)}
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            )}
+          </motion.div>
+        )}
+
+        {/* Developer Updates - What developers have done on the project */}
+        <DeveloperUpdates 
+          projectId={project.projectId}
+          darkMode={darkMode}
+        />
+
+        {/* Referral Widget - Earn rewards by sharing */}
+        {project.referralCode && (
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.3 }}
+          >
+            <ReferralWidget
+              referralCode={project.referralCode}
+              referralUrl={`${window.location.origin}/?ref=${project.referralCode}`}
+              referralsCount={project.referralsCount || 0}
+              totalEarned={project.referralRewards || 0}
+              onCopyCode={() => {
+                console.log('Referral code copied')
+              }}
+              onShare={() => {
+                console.log('Referral shared')
+              }}
+            />
+          </motion.div>
+        )}
+
         {/* Trust badges - simplified footer */}
-        <div className="flex justify-center gap-6 py-6 text-xs text-gray-500">
+        <div className={`flex justify-center gap-6 py-6 text-xs ${darkMode ? 'text-gray-500' : 'text-gray-400'}`}>
           <div className="flex items-center gap-1.5">
             <Shield className="w-4 h-4 text-green-500" />
             Beveiligd
@@ -1682,7 +2125,9 @@ export default function ProjectStatusNew() {
                 chatExpanded ? 'w-full md:w-[600px]' : 'w-full md:w-[400px]'
               } transition-all duration-300`}
             >
-              <div className="flex flex-col h-full bg-gray-900 border-l border-gray-800 shadow-2xl">
+              <div className={`flex flex-col h-full shadow-2xl border-l ${
+                darkMode ? 'bg-gray-900 border-gray-800' : 'bg-white border-gray-200'
+              }`}>
                 {/* Chat header */}
                 <div className={`bg-gradient-to-r ${phaseColors.gradient} p-4 flex-shrink-0`}>
                   <div className="flex items-center justify-between">
@@ -1724,12 +2169,12 @@ export default function ProjectStatusNew() {
                 </div>
 
                 {/* Messages */}
-                <div className="flex-1 overflow-y-auto p-4 space-y-3 bg-gray-950">
+                <div className={`flex-1 overflow-y-auto p-4 space-y-3 ${darkMode ? 'bg-gray-950' : 'bg-gray-50'}`}>
                   {messages.length === 0 ? (
                     <div className="h-full flex flex-col items-center justify-center text-gray-500">
                       <MessageSquare className="w-10 h-10 mb-2 opacity-50" />
                       <p className="text-sm">Nog geen berichten</p>
-                      <p className="text-xs mt-1 text-gray-600">Start een gesprek met ons</p>
+                      <p className={`text-xs mt-1 ${darkMode ? 'text-gray-600' : 'text-gray-400'}`}>Start een gesprek met ons</p>
                     </div>
                   ) : (
                     messages.map((msg) => (
@@ -1740,16 +2185,18 @@ export default function ProjectStatusNew() {
                         <div className={`max-w-[80%] rounded-2xl p-3 ${
                           msg.from === 'client'
                             ? `bg-gradient-to-r ${phaseColors.gradient} text-white rounded-br-md`
-                            : 'bg-gray-800 text-white rounded-bl-md'
+                            : darkMode ? 'bg-gray-800 text-white rounded-bl-md' : 'bg-white border border-gray-200 text-gray-900 rounded-bl-md'
                         }`}>
                           {/* Sender name */}
                           <p className={`text-xs font-medium mb-1 ${
-                            msg.from === 'client' ? 'text-white/70' : 'text-blue-400'
+                            msg.from === 'client' ? 'text-white/70' : 'text-blue-500'
                           }`}>
                             {msg.senderName || (msg.from === 'developer' ? 'Webstability Team' : project?.contactName || 'Jij')}
                           </p>
                           <p className="text-sm">{msg.message}</p>
-                          <p className={`text-xs mt-1 ${msg.from === 'client' ? 'text-white/60' : 'text-gray-500'}`}>
+                          <p className={`text-xs mt-1 ${
+                            msg.from === 'client' ? 'text-white/60' : (darkMode ? 'text-gray-500' : 'text-gray-400')
+                          }`}>
                             {new Date(msg.date).toLocaleTimeString('nl-NL', { hour: '2-digit', minute: '2-digit' })}
                           </p>
                         </div>
@@ -1760,14 +2207,20 @@ export default function ProjectStatusNew() {
                 </div>
 
                 {/* Input */}
-                <div className="p-4 border-t border-gray-800 flex-shrink-0 bg-gray-900">
+                <div className={`p-4 border-t flex-shrink-0 ${
+                  darkMode ? 'border-gray-800 bg-gray-900' : 'border-gray-200 bg-white'
+                }`}>
                   <div className="flex gap-2">
                     <input
                       type="text"
                       value={newMessage}
                       onChange={(e) => setNewMessage(e.target.value)}
                       placeholder="Typ je bericht..."
-                      className="flex-1 px-4 py-3 bg-gray-800 border border-gray-700 rounded-xl text-white placeholder-gray-500 focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm"
+                      className={`flex-1 px-4 py-3 border rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm ${
+                        darkMode 
+                          ? 'bg-gray-800 border-gray-700 text-white placeholder-gray-500' 
+                          : 'bg-gray-50 border-gray-200 text-gray-900 placeholder-gray-400'
+                      }`}
                       onKeyPress={(e) => e.key === 'Enter' && !messageLoading && sendMessage()}
                     />
                     <button
@@ -1847,6 +2300,67 @@ export default function ProjectStatusNew() {
           }}
         />
         </>
+      )}
+
+      {/* Help Center Slide-over */}
+      <HelpCenter
+        isOpen={showHelpCenter}
+        onClose={() => setShowHelpCenter(false)}
+        currentPhase={project?.status as 'onboarding' | 'design' | 'feedback' | 'revisie' | 'payment' | 'approval' | 'live' || 'onboarding'}
+        darkMode={darkMode}
+        onRestartTour={resetTour}
+      />
+
+      {/* Onboarding Tour for new users */}
+      <OnboardingTour
+        isOpen={shouldShowTour && !loading && !error}
+        onClose={dismissTour}
+        onComplete={() => {
+          dismissTour()
+          // Celebrate onboarding complete
+          celebrate('onboarding_complete')
+        }}
+        projectName={project?.businessName}
+      />
+
+      {/* Milestone Celebrations */}
+      <MilestoneCelebration
+        milestone={currentMilestone}
+        onClose={closeCelebration}
+      />
+
+      {/* Mobile Bottom Navigation */}
+      <MobileBottomNav
+        darkMode={darkMode}
+        unreadMessages={unreadMessages}
+        activeTab="home"
+        onHome={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
+        onChat={() => setShowChat(true)}
+        onDocs={() => {
+          if (project?.googleDriveUrl) {
+            window.open(project.googleDriveUrl, '_blank')
+          }
+        }}
+        onHelp={() => setShowHelpCenter(true)}
+        onAccount={() => setShowAccountModal(true)}
+      />
+
+      {/* Keyboard Shortcuts Modal */}
+      <KeyboardShortcutsModal
+        isOpen={showShortcutsModal}
+        onClose={() => setShowShortcutsModal(false)}
+        shortcuts={shortcuts}
+        darkMode={darkMode}
+      />
+
+      {/* Keyboard Shortcut Hint - shows after 2 seconds for new users */}
+      {isVerified && !shouldShowTour && (
+        <KeyboardShortcutHint darkMode={darkMode} />
+      )}
+
+      {/* PWA Install Prompt - shows after 30 seconds */}
+      {isVerified && (
+        <PWAInstallPrompt darkMode={darkMode} delay={30000} />
       )}
     </div>
   )

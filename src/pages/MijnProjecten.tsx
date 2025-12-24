@@ -25,9 +25,13 @@ import {
   LogOut,
   User,
   RefreshCw,
-  CreditCard
+  CreditCard,
+  Sun,
+  Moon
 } from 'lucide-react'
 import Logo from '../components/Logo'
+import { useDarkMode } from '../contexts/DarkModeContext'
+import { useSEO } from '../hooks/useSEO'
 
 interface ProjectSummary {
   projectId: string
@@ -56,6 +60,7 @@ const TYPE_LABELS: Record<string, string> = {
 export default function MijnProjecten() {
   const navigate = useNavigate()
   const [searchParams] = useSearchParams()
+  const { darkMode, toggleDarkMode } = useDarkMode()
   
   // Auth state
   const [isLoggedIn, setIsLoggedIn] = useState(false)
@@ -67,6 +72,15 @@ export default function MijnProjecten() {
   const [projects, setProjects] = useState<ProjectSummary[]>([])
   const [refreshing, setRefreshing] = useState(false)
   const [customerEmail, setCustomerEmail] = useState('')
+  
+  // SEO - Set page title and description
+  useSEO({
+    title: isLoggedIn 
+      ? `Mijn Projecten - ${projects.length} project${projects.length !== 1 ? 'en' : ''}` 
+      : 'Mijn Projecten - Inloggen',
+    description: 'Bekijk en beheer al je website projecten bij Webstability. Volg de voortgang, bekijk je facturen en chat met ons team.',
+    noindex: true // Klantenpagina's moeten niet geïndexeerd worden
+  })
   
   // Check for existing session
   useEffect(() => {
@@ -166,13 +180,29 @@ export default function MijnProjecten() {
   // Login screen
   if (!isLoggedIn) {
     return (
-      <div className="min-h-screen bg-gradient-to-b from-gray-900 via-gray-900 to-gray-950">
+      <div className={`min-h-screen transition-colors duration-300 ${
+        darkMode 
+          ? 'bg-gradient-to-b from-gray-900 via-gray-900 to-gray-950' 
+          : 'bg-gradient-to-b from-gray-50 via-white to-gray-100'
+      }`}>
         {/* Header */}
-        <header className="border-b border-white/10">
+        <header className={`border-b ${darkMode ? 'border-white/10' : 'border-gray-200'}`}>
           <div className="max-w-7xl mx-auto px-4 py-4 flex justify-between items-center">
             <Link to="/" className="hover:opacity-80 transition">
-              <Logo variant="white" />
+              <Logo variant={darkMode ? 'white' : 'default'} />
             </Link>
+            <button
+              onClick={toggleDarkMode}
+              className={`p-2 rounded-lg transition ${
+                darkMode 
+                  ? 'text-gray-400 hover:text-yellow-400 hover:bg-yellow-500/10' 
+                  : 'text-gray-600 hover:text-gray-900 hover:bg-gray-100'
+              }`}
+              title={darkMode ? 'Lichte modus' : 'Donkere modus'}
+              aria-label={darkMode ? 'Schakel naar lichte modus' : 'Schakel naar donkere modus'}
+            >
+              {darkMode ? <Sun className="w-5 h-5" /> : <Moon className="w-5 h-5" />}
+            </button>
           </div>
         </header>
 
@@ -307,22 +337,47 @@ export default function MijnProjecten() {
 
   // Projects Dashboard
   return (
-    <div className="min-h-screen bg-gradient-to-b from-gray-900 via-gray-900 to-gray-950">
+    <div className={`min-h-screen transition-colors duration-300 ${
+      darkMode 
+        ? 'bg-gradient-to-b from-gray-900 via-gray-900 to-gray-950' 
+        : 'bg-gradient-to-b from-gray-50 via-white to-gray-100'
+    }`}>
       {/* Header */}
-      <header className="border-b border-white/10 sticky top-0 z-50 bg-gray-900/80 backdrop-blur-xl">
+      <header className={`border-b sticky top-0 z-50 backdrop-blur-xl ${
+        darkMode 
+          ? 'border-white/10 bg-gray-900/80' 
+          : 'border-gray-200 bg-white/80'
+      }`}>
         <div className="max-w-7xl mx-auto px-4 py-4 flex justify-between items-center">
           <Link to="/" className="hover:opacity-80 transition">
-            <Logo variant="white" />
+            <Logo variant={darkMode ? 'white' : 'default'} />
           </Link>
           
           <div className="flex items-center gap-4">
-            <div className="hidden sm:flex items-center gap-2 text-gray-400 text-sm">
+            {/* Dark mode toggle */}
+            <button
+              onClick={toggleDarkMode}
+              className={`p-2 rounded-lg transition ${
+                darkMode 
+                  ? 'text-gray-400 hover:text-yellow-400 hover:bg-yellow-500/10' 
+                  : 'text-gray-600 hover:text-gray-900 hover:bg-gray-100'
+              }`}
+              title={darkMode ? 'Lichte modus' : 'Donkere modus'}
+            >
+              {darkMode ? <Sun className="w-5 h-5" /> : <Moon className="w-5 h-5" />}
+            </button>
+            
+            <div className={`hidden sm:flex items-center gap-2 text-sm ${darkMode ? 'text-gray-400' : 'text-gray-600'}`}>
               <User className="w-4 h-4" />
               <span>{customerEmail}</span>
             </div>
             <button
               onClick={handleLogout}
-              className="flex items-center gap-2 px-4 py-2 text-gray-400 hover:text-white hover:bg-gray-800 rounded-lg transition"
+              className={`flex items-center gap-2 px-4 py-2 rounded-lg transition ${
+                darkMode 
+                  ? 'text-gray-400 hover:text-white hover:bg-gray-800' 
+                  : 'text-gray-600 hover:text-gray-900 hover:bg-gray-100'
+              }`}
             >
               <LogOut className="w-4 h-4" />
               <span className="hidden sm:inline">Uitloggen</span>
@@ -336,10 +391,10 @@ export default function MijnProjecten() {
         {/* Page Header */}
         <div className="flex items-center justify-between mb-8">
           <div>
-            <h1 className="text-2xl sm:text-3xl font-bold text-white mb-2">
+            <h1 className={`text-2xl sm:text-3xl font-bold mb-2 ${darkMode ? 'text-white' : 'text-gray-900'}`}>
               Mijn Projecten
             </h1>
-            <p className="text-gray-400">
+            <p className={darkMode ? 'text-gray-400' : 'text-gray-600'}>
               {projects.length} project{projects.length !== 1 ? 'en' : ''} gevonden
             </p>
           </div>
@@ -348,7 +403,11 @@ export default function MijnProjecten() {
             <button
               onClick={handleRefresh}
               disabled={refreshing}
-              className="flex items-center gap-2 px-4 py-2 text-gray-400 hover:text-white hover:bg-gray-800 rounded-lg transition disabled:opacity-50"
+              className={`flex items-center gap-2 px-4 py-2 rounded-lg transition disabled:opacity-50 ${
+                darkMode 
+                  ? 'text-gray-400 hover:text-white hover:bg-gray-800' 
+                  : 'text-gray-600 hover:text-gray-900 hover:bg-gray-100'
+              }`}
             >
               <RefreshCw className={`w-4 h-4 ${refreshing ? 'animate-spin' : ''}`} />
               <span className="hidden sm:inline">Ververs</span>
@@ -380,7 +439,11 @@ export default function MijnProjecten() {
                 >
                   <Link
                     to={`/project/${project.projectId}`}
-                    className="block bg-gray-800/60 hover:bg-gray-800 backdrop-blur-sm rounded-xl border border-gray-700/50 hover:border-blue-500/50 transition group overflow-hidden"
+                    className={`block backdrop-blur-sm rounded-xl border transition group overflow-hidden ${
+                      darkMode 
+                        ? 'bg-gray-800/60 hover:bg-gray-800 border-gray-700/50 hover:border-blue-500/50' 
+                        : 'bg-white hover:bg-gray-50 border-gray-200 hover:border-blue-300 shadow-sm'
+                    }`}
                   >
                     <div className="p-5 sm:p-6">
                       <div className="flex items-start justify-between gap-4">
@@ -391,7 +454,11 @@ export default function MijnProjecten() {
                               <StatusIcon className={`w-5 h-5 ${statusConfig.color}`} />
                             </div>
                             <div className="min-w-0 flex-1">
-                              <h3 className="font-semibold text-white group-hover:text-blue-400 transition truncate">
+                              <h3 className={`font-semibold transition truncate ${
+                                darkMode 
+                                  ? 'text-white group-hover:text-blue-400' 
+                                  : 'text-gray-900 group-hover:text-blue-600'
+                              }`}>
                                 {project.businessName}
                               </h3>
                               <p className="text-xs text-gray-500">
@@ -405,10 +472,14 @@ export default function MijnProjecten() {
                             <span className={`px-3 py-1 rounded-full text-xs font-medium ${statusConfig.bg} ${statusConfig.color}`}>
                               {statusConfig.label}
                             </span>
-                            <span className="px-3 py-1 rounded-full text-xs font-medium bg-gray-700/50 text-gray-400">
+                            <span className={`px-3 py-1 rounded-full text-xs font-medium ${
+                              darkMode ? 'bg-gray-700/50 text-gray-400' : 'bg-gray-100 text-gray-600'
+                            }`}>
                               {TYPE_LABELS[project.type] || project.type}
                             </span>
-                            <span className="px-3 py-1 rounded-full text-xs font-medium bg-gray-700/50 text-gray-400 capitalize">
+                            <span className={`px-3 py-1 rounded-full text-xs font-medium capitalize ${
+                              darkMode ? 'bg-gray-700/50 text-gray-400' : 'bg-gray-100 text-gray-600'
+                            }`}>
                               {project.package}
                             </span>
                           </div>
@@ -420,7 +491,11 @@ export default function MijnProjecten() {
                             <Clock className="w-4 h-4" />
                             <span>{formatDate(project.createdAt)}</span>
                           </div>
-                          <ChevronRight className="w-5 h-5 text-gray-600 group-hover:text-blue-400 transition ml-auto" />
+                          <ChevronRight className={`w-5 h-5 transition ml-auto ${
+                            darkMode 
+                              ? 'text-gray-600 group-hover:text-blue-400' 
+                              : 'text-gray-400 group-hover:text-blue-600'
+                          }`} />
                         </div>
                       </div>
                     </div>
@@ -451,18 +526,20 @@ export default function MijnProjecten() {
             animate={{ opacity: 1, y: 0 }}
             className="text-center py-12"
           >
-            <div className="w-16 h-16 bg-gray-800 rounded-2xl flex items-center justify-center mx-auto mb-4">
+            <div className={`w-16 h-16 rounded-2xl flex items-center justify-center mx-auto mb-4 ${
+              darkMode ? 'bg-gray-800' : 'bg-gray-100'
+            }`}>
               <FolderOpen className="w-8 h-8 text-gray-500" />
             </div>
-            <h3 className="text-lg font-semibold text-white mb-2">
+            <h3 className={`text-lg font-semibold mb-2 ${darkMode ? 'text-white' : 'text-gray-900'}`}>
               Geen projecten gevonden
             </h3>
-            <p className="text-gray-400 mb-6">
+            <p className={darkMode ? 'text-gray-400' : 'text-gray-600'}>
               Start je eerste project om aan de slag te gaan
             </p>
             <Link
               to="/start"
-              className="inline-flex items-center gap-2 px-6 py-3 bg-emerald-600 hover:bg-emerald-500 text-white font-semibold rounded-xl transition"
+              className="inline-flex items-center gap-2 px-6 py-3 mt-6 bg-emerald-600 hover:bg-emerald-500 text-white font-semibold rounded-xl transition"
             >
               <Plus className="w-5 h-5" />
               Start nieuw project
@@ -475,9 +552,13 @@ export default function MijnProjecten() {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.3 }}
-          className="mt-12 bg-gray-800/40 rounded-xl border border-gray-700/50 p-6"
+          className={`mt-12 rounded-xl border p-6 ${
+            darkMode 
+              ? 'bg-gray-800/40 border-gray-700/50' 
+              : 'bg-white border-gray-200 shadow-sm'
+          }`}
         >
-          <h3 className="font-semibold text-white mb-4">
+          <h3 className={`font-semibold mb-4 ${darkMode ? 'text-white' : 'text-gray-900'}`}>
             Hulp nodig?
           </h3>
           <div className="grid sm:grid-cols-3 gap-4">
@@ -485,31 +566,43 @@ export default function MijnProjecten() {
               href="https://wa.me/31644712573"
               target="_blank"
               rel="noopener noreferrer"
-              className="flex items-center gap-3 p-3 bg-gray-900/50 rounded-lg hover:bg-gray-700/50 transition"
+              className={`flex items-center gap-3 p-3 rounded-lg transition ${
+                darkMode 
+                  ? 'bg-gray-900/50 hover:bg-gray-700/50' 
+                  : 'bg-gray-50 hover:bg-gray-100'
+              }`}
             >
-              <MessageSquare className="w-5 h-5 text-green-400" />
+              <MessageSquare className="w-5 h-5 text-green-500" />
               <div>
-                <p className="text-white text-sm font-medium">WhatsApp</p>
+                <p className={`text-sm font-medium ${darkMode ? 'text-white' : 'text-gray-900'}`}>WhatsApp</p>
                 <p className="text-gray-500 text-xs">Direct antwoord</p>
               </div>
             </a>
             <a
               href="mailto:info@webstability.nl"
-              className="flex items-center gap-3 p-3 bg-gray-900/50 rounded-lg hover:bg-gray-700/50 transition"
+              className={`flex items-center gap-3 p-3 rounded-lg transition ${
+                darkMode 
+                  ? 'bg-gray-900/50 hover:bg-gray-700/50' 
+                  : 'bg-gray-50 hover:bg-gray-100'
+              }`}
             >
-              <Mail className="w-5 h-5 text-blue-400" />
+              <Mail className="w-5 h-5 text-blue-500" />
               <div>
-                <p className="text-white text-sm font-medium">E-mail</p>
+                <p className={`text-sm font-medium ${darkMode ? 'text-white' : 'text-gray-900'}`}>E-mail</p>
                 <p className="text-gray-500 text-xs">info@webstability.nl</p>
               </div>
             </a>
             <Link
               to="/kennisbank"
-              className="flex items-center gap-3 p-3 bg-gray-900/50 rounded-lg hover:bg-gray-700/50 transition"
+              className={`flex items-center gap-3 p-3 rounded-lg transition ${
+                darkMode 
+                  ? 'bg-gray-900/50 hover:bg-gray-700/50' 
+                  : 'bg-gray-50 hover:bg-gray-100'
+              }`}
             >
-              <FileText className="w-5 h-5 text-purple-400" />
+              <FileText className="w-5 h-5 text-purple-500" />
               <div>
-                <p className="text-white text-sm font-medium">Kennisbank</p>
+                <p className={`text-sm font-medium ${darkMode ? 'text-white' : 'text-gray-900'}`}>Kennisbank</p>
                 <p className="text-gray-500 text-xs">Veelgestelde vragen</p>
               </div>
             </Link>

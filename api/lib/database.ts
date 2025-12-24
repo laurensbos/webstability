@@ -22,7 +22,7 @@ const kv = redis
 
 export interface Project {
   id: string
-  status: 'onboarding' | 'intake' | 'design' | 'development' | 'review' | 'live'
+  status: 'onboarding' | 'intake' | 'design' | 'feedback' | 'revisie' | 'development' | 'payment' | 'approval' | 'review' | 'live'
   type: 'website' | 'webshop' | 'drone' | 'logo'
   packageType: string
   customer: {

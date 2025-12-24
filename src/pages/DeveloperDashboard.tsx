@@ -59,6 +59,7 @@ import {
   Hammer,
 } from 'lucide-react'
 import Logo from '../components/Logo'
+import { DevFAB, MobileStats, MobileSearch } from '../components/DevDashboardMobile'
 import { AVAILABLE_FEEDBACK_QUESTIONS, FEEDBACK_QUESTION_CATEGORIES } from '../types/project'
 // GrowthTools components available: ChurnAlert, UpsellBanner for future use
 
@@ -1308,8 +1309,8 @@ type SmartAction = {
   bgColor: string
 }
 
-// Message templates for quick responses
-const MESSAGE_TEMPLATES = [
+// Message templates for quick responses in overview
+const OVERVIEW_MESSAGE_TEMPLATES = [
   { id: 'drive_link', label: '📁 Drive link', message: 'Hi! Hier is de Google Drive link met alle bestanden: [LINK]. Laat me weten als je vragen hebt!' },
   { id: 'design_ready', label: '🎨 Design klaar', message: 'Het design is klaar voor review! Bekijk het hier: [STAGING_URL]. Ik hoor graag je feedback.' },
   { id: 'development_start', label: '🚀 Betaling start', message: 'Goed nieuws! Ik ga nu aan de slag met de development. Ik hou je op de hoogte van de voortgang.' },
@@ -1570,7 +1571,7 @@ function OverviewView({ darkMode, projects, setActiveView, onSelectProject, onUp
   }
   
   // Send templated message
-  const sendTemplatedMessage = async (actionId: string, projectId: string, template: typeof MESSAGE_TEMPLATES[0]) => {
+  const sendTemplatedMessage = async (actionId: string, projectId: string, template: typeof OVERVIEW_MESSAGE_TEMPLATES[0]) => {
     const project = projects.find(p => p.id === projectId)
     if (!project || !onSendMessage) return
     
@@ -1656,32 +1657,57 @@ function OverviewView({ darkMode, projects, setActiveView, onSelectProject, onUp
       </div>
 
       {/* Quick Search */}
+      {/* Quick Search - Mobile optimized */}
       {projects.length > 3 && (
-        <div className="relative">
-          <Search className={`absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 ${darkMode ? 'text-gray-500' : 'text-gray-400'}`} />
-          <input
-            type="text"
-            placeholder="Zoek project... (⌘K)"
-            className={`w-full pl-10 pr-4 py-2.5 rounded-xl border text-sm ${
-              darkMode 
-                ? 'bg-gray-800 border-gray-700 text-white placeholder-gray-500 focus:border-emerald-500' 
-                : 'bg-white border-gray-200 text-gray-900 placeholder-gray-400 focus:border-emerald-500'
-            } focus:outline-none focus:ring-2 focus:ring-emerald-500/20 transition-all`}
-            onChange={(e) => {
-              const query = e.target.value.toLowerCase()
-              if (query.length > 1) {
-                const match = projects.find(p => 
-                  p.businessName.toLowerCase().includes(query) ||
-                  p.contactEmail.toLowerCase().includes(query)
-                )
-                if (match) {
-                  onSelectProject(match)
-                  setActiveView('projects')
+        <>
+          {/* Mobile search */}
+          <div className="lg:hidden">
+            <MobileSearch
+              value=""
+              onChange={(query) => {
+                if (query.length > 1) {
+                  const match = projects.find(p => 
+                    p.businessName.toLowerCase().includes(query.toLowerCase()) ||
+                    p.contactEmail.toLowerCase().includes(query.toLowerCase())
+                  )
+                  if (match) {
+                    onSelectProject(match)
+                    setActiveView('projects')
+                  }
                 }
-              }
-            }}
-          />
-        </div>
+              }}
+              placeholder="Zoek project..."
+              darkMode={darkMode}
+            />
+          </div>
+          
+          {/* Desktop search */}
+          <div className="hidden lg:block relative">
+            <Search className={`absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 ${darkMode ? 'text-gray-500' : 'text-gray-400'}`} />
+            <input
+              type="text"
+              placeholder="Zoek project... (⌘K)"
+              className={`w-full pl-10 pr-4 py-2.5 rounded-xl border text-sm ${
+                darkMode 
+                  ? 'bg-gray-800 border-gray-700 text-white placeholder-gray-500 focus:border-emerald-500' 
+                  : 'bg-white border-gray-200 text-gray-900 placeholder-gray-400 focus:border-emerald-500'
+              } focus:outline-none focus:ring-2 focus:ring-emerald-500/20 transition-all`}
+              onChange={(e) => {
+                const query = e.target.value.toLowerCase()
+                if (query.length > 1) {
+                  const match = projects.find(p => 
+                    p.businessName.toLowerCase().includes(query) ||
+                    p.contactEmail.toLowerCase().includes(query)
+                  )
+                  if (match) {
+                    onSelectProject(match)
+                    setActiveView('projects')
+                  }
+                }
+              }}
+            />
+          </div>
+        </>
       )}
 
       {/* 🎯 Smart Action Center */}
@@ -1780,7 +1806,7 @@ function OverviewView({ darkMode, projects, setActiveView, onSelectProject, onUp
                       </div>
                       
                       <div className="flex flex-wrap gap-1.5 mb-3">
-                        {MESSAGE_TEMPLATES.map(template => (
+                        {OVERVIEW_MESSAGE_TEMPLATES.map(template => (
                           <button
                             key={template.id}
                             onClick={(e) => { 
@@ -1858,8 +1884,47 @@ function OverviewView({ darkMode, projects, setActiveView, onSelectProject, onUp
         </div>
       )}
 
-      {/* Quick stats - 3 cards */}
-      <div className="grid grid-cols-3 gap-3">
+      {/* Quick stats - Swipeable on mobile */}
+      <div className="lg:hidden">
+        <MobileStats
+          darkMode={darkMode}
+          stats={[
+            {
+              label: 'Projecten',
+              value: projects.length,
+              icon: FolderKanban,
+              color: 'bg-emerald-500'
+            },
+            {
+              label: 'Ongelezen',
+              value: unreadMessages,
+              icon: MessageSquare,
+              color: unreadMessages > 0 ? 'bg-red-500' : 'bg-purple-500'
+            },
+            {
+              label: 'Wachtend',
+              value: pendingPayments,
+              icon: CreditCard,
+              color: pendingPayments > 0 ? 'bg-amber-500' : 'bg-green-500'
+            },
+            {
+              label: 'Actief',
+              value: activeProjects,
+              icon: Rocket,
+              color: 'bg-blue-500'
+            },
+            {
+              label: 'Live',
+              value: projects.filter(p => p.phase === 'live').length,
+              icon: Globe,
+              color: 'bg-indigo-500'
+            }
+          ]}
+        />
+      </div>
+
+      {/* Quick stats - Desktop grid */}
+      <div className="hidden lg:grid grid-cols-3 gap-3">
         <button
           onClick={() => setActiveView('projects')}
           className={`p-4 rounded-xl text-left transition-colors ${
@@ -6208,6 +6273,57 @@ export function _OldClientsView({ darkMode, clients, projects, onSelectClient, o
 // MESSAGES VIEW - Full Chat Interface
 // ===========================================
 
+// Message templates organized by category for chat
+const CHAT_MESSAGE_TEMPLATES = {
+  greeting: {
+    label: '👋 Begroeting',
+    messages: [
+      "Hoi! Bedankt voor je bericht. Ik ga er direct mee aan de slag.",
+      "Goedemorgen! Hoe kan ik je vandaag helpen?",
+      "Hallo! Leuk om van je te horen."
+    ]
+  },
+  update: {
+    label: '📊 Updates',
+    messages: [
+      "De wijzigingen zijn doorgevoerd. Kun je even kijken of het goed is?",
+      "Je design is klaar! Bekijk het via je portaal en laat me weten wat je ervan vindt.",
+      "Goed nieuws! Je website is bijna klaar voor lancering.",
+      "Ik heb de aanpassingen verwerkt. Check even of alles naar wens is."
+    ]
+  },
+  question: {
+    label: '❓ Vragen',
+    messages: [
+      "Kun je me wat meer vertellen over wat je precies wilt?",
+      "Heb je nog specifieke wensen voor deze sectie?",
+      "Welke kleuren spreken je het meest aan?",
+      "Zijn er voorbeeldwebsites die je mooi vindt?"
+    ]
+  },
+  confirm: {
+    label: '✅ Bevestigingen',
+    messages: [
+      "Prima, dat gaan we regelen!",
+      "Helemaal duidelijk, ik ga ermee aan de slag.",
+      "Top! Ik hou je op de hoogte van de voortgang.",
+      "Akkoord, je hoort snel van me."
+    ]
+  },
+  reminder: {
+    label: '⏰ Herinneringen',
+    messages: [
+      "Vriendelijke herinnering: ik wacht nog op je feedback voor de volgende stap.",
+      "Heb je al kans gehad om het design te bekijken?",
+      "Laat me weten of je nog vragen hebt!",
+      "Ik hoor graag van je wanneer je tijd hebt."
+    ]
+  }
+}
+
+// Common emojis for quick insertion
+const QUICK_EMOJIS = ['👍', '👋', '🎉', '✨', '🚀', '💪', '❤️', '😊', '👀', '🔥', '✅', '📧']
+
 interface MessagesViewProps {
   darkMode: boolean
   projects: Project[]
@@ -6219,7 +6335,12 @@ function MessagesView({ darkMode, projects, onUpdateProject }: MessagesViewProps
   const [newMessage, setNewMessage] = useState('')
   const [searchQuery, setSearchQuery] = useState('')
   const [filterUnread, setFilterUnread] = useState(false)
+  const [showTemplates, setShowTemplates] = useState(false)
+  const [showEmojis, setShowEmojis] = useState(false)
+  const [isSending, setIsSending] = useState(false)
+  const [selectedTemplateCategory, setSelectedTemplateCategory] = useState<keyof typeof CHAT_MESSAGE_TEMPLATES | null>(null)
   const messagesEndRef = React.useRef<HTMLDivElement>(null)
+  const inputRef = React.useRef<HTMLTextAreaElement>(null)
 
   // Get projects with messages, sorted by last message date
   const projectsWithMessages = projects
@@ -6269,8 +6390,9 @@ function MessagesView({ darkMode, projects, onUpdateProject }: MessagesViewProps
   }, [selectedProjectId])
 
   const handleSendMessage = async () => {
-    if (!newMessage.trim() || !selectedProject) return
+    if (!newMessage.trim() || !selectedProject || isSending) return
 
+    setIsSending(true)
     const message: ChatMessage = {
       id: `msg-${Date.now()}`,
       date: new Date().toISOString(),
@@ -6287,6 +6409,8 @@ function MessagesView({ darkMode, projects, onUpdateProject }: MessagesViewProps
     }
     onUpdateProject(updatedProject)
     setNewMessage('')
+    setShowTemplates(false)
+    setShowEmojis(false)
 
     // Send to API - use unified message endpoint
     try {
@@ -6304,7 +6428,24 @@ function MessagesView({ darkMode, projects, onUpdateProject }: MessagesViewProps
     } catch (error) {
       console.error('Error sending message:', error)
       // Could revert optimistic update here if needed
+    } finally {
+      setIsSending(false)
     }
+  }
+
+  // Insert emoji at cursor position
+  const insertEmoji = (emoji: string) => {
+    setNewMessage(prev => prev + emoji)
+    setShowEmojis(false)
+    inputRef.current?.focus()
+  }
+
+  // Insert template message
+  const insertTemplate = (template: string) => {
+    setNewMessage(template)
+    setShowTemplates(false)
+    setSelectedTemplateCategory(null)
+    inputRef.current?.focus()
   }
 
   const getUnreadCount = (project: Project) => 
@@ -6335,15 +6476,6 @@ function MessagesView({ darkMode, projects, onUpdateProject }: MessagesViewProps
       return date.toLocaleDateString('nl-NL', { day: 'numeric', month: 'short' })
     }
   }
-
-  // Quick reply templates
-  const quickReplies = [
-    "Bedankt voor je bericht! Ik ga er direct mee aan de slag.",
-    "De wijzigingen zijn doorgevoerd. Kun je even kijken of het goed is?",
-    "Ik neem zo snel mogelijk contact met je op.",
-    "De website is klaar voor review. Laat me weten wat je ervan vindt!",
-    "Prima, dat gaan we regelen!",
-  ]
 
   return (
     <div className="h-[calc(100vh-140px)] sm:h-[calc(100vh-180px)] flex rounded-2xl overflow-hidden border"
@@ -6656,32 +6788,137 @@ function MessagesView({ darkMode, projects, onUpdateProject }: MessagesViewProps
               )}
             </div>
 
-            {/* Quick Replies - hidden on mobile for more space */}
-            <div className={`px-3 sm:px-4 py-2 border-t hidden sm:flex gap-2 overflow-x-auto ${
-              darkMode ? 'border-gray-700 bg-gray-800/50' : 'border-gray-200 bg-white'
-            }`}>
-              {quickReplies.map((reply, i) => (
-                <button
-                  key={i}
-                  onClick={() => setNewMessage(reply)}
-                  className={`px-3 py-1.5 rounded-full text-xs font-medium whitespace-nowrap transition-colors flex-shrink-0 ${
-                    darkMode 
-                      ? 'bg-gray-700 text-gray-300 hover:bg-gray-600' 
-                      : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+            {/* Template Picker - Expandable */}
+            <AnimatePresence>
+              {showTemplates && (
+                <motion.div
+                  initial={{ height: 0, opacity: 0 }}
+                  animate={{ height: 'auto', opacity: 1 }}
+                  exit={{ height: 0, opacity: 0 }}
+                  className={`border-t overflow-hidden ${
+                    darkMode ? 'border-gray-700 bg-gray-800/80' : 'border-gray-200 bg-gray-50'
                   }`}
                 >
-                  {reply.substring(0, 30)}...
-                </button>
-              ))}
-            </div>
+                  <div className="p-3">
+                    {/* Category tabs */}
+                    <div className="flex gap-1.5 mb-3 overflow-x-auto pb-1">
+                      {Object.entries(CHAT_MESSAGE_TEMPLATES).map(([key, category]) => (
+                        <button
+                          key={key}
+                          onClick={() => setSelectedTemplateCategory(
+                            selectedTemplateCategory === key ? null : key as keyof typeof CHAT_MESSAGE_TEMPLATES
+                          )}
+                          className={`px-3 py-1.5 rounded-lg text-xs font-medium whitespace-nowrap transition-colors flex-shrink-0 ${
+                            selectedTemplateCategory === key
+                              ? 'bg-emerald-500 text-white'
+                              : darkMode 
+                                ? 'bg-gray-700 text-gray-300 hover:bg-gray-600' 
+                                : 'bg-white text-gray-600 hover:bg-gray-100 border border-gray-200'
+                          }`}
+                        >
+                          {category.label}
+                        </button>
+                      ))}
+                    </div>
+                    
+                    {/* Template messages */}
+                    {selectedTemplateCategory && (
+                      <div className="space-y-1.5 max-h-32 overflow-y-auto">
+                        {CHAT_MESSAGE_TEMPLATES[selectedTemplateCategory].messages.map((msg, i) => (
+                          <button
+                            key={i}
+                            onClick={() => insertTemplate(msg)}
+                            className={`w-full text-left p-2.5 rounded-lg text-sm transition-colors ${
+                              darkMode 
+                                ? 'bg-gray-700 text-gray-200 hover:bg-gray-600' 
+                                : 'bg-white text-gray-700 hover:bg-gray-100 border border-gray-200'
+                            }`}
+                          >
+                            {msg}
+                          </button>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                </motion.div>
+              )}
+            </AnimatePresence>
 
-            {/* Message Input */}
+            {/* Emoji Picker */}
+            <AnimatePresence>
+              {showEmojis && (
+                <motion.div
+                  initial={{ height: 0, opacity: 0 }}
+                  animate={{ height: 'auto', opacity: 1 }}
+                  exit={{ height: 0, opacity: 0 }}
+                  className={`border-t overflow-hidden ${
+                    darkMode ? 'border-gray-700 bg-gray-800/80' : 'border-gray-200 bg-gray-50'
+                  }`}
+                >
+                  <div className="p-3 flex flex-wrap gap-2">
+                    {QUICK_EMOJIS.map((emoji, i) => (
+                      <button
+                        key={i}
+                        onClick={() => insertEmoji(emoji)}
+                        className={`w-10 h-10 rounded-lg text-xl flex items-center justify-center transition-colors ${
+                          darkMode 
+                            ? 'hover:bg-gray-700' 
+                            : 'hover:bg-gray-100'
+                        }`}
+                      >
+                        {emoji}
+                      </button>
+                    ))}
+                  </div>
+                </motion.div>
+              )}
+            </AnimatePresence>
+
+            {/* Message Input - Enhanced */}
             <div className={`p-3 sm:p-4 border-t ${
               darkMode ? 'border-gray-700 bg-gray-800' : 'border-gray-200 bg-white'
             }`}>
+              {/* Action buttons row */}
+              <div className="flex gap-1.5 mb-2">
+                <button
+                  onClick={() => {
+                    setShowTemplates(!showTemplates)
+                    setShowEmojis(false)
+                  }}
+                  className={`p-2 rounded-lg transition-colors ${
+                    showTemplates
+                      ? 'bg-emerald-500 text-white'
+                      : darkMode 
+                        ? 'text-gray-400 hover:text-white hover:bg-gray-700' 
+                        : 'text-gray-500 hover:text-gray-900 hover:bg-gray-100'
+                  }`}
+                  title="Templates"
+                >
+                  <FileText className="w-4 h-4" />
+                </button>
+                <button
+                  onClick={() => {
+                    setShowEmojis(!showEmojis)
+                    setShowTemplates(false)
+                  }}
+                  className={`p-2 rounded-lg transition-colors ${
+                    showEmojis
+                      ? 'bg-emerald-500 text-white'
+                      : darkMode 
+                        ? 'text-gray-400 hover:text-white hover:bg-gray-700' 
+                        : 'text-gray-500 hover:text-gray-900 hover:bg-gray-100'
+                  }`}
+                  title="Emoji's"
+                >
+                  <span className="text-base">😊</span>
+                </button>
+              </div>
+              
+              {/* Input row */}
               <div className="flex gap-2 sm:gap-3">
-                <div className="flex-1 min-w-0">
+                <div className="flex-1 min-w-0 relative">
                   <textarea
+                    ref={inputRef}
                     value={newMessage}
                     onChange={(e) => setNewMessage(e.target.value)}
                     onKeyDown={(e) => {
@@ -6699,23 +6936,34 @@ function MessagesView({ darkMode, projects, onUpdateProject }: MessagesViewProps
                     } focus:outline-none focus:ring-2 focus:ring-emerald-500/50`}
                     style={{ minHeight: '48px', maxHeight: '120px', fontSize: '16px' }}
                   />
+                  {newMessage.length > 0 && (
+                    <span className={`absolute right-3 bottom-1.5 text-xs ${
+                      darkMode ? 'text-gray-500' : 'text-gray-400'
+                    }`}>
+                      {newMessage.length}
+                    </span>
+                  )}
                 </div>
                 <button
                   onClick={handleSendMessage}
-                  disabled={!newMessage.trim()}
+                  disabled={!newMessage.trim() || isSending}
                   className={`px-4 sm:px-5 rounded-2xl font-semibold transition-all flex items-center justify-center flex-shrink-0 ${
-                    newMessage.trim()
+                    newMessage.trim() && !isSending
                       ? 'bg-emerald-500 hover:bg-emerald-600 text-white'
                       : darkMode 
                         ? 'bg-gray-700 text-gray-500 cursor-not-allowed' 
                         : 'bg-gray-100 text-gray-400 cursor-not-allowed'
                   }`}
                 >
-                  <Send className="w-5 h-5" />
+                  {isSending ? (
+                    <Loader2 className="w-5 h-5 animate-spin" />
+                  ) : (
+                    <Send className="w-5 h-5" />
+                  )}
                 </button>
               </div>
               <p className={`text-xs mt-2 hidden sm:block ${darkMode ? 'text-gray-500' : 'text-gray-400'}`}>
-                Enter om te verzenden, Shift+Enter voor nieuwe regel
+                Enter om te verzenden • Shift+Enter voor nieuwe regel • 📝 = Templates • 😊 = Emoji's
               </p>
             </div>
           </>
@@ -10255,6 +10503,34 @@ export default function DeveloperDashboardNew() {
           setActiveView={setActiveView}
           darkMode={darkMode}
           unreadMessages={unreadMessages}
+        />
+
+        {/* Floating Action Button for quick actions on mobile */}
+        <DevFAB
+          darkMode={darkMode}
+          actions={[
+            {
+              id: 'new-project',
+              label: 'Nieuw project',
+              icon: FolderKanban,
+              onClick: () => setActiveView('projects'),
+              color: 'bg-emerald-500'
+            },
+            {
+              id: 'messages',
+              label: 'Berichten',
+              icon: MessageSquare,
+              onClick: () => setActiveView('messages'),
+              color: 'bg-purple-500'
+            },
+            {
+              id: 'refresh',
+              label: 'Vernieuwen',
+              icon: RefreshCw,
+              onClick: loadData,
+              color: 'bg-blue-500'
+            }
+          ]}
         />
       </div>
     </div>

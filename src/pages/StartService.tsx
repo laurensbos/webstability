@@ -370,7 +370,7 @@ export default function StartService() {
       // Redirect to thank you page
       navigate(`/bedankt-service?type=${serviceType}&id=${result.requestId}`)
     } catch {
-      alert('Er ging iets mis. Probeer het opnieuw of mail naar hallo@webstability.nl')
+      alert('Er ging iets mis. Probeer het opnieuw of mail naar info@webstability.nl')
     } finally {
       setIsSubmitting(false)
     }

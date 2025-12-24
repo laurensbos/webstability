@@ -198,6 +198,7 @@ export default function Kennisbank() {
                   <img 
                     src={featuredArticle.image}
                     alt={featuredArticle.title}
+                    loading="eager"
                     className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
                   />
                   <div className="absolute inset-0 bg-gradient-to-r from-gray-900/95 via-gray-900/80 to-gray-900/60" />
@@ -295,6 +296,7 @@ export default function Kennisbank() {
                         <img 
                           src={article.image}
                           alt={article.title}
+                          loading="lazy"
                           className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                         />
                         <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent" />
@@ -386,6 +388,7 @@ export default function Kennisbank() {
                         <img 
                           src={article.image}
                           alt={article.title}
+                          loading="lazy"
                           className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                         />
                         <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent" />

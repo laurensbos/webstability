@@ -30,7 +30,7 @@ const kv = REDIS_URL && REDIS_TOKEN
 
 interface Project {
   id: string
-  status: 'onboarding' | 'intake' | 'design' | 'development' | 'review' | 'live'
+  status: 'onboarding' | 'intake' | 'design' | 'feedback' | 'revisie' | 'development' | 'payment' | 'approval' | 'review' | 'live'
   phase?: string // Explicit phase for client portal
   type: 'website' | 'webshop' | 'drone' | 'logo'
   packageType: string

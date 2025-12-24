@@ -213,15 +213,15 @@ export const PreLiveApproval: React.FC<PreLiveApprovalProps> = ({
         animate={{ opacity: 1, y: 0 }}
         className="bg-gradient-to-br from-purple-50 to-indigo-50 rounded-2xl p-6 border border-purple-100"
       >
-        <div className="flex items-start gap-4">
-          <div className="w-12 h-12 bg-purple-100 rounded-xl flex items-center justify-center flex-shrink-0">
-            <Rocket className="w-6 h-6 text-purple-600" />
+        <div className="flex items-start gap-3 sm:gap-4">
+          <div className="w-10 h-10 sm:w-12 sm:h-12 bg-purple-100 rounded-xl flex items-center justify-center flex-shrink-0">
+            <Rocket className="w-5 h-5 sm:w-6 sm:h-6 text-purple-600" />
           </div>
           <div>
-            <h2 className="text-xl font-bold text-gray-900 mb-1">
+            <h2 className="text-lg sm:text-xl font-bold text-gray-900 mb-1">
               Laatste stap: Goedkeuring voor livegang
             </h2>
-            <p className="text-gray-600">
+            <p className="text-sm sm:text-base text-gray-600">
               Controleer onderstaande punten en geef je akkoord. Daarna zetten we {businessName} live!
             </p>
           </div>

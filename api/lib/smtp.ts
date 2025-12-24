@@ -297,6 +297,11 @@ export const baseTemplate = (content: string, _accentColor: string = '#10b981') 
                         </td>
                       </tr>
                       <tr>
+                        <td align="center" style="padding-bottom: 8px;">
+                          <a href="https://wa.me/31644712573" style="color: ${BRAND_COLORS.primaryLight}; text-decoration: none; font-size: 14px; font-weight: 500;">💬 WhatsApp</a>
+                        </td>
+                      </tr>
+                      <tr>
                         <td align="center">
                           <a href="tel:+31644712573" style="color: ${BRAND_COLORS.primaryLight}; text-decoration: none; font-size: 14px; font-weight: 500;">📞 06-44712573</a>
                         </td>
@@ -352,19 +357,27 @@ const getServiceColor = (_type?: string) => ({
 // Progress Bar Component for Emails - Dark Mode
 // ===========================================
 
-type ProjectPhase = 'onboarding' | 'design' | 'feedback' | 'payment' | 'live'
+type ProjectPhase = 'onboarding' | 'design' | 'feedback' | 'revisie' | 'development' | 'payment' | 'approval' | 'review' | 'live'
 
-const PHASE_CONFIG: { key: ProjectPhase; label: string; emoji: string }[] = [
+const PHASE_CONFIG: { key: ProjectPhase | 'design_approved'; label: string; emoji: string }[] = [
   { key: 'onboarding', label: 'Onboarding', emoji: '📝' },
   { key: 'design', label: 'Design', emoji: '🎨' },
-  { key: 'design_approved', label: 'Goedgekeurd', emoji: '✅' },
-  { key: 'development', label: 'Ontwikkeling', emoji: '💻' },
-  { key: 'review', label: 'Review', emoji: '🔍' },
+  { key: 'feedback', label: 'Feedback', emoji: '💬' },
+  { key: 'revisie', label: 'Revisie', emoji: '🔄' },
+  { key: 'payment', label: 'Betaling', emoji: '💳' },
+  { key: 'approval', label: 'Goedkeuring', emoji: '✅' },
   { key: 'live', label: 'Live', emoji: '🚀' },
 ]
 
-const getProgressBar = (currentPhase: ProjectPhase, _accentColor: string = '#10b981'): string => {
-  const currentIndex = PHASE_CONFIG.findIndex(p => p.key === currentPhase)
+const getProgressBar = (currentPhase: ProjectPhase | 'design_approved' | 'development' | 'review', _accentColor: string = '#10b981'): string => {
+  // Map legacy phases to new phases
+  const phaseMapping: Record<string, ProjectPhase> = {
+    'design_approved': 'feedback',
+    'development': 'revisie',
+    'review': 'approval'
+  }
+  const mappedPhase = phaseMapping[currentPhase] || currentPhase as ProjectPhase
+  const currentIndex = PHASE_CONFIG.findIndex(p => p.key === mappedPhase)
   
   // Generate the step circles with connecting lines - mobile optimized, dark mode
   const steps = PHASE_CONFIG.map((phase, index) => {
@@ -1221,7 +1234,7 @@ export const sendDeadlineReminderEmail = async (params: {
   email: string
   name: string
   projectId: string
-  phase: 'onboarding' | 'design' | 'development' | 'review' | 'live'
+  phase: 'onboarding' | 'design' | 'feedback' | 'revisie' | 'development' | 'payment' | 'approval' | 'review' | 'live'
   type?: string
   deadline: string
   daysUntil: number

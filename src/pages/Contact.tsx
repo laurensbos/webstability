@@ -136,7 +136,7 @@ export default function Contact() {
     setFormState('submitting')
 
     try {
-      await fetch('https://formsubmit.co/ajax/hallo@webstability.nl', {
+      await fetch('https://formsubmit.co/ajax/info@webstability.nl', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -155,7 +155,7 @@ export default function Contact() {
       setFormData({ name: '', email: '', phone: '', company: '', message: '' })
     } catch {
       setFormState('idle')
-      alert('Er ging iets mis. Probeer het opnieuw of mail direct naar hallo@webstability.nl')
+      alert('Er ging iets mis. Probeer het opnieuw of mail direct naar info@webstability.nl')
     }
   }
 

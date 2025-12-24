@@ -5,7 +5,7 @@
 
 export type DashboardView = 'projects' | 'messages' | 'payments' | 'customers'
 
-export type ProjectPhase = 'onboarding' | 'design' | 'feedback' | 'payment' | 'live'
+export type ProjectPhase = 'onboarding' | 'design' | 'feedback' | 'revisie' | 'payment' | 'approval' | 'live'
 export type PaymentStatus = 'pending' | 'awaiting_payment' | 'paid' | 'failed' | 'refunded'
 export type ServiceType = 'website' | 'webshop' | 'logo' | 'drone'
 
@@ -259,11 +259,23 @@ export const PHASE_CONFIG: Record<ProjectPhase, {
     bgColor: 'bg-blue-500/20',
     emoji: '💬'
   },
+  revisie: {
+    label: 'Revisie',
+    color: 'text-orange-400',
+    bgColor: 'bg-orange-500/20',
+    emoji: '🔄'
+  },
   payment: { 
     label: 'Betaling', 
     color: 'text-purple-400',
     bgColor: 'bg-purple-500/20',
-    emoji: '�'
+    emoji: '💳'
+  },
+  approval: {
+    label: 'Goedkeuring',
+    color: 'text-pink-400',
+    bgColor: 'bg-pink-500/20',
+    emoji: '✅'
   },
   live: { 
     label: 'Live', 
@@ -320,11 +332,19 @@ export const PHASE_CHECKLIST: Record<ProjectPhase, {
     tasks: [
       'Klant bekijkt design preview',
       'Verwerk feedback punten',
+      'Update design volgens wensen',
+    ],
+    nextAction: 'Feedback verwerkt → Stuur herzien design',
+  },
+  revisie: {
+    title: 'Revisie afronden',
+    tasks: [
       'Bouw website volgens goedgekeurd design',
       'Test responsive design (mobile/tablet/desktop)',
+      'Test alle functionaliteit',
       'Vraag klant om akkoord voor betaling',
     ],
-    nextAction: 'Klant akkoord → Stuur betaallink',
+    nextAction: 'Website klaar → Stuur betaallink',
   },
   payment: {
     title: 'Wachten op betaling',
@@ -332,9 +352,18 @@ export const PHASE_CHECKLIST: Record<ProjectPhase, {
       'Betaallink verstuurd naar klant',
       'Wacht op eerste betaling',
       'Check of betaling is ontvangen',
+    ],
+    nextAction: 'Betaling binnen → Stuur goedkeuringsverzoek',
+  },
+  approval: {
+    title: 'Wachten op goedkeuring',
+    tasks: [
+      'Klant checkt alle content',
+      'Klant bevestigt contactgegevens',
+      'Klant accepteert voorwaarden',
       'Configureer domein & DNS',
     ],
-    nextAction: 'Betaling binnen → Zet website live',
+    nextAction: 'Goedkeuring binnen → Zet website live',
   },
   live: {
     title: 'Website is live',

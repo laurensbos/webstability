@@ -45,9 +45,7 @@ import LogoProjectSection from '../components/LogoProjectSection'
 import ClientAccountModal from '../components/ClientAccountModal'
 import type { Project, ProjectPhase, ProjectMessage, ChangeRequest, LogoProject, LogoDeliverable } from '../types/project'
 import { getProgressPercentage } from '../types/project'
-
-// WhatsApp number for support
-const WHATSAPP_NUMBER = '31644712573'
+import { getWhatsAppLink, WHATSAPP_MESSAGES } from '../lib/constants'
 
 // Phase configuration
 const PHASES: { key: ProjectPhase; label: string; icon: typeof FileText }[] = [
@@ -1981,7 +1979,7 @@ export default function ProjectStatusNew() {
         >
           {/* WhatsApp */}
           <a
-            href={`https://wa.me/${WHATSAPP_NUMBER}?text=Hoi! Vraag over project ${projectId}`}
+            href={getWhatsAppLink(WHATSAPP_MESSAGES.PROJECT(projectId!))}
             target="_blank"
             rel="noopener noreferrer"
             className={`p-4 rounded-xl border transition group ${
