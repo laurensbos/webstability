@@ -29,10 +29,13 @@ import {
   Loader2,
   ClipboardList,
   ListChecks,
-  Palette
+  Palette,
+  HelpCircle,
+  Plus
 } from 'lucide-react'
 import type { Project, ProjectPhase, ChatMessage } from './types'
 import { PHASE_CONFIG, PACKAGE_CONFIG, SERVICE_CONFIG, PHASE_CHECKLIST } from './types'
+import { AVAILABLE_FEEDBACK_QUESTIONS, FEEDBACK_QUESTION_CATEGORIES } from '../../types/project'
 
 interface ProjectDetailModalProps {
   project: Project
@@ -70,6 +73,12 @@ export default function ProjectDetailModal({
   const [showPhaseChecklist, setShowPhaseChecklist] = useState(false)
   const [checklistItems, setChecklistItems] = useState<Record<string, boolean>>({})
   const [targetPhase, setTargetPhase] = useState<ProjectPhase | null>(null)
+
+  // Feedback questions state
+  const [showQuestionsPanel, setShowQuestionsPanel] = useState(false)
+  const [selectedQuestionIds, setSelectedQuestionIds] = useState<string[]>(project.feedbackQuestions || [])
+  const [customQuestions, setCustomQuestions] = useState<string[]>(project.customFeedbackQuestions || [])
+  const [newCustomQuestion, setNewCustomQuestion] = useState('')
 
   const packageInfo = PACKAGE_CONFIG[project.package]
   const phaseInfo = PHASE_CONFIG[project.phase]
@@ -213,6 +222,42 @@ export default function ProjectDetailModal({
       updatedAt: new Date().toISOString()
     })
     setTimeout(() => setSavingDesignUrl(false), 500)
+  }
+
+  // Feedback questions handlers
+  const toggleQuestionSelection = (questionId: string) => {
+    const newSelection = selectedQuestionIds.includes(questionId)
+      ? selectedQuestionIds.filter(id => id !== questionId)
+      : [...selectedQuestionIds, questionId]
+    
+    setSelectedQuestionIds(newSelection)
+    onUpdate({
+      ...project,
+      feedbackQuestions: newSelection,
+      updatedAt: new Date().toISOString()
+    })
+  }
+
+  const addCustomQuestion = () => {
+    if (!newCustomQuestion.trim()) return
+    const newQuestions = [...customQuestions, newCustomQuestion.trim()]
+    setCustomQuestions(newQuestions)
+    setNewCustomQuestion('')
+    onUpdate({
+      ...project,
+      customFeedbackQuestions: newQuestions,
+      updatedAt: new Date().toISOString()
+    })
+  }
+
+  const removeCustomQuestion = (index: number) => {
+    const newQuestions = customQuestions.filter((_, i) => i !== index)
+    setCustomQuestions(newQuestions)
+    onUpdate({
+      ...project,
+      customFeedbackQuestions: newQuestions,
+      updatedAt: new Date().toISOString()
+    })
   }
 
   const handleCopyLink = (url: string) => {
@@ -524,6 +569,122 @@ export default function ProjectDetailModal({
                         ✓ Klant kan dit bekijken via hun dashboard
                       </p>
                     )}
+                  </div>
+                )}
+
+                {/* 📝 Extra Feedback Vragen - Design en Feedback fase */}
+                {(project.phase === 'design' || project.phase === 'feedback') && (
+                  <div className="bg-gray-800/50 rounded-xl border border-gray-700">
+                    <button
+                      onClick={() => setShowQuestionsPanel(!showQuestionsPanel)}
+                      className="w-full flex items-center justify-between px-4 py-3 hover:bg-gray-700/50 transition-colors rounded-xl"
+                    >
+                      <div className="flex items-center gap-3">
+                        <HelpCircle className="w-5 h-5 text-purple-400" />
+                        <div className="text-left">
+                          <p className="font-medium text-white text-sm">
+                            Extra vragen voor feedback
+                          </p>
+                          <p className="text-xs text-gray-400">
+                            {selectedQuestionIds.length + customQuestions.length} vragen geselecteerd
+                          </p>
+                        </div>
+                      </div>
+                      <ChevronRight className={`w-5 h-5 transition-transform text-gray-400 ${showQuestionsPanel ? 'rotate-90' : ''}`} />
+                    </button>
+                    
+                    <AnimatePresence>
+                      {showQuestionsPanel && (
+                        <motion.div
+                          initial={{ height: 0, opacity: 0 }}
+                          animate={{ height: 'auto', opacity: 1 }}
+                          exit={{ height: 0, opacity: 0 }}
+                          className="overflow-hidden"
+                        >
+                          <div className="px-4 pb-4 space-y-4">
+                            {/* Predefined Questions by Category */}
+                            {Object.entries(FEEDBACK_QUESTION_CATEGORIES).filter(([key]) => key !== 'custom').map(([categoryKey, categoryLabel]) => {
+                              const categoryQuestions = AVAILABLE_FEEDBACK_QUESTIONS.filter(q => q.category === categoryKey)
+                              if (categoryQuestions.length === 0) return null
+                              
+                              return (
+                                <div key={categoryKey}>
+                                  <h4 className="text-xs font-semibold uppercase tracking-wide mb-2 text-gray-400">
+                                    {categoryLabel}
+                                  </h4>
+                                  <div className="space-y-2">
+                                    {categoryQuestions.map(q => (
+                                      <label
+                                        key={q.id}
+                                        className={`flex items-start gap-3 p-2 rounded-lg cursor-pointer transition-colors ${
+                                          selectedQuestionIds.includes(q.id)
+                                            ? 'bg-purple-500/20'
+                                            : 'hover:bg-gray-700'
+                                        }`}
+                                      >
+                                        <input
+                                          type="checkbox"
+                                          checked={selectedQuestionIds.includes(q.id)}
+                                          onChange={() => toggleQuestionSelection(q.id)}
+                                          className="mt-0.5 rounded border-gray-600 text-purple-500 focus:ring-purple-500 bg-gray-700"
+                                        />
+                                        <span className="text-sm text-gray-200">
+                                          {q.question}
+                                        </span>
+                                      </label>
+                                    ))}
+                                  </div>
+                                </div>
+                              )
+                            })}
+                            
+                            {/* Custom Questions */}
+                            <div className="pt-3 border-t border-gray-700">
+                              <h4 className="text-xs font-semibold uppercase tracking-wide mb-2 text-gray-400">
+                                {FEEDBACK_QUESTION_CATEGORIES.custom}
+                              </h4>
+                              
+                              {customQuestions.length > 0 && (
+                                <div className="space-y-2 mb-3">
+                                  {customQuestions.map((q, index) => (
+                                    <div
+                                      key={index}
+                                      className="flex items-start justify-between gap-2 p-2 rounded-lg bg-purple-500/20"
+                                    >
+                                      <span className="text-sm text-gray-200">{q}</span>
+                                      <button
+                                        onClick={() => removeCustomQuestion(index)}
+                                        className="p-1 rounded-lg transition-colors hover:bg-gray-700 text-gray-400 hover:text-red-400"
+                                      >
+                                        <X className="w-4 h-4" />
+                                      </button>
+                                    </div>
+                                  ))}
+                                </div>
+                              )}
+                              
+                              <div className="flex gap-2">
+                                <input
+                                  type="text"
+                                  value={newCustomQuestion}
+                                  onChange={(e) => setNewCustomQuestion(e.target.value)}
+                                  onKeyDown={(e) => e.key === 'Enter' && addCustomQuestion()}
+                                  placeholder="Stel een eigen vraag..."
+                                  className="flex-1 px-3 py-2 rounded-lg border text-sm bg-gray-700 border-gray-600 text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-purple-500/20"
+                                />
+                                <button
+                                  onClick={addCustomQuestion}
+                                  disabled={!newCustomQuestion.trim()}
+                                  className="px-3 py-2 bg-purple-500 text-white rounded-lg hover:bg-purple-600 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                                >
+                                  <Plus className="w-4 h-4" />
+                                </button>
+                              </div>
+                            </div>
+                          </div>
+                        </motion.div>
+                      )}
+                    </AnimatePresence>
                   </div>
                 )}
 

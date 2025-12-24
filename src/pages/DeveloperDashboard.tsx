@@ -3547,7 +3547,7 @@ function ProjectDetailModal({ project, darkMode, onClose, onUpdate, phases }: Om
                 </p>
               )}
               
-              {/* Extra Vragen Selectie - altijd zichtbaar */}
+              {/* Extra Vragen Selectie - altijd zichtbaar in design/feedback fase */}
               <div className="mt-4">
                 <button
                   onClick={() => setShowQuestionsPanel(!showQuestionsPanel)}

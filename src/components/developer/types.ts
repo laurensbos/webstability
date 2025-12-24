@@ -39,6 +39,9 @@ export interface Project {
   lastActivityAt?: string
   liveDate?: string
   feedbackHistory?: FeedbackEntry[]
+  // Feedback questions selection
+  feedbackQuestions?: string[]
+  customFeedbackQuestions?: string[]
   // Domain & Email for live going
   domainInfo?: DomainInfo
   emailInfo?: EmailInfo
