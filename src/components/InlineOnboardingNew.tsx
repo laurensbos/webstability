@@ -148,6 +148,18 @@ function PagesSelector({ question, value, onChange, disabled, darkMode, packageT
   const packageLimit = question.packageLimits?.[packageType] || 5
   const isAtLimit = selectedValues.length >= packageLimit
   
+  // Package hierarchy for checking requirements
+  const packageOrder: PackageType[] = ['starter', 'professional', 'business', 'webshop']
+  const currentPackageIndex = packageOrder.indexOf(packageType)
+  
+  const isOptionLocked = (option: { value: string; label: string; description?: string; requiresPackage?: PackageType }) => {
+    if (!option.requiresPackage) return false
+    const requiredIndex = packageOrder.indexOf(option.requiresPackage)
+    // Webshop should also unlock business features
+    if (packageType === 'webshop' && option.requiresPackage === 'business') return false
+    return currentPackageIndex < requiredIndex
+  }
+  
   const toggleValue = (optionValue: string) => {
     if (selectedValues.includes(optionValue)) {
       onChange(selectedValues.filter((v: string) => v !== optionValue))
@@ -193,27 +205,38 @@ function PagesSelector({ question, value, onChange, disabled, darkMode, packageT
       {/* Page options */}
       <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
         {question.options?.map((option) => {
-          const isSelected = selectedValues.includes(option.value)
-          const isDisabled = disabled || (!isSelected && isAtLimit)
+          const isLocked = isOptionLocked(option)
+          const isSelected = selectedValues.includes(option.value) && !isLocked
+          const isDisabled = disabled || isLocked || (!isSelected && isAtLimit)
           
           return (
             <button
               key={option.value}
               type="button"
-              onClick={() => toggleValue(option.value)}
-              disabled={isDisabled}
-              className={`flex items-center gap-2 p-3 rounded-xl border transition-all text-left ${
-                isSelected
+              onClick={() => {
+                if (isLocked && onUpgradeClick) {
+                  onUpgradeClick()
+                } else if (!isLocked) {
+                  toggleValue(option.value)
+                }
+              }}
+              disabled={disabled}
+              className={`relative flex items-center gap-2 p-3 rounded-xl border transition-all text-left ${
+                isLocked
                   ? darkMode
-                    ? 'border-primary-500 bg-primary-500/10'
-                    : 'border-primary-500 bg-primary-50'
-                  : isDisabled
+                    ? 'border-gray-700 bg-gray-800/30 opacity-60'
+                    : 'border-gray-200 bg-gray-50 opacity-60'
+                  : isSelected
                     ? darkMode
-                      ? 'border-gray-700 bg-gray-800/30 opacity-50 cursor-not-allowed'
-                      : 'border-gray-200 bg-gray-50 opacity-50 cursor-not-allowed'
-                    : darkMode
-                      ? 'border-gray-700 bg-gray-800/50 hover:bg-gray-800'
-                      : 'border-gray-200 bg-white hover:bg-gray-50'
+                      ? 'border-primary-500 bg-primary-500/10'
+                      : 'border-primary-500 bg-primary-50'
+                    : isDisabled
+                      ? darkMode
+                        ? 'border-gray-700 bg-gray-800/30 opacity-50 cursor-not-allowed'
+                        : 'border-gray-200 bg-gray-50 opacity-50 cursor-not-allowed'
+                      : darkMode
+                        ? 'border-gray-700 bg-gray-800/50 hover:bg-gray-800'
+                        : 'border-gray-200 bg-white hover:bg-gray-50'
               }`}
             >
               <div className={`w-5 h-5 rounded-md border-2 flex items-center justify-center flex-shrink-0 ${
@@ -223,9 +246,19 @@ function PagesSelector({ question, value, onChange, disabled, darkMode, packageT
               }`}>
                 {isSelected && <Check className="w-3 h-3 text-white" />}
               </div>
-              <span className={`text-sm ${darkMode ? 'text-white' : 'text-gray-900'}`}>
-                {option.label}
-              </span>
+              <div className="flex-1">
+                <span className={`text-sm ${darkMode ? 'text-white' : 'text-gray-900'}`}>
+                  {option.label}
+                </span>
+                {option.description && (
+                  <p className={`text-xs ${isLocked ? 'text-amber-500' : darkMode ? 'text-gray-500' : 'text-gray-400'}`}>
+                    {option.description}
+                  </p>
+                )}
+              </div>
+              {isLocked && (
+                <Sparkles className="w-4 h-4 text-amber-500 flex-shrink-0" />
+              )}
             </button>
           )
         })}
@@ -273,8 +306,17 @@ function PagesSelector({ question, value, onChange, disabled, darkMode, packageT
 }
 
 // Checkbox Group
-function CheckboxQuestion({ question, value, onChange, disabled, darkMode }: QuestionProps) {
+interface CheckboxQuestionProps extends QuestionProps {
+  packageType?: PackageType
+  onUpgradeClick?: () => void
+}
+
+function CheckboxQuestion({ question, value, onChange, disabled, darkMode, packageType = 'starter', onUpgradeClick }: CheckboxQuestionProps) {
   const selectedValues = Array.isArray(value) ? value : []
+  
+  // Package hierarchy for checking requirements
+  const packageOrder: PackageType[] = ['starter', 'professional', 'business', 'webshop']
+  const currentPackageIndex = packageOrder.indexOf(packageType)
   
   const toggleValue = (optionValue: string) => {
     if (selectedValues.includes(optionValue)) {
@@ -283,37 +325,74 @@ function CheckboxQuestion({ question, value, onChange, disabled, darkMode }: Que
       onChange([...selectedValues, optionValue])
     }
   }
+  
+  const isOptionLocked = (option: { value: string; label: string; description?: string; requiresPackage?: PackageType }) => {
+    if (!option.requiresPackage) return false
+    const requiredIndex = packageOrder.indexOf(option.requiresPackage)
+    // Business is at index 2, webshop is at index 3 - webshop should also unlock business features
+    if (packageType === 'webshop' && option.requiresPackage === 'business') return false
+    return currentPackageIndex < requiredIndex
+  }
 
   return (
     <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
-      {question.options?.map((option) => (
-        <button
-          key={option.value}
-          type="button"
-          onClick={() => toggleValue(option.value)}
-          disabled={disabled}
-          className={`flex items-center gap-3 p-3 rounded-xl border transition-all text-left ${
-            selectedValues.includes(option.value)
-              ? darkMode
-                ? 'border-primary-500 bg-primary-500/10'
-                : 'border-primary-500 bg-primary-50'
-              : darkMode
-                ? 'border-gray-700 bg-gray-800/50 hover:bg-gray-800'
-                : 'border-gray-200 bg-white hover:bg-gray-50'
-          }`}
-        >
-          <div className={`w-5 h-5 rounded-md border-2 flex items-center justify-center flex-shrink-0 ${
-            selectedValues.includes(option.value)
-              ? 'border-primary-500 bg-primary-500'
-              : darkMode ? 'border-gray-600' : 'border-gray-300'
-          }`}>
-            {selectedValues.includes(option.value) && <Check className="w-3 h-3 text-white" />}
-          </div>
-          <span className={`text-sm ${darkMode ? 'text-white' : 'text-gray-900'}`}>
-            {option.label}
-          </span>
-        </button>
-      ))}
+      {question.options?.map((option) => {
+        const isLocked = isOptionLocked(option)
+        const isSelected = selectedValues.includes(option.value) && !isLocked
+        
+        return (
+          <button
+            key={option.value}
+            type="button"
+            onClick={() => {
+              if (isLocked && onUpgradeClick) {
+                onUpgradeClick()
+              } else if (!isLocked) {
+                toggleValue(option.value)
+              }
+            }}
+            disabled={disabled}
+            className={`relative flex items-center gap-3 p-3 rounded-xl border transition-all text-left ${
+              isLocked
+                ? darkMode
+                  ? 'border-gray-700 bg-gray-800/30 opacity-60'
+                  : 'border-gray-200 bg-gray-50 opacity-60'
+                : isSelected
+                  ? darkMode
+                    ? 'border-primary-500 bg-primary-500/10'
+                    : 'border-primary-500 bg-primary-50'
+                  : darkMode
+                    ? 'border-gray-700 bg-gray-800/50 hover:bg-gray-800'
+                    : 'border-gray-200 bg-white hover:bg-gray-50'
+            }`}
+          >
+            <div className={`w-5 h-5 rounded-md border-2 flex items-center justify-center flex-shrink-0 ${
+              isSelected
+                ? 'border-primary-500 bg-primary-500'
+                : darkMode ? 'border-gray-600' : 'border-gray-300'
+            }`}>
+              {isSelected && <Check className="w-3 h-3 text-white" />}
+            </div>
+            <div className="flex-1">
+              <span className={`text-sm ${darkMode ? 'text-white' : 'text-gray-900'}`}>
+                {option.label}
+              </span>
+              {option.description && (
+                <p className={`text-xs mt-0.5 ${
+                  isLocked 
+                    ? 'text-amber-500' 
+                    : darkMode ? 'text-gray-500' : 'text-gray-400'
+                }`}>
+                  {option.description}
+                </p>
+              )}
+            </div>
+            {isLocked && (
+              <Sparkles className="w-4 h-4 text-amber-500 flex-shrink-0" />
+            )}
+          </button>
+        )
+      })}
     </div>
   )
 }
@@ -493,19 +572,41 @@ function MultiColorQuestion({ value, onChange, darkMode }: Pick<QuestionProps, '
 // Font Selector with live preview
 function FontQuestion({ value, onChange, darkMode }: Pick<QuestionProps, 'value' | 'onChange' | 'darkMode'>) {
   const fonts = [
-    { value: 'inter', label: 'Inter', style: 'Modern & Clean', family: "'Inter', sans-serif" },
-    { value: 'poppins', label: 'Poppins', style: 'Vriendelijk & Modern', family: "'Poppins', sans-serif" },
-    { value: 'playfair', label: 'Playfair Display', style: 'Elegant & Klassiek', family: "'Playfair Display', serif" },
-    { value: 'montserrat', label: 'Montserrat', style: 'Professioneel & Strak', family: "'Montserrat', sans-serif" },
-    { value: 'roboto', label: 'Roboto', style: 'Neutraal & Leesbaar', family: "'Roboto', sans-serif" },
-    { value: 'opensans', label: 'Open Sans', style: 'Helder & Toegankelijk', family: "'Open Sans', sans-serif" },
-    { value: 'lato', label: 'Lato', style: 'Warm & Zakelijk', family: "'Lato', sans-serif" },
-    { value: 'raleway', label: 'Raleway', style: 'Elegant & Licht', family: "'Raleway', sans-serif" },
-    { value: 'merriweather', label: 'Merriweather', style: 'Klassiek & Betrouwbaar', family: "'Merriweather', serif" },
-    { value: 'nunito', label: 'Nunito', style: 'Speels & Rond', family: "'Nunito', sans-serif" },
-    { value: 'sourcesans', label: 'Source Sans Pro', style: 'Tech & Modern', family: "'Source Sans Pro', sans-serif" },
-    { value: 'dmserif', label: 'DM Serif Display', style: 'Luxe & Statement', family: "'DM Serif Display', serif" },
+    { value: 'inter', label: 'Inter', style: 'Modern & Clean', family: "'Inter', sans-serif", googleFont: 'Inter:wght@400;600;700' },
+    { value: 'poppins', label: 'Poppins', style: 'Vriendelijk & Modern', family: "'Poppins', sans-serif", googleFont: 'Poppins:wght@400;600;700' },
+    { value: 'playfair', label: 'Playfair Display', style: 'Elegant & Klassiek', family: "'Playfair Display', serif", googleFont: 'Playfair+Display:wght@400;600;700' },
+    { value: 'montserrat', label: 'Montserrat', style: 'Professioneel & Strak', family: "'Montserrat', sans-serif", googleFont: 'Montserrat:wght@400;600;700' },
+    { value: 'roboto', label: 'Roboto', style: 'Neutraal & Leesbaar', family: "'Roboto', sans-serif", googleFont: 'Roboto:wght@400;500;700' },
+    { value: 'opensans', label: 'Open Sans', style: 'Helder & Toegankelijk', family: "'Open Sans', sans-serif", googleFont: 'Open+Sans:wght@400;600;700' },
+    { value: 'lato', label: 'Lato', style: 'Warm & Zakelijk', family: "'Lato', sans-serif", googleFont: 'Lato:wght@400;700' },
+    { value: 'raleway', label: 'Raleway', style: 'Elegant & Licht', family: "'Raleway', sans-serif", googleFont: 'Raleway:wght@400;600;700' },
+    { value: 'merriweather', label: 'Merriweather', style: 'Klassiek & Betrouwbaar', family: "'Merriweather', serif", googleFont: 'Merriweather:wght@400;700' },
+    { value: 'nunito', label: 'Nunito', style: 'Speels & Rond', family: "'Nunito', sans-serif", googleFont: 'Nunito:wght@400;600;700' },
+    { value: 'sourcesans', label: 'Source Sans 3', style: 'Tech & Modern', family: "'Source Sans 3', sans-serif", googleFont: 'Source+Sans+3:wght@400;600;700' },
+    { value: 'dmserif', label: 'DM Serif Display', style: 'Luxe & Statement', family: "'DM Serif Display', serif", googleFont: 'DM+Serif+Display:wght@400' },
   ]
+
+  // Load Google Fonts
+  useEffect(() => {
+    const fontFamilies = fonts.map(f => f.googleFont).join('&family=')
+    const link = document.createElement('link')
+    link.href = `https://fonts.googleapis.com/css2?family=${fontFamilies}&display=swap`
+    link.rel = 'stylesheet'
+    link.id = 'google-fonts-onboarding'
+    
+    // Only add if not already present
+    if (!document.getElementById('google-fonts-onboarding')) {
+      document.head.appendChild(link)
+    }
+    
+    return () => {
+      // Cleanup on unmount
+      const existingLink = document.getElementById('google-fonts-onboarding')
+      if (existingLink) {
+        document.head.removeChild(existingLink)
+      }
+    }
+  }, [])
 
   return (
     <div className="space-y-3">
@@ -674,7 +775,7 @@ function QuestionRenderer({ question, value, onChange, disabled, darkMode, googl
     case 'select':
       return <RadioQuestion {...props} />
     case 'checkbox':
-      return <CheckboxQuestion {...props} />
+      return <CheckboxQuestion {...props} packageType={packageType} onUpgradeClick={onUpgradeClick} />
     case 'color':
       return <ColorQuestion value={value} onChange={onChange} darkMode={darkMode} />
     case 'multicolor':
@@ -1001,7 +1102,25 @@ export default function InlineOnboarding({
   }
 
   const isSectionComplete = (section: OnboardingSection) => {
-    const requiredQuestions = section.questions.filter(q => q.required)
+    // Filter questions based on conditionalOn (same logic as SectionComponent)
+    const visibleQuestions = section.questions.filter(q => {
+      if (!q.conditionalOn) return true
+      const dependentValue = answers[q.conditionalOn.questionId]
+      return q.conditionalOn.values.includes(dependentValue)
+    })
+    
+    const requiredQuestions = visibleQuestions.filter(q => q.required)
+    
+    // If no required questions, section is NOT complete until at least one optional question is answered
+    if (requiredQuestions.length === 0) {
+      const hasAnyAnswer = visibleQuestions.some(q => {
+        const answer = answers[q.id]
+        if (Array.isArray(answer)) return answer.length > 0
+        return answer !== undefined && answer !== '' && answer !== null
+      })
+      return hasAnyAnswer
+    }
+    
     return requiredQuestions.every(q => {
       const answer = answers[q.id]
       if (Array.isArray(answer)) return answer.length > 0

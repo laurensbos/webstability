@@ -13,7 +13,7 @@ export interface OnboardingQuestion {
   label: string
   description?: string
   placeholder?: string
-  options?: { value: string; label: string; description?: string }[]
+  options?: { value: string; label: string; description?: string; requiresPackage?: PackageType }[]
   required: boolean
   showUploadButton?: boolean  // Toon upload knop naast de vraag
   uploadButtonText?: string   // Tekst voor upload knop
@@ -281,7 +281,7 @@ export const ONBOARDING_SECTIONS: OnboardingSection[] = [
           { value: 'pricing', label: 'Prijzen' },
           { value: 'testimonials', label: 'Reviews' },
           { value: 'gallery', label: 'Galerij' },
-          { value: 'booking', label: 'Afspraken' }
+          { value: 'booking', label: 'Afspraken', description: 'Alleen Business pakket', requiresPackage: 'business' }
         ],
         packages: ['starter', 'professional', 'business', 'webshop']
       },
@@ -295,7 +295,7 @@ export const ONBOARDING_SECTIONS: OnboardingSection[] = [
           { value: 'whatsapp', label: 'WhatsApp knop' },
           { value: 'phone', label: 'Telefoonnummer' },
           { value: 'email', label: 'E-mail link' },
-          { value: 'booking', label: 'Online afspraken', description: 'Alleen Business pakket' }
+          { value: 'booking', label: 'Online afspraken', description: 'Alleen Business pakket', requiresPackage: 'business' }
         ],
         packages: ['starter', 'professional', 'business', 'webshop']
       },
