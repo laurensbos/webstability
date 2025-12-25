@@ -36,7 +36,6 @@ import PreLiveApproval from '../components/PreLiveApproval'
 import ClientLiveDashboard from '../components/ClientLiveDashboard'
 import DeveloperUpdates from '../components/DeveloperUpdates'
 import PackagePhaseCard from '../components/PackagePhaseCard'
-import CustomerTaskChecklist from '../components/CustomerTaskChecklist'
 import HelpCenter from '../components/HelpCenter'
 import NotificationBell, { generateProjectNotifications } from '../components/NotificationBell'
 import OnboardingTour, { useOnboardingTour } from '../components/OnboardingTour'
@@ -250,9 +249,6 @@ export default function ProjectStatusNew() {
   // Notifications state
   const [notifications, setNotifications] = useState<Notification[]>([])
   
-  // Task completion state
-  const [completedTasks, setCompletedTasks] = useState<string[]>([])
-  
   const phaseColors = project ? getPhaseColors(project.status) : getPhaseColors('onboarding')
   
   // SEO - Set page title and description
@@ -355,18 +351,6 @@ export default function ProjectStatusNew() {
       return () => clearTimeout(timer)
     }
   }, [project?.status, celebrate])
-
-  // Load completed tasks from localStorage
-  useEffect(() => {
-    if (project?.projectId && project?.status) {
-      const stored = localStorage.getItem(`tasks-${project.projectId}-${project.status}`)
-      if (stored) {
-        setCompletedTasks(JSON.parse(stored))
-      } else {
-        setCompletedTasks([])
-      }
-    }
-  }, [project?.projectId, project?.status])
 
   const verifyMagicSession = async (id: string, sessionToken: string) => {
     setVerifyLoading(true)
@@ -1002,7 +986,7 @@ export default function ProjectStatusNew() {
               : 'bg-white border-gray-200 shadow-sm'
           }`}
         >
-          <div className="flex items-center justify-between mb-4 overflow-x-auto pb-2 -mx-2 px-2 scrollbar-thin scrollbar-thumb-gray-300 dark:scrollbar-thumb-gray-600 gap-2 sm:gap-0 min-w-0">
+          <div className="flex items-center justify-between mb-4 overflow-x-auto pb-2 -mx-2 px-2 scrollbar-none gap-2 sm:gap-0 min-w-0" style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
             {PHASES.map((phase, index) => {
               const status = getPhaseStatus(phase.key)
               const Icon = phase.icon
@@ -1154,6 +1138,8 @@ export default function ProjectStatusNew() {
               currentPhase={project.status as 'onboarding' | 'design' | 'feedback' | 'revisie' | 'payment' | 'approval' | 'live'}
               usedRevisions={project.revisionsUsed || 0}
               darkMode={darkMode}
+              projectId={project.projectId}
+              googleDriveUrl={project.googleDriveUrl}
             />
           </div>
         )}
@@ -1175,26 +1161,6 @@ export default function ProjectStatusNew() {
             darkMode={darkMode}
           />
         </div>
-
-        {/* Customer Task Checklist - Interactive tasks for current phase */}
-        {project.status !== 'live' && (
-          <div data-tour="tasks">
-            <CustomerTaskChecklist
-              projectId={project.projectId}
-              currentPhase={project.status as 'onboarding' | 'design' | 'feedback' | 'revisie' | 'payment' | 'approval' | 'live'}
-              completedTasks={completedTasks}
-              onTaskComplete={async (taskId, completed) => {
-                if (completed) {
-                  setCompletedTasks(prev => [...prev, taskId])
-                } else {
-                  setCompletedTasks(prev => prev.filter(id => id !== taskId))
-                }
-              }}
-              darkMode={darkMode}
-              googleDriveUrl={project.googleDriveUrl}
-            />
-          </div>
-        )}
 
         {/* Special Revisie Status Card - shown when feedback is being processed */}
         {project.status === 'revisie' && (

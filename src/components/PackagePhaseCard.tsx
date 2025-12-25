@@ -1,11 +1,14 @@
 import { motion } from 'framer-motion'
+import { Link } from 'react-router-dom'
 import { 
   CheckCircle2, 
   Clock, 
   Lightbulb, 
   ChevronRight,
   Package,
-  RefreshCw
+  RefreshCw,
+  Upload,
+  ExternalLink
 } from 'lucide-react'
 import { getPackage, getPhaseInfo, getRemainingRevisions } from '../config/packages'
 import type { PackageType, ProjectPhase } from '../config/packages'
@@ -17,6 +20,8 @@ interface PackagePhaseCardProps {
   usedRevisions?: number
   darkMode?: boolean
   onTaskClick?: (taskId: string) => void
+  projectId?: string
+  googleDriveUrl?: string
 }
 
 export default function PackagePhaseCard({
@@ -25,7 +30,9 @@ export default function PackagePhaseCard({
   completedTasks = [],
   usedRevisions = 0,
   darkMode = true,
-  onTaskClick
+  onTaskClick,
+  projectId,
+  googleDriveUrl
 }: PackagePhaseCardProps) {
   const pkg = getPackage(packageType)
   const phaseInfo = getPhaseInfo(packageType, currentPhase)
@@ -112,13 +119,37 @@ export default function PackagePhaseCard({
               {phaseInfo.clientTasks.map((task, index) => {
                 const taskId = `${currentPhase}-task-${index}`
                 const isCompleted = completedTasks.includes(taskId)
+                
+                // Determine link based on task content and phase
+                const getTaskLink = () => {
+                  if (currentPhase === 'onboarding' && projectId) {
+                    // All onboarding tasks link to the intake page
+                    return `/intake/${projectId}`
+                  }
+                  if (task.toLowerCase().includes('upload') && googleDriveUrl) {
+                    return googleDriveUrl
+                  }
+                  return null
+                }
+                
+                const taskLink = getTaskLink()
+                const isExternal = taskLink?.startsWith('http')
+                
+                const TaskWrapper = taskLink 
+                  ? isExternal ? 'a' : Link 
+                  : 'button'
+                
+                const taskProps = taskLink
+                  ? isExternal 
+                    ? { href: taskLink, target: '_blank', rel: 'noopener noreferrer' }
+                    : { to: taskLink }
+                  : { onClick: () => onTaskClick?.(taskId) }
 
                 return (
-                  <motion.button
+                  <TaskWrapper
                     key={index}
-                    whileHover={{ x: 4 }}
-                    onClick={() => onTaskClick?.(taskId)}
-                    className={`w-full flex items-center gap-3 p-3 rounded-xl text-left transition-colors ${
+                    {...taskProps as any}
+                    className={`w-full flex items-center gap-3 p-3 rounded-xl text-left transition-colors active:scale-[0.98] ${
                       isCompleted
                         ? 'bg-green-500/10 border border-green-500/30'
                         : darkMode 
@@ -141,13 +172,35 @@ export default function PackagePhaseCard({
                       {task}
                     </span>
                     {!isCompleted && (
-                      <ChevronRight className={`w-4 h-4 ${darkMode ? 'text-gray-500' : 'text-gray-400'}`} />
+                      isExternal ? (
+                        <ExternalLink className={`w-4 h-4 ${darkMode ? 'text-gray-500' : 'text-gray-400'}`} />
+                      ) : (
+                        <ChevronRight className={`w-4 h-4 ${darkMode ? 'text-gray-500' : 'text-gray-400'}`} />
+                      )
                     )}
-                  </motion.button>
+                  </TaskWrapper>
                 )
               })}
             </div>
           </div>
+        )}
+
+        {/* Upload Button - Only in onboarding phase with drive URL */}
+        {currentPhase === 'onboarding' && googleDriveUrl && (
+          <a
+            href={googleDriveUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            className={`flex items-center justify-center gap-2 w-full py-3 mb-4 rounded-xl font-medium text-sm transition active:scale-[0.98] ${
+              darkMode 
+                ? 'bg-green-500/20 hover:bg-green-500/30 text-green-400 border border-green-500/30' 
+                : 'bg-green-600 hover:bg-green-700 text-white'
+            }`}
+          >
+            <Upload className="w-4 h-4" />
+            Upload bestanden
+            <ExternalLink className="w-3.5 h-3.5" />
+          </a>
         )}
 
         {/* Tips */}
