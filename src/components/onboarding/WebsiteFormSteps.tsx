@@ -1705,6 +1705,41 @@ export function WebsiteContentStep({ data, onChange, disabled, packageId, onUpgr
         ]}
       />
 
+      {/* Photo/Drone upsell for no or partial photos */}
+      {(data.hasPhotos === 'some' || data.hasPhotos === 'no') && (
+        <motion.div
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="bg-gradient-to-br from-sky-500/10 to-blue-500/10 border border-sky-500/30 rounded-xl p-4"
+        >
+          <div className="flex items-start gap-3">
+            <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-sky-500 to-blue-500 flex items-center justify-center flex-shrink-0">
+              <Image className="w-5 h-5 text-white" />
+            </div>
+            <div className="flex-1">
+              <h4 className="font-semibold text-white mb-1">
+                Professionele foto's nodig?
+              </h4>
+              <p className="text-sm text-gray-400 mb-3">
+                Goede foto's maken een wereld van verschil. We bieden professionele fotografie én drone-opnames voor unieke beelden van je bedrijf.
+              </p>
+              <div className="flex flex-wrap items-center gap-3">
+                <a 
+                  href="/diensten/fotografie" 
+                  target="_blank"
+                  className="inline-flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-sky-500 to-blue-500 text-white text-sm font-medium rounded-lg hover:from-sky-600 hover:to-blue-600 transition-all"
+                >
+                  <Image className="w-4 h-4" />
+                  Bekijk fotopakketten
+                  <ArrowUpRight className="w-3 h-3" />
+                </a>
+                <span className="text-xs text-gray-500">Fotografie vanaf €199,- | Drone vanaf €299,-</span>
+              </div>
+            </div>
+          </div>
+        </motion.div>
+      )}
+
       {/* Blog content - only for Professional and Business */}
       {pkg.features.blog ? (
         <RadioGroup
