@@ -5,7 +5,6 @@ import { ProjectStatusSkeleton } from '../components/LoadingSkeletons'
 import {
   CheckCircle2,
   CheckCircle,
-  Circle,
   Clock,
   Loader2,
   AlertCircle,
@@ -19,7 +18,6 @@ import {
   FolderOpen,
   Mail,
   Shield,
-  Star,
   Lock,
   Eye,
   EyeOff,
@@ -78,77 +76,6 @@ const PHASES: { key: ProjectPhase; label: string; icon: typeof FileText }[] = [
   { key: 'approval', label: 'Goedkeuring', icon: CheckCircle },
   { key: 'live', label: 'Live', icon: Rocket }
 ]
-
-// Client actions per phase
-const PHASE_ACTIONS: Record<ProjectPhase, { 
-  title: string
-  description: string
-  buttonText: string
-  buttonLink?: string
-  type: 'link' | 'action' | 'none' | 'whatsapp'
-  urgent?: boolean
-}[]> = {
-  onboarding: [
-    { 
-      title: 'Onboarding invullen', 
-      description: 'Vul je bedrijfsgegevens in',
-      buttonText: 'Onboarding',
-      buttonLink: '/intake/:projectId',
-      type: 'link',
-      urgent: true
-    },
-    { 
-      title: 'Direct contact via Chat', 
-      description: 'Stel je vraag via de chat',
-      buttonText: 'Chat',
-      type: 'action'
-    }
-  ],
-  design: [
-    { 
-      title: 'WhatsApp ons', 
-      description: 'Heb je een vraag? Stuur ons een berichtje',
-      buttonText: 'WhatsApp',
-      type: 'whatsapp'
-    }
-  ],
-  feedback: [
-    { 
-      title: 'Bekijk je design', 
-      description: 'Bekijk de preview en geef feedback',
-      buttonText: 'Design bekijken',
-      type: 'action',
-      urgent: true
-    }
-  ],
-  revisie: [
-    { 
-      title: 'WhatsApp ons', 
-      description: 'Heb je een vraag? Stuur ons een berichtje',
-      buttonText: 'WhatsApp',
-      type: 'whatsapp'
-    }
-  ],
-  payment: [
-    { 
-      title: 'Betaling afronden', 
-      description: 'Rond de betaling af om live te gaan',
-      buttonText: 'Betalen',
-      type: 'action',
-      urgent: true
-    }
-  ],
-  approval: [
-    { 
-      title: 'Goedkeuring geven', 
-      description: 'Controleer alles en geef je akkoord',
-      buttonText: 'Goedkeuren',
-      type: 'action',
-      urgent: true
-    }
-  ],
-  live: []
-}
 
 // Phase expectations text - now dynamically based on package
 const PHASE_INFO: Record<ProjectPhase, { title: string; description: string }> = {
@@ -777,52 +704,6 @@ export default function ProjectStatusNew() {
     return 'pending'
   }
 
-  // Get client actions for current phase
-  const getClientActions = () => {
-    if (!project) return []
-    const actions = PHASE_ACTIONS[project.status] || []
-    
-    return actions.map(action => {
-      // Special handling for Media uploaden - use Drive URL
-      if (action.title === 'Media uploaden') {
-        return {
-          ...action,
-          completed: false, // Can always upload more
-          link: project.googleDriveUrl || '',
-          isExternal: true
-        }
-      }
-      
-      // Special handling for Teksten aanleveren - also use Drive URL
-      if (action.title === 'Teksten aanleveren') {
-        return {
-          ...action,
-          completed: false,
-          link: project.googleDriveUrl || '',
-          isExternal: true
-        }
-      }
-      
-      // Special handling for Chat - opens chat panel
-      if (action.title === 'Direct contact via Chat') {
-        return {
-          ...action,
-          completed: false,
-          link: '#',
-          isExternal: false,
-          isChat: true
-        }
-      }
-      
-      return {
-        ...action,
-        completed: action.title === 'Onboarding invullen' && onboardingCompleted,
-        link: action.buttonLink?.replace(':projectId', projectId || ''),
-        isExternal: false
-      }
-    })
-  }
-
   // LOGIN SCREEN
   if (!isVerified && projectId) {
     return (
@@ -969,9 +850,7 @@ export default function ProjectStatusNew() {
   }
 
   // MAIN DASHBOARD
-  const clientActions = getClientActions()
   const progress = getProgressPercentage(project.status)
-  const pendingActions = clientActions.filter(a => !a.completed)
   const unreadMessages = messages.filter(m => !m.read && m.from === 'developer').length
 
   return (
@@ -1312,6 +1191,7 @@ export default function ProjectStatusNew() {
                 }
               }}
               darkMode={darkMode}
+              googleDriveUrl={project.googleDriveUrl}
             />
           </div>
         )}
@@ -1360,214 +1240,6 @@ export default function ProjectStatusNew() {
                   )}
                 </div>
               </div>
-            </div>
-          </motion.div>
-        )}
-
-        {/* Action Cards - What the client needs to do */}
-        {pendingActions.length > 0 && (
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.1 }}
-            className="space-y-3"
-          >
-            <h2 className="text-sm font-medium text-gray-400 flex items-center gap-2">
-              <Star className="w-4 h-4 text-amber-400" />
-              Jouw actiepunten
-            </h2>
-            
-            {pendingActions.map((action, index) => {
-              const ActionWrapper = action.isExternal ? 'a' : Link
-              const linkProps = action.isExternal 
-                ? { href: action.link || '#', target: '_blank', rel: 'noopener noreferrer' }
-                : { to: action.link || '#' }
-              
-              // Determine styling based on action type
-              const isChat = (action as any).isChat
-              const isWhatsApp = (action as any).isWhatsApp || action.type === 'whatsapp'
-              const bgClass = isChat || isWhatsApp
-                ? 'bg-green-500/10 border-green-500/30 hover:border-green-500/50'
-                : action.urgent 
-                  ? 'bg-amber-500/10 border-amber-500/30 hover:border-amber-500/50' 
-                  : 'bg-gray-900 border-gray-800 hover:border-gray-700'
-              
-              const iconBgClass = isChat || isWhatsApp
-                ? 'bg-green-500/20'
-                : action.urgent ? 'bg-amber-500/20' : 'bg-gray-800'
-              
-              const textClass = isChat || isWhatsApp
-                ? 'text-green-400'
-                : action.urgent ? 'text-amber-400' : 'text-white'
-              
-              const arrowClass = isChat || isWhatsApp
-                ? 'text-green-500'
-                : action.urgent ? 'text-amber-500' : 'text-gray-600'
-              
-              // For chat actions, use a button that opens the chat
-              if (isChat) {
-                return (
-                  <button
-                    key={index}
-                    onClick={() => setShowChat(true)}
-                    className={`block w-full text-left p-4 rounded-xl border transition group ${bgClass}`}
-                  >
-                    <div className="flex items-center gap-4">
-                      <div className={`w-10 h-10 rounded-lg flex items-center justify-center ${iconBgClass}`}>
-                        <MessageSquare className={`w-5 h-5 ${textClass}`} />
-                      </div>
-                      <div className="flex-1 min-w-0">
-                        <p className={`font-medium ${textClass}`}>
-                          {action.title}
-                        </p>
-                        <p className="text-sm text-gray-500 truncate">{action.description}</p>
-                      </div>
-                      <ArrowRight className={`w-5 h-5 transition group-hover:translate-x-1 ${arrowClass}`} />
-                    </div>
-                  </button>
-                )
-              }
-              
-              return (
-                <ActionWrapper
-                  key={index}
-                  {...linkProps as any}
-                  className={`block p-4 rounded-xl border transition group ${bgClass}`}
-                >
-                  <div className="flex items-center gap-4">
-                    <div className={`w-10 h-10 rounded-lg flex items-center justify-center ${iconBgClass}`}>
-                      {isWhatsApp ? (
-                        <svg className={`w-5 h-5 ${textClass}`} viewBox="0 0 24 24" fill="currentColor">
-                          <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/>
-                        </svg>
-                      ) : (
-                        <Circle className={`w-5 h-5 ${action.urgent ? 'text-amber-400' : 'text-gray-500'}`} />
-                      )}
-                    </div>
-                    <div className="flex-1 min-w-0">
-                      <p className={`font-medium ${textClass}`}>
-                        {action.title}
-                      </p>
-                      <p className="text-sm text-gray-500 truncate">{action.description}</p>
-                    </div>
-                    {action.isExternal ? (
-                      <ArrowRight className={`w-5 h-5 transition group-hover:translate-x-1 ${arrowClass}`} />
-                    ) : (
-                      <ChevronRight className={`w-5 h-5 transition group-hover:translate-x-1 ${arrowClass}`} />
-                    )}
-                  </div>
-                </ActionWrapper>
-              )
-            })}
-          </motion.div>
-        )}
-
-        {/* Completed actions */}
-        {clientActions.some(a => a.completed) && (
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.15 }}
-          >
-            {clientActions.filter(a => a.completed).map((action, index) => (
-              <div
-                key={index}
-                className="p-4 rounded-xl bg-green-500/10 border border-green-500/20"
-              >
-                <div className="flex items-center gap-4">
-                  <div className="w-10 h-10 rounded-lg bg-green-500/20 flex items-center justify-center">
-                    <CheckCircle2 className="w-5 h-5 text-green-400" />
-                  </div>
-                  <div className="flex-1">
-                    <p className="font-medium text-green-400">{action.title}</p>
-                    <p className="text-sm text-gray-500">Afgerond</p>
-                  </div>
-                  {action.link && (
-                    <Link
-                      to={action.link}
-                      className="text-sm text-blue-400 hover:text-blue-300 flex items-center gap-1"
-                    >
-                      <span>Wijzig</span>
-                    </Link>
-                  )}
-                </div>
-              </div>
-            ))}
-          </motion.div>
-        )}
-
-        {/* Project Files Section - Only show in onboarding phase when we have a drive URL */}
-        {project.status === 'onboarding' && project.googleDriveUrl && (
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.18 }}
-            className={`rounded-2xl border overflow-hidden ${
-              darkMode ? 'bg-gray-900 border-gray-800' : 'bg-white border-gray-200 shadow-sm'
-            }`}
-          >
-            <div className={`p-4 sm:p-5 border-b ${darkMode ? 'border-gray-800' : 'border-gray-200'}`}>
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-3">
-                  <div className={`w-10 h-10 rounded-xl flex items-center justify-center ${
-                    darkMode ? 'bg-blue-500/20' : 'bg-blue-100'
-                  }`}>
-                    <FolderOpen className={`w-5 h-5 ${darkMode ? 'text-blue-400' : 'text-blue-600'}`} />
-                  </div>
-                  <div>
-                    <h3 className={`font-semibold ${darkMode ? 'text-white' : 'text-gray-900'}`}>Projectbestanden</h3>
-                    <p className="text-xs text-gray-500">Upload hier je logo, foto's en teksten</p>
-                  </div>
-                </div>
-                <a
-                  href={project.googleDriveUrl}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className={`p-2 rounded-lg transition ${
-                    darkMode ? 'text-blue-400 hover:text-blue-300 hover:bg-blue-500/10' : 'text-blue-600 hover:text-blue-700 hover:bg-blue-50'
-                  }`}
-                >
-                  <ExternalLink className="w-5 h-5" />
-                </a>
-              </div>
-            </div>
-            
-            {/* File type indicators */}
-            <div className="p-4 sm:p-5">
-              <p className="text-xs text-gray-500 mb-3 flex items-center gap-1.5">
-                <Sparkles className="w-3.5 h-3.5 text-amber-400" />
-                Wat moet je uploaden?
-              </p>
-              <div className="grid grid-cols-2 gap-2">
-                {[
-                  { icon: '🖼️', label: 'Logo (PNG/SVG)', desc: 'Je bedrijfslogo' },
-                  { icon: '📸', label: "Foto's", desc: 'Product/team foto\'s' },
-                  { icon: '📄', label: 'Teksten', desc: 'Website content' },
-                  { icon: '🎨', label: 'Huisstijl', desc: 'Kleuren/fonts' },
-                ].map((item, i) => (
-                  <div 
-                    key={i} 
-                    className={`p-3 rounded-xl border ${
-                      darkMode ? 'bg-gray-800/50 border-gray-700/50' : 'bg-gray-50 border-gray-200'
-                    }`}
-                  >
-                    <span className="text-lg mb-1 block">{item.icon}</span>
-                    <p className={`text-sm font-medium ${darkMode ? 'text-white' : 'text-gray-900'}`}>{item.label}</p>
-                    <p className="text-xs text-gray-500">{item.desc}</p>
-                  </div>
-                ))}
-              </div>
-              
-              <a
-                href={project.googleDriveUrl}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="mt-4 w-full py-3 bg-blue-500/10 hover:bg-blue-500/20 border border-blue-500/30 hover:border-blue-500/50 text-blue-400 font-medium rounded-xl transition flex items-center justify-center gap-2"
-              >
-                <FolderOpen className="w-4 h-4" />
-                Open Google Drive
-                <ExternalLink className="w-4 h-4" />
-              </a>
             </div>
           </motion.div>
         )}

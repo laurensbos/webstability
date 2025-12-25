@@ -1,8 +1,10 @@
 /**
  * CustomerTaskChecklist - Interactieve taken checklist voor klanten
  * 
- * Toont fase-specifieke taken die de klant moet afvinken.
- * Taken worden lokaal opgeslagen en gesynchroniseerd met de server.
+ * Mobile-first design met:
+ * - Uitvouwbare taken per fase
+ * - Inline upload knop met info tooltip
+ * - Geen popups, alles inline
  */
 
 import { useState, useEffect } from 'react'
@@ -13,8 +15,10 @@ import {
   ChevronDown,
   ChevronUp,
   Clock,
-  Sparkles,
-  ArrowRight
+  Upload,
+  Info,
+  ExternalLink,
+  X
 } from 'lucide-react'
 
 // Fase types
@@ -25,8 +29,6 @@ interface Task {
   label: string
   description?: string
   required: boolean
-  link?: string
-  linkLabel?: string
 }
 
 interface PhaseTaskConfig {
@@ -34,6 +36,7 @@ interface PhaseTaskConfig {
   description: string
   tasks: Task[]
   estimatedMinutes: number
+  showUpload?: boolean // Show upload button for this phase
 }
 
 // Taken per fase
@@ -42,6 +45,7 @@ const PHASE_TASKS: Record<ProjectPhase, PhaseTaskConfig> = {
     title: 'Onboarding afronden',
     description: 'Vul alle gegevens in zodat we kunnen starten',
     estimatedMinutes: 15,
+    showUpload: true,
     tasks: [
       { id: 'business-info', label: 'Bedrijfsgegevens invullen', description: 'Naam, adres, KVK, BTW', required: true },
       { id: 'contact-info', label: 'Contactgegevens invullen', description: 'E-mail, telefoon', required: true },
@@ -53,7 +57,7 @@ const PHASE_TASKS: Record<ProjectPhase, PhaseTaskConfig> = {
   },
   design: {
     title: 'Wachten op ontwerp',
-    description: 'We werken aan je website. Je hoeft nu niets te doen.',
+    description: 'We werken aan je website',
     estimatedMinutes: 0,
     tasks: [
       { id: 'wait-design', label: 'Ontwerp wordt gemaakt', description: 'Je ontvangt een e-mail wanneer het klaar is', required: false },
@@ -68,7 +72,6 @@ const PHASE_TASKS: Record<ProjectPhase, PhaseTaskConfig> = {
       { id: 'view-mobile', label: 'Bekijk de mobiele versie', description: 'Check hoe het eruitziet op je telefoon', required: true },
       { id: 'check-text', label: 'Controleer alle teksten', description: 'Zijn er geen tikfouten? Klopt alles?', required: true },
       { id: 'check-images', label: 'Controleer de afbeeldingen', description: 'Zijn de juiste foto\'s gebruikt?', required: true },
-      { id: 'answer-questions', label: 'Beantwoord de feedbackvragen', description: 'Geef aan wat je vindt', required: true },
       { id: 'submit-feedback', label: 'Verstuur je feedback', description: 'Of keur het ontwerp goed', required: true },
     ]
   },
@@ -86,7 +89,6 @@ const PHASE_TASKS: Record<ProjectPhase, PhaseTaskConfig> = {
     estimatedMinutes: 5,
     tasks: [
       { id: 'review-invoice', label: 'Controleer de factuur', description: 'Bekijk het bedrag en de voorwaarden', required: true },
-      { id: 'choose-payment', label: 'Kies betaalmethode', description: 'iDEAL, creditcard of anders', required: true },
       { id: 'complete-payment', label: 'Voltooi de betaling', description: 'Na betaling gaan we naar de laatste stap', required: true },
     ]
   },
@@ -96,23 +98,28 @@ const PHASE_TASKS: Record<ProjectPhase, PhaseTaskConfig> = {
     estimatedMinutes: 10,
     tasks: [
       { id: 'check-content', label: 'Controleer alle content', description: 'Laatste check op teksten en afbeeldingen', required: true },
-      { id: 'check-contact', label: 'Controleer contactgegevens', description: 'E-mail, telefoon, adres correct?', required: true },
       { id: 'confirm-domain', label: 'Bevestig je domeinnaam', description: 'Op welk adres komt de website?', required: true },
-      { id: 'accept-terms', label: 'Accepteer de voorwaarden', description: 'Lees en accepteer de algemene voorwaarden', required: true },
       { id: 'give-approval', label: 'Geef je definitieve akkoord', description: 'Hierna gaan we live!', required: true },
     ]
   },
   live: {
     title: 'Je website is live! 🎉',
-    description: 'Beheer je website en vraag wijzigingen aan',
+    description: 'Beheer je website',
     estimatedMinutes: 0,
     tasks: [
       { id: 'share-website', label: 'Deel je website', description: 'Laat iedereen weten dat je online bent', required: false },
-      { id: 'add-signature', label: 'Voeg toe aan e-mail handtekening', description: 'Zet je website link in je e-mails', required: false },
       { id: 'request-reviews', label: 'Vraag klanten om reviews', description: 'Reviews helpen je online zichtbaarheid', required: false },
     ]
   }
 }
+
+// Upload info items
+const UPLOAD_INFO = [
+  { icon: '🖼️', label: 'Logo', desc: 'PNG of SVG formaat' },
+  { icon: '📸', label: "Foto's", desc: 'Hoge kwaliteit foto\'s' },
+  { icon: '📄', label: 'Teksten', desc: 'Word of PDF documenten' },
+  { icon: '🎨', label: 'Huisstijl', desc: 'Kleuren & fonts (optioneel)' },
+]
 
 interface CustomerTaskChecklistProps {
   projectId: string
@@ -122,6 +129,7 @@ interface CustomerTaskChecklistProps {
   onAllTasksComplete?: () => void
   darkMode?: boolean
   compact?: boolean
+  googleDriveUrl?: string
 }
 
 export default function CustomerTaskChecklist({
@@ -131,16 +139,18 @@ export default function CustomerTaskChecklist({
   onTaskComplete,
   onAllTasksComplete,
   darkMode = true,
-  compact = false
+  compact = false,
+  googleDriveUrl
 }: CustomerTaskChecklistProps) {
   const [completedTasks, setCompletedTasks] = useState<string[]>([])
   const [isExpanded, setIsExpanded] = useState(true)
   const [isAnimating, setIsAnimating] = useState<string | null>(null)
+  const [showUploadInfo, setShowUploadInfo] = useState(false)
 
   const phaseConfig = PHASE_TASKS[currentPhase]
   const tasks = phaseConfig.tasks
 
-  // Load completed tasks from localStorage or external prop
+  // Load completed tasks
   useEffect(() => {
     if (externalCompletedTasks) {
       setCompletedTasks(externalCompletedTasks)
@@ -152,7 +162,7 @@ export default function CustomerTaskChecklist({
     }
   }, [projectId, currentPhase, externalCompletedTasks])
 
-  // Save to localStorage when tasks change
+  // Save to localStorage
   useEffect(() => {
     if (!externalCompletedTasks) {
       localStorage.setItem(`tasks-${projectId}-${currentPhase}`, JSON.stringify(completedTasks))
@@ -171,18 +181,15 @@ export default function CustomerTaskChecklist({
   const handleToggleTask = async (taskId: string) => {
     const isCompleting = !completedTasks.includes(taskId)
     
-    // Animate
     setIsAnimating(taskId)
     setTimeout(() => setIsAnimating(null), 500)
 
-    // Update state
     if (isCompleting) {
       setCompletedTasks(prev => [...prev, taskId])
     } else {
       setCompletedTasks(prev => prev.filter(id => id !== taskId))
     }
 
-    // Notify parent
     if (onTaskComplete) {
       await onTaskComplete(taskId, isCompleting)
     }
@@ -193,7 +200,7 @@ export default function CustomerTaskChecklist({
   const requiredCompletedCount = tasks.filter(t => t.required && completedTasks.includes(t.id)).length
   const progress = requiredCount > 0 ? Math.round((requiredCompletedCount / requiredCount) * 100) : 100
 
-  // Compact mode for sidebar
+  // Compact mode
   if (compact) {
     return (
       <div className={`rounded-xl p-4 ${darkMode ? 'bg-gray-800/50' : 'bg-gray-50'}`}>
@@ -209,7 +216,7 @@ export default function CustomerTaskChecklist({
           <motion.div
             initial={{ width: 0 }}
             animate={{ width: `${progress}%` }}
-            className={`h-full ${progress === 100 ? 'bg-green-500' : 'bg-blue-500'}`}
+            className={`h-full ${progress === 100 ? 'bg-green-500' : 'bg-amber-500'}`}
           />
         </div>
       </div>
@@ -222,64 +229,71 @@ export default function CustomerTaskChecklist({
       animate={{ opacity: 1, y: 0 }}
       className={`rounded-2xl border overflow-hidden ${
         darkMode 
-          ? 'bg-gray-800/50 border-gray-700' 
-          : 'bg-white border-gray-200 shadow-sm'
+          ? 'bg-gradient-to-br from-amber-500/10 to-orange-500/5 border-amber-500/30' 
+          : 'bg-gradient-to-br from-amber-50 to-orange-50 border-amber-200'
       }`}
     >
-      {/* Header */}
+      {/* Header - Always visible */}
       <button
         onClick={() => setIsExpanded(!isExpanded)}
-        className={`w-full p-4 flex items-center justify-between ${
-          darkMode ? 'hover:bg-gray-700/50' : 'hover:bg-gray-50'
-        } transition-colors`}
+        className="w-full p-4 sm:p-5 flex items-center justify-between text-left"
       >
-        <div className="flex items-center gap-3">
-          <div className={`p-2 rounded-xl ${
+        <div className="flex items-center gap-3 sm:gap-4">
+          <div className={`w-10 h-10 sm:w-12 sm:h-12 rounded-xl flex items-center justify-center flex-shrink-0 ${
             progress === 100 
               ? 'bg-green-500/20 text-green-500' 
-              : 'bg-blue-500/20 text-blue-500'
+              : 'bg-amber-500/20 text-amber-500'
           }`}>
             {progress === 100 ? (
-              <Sparkles className="w-5 h-5" />
+              <CheckCircle2 className="w-5 h-5 sm:w-6 sm:h-6" />
             ) : (
-              <CheckCircle2 className="w-5 h-5" />
+              <span className="text-lg sm:text-xl font-bold">{requiredCompletedCount}</span>
             )}
           </div>
-          <div className="text-left">
-            <h3 className={`font-semibold ${darkMode ? 'text-white' : 'text-gray-900'}`}>
+          <div>
+            <h3 className={`font-semibold text-base sm:text-lg ${
+              progress === 100 
+                ? darkMode ? 'text-green-400' : 'text-green-600'
+                : darkMode ? 'text-amber-400' : 'text-amber-600'
+            }`}>
               {phaseConfig.title}
             </h3>
-            <p className={`text-sm ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>
-              {progress === 100 ? 'Alle taken afgerond!' : `${requiredCompletedCount} van ${requiredCount} verplichte taken`}
+            <p className={`text-xs sm:text-sm ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>
+              {progress === 100 
+                ? '✓ Alle taken afgerond!' 
+                : `${requiredCompletedCount} van ${requiredCount} verplicht`
+              }
             </p>
           </div>
         </div>
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-2 sm:gap-3">
           {phaseConfig.estimatedMinutes > 0 && (
-            <div className={`flex items-center gap-1 text-sm ${darkMode ? 'text-gray-500' : 'text-gray-400'}`}>
-              <Clock className="w-4 h-4" />
+            <div className={`hidden sm:flex items-center gap-1.5 text-xs ${darkMode ? 'text-gray-500' : 'text-gray-400'}`}>
+              <Clock className="w-3.5 h-3.5" />
               <span>~{phaseConfig.estimatedMinutes} min</span>
             </div>
           )}
-          {isExpanded ? (
-            <ChevronUp className={`w-5 h-5 ${darkMode ? 'text-gray-400' : 'text-gray-500'}`} />
-          ) : (
-            <ChevronDown className={`w-5 h-5 ${darkMode ? 'text-gray-400' : 'text-gray-500'}`} />
-          )}
+          <div className={`p-1.5 rounded-lg ${darkMode ? 'bg-gray-800/50' : 'bg-white/50'}`}>
+            {isExpanded ? (
+              <ChevronUp className={`w-5 h-5 ${darkMode ? 'text-gray-400' : 'text-gray-500'}`} />
+            ) : (
+              <ChevronDown className={`w-5 h-5 ${darkMode ? 'text-gray-400' : 'text-gray-500'}`} />
+            )}
+          </div>
         </div>
       </button>
 
       {/* Progress bar */}
-      <div className={`h-1 ${darkMode ? 'bg-gray-700' : 'bg-gray-100'}`}>
+      <div className={`h-1 ${darkMode ? 'bg-gray-800/50' : 'bg-white/50'}`}>
         <motion.div
           initial={{ width: 0 }}
           animate={{ width: `${progress}%` }}
           transition={{ duration: 0.5, ease: 'easeOut' }}
-          className={`h-full ${progress === 100 ? 'bg-green-500' : 'bg-blue-500'}`}
+          className={`h-full ${progress === 100 ? 'bg-green-500' : 'bg-amber-500'}`}
         />
       </div>
 
-      {/* Tasks */}
+      {/* Expandable content */}
       <AnimatePresence>
         {isExpanded && (
           <motion.div
@@ -289,7 +303,8 @@ export default function CustomerTaskChecklist({
             transition={{ duration: 0.2 }}
             className="overflow-hidden"
           >
-            <div className="p-4 space-y-2">
+            {/* Tasks list */}
+            <div className="p-3 sm:p-4 space-y-2">
               {tasks.map((task, index) => {
                 const isCompleted = completedTasks.includes(task.id)
                 const isAnimatingThis = isAnimating === task.id
@@ -297,18 +312,18 @@ export default function CustomerTaskChecklist({
                 return (
                   <motion.button
                     key={task.id}
-                    initial={{ opacity: 0, x: -20 }}
+                    initial={{ opacity: 0, x: -10 }}
                     animate={{ opacity: 1, x: 0 }}
-                    transition={{ delay: index * 0.05 }}
+                    transition={{ delay: index * 0.03 }}
                     onClick={() => handleToggleTask(task.id)}
-                    className={`w-full flex items-start gap-3 p-3 rounded-xl text-left transition-all ${
+                    className={`w-full flex items-start gap-3 p-3 sm:p-4 rounded-xl text-left transition-all active:scale-[0.98] ${
                       isCompleted
                         ? darkMode 
-                          ? 'bg-green-500/10 border border-green-500/30' 
-                          : 'bg-green-50 border border-green-200'
+                          ? 'bg-green-500/15 border border-green-500/30' 
+                          : 'bg-green-100 border border-green-300'
                         : darkMode
-                          ? 'bg-gray-700/50 hover:bg-gray-700 border border-transparent'
-                          : 'bg-gray-50 hover:bg-gray-100 border border-transparent'
+                          ? 'bg-gray-900/50 hover:bg-gray-900 border border-gray-700/50'
+                          : 'bg-white hover:bg-gray-50 border border-gray-200'
                     }`}
                   >
                     {/* Checkbox */}
@@ -322,7 +337,7 @@ export default function CustomerTaskChecklist({
                             exit={{ scale: 0 }}
                             className="text-green-500"
                           >
-                            <CheckCircle2 className="w-5 h-5" />
+                            <CheckCircle2 className="w-5 h-5 sm:w-6 sm:h-6" />
                           </motion.div>
                         ) : (
                           <motion.div
@@ -330,9 +345,9 @@ export default function CustomerTaskChecklist({
                             initial={{ scale: 0 }}
                             animate={{ scale: 1 }}
                             exit={{ scale: 0 }}
-                            className={darkMode ? 'text-gray-500' : 'text-gray-400'}
+                            className={darkMode ? 'text-gray-600' : 'text-gray-400'}
                           >
-                            <Circle className="w-5 h-5" />
+                            <Circle className="w-5 h-5 sm:w-6 sm:h-6" />
                           </motion.div>
                         )}
                       </AnimatePresence>
@@ -340,47 +355,116 @@ export default function CustomerTaskChecklist({
 
                     {/* Content */}
                     <div className="flex-1 min-w-0">
-                      <div className="flex items-center gap-2">
-                        <span className={`font-medium ${
+                      <div className="flex items-center gap-2 flex-wrap">
+                        <span className={`font-medium text-sm sm:text-base ${
                           isCompleted 
-                            ? 'text-green-600 dark:text-green-400 line-through' 
+                            ? 'text-green-500 line-through' 
                             : darkMode ? 'text-white' : 'text-gray-900'
                         }`}>
                           {task.label}
                         </span>
                         {task.required && !isCompleted && (
-                          <span className="text-xs text-red-500 font-medium">Verplicht</span>
+                          <span className="text-[10px] sm:text-xs text-red-500 font-medium bg-red-500/10 px-1.5 py-0.5 rounded">
+                            Verplicht
+                          </span>
                         )}
                       </div>
                       {task.description && (
-                        <p className={`text-sm mt-0.5 ${
+                        <p className={`text-xs sm:text-sm mt-0.5 ${
                           isCompleted
-                            ? 'text-green-600/70 dark:text-green-400/70'
-                            : darkMode ? 'text-gray-400' : 'text-gray-500'
+                            ? 'text-green-500/70'
+                            : darkMode ? 'text-gray-500' : 'text-gray-500'
                         }`}>
                           {task.description}
                         </p>
                       )}
                     </div>
-
-                    {/* Link arrow */}
-                    {task.link && !isCompleted && (
-                      <ArrowRight className={`w-4 h-4 flex-shrink-0 ${
-                        darkMode ? 'text-gray-500' : 'text-gray-400'
-                      }`} />
-                    )}
                   </motion.button>
                 )
               })}
             </div>
 
+            {/* Upload Section - Only for onboarding phase with drive URL */}
+            {phaseConfig.showUpload && googleDriveUrl && (
+              <div className={`mx-3 sm:mx-4 mb-3 sm:mb-4 p-3 sm:p-4 rounded-xl border ${
+                darkMode ? 'bg-gray-900/50 border-gray-700/50' : 'bg-white border-gray-200'
+              }`}>
+                <div className="flex items-center justify-between mb-3">
+                  <div className="flex items-center gap-2">
+                    <Upload className={`w-4 h-4 ${darkMode ? 'text-blue-400' : 'text-blue-600'}`} />
+                    <span className={`text-sm font-medium ${darkMode ? 'text-white' : 'text-gray-900'}`}>
+                      Bestanden uploaden
+                    </span>
+                  </div>
+                  <button
+                    onClick={(e) => {
+                      e.stopPropagation()
+                      setShowUploadInfo(!showUploadInfo)
+                    }}
+                    className={`p-1.5 rounded-lg transition ${
+                      showUploadInfo
+                        ? darkMode ? 'bg-blue-500/20 text-blue-400' : 'bg-blue-100 text-blue-600'
+                        : darkMode ? 'hover:bg-gray-800 text-gray-400' : 'hover:bg-gray-100 text-gray-500'
+                    }`}
+                    title="Wat moet ik uploaden?"
+                  >
+                    {showUploadInfo ? <X className="w-4 h-4" /> : <Info className="w-4 h-4" />}
+                  </button>
+                </div>
+
+                {/* Upload info tooltip */}
+                <AnimatePresence>
+                  {showUploadInfo && (
+                    <motion.div
+                      initial={{ height: 0, opacity: 0 }}
+                      animate={{ height: 'auto', opacity: 1 }}
+                      exit={{ height: 0, opacity: 0 }}
+                      className="overflow-hidden mb-3"
+                    >
+                      <div className="grid grid-cols-2 gap-2">
+                        {UPLOAD_INFO.map((item, i) => (
+                          <div 
+                            key={i} 
+                            className={`p-2 sm:p-3 rounded-lg ${
+                              darkMode ? 'bg-gray-800/50' : 'bg-gray-50'
+                            }`}
+                          >
+                            <span className="text-base sm:text-lg">{item.icon}</span>
+                            <p className={`text-xs sm:text-sm font-medium mt-1 ${darkMode ? 'text-white' : 'text-gray-900'}`}>
+                              {item.label}
+                            </p>
+                            <p className="text-[10px] sm:text-xs text-gray-500">{item.desc}</p>
+                          </div>
+                        ))}
+                      </div>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+
+                {/* Upload button */}
+                <a
+                  href={googleDriveUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  onClick={(e) => e.stopPropagation()}
+                  className={`flex items-center justify-center gap-2 w-full py-3 rounded-xl font-medium text-sm sm:text-base transition active:scale-[0.98] ${
+                    darkMode 
+                      ? 'bg-blue-500/20 hover:bg-blue-500/30 text-blue-400 border border-blue-500/30' 
+                      : 'bg-blue-600 hover:bg-blue-700 text-white'
+                  }`}
+                >
+                  <Upload className="w-4 h-4" />
+                  Upload naar Google Drive
+                  <ExternalLink className="w-3.5 h-3.5" />
+                </a>
+              </div>
+            )}
+
             {/* Footer hint */}
             {progress < 100 && (
-              <div className={`px-4 pb-4`}>
-                <p className={`text-xs text-center ${darkMode ? 'text-gray-500' : 'text-gray-400'}`}>
-                  Klik op een taak om deze af te vinken
-                </p>
-              </div>
+              <p className={`text-[10px] sm:text-xs text-center pb-3 sm:pb-4 ${darkMode ? 'text-gray-600' : 'text-gray-400'}`}>
+                Tik op een taak om af te vinken
+              </p>
             )}
           </motion.div>
         )}
