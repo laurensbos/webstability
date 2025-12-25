@@ -5,7 +5,7 @@
 
 export type DashboardView = 'projects' | 'messages' | 'payments' | 'customers'
 
-export type ProjectPhase = 'onboarding' | 'design' | 'feedback' | 'revisie' | 'payment' | 'approval' | 'live'
+export type ProjectPhase = 'onboarding' | 'design' | 'feedback' | 'revisie' | 'payment' | 'domain' | 'live'
 export type PaymentStatus = 'pending' | 'awaiting_payment' | 'paid' | 'failed' | 'refunded'
 export type ServiceType = 'website' | 'webshop' | 'logo' | 'drone'
 
@@ -271,11 +271,11 @@ export const PHASE_CONFIG: Record<ProjectPhase, {
     bgColor: 'bg-purple-500/20',
     emoji: '💳'
   },
-  approval: {
-    label: 'Goedkeuring',
+  domain: {
+    label: 'Domein',
     color: 'text-pink-400',
     bgColor: 'bg-pink-500/20',
-    emoji: '✅'
+    emoji: '🌐'
   },
   live: { 
     label: 'Live', 
@@ -353,17 +353,17 @@ export const PHASE_CHECKLIST: Record<ProjectPhase, {
       'Wacht op eerste betaling',
       'Check of betaling is ontvangen',
     ],
-    nextAction: 'Betaling binnen → Stuur goedkeuringsverzoek',
+    nextAction: 'Betaling binnen → Start domeinverhuizing',
   },
-  approval: {
-    title: 'Wachten op goedkeuring',
+  domain: {
+    title: 'Domein configureren',
     tasks: [
-      'Klant checkt alle content',
-      'Klant bevestigt contactgegevens',
-      'Klant accepteert voorwaarden',
-      'Configureer domein & DNS',
+      'Autorisatiecode opvragen bij klant',
+      'Domeinverhuizing starten',
+      'DNS configureren',
+      'Wacht op propagatie',
     ],
-    nextAction: 'Goedkeuring binnen → Zet website live',
+    nextAction: 'Domein klaar → Zet website live',
   },
   live: {
     title: 'Website is live',

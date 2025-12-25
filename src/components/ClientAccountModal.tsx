@@ -12,7 +12,6 @@ import {
   AlertCircle,
   Loader2,
   ExternalLink,
-  Clock,
   Receipt,
   Globe,
   Edit3,
@@ -453,115 +452,146 @@ export default function ClientAccountModal({
                         )}
                       </div>
 
-                      <div className="p-4 sm:p-5 space-y-4">
-                        {/* Business Name */}
-                        <div className="group">
-                          <label className={`flex items-center gap-2 text-sm mb-1.5 ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>
-                            <Building2 className="w-4 h-4" />
-                            Bedrijfsnaam
-                          </label>
-                          {isEditing ? (
-                            <input
-                              type="text"
-                              value={formData.businessName}
-                              onChange={(e) => setFormData({ ...formData, businessName: e.target.value })}
-                              className={`w-full px-4 py-3 rounded-xl border focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all ${
-                                darkMode 
-                                  ? 'bg-gray-900 border-gray-700 text-white' 
-                                  : 'bg-gray-50 border-gray-200 text-gray-900'
-                              }`}
-                              placeholder="Jouw bedrijfsnaam"
-                            />
-                          ) : (
-                            <p className={`px-4 py-3 rounded-xl font-medium ${
-                              darkMode ? 'bg-gray-900/50 text-white' : 'bg-gray-50 text-gray-900'
-                            }`}>
-                              {project.businessName || <span className={darkMode ? 'text-gray-400 italic' : 'text-gray-400 italic'}>Niet ingevuld</span>}
-                            </p>
-                          )}
-                        </div>
-
-                        {/* Contact Name */}
-                        <div className="group">
-                          <label className={`flex items-center gap-2 text-sm mb-1.5 ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>
-                            <User className="w-4 h-4" />
-                            Naam
-                          </label>
-                          {isEditing ? (
-                            <input
-                              type="text"
-                              value={formData.contactName}
-                              onChange={(e) => setFormData({ ...formData, contactName: e.target.value })}
-                              className={`w-full px-4 py-3 rounded-xl border focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all ${
-                                darkMode 
-                                  ? 'bg-gray-900 border-gray-700 text-white' 
-                                  : 'bg-gray-50 border-gray-200 text-gray-900'
-                              }`}
-                              placeholder="Je naam"
-                            />
-                          ) : (
-                            <p className={`px-4 py-3 rounded-xl font-medium ${
-                              darkMode ? 'bg-gray-900/50 text-white' : 'bg-gray-50 text-gray-900'
-                            }`}>
-                              {project.contactName || <span className="text-gray-400 italic">Niet ingevuld</span>}
-                            </p>
-                          )}
-                        </div>
-
-                        {/* Email & Phone - 2 column on larger screens */}
-                        <div className="grid sm:grid-cols-2 gap-4">
-                          <div className="group">
-                            <label className={`flex items-center gap-2 text-sm mb-1.5 ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>
-                              <Mail className="w-4 h-4" />
-                              E-mailadres
-                            </label>
-                            {isEditing ? (
-                              <input
-                                type="email"
-                                value={formData.contactEmail}
-                                onChange={(e) => setFormData({ ...formData, contactEmail: e.target.value })}
-                                className={`w-full px-4 py-3 rounded-xl border focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all ${
-                                  darkMode 
-                                    ? 'bg-gray-900 border-gray-700 text-white' 
-                                    : 'bg-gray-50 border-gray-200 text-gray-900'
-                                }`}
-                                placeholder="email@voorbeeld.nl"
-                              />
-                            ) : (
-                              <p className={`px-4 py-3 rounded-xl font-medium break-all ${
-                                darkMode ? 'bg-gray-900/50 text-white' : 'bg-gray-50 text-gray-900'
-                              }`}>
-                                {project.contactEmail || <span className="text-gray-400 italic">Niet ingevuld</span>}
-                              </p>
-                            )}
+                      <div className="p-4 sm:p-5">
+                        {isEditing ? (
+                          // Edit mode - form layout
+                          <div className="space-y-4">
+                            <div className="grid sm:grid-cols-2 gap-4">
+                              <div>
+                                <label className={`text-xs font-medium mb-1.5 block ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>
+                                  Bedrijfsnaam
+                                </label>
+                                <input
+                                  type="text"
+                                  value={formData.businessName}
+                                  onChange={(e) => setFormData({ ...formData, businessName: e.target.value })}
+                                  className={`w-full px-4 py-2.5 rounded-xl border text-sm focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all ${
+                                    darkMode 
+                                      ? 'bg-gray-900 border-gray-700 text-white' 
+                                      : 'bg-gray-50 border-gray-200 text-gray-900'
+                                  }`}
+                                  placeholder="Jouw bedrijfsnaam"
+                                />
+                              </div>
+                              <div>
+                                <label className={`text-xs font-medium mb-1.5 block ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>
+                                  Contactpersoon
+                                </label>
+                                <input
+                                  type="text"
+                                  value={formData.contactName}
+                                  onChange={(e) => setFormData({ ...formData, contactName: e.target.value })}
+                                  className={`w-full px-4 py-2.5 rounded-xl border text-sm focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all ${
+                                    darkMode 
+                                      ? 'bg-gray-900 border-gray-700 text-white' 
+                                      : 'bg-gray-50 border-gray-200 text-gray-900'
+                                  }`}
+                                  placeholder="Je naam"
+                                />
+                              </div>
+                            </div>
+                            <div className="grid sm:grid-cols-2 gap-4">
+                              <div>
+                                <label className={`text-xs font-medium mb-1.5 block ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>
+                                  E-mailadres
+                                </label>
+                                <input
+                                  type="email"
+                                  value={formData.contactEmail}
+                                  onChange={(e) => setFormData({ ...formData, contactEmail: e.target.value })}
+                                  className={`w-full px-4 py-2.5 rounded-xl border text-sm focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all ${
+                                    darkMode 
+                                      ? 'bg-gray-900 border-gray-700 text-white' 
+                                      : 'bg-gray-50 border-gray-200 text-gray-900'
+                                  }`}
+                                  placeholder="email@voorbeeld.nl"
+                                />
+                              </div>
+                              <div>
+                                <label className={`text-xs font-medium mb-1.5 block ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>
+                                  Telefoonnummer
+                                </label>
+                                <input
+                                  type="tel"
+                                  value={formData.contactPhone}
+                                  onChange={(e) => setFormData({ ...formData, contactPhone: e.target.value })}
+                                  className={`w-full px-4 py-2.5 rounded-xl border text-sm focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all ${
+                                    darkMode 
+                                      ? 'bg-gray-900 border-gray-700 text-white' 
+                                      : 'bg-gray-50 border-gray-200 text-gray-900'
+                                  }`}
+                                  placeholder="06 12345678"
+                                />
+                              </div>
+                            </div>
                           </div>
-
-                          <div className="group">
-                            <label className={`flex items-center gap-2 text-sm mb-1.5 ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>
-                              <Phone className="w-4 h-4" />
-                              Telefoonnummer
-                            </label>
-                            {isEditing ? (
-                              <input
-                                type="tel"
-                                value={formData.contactPhone}
-                                onChange={(e) => setFormData({ ...formData, contactPhone: e.target.value })}
-                                className={`w-full px-4 py-3 rounded-xl border focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all ${
-                                  darkMode 
-                                    ? 'bg-gray-900 border-gray-700 text-white' 
-                                    : 'bg-gray-50 border-gray-200 text-gray-900'
-                                }`}
-                                placeholder="06 12345678"
-                              />
-                            ) : (
-                              <p className={`px-4 py-3 rounded-xl font-medium ${
-                                darkMode ? 'bg-gray-900/50 text-white' : 'bg-gray-50 text-gray-900'
-                              }`}>
-                                {project.contactPhone || <span className="text-gray-400 italic">Niet ingevuld</span>}
-                              </p>
-                            )}
+                        ) : (
+                          // View mode - compact list
+                          <div className="space-y-3">
+                            {/* Bedrijf & Naam */}
+                            <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-6">
+                              <div className="flex items-center gap-3 min-w-0 flex-1">
+                                <div className={`w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0 ${
+                                  darkMode ? 'bg-gray-700' : 'bg-gray-100'
+                                }`}>
+                                  <Building2 className={`w-4 h-4 ${darkMode ? 'text-gray-400' : 'text-gray-500'}`} />
+                                </div>
+                                <div className="min-w-0">
+                                  <p className={`text-xs ${darkMode ? 'text-gray-500' : 'text-gray-400'}`}>Bedrijf</p>
+                                  <p className={`font-medium truncate ${darkMode ? 'text-white' : 'text-gray-900'}`}>
+                                    {project.businessName || <span className="text-gray-400 italic text-sm">—</span>}
+                                  </p>
+                                </div>
+                              </div>
+                              <div className="flex items-center gap-3 min-w-0 flex-1">
+                                <div className={`w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0 ${
+                                  darkMode ? 'bg-gray-700' : 'bg-gray-100'
+                                }`}>
+                                  <User className={`w-4 h-4 ${darkMode ? 'text-gray-400' : 'text-gray-500'}`} />
+                                </div>
+                                <div className="min-w-0">
+                                  <p className={`text-xs ${darkMode ? 'text-gray-500' : 'text-gray-400'}`}>Contact</p>
+                                  <p className={`font-medium truncate ${darkMode ? 'text-white' : 'text-gray-900'}`}>
+                                    {project.contactName || <span className="text-gray-400 italic text-sm">—</span>}
+                                  </p>
+                                </div>
+                              </div>
+                            </div>
+                            
+                            {/* Divider */}
+                            <div className={`border-t ${darkMode ? 'border-gray-700' : 'border-gray-100'}`} />
+                            
+                            {/* Email & Phone */}
+                            <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-6">
+                              <div className="flex items-center gap-3 min-w-0 flex-1">
+                                <div className={`w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0 ${
+                                  darkMode ? 'bg-gray-700' : 'bg-gray-100'
+                                }`}>
+                                  <Mail className={`w-4 h-4 ${darkMode ? 'text-gray-400' : 'text-gray-500'}`} />
+                                </div>
+                                <div className="min-w-0">
+                                  <p className={`text-xs ${darkMode ? 'text-gray-500' : 'text-gray-400'}`}>E-mail</p>
+                                  <p className={`font-medium truncate text-sm ${darkMode ? 'text-white' : 'text-gray-900'}`}>
+                                    {project.contactEmail || <span className="text-gray-400 italic">—</span>}
+                                  </p>
+                                </div>
+                              </div>
+                              <div className="flex items-center gap-3 min-w-0 flex-1">
+                                <div className={`w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0 ${
+                                  darkMode ? 'bg-gray-700' : 'bg-gray-100'
+                                }`}>
+                                  <Phone className={`w-4 h-4 ${darkMode ? 'text-gray-400' : 'text-gray-500'}`} />
+                                </div>
+                                <div className="min-w-0">
+                                  <p className={`text-xs ${darkMode ? 'text-gray-500' : 'text-gray-400'}`}>Telefoon</p>
+                                  <p className={`font-medium truncate ${darkMode ? 'text-white' : 'text-gray-900'}`}>
+                                    {project.contactPhone || <span className="text-gray-400 italic text-sm">—</span>}
+                                  </p>
+                                </div>
+                              </div>
+                            </div>
                           </div>
-                        </div>
+                        )}
                       </div>
                     </div>
 
@@ -616,30 +646,48 @@ export default function ClientAccountModal({
 
                     {/* Referral Card */}
                     {project.referralCode && (
-                      <div className="bg-gradient-to-br from-primary-500/5 to-blue-500/5 rounded-2xl border border-primary-500/20 overflow-hidden">
+                      <div className={`rounded-2xl border overflow-hidden ${
+                        darkMode
+                          ? 'bg-gradient-to-br from-primary-500/5 to-blue-500/5 border-primary-500/20'
+                          : 'bg-gradient-to-br from-primary-50 to-blue-50 border-primary-200'
+                      }`}>
                         <div className="p-4 sm:p-5">
                           <div className="flex items-start gap-3">
-                            <div className="w-10 h-10 rounded-xl bg-primary-500/20 flex items-center justify-center flex-shrink-0">
-                              <Gift className="w-5 h-5 text-primary-500" />
+                            <div className={`w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0 ${
+                              darkMode ? 'bg-primary-500/20' : 'bg-primary-100'
+                            }`}>
+                              <Gift className={`w-5 h-5 ${darkMode ? 'text-primary-400' : 'text-primary-600'}`} />
                             </div>
                             <div className="flex-1 min-w-0">
-                              <h4 className="font-semibold text-white mb-1">Referral Programma</h4>
-                              <p className="text-sm text-gray-400 mb-3">
+                              <h4 className={`font-semibold mb-1 ${darkMode ? 'text-white' : 'text-gray-900'}`}>
+                                🎁 Referral Programma
+                              </h4>
+                              <p className={`text-sm mb-3 ${darkMode ? 'text-gray-400' : 'text-gray-600'}`}>
                                 Deel je code en verdien €50 korting per doorverwijzing!
                               </p>
-                              <div className="flex items-center gap-2 p-3 rounded-xl bg-gray-800 border border-gray-200 dark:border-gray-700">
-                                <span className="font-mono font-bold text-primary-400 flex-1">
+                              <div className={`flex items-center gap-2 p-3 rounded-xl border ${
+                                darkMode
+                                  ? 'bg-gray-800 border-gray-700'
+                                  : 'bg-white border-gray-200'
+                              }`}>
+                                <span className={`font-mono font-bold flex-1 ${
+                                  darkMode ? 'text-primary-400' : 'text-primary-600'
+                                }`}>
                                   {project.referralCode}
                                 </span>
                                 <button
                                   onClick={() => navigator.clipboard.writeText(project.referralCode || '')}
-                                  className="p-2 rounded-lg bg-gray-700 hover:bg-gray-600 transition-colors"
+                                  className={`p-2 rounded-lg transition-colors ${
+                                    darkMode
+                                      ? 'bg-gray-700 hover:bg-gray-600 text-gray-400'
+                                      : 'bg-gray-100 hover:bg-gray-200 text-gray-500'
+                                  }`}
                                 >
-                                  <Copy className="w-4 h-4 text-gray-400" />
+                                  <Copy className="w-4 h-4" />
                                 </button>
                               </div>
                               {(project.referralsCount || 0) > 0 && (
-                                <p className="mt-2 text-sm text-primary-400">
+                                <p className={`mt-2 text-sm ${darkMode ? 'text-primary-400' : 'text-primary-600'}`}>
                                   ✨ {project.referralsCount} doorverwijzing(en) • €{project.referralRewards || 0} verdiend
                                 </p>
                               )}
@@ -667,23 +715,25 @@ export default function ClientAccountModal({
                         ? 'bg-gradient-to-br from-green-500/10 to-emerald-500/5 border border-green-500/20'
                         : project.paymentStatus === 'awaiting_payment'
                         ? 'bg-gradient-to-br from-amber-500/10 to-orange-500/5 border border-amber-500/20'
-                        : 'bg-gray-800 border border-gray-700'
+                        : darkMode
+                        ? 'bg-gradient-to-br from-primary-500/5 to-purple-500/5 border border-primary-500/20'
+                        : 'bg-gradient-to-br from-primary-50 to-purple-50 border border-primary-200'
                     }`}>
                       <div className="p-5 sm:p-6">
                         <div className="flex flex-col sm:flex-row sm:items-center gap-4">
-                          <div className={`w-14 h-14 rounded-2xl flex items-center justify-center flex-shrink-0 ${
+                          <div className={`w-16 h-16 rounded-2xl flex items-center justify-center flex-shrink-0 ${
                             project.paymentStatus === 'paid'
                               ? 'bg-green-500/20'
                               : project.paymentStatus === 'awaiting_payment'
                               ? 'bg-amber-500/20'
-                              : 'bg-gray-700'
+                              : 'bg-gradient-to-br from-primary-500/20 to-purple-500/20'
                           }`}>
                             {project.paymentStatus === 'paid' ? (
-                              <CheckCircle2 className="w-7 h-7 text-green-500" />
+                              <CheckCircle2 className="w-8 h-8 text-green-500" />
                             ) : project.paymentStatus === 'awaiting_payment' ? (
-                              <AlertCircle className="w-7 h-7 text-amber-500" />
+                              <AlertCircle className="w-8 h-8 text-amber-500" />
                             ) : (
-                              <Clock className="w-7 h-7 text-gray-400" />
+                              <span className="text-3xl">🎨</span>
                             )}
                           </div>
                           <div className="flex-1">
@@ -692,23 +742,29 @@ export default function ClientAccountModal({
                                 ? 'text-green-400'
                                 : project.paymentStatus === 'awaiting_payment'
                                 ? 'text-amber-400'
-                                : 'text-gray-400'
+                                : darkMode ? 'text-primary-400' : 'text-primary-600'
                             }`}>
                               {project.paymentStatus === 'paid'
-                                ? 'Betaling ontvangen ✓'
+                                ? '✓ Betaling ontvangen'
                                 : project.paymentStatus === 'awaiting_payment'
                                 ? 'Wacht op betaling'
                                 : project.paymentStatus === 'not_required'
-                                ? 'Nog geen betaling nodig'
+                                ? 'Wij leveren eerst!'
                                 : 'Betaalstatus onbekend'}
                             </h3>
-                            <p className="text-sm text-gray-400">
+                            <p className={`text-sm ${darkMode ? 'text-gray-400' : 'text-gray-600'}`}>
                               {project.paymentStatus === 'paid' && project.paymentCompletedAt
                                 ? `Betaald op ${new Date(project.paymentCompletedAt).toLocaleDateString('nl-NL', { day: 'numeric', month: 'long', year: 'numeric' })}`
                                 : project.paymentStatus === 'awaiting_payment'
                                 ? 'Rond de betaling af om door te gaan met je project'
-                                : 'We informeren je wanneer er een betaling nodig is'}
+                                : 'Je krijgt eerst je design te zien. Pas als je tevreden bent, sturen we de betaallink. Geen risico!'}
                             </p>
+                            {project.paymentStatus === 'not_required' && (
+                              <div className={`mt-3 flex items-center gap-2 text-xs font-medium ${darkMode ? 'text-primary-400' : 'text-primary-600'}`}>
+                                <Shield className="w-3.5 h-3.5" />
+                                <span>100% tevreden garantie</span>
+                              </div>
+                            )}
                           </div>
                           {project.paymentStatus === 'awaiting_payment' && project.paymentUrl && (
                             <a
@@ -726,36 +782,60 @@ export default function ClientAccountModal({
                     </div>
 
                     {/* Current Subscription */}
-                    <div className="bg-gray-800 rounded-2xl shadow-sm border border-gray-700 overflow-hidden">
-                      <div className="flex items-center gap-3 px-4 sm:px-5 py-4 border-b border-gray-700">
+                    <div className={`rounded-2xl shadow-sm border overflow-hidden ${
+                      darkMode ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-200'
+                    }`}>
+                      <div className={`flex items-center gap-3 px-4 sm:px-5 py-4 border-b ${
+                        darkMode ? 'border-gray-700' : 'border-gray-100'
+                      }`}>
                         <div className={`w-10 h-10 rounded-xl ${currentPackage.iconBg} flex items-center justify-center`}>
                           <Package className={`w-5 h-5 ${currentPackage.iconColor}`} />
                         </div>
-                        <h3 className="text-base sm:text-lg font-semibold text-white">
+                        <h3 className={`text-base sm:text-lg font-semibold ${
+                          darkMode ? 'text-white' : 'text-gray-900'
+                        }`}>
                           Huidige abonnement
                         </h3>
                       </div>
                       <div className="p-4 sm:p-5">
-                        <div className="flex items-center justify-between p-4 rounded-xl bg-gray-900/50">
+                        <div className={`flex items-center justify-between p-4 rounded-xl ${
+                          darkMode ? 'bg-gray-900/50' : 'bg-gray-50'
+                        }`}>
                           <div>
-                            <p className="font-semibold text-white">{currentPackage.name}</p>
-                            <p className="text-sm text-gray-400">Maandelijks abonnement</p>
+                            <p className={`font-semibold ${darkMode ? 'text-white' : 'text-gray-900'}`}>
+                              {currentPackage.name}
+                            </p>
+                            <p className={`text-sm ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>
+                              Maandelijks abonnement
+                            </p>
                           </div>
                           <div className="text-right">
-                            <p className="text-2xl font-bold text-white">€{currentPackage.price}</p>
-                            <p className="text-sm text-gray-400">per maand</p>
+                            <p className={`text-2xl font-bold ${darkMode ? 'text-white' : 'text-gray-900'}`}>
+                              €{currentPackage.price}
+                            </p>
+                            <p className={`text-sm ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>
+                              per maand
+                            </p>
                           </div>
                         </div>
                       </div>
                     </div>
 
                     {/* Invoices */}
-                    <div className="bg-gray-800 rounded-2xl shadow-sm border border-gray-700 overflow-hidden">
-                      <div className="flex items-center gap-3 px-4 sm:px-5 py-4 border-b border-gray-700">
-                        <div className="w-10 h-10 rounded-xl bg-gray-700 flex items-center justify-center">
-                          <Receipt className="w-5 h-5 text-gray-400" />
+                    <div className={`rounded-2xl shadow-sm border overflow-hidden ${
+                      darkMode ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-200'
+                    }`}>
+                      <div className={`flex items-center gap-3 px-4 sm:px-5 py-4 border-b ${
+                        darkMode ? 'border-gray-700' : 'border-gray-100'
+                      }`}>
+                        <div className={`w-10 h-10 rounded-xl flex items-center justify-center ${
+                          darkMode ? 'bg-gray-700' : 'bg-gray-100'
+                        }`}>
+                          <Receipt className={`w-5 h-5 ${darkMode ? 'text-gray-400' : 'text-gray-500'}`} />
                         </div>
-                        <h3 className="text-base sm:text-lg font-semibold text-white">
+                        <h3 className={`text-base sm:text-lg font-semibold ${
+                          darkMode ? 'text-white' : 'text-gray-900'
+                        }`}>
                           Factuurgeschiedenis
                         </h3>
                       </div>
@@ -765,7 +845,9 @@ export default function ClientAccountModal({
                             {project.invoices.map((invoice) => (
                               <div
                                 key={invoice.id}
-                                className="flex items-center justify-between p-4 rounded-xl bg-gray-900/50"
+                                className={`flex items-center justify-between p-4 rounded-xl ${
+                                  darkMode ? 'bg-gray-900/50' : 'bg-gray-50'
+                                }`}
                               >
                                 <div className="flex items-center gap-3">
                                   <div className={`w-10 h-10 rounded-xl flex items-center justify-center ${
@@ -773,31 +855,37 @@ export default function ClientAccountModal({
                                       ? 'bg-green-500/20'
                                       : invoice.status === 'overdue'
                                       ? 'bg-red-500/20'
-                                      : 'bg-gray-700'
+                                      : darkMode ? 'bg-gray-700' : 'bg-gray-200'
                                   }`}>
                                     <Receipt className={`w-5 h-5 ${
                                       invoice.status === 'paid'
                                         ? 'text-green-500'
                                         : invoice.status === 'overdue'
                                         ? 'text-red-500'
-                                        : 'text-gray-400'
+                                        : darkMode ? 'text-gray-400' : 'text-gray-500'
                                     }`} />
                                   </div>
                                   <div>
-                                    <p className="font-medium text-white">{invoice.description}</p>
-                                    <p className="text-sm text-gray-400">
+                                    <p className={`font-medium ${darkMode ? 'text-white' : 'text-gray-900'}`}>
+                                      {invoice.description}
+                                    </p>
+                                    <p className={`text-sm ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>
                                       {new Date(invoice.date).toLocaleDateString('nl-NL')}
                                     </p>
                                   </div>
                                 </div>
                                 <div className="text-right">
-                                  <p className="font-semibold text-white">€{invoice.amount.toFixed(2)}</p>
+                                  <p className={`font-semibold ${darkMode ? 'text-white' : 'text-gray-900'}`}>
+                                    €{invoice.amount.toFixed(2)}
+                                  </p>
                                   <span className={`text-xs px-2 py-0.5 rounded-full ${
                                     invoice.status === 'paid'
-                                      ? 'bg-green-500/20 text-green-400'
+                                      ? 'bg-green-500/20 text-green-500'
                                       : invoice.status === 'overdue'
-                                      ? 'bg-red-500/20 text-red-600 dark:text-red-400'
-                                      : 'bg-gray-700 text-gray-400'
+                                      ? 'bg-red-500/20 text-red-500'
+                                      : darkMode
+                                      ? 'bg-gray-700 text-gray-400'
+                                      : 'bg-gray-200 text-gray-600'
                                   }`}>
                                     {invoice.status === 'paid' ? 'Betaald' :
                                      invoice.status === 'overdue' ? 'Achterstallig' :
@@ -809,9 +897,15 @@ export default function ClientAccountModal({
                           </div>
                         ) : (
                           <div className="py-10 text-center">
-                            <Receipt className="w-12 h-12 text-gray-300 dark:text-gray-600 mx-auto mb-3" />
-                            <p className="text-gray-400 font-medium">Nog geen facturen</p>
-                            <p className="text-sm text-gray-400 dark:text-gray-500 mt-1">
+                            <div className={`w-16 h-16 rounded-2xl flex items-center justify-center mx-auto mb-4 ${
+                              darkMode ? 'bg-gray-700' : 'bg-gray-100'
+                            }`}>
+                              <span className="text-3xl">📄</span>
+                            </div>
+                            <p className={`font-medium ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>
+                              Nog geen facturen
+                            </p>
+                            <p className={`text-sm mt-1 ${darkMode ? 'text-gray-500' : 'text-gray-500'}`}>
                               Facturen verschijnen hier zodra ze beschikbaar zijn
                             </p>
                           </div>
@@ -870,28 +964,36 @@ export default function ClientAccountModal({
 
                     {/* Service Details */}
                     <div className="grid sm:grid-cols-2 gap-4">
-                      <div className="bg-gray-800 rounded-2xl p-5 border border-gray-700">
+                      <div className={`rounded-2xl p-5 border ${
+                        darkMode ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-200 shadow-sm'
+                      }`}>
                         <div className="flex items-center gap-3 mb-3">
-                          <div className="w-10 h-10 rounded-xl bg-primary-500/10 flex items-center justify-center">
-                            <Globe className="w-5 h-5 text-primary-500" />
+                          <div className={`w-10 h-10 rounded-xl flex items-center justify-center ${
+                            darkMode ? 'bg-primary-500/10' : 'bg-primary-50'
+                          }`}>
+                            <Globe className={`w-5 h-5 ${darkMode ? 'text-primary-400' : 'text-primary-600'}`} />
                           </div>
                           <div>
-                            <p className="text-sm text-gray-400">Type dienst</p>
-                            <p className="font-semibold text-white">
+                            <p className={`text-sm ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>Type dienst</p>
+                            <p className={`font-semibold ${darkMode ? 'text-white' : 'text-gray-900'}`}>
                               {serviceTypeLabels[project.serviceType || 'website'] || 'Website'}
                             </p>
                           </div>
                         </div>
                       </div>
 
-                      <div className="bg-gray-800 rounded-2xl p-5 border border-gray-700">
+                      <div className={`rounded-2xl p-5 border ${
+                        darkMode ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-200 shadow-sm'
+                      }`}>
                         <div className="flex items-center gap-3 mb-3">
-                          <div className="w-10 h-10 rounded-xl bg-green-500/10 flex items-center justify-center">
-                            <Shield className="w-5 h-5 text-green-500" />
+                          <div className={`w-10 h-10 rounded-xl flex items-center justify-center ${
+                            darkMode ? 'bg-green-500/10' : 'bg-green-50'
+                          }`}>
+                            <Shield className={`w-5 h-5 ${darkMode ? 'text-green-400' : 'text-green-600'}`} />
                           </div>
                           <div>
-                            <p className="text-sm text-gray-400">Support reactietijd</p>
-                            <p className="font-semibold text-white">
+                            <p className={`text-sm ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>Support reactietijd</p>
+                            <p className={`font-semibold ${darkMode ? 'text-white' : 'text-gray-900'}`}>
                               {project.package === 'business' || project.package === 'premium'
                                 ? 'Binnen 4 uur'
                                 : project.package === 'professional'
@@ -905,24 +1007,32 @@ export default function ClientAccountModal({
 
                     {/* Revisions Progress */}
                     {project.revisionsTotal !== undefined && (
-                      <div className="bg-gray-800 rounded-2xl p-5 border border-gray-700">
+                      <div className={`rounded-2xl p-5 border ${
+                        darkMode ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-200 shadow-sm'
+                      }`}>
                         <div className="flex items-center justify-between mb-3">
                           <div className="flex items-center gap-3">
-                            <div className="w-10 h-10 rounded-xl bg-purple-500/10 flex items-center justify-center">
-                              <Edit3 className="w-5 h-5 text-purple-500" />
+                            <div className={`w-10 h-10 rounded-xl flex items-center justify-center ${
+                              darkMode ? 'bg-purple-500/10' : 'bg-purple-50'
+                            }`}>
+                              <Edit3 className={`w-5 h-5 ${darkMode ? 'text-purple-400' : 'text-purple-600'}`} />
                             </div>
                             <div>
-                              <p className="font-semibold text-white">Revisies deze maand</p>
-                              <p className="text-sm text-gray-400">
+                              <p className={`font-semibold ${darkMode ? 'text-white' : 'text-gray-900'}`}>
+                                Revisies deze maand
+                              </p>
+                              <p className={`text-sm ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>
                                 {project.revisionsUsed || 0} van {project.revisionsTotal} gebruikt
                               </p>
                             </div>
                           </div>
-                          <span className="text-2xl font-bold text-white">
+                          <span className={`text-2xl font-bold ${darkMode ? 'text-white' : 'text-gray-900'}`}>
                             {project.revisionsTotal - (project.revisionsUsed || 0)}
                           </span>
                         </div>
-                        <div className="h-3 rounded-full bg-gray-700 overflow-hidden">
+                        <div className={`h-3 rounded-full overflow-hidden ${
+                          darkMode ? 'bg-gray-700' : 'bg-gray-200'
+                        }`}>
                           <div
                             className="h-full bg-gradient-to-r from-purple-500 to-pink-500 rounded-full transition-all"
                             style={{
@@ -968,17 +1078,25 @@ export default function ClientAccountModal({
                     transition={{ duration: 0.2 }}
                     className="p-4 sm:p-6"
                   >
-                    <div className="bg-gray-800 rounded-2xl shadow-sm border border-gray-700 overflow-hidden">
-                      <div className="flex items-center gap-3 px-4 sm:px-5 py-4 border-b border-gray-700">
-                        <div className="w-10 h-10 rounded-xl bg-primary-500/10 flex items-center justify-center">
-                          <MessageSquare className="w-5 h-5 text-primary-500" />
+                    <div className={`rounded-2xl shadow-sm border overflow-hidden ${
+                      darkMode ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-200'
+                    }`}>
+                      <div className={`flex items-center gap-3 px-4 sm:px-5 py-4 border-b ${
+                        darkMode ? 'border-gray-700' : 'border-gray-100'
+                      }`}>
+                        <div className={`w-10 h-10 rounded-xl flex items-center justify-center ${
+                          darkMode ? 'bg-primary-500/10' : 'bg-primary-50'
+                        }`}>
+                          <MessageSquare className={`w-5 h-5 ${darkMode ? 'text-primary-400' : 'text-primary-600'}`} />
                         </div>
                         <div>
-                          <h3 className="text-base sm:text-lg font-semibold text-white">
+                          <h3 className={`text-base sm:text-lg font-semibold ${
+                            darkMode ? 'text-white' : 'text-gray-900'
+                          }`}>
                             Berichtengeschiedenis
                           </h3>
                           {project.messages && project.messages.length > 0 && (
-                            <p className="text-sm text-gray-400">
+                            <p className={`text-sm ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>
                               {project.messages.length} bericht{project.messages.length !== 1 ? 'en' : ''}
                             </p>
                           )}
@@ -999,21 +1117,23 @@ export default function ClientAccountModal({
                                     className={`max-w-[85%] sm:max-w-[75%] p-4 rounded-2xl ${
                                       message.from === 'client'
                                         ? 'bg-primary-500 text-white rounded-br-sm'
-                                        : 'bg-gray-700 text-white rounded-bl-sm'
+                                        : darkMode
+                                        ? 'bg-gray-700 text-white rounded-bl-sm'
+                                        : 'bg-gray-100 text-gray-900 rounded-bl-sm'
                                     }`}
                                   >
                                     <div className="flex items-center gap-2 mb-1">
                                       <span className={`text-xs font-medium ${
                                         message.from === 'client'
                                           ? 'text-white/80'
-                                          : 'text-gray-400'
+                                          : darkMode ? 'text-gray-400' : 'text-gray-500'
                                       }`}>
                                         {message.from === 'client' ? 'Jij' : message.senderName || 'Webstability'}
                                       </span>
                                       <span className={`text-xs ${
                                         message.from === 'client'
                                           ? 'text-white/60'
-                                          : 'text-gray-400 dark:text-gray-500'
+                                          : darkMode ? 'text-gray-500' : 'text-gray-400'
                                       }`}>
                                         {new Date(message.date).toLocaleDateString('nl-NL', {
                                           day: 'numeric',
@@ -1037,11 +1157,15 @@ export default function ClientAccountModal({
                           </div>
                         ) : (
                           <div className="py-12 text-center">
-                            <div className="w-16 h-16 rounded-2xl bg-gray-700 flex items-center justify-center mx-auto mb-4">
-                              <MessageSquare className="w-8 h-8 text-gray-400" />
+                            <div className={`w-16 h-16 rounded-2xl flex items-center justify-center mx-auto mb-4 ${
+                              darkMode ? 'bg-gray-700' : 'bg-gray-100'
+                            }`}>
+                              <span className="text-3xl">💬</span>
                             </div>
-                            <p className="text-gray-400 font-medium">Nog geen berichten</p>
-                            <p className="text-sm text-gray-500 mt-1">
+                            <p className={`font-medium ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>
+                              Nog geen berichten
+                            </p>
+                            <p className={`text-sm mt-1 ${darkMode ? 'text-gray-500' : 'text-gray-500'}`}>
                               Berichten met ons team verschijnen hier
                             </p>
                           </div>

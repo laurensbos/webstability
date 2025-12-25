@@ -2,7 +2,7 @@
  * Project status types voor het klantportaal
  */
 
-export type ProjectPhase = 'onboarding' | 'design' | 'feedback' | 'revisie' | 'payment' | 'approval' | 'live'
+export type ProjectPhase = 'onboarding' | 'design' | 'feedback' | 'revisie' | 'payment' | 'domain' | 'live'
 
 export type PackageType = 'starter' | 'professional' | 'premium' | 'webshop'
 
@@ -591,7 +591,7 @@ export const getProgressPercentage = (status: ProjectPhase): number => {
     feedback: 50,
     revisie: 60,
     payment: 75,
-    approval: 90,
+    domain: 90,
     live: 100
   }
   return percentages[status] ?? 0
@@ -671,11 +671,12 @@ export const PHASE_FAQS: Record<ProjectPhase, PhaseFAQ[]> = {
     { question: 'Hoe lang duurt het tot mijn site live is?', answer: 'Na betaling duurt het meestal 1-2 werkdagen voordat je website volledig live is.' },
     { question: 'Wat als ik nog iets wil aanpassen?', answer: 'Kleine wijzigingen zijn altijd mogelijk. Neem contact met ons op via de chat.' }
   ],
-  approval: [
-    { question: 'Wat moet ik controleren?', answer: 'Controleer of alle teksten kloppen, contactgegevens correct zijn, en je akkoord gaat met de voorwaarden.' },
-    { question: 'Wat zijn de algemene voorwaarden?', answer: 'Dit betreft het abonnement, betalingsvoorwaarden, en afspraken over wijzigingen en hosting.' },
-    { question: 'Kan ik nog iets aanpassen?', answer: 'Ja! Voordat je goedkeurt kun je kleine aanpassingen doorgeven. Na goedkeuring gaat je site live.' },
-    { question: 'Hoe lang duurt het tot mijn site live is?', answer: 'Na je goedkeuring zetten we je website binnen 24 uur live!' }
+  domain: [
+    { question: 'Wat is een domein?', answer: 'Een domein is het webadres van je website, bijvoorbeeld jouwbedrijf.nl.' },
+    { question: 'Ik heb al een domein, wat nu?', answer: 'Geen probleem! We hebben je autorisatiecode nodig om het domein te verhuizen. Deze kun je opvragen bij je huidige provider.' },
+    { question: 'Wat is een autorisatiecode?', answer: 'Dit is een unieke code die nodig is om je domein te verhuizen naar een andere provider. Vraag deze op bij je huidige domeinprovider.' },
+    { question: 'Hoe lang duurt het verhuizen?', answer: 'Een domeinverhuizing duurt gemiddeld 1-5 werkdagen, afhankelijk van je huidige provider.' },
+    { question: 'Moet ik zelf iets doen?', answer: 'Je hoeft alleen de autorisatiecode te delen en de verhuizing goed te keuren. Wij regelen de rest!' }
   ],
   live: [
     { question: 'Mijn website is live! Wat nu?', answer: 'Gefeliciteerd! Je kunt nu je website delen. Wij zorgen voor hosting, SSL en technisch onderhoud.' },

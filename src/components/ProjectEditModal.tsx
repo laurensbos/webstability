@@ -39,7 +39,7 @@ const PHASE_ICONS: Record<ProjectPhase, typeof FileText> = {
   feedback: MessageSquare,
   revisie: RefreshCw,
   payment: CreditCard,
-  approval: CheckCircle,
+  domain: CheckCircle,
   live: Rocket
 }
 

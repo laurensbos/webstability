@@ -14,10 +14,11 @@ import {
   CheckCircle2,
   ExternalLink,
   FolderOpen,
-  Sparkles,
+  Globe,
   Star,
   RefreshCw,
   ArrowRight,
+  Sparkles,
   type LucideIcon
 } from 'lucide-react'
 
@@ -33,7 +34,7 @@ interface QuickAction {
 }
 
 interface QuickActionsProps {
-  phase: 'onboarding' | 'design' | 'feedback' | 'revisie' | 'payment' | 'approval' | 'live'
+  phase: 'onboarding' | 'design' | 'feedback' | 'revisie' | 'payment' | 'domain' | 'live'
   onUploadFiles?: () => void
   onViewDesign?: () => void
   onSendMessage?: () => void
@@ -181,14 +182,14 @@ export default function QuickActions({
         })
         break
 
-      case 'approval':
+      case 'domain':
         baseActions.push({
-          id: 'approve',
-          label: 'Ga akkoord & live',
-          description: 'Final check',
-          icon: Sparkles,
-          onClick: onApprove || (() => {}),
-          variant: 'success'
+          id: 'domain-info',
+          label: 'Domein informatie',
+          description: 'Voeg je domeingegevens toe',
+          icon: Globe,
+          onClick: () => {},
+          variant: 'primary'
         })
         if (hasDesignPreview) {
           baseActions.push({

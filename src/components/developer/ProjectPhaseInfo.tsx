@@ -41,7 +41,7 @@ export default function ProjectPhaseInfo({
   const estimatedDays = pkg.estimatedDays[project.phase]
 
   // Calculate progress
-  const phases: ProjectPhase[] = ['onboarding', 'design', 'feedback', 'revisie', 'payment', 'approval', 'live']
+  const phases: ProjectPhase[] = ['onboarding', 'design', 'feedback', 'revisie', 'payment', 'domain', 'live']
   const currentPhaseIndex = phases.indexOf(project.phase)
   const progressPercent = Math.round((currentPhaseIndex / (phases.length - 1)) * 100)
 
@@ -52,7 +52,7 @@ export default function ProjectPhaseInfo({
     feedback: 'text-purple-500 bg-purple-500/10 border-purple-500/30',
     revisie: 'text-cyan-500 bg-cyan-500/10 border-cyan-500/30',
     payment: 'text-indigo-500 bg-indigo-500/10 border-indigo-500/30',
-    approval: 'text-pink-500 bg-pink-500/10 border-pink-500/30',
+    domain: 'text-pink-500 bg-pink-500/10 border-pink-500/30',
     live: 'text-green-500 bg-green-500/10 border-green-500/30'
   }
 
@@ -62,7 +62,7 @@ export default function ProjectPhaseInfo({
     feedback: 'Feedback',
     revisie: 'Revisie',
     payment: 'Betaling',
-    approval: 'Goedkeuring',
+    domain: 'Domein',
     live: 'Live'
   }
 

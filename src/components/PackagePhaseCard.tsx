@@ -46,7 +46,7 @@ export default function PackagePhaseCard({
     feedback: { bg: 'bg-purple-500/10', border: 'border-purple-500/30', icon: 'text-purple-400' },
     revisie: { bg: 'bg-cyan-500/10', border: 'border-cyan-500/30', icon: 'text-cyan-400' },
     payment: { bg: 'bg-indigo-500/10', border: 'border-indigo-500/30', icon: 'text-indigo-400' },
-    approval: { bg: 'bg-pink-500/10', border: 'border-pink-500/30', icon: 'text-pink-400' },
+    domain: { bg: 'bg-pink-500/10', border: 'border-pink-500/30', icon: 'text-pink-400' },
     live: { bg: 'bg-green-500/10', border: 'border-green-500/30', icon: 'text-green-400' }
   }
 

@@ -20,7 +20,7 @@ import {
   MessageSquare,
   RefreshCw,
   CreditCard,
-  ThumbsUp,
+  Globe,
   Rocket,
   ChevronDown,
   ChevronUp,
@@ -28,7 +28,7 @@ import {
   Sparkles
 } from 'lucide-react'
 
-type ProjectPhase = 'onboarding' | 'design' | 'feedback' | 'revisie' | 'payment' | 'approval' | 'live'
+type ProjectPhase = 'onboarding' | 'design' | 'feedback' | 'revisie' | 'payment' | 'domain' | 'live'
 
 interface PhaseData {
   key: ProjectPhase
@@ -87,13 +87,13 @@ const PHASES: PhaseData[] = [
     tips: ['Betaal veilig via iDEAL of creditcard', 'Je ontvangt direct een bevestiging']
   },
   {
-    key: 'approval',
-    label: 'Goedkeuring',
-    description: 'Laatste check voor livegang',
-    icon: <ThumbsUp className="w-5 h-5" />,
-    emoji: '✅',
+    key: 'domain',
+    label: 'Domein',
+    description: 'Domein verhuizen & configureren',
+    icon: <Globe className="w-5 h-5" />,
+    emoji: '🌐',
     estimatedDays: 9,
-    tips: ['Controleer alle teksten en afbeeldingen', 'Test alle links en formulieren']
+    tips: ['Vraag je autorisatiecode op bij je provider', 'We regelen de verhuizing voor je']
   },
   {
     key: 'live',

@@ -25,7 +25,7 @@ import {
   Lightbulb
 } from 'lucide-react'
 
-type ProjectPhase = 'onboarding' | 'design' | 'feedback' | 'revisie' | 'payment' | 'approval' | 'live'
+type ProjectPhase = 'onboarding' | 'design' | 'feedback' | 'revisie' | 'payment' | 'domain' | 'live'
 
 interface FAQItem {
   question: string

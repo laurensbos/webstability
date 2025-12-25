@@ -4,7 +4,7 @@ import { motion, AnimatePresence } from 'framer-motion'
 import { ProjectStatusSkeleton } from '../components/LoadingSkeletons'
 import {
   CheckCircle2,
-  CheckCircle,
+  Globe,
   Clock,
   Loader2,
   AlertCircle,
@@ -73,7 +73,7 @@ const PHASES: { key: ProjectPhase; label: string; icon: typeof FileText }[] = [
   { key: 'feedback', label: 'Feedback', icon: MessageSquare },
   { key: 'revisie', label: 'Revisie', icon: RefreshCw },
   { key: 'payment', label: 'Betaling', icon: CreditCard },
-  { key: 'approval', label: 'Goedkeuring', icon: CheckCircle },
+  { key: 'domain', label: 'Domein', icon: Globe },
   { key: 'live', label: 'Live', icon: Rocket }
 ]
 
@@ -99,9 +99,9 @@ const PHASE_INFO: Record<ProjectPhase, { title: string; description: string }> =
     title: 'Wachten op betaling',
     description: 'Je design is goedgekeurd! Na de betaling zetten we je website live.'
   },
-  approval: {
-    title: 'Laatste check voor livegang',
-    description: 'Je betaling is ontvangen! Controleer nog even of alles klopt en geef je goedkeuring. Dan zetten we je site live!'
+  domain: {
+    title: 'Domein configureren',
+    description: 'Je betaling is ontvangen! We gaan nu je domein verhuizen en configureren. Binnenkort is je website live!'
   },
   live: {
     title: 'Gefeliciteerd! 🎉',
@@ -149,7 +149,7 @@ const getPhaseColors = (phase: ProjectPhase) => {
     feedback: { bg: 'bg-indigo-500', gradient: 'from-indigo-500 to-purple-500', text: 'text-indigo-400' },
     revisie: { bg: 'bg-cyan-500', gradient: 'from-cyan-500 to-blue-500', text: 'text-cyan-400' },
     payment: { bg: 'bg-purple-500', gradient: 'from-purple-600 to-indigo-500', text: 'text-purple-400' },
-    approval: { bg: 'bg-pink-500', gradient: 'from-pink-500 to-rose-500', text: 'text-pink-400' },
+    domain: { bg: 'bg-pink-500', gradient: 'from-pink-500 to-rose-500', text: 'text-pink-400' },
     live: { bg: 'bg-green-500', gradient: 'from-green-500 to-emerald-500', text: 'text-green-400' }
   }
   return colors[phase] || colors.onboarding
@@ -988,29 +988,34 @@ export default function ProjectStatusNew() {
               : 'bg-white border-gray-200 shadow-sm'
           }`}
         >
-          <div className="flex items-center justify-between mb-4 overflow-x-auto pb-2 -mx-2 px-2 scrollbar-none gap-2 sm:gap-0 min-w-0" style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
-            {PHASES.map((phase, index) => {
-              const status = getPhaseStatus(phase.key)
-              const Icon = phase.icon
-              const isLast = index === PHASES.length - 1
-              
-              return (
-                <div key={phase.key} className="flex items-center flex-shrink-0 sm:flex-shrink sm:flex-1">
-                  <div className="flex flex-col items-center">
-                    <motion.div 
-                      layout
-                      initial={false}
-                      animate={{
-                        scale: status === 'current' ? 1.05 : 1,
-                        boxShadow: status === 'current' ? '0 0 20px rgba(99, 102, 241, 0.4)' : 'none'
-                      }}
-                      transition={{ type: "spring", stiffness: 300, damping: 25 }}
-                      className={`w-10 h-10 sm:w-12 sm:h-12 rounded-xl flex items-center justify-center transition-colors duration-500 ${
-                        status === 'completed' ? 'bg-green-500/20 border-2 border-green-500/50' :
-                        status === 'current' ? `bg-gradient-to-br ${phaseColors.gradient}` :
-                        darkMode ? 'bg-gray-800 border border-gray-700' : 'bg-gray-100 border border-gray-200'
-                      }`}
-                    >
+          {/* Desktop: full width spread, Mobile: horizontal scroll */}
+          <div className="relative">
+            {/* Mobile scroll indicator */}
+            <div className="sm:hidden absolute right-0 top-0 bottom-0 w-8 bg-gradient-to-l from-gray-900/80 to-transparent pointer-events-none z-10 rounded-r-xl" />
+            
+            <div className="flex items-center justify-between mb-4 overflow-x-auto pb-2 -mx-2 px-2 scrollbar-none gap-1 sm:gap-0 min-w-0" style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
+              {PHASES.map((phase, index) => {
+                const status = getPhaseStatus(phase.key)
+                const Icon = phase.icon
+                const isLast = index === PHASES.length - 1
+                
+                return (
+                  <div key={phase.key} className="flex items-center flex-shrink-0 sm:flex-shrink sm:flex-1">
+                    <div className="flex flex-col items-center min-w-[48px] sm:min-w-0">
+                      <motion.div 
+                        layout
+                        initial={false}
+                        animate={{
+                          scale: status === 'current' ? 1.1 : 1,
+                          boxShadow: status === 'current' ? '0 0 20px rgba(99, 102, 241, 0.5)' : 'none'
+                        }}
+                        transition={{ type: "spring", stiffness: 300, damping: 25 }}
+                        className={`w-10 h-10 sm:w-12 sm:h-12 rounded-xl flex items-center justify-center transition-colors duration-500 ${
+                          status === 'completed' ? 'bg-green-500/20 border-2 border-green-500/50' :
+                          status === 'current' ? `bg-gradient-to-br ${phaseColors.gradient} ring-2 ring-white/30` :
+                          darkMode ? 'bg-gray-800 border border-gray-700' : 'bg-gray-100 border border-gray-200'
+                        }`}
+                      >
                       <AnimatePresence mode="wait">
                         {status === 'completed' ? (
                           <motion.div
@@ -1063,6 +1068,7 @@ export default function ProjectStatusNew() {
                 </div>
               )
             })}
+            </div>
           </div>
           
           {/* Progress percentage */}
@@ -1207,7 +1213,7 @@ export default function ProjectStatusNew() {
             ) : (
               <PackagePhaseCard
                 packageType={project.package as 'starter' | 'professional' | 'business' | 'webshop'}
-                currentPhase={project.status as 'onboarding' | 'design' | 'feedback' | 'revisie' | 'payment' | 'approval' | 'live'}
+                currentPhase={project.status as 'onboarding' | 'design' | 'feedback' | 'revisie' | 'payment' | 'domain' | 'live'}
                 usedRevisions={project.revisionsUsed || 0}
                 darkMode={darkMode}
                 projectId={project.projectId}
@@ -1219,7 +1225,7 @@ export default function ProjectStatusNew() {
 
         {/* Quick Actions - Context-aware shortcuts */}
         <QuickActions
-          phase={project.status as 'onboarding' | 'design' | 'feedback' | 'revisie' | 'payment' | 'approval' | 'live'}
+          phase={project.status as 'onboarding' | 'design' | 'feedback' | 'revisie' | 'payment' | 'domain' | 'live'}
           onViewDesign={() => setShowDesignPreview(true)}
           onSendMessage={() => setShowChat(true)}
           onApprove={() => setShowDesignPreview(true)}
@@ -1515,7 +1521,7 @@ export default function ProjectStatusNew() {
         )}
 
         {/* Pre-Live Checklist - Show after payment is received */}
-        {project.paymentStatus === 'paid' && project.status !== 'live' && project.status !== 'approval' && (
+        {project.paymentStatus === 'paid' && project.status !== 'live' && project.status !== 'domain' && (
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -1558,8 +1564,8 @@ export default function ProjectStatusNew() {
           </motion.div>
         )}
 
-        {/* Pre-Live Approval - Final approval before going live */}
-        {project.status === 'approval' && (
+        {/* Domain Configuration - Domain transfer and setup before going live */}
+        {project.status === 'domain' && (
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -2006,7 +2012,7 @@ export default function ProjectStatusNew() {
       <HelpCenter
         isOpen={showHelpCenter}
         onClose={() => setShowHelpCenter(false)}
-        currentPhase={project?.status as 'onboarding' | 'design' | 'feedback' | 'revisie' | 'payment' | 'approval' | 'live' || 'onboarding'}
+        currentPhase={project?.status as 'onboarding' | 'design' | 'feedback' | 'revisie' | 'payment' | 'domain' | 'live' || 'onboarding'}
         darkMode={darkMode}
         onRestartTour={resetTour}
       />

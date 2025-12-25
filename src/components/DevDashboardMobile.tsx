@@ -303,7 +303,7 @@ export function MobileProjectCard({
     feedback: 'bg-purple-500',
     revisie: 'bg-cyan-500',
     payment: 'bg-indigo-500',
-    approval: 'bg-pink-500',
+    domain: 'bg-pink-500',
     live: 'bg-green-500'
   }
 
@@ -313,7 +313,7 @@ export function MobileProjectCard({
     feedback: 'Feedback',
     revisie: 'Revisie',
     payment: 'Betaling',
-    approval: 'Goedkeuring',
+    domain: 'Domein',
     live: 'Live'
   }
 

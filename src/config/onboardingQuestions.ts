@@ -400,7 +400,139 @@ export const ONBOARDING_SECTIONS: OnboardingSection[] = [
   },
 
   // =========================================
-  // 6. EXTRA WENSEN
+  // 6. CONTACT & BEREIKBAARHEID
+  // =========================================
+  {
+    id: 'contact',
+    title: 'Contact & Bereikbaarheid',
+    description: 'Je contactgegevens voor de website',
+    icon: '📞',
+    color: 'cyan',
+    questions: [
+      {
+        id: 'contactEmail',
+        type: 'text',
+        label: 'E-mailadres voor de website',
+        description: 'Dit e-mailadres komt op je contactpagina',
+        placeholder: 'info@jouwbedrijf.nl',
+        required: true,
+        packages: ['starter', 'professional', 'business', 'webshop']
+      },
+      {
+        id: 'contactPhone',
+        type: 'text',
+        label: 'Telefoonnummer',
+        description: 'Optioneel - voor de contactpagina',
+        placeholder: '06 12345678',
+        required: false,
+        packages: ['starter', 'professional', 'business', 'webshop']
+      },
+      {
+        id: 'businessAddress',
+        type: 'textarea',
+        label: 'Vestigingsadres',
+        description: 'Je adres voor de contactpagina en Google Maps',
+        placeholder: 'Straatnaam 123\n1234 AB Plaatsnaam',
+        required: false,
+        packages: ['starter', 'professional', 'business', 'webshop']
+      },
+      {
+        id: 'openingHours',
+        type: 'textarea',
+        label: 'Openingstijden',
+        description: 'Wanneer ben je bereikbaar?',
+        placeholder: 'Ma-Vr: 9:00 - 17:00\nZa-Zo: Gesloten',
+        required: false,
+        packages: ['professional', 'business', 'webshop']
+      },
+      {
+        id: 'socialMedia',
+        type: 'checkbox',
+        label: 'Welke social media kanalen heb je?',
+        description: 'We voegen knoppen toe naar je actieve kanalen',
+        required: false,
+        options: [
+          { value: 'instagram', label: 'Instagram' },
+          { value: 'facebook', label: 'Facebook' },
+          { value: 'linkedin', label: 'LinkedIn' },
+          { value: 'twitter', label: 'X (Twitter)' },
+          { value: 'tiktok', label: 'TikTok' },
+          { value: 'youtube', label: 'YouTube' },
+          { value: 'pinterest', label: 'Pinterest' }
+        ],
+        packages: ['starter', 'professional', 'business', 'webshop']
+      },
+      {
+        id: 'socialMediaUrls',
+        type: 'textarea',
+        label: 'Social media links',
+        description: 'Plak hier de links naar je profielen',
+        placeholder: 'Instagram: https://instagram.com/jouwbedrijf\nLinkedIn: https://linkedin.com/company/...',
+        required: false,
+        packages: ['starter', 'professional', 'business', 'webshop']
+      }
+    ]
+  },
+
+  // =========================================
+  // 7. STRATEGIE & CONCURRENTIE
+  // =========================================
+  {
+    id: 'strategie',
+    title: 'Strategie & Doelen',
+    description: 'Help ons je bedrijf beter begrijpen',
+    icon: '🎯',
+    color: 'orange',
+    questions: [
+      {
+        id: 'competitors',
+        type: 'tags',
+        label: 'Wie zijn je concurrenten?',
+        description: 'Noem bedrijfsnamen of websites van concurrenten',
+        placeholder: 'bijv. "Concurrent B.V." of "www.concurrent.nl"',
+        required: false,
+        helpText: 'We gebruiken dit om te zien wat goed werkt in jouw branche',
+        packages: ['professional', 'business', 'webshop']
+      },
+      {
+        id: 'differentiation',
+        type: 'textarea',
+        label: 'Waarin onderscheid je je van concurrenten?',
+        description: 'Wat doe jij beter of anders?',
+        placeholder: 'bijv. "Snellere levering, persoonlijke service, uniek product..."',
+        required: false,
+        packages: ['professional', 'business', 'webshop']
+      },
+      {
+        id: 'mainCTA',
+        type: 'radio',
+        label: 'Wat is het belangrijkste doel van je website?',
+        description: 'Wat wil je dat bezoekers doen?',
+        required: true,
+        options: [
+          { value: 'contact', label: 'Contact opnemen', description: 'Bellen, mailen of formulier invullen' },
+          { value: 'quote', label: 'Offerte aanvragen', description: 'Lead generatie' },
+          { value: 'booking', label: 'Afspraak maken', description: 'Online reserveren of boeken' },
+          { value: 'buy', label: 'Product kopen', description: 'E-commerce transactie' },
+          { value: 'info', label: 'Informatie vinden', description: 'Brochure website' },
+          { value: 'subscribe', label: 'Nieuwsbrief inschrijven', description: 'E-mail lijst opbouwen' }
+        ],
+        packages: ['starter', 'professional', 'business', 'webshop']
+      },
+      {
+        id: 'conversionGoal',
+        type: 'textarea',
+        label: 'Wat is een succesvolle conversie voor jou?',
+        description: 'Beschrijf het ideale resultaat van een websitebezoek',
+        placeholder: 'bijv. "Een offerte aanvraag voor een verbouwingsproject"',
+        required: false,
+        packages: ['business', 'webshop']
+      }
+    ]
+  },
+
+  // =========================================
+  // 8. EXTRA WENSEN
   // =========================================
   {
     id: 'extra',

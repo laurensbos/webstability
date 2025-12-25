@@ -75,7 +75,7 @@ type DashboardView =
   | 'messages' 
   | 'payments'
 
-type ProjectPhase = 'onboarding' | 'design' | 'feedback' | 'revisie' | 'payment' | 'approval' | 'live'
+type ProjectPhase = 'onboarding' | 'design' | 'feedback' | 'revisie' | 'payment' | 'domain' | 'live'
 type PaymentStatus = 'pending' | 'awaiting_payment' | 'paid' | 'failed' | 'refunded'
 type ServiceType = 'drone' | 'logo' | 'foto' | 'tekst' | 'seo'
 
@@ -206,7 +206,7 @@ const PHASE_CONFIG: Record<ProjectPhase, { label: string; color: string; bg: str
   feedback: { label: 'Feedback', color: 'text-blue-600', bg: 'bg-blue-100', icon: MessageSquare },
   revisie: { label: 'Revisie', color: 'text-cyan-600', bg: 'bg-cyan-100', icon: RefreshCw },
   payment: { label: 'Betaling', color: 'text-purple-600', bg: 'bg-purple-100', icon: CreditCard },
-  approval: { label: 'Goedkeuring', color: 'text-pink-600', bg: 'bg-pink-100', icon: CheckCircle },
+  domain: { label: 'Domein', color: 'text-pink-600', bg: 'bg-pink-100', icon: Globe },
   live: { label: 'Live', color: 'text-green-600', bg: 'bg-green-100', icon: Rocket },
 }
 
@@ -1970,7 +1970,7 @@ function OverviewView({ darkMode, projects, setActiveView, onSelectProject, onUp
           Projecten per fase
         </h3>
         <div className="grid grid-cols-7 gap-2">
-          {(['onboarding', 'design', 'feedback', 'payment', 'approval', 'live'] as ProjectPhase[]).map(phase => {
+          {(['onboarding', 'design', 'feedback', 'payment', 'domain', 'live'] as ProjectPhase[]).map(phase => {
             const count = projects.filter(p => p.phase === phase).length
             const config = PHASE_CONFIG[phase]
             const PhaseIcon = config.icon
@@ -2222,7 +2222,7 @@ function ProjectsView({ darkMode, projects, onUpdateProject, onDeleteProject: _o
     { key: 'feedback', label: 'Feedback', color: 'bg-blue-500', bgColor: darkMode ? 'bg-blue-900/20' : 'bg-blue-50' },
     { key: 'revisie', label: 'Revisie', color: 'bg-cyan-500', bgColor: darkMode ? 'bg-cyan-900/20' : 'bg-cyan-50' },
     { key: 'payment', label: 'Betaling', color: 'bg-purple-500', bgColor: darkMode ? 'bg-purple-900/20' : 'bg-purple-50' },
-    { key: 'approval', label: 'Goedkeuring', color: 'bg-pink-500', bgColor: darkMode ? 'bg-pink-900/20' : 'bg-pink-50' },
+    { key: 'domain', label: 'Domein', color: 'bg-pink-500', bgColor: darkMode ? 'bg-pink-900/20' : 'bg-pink-50' },
     { key: 'live', label: 'Live', color: 'bg-green-500', bgColor: darkMode ? 'bg-green-900/20' : 'bg-green-50' },
   ]
 
@@ -2286,11 +2286,11 @@ function ProjectsView({ darkMode, projects, onUpdateProject, onDeleteProject: _o
           { id: 'pay_payment_provider', label: 'Betaalprovider ingesteld' },
         ] : []),
       ],
-      approval: [
-        { id: 'app_preview_ready', label: 'Finale preview klaar' },
-        { id: 'app_domain_ready', label: 'Domein voorbereid' },
-        { id: 'app_client_notified', label: 'Klant genotificeerd voor goedkeuring' },
-        { id: 'app_approved', label: 'Klant heeft goedgekeurd' },
+      domain: [
+        { id: 'dom_authcode_received', label: 'Autorisatiecode ontvangen' },
+        { id: 'dom_transfer_started', label: 'Verhuizing gestart' },
+        { id: 'dom_dns_configured', label: 'DNS geconfigureerd' },
+        { id: 'dom_ready', label: 'Domein klaar voor livegang' },
       ],
       live: [
         { id: 'live_domain', label: 'Domein gekoppeld' },
@@ -2336,8 +2336,8 @@ function ProjectsView({ darkMode, projects, onUpdateProject, onDeleteProject: _o
       case 'payment':
         return { action: 'Bouw de website en zet staging URL', priority: 'high', icon: '💻' }
       
-      case 'approval':
-        return { action: 'Wacht op finale goedkeuring klant', priority: 'medium', icon: '✅' }
+      case 'domain':
+        return { action: 'Vraag autorisatiecode en configureer domein', priority: 'medium', icon: '🌐' }
       
       case 'live':
         return { action: 'Project afgerond! 🎉', priority: 'low', icon: '🏆' }
@@ -2350,7 +2350,7 @@ function ProjectsView({ darkMode, projects, onUpdateProject, onDeleteProject: _o
   // Handle confirmed phase change
   const handleConfirmedPhaseChange = async (project: Project, direction: 'next' | 'previous') => {
     setPhaseChangeLoading(true)
-    const phaseOrder: ProjectPhase[] = ['onboarding', 'design', 'feedback', 'revisie', 'payment', 'approval', 'live']
+    const phaseOrder: ProjectPhase[] = ['onboarding', 'design', 'feedback', 'revisie', 'payment', 'domain', 'live']
     const currentIndex = phaseOrder.indexOf(project.phase)
     const targetIndex = direction === 'next' ? currentIndex + 1 : currentIndex - 1
     
@@ -2474,8 +2474,8 @@ function ProjectsView({ darkMode, projects, onUpdateProject, onDeleteProject: _o
         design: '→ Feedback',
         feedback: '→ Revisie',
         revisie: '→ Betaling',
-        payment: '→ Goedkeuring',
-        approval: '→ Live',
+        payment: '→ Domein',
+        domain: '→ Live',
         live: ''
       }
       return phaseLabels[project.phase]
@@ -3541,7 +3541,7 @@ function ProjectsView({ darkMode, projects, onUpdateProject, onDeleteProject: _o
               } shadow-2xl`}
             >
               {(() => {
-                const phaseOrder: ProjectPhase[] = ['onboarding', 'design', 'feedback', 'revisie', 'payment', 'approval', 'live']
+                const phaseOrder: ProjectPhase[] = ['onboarding', 'design', 'feedback', 'revisie', 'payment', 'domain', 'live']
                 const currentIndex = phaseOrder.indexOf(phaseChangeProject.phase)
                 const targetIndex = phaseChangeDirection === 'next' ? currentIndex + 1 : currentIndex - 1
                 const targetPhase = phaseOrder[targetIndex]
@@ -3759,11 +3759,11 @@ function ProjectDetailModal({ project, darkMode, onClose, onUpdate, phases }: Om
       { id: 'pay_build', label: 'Website gebouwd' },
       { id: 'pay_domain', label: 'Domein geconfigureerd' },
     ],
-    approval: [
-      { id: 'app_preview_ready', label: 'Finale preview klaar' },
-      { id: 'app_domain_ready', label: 'Domein voorbereid' },
-      { id: 'app_client_notified', label: 'Klant genotificeerd' },
-      { id: 'app_approved', label: 'Klant heeft goedgekeurd' },
+    domain: [
+      { id: 'dom_authcode_received', label: 'Autorisatiecode ontvangen' },
+      { id: 'dom_transfer_started', label: 'Verhuizing gestart' },
+      { id: 'dom_dns_configured', label: 'DNS geconfigureerd' },
+      { id: 'dom_ready', label: 'Domein klaar voor livegang' },
     ],
     live: [
       { id: 'live_domain', label: 'Domein gekoppeld' },
@@ -3784,7 +3784,7 @@ function ProjectDetailModal({ project, darkMode, onClose, onUpdate, phases }: Om
   }
 
   const handleMoveToNextPhaseWithEmail = async () => {
-    const phaseOrder: ProjectPhase[] = ['onboarding', 'design', 'feedback', 'revisie', 'payment', 'approval', 'live']
+    const phaseOrder: ProjectPhase[] = ['onboarding', 'design', 'feedback', 'revisie', 'payment', 'domain', 'live']
     const currentIndex = phaseOrder.indexOf(editPhase)
     if (currentIndex < phaseOrder.length - 1) {
       const nextPhase = phaseOrder[currentIndex + 1]

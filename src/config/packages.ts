@@ -4,7 +4,7 @@
 // ===========================================
 
 export type PackageType = 'starter' | 'professional' | 'business' | 'webshop'
-export type ProjectPhase = 'onboarding' | 'design' | 'feedback' | 'revisie' | 'payment' | 'approval' | 'live'
+export type ProjectPhase = 'onboarding' | 'design' | 'feedback' | 'revisie' | 'payment' | 'domain' | 'live'
 
 export interface PackageConfig {
   id: PackageType
@@ -53,7 +53,7 @@ export const PACKAGES: Record<PackageType, PackageConfig> = {
       feedback: 2,
       revisie: 2,
       payment: 1,
-      approval: 1,
+      domain: 1,
       live: 0
     },
     phaseDescriptions: {
@@ -113,16 +113,17 @@ export const PACKAGES: Record<PackageType, PackageConfig> = {
           'Je eerste maand start na livegang'
         ]
       },
-      approval: {
-        title: 'Laatste check',
-        description: 'Controleer of alles klopt voordat we live gaan.',
+      domain: {
+        title: 'Domein configureren',
+        description: 'We gaan je domein verhuizen en configureren voor de livegang.',
         clientTasks: [
-          'Check je contactgegevens',
-          'Bevestig je domeinnaam',
-          'Geef je akkoord'
+          'Vraag je autorisatiecode op bij je huidige provider',
+          'Deel de autorisatiecode met ons',
+          'Keur de domeinverhuizing goed via e-mail'
         ],
         tips: [
-          'Na goedkeuring gaan we binnen 24 uur live'
+          'Geen domein? Wij regelen een nieuw domein voor je',
+          'Domeinverhuizing duurt gemiddeld 1-5 werkdagen'
         ]
       },
       live: {
@@ -162,7 +163,7 @@ export const PACKAGES: Record<PackageType, PackageConfig> = {
       feedback: 3,
       revisie: 2,
       payment: 1,
-      approval: 1,
+      domain: 1,
       live: 0
     },
     phaseDescriptions: {
@@ -226,7 +227,7 @@ export const PACKAGES: Record<PackageType, PackageConfig> = {
           'Hosting, onderhoud en onbeperkt wijzigingen inbegrepen'
         ]
       },
-      approval: {
+      domain: {
         title: 'Laatste check voor livegang',
         description: 'Controleer of alles perfect is voordat we live gaan.',
         clientTasks: [
@@ -277,7 +278,7 @@ export const PACKAGES: Record<PackageType, PackageConfig> = {
       feedback: 4,
       revisie: 3,
       payment: 1,
-      approval: 1,
+      domain: 1,
       live: 0
     },
     phaseDescriptions: {
@@ -342,7 +343,7 @@ export const PACKAGES: Record<PackageType, PackageConfig> = {
           'All-inclusive: hosting, onderhoud, updates en priority support'
         ]
       },
-      approval: {
+      domain: {
         title: 'Livegang voorbereiden',
         description: 'We gaan je website lanceren. Even alles controleren.',
         clientTasks: [
@@ -394,7 +395,7 @@ export const PACKAGES: Record<PackageType, PackageConfig> = {
       feedback: 5,
       revisie: 3,
       payment: 1,
-      approval: 2,
+      domain: 2,
       live: 0
     },
     phaseDescriptions: {
@@ -466,7 +467,7 @@ export const PACKAGES: Record<PackageType, PackageConfig> = {
           'Eerste maand start na livegang'
         ]
       },
-      approval: {
+      domain: {
         title: 'Launch checklist',
         description: 'Laatste checks voordat je klanten kunnen bestellen.',
         clientTasks: [

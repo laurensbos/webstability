@@ -55,7 +55,7 @@ const PHASE_GRADIENTS: Record<ProjectPhase, string> = {
   feedback: 'from-blue-500 to-cyan-600',
   revisie: 'from-orange-500 to-red-600',
   payment: 'from-emerald-500 to-teal-600',
-  approval: 'from-pink-500 to-rose-600',
+  domain: 'from-pink-500 to-rose-600',
   live: 'from-green-500 to-emerald-600'
 }
 
@@ -334,7 +334,7 @@ export default function DeveloperDashboard() {
     )
   }
 
-  const phases: ProjectPhase[] = ['onboarding', 'design', 'feedback', 'revisie', 'payment', 'approval']
+  const phases: ProjectPhase[] = ['onboarding', 'design', 'feedback', 'revisie', 'payment', 'domain']
   const liveProjects = filteredProjects.filter(p => p.phase === 'live')
   const activeProjects = filteredProjects.filter(p => p.phase !== 'live')
   const grouped = projectsByPhase(phases)

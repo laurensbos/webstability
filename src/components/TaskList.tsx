@@ -43,7 +43,7 @@ const PHASE_INFO: Record<ProjectPhase, { icon: typeof FileText; label: string; c
   feedback: { icon: MessageSquare, label: 'Feedback', color: 'purple' },
   revisie: { icon: RefreshCw, label: 'Revisie', color: 'cyan' },
   payment: { icon: CreditCard, label: 'Betaling', color: 'indigo' },
-  approval: { icon: CheckCircle, label: 'Goedkeuring', color: 'pink' },
+  domain: { icon: CheckCircle, label: 'Goedkeuring', color: 'pink' },
   live: { icon: Rocket, label: 'Live', color: 'green' },
 }
 

@@ -22,7 +22,7 @@ import {
 } from 'lucide-react'
 
 // Fase types
-type ProjectPhase = 'onboarding' | 'design' | 'feedback' | 'revisie' | 'payment' | 'approval' | 'live'
+type ProjectPhase = 'onboarding' | 'design' | 'feedback' | 'revisie' | 'payment' | 'domain' | 'live'
 
 interface Task {
   id: string
@@ -92,14 +92,14 @@ const PHASE_TASKS: Record<ProjectPhase, PhaseTaskConfig> = {
       { id: 'complete-payment', label: 'Voltooi de betaling', description: 'Na betaling gaan we naar de laatste stap', required: true },
     ]
   },
-  approval: {
-    title: 'Laatste goedkeuring',
-    description: 'Controleer alles voor de livegang',
-    estimatedMinutes: 10,
+  domain: {
+    title: 'Domein verhuizen',
+    description: 'We configureren je domein voor livegang',
+    estimatedMinutes: 15,
     tasks: [
-      { id: 'check-content', label: 'Controleer alle content', description: 'Laatste check op teksten en afbeeldingen', required: true },
-      { id: 'confirm-domain', label: 'Bevestig je domeinnaam', description: 'Op welk adres komt de website?', required: true },
-      { id: 'give-approval', label: 'Geef je definitieve akkoord', description: 'Hierna gaan we live!', required: true },
+      { id: 'provide-authcode', label: 'Deel je autorisatiecode', description: 'Vraag deze op bij je huidige provider', required: true },
+      { id: 'approve-transfer', label: 'Keur de verhuizing goed', description: 'Je ontvangt een e-mail om te bevestigen', required: true },
+      { id: 'wait-dns', label: 'DNS propagatie', description: 'Dit kan 1-48 uur duren', required: false },
     ]
   },
   live: {
