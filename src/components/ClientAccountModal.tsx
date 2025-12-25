@@ -37,6 +37,10 @@ interface ClientAccountModalProps {
   onClose: () => void
   project: Project
   onUpdateProject?: (updates: Partial<Project>) => Promise<void>
+  /** Render inline instead of modal - used for account tab in bottom nav */
+  isInline?: boolean
+  /** Initial tab to show */
+  initialTab?: TabType
 }
 
 type TabType = 'profile' | 'payments' | 'package' | 'messages'
@@ -109,13 +113,22 @@ export default function ClientAccountModal({
   isOpen, 
   onClose, 
   project,
-  onUpdateProject 
+  onUpdateProject,
+  isInline = false,
+  initialTab
 }: ClientAccountModalProps) {
   const { darkMode } = useDarkMode()
-  const [activeTab, setActiveTab] = useState<TabType>('profile')
+  const [activeTab, setActiveTab] = useState<TabType>(initialTab || 'profile')
   const [isEditing, setIsEditing] = useState(false)
   const [isSaving, setIsSaving] = useState(false)
   const [saveSuccess, setSaveSuccess] = useState(false)
+  
+  // Update active tab when initialTab prop changes
+  useEffect(() => {
+    if (initialTab) {
+      setActiveTab(initialTab)
+    }
+  }, [initialTab])
   
   // Editable form state
   const [formData, setFormData] = useState({
@@ -168,6 +181,87 @@ export default function ClientAccountModal({
   const currentPackage = getPackageInfo(project.package)
 
   if (!isOpen) return null
+
+  // Content to render - used for both modal and inline modes
+  const renderContent = () => (
+    <>
+      {/* Hero Section with User Info */}
+      <div className="flex-shrink-0 relative overflow-hidden">
+        {/* Gradient background */}
+        <div className={`absolute inset-0 bg-gradient-to-br ${currentPackage.gradient} opacity-10`} />
+        <div className={`absolute inset-0 bg-gradient-to-b from-transparent via-transparent ${
+          darkMode ? 'to-gray-950' : 'to-gray-50'
+        }`} />
+        
+        <div className="relative max-w-6xl mx-auto px-4 sm:px-6 py-8">
+          <div className="flex flex-col sm:flex-row sm:items-center gap-4 sm:gap-6">
+            {/* Large Avatar */}
+            <div className={`w-20 h-20 sm:w-24 sm:h-24 rounded-2xl bg-gradient-to-br ${currentPackage.gradient} flex items-center justify-center shadow-2xl`}>
+              <span className="text-3xl sm:text-4xl font-bold text-white">
+                {(project.businessName || project.contactName || 'W').charAt(0).toUpperCase()}
+              </span>
+            </div>
+            <div className="flex-1">
+              <h1 className={`text-2xl sm:text-3xl font-bold mb-1 ${darkMode ? 'text-white' : 'text-gray-900'}`}>
+                {project.businessName || 'Mijn Account'}
+              </h1>
+              <p className={`text-sm sm:text-base ${darkMode ? 'text-gray-400' : 'text-gray-600'}`}>
+                {project.contactName ? `${project.contactName} • ` : ''}{project.contactEmail || 'Klantportaal'}
+              </p>
+              <div className="flex items-center gap-3 mt-3">
+                <span className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-medium bg-gradient-to-r ${currentPackage.gradient} text-white`}>
+                  <Package className="w-3.5 h-3.5" />
+                  {currentPackage.name} pakket
+                </span>
+                <span className={`text-xs ${darkMode ? 'text-gray-500' : 'text-gray-400'}`}>
+                  Project: {project.projectId}
+                </span>
+              </div>
+            </div>
+          </div>
+
+          {/* Navigation Tabs */}
+          <nav className="mt-8 -mb-px">
+            <div className="flex gap-1 sm:gap-2 overflow-x-auto scrollbar-hide pb-1">
+              {tabs.map((tab) => (
+                <button
+                  key={tab.id}
+                  onClick={() => setActiveTab(tab.id)}
+                  className={`relative flex items-center gap-2 px-4 py-3 rounded-t-xl text-sm font-medium transition-all whitespace-nowrap ${
+                    activeTab === tab.id
+                      ? darkMode
+                        ? 'bg-gray-900 text-white border-t-2 border-x border-t-primary-500 border-gray-800'
+                        : 'bg-white text-gray-900 border-t-2 border-x border-t-primary-500 border-gray-200 shadow-sm'
+                      : darkMode
+                        ? 'text-gray-400 hover:text-white hover:bg-gray-800/50'
+                        : 'text-gray-500 hover:text-gray-900 hover:bg-gray-100'
+                  }`}
+                >
+                  <tab.icon className="w-4 h-4" />
+                  <span className="hidden sm:inline">{tab.label}</span>
+                  <span className="sm:hidden">{tab.mobileLabel}</span>
+                  {tab.badge && tab.badge > 0 && (
+                    <span className="absolute -top-1 -right-1 min-w-[18px] h-[18px] flex items-center justify-center text-[10px] font-bold rounded-full bg-red-500 text-white px-1">
+                      {tab.badge}
+                    </span>
+                  )}
+                </button>
+              ))}
+            </div>
+          </nav>
+        </div>
+      </div>
+    </>
+  )
+
+  // Inline mode - render content directly without modal overlay and header
+  if (isInline) {
+    return (
+      <div className={`flex flex-col min-h-full ${darkMode ? 'bg-gray-950' : 'bg-gray-50'}`}>
+        {renderContent()}
+      </div>
+    )
+  }
 
   return (
     <AnimatePresence>

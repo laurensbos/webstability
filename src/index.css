@@ -245,6 +245,11 @@ h1, h2, h3, h4, h5, h6,
   animation: pulse-soft 2s ease-in-out infinite;
 }
 
+.animate-shimmer {
+  background-size: 200% 100%;
+  animation: shimmer 2s infinite linear;
+}
+
 /* Shimmer loading effect */
 .shimmer {
   background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);

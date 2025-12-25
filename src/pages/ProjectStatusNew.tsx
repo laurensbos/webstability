@@ -45,6 +45,7 @@ import { ReferralWidget } from '../components/GrowthTools'
 import MobileBottomNav from '../components/MobileBottomNav'
 import QuickActions from '../components/QuickActions'
 import { DarkModeButton } from '../components/DarkModeToggle'
+import Footer from '../components/Footer'
 import { useKeyboardShortcuts, KeyboardShortcutsModal, KeyboardShortcutHint } from '../hooks/useKeyboardShortcuts'
 import PWAInstallPrompt from '../components/PWAInstallPrompt'
 import type { Notification } from '../components/NotificationBell'
@@ -214,7 +215,13 @@ export default function ProjectStatusNew() {
   
   // Onboarding state
   const [onboardingCompleted, setOnboardingCompleted] = useState(false)
-  const [onboardingExpanded, setOnboardingExpanded] = useState(true) // Collapsible onboarding card
+  // Default collapsed on mobile (we'll check window width)
+  const [onboardingExpanded, setOnboardingExpanded] = useState(() => {
+    if (typeof window !== 'undefined') {
+      return window.innerWidth >= 640 // sm breakpoint
+    }
+    return true
+  })
   
   // Success banner for just completed onboarding
   const [showOnboardingSuccess, setShowOnboardingSuccess] = useState(false)
@@ -223,8 +230,9 @@ export default function ProjectStatusNew() {
   const [confirmingReadyForDesign, setConfirmingReadyForDesign] = useState(false)
   const [readyForDesignLoading, setReadyForDesignLoading] = useState(false)
   
-  // Account modal state
+  // Account modal state - now also supports inline view
   const [showAccountModal, setShowAccountModal] = useState(false)
+  const [accountTab, setAccountTab] = useState<'profile' | 'payments' | 'package' | 'messages'>('profile')
   
   // Design preview modal state
   const [showDesignPreview, setShowDesignPreview] = useState(false)
@@ -927,8 +935,8 @@ export default function ProjectStatusNew() {
               </button>
             </div>
           </div>
-          {/* Business name bar */}
-          <div className={`flex items-center justify-between mt-2 pt-2 border-t ${darkMode ? 'border-white/5' : 'border-gray-200'}`}>
+          {/* Business name bar - hidden on mobile as info is in bottom nav context */}
+          <div className={`hidden sm:flex items-center justify-between mt-2 pt-2 border-t ${darkMode ? 'border-white/5' : 'border-gray-200'}`}>
             <div className="flex items-center gap-2">
               <span className={`font-medium text-sm ${darkMode ? 'text-white' : 'text-gray-900'}`}>{project.businessName}</span>
               <span className="text-gray-400">•</span>
@@ -944,7 +952,8 @@ export default function ProjectStatusNew() {
         </div>
       </header>
 
-      <main className="max-w-3xl mx-auto px-4 py-6 space-y-5">
+      {/* Main Content */}
+      <main className="max-w-3xl mx-auto px-4 py-6 space-y-5 pb-24">
         {/* Onboarding Success Banner */}
         <AnimatePresence>
           {showOnboardingSuccess && (
@@ -988,6 +997,28 @@ export default function ProjectStatusNew() {
               : 'bg-white border-gray-200 shadow-sm'
           }`}
         >
+          {/* Progress header */}
+          <div className="flex items-center justify-between mb-4">
+            <h3 className={`text-sm font-semibold ${darkMode ? 'text-white' : 'text-gray-900'}`}>
+              Project Voortgang
+            </h3>
+            <span className={`text-2xl font-bold bg-gradient-to-r ${phaseColors.gradient} bg-clip-text text-transparent`}>
+              {progress}%
+            </span>
+          </div>
+
+          {/* Large progress bar */}
+          <div className={`h-3 rounded-full overflow-hidden mb-6 ${darkMode ? 'bg-gray-800' : 'bg-gray-200'}`}>
+            <motion.div
+              initial={{ width: 0 }}
+              animate={{ width: `${progress}%` }}
+              transition={{ duration: 1, ease: "easeOut" }}
+              className={`h-full rounded-full bg-gradient-to-r ${phaseColors.gradient} relative`}
+            >
+              <div className="absolute inset-0 bg-gradient-to-r from-white/0 via-white/20 to-white/0 animate-shimmer" />
+            </motion.div>
+          </div>
+
           {/* Desktop: full width spread, Mobile: horizontal scroll */}
           <div className="relative">
             {/* Mobile scroll indicator */}
@@ -1069,19 +1100,6 @@ export default function ProjectStatusNew() {
               )
             })}
             </div>
-          </div>
-          
-          {/* Progress percentage */}
-          <div className="flex items-center gap-3">
-            <div className={`flex-1 h-2 rounded-full overflow-hidden ${darkMode ? 'bg-gray-800' : 'bg-gray-200'}`}>
-              <motion.div
-                initial={{ width: 0 }}
-                animate={{ width: `${progress}%` }}
-                transition={{ duration: 1, ease: "easeOut" }}
-                className={`h-full rounded-full bg-gradient-to-r ${phaseColors.gradient}`}
-              />
-            </div>
-            <span className={`text-sm font-medium ${darkMode ? 'text-white' : 'text-gray-900'}`}>{progress}%</span>
           </div>
         </motion.div>
 
@@ -1808,6 +1826,11 @@ export default function ProjectStatusNew() {
         </div>
       </main>
 
+      {/* Footer */}
+      <div className="pb-20 sm:pb-0">
+        <Footer />
+      </div>
+
       {/* Floating Chat - Right Side Panel */}
       <AnimatePresence>
         {showChat && (
@@ -1972,6 +1995,7 @@ export default function ProjectStatusNew() {
           onClose={() => setShowAccountModal(false)}
           project={project}
           onUpdateProject={updateProject}
+          initialTab={accountTab}
         />
       )}
 
@@ -2044,7 +2068,10 @@ export default function ProjectStatusNew() {
           }
         }}
         onHelp={() => setShowHelpCenter(true)}
-        onAccount={() => setShowAccountModal(true)}
+        onAccount={() => {
+          setAccountTab('profile')
+          setShowAccountModal(true)
+        }}
       />
 
       {/* Keyboard Shortcuts Modal */}
