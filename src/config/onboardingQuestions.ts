@@ -5,7 +5,7 @@
 
 import type { PackageType } from './packages'
 
-export type QuestionType = 'text' | 'textarea' | 'select' | 'radio' | 'checkbox' | 'color' | 'multicolor' | 'font' | 'upload' | 'tags'
+export type QuestionType = 'text' | 'textarea' | 'select' | 'radio' | 'checkbox' | 'color' | 'multicolor' | 'font' | 'upload' | 'tags' | 'pages-selector'
 
 export interface OnboardingQuestion {
   id: string
@@ -23,13 +23,15 @@ export interface OnboardingQuestion {
     questionId: string
     values: string[]
   }
+  // Package limits for pages-selector type
+  packageLimits?: Record<PackageType, number>
 }
 
 export interface OnboardingSection {
   id: string
   title: string
   description: string
-  icon: string
+  icon: string  // Lucide icon name (e.g., 'Building2', 'Palette')
   color: string
   questions: OnboardingQuestion[]
 }
@@ -46,7 +48,7 @@ export const ONBOARDING_SECTIONS: OnboardingSection[] = [
     id: 'bedrijf',
     title: 'Over je bedrijf',
     description: 'Vertel ons wie je bent',
-    icon: '🏢',
+    icon: 'Building2',
     color: 'blue',
     questions: [
       {
@@ -104,7 +106,7 @@ export const ONBOARDING_SECTIONS: OnboardingSection[] = [
     id: 'branding',
     title: 'Huisstijl & Design',
     description: 'Hoe moet je website eruitzien?',
-    icon: '🎨',
+    icon: 'Palette',
     color: 'purple',
     questions: [
       {
@@ -180,7 +182,7 @@ export const ONBOARDING_SECTIONS: OnboardingSection[] = [
     id: 'content',
     title: 'Content & Media',
     description: 'Teksten en beeldmateriaal',
-    icon: '📝',
+    icon: 'FileText',
     color: 'amber',
     questions: [
       {
@@ -252,24 +254,34 @@ export const ONBOARDING_SECTIONS: OnboardingSection[] = [
     id: 'paginas',
     title: 'Pagina\'s & Functies',
     description: 'Wat moet je website kunnen?',
-    icon: '📄',
+    icon: 'LayoutGrid',
     color: 'emerald',
     questions: [
       {
         id: 'pages',
-        type: 'checkbox',
+        type: 'pages-selector',
         label: 'Welke pagina\'s wil je?',
+        description: 'Selecteer de pagina\'s die je nodig hebt',
         required: true,
+        packageLimits: {
+          starter: 5,
+          professional: 10,
+          business: 20,
+          webshop: 15
+        },
         options: [
           { value: 'home', label: 'Homepage' },
           { value: 'about', label: 'Over ons' },
-          { value: 'services', label: 'Diensten/Producten' },
-          { value: 'portfolio', label: 'Portfolio/Cases' },
+          { value: 'services', label: 'Diensten' },
+          { value: 'portfolio', label: 'Portfolio' },
           { value: 'contact', label: 'Contact' },
-          { value: 'faq', label: 'Veelgestelde vragen' },
+          { value: 'faq', label: 'FAQ' },
           { value: 'team', label: 'Team' },
           { value: 'blog', label: 'Blog' },
-          { value: 'pricing', label: 'Prijzen' }
+          { value: 'pricing', label: 'Prijzen' },
+          { value: 'testimonials', label: 'Reviews' },
+          { value: 'gallery', label: 'Galerij' },
+          { value: 'booking', label: 'Afspraken' }
         ],
         packages: ['starter', 'professional', 'business', 'webshop']
       },
@@ -326,7 +338,7 @@ export const ONBOARDING_SECTIONS: OnboardingSection[] = [
     id: 'webshop',
     title: 'Webshop Details',
     description: 'Specifiek voor je webshop',
-    icon: '🛒',
+    icon: 'ShoppingCart',
     color: 'green',
     questions: [
       {
@@ -406,7 +418,7 @@ export const ONBOARDING_SECTIONS: OnboardingSection[] = [
     id: 'contact',
     title: 'Contact & Bereikbaarheid',
     description: 'Je contactgegevens voor de website',
-    icon: '📞',
+    icon: 'Phone',
     color: 'cyan',
     questions: [
       {
@@ -481,7 +493,7 @@ export const ONBOARDING_SECTIONS: OnboardingSection[] = [
     id: 'strategie',
     title: 'Strategie & Doelen',
     description: 'Help ons je bedrijf beter begrijpen',
-    icon: '🎯',
+    icon: 'Target',
     color: 'orange',
     questions: [
       {
@@ -538,7 +550,7 @@ export const ONBOARDING_SECTIONS: OnboardingSection[] = [
     id: 'extra',
     title: 'Extra wensen',
     description: 'Nog iets dat we moeten weten?',
-    icon: '✨',
+    icon: 'Sparkles',
     color: 'pink',
     questions: [
       {

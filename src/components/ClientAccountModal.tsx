@@ -30,6 +30,7 @@ import {
 import Logo from './Logo'
 import type { Project } from '../types/project'
 import { getWhatsAppLink, WHATSAPP_MESSAGES } from '../lib/constants'
+import { PACKAGES } from '../config/packages'
 
 interface ClientAccountModalProps {
   isOpen: boolean
@@ -48,89 +49,51 @@ interface TabItem {
   badge?: number
 }
 
-// Package information with enhanced data
-const packageInfo: Record<string, { 
-  name: string
-  price: number
-  features: string[]
+// Package visual styling
+const packageStyles: Record<string, { 
   gradient: string
   iconBg: string
   iconColor: string
+  accentColor: string
 }> = {
   starter: {
-    name: 'Starter',
-    price: 99,
-    features: [
-      'Tot 5 pagina\'s',
-      'Responsive design',
-      'Contactformulier',
-      'Basis SEO',
-      'SSL-certificaat',
-      '48u support reactietijd',
-    ],
     gradient: 'from-blue-500 to-cyan-500',
     iconBg: 'bg-blue-500/20',
-    iconColor: 'text-blue-500'
+    iconColor: 'text-blue-500',
+    accentColor: 'blue'
   },
   professional: {
-    name: 'Professioneel',
-    price: 149,
-    features: [
-      'Tot 10 pagina\'s',
-      'Premium design',
-      'Blog functionaliteit',
-      'Google Analytics',
-      'Uitgebreide SEO',
-      '24u support reactietijd',
-    ],
     gradient: 'from-purple-500 to-pink-500',
     iconBg: 'bg-purple-500/20',
-    iconColor: 'text-purple-500'
+    iconColor: 'text-purple-500',
+    accentColor: 'purple'
   },
   business: {
-    name: 'Business',
-    price: 199,
-    features: [
-      'Onbeperkt pagina\'s',
-      'Custom functionaliteiten',
-      'Meertalig mogelijk',
-      'Geavanceerde integraties',
-      'Prioriteit support',
-      'Maandelijkse rapportage',
-    ],
     gradient: 'from-amber-500 to-orange-500',
     iconBg: 'bg-amber-500/20',
-    iconColor: 'text-amber-500'
-  },
-  premium: {
-    name: 'Premium',
-    price: 249,
-    features: [
-      'Onbeperkt pagina\'s',
-      'Custom functionaliteiten',
-      'Meertalig mogelijk',
-      'Geavanceerde integraties',
-      'Prioriteit support',
-      'Maandelijkse rapportage',
-    ],
-    gradient: 'from-violet-500 to-purple-600',
-    iconBg: 'bg-violet-500/20',
-    iconColor: 'text-violet-500'
+    iconColor: 'text-amber-500',
+    accentColor: 'amber'
   },
   webshop: {
-    name: 'Webshop',
-    price: 349,
-    features: [
-      'Tot 500 producten',
-      'iDEAL & creditcard',
-      'Voorraadbeheer',
-      'Klantaccounts',
-      'Kortingscodes',
-      'Prioriteit support',
-    ],
     gradient: 'from-emerald-500 to-teal-500',
     iconBg: 'bg-emerald-500/20',
-    iconColor: 'text-emerald-500'
+    iconColor: 'text-emerald-500',
+    accentColor: 'emerald'
+  }
+}
+
+// Helper to get package info
+const getPackageInfo = (packageType: string) => {
+  const pkg = PACKAGES[packageType as keyof typeof PACKAGES]
+  const style = packageStyles[packageType] || packageStyles.starter
+  return {
+    name: pkg?.name || 'Starter',
+    price: pkg?.price || 119,
+    setupFee: pkg?.setupFee || 149,
+    features: pkg?.features || [],
+    revisions: pkg?.revisions || 2,
+    changesPerMonth: pkg?.changesPerMonth || 2,
+    ...style
   }
 }
 
@@ -202,7 +165,7 @@ export default function ClientAccountModal({
     }
   }
 
-  const currentPackage = packageInfo[project.package] || packageInfo.starter
+  const currentPackage = getPackageInfo(project.package)
 
   if (!isOpen) return null
 
@@ -949,7 +912,7 @@ export default function ClientAccountModal({
                         </div>
 
                         <div className="grid sm:grid-cols-2 gap-3">
-                          {currentPackage.features.map((feature, index) => (
+                          {currentPackage.features.map((feature: string, index: number) => (
                             <div
                               key={index}
                               className="flex items-center gap-3 p-3 rounded-xl bg-white/10 backdrop-blur-sm"
@@ -963,42 +926,74 @@ export default function ClientAccountModal({
                     </div>
 
                     {/* Service Details */}
-                    <div className="grid sm:grid-cols-2 gap-4">
-                      <div className={`rounded-2xl p-5 border ${
+                    <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                      <div className={`rounded-2xl p-4 border ${
                         darkMode ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-200 shadow-sm'
                       }`}>
-                        <div className="flex items-center gap-3 mb-3">
+                        <div className="flex items-center gap-3">
                           <div className={`w-10 h-10 rounded-xl flex items-center justify-center ${
                             darkMode ? 'bg-primary-500/10' : 'bg-primary-50'
                           }`}>
                             <Globe className={`w-5 h-5 ${darkMode ? 'text-primary-400' : 'text-primary-600'}`} />
                           </div>
                           <div>
-                            <p className={`text-sm ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>Type dienst</p>
-                            <p className={`font-semibold ${darkMode ? 'text-white' : 'text-gray-900'}`}>
+                            <p className={`text-xs ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>Type</p>
+                            <p className={`font-semibold text-sm ${darkMode ? 'text-white' : 'text-gray-900'}`}>
                               {serviceTypeLabels[project.serviceType || 'website'] || 'Website'}
                             </p>
                           </div>
                         </div>
                       </div>
 
-                      <div className={`rounded-2xl p-5 border ${
+                      <div className={`rounded-2xl p-4 border ${
                         darkMode ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-200 shadow-sm'
                       }`}>
-                        <div className="flex items-center gap-3 mb-3">
+                        <div className="flex items-center gap-3">
                           <div className={`w-10 h-10 rounded-xl flex items-center justify-center ${
                             darkMode ? 'bg-green-500/10' : 'bg-green-50'
                           }`}>
                             <Shield className={`w-5 h-5 ${darkMode ? 'text-green-400' : 'text-green-600'}`} />
                           </div>
                           <div>
-                            <p className={`text-sm ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>Support reactietijd</p>
-                            <p className={`font-semibold ${darkMode ? 'text-white' : 'text-gray-900'}`}>
-                              {project.package === 'business' || project.package === 'premium'
-                                ? 'Binnen 4 uur'
-                                : project.package === 'professional'
-                                ? 'Binnen 24 uur'
-                                : 'Binnen 48 uur'}
+                            <p className={`text-xs ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>Support</p>
+                            <p className={`font-semibold text-sm ${darkMode ? 'text-white' : 'text-gray-900'}`}>
+                              {project.package === 'business' ? '4 uur' : project.package === 'professional' ? '24 uur' : '48 uur'}
+                            </p>
+                          </div>
+                        </div>
+                      </div>
+
+                      <div className={`rounded-2xl p-4 border ${
+                        darkMode ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-200 shadow-sm'
+                      }`}>
+                        <div className="flex items-center gap-3">
+                          <div className={`w-10 h-10 rounded-xl flex items-center justify-center ${
+                            darkMode ? 'bg-purple-500/10' : 'bg-purple-50'
+                          }`}>
+                            <Edit3 className={`w-5 h-5 ${darkMode ? 'text-purple-400' : 'text-purple-600'}`} />
+                          </div>
+                          <div>
+                            <p className={`text-xs ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>Wijzigingen</p>
+                            <p className={`font-semibold text-sm ${darkMode ? 'text-white' : 'text-gray-900'}`}>
+                              {currentPackage.changesPerMonth >= 999 ? 'Onbeperkt' : `${currentPackage.changesPerMonth}/maand`}
+                            </p>
+                          </div>
+                        </div>
+                      </div>
+
+                      <div className={`rounded-2xl p-4 border ${
+                        darkMode ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-200 shadow-sm'
+                      }`}>
+                        <div className="flex items-center gap-3">
+                          <div className={`w-10 h-10 rounded-xl flex items-center justify-center ${
+                            darkMode ? 'bg-amber-500/10' : 'bg-amber-50'
+                          }`}>
+                            <Sparkles className={`w-5 h-5 ${darkMode ? 'text-amber-400' : 'text-amber-600'}`} />
+                          </div>
+                          <div>
+                            <p className={`text-xs ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>Revisies</p>
+                            <p className={`font-semibold text-sm ${darkMode ? 'text-white' : 'text-gray-900'}`}>
+                              {currentPackage.revisions}x inbegrepen
                             </p>
                           </div>
                         </div>

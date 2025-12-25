@@ -9,7 +9,16 @@ import {
   Loader2,
   Check,
   HelpCircle,
-  Sparkles
+  Sparkles,
+  Building2,
+  Palette,
+  FileText,
+  LayoutGrid,
+  ShoppingCart,
+  Phone,
+  Target,
+  ArrowUpRight,
+  type LucideIcon
 } from 'lucide-react'
 import { 
   getSectionsForPackage,
@@ -18,6 +27,19 @@ import {
   type OnboardingSection 
 } from '../config/onboardingQuestions'
 import type { PackageType } from '../config/packages'
+import { PACKAGES } from '../config/packages'
+
+// Icon mapping for sections
+const SECTION_ICONS: Record<string, LucideIcon> = {
+  Building2,
+  Palette,
+  FileText,
+  LayoutGrid,
+  ShoppingCart,
+  Phone,
+  Target,
+  Sparkles
+}
 
 // ===========================================
 // QUESTION COMPONENTS
@@ -111,6 +133,141 @@ function RadioQuestion({ question, value, onChange, disabled, darkMode }: Questi
           </div>
         </button>
       ))}
+    </div>
+  )
+}
+
+// Pages Selector with package limits
+interface PagesSelectorProps extends QuestionProps {
+  packageType?: PackageType
+  onUpgradeClick?: () => void
+}
+
+function PagesSelector({ question, value, onChange, disabled, darkMode, packageType = 'starter', onUpgradeClick }: PagesSelectorProps) {
+  const selectedValues = Array.isArray(value) ? value : []
+  const packageLimit = question.packageLimits?.[packageType] || 5
+  const isAtLimit = selectedValues.length >= packageLimit
+  
+  const toggleValue = (optionValue: string) => {
+    if (selectedValues.includes(optionValue)) {
+      onChange(selectedValues.filter((v: string) => v !== optionValue))
+    } else if (!isAtLimit) {
+      onChange([...selectedValues, optionValue])
+    }
+  }
+
+  // Get next package for upgrade suggestion
+  const getNextPackage = (): PackageType | null => {
+    const order: PackageType[] = ['starter', 'professional', 'business']
+    const currentIndex = order.indexOf(packageType)
+    if (currentIndex < order.length - 1) {
+      return order[currentIndex + 1]
+    }
+    return null
+  }
+
+  const nextPkg = getNextPackage()
+  const nextPkgInfo = nextPkg ? PACKAGES[nextPkg] : null
+
+  return (
+    <div className="space-y-4">
+      {/* Progress indicator */}
+      <div className={`flex items-center justify-between p-3 rounded-xl ${
+        darkMode ? 'bg-gray-800' : 'bg-gray-50'
+      }`}>
+        <div className="flex items-center gap-2">
+          <LayoutGrid className={`w-4 h-4 ${darkMode ? 'text-gray-400' : 'text-gray-500'}`} />
+          <span className={`text-sm font-medium ${darkMode ? 'text-white' : 'text-gray-900'}`}>
+            {selectedValues.length} / {packageLimit} pagina's geselecteerd
+          </span>
+        </div>
+        <span className={`text-xs px-2 py-1 rounded-full ${
+          isAtLimit 
+            ? 'bg-amber-500/20 text-amber-500' 
+            : 'bg-green-500/20 text-green-500'
+        }`}>
+          {isAtLimit ? 'Limiet bereikt' : `${packageLimit - selectedValues.length} over`}
+        </span>
+      </div>
+      
+      {/* Page options */}
+      <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
+        {question.options?.map((option) => {
+          const isSelected = selectedValues.includes(option.value)
+          const isDisabled = disabled || (!isSelected && isAtLimit)
+          
+          return (
+            <button
+              key={option.value}
+              type="button"
+              onClick={() => toggleValue(option.value)}
+              disabled={isDisabled}
+              className={`flex items-center gap-2 p-3 rounded-xl border transition-all text-left ${
+                isSelected
+                  ? darkMode
+                    ? 'border-primary-500 bg-primary-500/10'
+                    : 'border-primary-500 bg-primary-50'
+                  : isDisabled
+                    ? darkMode
+                      ? 'border-gray-700 bg-gray-800/30 opacity-50 cursor-not-allowed'
+                      : 'border-gray-200 bg-gray-50 opacity-50 cursor-not-allowed'
+                    : darkMode
+                      ? 'border-gray-700 bg-gray-800/50 hover:bg-gray-800'
+                      : 'border-gray-200 bg-white hover:bg-gray-50'
+              }`}
+            >
+              <div className={`w-5 h-5 rounded-md border-2 flex items-center justify-center flex-shrink-0 ${
+                isSelected
+                  ? 'border-primary-500 bg-primary-500'
+                  : darkMode ? 'border-gray-600' : 'border-gray-300'
+              }`}>
+                {isSelected && <Check className="w-3 h-3 text-white" />}
+              </div>
+              <span className={`text-sm ${darkMode ? 'text-white' : 'text-gray-900'}`}>
+                {option.label}
+              </span>
+            </button>
+          )
+        })}
+      </div>
+
+      {/* Upgrade prompt when at limit */}
+      {isAtLimit && nextPkgInfo && (
+        <motion.div
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          className={`p-4 rounded-xl border ${
+            darkMode 
+              ? 'bg-gradient-to-r from-primary-500/10 to-purple-500/10 border-primary-500/30' 
+              : 'bg-gradient-to-r from-primary-50 to-purple-50 border-primary-200'
+          }`}
+        >
+          <div className="flex items-start gap-3">
+            <div className={`w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0 ${
+              darkMode ? 'bg-primary-500/20' : 'bg-primary-100'
+            }`}>
+              <ArrowUpRight className={`w-5 h-5 ${darkMode ? 'text-primary-400' : 'text-primary-600'}`} />
+            </div>
+            <div className="flex-1">
+              <h4 className={`font-semibold ${darkMode ? 'text-white' : 'text-gray-900'}`}>
+                Meer pagina's nodig?
+              </h4>
+              <p className={`text-sm mt-1 ${darkMode ? 'text-gray-400' : 'text-gray-600'}`}>
+                Upgrade naar <span className="font-medium">{nextPkgInfo.name}</span> voor tot {question.packageLimits?.[nextPkg!]} pagina's
+              </p>
+              {onUpgradeClick && (
+                <button
+                  onClick={onUpgradeClick}
+                  className="mt-2 text-sm font-medium text-primary-500 hover:text-primary-400 transition-colors flex items-center gap-1"
+                >
+                  Bekijk upgrade opties
+                  <ArrowUpRight className="w-4 h-4" />
+                </button>
+              )}
+            </div>
+          </div>
+        </motion.div>
+      )}
     </div>
   )
 }
@@ -500,7 +657,12 @@ function UploadQuestion({ question, googleDriveUrl, darkMode }: QuestionProps) {
 // QUESTION RENDERER
 // ===========================================
 
-function QuestionRenderer({ question, value, onChange, disabled, darkMode, googleDriveUrl }: QuestionProps) {
+interface QuestionRendererProps extends QuestionProps {
+  packageType?: PackageType
+  onUpgradeClick?: () => void
+}
+
+function QuestionRenderer({ question, value, onChange, disabled, darkMode, googleDriveUrl, packageType, onUpgradeClick }: QuestionRendererProps) {
   const props = { question, value, onChange, disabled, darkMode, googleDriveUrl }
   
   switch (question.type) {
@@ -523,6 +685,8 @@ function QuestionRenderer({ question, value, onChange, disabled, darkMode, googl
       return <TagsQuestion {...props} />
     case 'upload':
       return <UploadQuestion {...props} />
+    case 'pages-selector':
+      return <PagesSelector {...props} packageType={packageType} onUpgradeClick={onUpgradeClick} />
     default:
       return <TextQuestion {...props} />
   }
@@ -543,6 +707,8 @@ interface SectionComponentProps {
   googleDriveUrl?: string
   sectionNumber: number
   totalSections: number
+  packageType?: PackageType
+  onUpgradeClick?: () => void
 }
 
 function SectionComponent({
@@ -555,7 +721,9 @@ function SectionComponent({
   darkMode = true,
   googleDriveUrl,
   sectionNumber,
-  totalSections
+  totalSections,
+  packageType,
+  onUpgradeClick
 }: SectionComponentProps) {
   // Filter questions based on conditionalOn
   const visibleQuestions = section.questions.filter(q => {
@@ -617,7 +785,20 @@ function SectionComponent({
         
         <div className="flex-1">
           <div className="flex items-center gap-2">
-            <span className="text-lg">{section.icon}</span>
+            {(() => {
+              const IconComponent = SECTION_ICONS[section.icon]
+              return IconComponent ? (
+                <IconComponent className={`w-5 h-5 ${
+                  isComplete 
+                    ? 'text-green-500' 
+                    : isExpanded 
+                      ? colors.icon 
+                      : darkMode ? 'text-gray-400' : 'text-gray-500'
+                }`} />
+              ) : (
+                <span className="text-lg">{section.icon}</span>
+              )
+            })()}
             <span className={`font-semibold ${
               isComplete 
                 ? 'text-green-500' 
@@ -691,6 +872,8 @@ function SectionComponent({
                     disabled={false}
                     darkMode={darkMode}
                     googleDriveUrl={googleDriveUrl}
+                    packageType={packageType}
+                    onUpgradeClick={onUpgradeClick}
                   />
 
                   {/* Inline Upload Button */}
@@ -890,6 +1073,7 @@ export default function InlineOnboarding({
           googleDriveUrl={googleDriveUrl}
           sectionNumber={index + 1}
           totalSections={sections.length}
+          packageType={packageType}
         />
       ))}
 
