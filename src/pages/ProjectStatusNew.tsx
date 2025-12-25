@@ -214,6 +214,7 @@ export default function ProjectStatusNew() {
   
   // Onboarding state
   const [onboardingCompleted, setOnboardingCompleted] = useState(false)
+  const [onboardingExpanded, setOnboardingExpanded] = useState(true) // Collapsible onboarding card
   
   // Success banner for just completed onboarding
   const [showOnboardingSuccess, setShowOnboardingSuccess] = useState(false)
@@ -1143,13 +1144,16 @@ export default function ProjectStatusNew() {
                   darkMode ? 'bg-gray-900 border-blue-500/30' : 'bg-white border-blue-200 shadow-sm'
                 }`}
               >
-                {/* Header */}
-                <div className={`p-4 border-b ${darkMode ? 'border-gray-800' : 'border-gray-100'}`}>
+                {/* Collapsible Header */}
+                <button
+                  onClick={() => setOnboardingExpanded(!onboardingExpanded)}
+                  className={`w-full p-4 border-b ${darkMode ? 'border-gray-800' : 'border-gray-100'} flex items-center justify-between`}
+                >
                   <div className="flex items-center gap-3">
                     <div className={`p-2 rounded-xl ${darkMode ? 'bg-blue-500/10' : 'bg-blue-100'}`}>
                       <FileText className={`w-5 h-5 ${darkMode ? 'text-blue-400' : 'text-blue-600'}`} />
                     </div>
-                    <div>
+                    <div className="text-left">
                       <div className="flex items-center gap-2">
                         <span className="text-lg">🚀</span>
                         <h3 className={`font-semibold ${darkMode ? 'text-white' : 'text-gray-900'}`}>
@@ -1165,25 +1169,40 @@ export default function ProjectStatusNew() {
                       </p>
                     </div>
                   </div>
-                </div>
+                  <ChevronRight className={`w-5 h-5 transition-transform ${
+                    onboardingExpanded ? 'rotate-90' : ''
+                  } ${darkMode ? 'text-gray-400' : 'text-gray-500'}`} />
+                </button>
 
-                {/* Phase Info */}
-                <div className="p-4">
-                  <h4 className={`font-semibold mb-2 ${darkMode ? 'text-white' : 'text-gray-900'}`}>
-                    Vertel ons over je bedrijf
-                  </h4>
-                  <p className={`text-sm mb-4 ${darkMode ? 'text-gray-400' : 'text-gray-600'}`}>
-                    We hebben wat basisinformatie nodig om je website te maken. Dit duurt ongeveer 5-10 minuten.
-                  </p>
+                {/* Collapsible Content */}
+                <AnimatePresence>
+                  {onboardingExpanded && (
+                    <motion.div
+                      initial={{ height: 0, opacity: 0 }}
+                      animate={{ height: 'auto', opacity: 1 }}
+                      exit={{ height: 0, opacity: 0 }}
+                      transition={{ duration: 0.2 }}
+                      className="overflow-hidden"
+                    >
+                      <div className="p-4">
+                        <h4 className={`font-semibold mb-2 ${darkMode ? 'text-white' : 'text-gray-900'}`}>
+                          Vertel ons over je bedrijf
+                        </h4>
+                        <p className={`text-sm mb-4 ${darkMode ? 'text-gray-400' : 'text-gray-600'}`}>
+                          We hebben wat basisinformatie nodig om je website te maken. Dit duurt ongeveer 5-10 minuten.
+                        </p>
 
-                  {/* Inline Onboarding Component */}
-                  <InlineOnboarding
-                    projectId={project.projectId}
-                    packageType={project.package as 'starter' | 'professional' | 'business' | 'webshop'}
-                    darkMode={darkMode}
-                    googleDriveUrl={project.googleDriveUrl}
-                  />
-                </div>
+                        {/* Inline Onboarding Component */}
+                        <InlineOnboarding
+                          projectId={project.projectId}
+                          packageType={project.package as 'starter' | 'professional' | 'business' | 'webshop'}
+                          darkMode={darkMode}
+                          googleDriveUrl={project.googleDriveUrl}
+                        />
+                      </div>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
               </motion.div>
             ) : (
               <PackagePhaseCard

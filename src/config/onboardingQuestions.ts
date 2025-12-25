@@ -5,7 +5,7 @@
 
 import type { PackageType } from './packages'
 
-export type QuestionType = 'text' | 'textarea' | 'select' | 'radio' | 'checkbox' | 'color' | 'upload' | 'tags'
+export type QuestionType = 'text' | 'textarea' | 'select' | 'radio' | 'checkbox' | 'color' | 'multicolor' | 'font' | 'upload' | 'tags'
 
 export interface OnboardingQuestion {
   id: string
@@ -131,12 +131,21 @@ export const ONBOARDING_SECTIONS: OnboardingSection[] = [
         packages: ['starter', 'professional', 'business', 'webshop']
       },
       {
-        id: 'primaryColor',
-        type: 'color',
-        label: 'Hoofdkleur',
-        description: 'De belangrijkste kleur van je merk',
+        id: 'brandColors',
+        type: 'multicolor',
+        label: 'Kies je merkkeuren (max 4)',
+        description: 'Selecteer de kleuren die bij je merk passen. Begin met je hoofdkleur.',
         required: false,
-        helpText: 'Geen idee? We kiezen een passende kleur voor je',
+        helpText: 'Geen idee? Geen probleem! Onze designers kiezen passende kleuren op basis van je branche en stijl.',
+        packages: ['starter', 'professional', 'business', 'webshop']
+      },
+      {
+        id: 'brandFont',
+        type: 'font',
+        label: 'Welk lettertype past bij je bedrijf?',
+        description: 'Kies een font dat de uitstraling van je merk versterkt.',
+        required: false,
+        helpText: 'Dit is een voorkeur - onze designers kunnen een ander font adviseren als dat beter past.',
         packages: ['starter', 'professional', 'business', 'webshop']
       },
       {

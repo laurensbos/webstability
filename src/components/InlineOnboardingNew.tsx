@@ -161,7 +161,7 @@ function CheckboxQuestion({ question, value, onChange, disabled, darkMode }: Que
   )
 }
 
-// Color Picker
+// Single Color Picker (legacy)
 function ColorQuestion({ value, onChange, darkMode }: Pick<QuestionProps, 'value' | 'onChange' | 'darkMode'>) {
   const presetColors = [
     { value: '#10B981', label: 'Groen' },
@@ -201,6 +201,209 @@ function ColorQuestion({ value, onChange, darkMode }: Pick<QuestionProps, 'value
         />
         <span className="text-xs font-medium">+</span>
       </label>
+    </div>
+  )
+}
+
+// Multi Color Picker (max 4 colors)
+function MultiColorQuestion({ value, onChange, darkMode }: Pick<QuestionProps, 'value' | 'onChange' | 'darkMode'>) {
+  const selectedColors: string[] = Array.isArray(value) ? value : []
+  const MAX_COLORS = 4
+
+  const presetColors = [
+    { value: '#10B981', label: 'Groen' },
+    { value: '#3B82F6', label: 'Blauw' },
+    { value: '#8B5CF6', label: 'Paars' },
+    { value: '#F59E0B', label: 'Oranje' },
+    { value: '#EF4444', label: 'Rood' },
+    { value: '#EC4899', label: 'Roze' },
+    { value: '#14B8A6', label: 'Teal' },
+    { value: '#6366F1', label: 'Indigo' },
+    { value: '#F97316', label: 'Oranje' },
+    { value: '#84CC16', label: 'Lime' },
+    { value: '#06B6D4', label: 'Cyan' },
+    { value: '#1F2937', label: 'Donkergrijs' },
+    { value: '#111827', label: 'Zwart' },
+    { value: '#F3F4F6', label: 'Lichtgrijs' },
+  ]
+
+  const toggleColor = (color: string) => {
+    if (selectedColors.includes(color)) {
+      onChange(selectedColors.filter(c => c !== color))
+    } else if (selectedColors.length < MAX_COLORS) {
+      onChange([...selectedColors, color])
+    }
+  }
+
+  const addCustomColor = (color: string) => {
+    if (!selectedColors.includes(color) && selectedColors.length < MAX_COLORS) {
+      onChange([...selectedColors, color])
+    }
+  }
+
+  return (
+    <div className="space-y-4">
+      {/* Selected colors preview */}
+      {selectedColors.length > 0 && (
+        <div className={`p-3 rounded-xl ${darkMode ? 'bg-gray-800' : 'bg-gray-100'}`}>
+          <div className="flex items-center justify-between mb-2">
+            <span className={`text-xs font-medium ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>
+              Geselecteerd ({selectedColors.length}/{MAX_COLORS})
+            </span>
+            <button
+              type="button"
+              onClick={() => onChange([])}
+              className="text-xs text-red-500 hover:text-red-400"
+            >
+              Alles wissen
+            </button>
+          </div>
+          <div className="flex gap-2">
+            {selectedColors.map((color, index) => (
+              <div key={index} className="relative group">
+                <div
+                  className="w-12 h-12 rounded-xl border-2 border-white shadow-lg"
+                  style={{ backgroundColor: color }}
+                />
+                <button
+                  type="button"
+                  onClick={() => toggleColor(color)}
+                  className="absolute -top-1 -right-1 w-5 h-5 bg-red-500 text-white rounded-full text-xs opacity-0 group-hover:opacity-100 transition-opacity"
+                >
+                  ×
+                </button>
+                {index === 0 && (
+                  <span className="absolute -bottom-5 left-0 right-0 text-center text-[10px] text-gray-500">
+                    Hoofd
+                  </span>
+                )}
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* Color palette */}
+      <div className="flex flex-wrap gap-2">
+        {presetColors.map((color) => {
+          const isSelected = selectedColors.includes(color.value)
+          const isDisabled = !isSelected && selectedColors.length >= MAX_COLORS
+          
+          return (
+            <button
+              key={color.value}
+              type="button"
+              onClick={() => toggleColor(color.value)}
+              disabled={isDisabled}
+              className={`w-10 h-10 rounded-lg border-2 transition-all ${
+                isSelected
+                  ? 'border-white ring-2 ring-primary-500 scale-110'
+                  : isDisabled
+                    ? 'opacity-30 cursor-not-allowed border-transparent'
+                    : darkMode 
+                      ? 'border-gray-700 hover:scale-105' 
+                      : 'border-gray-200 hover:scale-105'
+              }`}
+              style={{ backgroundColor: color.value }}
+              title={color.label}
+            />
+          )
+        })}
+        
+        {/* Custom color picker */}
+        {selectedColors.length < MAX_COLORS && (
+          <label className={`w-10 h-10 rounded-lg border-2 cursor-pointer flex items-center justify-center ${
+            darkMode ? 'border-gray-700 bg-gray-800' : 'border-gray-200 bg-gray-100'
+          }`} title="Kies eigen kleur">
+            <input
+              type="color"
+              onChange={(e) => addCustomColor(e.target.value)}
+              className="sr-only"
+            />
+            <span className="text-lg">+</span>
+          </label>
+        )}
+      </div>
+
+      {/* Designer note */}
+      <p className={`text-xs italic ${darkMode ? 'text-gray-500' : 'text-gray-400'}`}>
+        💡 Dit zijn voorkeuren. Onze designers gebruiken hun expertise om de perfecte kleurcombinatie te creëren die past bij je merk en doelgroep.
+      </p>
+    </div>
+  )
+}
+
+// Font Selector with live preview
+function FontQuestion({ value, onChange, darkMode }: Pick<QuestionProps, 'value' | 'onChange' | 'darkMode'>) {
+  const fonts = [
+    { value: 'inter', label: 'Inter', style: 'Modern & Clean', family: "'Inter', sans-serif" },
+    { value: 'poppins', label: 'Poppins', style: 'Vriendelijk & Modern', family: "'Poppins', sans-serif" },
+    { value: 'playfair', label: 'Playfair Display', style: 'Elegant & Klassiek', family: "'Playfair Display', serif" },
+    { value: 'montserrat', label: 'Montserrat', style: 'Professioneel & Strak', family: "'Montserrat', sans-serif" },
+    { value: 'roboto', label: 'Roboto', style: 'Neutraal & Leesbaar', family: "'Roboto', sans-serif" },
+    { value: 'opensans', label: 'Open Sans', style: 'Helder & Toegankelijk', family: "'Open Sans', sans-serif" },
+    { value: 'lato', label: 'Lato', style: 'Warm & Zakelijk', family: "'Lato', sans-serif" },
+    { value: 'raleway', label: 'Raleway', style: 'Elegant & Licht', family: "'Raleway', sans-serif" },
+    { value: 'merriweather', label: 'Merriweather', style: 'Klassiek & Betrouwbaar', family: "'Merriweather', serif" },
+    { value: 'nunito', label: 'Nunito', style: 'Speels & Rond', family: "'Nunito', sans-serif" },
+    { value: 'sourcesans', label: 'Source Sans Pro', style: 'Tech & Modern', family: "'Source Sans Pro', sans-serif" },
+    { value: 'dmserif', label: 'DM Serif Display', style: 'Luxe & Statement', family: "'DM Serif Display', serif" },
+  ]
+
+  return (
+    <div className="space-y-3">
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+        {fonts.map((font) => (
+          <button
+            key={font.value}
+            type="button"
+            onClick={() => onChange(font.value)}
+            className={`p-3 rounded-xl border-2 text-left transition-all ${
+              value === font.value
+                ? darkMode
+                  ? 'border-primary-500 bg-primary-500/10'
+                  : 'border-primary-500 bg-primary-50'
+                : darkMode
+                  ? 'border-gray-700 bg-gray-800/50 hover:bg-gray-800'
+                  : 'border-gray-200 bg-white hover:bg-gray-50'
+            }`}
+          >
+            <span 
+              className={`text-lg block mb-1 ${darkMode ? 'text-white' : 'text-gray-900'}`}
+              style={{ fontFamily: font.family }}
+            >
+              {font.label}
+            </span>
+            <span className={`text-xs ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>
+              {font.style}
+            </span>
+          </button>
+        ))}
+      </div>
+
+      {/* Preview */}
+      {value && (
+        <div className={`p-4 rounded-xl ${darkMode ? 'bg-gray-800' : 'bg-gray-100'}`}>
+          <span className={`text-xs ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>Preview:</span>
+          <p 
+            className={`text-2xl mt-1 ${darkMode ? 'text-white' : 'text-gray-900'}`}
+            style={{ fontFamily: fonts.find(f => f.value === value)?.family }}
+          >
+            Jouw website, jouw stijl
+          </p>
+          <p 
+            className={`text-sm mt-1 ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}
+            style={{ fontFamily: fonts.find(f => f.value === value)?.family }}
+          >
+            Dit is hoe je tekst eruit zou kunnen zien met dit lettertype.
+          </p>
+        </div>
+      )}
+
+      {/* Designer note */}
+      <p className={`text-xs italic ${darkMode ? 'text-gray-500' : 'text-gray-400'}`}>
+        💡 Dit is een voorkeur. Onze designers kunnen een alternatief adviseren als dat beter past bij je website.
+      </p>
     </div>
   )
 }
@@ -311,7 +514,11 @@ function QuestionRenderer({ question, value, onChange, disabled, darkMode, googl
     case 'checkbox':
       return <CheckboxQuestion {...props} />
     case 'color':
-      return <ColorQuestion {...props} />
+      return <ColorQuestion value={value} onChange={onChange} darkMode={darkMode} />
+    case 'multicolor':
+      return <MultiColorQuestion value={value} onChange={onChange} darkMode={darkMode} />
+    case 'font':
+      return <FontQuestion value={value} onChange={onChange} darkMode={darkMode} />
     case 'tags':
       return <TagsQuestion {...props} />
     case 'upload':
