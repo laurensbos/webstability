@@ -1723,18 +1723,15 @@ export function WebsiteContentStep({ data, onChange, disabled, packageId, onUpgr
               <p className="text-sm text-gray-400 mb-3">
                 Goede foto's maken een wereld van verschil. We bieden professionele fotografie én drone-opnames voor unieke beelden van je bedrijf.
               </p>
-              <div className="flex flex-wrap items-center gap-3">
-                <a 
-                  href="/diensten/fotografie" 
-                  target="_blank"
-                  className="inline-flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-sky-500 to-blue-500 text-white text-sm font-medium rounded-lg hover:from-sky-600 hover:to-blue-600 transition-all"
-                >
-                  <Image className="w-4 h-4" />
-                  Bekijk fotopakketten
-                  <ArrowUpRight className="w-3 h-3" />
-                </a>
-                <span className="text-xs text-gray-500">Fotografie vanaf €199,- | Drone vanaf €299,-</span>
-              </div>
+              <a 
+                href="/diensten/fotografie" 
+                target="_blank"
+                className="inline-flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-sky-500 to-blue-500 text-white text-sm font-medium rounded-lg hover:from-sky-600 hover:to-blue-600 transition-all"
+              >
+                <Image className="w-4 h-4" />
+                Bekijk opties
+                <ArrowUpRight className="w-3 h-3" />
+              </a>
             </div>
           </div>
         </motion.div>

@@ -36,6 +36,7 @@ import PreLiveApproval from '../components/PreLiveApproval'
 import ClientLiveDashboard from '../components/ClientLiveDashboard'
 import DeveloperUpdates from '../components/DeveloperUpdates'
 import PackagePhaseCard from '../components/PackagePhaseCard'
+import InlineOnboarding from '../components/InlineOnboarding'
 import HelpCenter from '../components/HelpCenter'
 import NotificationBell, { generateProjectNotifications } from '../components/NotificationBell'
 import OnboardingTour, { useOnboardingTour } from '../components/OnboardingTour'
@@ -1133,34 +1134,85 @@ export default function ProjectStatusNew() {
         {/* Package-specific Phase Card - Shows tasks and tips per package */}
         {project.package && project.status !== 'live' && (
           <div data-tour="status">
-            <PackagePhaseCard
-              packageType={project.package as 'starter' | 'professional' | 'business' | 'webshop'}
-              currentPhase={project.status as 'onboarding' | 'design' | 'feedback' | 'revisie' | 'payment' | 'approval' | 'live'}
-              usedRevisions={project.revisionsUsed || 0}
-              darkMode={darkMode}
-              projectId={project.projectId}
-              googleDriveUrl={project.googleDriveUrl}
-            />
+            {/* Inline Onboarding for onboarding phase */}
+            {project.status === 'onboarding' ? (
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                className={`rounded-2xl border overflow-hidden ${
+                  darkMode ? 'bg-gray-900 border-blue-500/30' : 'bg-white border-blue-200 shadow-sm'
+                }`}
+              >
+                {/* Header */}
+                <div className={`p-4 border-b ${darkMode ? 'border-gray-800' : 'border-gray-100'}`}>
+                  <div className="flex items-center gap-3">
+                    <div className={`p-2 rounded-xl ${darkMode ? 'bg-blue-500/10' : 'bg-blue-100'}`}>
+                      <FileText className={`w-5 h-5 ${darkMode ? 'text-blue-400' : 'text-blue-600'}`} />
+                    </div>
+                    <div>
+                      <div className="flex items-center gap-2">
+                        <span className="text-lg">🚀</span>
+                        <h3 className={`font-semibold ${darkMode ? 'text-white' : 'text-gray-900'}`}>
+                          {project.package === 'starter' ? 'Starter' : 
+                           project.package === 'professional' ? 'Professioneel' : 
+                           project.package === 'business' ? 'Business' : 'Webshop'} Pakket
+                        </h3>
+                      </div>
+                      <p className={`text-sm ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>
+                        €{project.package === 'starter' ? '119' : 
+                          project.package === 'professional' ? '169' : 
+                          project.package === 'business' ? '249' : '399'}/maand
+                      </p>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Phase Info */}
+                <div className="p-4">
+                  <h4 className={`font-semibold mb-2 ${darkMode ? 'text-white' : 'text-gray-900'}`}>
+                    Vertel ons over je bedrijf
+                  </h4>
+                  <p className={`text-sm mb-4 ${darkMode ? 'text-gray-400' : 'text-gray-600'}`}>
+                    We hebben wat basisinformatie nodig om je website te maken. Dit duurt ongeveer 5-10 minuten.
+                  </p>
+
+                  {/* Inline Onboarding Component */}
+                  <InlineOnboarding
+                    projectId={project.projectId}
+                    packageType={project.package as 'starter' | 'professional' | 'business' | 'webshop'}
+                    darkMode={darkMode}
+                    googleDriveUrl={project.googleDriveUrl}
+                  />
+                </div>
+              </motion.div>
+            ) : (
+              <PackagePhaseCard
+                packageType={project.package as 'starter' | 'professional' | 'business' | 'webshop'}
+                currentPhase={project.status as 'onboarding' | 'design' | 'feedback' | 'revisie' | 'payment' | 'approval' | 'live'}
+                usedRevisions={project.revisionsUsed || 0}
+                darkMode={darkMode}
+                projectId={project.projectId}
+                googleDriveUrl={project.googleDriveUrl}
+              />
+            )}
           </div>
         )}
 
-        {/* Quick Actions - Context-aware shortcuts (mobile only) */}
-        <div className="md:hidden">
-          <QuickActions
-            phase={project.status as 'onboarding' | 'design' | 'feedback' | 'revisie' | 'payment' | 'approval' | 'live'}
-            onViewDesign={() => setShowDesignPreview(true)}
-            onSendMessage={() => setShowChat(true)}
-            onApprove={() => setShowDesignPreview(true)}
-            onRequestChanges={() => setShowDesignPreview(true)}
-            onLeaveReview={() => window.open('https://g.page/r/review', '_blank')}
-            hasDesignPreview={!!project.designPreviewUrl}
-            hasUnpaidInvoice={project.paymentStatus !== 'paid'}
-            paymentUrl={project.paymentUrl}
-            liveUrl={project.liveUrl}
-            googleDriveUrl={project.googleDriveUrl}
-            darkMode={darkMode}
-          />
-        </div>
+        {/* Quick Actions - Context-aware shortcuts */}
+        <QuickActions
+          phase={project.status as 'onboarding' | 'design' | 'feedback' | 'revisie' | 'payment' | 'approval' | 'live'}
+          onViewDesign={() => setShowDesignPreview(true)}
+          onSendMessage={() => setShowChat(true)}
+          onApprove={() => setShowDesignPreview(true)}
+          onRequestChanges={() => setShowDesignPreview(true)}
+          onLeaveReview={() => window.open('https://g.page/r/review', '_blank')}
+          hasDesignPreview={!!project.designPreviewUrl}
+          hasUnpaidInvoice={project.paymentStatus !== 'paid'}
+          paymentUrl={project.paymentUrl}
+          liveUrl={project.liveUrl}
+          googleDriveUrl={project.googleDriveUrl}
+          darkMode={darkMode}
+        />
 
         {/* Special Revisie Status Card - shown when feedback is being processed */}
         {project.status === 'revisie' && (
