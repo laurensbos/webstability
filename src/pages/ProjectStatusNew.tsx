@@ -42,7 +42,6 @@ import CustomerTaskChecklist from '../components/CustomerTaskChecklist'
 import HelpCenter from '../components/HelpCenter'
 import NotificationBell, { generateProjectNotifications } from '../components/NotificationBell'
 import OnboardingTour, { useOnboardingTour } from '../components/OnboardingTour'
-import ProjectTimeline from '../components/ProjectTimeline'
 import MilestoneCelebration, { useMilestoneCelebration } from '../components/MilestoneCelebration'
 import { ReferralWidget } from '../components/GrowthTools'
 import MobileBottomNav from '../components/MobileBottomNav'
@@ -1124,14 +1123,14 @@ export default function ProjectStatusNew() {
               : 'bg-white border-gray-200 shadow-sm'
           }`}
         >
-          <div className="flex items-center justify-between mb-4">
+          <div className="flex items-center justify-between mb-4 overflow-x-auto pb-2 -mx-2 px-2 scrollbar-thin scrollbar-thumb-gray-300 dark:scrollbar-thumb-gray-600 gap-2 sm:gap-0 min-w-0">
             {PHASES.map((phase, index) => {
               const status = getPhaseStatus(phase.key)
               const Icon = phase.icon
               const isLast = index === PHASES.length - 1
               
               return (
-                <div key={phase.key} className="flex items-center flex-1">
+                <div key={phase.key} className="flex items-center flex-shrink-0 sm:flex-shrink sm:flex-1">
                   <div className="flex flex-col items-center">
                     <motion.div 
                       layout
@@ -1280,21 +1279,23 @@ export default function ProjectStatusNew() {
           </div>
         )}
 
-        {/* Quick Actions - Context-aware shortcuts */}
-        <QuickActions
-          phase={project.status as 'onboarding' | 'design' | 'feedback' | 'revisie' | 'payment' | 'approval' | 'live'}
-          onViewDesign={() => setShowDesignPreview(true)}
-          onSendMessage={() => setShowChat(true)}
-          onApprove={() => setShowDesignPreview(true)}
-          onRequestChanges={() => setShowDesignPreview(true)}
-          onLeaveReview={() => window.open('https://g.page/r/review', '_blank')}
-          hasDesignPreview={!!project.designPreviewUrl}
-          hasUnpaidInvoice={project.paymentStatus !== 'paid'}
-          paymentUrl={project.paymentUrl}
-          liveUrl={project.liveUrl}
-          googleDriveUrl={project.googleDriveUrl}
-          darkMode={darkMode}
-        />
+        {/* Quick Actions - Context-aware shortcuts (mobile only) */}
+        <div className="md:hidden">
+          <QuickActions
+            phase={project.status as 'onboarding' | 'design' | 'feedback' | 'revisie' | 'payment' | 'approval' | 'live'}
+            onViewDesign={() => setShowDesignPreview(true)}
+            onSendMessage={() => setShowChat(true)}
+            onApprove={() => setShowDesignPreview(true)}
+            onRequestChanges={() => setShowDesignPreview(true)}
+            onLeaveReview={() => window.open('https://g.page/r/review', '_blank')}
+            hasDesignPreview={!!project.designPreviewUrl}
+            hasUnpaidInvoice={project.paymentStatus !== 'paid'}
+            paymentUrl={project.paymentUrl}
+            liveUrl={project.liveUrl}
+            googleDriveUrl={project.googleDriveUrl}
+            darkMode={darkMode}
+          />
+        </div>
 
         {/* Customer Task Checklist - Interactive tasks for current phase */}
         {project.status !== 'live' && (
@@ -1313,16 +1314,6 @@ export default function ProjectStatusNew() {
               darkMode={darkMode}
             />
           </div>
-        )}
-
-        {/* Project Timeline - Visual progress overview */}
-        {project.status !== 'live' && (
-          <ProjectTimeline
-            currentPhase={project.status as 'onboarding' | 'design' | 'feedback' | 'revisie' | 'payment' | 'approval' | 'live'}
-            startDate={project.createdAt ? new Date(project.createdAt) : new Date()}
-            darkMode={darkMode}
-            compact={true}
-          />
         )}
 
         {/* Special Revisie Status Card - shown when feedback is being processed */}
@@ -2315,11 +2306,7 @@ export default function ProjectStatusNew() {
       <OnboardingTour
         isOpen={shouldShowTour && !loading && !error}
         onClose={dismissTour}
-        onComplete={() => {
-          dismissTour()
-          // Celebrate onboarding complete
-          celebrate('onboarding_complete')
-        }}
+        onComplete={dismissTour}
         projectName={project?.businessName}
       />
 

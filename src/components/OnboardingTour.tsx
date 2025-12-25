@@ -177,8 +177,11 @@ export default function OnboardingTour({
 
   // Calculate tooltip position based on highlight rect
   const getTooltipStyle = (): React.CSSProperties => {
-    if (!highlightRect || step.position === 'center') {
+    // Always center on mobile or when no target element
+    const isMobile = window.innerWidth < 768
+    if (isMobile || !highlightRect || step.position === 'center') {
       return {
+        position: 'fixed',
         top: '50%',
         left: '50%',
         transform: 'translate(-50%, -50%)'
@@ -186,13 +189,14 @@ export default function OnboardingTour({
     }
 
     const padding = 20
-    const tooltipWidth = 400
+    const tooltipWidth = Math.min(400, window.innerWidth - 40)
     const tooltipHeight = 280
 
     switch (step.position) {
       case 'bottom':
         return {
-          top: highlightRect.bottom + padding,
+          position: 'fixed',
+          top: Math.min(highlightRect.bottom + padding, window.innerHeight - tooltipHeight - padding),
           left: Math.max(padding, Math.min(
             highlightRect.left + highlightRect.width / 2 - tooltipWidth / 2,
             window.innerWidth - tooltipWidth - padding
@@ -201,7 +205,8 @@ export default function OnboardingTour({
         }
       case 'top':
         return {
-          top: highlightRect.top - tooltipHeight - padding,
+          position: 'fixed',
+          top: Math.max(padding, highlightRect.top - tooltipHeight - padding),
           left: Math.max(padding, Math.min(
             highlightRect.left + highlightRect.width / 2 - tooltipWidth / 2,
             window.innerWidth - tooltipWidth - padding
@@ -210,18 +215,27 @@ export default function OnboardingTour({
         }
       case 'left':
         return {
-          top: Math.max(padding, highlightRect.top + highlightRect.height / 2 - tooltipHeight / 2),
-          left: highlightRect.left - tooltipWidth - padding,
+          position: 'fixed',
+          top: Math.max(padding, Math.min(
+            highlightRect.top + highlightRect.height / 2 - tooltipHeight / 2,
+            window.innerHeight - tooltipHeight - padding
+          )),
+          left: Math.max(padding, highlightRect.left - tooltipWidth - padding),
           transform: 'none'
         }
       case 'right':
         return {
-          top: Math.max(padding, highlightRect.top + highlightRect.height / 2 - tooltipHeight / 2),
-          left: highlightRect.right + padding,
+          position: 'fixed',
+          top: Math.max(padding, Math.min(
+            highlightRect.top + highlightRect.height / 2 - tooltipHeight / 2,
+            window.innerHeight - tooltipHeight - padding
+          )),
+          left: Math.min(highlightRect.right + padding, window.innerWidth - tooltipWidth - padding),
           transform: 'none'
         }
       default:
         return {
+          position: 'fixed',
           top: '50%',
           left: '50%',
           transform: 'translate(-50%, -50%)'
@@ -290,7 +304,7 @@ export default function OnboardingTour({
           animate={{ opacity: 1, y: 0, scale: 1 }}
           exit={{ opacity: 0, y: -20, scale: 0.95 }}
           transition={{ type: 'spring', damping: 25, stiffness: 300 }}
-          className="absolute w-[90vw] max-w-[400px] bg-zinc-900 rounded-2xl shadow-2xl border border-zinc-700 overflow-hidden"
+          className="fixed w-[90vw] max-w-[400px] bg-zinc-900 rounded-2xl shadow-2xl border border-zinc-700 overflow-hidden z-[101]"
           style={getTooltipStyle()}
         >
           {/* Progress bar */}
