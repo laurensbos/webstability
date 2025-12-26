@@ -1111,7 +1111,36 @@ export default function InlineOnboarding({
     
     const requiredQuestions = visibleQuestions.filter(q => q.required)
     
-    // If no required questions, section is NOT complete until at least one optional question is answered
+    // Check if all required questions are answered
+    const allRequiredAnswered = requiredQuestions.every(q => {
+      const answer = answers[q.id]
+      if (Array.isArray(answer)) return answer.length > 0
+      return answer !== undefined && answer !== '' && answer !== null
+    })
+    
+    if (!allRequiredAnswered) return false
+    
+    // Special handling for contact section - require more than just email
+    // A contact section should have email + at least phone OR address
+    if (section.id === 'contact') {
+      const hasPhone = answers['contactPhone'] && answers['contactPhone'].trim() !== ''
+      const hasAddress = answers['businessAddress'] && answers['businessAddress'].trim() !== ''
+      // Require at least one additional contact method besides email
+      if (!hasPhone && !hasAddress) {
+        return false
+      }
+      
+      // If social media channels are selected, URLs should be provided
+      const socialMediaAnswer = answers['socialMedia']
+      const socialMediaUrlsAnswer = answers['socialMediaUrls']
+      if (Array.isArray(socialMediaAnswer) && socialMediaAnswer.length > 0) {
+        if (!socialMediaUrlsAnswer || socialMediaUrlsAnswer.trim() === '') {
+          return false
+        }
+      }
+    }
+    
+    // If section has no required questions, require at least one answer
     if (requiredQuestions.length === 0) {
       const hasAnyAnswer = visibleQuestions.some(q => {
         const answer = answers[q.id]
@@ -1121,11 +1150,7 @@ export default function InlineOnboarding({
       return hasAnyAnswer
     }
     
-    return requiredQuestions.every(q => {
-      const answer = answers[q.id]
-      if (Array.isArray(answer)) return answer.length > 0
-      return answer !== undefined && answer !== '' && answer !== null
-    })
+    return true
   }
 
   // Auto-expand first incomplete section
