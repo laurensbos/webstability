@@ -862,13 +862,18 @@ export default function ProjectStatusNew() {
             </Link>
             <div className="flex items-center gap-1">
               {/* Dark mode toggle - always visible */}
-              <DarkModeButton
-                darkMode={darkMode}
-                onToggle={toggleDarkMode}
-                size="md"
-              />
+              <div className="relative group">
+                <DarkModeButton
+                  darkMode={darkMode}
+                  onToggle={toggleDarkMode}
+                  size="md"
+                />
+                <span className="absolute -bottom-8 left-1/2 -translate-x-1/2 px-2 py-1 text-xs font-medium rounded bg-gray-900 text-white opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap pointer-events-none hidden sm:block">
+                  {darkMode ? 'Lichte modus' : 'Donkere modus'}
+                </span>
+              </div>
               {/* Notifications - always visible */}
-              <div data-tour="notifications">
+              <div data-tour="notifications" className="relative group">
                 <NotificationBell
                   notifications={notifications}
                   onMarkAsRead={(id) => {
@@ -881,46 +886,62 @@ export default function ProjectStatusNew() {
                   }}
                   darkMode={darkMode}
                 />
+                <span className="absolute -bottom-8 left-1/2 -translate-x-1/2 px-2 py-1 text-xs font-medium rounded bg-gray-900 text-white opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap pointer-events-none hidden sm:block">
+                  Meldingen
+                </span>
               </div>
               {/* Chat - hidden on mobile (available in bottom nav) */}
-              <button
-                onClick={() => setShowChat(!showChat)}
-                className="hidden sm:flex relative p-2 text-gray-400 hover:text-white transition rounded-lg hover:bg-gray-800"
-              >
-                <MessageSquare className="w-5 h-5" />
-                {unreadMessages > 0 && (
-                  <span className="absolute -top-1 -right-1 w-4 h-4 bg-red-500 text-white text-xs rounded-full flex items-center justify-center">
-                    {unreadMessages}
-                  </span>
-                )}
-              </button>
+              <div className="relative group hidden sm:block">
+                <button
+                  onClick={() => setShowChat(!showChat)}
+                  className="relative p-2 text-gray-400 hover:text-white transition rounded-lg hover:bg-gray-800"
+                >
+                  <MessageSquare className="w-5 h-5" />
+                  {unreadMessages > 0 && (
+                    <span className="absolute -top-1 -right-1 w-4 h-4 bg-red-500 text-white text-xs rounded-full flex items-center justify-center">
+                      {unreadMessages}
+                    </span>
+                  )}
+                </button>
+                <span className="absolute -bottom-8 left-1/2 -translate-x-1/2 px-2 py-1 text-xs font-medium rounded bg-gray-900 text-white opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap pointer-events-none">
+                  Chat
+                </span>
+              </div>
               {/* Help - hidden on mobile (available in bottom nav) */}
-              <button
-                data-tour="help"
-                onClick={() => setShowHelpCenter(true)}
-                className={`hidden sm:flex p-2 transition rounded-lg ${
-                  darkMode 
-                    ? 'text-gray-400 hover:text-white hover:bg-gray-800' 
-                    : 'text-gray-500 hover:text-gray-900 hover:bg-gray-100'
-                }`}
-                title="Hulp & FAQ"
-              >
-                <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                </svg>
-              </button>
+              <div className="relative group hidden sm:block">
+                <button
+                  data-tour="help"
+                  onClick={() => setShowHelpCenter(true)}
+                  className={`p-2 transition rounded-lg ${
+                    darkMode 
+                      ? 'text-gray-400 hover:text-white hover:bg-gray-800' 
+                      : 'text-gray-500 hover:text-gray-900 hover:bg-gray-100'
+                  }`}
+                >
+                  <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                  </svg>
+                </button>
+                <span className="absolute -bottom-8 left-1/2 -translate-x-1/2 px-2 py-1 text-xs font-medium rounded bg-gray-900 text-white opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap pointer-events-none">
+                  Hulp & FAQ
+                </span>
+              </div>
               {/* Account - hidden on mobile (available in bottom nav) */}
-              <button
-                onClick={() => setShowAccountModal(true)}
-                className={`hidden sm:flex p-2 transition rounded-lg ${
-                  darkMode 
-                    ? 'text-gray-400 hover:text-white hover:bg-gray-800' 
-                    : 'text-gray-500 hover:text-gray-900 hover:bg-gray-100'
-                }`}
-                title="Mijn Account"
-              >
-                <FolderOpen className="w-5 h-5" />
-              </button>
+              <div className="relative group hidden sm:block">
+                <button
+                  onClick={() => setShowAccountModal(true)}
+                  className={`p-2 transition rounded-lg ${
+                    darkMode 
+                      ? 'text-gray-400 hover:text-white hover:bg-gray-800' 
+                      : 'text-gray-500 hover:text-gray-900 hover:bg-gray-100'
+                  }`}
+                >
+                  <FolderOpen className="w-5 h-5" />
+                </button>
+                <span className="absolute -bottom-8 left-1/2 -translate-x-1/2 px-2 py-1 text-xs font-medium rounded bg-gray-900 text-white opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap pointer-events-none">
+                  Mijn Account
+                </span>
+              </div>
             </div>
           </div>
           {/* Business name bar - hidden on mobile as info is in bottom nav context */}
