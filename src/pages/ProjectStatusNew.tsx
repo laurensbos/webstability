@@ -1001,10 +1001,24 @@ export default function ProjectStatusNew() {
 
         {/* Account View */}
         {activeView === 'account' && (
-          <AccountSection
-            project={project}
-            onUpdateProject={updateProject}
-          />
+          <>
+            <AccountSection
+              project={project}
+              onUpdateProject={updateProject}
+            />
+            
+            {/* Trust badges for account view */}
+            <div className={`flex justify-center gap-6 py-6 text-xs ${darkMode ? 'text-gray-500' : 'text-gray-400'}`}>
+              <div className="flex items-center gap-1.5">
+                <Shield className="w-4 h-4 text-green-500" />
+                Beveiligd
+              </div>
+              <div className="flex items-center gap-1.5">
+                <Lock className="w-4 h-4 text-blue-500" />
+                Privacy
+              </div>
+            </div>
+          </>
         )}
 
         {/* Dashboard View */}
