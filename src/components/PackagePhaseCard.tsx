@@ -58,21 +58,21 @@ export default function PackagePhaseCard({
       animate={{ opacity: 1, y: 0 }}
       className={`rounded-2xl border overflow-hidden ${colors.bg} ${colors.border}`}
     >
-      {/* Header */}
-      <div className={`p-4 border-b ${colors.border}`}>
+      {/* Header - Compacter op mobiel */}
+      <div className={`p-3 sm:p-4 border-b ${colors.border}`}>
         <div className="flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <div className={`p-2 rounded-xl ${colors.bg}`}>
-              <Package className={`w-5 h-5 ${colors.icon}`} />
+          <div className="flex items-center gap-2 sm:gap-3">
+            <div className={`p-1.5 sm:p-2 rounded-lg sm:rounded-xl ${colors.bg}`}>
+              <Package className={`w-4 h-4 sm:w-5 sm:h-5 ${colors.icon}`} />
             </div>
             <div>
-              <div className="flex items-center gap-2">
-                <span className="text-lg">{pkg.icon}</span>
-                <h3 className={`font-semibold ${darkMode ? 'text-white' : 'text-gray-900'}`}>
-                  {pkg.name} Pakket
+              <div className="flex items-center gap-1.5 sm:gap-2">
+                <span className="text-base sm:text-lg">{pkg.icon}</span>
+                <h3 className={`font-semibold text-sm sm:text-base ${darkMode ? 'text-white' : 'text-gray-900'}`}>
+                  {pkg.name}
                 </h3>
               </div>
-              <p className={`text-sm ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>
+              <p className={`text-xs sm:text-sm ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>
                 €{pkg.price}/maand
               </p>
             </div>
@@ -80,38 +80,38 @@ export default function PackagePhaseCard({
 
           {/* Revisions Badge - Only show in feedback/revisie phase */}
           {(currentPhase === 'feedback' || currentPhase === 'revisie') && (
-            <div className={`flex items-center gap-2 px-3 py-1.5 rounded-full ${
+            <div className={`flex items-center gap-1.5 px-2 sm:px-3 py-1 sm:py-1.5 rounded-full ${
               darkMode ? 'bg-gray-800' : 'bg-white'
             }`}>
-              <RefreshCw className={`w-4 h-4 ${colors.icon}`} />
-              <span className={`text-sm font-medium ${darkMode ? 'text-white' : 'text-gray-900'}`}>
-                {remainingRevisions} revisie{remainingRevisions !== 1 ? 's' : ''} over
+              <RefreshCw className={`w-3 h-3 sm:w-4 sm:h-4 ${colors.icon}`} />
+              <span className={`text-xs sm:text-sm font-medium ${darkMode ? 'text-white' : 'text-gray-900'}`}>
+                {remainingRevisions} revisie{remainingRevisions !== 1 ? 's' : ''}
               </span>
             </div>
           )}
         </div>
       </div>
 
-      {/* Phase Info */}
-      <div className="p-4">
-        <h4 className={`font-semibold mb-2 ${darkMode ? 'text-white' : 'text-gray-900'}`}>
+      {/* Phase Info - Compacter op mobiel */}
+      <div className="p-3 sm:p-4">
+        <h4 className={`font-semibold text-sm sm:text-base mb-1 sm:mb-2 ${darkMode ? 'text-white' : 'text-gray-900'}`}>
           {phaseInfo.title}
         </h4>
-        <p className={`text-sm mb-4 ${darkMode ? 'text-gray-400' : 'text-gray-600'}`}>
+        <p className={`text-xs sm:text-sm mb-3 sm:mb-4 ${darkMode ? 'text-gray-400' : 'text-gray-600'}`}>
           {phaseInfo.description}
         </p>
 
         {/* Estimated Time */}
         {estimatedDays > 0 && currentPhase !== 'live' && (
-          <div className={`flex items-center gap-2 mb-4 text-sm ${darkMode ? 'text-gray-500' : 'text-gray-400'}`}>
-            <Clock className="w-4 h-4" />
+          <div className={`flex items-center gap-2 mb-3 sm:mb-4 text-xs sm:text-sm ${darkMode ? 'text-gray-500' : 'text-gray-400'}`}>
+            <Clock className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
             <span>Geschatte tijd: {estimatedDays} werkdag{estimatedDays !== 1 ? 'en' : ''}</span>
           </div>
         )}
 
-        {/* Client Tasks */}
+        {/* Client Tasks - Hidden on mobile for cleaner look, shown on desktop */}
         {phaseInfo.clientTasks.length > 0 && (
-          <div className="mb-4">
+          <div className="mb-3 sm:mb-4 hidden sm:block">
             <h5 className={`text-sm font-medium mb-2 ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>
               Jouw taken:
             </h5>
@@ -185,13 +185,13 @@ export default function PackagePhaseCard({
           </div>
         )}
 
-        {/* Upload Button - Only in onboarding phase with drive URL */}
+        {/* Upload Button - Only in onboarding phase with drive URL - Hidden on mobile (already in QuickActions) */}
         {currentPhase === 'onboarding' && googleDriveUrl && (
           <a
             href={googleDriveUrl}
             target="_blank"
             rel="noopener noreferrer"
-            className={`flex items-center justify-center gap-2 w-full py-3 mb-4 rounded-xl font-medium text-sm transition active:scale-[0.98] ${
+            className={`hidden sm:flex items-center justify-center gap-2 w-full py-2.5 sm:py-3 mb-3 sm:mb-4 rounded-xl font-medium text-xs sm:text-sm transition active:scale-[0.98] ${
               darkMode 
                 ? 'bg-green-500/20 hover:bg-green-500/30 text-green-400 border border-green-500/30' 
                 : 'bg-green-600 hover:bg-green-700 text-white'
@@ -203,20 +203,20 @@ export default function PackagePhaseCard({
           </a>
         )}
 
-        {/* Tips */}
+        {/* Tips - Compacter op mobiel */}
         {phaseInfo.tips.length > 0 && (
-          <div className={`p-3 rounded-xl ${
+          <div className={`p-2.5 sm:p-3 rounded-xl ${
             darkMode ? 'bg-amber-500/10 border border-amber-500/20' : 'bg-amber-50 border border-amber-200'
           }`}>
             <div className="flex items-start gap-2">
-              <Lightbulb className="w-4 h-4 text-amber-500 flex-shrink-0 mt-0.5" />
+              <Lightbulb className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-amber-500 flex-shrink-0 mt-0.5" />
               <div>
-                <p className={`text-sm font-medium mb-1 ${darkMode ? 'text-amber-300' : 'text-amber-700'}`}>
+                <p className={`text-xs sm:text-sm font-medium mb-0.5 sm:mb-1 ${darkMode ? 'text-amber-300' : 'text-amber-700'}`}>
                   Tips
                 </p>
-                <ul className="space-y-1">
-                  {phaseInfo.tips.map((tip, index) => (
-                    <li key={index} className={`text-sm ${darkMode ? 'text-amber-200/70' : 'text-amber-600'}`}>
+                <ul className="space-y-0.5 sm:space-y-1">
+                  {phaseInfo.tips.slice(0, 2).map((tip, index) => (
+                    <li key={index} className={`text-xs sm:text-sm ${darkMode ? 'text-amber-200/70' : 'text-amber-600'}`}>
                       • {tip}
                     </li>
                   ))}
@@ -227,26 +227,26 @@ export default function PackagePhaseCard({
         )}
       </div>
 
-      {/* Package Features Teaser - Only in live phase */}
+      {/* Package Features Teaser - Only in live phase, compacter op mobiel */}
       {currentPhase === 'live' && (
-        <div className={`p-4 border-t ${colors.border}`}>
-          <p className={`text-sm font-medium mb-2 ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>
+        <div className={`p-3 sm:p-4 border-t ${colors.border}`}>
+          <p className={`text-xs sm:text-sm font-medium mb-1.5 sm:mb-2 ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>
             Inclusief in je pakket:
           </p>
-          <div className="flex flex-wrap gap-2">
-            {pkg.features.slice(0, 4).map((feature, index) => (
+          <div className="flex flex-wrap gap-1.5 sm:gap-2">
+            {pkg.features.slice(0, 3).map((feature, index) => (
               <span
                 key={index}
-                className={`px-2 py-1 rounded-lg text-xs ${
+                className={`px-2 py-0.5 sm:py-1 rounded-lg text-[10px] sm:text-xs ${
                   darkMode ? 'bg-gray-800 text-gray-300' : 'bg-gray-100 text-gray-600'
                 }`}
               >
                 {feature}
               </span>
             ))}
-            {pkg.features.length > 4 && (
-              <span className={`px-2 py-1 rounded-lg text-xs ${colors.icon}`}>
-                +{pkg.features.length - 4} meer
+            {pkg.features.length > 3 && (
+              <span className={`px-2 py-0.5 sm:py-1 rounded-lg text-[10px] sm:text-xs ${colors.icon}`}>
+                +{pkg.features.length - 3} meer
               </span>
             )}
           </div>

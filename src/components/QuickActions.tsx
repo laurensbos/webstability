@@ -5,7 +5,7 @@
  * Gives users fast access to the most relevant actions
  */
 
-import { motion, AnimatePresence } from 'framer-motion'
+import { motion } from 'framer-motion'
 import {
   Upload,
   Eye,
@@ -98,6 +98,7 @@ export default function QuickActions({
         baseActions.push({
           id: 'message',
           label: 'Stel een vraag',
+          mobileLabel: 'Vraag stellen',
           description: 'Over het design proces',
           icon: MessageSquare,
           onClick: onSendMessage || (() => {}),
@@ -107,6 +108,7 @@ export default function QuickActions({
           baseActions.push({
             id: 'files',
             label: 'Bekijk bestanden',
+            mobileLabel: 'Bestanden',
             icon: FolderOpen,
             onClick: () => window.open(googleDriveUrl, '_blank'),
             variant: 'secondary'
@@ -119,6 +121,7 @@ export default function QuickActions({
           baseActions.push({
             id: 'view-design',
             label: 'Bekijk ontwerp',
+            mobileLabel: 'Bekijken',
             description: 'Geef je feedback',
             icon: Eye,
             onClick: onViewDesign || (() => {}),
@@ -129,6 +132,7 @@ export default function QuickActions({
         baseActions.push({
           id: 'approve',
           label: 'Goedkeuren',
+          mobileLabel: 'Goedkeuren',
           description: 'Start bouw',
           icon: CheckCircle2,
           onClick: onApprove || (() => {}),
@@ -137,6 +141,7 @@ export default function QuickActions({
         baseActions.push({
           id: 'changes',
           label: 'Wijzigingen',
+          mobileLabel: 'Wijzigen',
           description: 'Aanpassingen doorgeven',
           icon: RefreshCw,
           onClick: onRequestChanges || (() => {}),
@@ -209,6 +214,7 @@ export default function QuickActions({
           baseActions.push({
             id: 'website',
             label: 'Bekijk website',
+            mobileLabel: 'Website',
             description: 'Ga naar je site',
             icon: ExternalLink,
             onClick: () => window.open(liveUrl, '_blank'),
@@ -218,6 +224,7 @@ export default function QuickActions({
         baseActions.push({
           id: 'review',
           label: 'Laat review achter',
+          mobileLabel: 'Review',
           description: '⭐ Help anderen',
           icon: Star,
           onClick: onLeaveReview || (() => {}),
@@ -226,6 +233,7 @@ export default function QuickActions({
         baseActions.push({
           id: 'message',
           label: 'Support nodig?',
+          mobileLabel: 'Support',
           icon: MessageSquare,
           onClick: onSendMessage || (() => {}),
           variant: 'secondary'
@@ -259,39 +267,66 @@ export default function QuickActions({
     <motion.div
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
-      className={`rounded-2xl border p-4 ${
+      className={`rounded-2xl border p-3 sm:p-4 ${
         darkMode
           ? 'bg-gray-900/50 border-gray-800'
           : 'bg-white border-gray-200 shadow-sm'
       }`}
     >
-      <div className="flex items-center gap-2 mb-3">
-        <Sparkles className={`w-4 h-4 ${darkMode ? 'text-blue-400' : 'text-blue-500'}`} />
-        <h3 className={`text-sm font-semibold ${darkMode ? 'text-white' : 'text-gray-900'}`}>
-          Snelle acties
-        </h3>
+      {/* Mobile: Horizontal scroll buttons */}
+      <div className="sm:hidden">
+        <div className="flex gap-2 overflow-x-auto pb-1 -mx-1 px-1 scrollbar-hide">
+          {actions.map((action) => {
+            const Icon = action.icon
+            return (
+              <button
+                key={action.id}
+                onClick={action.onClick}
+                disabled={action.disabled}
+                className={`relative flex-shrink-0 flex items-center gap-2 px-4 py-2.5 rounded-xl transition-all ${
+                  variantStyles[action.variant || 'secondary']
+                } ${action.disabled ? 'opacity-50' : ''}`}
+              >
+                {action.badge && (
+                  <span className="absolute -top-1 -right-1 w-2 h-2 bg-red-500 rounded-full" />
+                )}
+                <Icon className="w-4 h-4" />
+                <span className="text-sm font-medium whitespace-nowrap">
+                  {action.mobileLabel || action.label}
+                </span>
+              </button>
+            )
+          })}
+        </div>
       </div>
 
-      <div className="grid gap-2">
-        {actions.map((action, index) => {
-          const Icon = action.icon
-          
-          return (
-            <motion.button
-              key={action.id}
-              initial={{ opacity: 0, x: -20 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ delay: index * 0.05 }}
-              whileHover={{ scale: 1.01 }}
-              whileTap={{ scale: 0.99 }}
-              onClick={action.onClick}
-              disabled={action.disabled}
-              className={`relative flex items-center gap-3 p-3 rounded-xl transition-all ${
-                variantStyles[action.variant || 'secondary']
-              } ${action.disabled ? 'opacity-50 cursor-not-allowed' : ''}`}
-            >
-              {/* Badge */}
-              <AnimatePresence>
+      {/* Desktop: Full action cards */}
+      <div className="hidden sm:block">
+        <div className="flex items-center gap-2 mb-3">
+          <Sparkles className={`w-4 h-4 ${darkMode ? 'text-blue-400' : 'text-blue-500'}`} />
+          <h3 className={`text-sm font-semibold ${darkMode ? 'text-white' : 'text-gray-900'}`}>
+            Snelle acties
+          </h3>
+        </div>
+
+        <div className="grid gap-2">
+          {actions.map((action, index) => {
+            const Icon = action.icon
+            
+            return (
+              <motion.button
+                key={action.id}
+                initial={{ opacity: 0, x: -20 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ delay: index * 0.05 }}
+                whileHover={{ scale: 1.01 }}
+                whileTap={{ scale: 0.99 }}
+                onClick={action.onClick}
+                disabled={action.disabled}
+                className={`relative flex items-center gap-3 p-3 rounded-xl transition-all ${
+                  variantStyles[action.variant || 'secondary']
+                } ${action.disabled ? 'opacity-50 cursor-not-allowed' : ''}`}
+              >
                 {action.badge && (
                   <motion.span
                     initial={{ scale: 0 }}
@@ -301,50 +336,43 @@ export default function QuickActions({
                     {action.badge}
                   </motion.span>
                 )}
-              </AnimatePresence>
 
-              <div className={`w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0 ${
-                action.variant === 'primary' || action.variant === 'success'
-                  ? 'bg-white/20'
-                  : darkMode
-                    ? 'bg-gray-700'
-                    : 'bg-gray-100'
-              }`}>
-                <Icon className="w-5 h-5" />
-              </div>
+                <div className={`w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0 ${
+                  action.variant === 'primary' || action.variant === 'success'
+                    ? 'bg-white/20'
+                    : darkMode
+                      ? 'bg-gray-700'
+                      : 'bg-gray-100'
+                }`}>
+                  <Icon className="w-5 h-5" />
+                </div>
 
-              <div className="flex-1 text-left">
-                <p className="font-medium text-sm">
-                  {action.mobileLabel ? (
-                    <>
-                      <span className="sm:hidden">{action.mobileLabel}</span>
-                      <span className="hidden sm:inline">{action.label}</span>
-                    </>
-                  ) : action.label}
-                </p>
-                {action.description && (
-                  <p className={`text-xs mt-0.5 hidden sm:block ${
-                    action.variant === 'primary' || action.variant === 'success'
-                      ? 'text-white/70'
-                      : darkMode
-                        ? 'text-gray-400'
-                        : 'text-gray-500'
-                  }`}>
-                    {action.description}
-                  </p>
-                )}
-              </div>
+                <div className="flex-1 text-left">
+                  <p className="font-medium text-sm">{action.label}</p>
+                  {action.description && (
+                    <p className={`text-xs mt-0.5 ${
+                      action.variant === 'primary' || action.variant === 'success'
+                        ? 'text-white/70'
+                        : darkMode
+                          ? 'text-gray-400'
+                          : 'text-gray-500'
+                    }`}>
+                      {action.description}
+                    </p>
+                  )}
+                </div>
 
-              <ArrowRight className={`w-4 h-4 ${
-                action.variant === 'primary' || action.variant === 'success'
-                  ? 'text-white/70'
-                  : darkMode
-                    ? 'text-gray-500'
-                    : 'text-gray-400'
-              }`} />
-            </motion.button>
-          )
-        })}
+                <ArrowRight className={`w-4 h-4 ${
+                  action.variant === 'primary' || action.variant === 'success'
+                    ? 'text-white/70'
+                    : darkMode
+                      ? 'text-gray-500'
+                      : 'text-gray-400'
+                }`} />
+              </motion.button>
+            )
+          })}
+        </div>
       </div>
     </motion.div>
   )
