@@ -1,26 +1,20 @@
 /**
- * OnboardingTour - Interactieve walkthrough voor nieuwe klanten
+ * OnboardingTour - Simpele walkthrough voor nieuwe klanten
  * 
- * Begeleidt klanten stap voor stap door het portaal:
- * 1. Welkom & overzicht
- * 2. Project status uitleg
- * 3. Taken checklist
- * 4. Design feedback geven
- * 5. Contact opnemen
+ * Altijd gecentreerde cards, mobiel-vriendelijk, voor leken geschreven
  */
 
-import { useState, useEffect, useRef } from 'react'
+import { useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import {
   X,
   ChevronRight,
   ChevronLeft,
   Sparkles,
-  CheckCircle,
-  Layout,
-  MessageSquare,
-  FileCheck,
-  HelpCircle,
+  Rocket,
+  FileEdit,
+  Eye,
+  MessageCircle,
   PartyPopper
 } from 'lucide-react'
 
@@ -30,71 +24,81 @@ interface TourStep {
   description: string
   icon: React.ReactNode
   emoji: string
-  targetSelector?: string // CSS selector for highlighting element
-  position: 'center' | 'top' | 'bottom' | 'left' | 'right'
+  tips?: string[]
 }
 
 const TOUR_STEPS: TourStep[] = [
   {
     id: 'welcome',
-    title: 'Welkom bij je project! 👋',
-    description: 'Dit is je persoonlijke project portaal. Hier kun je de voortgang volgen, feedback geven en alles regelen voor je nieuwe website.',
+    title: 'Welkom! 👋',
+    description: 'Super dat je er bent! Dit is jouw persoonlijke dashboard waar je alles kunt regelen voor je nieuwe website.',
     icon: <Sparkles className="w-6 h-6" />,
     emoji: '🎉',
-    position: 'center'
+    tips: [
+      'Je kunt hier altijd terugkomen',
+      'Alle updates verschijnen automatisch',
+      'Je hoeft nergens voor te betalen tot je tevreden bent'
+    ]
   },
   {
-    id: 'status',
-    title: 'Project Status',
-    description: 'Bovenaan zie je altijd in welke fase je project zich bevindt. Van onboarding tot live - je kunt elke stap volgen.',
-    icon: <Layout className="w-6 h-6" />,
+    id: 'progress',
+    title: 'Je voortgang',
+    description: 'Bovenaan zie je een balk die laat zien hoe ver je project is. Van "Onboarding" tot "Live" - zo weet je altijd waar je staat.',
+    icon: <Rocket className="w-6 h-6" />,
     emoji: '📊',
-    targetSelector: '[data-tour="status"]',
-    position: 'bottom'
+    tips: [
+      'Elke fase heeft een andere kleur',
+      'Je krijgt een melding als er iets verandert',
+      'Klik op een fase om meer te lezen'
+    ]
   },
   {
-    id: 'tasks',
-    title: 'Jouw Taken',
-    description: 'Hier zie je wat er van jou nodig is. Vink taken af wanneer ze klaar zijn - zo weten wij dat we verder kunnen.',
-    icon: <FileCheck className="w-6 h-6" />,
-    emoji: '✅',
-    targetSelector: '[data-tour="tasks"]',
-    position: 'right'
+    id: 'onboarding',
+    title: 'Vragen invullen',
+    description: 'We hebben wat informatie nodig om je website te maken. Beantwoord de vragen - dit kost ongeveer 10 minuten.',
+    icon: <FileEdit className="w-6 h-6" />,
+    emoji: '✏️',
+    tips: [
+      'Vul alles rustig in, je kunt het later nog aanpassen',
+      'Niet alle vragen zijn verplicht',
+      'Twijfel je? Laat het leeg en we nemen contact op'
+    ]
   },
   {
     id: 'design',
-    title: 'Design Bekijken',
-    description: 'Wanneer je design klaar is, kun je het hier bekijken en direct feedback geven. Simpel met duimpjes omhoog of omlaag!',
-    icon: <CheckCircle className="w-6 h-6" />,
+    title: 'Design bekijken',
+    description: 'Zodra je design klaar is, kun je het hier bekijken. Vind je iets niet mooi? Geef feedback met duimpje omhoog of omlaag.',
+    icon: <Eye className="w-6 h-6" />,
     emoji: '🎨',
-    targetSelector: '[data-tour="design"]',
-    position: 'left'
+    tips: [
+      'Je krijgt een mail als het design klaar is',
+      'Feedback geven kan per onderdeel',
+      'Tot 2 revisierondes zijn gratis inbegrepen'
+    ]
   },
   {
-    id: 'help',
-    title: 'Hulp Nodig?',
-    description: 'Klik op het vraagteken voor veelgestelde vragen en tutorials. Je kunt ook altijd contact opnemen via WhatsApp of email.',
-    icon: <HelpCircle className="w-6 h-6" />,
-    emoji: '💡',
-    targetSelector: '[data-tour="help"]',
-    position: 'bottom'
-  },
-  {
-    id: 'messages',
-    title: 'Berichten & Updates',
-    description: 'Je ontvangt meldingen wanneer er nieuws is over je project. Check regelmatig je notificaties!',
-    icon: <MessageSquare className="w-6 h-6" />,
-    emoji: '🔔',
-    targetSelector: '[data-tour="notifications"]',
-    position: 'bottom'
+    id: 'contact',
+    title: 'Hulp nodig?',
+    description: 'Onderaan vind je knoppen voor Chat, Help en je Gegevens. Vragen? Stuur ons een berichtje - we reageren snel!',
+    icon: <MessageCircle className="w-6 h-6" />,
+    emoji: '💬',
+    tips: [
+      'Chat werkt het snelst',
+      'In "Help" staan veelgestelde vragen',
+      'Bij "Mijn gegevens" kun je je info aanpassen'
+    ]
   },
   {
     id: 'done',
-    title: 'Klaar om te beginnen!',
-    description: 'Je weet nu hoe alles werkt. Heb je vragen? We staan altijd voor je klaar. Veel succes met je project!',
+    title: 'Klaar om te starten!',
+    description: 'Dat was het! Begin met het invullen van de vragen, en wij gaan voor je aan de slag. Je nieuwe website komt eraan! 🚀',
     icon: <PartyPopper className="w-6 h-6" />,
     emoji: '🚀',
-    position: 'center'
+    tips: [
+      'Start met de eerste vraag hieronder',
+      'Je kunt deze rondleiding altijd opnieuw bekijken',
+      'Veel succes!'
+    ]
   }
 ]
 
@@ -112,32 +116,11 @@ export default function OnboardingTour({
   projectName = 'je project'
 }: OnboardingTourProps) {
   const [currentStep, setCurrentStep] = useState(0)
-  const [highlightRect, setHighlightRect] = useState<DOMRect | null>(null)
-  const overlayRef = useRef<HTMLDivElement>(null)
   
   const step = TOUR_STEPS[currentStep]
   const isFirstStep = currentStep === 0
   const isLastStep = currentStep === TOUR_STEPS.length - 1
   const progress = ((currentStep + 1) / TOUR_STEPS.length) * 100
-
-  // Find and highlight target element
-  useEffect(() => {
-    if (!isOpen || !step.targetSelector) {
-      setHighlightRect(null)
-      return
-    }
-
-    const targetElement = document.querySelector(step.targetSelector)
-    if (targetElement) {
-      const rect = targetElement.getBoundingClientRect()
-      setHighlightRect(rect)
-      
-      // Scroll element into view if needed
-      targetElement.scrollIntoView({ behavior: 'smooth', block: 'center' })
-    } else {
-      setHighlightRect(null)
-    }
-  }, [isOpen, step.targetSelector, currentStep])
 
   // Handle keyboard navigation
   useEffect(() => {
@@ -161,8 +144,14 @@ export default function OnboardingTour({
     return () => window.removeEventListener('keydown', handleKeyDown)
   }, [isOpen, isFirstStep, isLastStep])
 
+  // Reset step when tour opens
+  useEffect(() => {
+    if (isOpen) {
+      setCurrentStep(0)
+    }
+  }, [isOpen])
+
   const handleComplete = () => {
-    // Save completion to localStorage
     localStorage.setItem('onboarding-tour-completed', 'true')
     onComplete()
     onClose()
@@ -175,180 +164,101 @@ export default function OnboardingTour({
 
   if (!isOpen) return null
 
-  // Calculate tooltip position based on highlight rect
-  const getTooltipStyle = (): React.CSSProperties => {
-    // Always center on mobile or when no target element
-    const isMobile = window.innerWidth < 768
-    if (isMobile || !highlightRect || step.position === 'center') {
-      return {
-        position: 'fixed',
-        top: '50%',
-        left: '50%',
-        transform: 'translate(-50%, -50%)'
-      }
-    }
-
-    const padding = 20
-    const tooltipWidth = Math.min(400, window.innerWidth - 40)
-    const tooltipHeight = 280
-
-    switch (step.position) {
-      case 'bottom':
-        return {
-          position: 'fixed',
-          top: Math.min(highlightRect.bottom + padding, window.innerHeight - tooltipHeight - padding),
-          left: Math.max(padding, Math.min(
-            highlightRect.left + highlightRect.width / 2 - tooltipWidth / 2,
-            window.innerWidth - tooltipWidth - padding
-          )),
-          transform: 'none'
-        }
-      case 'top':
-        return {
-          position: 'fixed',
-          top: Math.max(padding, highlightRect.top - tooltipHeight - padding),
-          left: Math.max(padding, Math.min(
-            highlightRect.left + highlightRect.width / 2 - tooltipWidth / 2,
-            window.innerWidth - tooltipWidth - padding
-          )),
-          transform: 'none'
-        }
-      case 'left':
-        return {
-          position: 'fixed',
-          top: Math.max(padding, Math.min(
-            highlightRect.top + highlightRect.height / 2 - tooltipHeight / 2,
-            window.innerHeight - tooltipHeight - padding
-          )),
-          left: Math.max(padding, highlightRect.left - tooltipWidth - padding),
-          transform: 'none'
-        }
-      case 'right':
-        return {
-          position: 'fixed',
-          top: Math.max(padding, Math.min(
-            highlightRect.top + highlightRect.height / 2 - tooltipHeight / 2,
-            window.innerHeight - tooltipHeight - padding
-          )),
-          left: Math.min(highlightRect.right + padding, window.innerWidth - tooltipWidth - padding),
-          transform: 'none'
-        }
-      default:
-        return {
-          position: 'fixed',
-          top: '50%',
-          left: '50%',
-          transform: 'translate(-50%, -50%)'
-        }
-    }
-  }
-
   return (
     <AnimatePresence>
       <motion.div
-        ref={overlayRef}
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         exit={{ opacity: 0 }}
-        className="fixed inset-0 z-[100]"
+        className="fixed inset-0 z-[100] flex items-center justify-center p-4"
       >
-        {/* Dark overlay with cutout for highlighted element */}
-        <svg className="absolute inset-0 w-full h-full">
-          <defs>
-            <mask id="highlight-mask">
-              <rect x="0" y="0" width="100%" height="100%" fill="white" />
-              {highlightRect && (
-                <rect
-                  x={highlightRect.left - 8}
-                  y={highlightRect.top - 8}
-                  width={highlightRect.width + 16}
-                  height={highlightRect.height + 16}
-                  rx="12"
-                  fill="black"
-                />
-              )}
-            </mask>
-          </defs>
-          <rect
-            x="0"
-            y="0"
-            width="100%"
-            height="100%"
-            fill="rgba(0, 0, 0, 0.85)"
-            mask="url(#highlight-mask)"
-          />
-        </svg>
+        {/* Dark overlay */}
+        <div 
+          className="absolute inset-0 bg-black/80 backdrop-blur-sm"
+          onClick={handleSkip}
+        />
 
-        {/* Highlight ring around target element */}
-        {highlightRect && (
-          <motion.div
-            initial={{ opacity: 0, scale: 0.9 }}
-            animate={{ opacity: 1, scale: 1 }}
-            className="absolute pointer-events-none"
-            style={{
-              top: highlightRect.top - 8,
-              left: highlightRect.left - 8,
-              width: highlightRect.width + 16,
-              height: highlightRect.height + 16,
-              borderRadius: 12,
-              border: '3px solid rgb(168, 85, 247)',
-              boxShadow: '0 0 20px rgba(168, 85, 247, 0.5), inset 0 0 20px rgba(168, 85, 247, 0.1)'
-            }}
-          />
-        )}
-
-        {/* Tooltip card */}
+        {/* Card - always centered */}
         <motion.div
           key={currentStep}
-          initial={{ opacity: 0, y: 20, scale: 0.95 }}
+          initial={{ opacity: 0, y: 30, scale: 0.95 }}
           animate={{ opacity: 1, y: 0, scale: 1 }}
-          exit={{ opacity: 0, y: -20, scale: 0.95 }}
+          exit={{ opacity: 0, y: -30, scale: 0.95 }}
           transition={{ type: 'spring', damping: 25, stiffness: 300 }}
-          className="fixed w-[90vw] max-w-[400px] bg-zinc-900 rounded-2xl shadow-2xl border border-zinc-700 overflow-hidden z-[101]"
-          style={getTooltipStyle()}
+          className="relative w-full max-w-md bg-gradient-to-b from-gray-900 to-gray-950 rounded-3xl shadow-2xl border border-gray-700/50 overflow-hidden"
         >
           {/* Progress bar */}
-          <div className="h-1 bg-zinc-800">
+          <div className="h-1.5 bg-gray-800">
             <motion.div
-              className="h-full bg-gradient-to-r from-purple-600 to-purple-400"
+              className="h-full bg-gradient-to-r from-primary-600 to-primary-400"
               initial={{ width: 0 }}
               animate={{ width: `${progress}%` }}
-              transition={{ duration: 0.3 }}
+              transition={{ duration: 0.4, ease: 'easeOut' }}
             />
           </div>
 
+          {/* Close button */}
+          <button
+            onClick={handleSkip}
+            className="absolute top-4 right-4 p-2 text-gray-500 hover:text-white hover:bg-gray-800 rounded-xl transition-colors z-10"
+            aria-label="Sluiten"
+          >
+            <X className="w-5 h-5" />
+          </button>
+
           {/* Content */}
-          <div className="p-6">
-            {/* Emoji & Icon */}
-            <div className="flex items-center gap-3 mb-4">
-              <span className="text-4xl">{step.emoji}</span>
-              <div className="p-2 bg-purple-500/20 rounded-xl text-purple-400">
-                {step.icon}
+          <div className="p-6 sm:p-8">
+            {/* Emoji & Step indicator */}
+            <div className="flex items-center justify-between mb-6">
+              <div className="flex items-center gap-3">
+                <span className="text-5xl">{step.emoji}</span>
+                <div className="p-2.5 bg-primary-500/20 rounded-xl text-primary-400">
+                  {step.icon}
+                </div>
               </div>
+              <span className="text-sm text-gray-500 font-medium">
+                {currentStep + 1} / {TOUR_STEPS.length}
+              </span>
             </div>
 
             {/* Title */}
-            <h3 className="text-xl font-bold text-white mb-2">
+            <h3 className="text-2xl sm:text-3xl font-bold text-white mb-3">
               {step.title.replace('je project', projectName)}
             </h3>
 
             {/* Description */}
-            <p className="text-zinc-400 text-sm leading-relaxed mb-6">
+            <p className="text-gray-400 text-base sm:text-lg leading-relaxed mb-6">
               {step.description}
             </p>
 
-            {/* Step indicator */}
-            <div className="flex items-center gap-1.5 mb-4">
+            {/* Tips */}
+            {step.tips && step.tips.length > 0 && (
+              <div className="bg-gray-800/50 rounded-2xl p-4 mb-6">
+                <ul className="space-y-2">
+                  {step.tips.map((tip, index) => (
+                    <li key={index} className="flex items-start gap-2.5 text-sm text-gray-300">
+                      <span className="text-primary-400 mt-0.5">✓</span>
+                      {tip}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            )}
+
+            {/* Step dots */}
+            <div className="flex items-center justify-center gap-2 mb-6">
               {TOUR_STEPS.map((_, index) => (
-                <div
+                <button
                   key={index}
-                  className={`h-1.5 rounded-full transition-all duration-300 ${
+                  onClick={() => setCurrentStep(index)}
+                  className={`h-2 rounded-full transition-all duration-300 ${
                     index === currentStep
-                      ? 'w-6 bg-purple-500'
+                      ? 'w-8 bg-primary-500'
                       : index < currentStep
-                      ? 'w-1.5 bg-purple-500/50'
-                      : 'w-1.5 bg-zinc-700'
+                      ? 'w-2 bg-primary-500/50 hover:bg-primary-500/70'
+                      : 'w-2 bg-gray-700 hover:bg-gray-600'
                   }`}
+                  aria-label={`Ga naar stap ${index + 1}`}
                 />
               ))}
             </div>
@@ -358,68 +268,45 @@ export default function OnboardingTour({
               {!isFirstStep && (
                 <button
                   onClick={() => setCurrentStep(prev => prev - 1)}
-                  className="px-4 py-2.5 text-zinc-400 hover:text-white transition-colors flex items-center gap-1"
+                  className="flex items-center gap-1.5 px-4 py-3 text-gray-400 hover:text-white transition-colors rounded-xl hover:bg-gray-800"
                 >
                   <ChevronLeft className="w-4 h-4" />
-                  Vorige
+                  <span className="hidden sm:inline">Vorige</span>
                 </button>
               )}
               
               <div className="flex-1" />
               
               {!isLastStep ? (
-                <>
-                  <button
-                    onClick={handleSkip}
-                    className="px-4 py-2.5 text-zinc-500 hover:text-zinc-300 transition-colors text-sm"
-                  >
-                    Overslaan
-                  </button>
-                  <button
-                    onClick={() => setCurrentStep(prev => prev + 1)}
-                    className="px-5 py-2.5 bg-purple-600 text-white rounded-xl font-medium hover:bg-purple-700 transition-colors flex items-center gap-2"
-                  >
-                    Volgende
-                    <ChevronRight className="w-4 h-4" />
-                  </button>
-                </>
+                <button
+                  onClick={() => setCurrentStep(prev => prev + 1)}
+                  className="flex-1 sm:flex-none px-6 py-3 bg-primary-600 text-white rounded-xl font-semibold hover:bg-primary-700 transition-colors flex items-center justify-center gap-2 shadow-lg shadow-primary-500/25"
+                >
+                  Volgende
+                  <ChevronRight className="w-4 h-4" />
+                </button>
               ) : (
                 <button
                   onClick={handleComplete}
-                  className="px-6 py-2.5 bg-gradient-to-r from-purple-600 to-purple-500 text-white rounded-xl font-medium hover:from-purple-700 hover:to-purple-600 transition-all flex items-center gap-2 shadow-lg shadow-purple-500/25"
+                  className="flex-1 sm:flex-none px-6 py-3 bg-gradient-to-r from-primary-600 to-primary-500 text-white rounded-xl font-semibold hover:from-primary-700 hover:to-primary-600 transition-all flex items-center justify-center gap-2 shadow-lg shadow-primary-500/25"
                 >
                   <Sparkles className="w-4 h-4" />
                   Aan de slag!
                 </button>
               )}
             </div>
+
+            {/* Skip link - only on first few steps */}
+            {currentStep < 2 && (
+              <button
+                onClick={handleSkip}
+                className="w-full mt-4 text-center text-sm text-gray-600 hover:text-gray-400 transition-colors"
+              >
+                Overslaan, ik ken het al
+              </button>
+            )}
           </div>
-
-          {/* Close button */}
-          <button
-            onClick={onClose}
-            className="absolute top-4 right-4 p-1.5 text-zinc-500 hover:text-white hover:bg-zinc-800 rounded-lg transition-colors"
-          >
-            <X className="w-4 h-4" />
-          </button>
         </motion.div>
-
-        {/* Keyboard hint */}
-        <div className="fixed bottom-6 left-1/2 -translate-x-1/2 flex items-center gap-3 text-xs text-zinc-500">
-          <span className="flex items-center gap-1">
-            <kbd className="px-1.5 py-0.5 bg-zinc-800 rounded text-zinc-400">←</kbd>
-            <kbd className="px-1.5 py-0.5 bg-zinc-800 rounded text-zinc-400">→</kbd>
-            navigeren
-          </span>
-          <span className="flex items-center gap-1">
-            <kbd className="px-1.5 py-0.5 bg-zinc-800 rounded text-zinc-400">Enter</kbd>
-            volgende
-          </span>
-          <span className="flex items-center gap-1">
-            <kbd className="px-1.5 py-0.5 bg-zinc-800 rounded text-zinc-400">Esc</kbd>
-            sluiten
-          </span>
-        </div>
       </motion.div>
     </AnimatePresence>
   )
@@ -438,7 +325,7 @@ export function useOnboardingTour() {
       // Small delay to let the page render first
       const timer = setTimeout(() => {
         setShouldShowTour(true)
-      }, 1000)
+      }, 1500)
       return () => clearTimeout(timer)
     }
   }, [])
