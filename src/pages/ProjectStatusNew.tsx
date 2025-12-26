@@ -1212,6 +1212,22 @@ export default function ProjectStatusNew() {
           </div>
         </motion.div>
 
+        {/* Quick Actions - Context-aware shortcuts */}
+        <QuickActions
+          phase={project.status as 'onboarding' | 'design' | 'feedback' | 'revisie' | 'payment' | 'domain' | 'live'}
+          onViewDesign={() => setShowDesignPreview(true)}
+          onSendMessage={() => setShowChat(true)}
+          onApprove={() => setShowDesignPreview(true)}
+          onRequestChanges={() => setShowDesignPreview(true)}
+          onLeaveReview={() => window.open('https://g.page/r/review', '_blank')}
+          hasDesignPreview={!!project.designPreviewUrl}
+          hasUnpaidInvoice={project.paymentStatus !== 'paid'}
+          paymentUrl={project.paymentUrl}
+          liveUrl={project.liveUrl}
+          googleDriveUrl={project.googleDriveUrl}
+          darkMode={darkMode}
+        />
+
         {/* Package-specific Phase Card - Shows tasks and tips per package */}
         {project.package && project.status !== 'live' && (
           <div data-tour="status">
@@ -1306,22 +1322,6 @@ export default function ProjectStatusNew() {
             )}
           </div>
         )}
-
-        {/* Quick Actions - Context-aware shortcuts */}
-        <QuickActions
-          phase={project.status as 'onboarding' | 'design' | 'feedback' | 'revisie' | 'payment' | 'domain' | 'live'}
-          onViewDesign={() => setShowDesignPreview(true)}
-          onSendMessage={() => setShowChat(true)}
-          onApprove={() => setShowDesignPreview(true)}
-          onRequestChanges={() => setShowDesignPreview(true)}
-          onLeaveReview={() => window.open('https://g.page/r/review', '_blank')}
-          hasDesignPreview={!!project.designPreviewUrl}
-          hasUnpaidInvoice={project.paymentStatus !== 'paid'}
-          paymentUrl={project.paymentUrl}
-          liveUrl={project.liveUrl}
-          googleDriveUrl={project.googleDriveUrl}
-          darkMode={darkMode}
-        />
 
         {/* Special Revisie Status Card - shown when feedback is being processed */}
         {project.status === 'revisie' && (

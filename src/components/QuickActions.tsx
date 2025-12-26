@@ -25,6 +25,7 @@ import {
 interface QuickAction {
   id: string
   label: string
+  mobileLabel?: string  // Shorter label for mobile
   description?: string
   icon: LucideIcon
   onClick: () => void
@@ -76,6 +77,7 @@ export default function QuickActions({
           baseActions.push({
             id: 'upload',
             label: 'Upload bestanden',
+            mobileLabel: 'Uploaden',
             description: 'Logo, foto\'s en teksten',
             icon: Upload,
             onClick: () => window.open(googleDriveUrl, '_blank'),
@@ -312,9 +314,16 @@ export default function QuickActions({
               </div>
 
               <div className="flex-1 text-left">
-                <p className="font-medium text-sm">{action.label}</p>
+                <p className="font-medium text-sm">
+                  {action.mobileLabel ? (
+                    <>
+                      <span className="sm:hidden">{action.mobileLabel}</span>
+                      <span className="hidden sm:inline">{action.label}</span>
+                    </>
+                  ) : action.label}
+                </p>
                 {action.description && (
-                  <p className={`text-xs mt-0.5 ${
+                  <p className={`text-xs mt-0.5 hidden sm:block ${
                     action.variant === 'primary' || action.variant === 'success'
                       ? 'text-white/70'
                       : darkMode
