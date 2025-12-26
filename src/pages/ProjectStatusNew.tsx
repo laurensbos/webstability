@@ -31,7 +31,7 @@ import {
   RefreshCw
 } from 'lucide-react'
 import Logo from '../components/Logo'
-import ClientAccountModal from '../components/ClientAccountModal'
+import AccountSection from '../components/AccountSection'
 import DesignPreviewModal from '../components/DesignPreviewModalNew'
 import PreLiveChecklist from '../components/PreLiveChecklist'
 import PreLiveApproval from '../components/PreLiveApproval'
@@ -230,9 +230,8 @@ export default function ProjectStatusNew() {
   const [confirmingReadyForDesign, setConfirmingReadyForDesign] = useState(false)
   const [readyForDesignLoading, setReadyForDesignLoading] = useState(false)
   
-  // Account modal state - now also supports inline view
-  const [showAccountModal, setShowAccountModal] = useState(false)
-  const [accountTab, setAccountTab] = useState<'profile' | 'payments' | 'package' | 'messages'>('profile')
+  // Account - supports inline view
+  const [activeView, setActiveView] = useState<'dashboard' | 'account'>('dashboard')
   
   // Design preview modal state
   const [showDesignPreview, setShowDesignPreview] = useState(false)
@@ -929,7 +928,10 @@ export default function ProjectStatusNew() {
               {/* Account - hidden on mobile (available in bottom nav) */}
               <div className="relative group hidden sm:block">
                 <button
-                  onClick={() => setShowAccountModal(true)}
+                  onClick={() => {
+                    setActiveView('account')
+                    window.scrollTo({ top: 0, behavior: 'smooth' })
+                  }}
                   className={`p-2 transition rounded-lg ${
                     darkMode 
                       ? 'text-gray-400 hover:text-white hover:bg-gray-800' 
@@ -963,6 +965,51 @@ export default function ProjectStatusNew() {
 
       {/* Main Content */}
       <main className="max-w-3xl mx-auto px-4 py-6 space-y-5 pb-24">
+        {/* View Tabs - Dashboard / Account */}
+        <div className={`flex rounded-xl p-1 ${darkMode ? 'bg-gray-800/50' : 'bg-gray-100'}`}>
+          <button
+            onClick={() => setActiveView('dashboard')}
+            className={`flex-1 flex items-center justify-center gap-2 px-4 py-2.5 rounded-lg text-sm font-medium transition-all ${
+              activeView === 'dashboard'
+                ? darkMode
+                  ? 'bg-gray-700 text-white shadow-sm'
+                  : 'bg-white text-gray-900 shadow-sm'
+                : darkMode
+                  ? 'text-gray-400 hover:text-white'
+                  : 'text-gray-500 hover:text-gray-700'
+            }`}
+          >
+            <Rocket className="w-4 h-4" />
+            <span>Mijn project</span>
+          </button>
+          <button
+            onClick={() => setActiveView('account')}
+            className={`flex-1 flex items-center justify-center gap-2 px-4 py-2.5 rounded-lg text-sm font-medium transition-all ${
+              activeView === 'account'
+                ? darkMode
+                  ? 'bg-gray-700 text-white shadow-sm'
+                  : 'bg-white text-gray-900 shadow-sm'
+                : darkMode
+                  ? 'text-gray-400 hover:text-white'
+                  : 'text-gray-500 hover:text-gray-700'
+            }`}
+          >
+            <FolderOpen className="w-4 h-4" />
+            <span>Mijn gegevens</span>
+          </button>
+        </div>
+
+        {/* Account View */}
+        {activeView === 'account' && (
+          <AccountSection
+            project={project}
+            onUpdateProject={updateProject}
+          />
+        )}
+
+        {/* Dashboard View */}
+        {activeView === 'dashboard' && (
+        <>
         {/* Onboarding Success Banner */}
         <AnimatePresence>
           {showOnboardingSuccess && (
@@ -1843,6 +1890,8 @@ export default function ProjectStatusNew() {
             Real-time
           </div>
         </div>
+        </>
+        )}
       </main>
 
       {/* Footer */}
@@ -2007,17 +2056,6 @@ export default function ProjectStatusNew() {
         </motion.button>
       )}
 
-      {/* Client Account Modal */}
-      {project && (
-        <ClientAccountModal
-          isOpen={showAccountModal}
-          onClose={() => setShowAccountModal(false)}
-          project={project}
-          onUpdateProject={updateProject}
-          initialTab={accountTab}
-        />
-      )}
-
       {/* Design Preview Modal */}
       {project && project.designPreviewUrl && (
         <>
@@ -2078,8 +2116,11 @@ export default function ProjectStatusNew() {
       <MobileBottomNav
         darkMode={darkMode}
         unreadMessages={unreadMessages}
-        activeTab="home"
-        onHome={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
+        activeTab={activeView === 'account' ? 'account' : 'home'}
+        onHome={() => {
+          setActiveView('dashboard')
+          window.scrollTo({ top: 0, behavior: 'smooth' })
+        }}
         onChat={() => setShowChat(true)}
         onDocs={() => {
           if (project?.googleDriveUrl) {
@@ -2088,8 +2129,8 @@ export default function ProjectStatusNew() {
         }}
         onHelp={() => setShowHelpCenter(true)}
         onAccount={() => {
-          setAccountTab('profile')
-          setShowAccountModal(true)
+          setActiveView('account')
+          window.scrollTo({ top: 0, behavior: 'smooth' })
         }}
       />
 
