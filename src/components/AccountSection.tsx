@@ -528,25 +528,45 @@ export default function AccountSection({
                     <CheckCircle2 className="w-6 h-6 text-green-500" />
                     <div>
                       <p className={`font-medium ${darkMode ? 'text-green-400' : 'text-green-700'}`}>
-                        Betaling ontvangen
+                        Betaling ontvangen ✓
                       </p>
                       <p className={`text-sm ${darkMode ? 'text-green-400/70' : 'text-green-600'}`}>
-                        Eenmalig: €{currentPackage.setupFee}
+                        Eenmalige opstartkosten: €{currentPackage.setupFee}
                       </p>
                     </div>
                   </div>
                 ) : (
-                  <div className={`flex items-center gap-3 p-4 rounded-xl ${
-                    darkMode ? 'bg-amber-500/10' : 'bg-amber-50'
-                  }`}>
-                    <Clock className="w-6 h-6 text-amber-500" />
-                    <div>
-                      <p className={`font-medium ${darkMode ? 'text-amber-400' : 'text-amber-700'}`}>
-                        Wachten op betaling
+                  <div className="space-y-4">
+                    <div className={`flex items-start gap-3 p-4 rounded-xl ${
+                      darkMode ? 'bg-blue-500/10 border border-blue-500/20' : 'bg-blue-50 border border-blue-200'
+                    }`}>
+                      <div className={`w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0 ${
+                        darkMode ? 'bg-blue-500/20' : 'bg-blue-100'
+                      }`}>
+                        <Clock className="w-4 h-4 text-blue-500" />
+                      </div>
+                      <div>
+                        <p className={`font-medium mb-1 ${darkMode ? 'text-blue-400' : 'text-blue-700'}`}>
+                          Nog geen betaling nodig
+                        </p>
+                        <p className={`text-sm ${darkMode ? 'text-blue-400/70' : 'text-blue-600'}`}>
+                          Je betaalt pas nadat je het design hebt goedgekeurd. Eerst kijken, dan beslissen!
+                        </p>
+                      </div>
+                    </div>
+                    
+                    <div className={`p-4 rounded-xl ${darkMode ? 'bg-gray-900/50' : 'bg-gray-50'}`}>
+                      <p className={`text-sm font-medium mb-2 ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>
+                        Na goedkeuring design:
                       </p>
-                      <p className={`text-sm ${darkMode ? 'text-amber-400/70' : 'text-amber-600'}`}>
-                        Eenmalige opstartkosten: €{currentPackage.setupFee}
-                      </p>
+                      <div className="flex items-baseline gap-2">
+                        <span className={`text-2xl font-bold ${darkMode ? 'text-white' : 'text-gray-900'}`}>
+                          €{currentPackage.setupFee}
+                        </span>
+                        <span className={`text-sm ${darkMode ? 'text-gray-500' : 'text-gray-500'}`}>
+                          eenmalige opstartkosten
+                        </span>
+                      </div>
                     </div>
                   </div>
                 )}
@@ -561,42 +581,130 @@ export default function AccountSection({
                 darkMode ? 'border-gray-700/50' : 'border-gray-100'
               }`}>
                 <div className={`w-9 h-9 rounded-xl flex items-center justify-center ${
-                  darkMode ? 'bg-gray-700' : 'bg-gray-100'
+                  darkMode ? 'bg-primary-500/20' : 'bg-primary-50'
                 }`}>
-                  <Receipt className={`w-4 h-4 ${darkMode ? 'text-gray-400' : 'text-gray-500'}`} />
+                  <Receipt className={`w-4 h-4 ${darkMode ? 'text-primary-400' : 'text-primary-600'}`} />
                 </div>
-                <h3 className={`font-semibold ${darkMode ? 'text-white' : 'text-gray-900'}`}>
-                  Maandelijks abonnement
-                </h3>
+                <div>
+                  <h3 className={`font-semibold ${darkMode ? 'text-white' : 'text-gray-900'}`}>
+                    Maandelijks abonnement
+                  </h3>
+                  <p className={`text-xs ${darkMode ? 'text-gray-500' : 'text-gray-400'}`}>
+                    Start na oplevering website
+                  </p>
+                </div>
               </div>
 
               <div className="p-5">
-                <div className="flex items-baseline gap-1 mb-4">
-                  <span className={`text-3xl font-bold ${darkMode ? 'text-white' : 'text-gray-900'}`}>
-                    €{currentPackage.price}
-                  </span>
-                  <span className={`${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>/maand</span>
+                {/* Price */}
+                <div className={`flex items-center justify-between p-4 rounded-xl mb-4 ${
+                  darkMode ? 'bg-gradient-to-r from-primary-500/10 to-primary-600/5' : 'bg-gradient-to-r from-primary-50 to-primary-100/50'
+                }`}>
+                  <div>
+                    <p className={`text-xs font-medium mb-1 ${darkMode ? 'text-primary-400' : 'text-primary-600'}`}>
+                      {currentPackage.name} pakket
+                    </p>
+                    <div className="flex items-baseline gap-1">
+                      <span className={`text-3xl font-bold ${darkMode ? 'text-white' : 'text-gray-900'}`}>
+                        €{currentPackage.price}
+                      </span>
+                      <span className={`text-sm ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>/maand</span>
+                    </div>
+                  </div>
+                  <div className={`px-3 py-1 rounded-full text-xs font-medium ${
+                    darkMode ? 'bg-green-500/20 text-green-400' : 'bg-green-100 text-green-700'
+                  }`}>
+                    Geen contract
+                  </div>
                 </div>
-                <ul className="space-y-2">
-                  <li className="flex items-center gap-2">
-                    <Check className="w-4 h-4 text-green-500" />
-                    <span className={`text-sm ${darkMode ? 'text-gray-300' : 'text-gray-600'}`}>
-                      Hosting & onderhoud inbegrepen
-                    </span>
-                  </li>
-                  <li className="flex items-center gap-2">
-                    <Check className="w-4 h-4 text-green-500" />
-                    <span className={`text-sm ${darkMode ? 'text-gray-300' : 'text-gray-600'}`}>
-                      {currentPackage.changesPerMonth} wijzigingen per maand
-                    </span>
-                  </li>
-                  <li className="flex items-center gap-2">
-                    <Check className="w-4 h-4 text-green-500" />
-                    <span className={`text-sm ${darkMode ? 'text-gray-300' : 'text-gray-600'}`}>
-                      Maandelijks opzegbaar
-                    </span>
-                  </li>
-                </ul>
+                
+                {/* What's included */}
+                <div className="space-y-3">
+                  <p className={`text-xs font-semibold uppercase tracking-wide ${darkMode ? 'text-gray-500' : 'text-gray-400'}`}>
+                    Dit zit erin
+                  </p>
+                  
+                  <div className={`grid gap-2`}>
+                    <div className={`flex items-center gap-3 p-3 rounded-xl ${darkMode ? 'bg-gray-900/50' : 'bg-gray-50'}`}>
+                      <div className={`w-8 h-8 rounded-lg flex items-center justify-center ${darkMode ? 'bg-green-500/20' : 'bg-green-100'}`}>
+                        <Check className="w-4 h-4 text-green-500" />
+                      </div>
+                      <div>
+                        <p className={`text-sm font-medium ${darkMode ? 'text-white' : 'text-gray-900'}`}>
+                          Hosting & domein
+                        </p>
+                        <p className={`text-xs ${darkMode ? 'text-gray-500' : 'text-gray-400'}`}>
+                          Je website staat altijd online
+                        </p>
+                      </div>
+                    </div>
+                    
+                    <div className={`flex items-center gap-3 p-3 rounded-xl ${darkMode ? 'bg-gray-900/50' : 'bg-gray-50'}`}>
+                      <div className={`w-8 h-8 rounded-lg flex items-center justify-center ${darkMode ? 'bg-green-500/20' : 'bg-green-100'}`}>
+                        <Check className="w-4 h-4 text-green-500" />
+                      </div>
+                      <div>
+                        <p className={`text-sm font-medium ${darkMode ? 'text-white' : 'text-gray-900'}`}>
+                          {currentPackage.changesPerMonth} wijzigingen per maand
+                        </p>
+                        <p className={`text-xs ${darkMode ? 'text-gray-500' : 'text-gray-400'}`}>
+                          Teksten, foto's of kleine aanpassingen
+                        </p>
+                      </div>
+                    </div>
+                    
+                    <div className={`flex items-center gap-3 p-3 rounded-xl ${darkMode ? 'bg-gray-900/50' : 'bg-gray-50'}`}>
+                      <div className={`w-8 h-8 rounded-lg flex items-center justify-center ${darkMode ? 'bg-green-500/20' : 'bg-green-100'}`}>
+                        <Check className="w-4 h-4 text-green-500" />
+                      </div>
+                      <div>
+                        <p className={`text-sm font-medium ${darkMode ? 'text-white' : 'text-gray-900'}`}>
+                          SSL-certificaat & beveiliging
+                        </p>
+                        <p className={`text-xs ${darkMode ? 'text-gray-500' : 'text-gray-400'}`}>
+                          Veilig voor jou en je bezoekers
+                        </p>
+                      </div>
+                    </div>
+                    
+                    <div className={`flex items-center gap-3 p-3 rounded-xl ${darkMode ? 'bg-gray-900/50' : 'bg-gray-50'}`}>
+                      <div className={`w-8 h-8 rounded-lg flex items-center justify-center ${darkMode ? 'bg-green-500/20' : 'bg-green-100'}`}>
+                        <Check className="w-4 h-4 text-green-500" />
+                      </div>
+                      <div>
+                        <p className={`text-sm font-medium ${darkMode ? 'text-white' : 'text-gray-900'}`}>
+                          Onderhoud & updates
+                        </p>
+                        <p className={`text-xs ${darkMode ? 'text-gray-500' : 'text-gray-400'}`}>
+                          Wij houden alles up-to-date
+                        </p>
+                      </div>
+                    </div>
+                    
+                    <div className={`flex items-center gap-3 p-3 rounded-xl ${darkMode ? 'bg-gray-900/50' : 'bg-gray-50'}`}>
+                      <div className={`w-8 h-8 rounded-lg flex items-center justify-center ${darkMode ? 'bg-green-500/20' : 'bg-green-100'}`}>
+                        <Check className="w-4 h-4 text-green-500" />
+                      </div>
+                      <div>
+                        <p className={`text-sm font-medium ${darkMode ? 'text-white' : 'text-gray-900'}`}>
+                          Support via chat
+                        </p>
+                        <p className={`text-xs ${darkMode ? 'text-gray-500' : 'text-gray-400'}`}>
+                          Vragen? Wij helpen je snel
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                
+                {/* Cancellation info */}
+                <div className={`mt-4 p-3 rounded-xl border-2 border-dashed ${
+                  darkMode ? 'border-gray-700 bg-gray-900/30' : 'border-gray-200 bg-gray-50/50'
+                }`}>
+                  <p className={`text-xs text-center ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>
+                    💡 Maandelijks opzegbaar - geen lange contracten, geen gedoe
+                  </p>
+                </div>
               </div>
             </div>
           </motion.div>
