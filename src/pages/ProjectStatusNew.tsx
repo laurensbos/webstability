@@ -361,6 +361,24 @@ export default function ProjectStatusNew() {
     }
   }, [project?.status, celebrate])
 
+  // Mark messages as read when chat is opened
+  useEffect(() => {
+    if (!showChat || !projectId) return
+    
+    // Check if there are unread developer messages
+    const hasUnread = messages.some(m => !m.read && m.from === 'developer')
+    if (!hasUnread) return
+    
+    // Update local state immediately
+    setMessages(prev => prev.map(m => 
+      m.from === 'developer' ? { ...m, read: true } : m
+    ))
+    // Persist to backend
+    fetch(`/api/project/${projectId}/messages/read`, { method: 'POST' })
+      .catch(err => console.error('Failed to mark messages as read:', err))
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [showChat, projectId])
+
   const verifyMagicSession = async (id: string, sessionToken: string) => {
     setVerifyLoading(true)
     try {
