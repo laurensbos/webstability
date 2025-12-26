@@ -1255,17 +1255,13 @@ export default function ProjectStatusNew() {
                     </div>
                     <div className="text-left">
                       <div className="flex items-center gap-2">
-                        <span className="text-lg">🚀</span>
+                        <span className="text-lg">�</span>
                         <h3 className={`font-semibold ${darkMode ? 'text-white' : 'text-gray-900'}`}>
-                          {project.package === 'starter' ? 'Starter' : 
-                           project.package === 'professional' ? 'Professioneel' : 
-                           project.package === 'business' ? 'Business' : 'Webshop'} Pakket
+                          Vul je gegevens in
                         </h3>
                       </div>
                       <p className={`text-sm ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>
-                        {onboardingExpanded ? 'Klik om in te klappen' : 'Klik om uit te klappen'} • €{project.package === 'starter' ? '119' : 
-                          project.package === 'professional' ? '169' : 
-                          project.package === 'business' ? '249' : '399'}/maand
+                        {onboardingExpanded ? 'Klik om in te klappen' : 'Klik om te starten'} • ±10 minuten
                       </p>
                     </div>
                   </div>
@@ -1292,11 +1288,14 @@ export default function ProjectStatusNew() {
                     >
                       <div className="p-4">
                         <h4 className={`font-semibold mb-2 ${darkMode ? 'text-white' : 'text-gray-900'}`}>
-                          Vertel ons over je bedrijf
+                          Wat heb je nodig?
                         </h4>
-                        <p className={`text-sm mb-4 ${darkMode ? 'text-gray-400' : 'text-gray-600'}`}>
-                          We hebben wat basisinformatie nodig om je website te maken. Dit duurt ongeveer 5-10 minuten.
-                        </p>
+                        <ul className={`text-sm mb-4 space-y-1 ${darkMode ? 'text-gray-400' : 'text-gray-600'}`}>
+                          <li>✓ Bedrijfsnaam en beschrijving</li>
+                          <li>✓ Logo (of wij maken er één)</li>
+                          <li>✓ Kleurkeuze en stijlvoorkeur</li>
+                          <li>✓ Contactgegevens voor de website</li>
+                        </ul>
 
                         {/* Inline Onboarding Component */}
                         <InlineOnboarding

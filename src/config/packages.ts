@@ -58,17 +58,17 @@ export const PACKAGES: Record<PackageType, PackageConfig> = {
     },
     phaseDescriptions: {
       onboarding: {
-        title: 'Vertel ons over je bedrijf',
-        description: 'We hebben wat basisinformatie nodig om je website te maken. Dit duurt ongeveer 5-10 minuten.',
+        title: 'Vul je gegevens in',
+        description: 'Beantwoord een paar vragen over je bedrijf en stijlvoorkeur. Dit duurt ±10 minuten.',
         clientTasks: [
-          'Vul je bedrijfsgegevens in',
-          'Upload je logo (of laat ons er één maken)',
-          'Beschrijf kort wat je doet',
-          'Lever teksten aan voor je pagina\'s'
+          'Bedrijfsnaam en beschrijving',
+          'Logo uploaden (of wij maken er één)',
+          'Kleurkeuze en stijlvoorkeur',
+          'Contactgegevens voor de website'
         ],
         tips: [
           'Heb je nog geen logo? Geen probleem, we kunnen er één voor je ontwerpen',
-          'Kies 2-3 foto\'s die je bedrijf het beste representeren'
+          'Je kunt altijd later terugkomen om vragen aan te passen'
         ]
       },
       design: {
@@ -168,19 +168,19 @@ export const PACKAGES: Record<PackageType, PackageConfig> = {
     },
     phaseDescriptions: {
       onboarding: {
-        title: 'Laten we je website plannen',
-        description: 'We maken een professionele website voor je. Vertel ons over je bedrijf en wat je wilt bereiken.',
+        title: 'Vul je gegevens in',
+        description: 'Beantwoord vragen over je bedrijf, doelgroep en stijlvoorkeur. Dit duurt ±15 minuten.',
         clientTasks: [
-          'Vul je bedrijfsgegevens in',
-          'Upload je logo en huisstijl',
-          'Beschrijf je diensten of producten',
-          'Lever teksten aan voor elke pagina',
-          'Upload foto\'s van je werk/team'
+          'Bedrijfsnaam en beschrijving',
+          'Logo en huisstijl uploaden',
+          'Kleurkeuze en stijlvoorkeur',
+          'Doelgroep en concurrenten',
+          'Contactgegevens voor de website'
         ],
         tips: [
           'Goede foto\'s maken een groot verschil',
           'Denk na over je belangrijkste call-to-action',
-          'Bekijk websites van concurrenten voor inspiratie'
+          'Je kunt altijd later terugkomen om vragen aan te passen'
         ]
       },
       design: {
@@ -283,20 +283,19 @@ export const PACKAGES: Record<PackageType, PackageConfig> = {
     },
     phaseDescriptions: {
       onboarding: {
-        title: 'Laten we een strategie maken',
-        description: 'Je Business website verdient een grondige aanpak. Laten we samen je doelen en wensen bespreken.',
+        title: 'Vul je gegevens in',
+        description: 'Beantwoord uitgebreide vragen over je bedrijf, strategie en doelen. Dit duurt ±20 minuten.',
         clientTasks: [
-          'Vul de uitgebreide vragenlijst in',
-          'Upload je complete huisstijl (logo, kleuren, fonts)',
-          'Lever teksten aan voor alle pagina\'s',
-          'Deel je contentkalender (indien aanwezig)',
-          'Upload professionele foto\'s',
-          'Geef aan welke integraties je wilt'
+          'Bedrijfsgegevens en strategie',
+          'Complete huisstijl (logo, kleuren, fonts)',
+          'Doelgroep en concurrentie-analyse',
+          'Gewenste integraties en functies',
+          'Contactgegevens en openingstijden'
         ],
         tips: [
           'Denk na over je SEO keywords',
-          'Bereid een overzicht van je diensten/producten voor',
-          'We kunnen een korte kickoff call inplannen'
+          'We kunnen een korte kickoff call inplannen',
+          'Je kunt altijd later terugkomen om vragen aan te passen'
         ]
       },
       design: {
@@ -400,21 +399,20 @@ export const PACKAGES: Record<PackageType, PackageConfig> = {
     },
     phaseDescriptions: {
       onboarding: {
-        title: 'Laten we je webshop plannen',
-        description: 'Een webshop vereist grondige voorbereiding. Laten we alles doornemen.',
+        title: 'Vul je webshop gegevens in',
+        description: 'Beantwoord vragen over je producten, verzending en betaling. Dit duurt ±25 minuten.',
         clientTasks: [
-          'Vul de webshop vragenlijst in',
-          'Upload je huisstijl en branding',
-          'Lever je productcatalogus aan (CSV of handmatig)',
-          'Upload productfoto\'s (min. 800x800px)',
-          'Beschrijf je verzendopties',
-          'Geef je BTW en KVK gegevens door',
-          'Kies je betaalmethodes'
+          'Bedrijfsgegevens en branding',
+          'Productcatalogus (CSV of handmatig)',
+          'Productfoto\'s (min. 800x800px)',
+          'Verzendopties en tarieven',
+          'BTW en KVK gegevens',
+          'Betaalmethodes kiezen'
         ],
         tips: [
           'Goede productfoto\'s verkopen beter',
           'Bereid je retourbeleid voor',
-          'Denk na over je verzendtarieven'
+          'Je kunt altijd later producten toevoegen'
         ]
       },
       design: {
