@@ -10,6 +10,7 @@
     }
   ],
   "rewrites": [
+    { "source": "/api/project/:id/messages/read", "destination": "/api/project/[id]/messages/read" },
     { "source": "/api/project/:id/messages", "destination": "/api/project/[id]/messages" },
     { "source": "/api/project/:id/message", "destination": "/api/project/[id]/message" },
     { "source": "/api/project/:id/account", "destination": "/api/project/[id]/account" },

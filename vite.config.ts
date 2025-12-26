@@ -50,7 +50,15 @@ const PROJECTS: Array<any> = [
     updates: [],
     revisionsUsed: 0,
     revisionsTotal: 3,
-    messages: [],
+    messages: [
+      {
+        id: 'msg-1',
+        date: new Date().toISOString(),
+        from: 'developer',
+        message: 'Welkom bij Webstability! We gaan aan de slag met je website. Als je vragen hebt, kun je hier chatten.',
+        read: false
+      }
+    ],
     changeRequests: [],
     phaseDeadlines: {
       onboarding: '2025-12-24T23:59:59.000Z',
@@ -88,7 +96,15 @@ const PROJECTS: Array<any> = [
     ],
     revisionsUsed: 0,
     revisionsTotal: 3,
-    messages: [],
+    messages: [
+      {
+        id: 'msg-2',
+        date: new Date().toISOString(),
+        from: 'developer',
+        message: 'Je design preview is klaar! Bekijk hem en laat weten wat je ervan vindt.',
+        read: false
+      }
+    ],
     changeRequests: []
   }
 ]
@@ -503,6 +519,42 @@ function apiMock() {
             res.statusCode = 404
             res.setHeader('content-type', 'application/json')
             res.end(JSON.stringify({ error: 'Project niet gevonden' }))
+          }
+          return
+        }
+
+        // /api/project/:id/messages (GET) - get messages for project
+        if (req.url.match(/^\/api\/project\/[^/]+\/messages$/) && req.method === 'GET') {
+          const projectId = req.url.split('/')[3] || ''
+          const project = PROJECTS.find((p: any) => p.projectId === projectId || p.id === projectId)
+          
+          if (project) {
+            res.setHeader('content-type', 'application/json')
+            res.end(JSON.stringify({ success: true, messages: project.messages || [] }))
+          } else {
+            res.statusCode = 404
+            res.setHeader('content-type', 'application/json')
+            res.end(JSON.stringify({ success: false, message: 'Project niet gevonden' }))
+          }
+          return
+        }
+
+        // /api/project/:id/messages/read (POST) - mark messages as read
+        if (req.url.match(/^\/api\/project\/[^/]+\/messages\/read$/) && req.method === 'POST') {
+          const projectId = req.url.split('/')[3] || ''
+          const project = PROJECTS.find((p: any) => p.projectId === projectId || p.id === projectId)
+          
+          if (project) {
+            // Mark all developer messages as read
+            project.messages = (project.messages || []).map((m: any) => 
+              m.from === 'developer' ? { ...m, read: true } : m
+            )
+            res.setHeader('content-type', 'application/json')
+            res.end(JSON.stringify({ success: true, message: 'Berichten als gelezen gemarkeerd' }))
+          } else {
+            res.statusCode = 404
+            res.setHeader('content-type', 'application/json')
+            res.end(JSON.stringify({ success: false, message: 'Project niet gevonden' }))
           }
           return
         }
