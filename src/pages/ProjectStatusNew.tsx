@@ -51,6 +51,7 @@ import { DarkModeButton } from '../components/DarkModeToggle'
 import Footer from '../components/Footer'
 import { useKeyboardShortcuts, KeyboardShortcutsModal, KeyboardShortcutHint } from '../hooks/useKeyboardShortcuts'
 import PWAInstallPrompt from '../components/PWAInstallPrompt'
+import { PushNotificationPrompt } from '../components/PushNotificationToggle'
 import type { Notification } from '../components/NotificationBell'
 import { useDarkMode } from '../contexts/DarkModeContext'
 import { useSEO } from '../hooks/useSEO'
@@ -2216,6 +2217,15 @@ export default function ProjectStatusNew() {
       {/* PWA Install Prompt - shows after 30 seconds */}
       {isVerified && (
         <PWAInstallPrompt darkMode={darkMode} delay={30000} />
+      )}
+
+      {/* Push Notification Prompt - shows after 15 seconds */}
+      {isVerified && project && (
+        <PushNotificationPrompt 
+          projectId={project.projectId} 
+          darkMode={darkMode} 
+          delay={15000} 
+        />
       )}
     </div>
   )

@@ -2,6 +2,7 @@ import type { VercelRequest, VercelResponse } from '@vercel/node'
 import { Redis } from '@upstash/redis'
 import nodemailer from 'nodemailer'
 import { logEmailSent } from '../../developer/email-log.js'
+import { notifyNewMessage } from '../../lib/push.js'
 
 // Initialize Redis
 const REDIS_URL = process.env.UPSTASH_REDIS_REST_URL
@@ -141,6 +142,15 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
     const shouldNotifyDeveloper = isFirstClientMessage || clientReturnedAfterInactivity
     console.log(`Message sent for project ${projectId} from ${from}${isFirstClientMessage ? ' (first client message)' : ''}${clientReturnedAfterInactivity ? ' (client returned after inactivity)' : ''}`)
+
+    // Send push notification to client when developer sends a message
+    if (from === 'developer') {
+      try {
+        await notifyNewMessage(projectId, message.substring(0, 100))
+      } catch (err) {
+        console.error('[Message] Push notification failed:', err)
+      }
+    }
 
     // Helper function to send email via SMTP
     const sendEmail = async (to: string, subject: string, html: string) => {
