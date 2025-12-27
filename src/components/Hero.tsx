@@ -1,5 +1,6 @@
 import { motion } from 'framer-motion'
 import { ArrowRight, Star, TrendingUp } from 'lucide-react'
+import { useTranslation } from 'react-i18next'
 
 // Floating particles component - hidden on mobile for performance
 function FloatingParticles() {
@@ -43,6 +44,7 @@ function FloatingParticles() {
 }
 
 export default function Hero() {
+  const { t } = useTranslation()
 
   return (
     <section className="relative min-h-screen flex items-center overflow-hidden bg-gradient-to-br from-slate-50 via-blue-50/30 to-white dark:from-gray-900 dark:via-gray-900 dark:to-gray-800 pt-20">
@@ -114,10 +116,10 @@ export default function Hero() {
               transition={{ delay: 0.25, duration: 0.5, ease: "easeOut" }}
               className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold text-gray-900 dark:text-white leading-[1.1] mb-4 sm:mb-6 tracking-tight"
             >
-              Jouw website,{' '}
+              {t('hero.title')}{' '}
               <span className="relative inline-block">
                 <span className="relative z-10 bg-gradient-to-r from-primary-600 via-primary-500 to-blue-500 bg-clip-text text-transparent">
-                  binnen 7 dagen live
+                  {t('hero.titleHighlight')}
                 </span>
                 {/* Animated underline - subtle curved line */}
                 <motion.svg
@@ -157,7 +159,7 @@ export default function Hero() {
               transition={{ delay: 0.4, duration: 0.5, ease: "easeOut" }}
               className="text-base sm:text-lg md:text-xl text-gray-600 dark:text-gray-300 mb-6 sm:mb-8 max-w-lg mx-auto lg:mx-0 leading-relaxed"
             >
-              Hosting, updates & support inbegrepen. Eigen klantportaal voor wijzigingen. Gewoon ondernemen, wij regelen de rest.
+              {t('hero.subtitle')}
             </motion.p>
 
             {/* CTA buttons - stacked on mobile */}
@@ -173,14 +175,14 @@ export default function Hero() {
               >
                 {/* Shimmer effect */}
                 <div className="absolute inset-0 -translate-x-full group-hover:translate-x-full transition-transform duration-700 bg-gradient-to-r from-transparent via-white/20 to-transparent" />
-                <span className="relative">Start direct</span>
+                <span className="relative">{t('hero.cta')}</span>
                 <ArrowRight className="relative w-4 h-4 group-hover:translate-x-1 transition-transform" />
               </a>
               <a
                 href="#portfolio"
                 className="group text-gray-600 dark:text-white hover:text-primary-600 dark:hover:text-primary-400 font-medium text-sm transition-colors flex items-center gap-1"
               >
-                Bekijk ons werk 
+                {t('hero.secondaryCta')} 
                 <span className="group-hover:translate-x-1 transition-transform">→</span>
               </a>
             </motion.div>
@@ -198,7 +200,7 @@ export default function Hero() {
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M5 13l4 4L19 7" />
                   </svg>
                 </div>
-                <span className="whitespace-nowrap">Geen verplichtingen</span>
+                <span className="whitespace-nowrap">{t('hero.noObligations')}</span>
               </div>
               <div className="flex items-center gap-1.5 sm:gap-2 text-xs sm:text-sm text-gray-600 dark:text-gray-300 bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm border border-gray-100 dark:border-gray-700 rounded-full px-2.5 py-1.5 sm:px-4 sm:py-2">
                 <div className="w-4 h-4 sm:w-5 sm:h-5 rounded-full bg-primary-100 dark:bg-primary-900/30 flex items-center justify-center flex-shrink-0">
@@ -207,7 +209,7 @@ export default function Hero() {
                     <circle cx="12" cy="12" r="9" strokeWidth={2} />
                   </svg>
                 </div>
-                <span className="whitespace-nowrap">Reactie binnen 24 uur</span>
+                <span className="whitespace-nowrap">{t('hero.fastLive')}</span>
               </div>
             </motion.div>
           </motion.div>

@@ -53,15 +53,21 @@
   },
   "hero": {
     "badge": "Geen grote investering nodig",
-    "title": "Jouw professionele website",
-    "titleHighlight": "vanaf €49/maand",
-    "subtitle": "Vergeet dure websites van duizenden euro's. Wij bouwen jouw droomwebsite en je betaalt gewoon maandelijks. Inclusief hosting, onderhoud en support.",
-    "cta": "Start jouw website",
-    "secondaryCta": "Bekijk prijzen",
+    "title": "Jouw website,",
+    "titleHighlight": "binnen 7 dagen live",
+    "subtitle": "Hosting, updates & support inbegrepen. Eigen klantportaal voor wijzigingen. Gewoon ondernemen, wij regelen de rest.",
+    "cta": "Start direct",
+    "secondaryCta": "Bekijk portfolio",
     "trustBadge": "Al {{count}}+ ondernemers kozen voor ons",
     "feature1": "Geen opstartkosten",
     "feature2": "Klaar binnen 2 weken",
-    "feature3": "Altijd opzegbaar"
+    "feature3": "Altijd opzegbaar",
+    "startingFrom": "Vanaf",
+    "perMonth": "/maand",
+    "priceSubtext": "Geen verborgen kosten",
+    "noObligations": "Geen verplichtingen",
+    "fastLive": "Snel live",
+    "monthlyPayment": "Maandelijks betalen"
   },
   "benefits": {
     "title": "Waarom kiezen voor een website abonnement?",
@@ -122,6 +128,28 @@
     "features": "Wat zit erin:",
     "allFeatures": "Alle features",
     "compare": "Vergelijk pakketten",
+    "riskFree": {
+      "badge": "100% Vrijblijvend starten",
+      "title": "Probeer zonder",
+      "titleHighlight": "risico",
+      "subtitle": "We maken eerst een design op maat. Pas als je 100% tevreden bent, ga je betalen.",
+      "freeDesign": {
+        "title": "Gratis design",
+        "description": "Eerst een ontwerp, pas betalen als je tevreden bent"
+      },
+      "payAfter": {
+        "title": "Betaal na goedkeuring",
+        "description": "Geen cent vooraf, pas na akkoord op design"
+      },
+      "moneyBack": {
+        "title": "14 dagen geld-terug",
+        "description": "Niet tevreden? Volledige terugbetaling"
+      },
+      "cancelAnytime": {
+        "title": "Maandelijks opzegbaar",
+        "description": "Na 3 maanden kun je elk moment stoppen"
+      }
+    },
     "packages": {
       "starter": {
         "name": "Starter",

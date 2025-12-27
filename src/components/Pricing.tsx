@@ -2,8 +2,10 @@ import { motion } from 'framer-motion'
 import { Check, ArrowRight, Sparkles, Shield, Clock, CreditCard, Zap } from 'lucide-react'
 import { packages, getDeliveryText } from '../data/packages'
 import { useState, useRef, useEffect } from 'react'
+import { useTranslation } from 'react-i18next'
 
 export default function Pricing() {
+	const { t } = useTranslation()
 	const scrollRef = useRef<HTMLDivElement>(null)
 	const [activeIndex, setActiveIndex] = useState(1) // Start met Professional (meest gekozen)
 
@@ -29,23 +31,23 @@ export default function Pricing() {
 	const riskFreeFeatures = [
 		{
 			icon: Sparkles,
-			title: 'Gratis design',
-			description: 'Eerst een ontwerp, pas betalen als je tevreden bent'
+			title: t('pricing.riskFree.freeDesign.title'),
+			description: t('pricing.riskFree.freeDesign.description')
 		},
 		{
 			icon: CreditCard,
-			title: 'Betaal na goedkeuring',
-			description: 'Geen cent vooraf, pas na akkoord op design'
+			title: t('pricing.riskFree.payAfter.title'),
+			description: t('pricing.riskFree.payAfter.description')
 		},
 		{
 			icon: Shield,
-			title: '14 dagen geld-terug',
-			description: 'Niet tevreden? Volledige terugbetaling'
+			title: t('pricing.riskFree.moneyBack.title'),
+			description: t('pricing.riskFree.moneyBack.description')
 		},
 		{
 			icon: Clock,
-			title: 'Maandelijks opzegbaar',
-			description: 'Na 3 maanden kun je elk moment stoppen'
+			title: t('pricing.riskFree.cancelAnytime.title'),
+			description: t('pricing.riskFree.cancelAnytime.description')
 		}
 	]
 
@@ -67,14 +69,14 @@ export default function Pricing() {
 					<div className="text-center mb-8">
 						<span className="inline-flex items-center gap-2 bg-gradient-to-r from-emerald-50 to-green-50 dark:from-emerald-900/30 dark:to-green-900/30 border border-emerald-200/50 dark:border-emerald-700/50 rounded-full px-4 py-2 mb-4">
 							<Sparkles className="w-4 h-4 text-emerald-600 dark:text-emerald-400" />
-							<span className="text-sm font-medium text-emerald-700 dark:text-emerald-300">100% Vrijblijvend starten</span>
+							<span className="text-sm font-medium text-emerald-700 dark:text-emerald-300">{t('pricing.riskFree.badge')}</span>
 						</span>
 						<h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-gray-900 dark:text-white mb-3">
-							Probeer zonder{' '}
-							<span className="bg-gradient-to-r from-emerald-600 to-green-600 bg-clip-text text-transparent">risico</span>
+							{t('pricing.riskFree.title')}{' '}
+							<span className="bg-gradient-to-r from-emerald-600 to-green-600 bg-clip-text text-transparent">{t('pricing.riskFree.titleHighlight')}</span>
 						</h2>
 						<p className="text-gray-600 dark:text-gray-400 max-w-xl mx-auto">
-							We maken eerst een design op maat. Pas als je 100% tevreden bent, ga je betalen.
+							{t('pricing.riskFree.subtitle')}
 						</p>
 					</div>
 

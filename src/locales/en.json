@@ -53,15 +53,21 @@
   },
   "hero": {
     "badge": "No large investment needed",
-    "title": "Your professional website",
-    "titleHighlight": "from €49/month",
-    "subtitle": "Forget expensive websites costing thousands. We build your dream website and you simply pay monthly. Including hosting, maintenance and support.",
-    "cta": "Start your website",
-    "secondaryCta": "View pricing",
+    "title": "Your website,",
+    "titleHighlight": "live within 7 days",
+    "subtitle": "Hosting, updates & support included. Your own client portal for changes. Just run your business, we handle the rest.",
+    "cta": "Get started",
+    "secondaryCta": "View portfolio",
     "trustBadge": "{{count}}+ entrepreneurs chose us",
     "feature1": "No startup costs",
     "feature2": "Ready within 2 weeks",
-    "feature3": "Cancel anytime"
+    "feature3": "Cancel anytime",
+    "startingFrom": "From",
+    "perMonth": "/month",
+    "priceSubtext": "No hidden costs",
+    "noObligations": "No obligations",
+    "fastLive": "Fast launch",
+    "monthlyPayment": "Pay monthly"
   },
   "benefits": {
     "title": "Why choose a website subscription?",
@@ -122,6 +128,28 @@
     "features": "What's included:",
     "allFeatures": "All features",
     "compare": "Compare packages",
+    "riskFree": {
+      "badge": "100% Risk-free start",
+      "title": "Try without",
+      "titleHighlight": "risk",
+      "subtitle": "We first create a custom design. You only pay when you're 100% satisfied.",
+      "freeDesign": {
+        "title": "Free design",
+        "description": "First a design, only pay when you're satisfied"
+      },
+      "payAfter": {
+        "title": "Pay after approval",
+        "description": "Nothing upfront, only after design approval"
+      },
+      "moneyBack": {
+        "title": "14-day money back",
+        "description": "Not satisfied? Full refund"
+      },
+      "cancelAnytime": {
+        "title": "Cancel monthly",
+        "description": "After 3 months you can cancel anytime"
+      }
+    },
     "packages": {
       "starter": {
         "name": "Starter",
