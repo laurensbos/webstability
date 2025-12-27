@@ -120,8 +120,9 @@
     }
   },
   "pricing": {
-    "title": "Transparante prijzen",
-    "subtitle": "Kies het pakket dat bij je past. Geen verborgen kosten.",
+    "title": "Transparante",
+    "titleHighlight": "maandprijzen",
+    "subtitle": "Inclusief hosting, SSL, onderhoud, updates en support. Geen verrassingen.",
     "monthly": "Maandelijks",
     "yearly": "Jaarlijks",
     "yearlyDiscount": "2 maanden gratis",
@@ -130,6 +131,22 @@
     "features": "Wat zit erin:",
     "allFeatures": "Alle features",
     "compare": "Vergelijk pakketten",
+    "choosePackage": "Kies je pakket",
+    "swipeHint": "← Swipe voor meer →",
+    "mostChosen": "Meest gekozen",
+    "perMonth": "/maand",
+    "oneTimeSetup": "eenmalige opstartkosten",
+    "supportResponseTime": "Support reactietijd",
+    "revisionsPerMonth": "Wijzigingen/maand",
+    "unlimited": "Onbeperkt",
+    "choose": "Kies",
+    "vatNotice": "Alle prijzen zijn inclusief 21% BTW",
+    "vatRefund": "Als ondernemer krijg je de BTW terug via je belastingaangifte",
+    "webshop": {
+      "title": "Liever een webshop?",
+      "description": "Bekijk onze webshop pakketten vanaf €399/maand met alle betaalmethodes inbegrepen.",
+      "button": "Bekijk webshop pakketten"
+    },
     "riskFree": {
       "badge": "100% Vrijblijvend starten",
       "title": "Probeer zonder",
@@ -251,14 +268,29 @@
     "secondaryButton": "Plan een gesprek"
   },
   "footer": {
-    "description": "Professionele websites voor ondernemers. Geen grote investering, gewoon een vast maandbedrag.",
-    "services": "Diensten",
-    "company": "Bedrijf",
-    "legal": "Juridisch",
-    "contact": "Contact",
-    "privacy": "Privacybeleid",
-    "terms": "Algemene voorwaarden",
-    "cookies": "Cookiebeleid",
+    "description": "Professionele websites voor ondernemers. Geen gedoe, gewoon een mooie website die werkt.",
+    "sections": {
+      "services": "Diensten",
+      "product": "Product",
+      "company": "Bedrijf",
+      "legal": "Legal"
+    },
+    "links": {
+      "websites": "Websites",
+      "webshop": "Webshop",
+      "logoDesign": "Logo laten maken",
+      "droneVideography": "Luchtfoto & Videografie",
+      "features": "Features",
+      "pricing": "Prijzen",
+      "howItWorks": "Hoe het werkt",
+      "faq": "FAQ",
+      "aboutUs": "Over ons",
+      "portfolio": "Portfolio",
+      "knowledgeBase": "Kennisbank",
+      "contact": "Contact",
+      "privacy": "Privacy",
+      "terms": "Algemene voorwaarden"
+    },
     "rights": "Alle rechten voorbehouden"
   },
   "contact": {

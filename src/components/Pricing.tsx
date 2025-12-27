@@ -108,7 +108,7 @@ export default function Pricing() {
 				{/* Divider */}
 				<div className="flex items-center gap-4 mb-10 lg:mb-12">
 					<div className="flex-1 h-px bg-gradient-to-r from-transparent via-gray-200 dark:via-gray-700 to-transparent" />
-					<span className="text-xs font-medium text-gray-400 dark:text-gray-500 uppercase tracking-wider">Kies je pakket</span>
+					<span className="text-xs font-medium text-gray-400 dark:text-gray-500 uppercase tracking-wider">{t('pricing.choosePackage')}</span>
 					<div className="flex-1 h-px bg-gradient-to-r from-transparent via-gray-200 dark:via-gray-700 to-transparent" />
 				</div>
 
@@ -120,8 +120,8 @@ export default function Pricing() {
 						viewport={{ once: true }}
 						className="text-2xl sm:text-3xl lg:text-4xl font-bold text-gray-900 dark:text-white mb-4"
 					>
-						Transparante{' '}
-						<span className="bg-gradient-to-r from-primary-600 to-blue-600 bg-clip-text text-transparent">maandprijzen</span>
+						{t('pricing.title')}{' '}
+						<span className="bg-gradient-to-r from-primary-600 to-blue-600 bg-clip-text text-transparent">{t('pricing.titleHighlight')}</span>
 					</motion.h2>
 					<motion.p
 						initial={{ opacity: 0, y: 20 }}
@@ -130,7 +130,7 @@ export default function Pricing() {
 						transition={{ delay: 0.1 }}
 						className="text-gray-600 dark:text-gray-400 text-base lg:text-lg mb-4"
 					>
-						Inclusief hosting, SSL, onderhoud, updates en support. Geen verrassingen.
+						{t('pricing.subtitle')}
 					</motion.p>
 				</div>
 
@@ -138,7 +138,7 @@ export default function Pricing() {
 				<div className="lg:hidden relative">
 					{/* Swipe hint */}
 					<div className="flex items-center justify-center gap-2 text-xs text-gray-400 dark:text-gray-500 mb-3">
-						<span>← Swipe voor meer →</span>
+						<span>{t('pricing.swipeHint')}</span>
 					</div>
 
 					{/* Cards container - pt-5 voor ruimte boven "Meest gekozen" badge */}
@@ -163,7 +163,7 @@ export default function Pricing() {
 							>
 								{pkg.popular && (
 									<span className="absolute -top-3.5 left-1/2 -translate-x-1/2 bg-primary-500 text-white text-xs font-medium px-3 py-1.5 rounded-full whitespace-nowrap z-10">
-										Meest gekozen
+										{t('pricing.mostChosen')}
 									</span>
 								)}
 								
@@ -183,10 +183,10 @@ export default function Pricing() {
 										<span className="text-3xl font-bold text-gray-900 dark:text-white">
 											€{pkg.price}
 										</span>
-										<span className="text-sm text-gray-500 dark:text-gray-400">/maand</span>
+										<span className="text-sm text-gray-500 dark:text-gray-400">{t('pricing.perMonth')}</span>
 									</div>
 									<p className="text-xs text-gray-400 dark:text-gray-500 mt-1">
-										+ €{pkg.setupFee} eenmalige opstartkosten
+										+ €{pkg.setupFee} {t('pricing.oneTimeSetup')}
 									</p>
 								</div>
 
@@ -213,13 +213,13 @@ export default function Pricing() {
 								{/* Support & revisions info */}
 								<div className="text-xs text-gray-500 dark:text-gray-400 mb-4 pt-3 border-t border-gray-100 dark:border-gray-700">
 									<div className="flex justify-between mb-1">
-										<span>Support reactietijd:</span>
+										<span>{t('pricing.supportResponseTime')}:</span>
 										<span className="font-medium text-gray-700 dark:text-gray-300">{pkg.supportResponseTime}</span>
 									</div>
 									<div className="flex justify-between">
-										<span>Wijzigingen/maand:</span>
+										<span>{t('pricing.revisionsPerMonth')}:</span>
 										<span className="font-medium text-gray-700 dark:text-gray-300">
-											{pkg.revisionsPerMonth === 'unlimited' ? 'Onbeperkt' : pkg.revisionsPerMonth}
+											{pkg.revisionsPerMonth === 'unlimited' ? t('pricing.unlimited') : pkg.revisionsPerMonth}
 										</span>
 									</div>
 								</div>
@@ -233,7 +233,7 @@ export default function Pricing() {
 											: 'bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 text-gray-900 dark:text-white'
 									}`}
 								>
-									Kies {pkg.name}
+									{t('pricing.choose')} {pkg.name}
 									<ArrowRight className="w-4 h-4" />
 								</a>
 							</motion.div>
@@ -278,7 +278,7 @@ export default function Pricing() {
 						>
 							{pkg.popular && (
 								<span className="absolute -top-3 left-1/2 -translate-x-1/2 bg-primary-500 text-white text-xs font-medium px-3 py-1 rounded-full">
-									Meest gekozen
+									{t('pricing.mostChosen')}
 								</span>
 							)}
 							
@@ -303,10 +303,10 @@ export default function Pricing() {
 									<span className="text-4xl font-bold text-gray-900 dark:text-white">
 										€{pkg.price}
 									</span>
-									<span className="text-sm text-gray-500 dark:text-gray-400">/maand</span>
+									<span className="text-sm text-gray-500 dark:text-gray-400">{t('pricing.perMonth')}</span>
 								</div>
 								<p className="text-xs text-gray-400 dark:text-gray-500 mt-1">
-									+ €{pkg.setupFee} eenmalige opstartkosten
+									+ €{pkg.setupFee} {t('pricing.oneTimeSetup')}
 								</p>
 							</div>
 
@@ -333,13 +333,13 @@ export default function Pricing() {
 							{/* Support & revisions info */}
 							<div className="text-sm text-gray-500 dark:text-gray-400 mb-6 pt-4 border-t border-gray-100 dark:border-gray-700 space-y-2">
 								<div className="flex justify-between">
-									<span>Support reactietijd:</span>
+									<span>{t('pricing.supportResponseTime')}:</span>
 									<span className="font-medium text-gray-700 dark:text-gray-300">{pkg.supportResponseTime}</span>
 								</div>
 								<div className="flex justify-between">
-									<span>Wijzigingen/maand:</span>
+									<span>{t('pricing.revisionsPerMonth')}:</span>
 									<span className="font-medium text-gray-700 dark:text-gray-300">
-										{pkg.revisionsPerMonth === 'unlimited' ? 'Onbeperkt' : pkg.revisionsPerMonth}
+										{pkg.revisionsPerMonth === 'unlimited' ? t('pricing.unlimited') : pkg.revisionsPerMonth}
 									</span>
 								</div>
 							</div>
@@ -353,7 +353,7 @@ export default function Pricing() {
 										: 'bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 text-gray-900 dark:text-white'
 								}`}
 							>
-								Kies {pkg.name}
+								{t('pricing.choose')} {pkg.name}
 								<ArrowRight className="w-4 h-4" />
 							</a>
 						</motion.div>
@@ -368,16 +368,16 @@ export default function Pricing() {
 					className="bg-gradient-to-r from-emerald-50 to-green-50 dark:from-emerald-900/20 dark:to-green-900/20 border border-emerald-200/50 dark:border-emerald-700/50 rounded-2xl p-6 lg:p-8 text-center"
 				>
 					<h3 className="text-lg lg:text-xl font-bold text-gray-900 dark:text-white mb-2">
-						Liever een webshop?
+						{t('pricing.webshop.title')}
 					</h3>
 					<p className="text-sm lg:text-base text-gray-600 dark:text-gray-400 mb-4">
-						Bekijk onze webshop pakketten vanaf €399/maand met alle betaalmethodes inbegrepen.
+						{t('pricing.webshop.description')}
 					</p>
 					<a
 						href="/webshops"
 						className="inline-flex items-center gap-2 px-6 py-3 bg-emerald-500 hover:bg-emerald-600 text-white font-semibold rounded-xl transition-all"
 					>
-						Bekijk webshop pakketten
+						{t('pricing.webshop.button')}
 						<ArrowRight className="w-4 h-4" />
 					</a>
 				</motion.div>
@@ -390,9 +390,9 @@ export default function Pricing() {
 					className="text-center mt-8 lg:mt-12"
 				>
 					<p className="text-sm text-gray-500 dark:text-gray-400">
-						Alle prijzen zijn inclusief 21% BTW •{' '}
+						{t('pricing.vatNotice')} •{' '}
 						<span className="text-primary-600 dark:text-primary-400 font-medium">
-							Als ondernemer krijg je de BTW terug via je belastingaangifte
+							{t('pricing.vatRefund')}
 						</span>
 					</p>
 				</motion.div>

@@ -2,33 +2,11 @@ import { motion } from 'framer-motion'
 import { ArrowRight, Mail, Phone, MapPin, ChevronDown, Sparkles, Star } from 'lucide-react'
 import { Link } from 'react-router-dom'
 import { useState } from 'react'
+import { useTranslation } from 'react-i18next'
 import Logo from './Logo'
 import { LanguageSelector } from './LanguageSelector'
 
-const footerLinks = {
-  diensten: [
-    { label: 'Websites', href: '/websites' },
-    { label: 'Webshop', href: '/webshop' },
-    { label: 'Logo laten maken', href: '/logo-maken' },
-    { label: 'Luchtfoto & Videografie', href: '/luchtvideografie' },
-  ],
-  product: [
-    { label: 'Features', href: '/#features' },
-    { label: 'Prijzen', href: '/#pricing' },
-    { label: 'Hoe het werkt', href: '/#how-it-works' },
-    { label: 'FAQ', href: '/#faq' },
-  ],
-  bedrijf: [
-    { label: 'Over ons', href: '/over-ons' },
-    { label: 'Portfolio', href: '/portfolio' },
-    { label: 'Kennisbank', href: '/kennisbank' },
-    { label: 'Contact', href: '/contact' },
-  ],
-  legal: [
-    { label: 'Privacy', href: '/privacy' },
-    { label: 'Algemene voorwaarden', href: '/voorwaarden' },
-  ],
-}
+// footerLinks are now defined inside the component for i18n support
 
 // Collapsible section for mobile
 function MobileAccordion({ title, children }: { title: string; children: React.ReactNode }) {
@@ -210,7 +188,33 @@ interface FooterProps {
 }
 
 export default function Footer({ ctaVariant = 'default' }: FooterProps) {
+  const { t } = useTranslation()
   const config = ctaVariant !== 'none' ? ctaConfigs[ctaVariant] : null
+
+  const footerLinksTranslated = {
+    diensten: [
+      { label: t('footer.links.websites'), href: '/websites' },
+      { label: t('footer.links.webshop'), href: '/webshop' },
+      { label: t('footer.links.logoDesign'), href: '/logo-maken' },
+      { label: t('footer.links.droneVideography'), href: '/luchtvideografie' },
+    ],
+    product: [
+      { label: t('footer.links.features'), href: '/#features' },
+      { label: t('footer.links.pricing'), href: '/#pricing' },
+      { label: t('footer.links.howItWorks'), href: '/#how-it-works' },
+      { label: t('footer.links.faq'), href: '/#faq' },
+    ],
+    bedrijf: [
+      { label: t('footer.links.aboutUs'), href: '/over-ons' },
+      { label: t('footer.links.portfolio'), href: '/portfolio' },
+      { label: t('footer.links.knowledgeBase'), href: '/kennisbank' },
+      { label: t('footer.links.contact'), href: '/contact' },
+    ],
+    legal: [
+      { label: t('footer.links.privacy'), href: '/privacy' },
+      { label: t('footer.links.terms'), href: '/voorwaarden' },
+    ],
+  }
 
   return (
     <footer className="bg-gray-50 dark:bg-gray-900 border-t border-gray-200 dark:border-gray-800">
@@ -277,7 +281,7 @@ export default function Footer({ ctaVariant = 'default' }: FooterProps) {
               to="/contact"
               className="inline-flex items-center justify-center px-8 py-4 lg:px-10 lg:py-5 bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-200 font-semibold rounded-xl transition-all border border-gray-200 dark:border-gray-700 hover:border-gray-300 dark:hover:border-gray-600 shadow-lg hover:shadow-xl text-base lg:text-lg"
             >
-              Neem contact op
+              {t('contact.hero.messageButton')}
             </Link>
           </motion.div>
         </div>
@@ -305,9 +309,9 @@ export default function Footer({ ctaVariant = 'default' }: FooterProps) {
             </div>
             
             {/* Accordion sections */}
-            <MobileAccordion title="Diensten">
+            <MobileAccordion title={t('footer.sections.services')}>
               <ul className="space-y-2">
-                {footerLinks.diensten.map((link) => (
+                {footerLinksTranslated.diensten.map((link) => (
                   <li key={link.href}>
                     <Link to={link.href} className="text-gray-600 dark:text-gray-400 hover:text-primary-600 transition-colors text-sm">
                       {link.label}
@@ -317,9 +321,9 @@ export default function Footer({ ctaVariant = 'default' }: FooterProps) {
               </ul>
             </MobileAccordion>
             
-            <MobileAccordion title="Product">
+            <MobileAccordion title={t('footer.sections.product')}>
               <ul className="space-y-2">
-                {footerLinks.product.map((link) => (
+                {footerLinksTranslated.product.map((link) => (
                   <li key={link.href}>
                     <a href={link.href} className="text-gray-600 dark:text-gray-400 hover:text-primary-600 transition-colors text-sm">
                       {link.label}
@@ -329,9 +333,9 @@ export default function Footer({ ctaVariant = 'default' }: FooterProps) {
               </ul>
             </MobileAccordion>
             
-            <MobileAccordion title="Bedrijf">
+            <MobileAccordion title={t('footer.sections.company')}>
               <ul className="space-y-2">
-                {footerLinks.bedrijf.map((link) => (
+                {footerLinksTranslated.bedrijf.map((link) => (
                   <li key={link.href}>
                     <Link to={link.href} className="text-gray-600 dark:text-gray-400 hover:text-primary-600 transition-colors text-sm">
                       {link.label}
@@ -341,9 +345,9 @@ export default function Footer({ ctaVariant = 'default' }: FooterProps) {
               </ul>
             </MobileAccordion>
             
-            <MobileAccordion title="Legal">
+            <MobileAccordion title={t('footer.sections.legal')}>
               <ul className="space-y-2">
-                {footerLinks.legal.map((link) => (
+                {footerLinksTranslated.legal.map((link) => (
                   <li key={link.href}>
                     <Link to={link.href} className="text-gray-600 dark:text-gray-400 hover:text-primary-600 transition-colors text-sm">
                       {link.label}
@@ -362,8 +366,7 @@ export default function Footer({ ctaVariant = 'default' }: FooterProps) {
                 <Logo size="md" showText />
               </Link>
               <p className="text-gray-600 dark:text-gray-400 mb-6 max-w-sm">
-                Professionele websites voor ondernemers. 
-                Geen gedoe, gewoon een mooie website die werkt.
+                {t('footer.description')}
               </p>
               
               {/* Contact info */}
@@ -385,9 +388,9 @@ export default function Footer({ ctaVariant = 'default' }: FooterProps) {
 
             {/* Diensten */}
             <div>
-              <h4 className="text-gray-900 dark:text-white font-semibold mb-4">Diensten</h4>
+              <h4 className="text-gray-900 dark:text-white font-semibold mb-4">{t('footer.sections.services')}</h4>
               <ul className="space-y-3">
-                {footerLinks.diensten.map((link) => (
+                {footerLinksTranslated.diensten.map((link) => (
                   <li key={link.href}>
                     <Link to={link.href} className="text-gray-600 dark:text-gray-400 hover:text-primary-600 transition-colors text-sm">
                       {link.label}
@@ -399,9 +402,9 @@ export default function Footer({ ctaVariant = 'default' }: FooterProps) {
 
             {/* Product */}
             <div>
-              <h4 className="text-gray-900 dark:text-white font-semibold mb-4">Product</h4>
+              <h4 className="text-gray-900 dark:text-white font-semibold mb-4">{t('footer.sections.product')}</h4>
               <ul className="space-y-3">
-                {footerLinks.product.map((link) => (
+                {footerLinksTranslated.product.map((link) => (
                   <li key={link.href}>
                     <a href={link.href} className="text-gray-600 dark:text-gray-400 hover:text-primary-600 transition-colors text-sm">
                       {link.label}
@@ -413,9 +416,9 @@ export default function Footer({ ctaVariant = 'default' }: FooterProps) {
 
             {/* Bedrijf */}
             <div>
-              <h4 className="text-gray-900 dark:text-white font-semibold mb-4">Bedrijf</h4>
+              <h4 className="text-gray-900 dark:text-white font-semibold mb-4">{t('footer.sections.company')}</h4>
               <ul className="space-y-3">
-                {footerLinks.bedrijf.map((link) => (
+                {footerLinksTranslated.bedrijf.map((link) => (
                   <li key={link.href}>
                     <Link to={link.href} className="text-gray-600 dark:text-gray-400 hover:text-primary-600 transition-colors text-sm">
                       {link.label}
@@ -427,9 +430,9 @@ export default function Footer({ ctaVariant = 'default' }: FooterProps) {
 
             {/* Legal */}
             <div>
-              <h4 className="text-gray-900 dark:text-white font-semibold mb-4">Legal</h4>
+              <h4 className="text-gray-900 dark:text-white font-semibold mb-4">{t('footer.sections.legal')}</h4>
               <ul className="space-y-3">
-                {footerLinks.legal.map((link) => (
+                {footerLinksTranslated.legal.map((link) => (
                   <li key={link.href}>
                     <Link to={link.href} className="text-gray-600 dark:text-gray-400 hover:text-primary-600 transition-colors text-sm">
                       {link.label}

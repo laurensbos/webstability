@@ -120,8 +120,9 @@
     }
   },
   "pricing": {
-    "title": "Transparent pricing",
-    "subtitle": "Choose the package that suits you. No hidden costs.",
+    "title": "Transparent",
+    "titleHighlight": "monthly prices",
+    "subtitle": "Including hosting, SSL, maintenance, updates and support. No surprises.",
     "monthly": "Monthly",
     "yearly": "Yearly",
     "yearlyDiscount": "2 months free",
@@ -130,6 +131,22 @@
     "features": "What's included:",
     "allFeatures": "All features",
     "compare": "Compare packages",
+    "choosePackage": "Choose your package",
+    "swipeHint": "← Swipe for more →",
+    "mostChosen": "Most chosen",
+    "perMonth": "/month",
+    "oneTimeSetup": "one-time setup fee",
+    "supportResponseTime": "Support response time",
+    "revisionsPerMonth": "Changes/month",
+    "unlimited": "Unlimited",
+    "choose": "Choose",
+    "vatNotice": "All prices include 21% VAT",
+    "vatRefund": "As a business owner, you can reclaim the VAT on your tax return",
+    "webshop": {
+      "title": "Prefer a webshop?",
+      "description": "Check out our webshop packages from €399/month with all payment methods included.",
+      "button": "View webshop packages"
+    },
     "riskFree": {
       "badge": "100% Risk-free start",
       "title": "Try without",
@@ -251,14 +268,29 @@
     "secondaryButton": "Schedule a call"
   },
   "footer": {
-    "description": "Professional websites for entrepreneurs. No large investment, just a fixed monthly fee.",
-    "services": "Services",
-    "company": "Company",
-    "legal": "Legal",
-    "contact": "Contact",
-    "privacy": "Privacy Policy",
-    "terms": "Terms & Conditions",
-    "cookies": "Cookie Policy",
+    "description": "Professional websites for entrepreneurs. No hassle, just a beautiful website that works.",
+    "sections": {
+      "services": "Services",
+      "product": "Product",
+      "company": "Company",
+      "legal": "Legal"
+    },
+    "links": {
+      "websites": "Websites",
+      "webshop": "Webshop",
+      "logoDesign": "Logo Design",
+      "droneVideography": "Aerial Photo & Videography",
+      "features": "Features",
+      "pricing": "Pricing",
+      "howItWorks": "How it works",
+      "faq": "FAQ",
+      "aboutUs": "About us",
+      "portfolio": "Portfolio",
+      "knowledgeBase": "Knowledge Base",
+      "contact": "Contact",
+      "privacy": "Privacy",
+      "terms": "Terms & Conditions"
+    },
     "rights": "All rights reserved"
   },
   "contact": {
