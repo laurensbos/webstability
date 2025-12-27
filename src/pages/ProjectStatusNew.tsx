@@ -2076,7 +2076,7 @@ export default function ProjectStatusNew() {
           initial={{ scale: 0 }}
           animate={{ scale: 1 }}
           onClick={() => setShowChat(true)}
-          className={`fixed bottom-6 right-6 w-14 h-14 bg-gradient-to-r ${phaseColors.gradient} rounded-full shadow-lg flex items-center justify-center z-40 hover:scale-110 transition`}
+          className={`fixed bottom-24 md:bottom-6 right-4 md:right-6 w-14 h-14 bg-gradient-to-r ${phaseColors.gradient} rounded-full shadow-lg flex items-center justify-center z-40 hover:scale-110 transition`}
         >
           <MessageSquare className="w-6 h-6 text-white" />
           {unreadMessages > 0 && (

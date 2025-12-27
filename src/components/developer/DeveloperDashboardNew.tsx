@@ -40,7 +40,12 @@ import {
   Zap,
   Eye,
   Send,
-  XCircle
+  XCircle,
+  HelpCircle,
+  PlayCircle,
+  Home,
+  MoreHorizontal,
+  ChevronLeft
 } from 'lucide-react'
 import Logo from '../Logo'
 import QuickStats from './QuickStats'
@@ -110,6 +115,8 @@ export default function DeveloperDashboard() {
   const [searchQuery, setSearchQuery] = useState('')
   const [showLiveProjects, setShowLiveProjects] = useState(false)
   const [viewMode, setViewMode] = useState<'kanban' | 'list'>('kanban')
+  const [showTutorial, setShowTutorial] = useState(false)
+  const [currentKanbanPhase, setCurrentKanbanPhase] = useState(0)
   
   // Payment modal state
   const [paymentModal, setPaymentModal] = useState<{
@@ -516,7 +523,7 @@ export default function DeveloperDashboard() {
         </header>
 
         {/* Content */}
-        <div className="p-4 lg:p-6">
+        <div className="p-4 lg:p-6 pb-24 md:pb-6">
           {/* Hero Section - Only on Projects View */}
           {activeView === 'projects' && (
             <motion.div
@@ -616,16 +623,86 @@ export default function DeveloperDashboard() {
                 </div>
               </div>
 
-              {/* Kanban View - Enhanced */}
+              {/* Kanban View - Enhanced with Mobile Horizontal Scroll */}
               {viewMode === 'kanban' && (
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-4">
+                <div className="relative">
+                  {/* Mobile Phase Indicator */}
+                  <div className="md:hidden flex items-center justify-center gap-2 mb-3">
+                    {phases.map((phase, idx) => (
+                      <button
+                        key={phase}
+                        onClick={() => {
+                          setCurrentKanbanPhase(idx)
+                          const container = document.getElementById('kanban-scroll')
+                          if (container) {
+                            const columnWidth = container.scrollWidth / phases.length
+                            container.scrollTo({ left: columnWidth * idx, behavior: 'smooth' })
+                          }
+                        }}
+                        className={`w-2 h-2 rounded-full transition-all ${
+                          currentKanbanPhase === idx ? 'bg-emerald-500 w-4' : 'bg-white/20'
+                        }`}
+                      />
+                    ))}
+                  </div>
+                  
+                  {/* Mobile Swipe Hint */}
+                  <div className="md:hidden flex items-center justify-between px-2 mb-2 text-xs text-gray-500">
+                    <button 
+                      onClick={() => {
+                        const container = document.getElementById('kanban-scroll')
+                        if (container && currentKanbanPhase > 0) {
+                          const columnWidth = container.scrollWidth / phases.length
+                          container.scrollTo({ left: columnWidth * (currentKanbanPhase - 1), behavior: 'smooth' })
+                          setCurrentKanbanPhase(currentKanbanPhase - 1)
+                        }
+                      }}
+                      className={`flex items-center gap-1 ${currentKanbanPhase === 0 ? 'opacity-30' : 'opacity-60'}`}
+                      disabled={currentKanbanPhase === 0}
+                    >
+                      <ChevronLeft className="w-4 h-4" />
+                      {currentKanbanPhase > 0 && PHASE_CONFIG[phases[currentKanbanPhase - 1]]?.label}
+                    </button>
+                    <span className="font-medium text-white">
+                      {PHASE_CONFIG[phases[currentKanbanPhase]]?.emoji} {PHASE_CONFIG[phases[currentKanbanPhase]]?.label}
+                    </span>
+                    <button
+                      onClick={() => {
+                        const container = document.getElementById('kanban-scroll')
+                        if (container && currentKanbanPhase < phases.length - 1) {
+                          const columnWidth = container.scrollWidth / phases.length
+                          container.scrollTo({ left: columnWidth * (currentKanbanPhase + 1), behavior: 'smooth' })
+                          setCurrentKanbanPhase(currentKanbanPhase + 1)
+                        }
+                      }}
+                      className={`flex items-center gap-1 ${currentKanbanPhase === phases.length - 1 ? 'opacity-30' : 'opacity-60'}`}
+                      disabled={currentKanbanPhase === phases.length - 1}
+                    >
+                      {currentKanbanPhase < phases.length - 1 && PHASE_CONFIG[phases[currentKanbanPhase + 1]]?.label}
+                      <ChevronRight className="w-4 h-4" />
+                    </button>
+                  </div>
+                  
+                  {/* Scrollable Container */}
+                  <div 
+                    id="kanban-scroll"
+                    className="flex md:grid md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-4 overflow-x-auto pb-4 snap-x snap-mandatory md:snap-none scrollbar-hide"
+                    onScroll={(e) => {
+                      const container = e.currentTarget
+                      const columnWidth = container.scrollWidth / phases.length
+                      const newPhase = Math.round(container.scrollLeft / columnWidth)
+                      if (newPhase !== currentKanbanPhase) {
+                        setCurrentKanbanPhase(newPhase)
+                      }
+                    }}
+                  >
                   {phases.map(phase => {
                     const phaseInfo = PHASE_CONFIG[phase]
                     const phaseProjects = grouped[phase] || []
                     const gradient = PHASE_GRADIENTS[phase]
                     
                     return (
-                      <div key={phase} className="bg-white/5 backdrop-blur-sm rounded-xl border border-white/10 overflow-hidden">
+                      <div key={phase} className="min-w-[280px] md:min-w-0 snap-center bg-white/5 backdrop-blur-sm rounded-xl border border-white/10 overflow-hidden flex-shrink-0 md:flex-shrink">
                         {/* Phase Header with Gradient */}
                         <div className={`bg-gradient-to-r ${gradient} p-3`}>
                           <div className="flex items-center justify-between">
@@ -704,6 +781,7 @@ export default function DeveloperDashboard() {
                       </div>
                     )
                   })}
+                  </div>
                 </div>
               )}
 
@@ -1520,6 +1598,189 @@ export default function DeveloperDashboard() {
           </motion.div>
         )}
       </AnimatePresence>
+
+      {/* Tutorial/Help Modal */}
+      <AnimatePresence>
+        {showTutorial && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-[60] bg-black/80 backdrop-blur-sm flex items-center justify-center p-4"
+            onClick={() => setShowTutorial(false)}
+          >
+            <motion.div
+              initial={{ scale: 0.9, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.9, opacity: 0 }}
+              onClick={(e) => e.stopPropagation()}
+              className="bg-gray-900/95 backdrop-blur-xl border border-white/10 rounded-2xl max-w-lg w-full max-h-[80vh] overflow-y-auto shadow-2xl"
+            >
+              {/* Header */}
+              <div className="p-5 border-b border-white/10 flex items-center justify-between">
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-violet-500 to-purple-600 flex items-center justify-center">
+                    <HelpCircle className="w-5 h-5 text-white" />
+                  </div>
+                  <div>
+                    <h2 className="text-lg font-bold text-white">Dashboard Help</h2>
+                    <p className="text-sm text-gray-400">Snelle handleiding</p>
+                  </div>
+                </div>
+                <button 
+                  onClick={() => setShowTutorial(false)}
+                  className="p-2 hover:bg-white/10 rounded-xl transition"
+                >
+                  <X className="w-5 h-5 text-gray-400" />
+                </button>
+              </div>
+
+              {/* Content */}
+              <div className="p-5 space-y-4">
+                {/* Kanban Section */}
+                <div className="p-4 bg-white/5 rounded-xl border border-white/10">
+                  <div className="flex items-center gap-2 mb-2">
+                    <LayoutGrid className="w-4 h-4 text-emerald-400" />
+                    <h3 className="font-medium text-white">Kanban View</h3>
+                  </div>
+                  <p className="text-sm text-gray-400">
+                    Sleep projecten tussen fases of klik voor details. Op mobiel: swipe horizontaal.
+                  </p>
+                </div>
+
+                {/* Phases Section */}
+                <div className="p-4 bg-white/5 rounded-xl border border-white/10">
+                  <div className="flex items-center gap-2 mb-3">
+                    <PlayCircle className="w-4 h-4 text-blue-400" />
+                    <h3 className="font-medium text-white">Projectfases</h3>
+                  </div>
+                  <div className="space-y-2 text-sm">
+                    {Object.entries(PHASE_CONFIG).map(([key, config]) => (
+                      <div key={key} className="flex items-center gap-2 text-gray-300">
+                        <span>{config.emoji}</span>
+                        <span className="font-medium">{config.label}:</span>
+                        <span className="text-gray-500">
+                          {key === 'onboarding' && 'Klantgegevens verzamelen'}
+                          {key === 'design' && 'Website in ontwikkeling'}
+                          {key === 'feedback' && 'Wacht op klant feedback'}
+                          {key === 'revisie' && 'Aanpassingen doorvoeren'}
+                          {key === 'payment' && 'Betaling afwachten'}
+                          {key === 'domain' && 'Domein koppelen'}
+                          {key === 'live' && 'Website is online'}
+                        </span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Urgency Section */}
+                <div className="p-4 bg-white/5 rounded-xl border border-white/10">
+                  <div className="flex items-center gap-2 mb-3">
+                    <AlertCircle className="w-4 h-4 text-amber-400" />
+                    <h3 className="font-medium text-white">Urgentie indicators</h3>
+                  </div>
+                  <div className="space-y-2 text-sm">
+                    <div className="flex items-center gap-2">
+                      <span className="w-2 h-2 rounded-full bg-red-500 animate-pulse" />
+                      <span className="text-gray-300">Rood: Ongelezen berichten / langer dan 3 dagen</span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <span className="w-2 h-2 rounded-full bg-amber-500" />
+                      <span className="text-gray-300">Oranje: In revisie fase / in betaling</span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <span className="w-2 h-2 rounded-full bg-blue-500" />
+                      <span className="text-gray-300">Blauw: Nieuwe klant</span>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Keyboard Shortcuts */}
+                <div className="p-4 bg-white/5 rounded-xl border border-white/10">
+                  <div className="flex items-center gap-2 mb-3">
+                    <Zap className="w-4 h-4 text-yellow-400" />
+                    <h3 className="font-medium text-white">Sneltoetsen</h3>
+                  </div>
+                  <div className="grid grid-cols-2 gap-2 text-sm">
+                    <div className="flex items-center gap-2">
+                      <kbd className="px-2 py-1 bg-gray-800 rounded text-xs text-gray-300">K</kbd>
+                      <span className="text-gray-400">Kanban view</span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <kbd className="px-2 py-1 bg-gray-800 rounded text-xs text-gray-300">L</kbd>
+                      <span className="text-gray-400">List view</span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <kbd className="px-2 py-1 bg-gray-800 rounded text-xs text-gray-300">/</kbd>
+                      <span className="text-gray-400">Zoeken</span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <kbd className="px-2 py-1 bg-gray-800 rounded text-xs text-gray-300">?</kbd>
+                      <span className="text-gray-400">Help</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* Mobile Bottom Navigation */}
+      <nav className="md:hidden fixed bottom-0 left-0 right-0 z-50 bg-gray-900/95 backdrop-blur-xl border-t border-white/10 pb-safe">
+        <div className="flex items-center justify-around py-2">
+          <button
+            onClick={() => setActiveView('projects')}
+            className={`flex flex-col items-center gap-1 px-4 py-2 rounded-xl transition ${
+              activeView === 'projects' ? 'text-emerald-400' : 'text-gray-500 hover:text-gray-300'
+            }`}
+          >
+            <Home className="w-5 h-5" />
+            <span className="text-[10px] font-medium">Projecten</span>
+          </button>
+          <button
+            onClick={() => setActiveView('messages')}
+            className={`relative flex flex-col items-center gap-1 px-4 py-2 rounded-xl transition ${
+              activeView === 'messages' ? 'text-emerald-400' : 'text-gray-500 hover:text-gray-300'
+            }`}
+          >
+            <MessageSquare className="w-5 h-5" />
+            <span className="text-[10px] font-medium">Berichten</span>
+            {unreadCount > 0 && (
+              <span className="absolute top-1 right-2 w-4 h-4 bg-red-500 rounded-full text-[9px] font-bold text-white flex items-center justify-center">
+                {unreadCount > 9 ? '9+' : unreadCount}
+              </span>
+            )}
+          </button>
+          <button
+            onClick={() => setActiveView('payments')}
+            className={`flex flex-col items-center gap-1 px-4 py-2 rounded-xl transition ${
+              activeView === 'payments' ? 'text-emerald-400' : 'text-gray-500 hover:text-gray-300'
+            }`}
+          >
+            <CreditCard className="w-5 h-5" />
+            <span className="text-[10px] font-medium">Betalingen</span>
+          </button>
+          <button
+            onClick={() => setShowTutorial(true)}
+            className="flex flex-col items-center gap-1 px-4 py-2 rounded-xl text-gray-500 hover:text-gray-300 transition"
+          >
+            <MoreHorizontal className="w-5 h-5" />
+            <span className="text-[10px] font-medium">Meer</span>
+          </button>
+        </div>
+      </nav>
+
+      {/* Desktop Help Button - Fixed Position */}
+      <button
+        onClick={() => setShowTutorial(true)}
+        className="hidden md:flex fixed bottom-6 right-6 z-50 items-center gap-2 px-4 py-3 bg-gradient-to-r from-violet-500 to-purple-600 text-white rounded-full shadow-lg shadow-purple-500/30 hover:shadow-purple-500/50 transition group"
+      >
+        <HelpCircle className="w-5 h-5" />
+        <span className="text-sm font-medium max-w-0 overflow-hidden group-hover:max-w-xs transition-all duration-300">
+          Help
+        </span>
+      </button>
     </div>
   )
 }
