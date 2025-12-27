@@ -2,6 +2,7 @@ import { useState, useEffect, useRef } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Menu, X, ChevronDown, Image, Users, Mail, ArrowRight, ShoppingCart, Search, ClipboardList, Palette, Plane, Globe, Moon, Sun } from 'lucide-react'
+import { useTranslation } from 'react-i18next'
 import Logo from './Logo'
 import { useDarkMode } from '../contexts/DarkModeContext'
 import { LanguageSelector, MobileLanguageSelector } from './LanguageSelector'
@@ -17,22 +18,25 @@ interface HeaderProps {
   urgencyBannerVisible?: boolean
 }
 
-const dienstenItems = [
-  { label: 'Websites', href: '/websites', icon: Globe, description: 'Professionele website laten maken' },
-  { label: 'Webshop', href: '/webshop', icon: ShoppingCart, description: 'Webshop laten maken' },
-  { label: 'Logo laten maken', href: '/logo', icon: Palette, description: 'Professioneel logo ontwerp' },
-  { label: 'Luchtfoto & Videografie', href: '/luchtvideografie', icon: Plane, description: 'Professionele luchtopnames' },
-]
-
-const overOnsItems = [
-  { label: 'Over ons', href: '/over-ons', icon: Users, description: 'Ons verhaal en team' },
-  { label: 'Portfolio', href: '/portfolio', icon: Image, description: 'Bekijk ons werk' },
-  { label: 'Contact', href: '/contact', icon: Mail, description: 'Neem contact op' },
-]
+// dienstenItems and overOnsItems are now defined inside the component for i18n support
 
 export default function Header({ urgencyBannerVisible = false }: HeaderProps) {
+  const { t } = useTranslation()
   const navigate = useNavigate()
   const { darkMode, toggleDarkMode } = useDarkMode()
+
+  const dienstenItems = [
+    { label: t('header.services.websites'), href: '/websites', icon: Globe, description: t('header.services.websitesDesc') },
+    { label: t('header.services.webshop'), href: '/webshop', icon: ShoppingCart, description: t('header.services.webshopDesc') },
+    { label: t('header.services.logo'), href: '/logo', icon: Palette, description: t('header.services.logoDesc') },
+    { label: t('header.services.drone'), href: '/luchtvideografie', icon: Plane, description: t('header.services.droneDesc') },
+  ]
+
+  const overOnsItems = [
+    { label: t('header.about.aboutUs'), href: '/over-ons', icon: Users, description: t('header.about.aboutUsDesc') },
+    { label: t('header.about.portfolio'), href: '/portfolio', icon: Image, description: t('header.about.portfolioDesc') },
+    { label: t('header.about.contact'), href: '/contact', icon: Mail, description: t('header.about.contactDesc') },
+  ]
   const [isScrolled, setIsScrolled] = useState(false)
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
   const [activeDropdown, setActiveDropdown] = useState<string | null>(null)
@@ -225,7 +229,7 @@ export default function Header({ urgencyBannerVisible = false }: HeaderProps) {
                 href="/#how-it-works"
                 className="px-4 py-2 text-sm font-medium text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white hover:bg-gray-50 dark:hover:bg-gray-800 rounded-lg transition-all"
               >
-                Hoe het werkt
+                {t('nav.howItWorks')}
               </a>
 
               {/* Prijzen - Direct link */}
@@ -233,7 +237,7 @@ export default function Header({ urgencyBannerVisible = false }: HeaderProps) {
                 href="/#pricing"
                 className="px-4 py-2 text-sm font-medium text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white hover:bg-gray-50 dark:hover:bg-gray-800 rounded-lg transition-all"
               >
-                Prijzen
+                {t('nav.pricing')}
               </a>
 
               {/* Diensten Dropdown */}
@@ -247,7 +251,7 @@ export default function Header({ urgencyBannerVisible = false }: HeaderProps) {
                       : 'text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white hover:bg-gray-50 dark:hover:bg-gray-800'
                   }`}
                 >
-                  Diensten
+                  {t('nav.services')}
                   <ChevronDown className={`w-4 h-4 transition-transform ${activeDropdown === 'diensten' ? 'rotate-180' : ''}`} />
                 </button>
 
@@ -303,7 +307,7 @@ export default function Header({ urgencyBannerVisible = false }: HeaderProps) {
                       : 'text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white hover:bg-gray-50 dark:hover:bg-gray-800'
                   }`}
                 >
-                  Over ons
+                  {t('nav.about')}
                   <ChevronDown className={`w-4 h-4 transition-transform ${activeDropdown === 'overons' ? 'rotate-180' : ''}`} />
                 </button>
 
@@ -445,7 +449,7 @@ export default function Header({ urgencyBannerVisible = false }: HeaderProps) {
                 onClick={() => setIsMobileMenuOpen(false)}
                 className="flex items-center px-3 py-3 text-gray-900 dark:text-white font-medium rounded-lg hover:bg-gray-50 dark:hover:bg-gray-800"
               >
-                Hoe het werkt
+                {t('nav.howItWorks')}
               </a>
 
               {/* Prijzen direct */}
@@ -454,7 +458,7 @@ export default function Header({ urgencyBannerVisible = false }: HeaderProps) {
                 onClick={() => setIsMobileMenuOpen(false)}
                 className="flex items-center px-3 py-3 text-gray-900 dark:text-white font-medium rounded-lg hover:bg-gray-50 dark:hover:bg-gray-800"
               >
-                Prijzen
+                {t('nav.pricing')}
               </a>
 
               {/* Diensten accordion */}
@@ -463,7 +467,7 @@ export default function Header({ urgencyBannerVisible = false }: HeaderProps) {
                   onClick={() => setMobileExpanded(mobileExpanded === 'diensten' ? null : 'diensten')}
                   className="flex items-center justify-between w-full px-3 py-3 text-gray-900 dark:text-white font-medium rounded-lg hover:bg-gray-50 dark:hover:bg-gray-800"
                 >
-                  Diensten
+                  {t('nav.services')}
                   <ChevronDown className={`w-5 h-5 text-gray-400 transition-transform ${mobileExpanded === 'diensten' ? 'rotate-180' : ''}`} />
                 </button>
                 <AnimatePresence>
@@ -498,7 +502,7 @@ export default function Header({ urgencyBannerVisible = false }: HeaderProps) {
                 onClick={() => setIsMobileMenuOpen(false)}
                 className="flex items-center px-3 py-3 text-gray-900 dark:text-white font-medium rounded-lg hover:bg-gray-50 dark:hover:bg-gray-800"
               >
-                Kennisbank
+                {t('nav.knowledgeBase')}
               </a>
 
               {/* Over ons accordion */}
@@ -507,7 +511,7 @@ export default function Header({ urgencyBannerVisible = false }: HeaderProps) {
                   onClick={() => setMobileExpanded(mobileExpanded === 'overons' ? null : 'overons')}
                   className="flex items-center justify-between w-full px-3 py-3 text-gray-900 dark:text-white font-medium rounded-lg hover:bg-gray-50 dark:hover:bg-gray-800"
                 >
-                  Over ons
+                  {t('nav.about')}
                   <ChevronDown className={`w-5 h-5 text-gray-400 transition-transform ${mobileExpanded === 'overons' ? 'rotate-180' : ''}`} />
                 </button>
                 <AnimatePresence>

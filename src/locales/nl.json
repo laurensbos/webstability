@@ -49,7 +49,29 @@
     "dashboard": "Dashboard",
     "logout": "Uitloggen",
     "myProject": "Mijn project",
-    "startProject": "Start project"
+    "startProject": "Start project",
+    "howItWorks": "Hoe het werkt",
+    "knowledgeBase": "Kennisbank"
+  },
+  "header": {
+    "services": {
+      "websites": "Websites",
+      "websitesDesc": "Professionele website laten maken",
+      "webshop": "Webshop",
+      "webshopDesc": "Webshop laten maken",
+      "logo": "Logo laten maken",
+      "logoDesc": "Professioneel logo ontwerp",
+      "drone": "Luchtfoto & Videografie",
+      "droneDesc": "Professionele luchtopnames"
+    },
+    "about": {
+      "aboutUs": "Over ons",
+      "aboutUsDesc": "Ons verhaal en team",
+      "portfolio": "Portfolio",
+      "portfolioDesc": "Bekijk ons werk",
+      "contact": "Contact",
+      "contactDesc": "Neem contact op"
+    }
   },
   "hero": {
     "badge": "Geen grote investering nodig",

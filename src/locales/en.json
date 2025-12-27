@@ -49,7 +49,29 @@
     "dashboard": "Dashboard",
     "logout": "Logout",
     "myProject": "My Project",
-    "startProject": "Start Project"
+    "startProject": "Start Project",
+    "howItWorks": "How it works",
+    "knowledgeBase": "Knowledge Base"
+  },
+  "header": {
+    "services": {
+      "websites": "Websites",
+      "websitesDesc": "Professional website design",
+      "webshop": "Webshop",
+      "webshopDesc": "E-commerce solutions",
+      "logo": "Logo Design",
+      "logoDesc": "Professional logo design",
+      "drone": "Aerial Photo & Video",
+      "droneDesc": "Professional aerial footage"
+    },
+    "about": {
+      "aboutUs": "About us",
+      "aboutUsDesc": "Our story and team",
+      "portfolio": "Portfolio",
+      "portfolioDesc": "View our work",
+      "contact": "Contact",
+      "contactDesc": "Get in touch"
+    }
   },
   "hero": {
     "badge": "No large investment needed",
