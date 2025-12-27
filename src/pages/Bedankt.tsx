@@ -19,6 +19,7 @@ import {
   Shield
 } from 'lucide-react'
 import { Link, useSearchParams } from 'react-router-dom'
+import { useTranslation } from 'react-i18next'
 import Header from '../components/Header'
 
 type ServiceType = 'website' | 'webshop' | 'drone' | 'logo'
@@ -51,6 +52,7 @@ const serviceConfig = {
 }
 
 export default function Bedankt() {
+  const { t } = useTranslation()
   const [searchParams] = useSearchParams()
   const projectId = searchParams.get('project') || 'WS-XXXXXX'
   const dienst = (searchParams.get('dienst') as ServiceType) || 'website'
@@ -78,23 +80,23 @@ export default function Bedankt() {
   const steps = [
     {
       icon: Mail,
-      title: 'Onboarding invullen',
-      description: 'Vertel ons meer over je wensen via de onboarding. Dit duurt 2-3 minuten.',
-      time: 'Stap 1',
+      title: t('thankYou.steps.onboarding.title'),
+      description: t('thankYou.steps.onboarding.description'),
+      time: t('thankYou.steps.onboarding.time'),
       color: 'bg-blue-500',
     },
     {
       icon: Clock,
-      title: 'Wij sturen een ontwerp',
-      description: 'Binnen 5-7 werkdagen ontvang je het eerste ontwerp van je website.',
-      time: 'Stap 2',
+      title: t('thankYou.steps.design.title'),
+      description: t('thankYou.steps.design.description'),
+      time: t('thankYou.steps.design.time'),
       color: 'bg-amber-500',
     },
     {
       icon: Palette,
-      title: 'Feedback & live!',
-      description: 'Na jouw goedkeuring gaat je website live. Pas daarna start de betaling.',
-      time: 'Stap 3',
+      title: t('thankYou.steps.feedback.title'),
+      description: t('thankYou.steps.feedback.description'),
+      time: t('thankYou.steps.feedback.time'),
       color: 'bg-green-500',
     },
   ]
@@ -145,7 +147,7 @@ export default function Bedankt() {
               className={`inline-flex items-center gap-2 px-4 py-2 rounded-full bg-gradient-to-r ${config.gradient} text-white text-sm font-medium mb-4`}
             >
               <ServiceIcon className="w-4 h-4" />
-              {config.label}
+              {t(`thankYou.services.${dienst}`)}
             </motion.div>
 
             {/* Title */}
@@ -155,7 +157,7 @@ export default function Bedankt() {
               transition={{ delay: 0.3 }}
               className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white mb-3"
             >
-              Super, je project is aangemaakt! 🎉
+              {t('thankYou.title')}
             </motion.h1>
             
             <motion.p 
@@ -164,7 +166,7 @@ export default function Bedankt() {
               transition={{ delay: 0.4 }}
               className="text-gray-600 dark:text-gray-400 text-sm sm:text-base"
             >
-              Vul nu de onboarding in zodat we kunnen beginnen met je ontwerp.
+              {t('thankYou.subtitle')}
             </motion.p>
           </motion.div>
 
@@ -177,7 +179,7 @@ export default function Bedankt() {
           >
             <div className="flex items-center gap-2 text-white/80 text-sm mb-3">
               <Shield className="w-4 h-4" />
-              <span>Je project ID</span>
+              <span>{t('thankYou.projectId')}</span>
             </div>
             
             <button
@@ -191,12 +193,12 @@ export default function Bedankt() {
                 {copied ? (
                   <>
                     <Check className="w-5 h-5" />
-                    <span className="text-sm">Gekopieerd!</span>
+                    <span className="text-sm">{t('thankYou.copied')}</span>
                   </>
                 ) : (
                   <>
                     <Copy className="w-5 h-5" />
-                    <span className="text-sm hidden sm:inline">Kopieer</span>
+                    <span className="text-sm hidden sm:inline">{t('thankYou.copy')}</span>
                   </>
                 )}
               </div>
@@ -209,7 +211,7 @@ export default function Bedankt() {
                 className="flex items-center justify-center gap-2 w-full px-4 py-3 bg-white text-gray-900 rounded-xl font-semibold hover:bg-gray-50 transition-colors shadow-lg"
               >
                 <Sparkles className="w-4 h-4" />
-                Start onboarding (2 min)
+                {t('thankYou.startOnboarding')}
                 <ArrowRight className="w-4 h-4" />
               </Link>
             </div>
@@ -224,24 +226,24 @@ export default function Bedankt() {
           >
             <h2 className="font-semibold text-gray-900 dark:text-white mb-3 flex items-center gap-2">
               <Shield className="w-5 h-5 text-primary-500" />
-              Wat kun je verwachten?
+              {t('thankYou.whatToExpect')}
             </h2>
             <ul className="space-y-2 text-sm text-gray-600 dark:text-gray-400">
               <li className="flex items-start gap-2">
                 <Check className="w-4 h-4 text-green-500 mt-0.5 flex-shrink-0" />
-                <span><strong className="text-gray-900 dark:text-white">Gratis ontwerp</strong> — Je betaalt pas na goedkeuring</span>
+                <span><strong className="text-gray-900 dark:text-white">{t('thankYou.expectations.freeDesign')}</strong> — {t('thankYou.expectations.freeDesignDesc')}</span>
               </li>
               <li className="flex items-start gap-2">
                 <Check className="w-4 h-4 text-green-500 mt-0.5 flex-shrink-0" />
-                <span><strong className="text-gray-900 dark:text-white">5-7 werkdagen</strong> — Eerste ontwerp klaar</span>
+                <span><strong className="text-gray-900 dark:text-white">{t('thankYou.expectations.timeline')}</strong> — {t('thankYou.expectations.timelineDesc')}</span>
               </li>
               <li className="flex items-start gap-2">
                 <Check className="w-4 h-4 text-green-500 mt-0.5 flex-shrink-0" />
-                <span><strong className="text-gray-900 dark:text-white">Onbeperkte revisies</strong> — Tot je 100% tevreden bent</span>
+                <span><strong className="text-gray-900 dark:text-white">{t('thankYou.expectations.revisions')}</strong> — {t('thankYou.expectations.revisionsDesc')}</span>
               </li>
               <li className="flex items-start gap-2">
                 <Check className="w-4 h-4 text-green-500 mt-0.5 flex-shrink-0" />
-                <span><strong className="text-gray-900 dark:text-white">Direct contact</strong> — Via je persoonlijke dashboard</span>
+                <span><strong className="text-gray-900 dark:text-white">{t('thankYou.expectations.directContact')}</strong> — {t('thankYou.expectations.directContactDesc')}</span>
               </li>
             </ul>
           </motion.div>
@@ -254,7 +256,7 @@ export default function Bedankt() {
             className="bg-gray-50 dark:bg-gray-800 rounded-2xl p-5 sm:p-6 mb-6"
           >
             <h2 className="font-semibold text-gray-900 dark:text-white mb-4 text-sm sm:text-base">
-              Zo werkt het
+              {t('thankYou.howItWorks')}
             </h2>
 
             {/* Mobile: Swipe Cards */}

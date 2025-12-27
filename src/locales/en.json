@@ -419,6 +419,45 @@
     "files": "Files",
     "settings": "Settings",
     "help": "Need help?",
+    "phases": {
+      "onboarding": "Onboarding",
+      "design": "Design",
+      "feedback": "Feedback",
+      "revisie": "Revision",
+      "payment": "Payment",
+      "domain": "Domain",
+      "live": "Live"
+    },
+    "phaseInfo": {
+      "onboarding": {
+        "title": "We're collecting your information",
+        "description": "Complete the onboarding so we can understand your business."
+      },
+      "design": {
+        "title": "Your design is being created",
+        "description": "We're working on your website design."
+      },
+      "feedback": {
+        "title": "Review your design preview",
+        "description": "Your design is ready! Review the preview and provide feedback."
+      },
+      "revisie": {
+        "title": "Processing your feedback",
+        "description": "We're processing your feedback and making final adjustments."
+      },
+      "payment": {
+        "title": "Finishing your project",
+        "description": "Your website is almost ready! Complete payment to go live."
+      },
+      "domain": {
+        "title": "Setting up domain",
+        "description": "We're connecting your domain and making final preparations."
+      },
+      "live": {
+        "title": "Your website is live!",
+        "description": "Congratulations! Your website is now online."
+      }
+    },
     "status": {
       "title": "Project status",
       "intake": "Intake",
@@ -957,5 +996,52 @@
       "button": "Start your project"
     },
     "viewWebsite": "View website"
+  },
+  "thankYou": {
+    "title": "Great, your project has been created! 🎉",
+    "subtitle": "Now complete the onboarding so we can start with your design.",
+    "projectId": "Your project ID",
+    "copied": "Copied!",
+    "copy": "Copy",
+    "startOnboarding": "Start onboarding (2 min)",
+    "whatToExpect": "What can you expect?",
+    "expectations": {
+      "freeDesign": "Free design",
+      "freeDesignDesc": "You only pay after approval",
+      "timeline": "5-7 business days",
+      "timelineDesc": "First design ready",
+      "revisions": "Unlimited revisions",
+      "revisionsDesc": "Until you're 100% satisfied",
+      "directContact": "Direct contact",
+      "directContactDesc": "Via your personal dashboard"
+    },
+    "howItWorks": "How it works",
+    "steps": {
+      "onboarding": {
+        "title": "Complete onboarding",
+        "description": "Tell us more about your wishes via the onboarding. This takes 2-3 minutes.",
+        "time": "Step 1"
+      },
+      "design": {
+        "title": "We send a design",
+        "description": "Within 5-7 business days you'll receive the first design of your website.",
+        "time": "Step 2"
+      },
+      "feedback": {
+        "title": "Feedback & live!",
+        "description": "After your approval your website goes live. Only then does payment start.",
+        "time": "Step 3"
+      }
+    },
+    "services": {
+      "website": "Website",
+      "webshop": "Webshop",
+      "drone": "Drone footage",
+      "logo": "Logo design"
+    },
+    "emailConfirmation": {
+      "title": "Confirmation sent to",
+      "description": "Also check your spam folder"
+    }
   }
 }

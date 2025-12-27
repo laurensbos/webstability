@@ -419,6 +419,45 @@
     "files": "Bestanden",
     "settings": "Instellingen",
     "help": "Hulp nodig?",
+    "phases": {
+      "onboarding": "Onboarding",
+      "design": "Design",
+      "feedback": "Feedback",
+      "revisie": "Revisie",
+      "payment": "Betaling",
+      "domain": "Domein",
+      "live": "Live"
+    },
+    "phaseInfo": {
+      "onboarding": {
+        "title": "We verzamelen je informatie",
+        "description": "Vul de onboarding in zodat we je bedrijf goed begrijpen."
+      },
+      "design": {
+        "title": "Je design wordt gemaakt",
+        "description": "We werken aan het ontwerp van jouw website."
+      },
+      "feedback": {
+        "title": "Bekijk je design preview",
+        "description": "Je design is klaar! Bekijk de preview en geef je feedback."
+      },
+      "revisie": {
+        "title": "Je feedback wordt verwerkt",
+        "description": "We verwerken je feedback en maken de laatste aanpassingen."
+      },
+      "payment": {
+        "title": "Afronden van je project",
+        "description": "Je website is bijna klaar! Rond de betaling af om live te gaan."
+      },
+      "domain": {
+        "title": "Domein instellen",
+        "description": "We koppelen je domein en maken de laatste voorbereidingen."
+      },
+      "live": {
+        "title": "Je website is live!",
+        "description": "Gefeliciteerd! Je website is nu online."
+      }
+    },
     "status": {
       "title": "Project status",
       "intake": "Intake",
@@ -957,5 +996,52 @@
       "button": "Start je project"
     },
     "viewWebsite": "Bekijk website"
+  },
+  "thankYou": {
+    "title": "Super, je project is aangemaakt! 🎉",
+    "subtitle": "Vul nu de onboarding in zodat we kunnen beginnen met je ontwerp.",
+    "projectId": "Je project ID",
+    "copied": "Gekopieerd!",
+    "copy": "Kopieer",
+    "startOnboarding": "Start onboarding (2 min)",
+    "whatToExpect": "Wat kun je verwachten?",
+    "expectations": {
+      "freeDesign": "Gratis ontwerp",
+      "freeDesignDesc": "Je betaalt pas na goedkeuring",
+      "timeline": "5-7 werkdagen",
+      "timelineDesc": "Eerste ontwerp klaar",
+      "revisions": "Onbeperkte revisies",
+      "revisionsDesc": "Tot je 100% tevreden bent",
+      "directContact": "Direct contact",
+      "directContactDesc": "Via je persoonlijke dashboard"
+    },
+    "howItWorks": "Zo werkt het",
+    "steps": {
+      "onboarding": {
+        "title": "Onboarding invullen",
+        "description": "Vertel ons meer over je wensen via de onboarding. Dit duurt 2-3 minuten.",
+        "time": "Stap 1"
+      },
+      "design": {
+        "title": "Wij sturen een ontwerp",
+        "description": "Binnen 5-7 werkdagen ontvang je het eerste ontwerp van je website.",
+        "time": "Stap 2"
+      },
+      "feedback": {
+        "title": "Feedback & live!",
+        "description": "Na jouw goedkeuring gaat je website live. Pas daarna start de betaling.",
+        "time": "Stap 3"
+      }
+    },
+    "services": {
+      "website": "Website",
+      "webshop": "Webshop",
+      "drone": "Drone opnames",
+      "logo": "Logo ontwerp"
+    },
+    "emailConfirmation": {
+      "title": "Bevestiging verstuurd naar",
+      "description": "Controleer ook je spam map"
+    }
   }
 }
