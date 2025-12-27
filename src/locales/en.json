@@ -1,0 +1,560 @@
+{
+  "common": {
+    "loading": "Loading...",
+    "save": "Save",
+    "cancel": "Cancel",
+    "delete": "Delete",
+    "edit": "Edit",
+    "back": "Back",
+    "next": "Next",
+    "previous": "Previous",
+    "submit": "Submit",
+    "close": "Close",
+    "search": "Search",
+    "filter": "Filter",
+    "all": "All",
+    "none": "None",
+    "yes": "Yes",
+    "no": "No",
+    "or": "or",
+    "and": "and",
+    "optional": "optional",
+    "required": "required",
+    "success": "Success!",
+    "error": "Error",
+    "warning": "Warning",
+    "info": "Info",
+    "confirm": "Confirm",
+    "continue": "Continue",
+    "tryAgain": "Try again",
+    "learnMore": "Learn more",
+    "viewAll": "View all",
+    "seeMore": "See more",
+    "showLess": "Show less",
+    "perMonth": "/month",
+    "free": "Free",
+    "popular": "Popular",
+    "new": "New",
+    "recommended": "Recommended"
+  },
+  "nav": {
+    "home": "Home",
+    "services": "Services",
+    "pricing": "Pricing",
+    "about": "About",
+    "contact": "Contact",
+    "blog": "Blog",
+    "faq": "FAQ",
+    "login": "Login",
+    "dashboard": "Dashboard",
+    "logout": "Logout",
+    "myProject": "My Project",
+    "startProject": "Start Project"
+  },
+  "hero": {
+    "badge": "No large investment needed",
+    "title": "Your professional website",
+    "titleHighlight": "from €49/month",
+    "subtitle": "Forget expensive websites costing thousands. We build your dream website and you simply pay monthly. Including hosting, maintenance and support.",
+    "cta": "Start your website",
+    "secondaryCta": "View pricing",
+    "trustBadge": "{{count}}+ entrepreneurs chose us",
+    "feature1": "No startup costs",
+    "feature2": "Ready within 2 weeks",
+    "feature3": "Cancel anytime"
+  },
+  "benefits": {
+    "title": "Why choose a website subscription?",
+    "subtitle": "No worries, no hassle. We take care of everything.",
+    "noInvestment": {
+      "title": "No large investment",
+      "description": "No thousands upfront. Start immediately with a professional website for a fixed monthly fee."
+    },
+    "alwaysUpToDate": {
+      "title": "Always up-to-date",
+      "description": "We handle updates, security and backups. You focus on your business."
+    },
+    "fastOnline": {
+      "title": "Online fast",
+      "description": "Your website goes live within 2 weeks. Including mobile-friendly design."
+    },
+    "support": {
+      "title": "Personal support",
+      "description": "Direct contact with your own web designer. No call centers or long wait times."
+    },
+    "flexible": {
+      "title": "Flexible adjustments",
+      "description": "Want to change something? Small modifications are included. No extra costs."
+    },
+    "noLock": {
+      "title": "No long contracts",
+      "description": "Cancel monthly. You're not locked in."
+    }
+  },
+  "howItWorks": {
+    "title": "How it works",
+    "subtitle": "4 simple steps to your new website",
+    "step1": {
+      "title": "Choose your package",
+      "description": "Select the package that fits your business and needs."
+    },
+    "step2": {
+      "title": "Tell us about your business",
+      "description": "Fill out our simple questionnaire. It only takes 10 minutes."
+    },
+    "step3": {
+      "title": "We build your website",
+      "description": "Our team gets to work. You'll receive a preview and can give feedback."
+    },
+    "step4": {
+      "title": "Your website goes live!",
+      "description": "After approval, we launch your site. You only pay at launch."
+    }
+  },
+  "pricing": {
+    "title": "Transparent pricing",
+    "subtitle": "Choose the package that suits you. No hidden costs.",
+    "monthly": "Monthly",
+    "yearly": "Yearly",
+    "yearlyDiscount": "2 months free",
+    "mostPopular": "Most popular",
+    "startNow": "Start now",
+    "features": "What's included:",
+    "allFeatures": "All features",
+    "compare": "Compare packages",
+    "packages": {
+      "starter": {
+        "name": "Starter",
+        "description": "Perfect for freelancers and starters",
+        "price": "49",
+        "features": [
+          "Up to 5 pages",
+          "Mobile-friendly design",
+          "Contact form",
+          "SSL certificate",
+          "Fast hosting",
+          "Cancel monthly"
+        ]
+      },
+      "professional": {
+        "name": "Professional",
+        "description": "For growing businesses",
+        "price": "89",
+        "features": [
+          "Up to 10 pages",
+          "Everything from Starter",
+          "Blog functionality",
+          "Google Analytics",
+          "SEO optimization",
+          "Faster support"
+        ]
+      },
+      "business": {
+        "name": "Business",
+        "description": "For established entrepreneurs",
+        "price": "149",
+        "features": [
+          "Up to 20 pages",
+          "Everything from Professional",
+          "Multilingual (NL/EN/DE)",
+          "Advanced integrations",
+          "Priority support",
+          "Monthly report"
+        ]
+      },
+      "webshop": {
+        "name": "Webshop",
+        "description": "Sell online",
+        "price": "199",
+        "features": [
+          "Up to 15 pages + shop",
+          "Unlimited products",
+          "iDEAL & credit card",
+          "Inventory management",
+          "Order notifications",
+          "Shipping integrations"
+        ]
+      }
+    }
+  },
+  "testimonials": {
+    "title": "What customers say",
+    "subtitle": "Read experiences from entrepreneurs who came before you"
+  },
+  "faq": {
+    "title": "Frequently asked questions",
+    "subtitle": "Everything you want to know about our website subscriptions",
+    "q1": {
+      "question": "What are the startup costs?",
+      "answer": "None! You only pay the monthly subscription. We invest in building your website."
+    },
+    "q2": {
+      "question": "How long until my website is live?",
+      "answer": "On average 2 weeks after completing the questionnaire. Webshops may take slightly longer."
+    },
+    "q3": {
+      "question": "Can I modify my website later?",
+      "answer": "Absolutely! Small adjustments are included for free. For major changes, we'll provide a quote."
+    },
+    "q4": {
+      "question": "What if I want to cancel?",
+      "answer": "You can cancel monthly. After cancellation, you can take over your website for a one-time fee."
+    },
+    "q5": {
+      "question": "Will my website rank well on Google?",
+      "answer": "Yes! All websites are SEO-optimized. Professional and Business packages include extra SEO tools."
+    },
+    "q6": {
+      "question": "Can I use my own domain?",
+      "answer": "Certainly! You can connect your existing domain or we'll register a new one for you."
+    }
+  },
+  "cta": {
+    "title": "Ready to get started?",
+    "subtitle": "Start your professional website today. No risk, no startup costs.",
+    "button": "Get started",
+    "secondaryButton": "Schedule a call"
+  },
+  "footer": {
+    "description": "Professional websites for entrepreneurs. No large investment, just a fixed monthly fee.",
+    "services": "Services",
+    "company": "Company",
+    "legal": "Legal",
+    "contact": "Contact",
+    "privacy": "Privacy Policy",
+    "terms": "Terms & Conditions",
+    "cookies": "Cookie Policy",
+    "rights": "All rights reserved"
+  },
+  "contact": {
+    "title": "Contact",
+    "subtitle": "Have a question? We're happy to help!",
+    "form": {
+      "name": "Your name",
+      "email": "Email address",
+      "phone": "Phone number",
+      "subject": "Subject",
+      "message": "Your message",
+      "submit": "Send message",
+      "success": "Thank you for your message! We'll get back to you as soon as possible.",
+      "error": "Something went wrong. Please try again."
+    },
+    "info": {
+      "email": "Email",
+      "phone": "Phone",
+      "hours": "Available",
+      "hoursValue": "Mon-Fri 9:00 AM - 5:00 PM"
+    }
+  },
+  "about": {
+    "title": "About Webstability",
+    "subtitle": "We believe every entrepreneur deserves a professional website",
+    "mission": {
+      "title": "Our mission",
+      "description": "Making websites accessible to everyone. No expensive projects, but affordable monthly subscriptions."
+    },
+    "team": {
+      "title": "The team",
+      "description": "A small team of passionate web designers and developers."
+    },
+    "values": {
+      "title": "Our values",
+      "quality": "Quality over quantity",
+      "transparency": "Transparency in everything",
+      "personal": "Personal attention",
+      "innovation": "Continuous innovation"
+    }
+  },
+  "dashboard": {
+    "welcome": "Welcome back",
+    "overview": "Overview",
+    "myProject": "My Project",
+    "messages": "Messages",
+    "files": "Files",
+    "settings": "Settings",
+    "help": "Need help?",
+    "status": {
+      "title": "Project status",
+      "intake": "Intake",
+      "design": "Design",
+      "development": "Development",
+      "review": "Review",
+      "live": "Live"
+    },
+    "progress": {
+      "title": "Progress",
+      "onboarding": "Complete questionnaire",
+      "onboardingDesc": "Tell us about your business",
+      "design": "Approve design",
+      "designDesc": "Review and provide feedback on the design",
+      "content": "Provide content",
+      "contentDesc": "Upload texts and images",
+      "review": "Review website",
+      "reviewDesc": "Test your website before launch",
+      "launch": "Launch",
+      "launchDesc": "Your website goes live!"
+    },
+    "quickActions": {
+      "title": "Quick actions",
+      "uploadFiles": "Upload files",
+      "sendMessage": "Send message",
+      "viewPreview": "View preview",
+      "scheduleMeeting": "Schedule meeting"
+    }
+  },
+  "onboarding": {
+    "title": "Tell us about your business",
+    "subtitle": "The more we know, the better we can build your website",
+    "progress": "Progress",
+    "section": "Section {{current}} of {{total}}",
+    "saveProgress": "Save and continue later",
+    "submit": "Submit",
+    "sections": {
+      "bedrijf": {
+        "title": "About your business",
+        "description": "Tell us who you are"
+      },
+      "branding": {
+        "title": "Branding & Design",
+        "description": "How should your website look?"
+      },
+      "content": {
+        "title": "Content & Media",
+        "description": "Texts and visual materials"
+      },
+      "paginas": {
+        "title": "Pages & Features",
+        "description": "What should your website do?"
+      },
+      "webshop": {
+        "title": "Webshop Details",
+        "description": "Specific to your webshop"
+      },
+      "contact": {
+        "title": "Contact & Availability",
+        "description": "Your contact details for the website"
+      },
+      "strategie": {
+        "title": "Strategy & Goals",
+        "description": "Help us understand your business better"
+      },
+      "extra": {
+        "title": "Additional requests",
+        "description": "Anything else we should know?"
+      }
+    },
+    "questions": {
+      "companyName": "Company name",
+      "tagline": "Slogan or tagline",
+      "businessDescription": "Describe your business",
+      "targetAudience": "Who is your target audience?",
+      "uniqueSellingPoints": "What makes you unique?",
+      "hasLogo": "Do you have a logo?",
+      "logoUpload": "Upload your logo",
+      "brandColors": "Choose your brand colors (max 4)",
+      "brandFont": "Which font suits your business?",
+      "designStyle": "Which style suits you?",
+      "inspirationUrls": "Inspiration websites",
+      "hasTexts": "Do you have texts for your website?",
+      "textsUpload": "Upload your texts",
+      "hasPhotos": "Do you have professional photos?",
+      "photosUpload": "Upload your photos",
+      "wantsBlog": "Do you want a blog on your website?",
+      "pages": "Which pages do you want?",
+      "contactMethods": "How can customers contact you?",
+      "languages": "In which languages should your website be?",
+      "integrations": "Which integrations do you want?",
+      "productCount": "How many products do you have?",
+      "productCatalog": "Upload your product catalog",
+      "paymentMethods": "Which payment methods?",
+      "shippingOptions": "Shipping options",
+      "vatNumber": "VAT number",
+      "kvkNumber": "Chamber of Commerce number",
+      "contactEmail": "Email address for the website",
+      "contactPhone": "Phone number",
+      "businessAddress": "Business address",
+      "openingHours": "Opening hours",
+      "socialMedia": "Which social media channels do you have?",
+      "socialMediaUrls": "Social media links",
+      "competitors": "Who are your competitors?",
+      "differentiation": "What sets you apart from competitors?",
+      "mainCTA": "What is the main goal of your website?",
+      "conversionGoal": "What is a successful conversion for you?",
+      "deadline": "When should your website be live?",
+      "additionalNotes": "Additional remarks"
+    }
+  },
+  "chat": {
+    "title": "Messages",
+    "placeholder": "Type your message...",
+    "send": "Send",
+    "noMessages": "No messages yet",
+    "newMessage": "New message",
+    "from": "From",
+    "attachFile": "Attach file",
+    "typing": "typing..."
+  },
+  "notifications": {
+    "title": "Notifications",
+    "empty": "No new notifications",
+    "markAllRead": "Mark all as read",
+    "push": {
+      "enable": "Enable notifications",
+      "enabled": "Notifications enabled",
+      "disabled": "Notifications disabled",
+      "prompt": "Would you like to receive notifications about your project?"
+    }
+  },
+  "files": {
+    "title": "Files",
+    "upload": "Upload files",
+    "download": "Download",
+    "delete": "Delete",
+    "noFiles": "No files yet",
+    "dragDrop": "Drag files here or click to upload",
+    "maxSize": "Max {{size}}MB per file",
+    "types": "Supported: {{types}}"
+  },
+  "developer": {
+    "dashboard": "Developer Dashboard",
+    "projects": "Projects",
+    "clients": "Clients",
+    "messages": "Messages",
+    "analytics": "Analytics",
+    "settings": "Settings",
+    "newProject": "New project",
+    "allProjects": "All projects",
+    "activeProjects": "Active projects",
+    "completedProjects": "Completed projects",
+    "projectDetails": "Project details",
+    "clientInfo": "Client information",
+    "timeline": "Timeline",
+    "tasks": "Tasks",
+    "notes": "Notes",
+    "status": {
+      "intake": "Intake",
+      "questionnaire": "Questionnaire",
+      "design": "Design",
+      "feedback": "Feedback",
+      "development": "Development",
+      "review": "Review",
+      "live": "Live",
+      "paused": "Paused"
+    },
+    "actions": {
+      "sendMessage": "Send message",
+      "updateStatus": "Update status",
+      "viewOnboarding": "View onboarding",
+      "openDrive": "Open Drive",
+      "sendReminder": "Send reminder"
+    }
+  },
+  "marketing": {
+    "dashboard": "Marketing Dashboard",
+    "leads": "Leads",
+    "campaigns": "Campaigns",
+    "analytics": "Analytics",
+    "emails": "Emails",
+    "searchBusinesses": "Search businesses",
+    "analyzeWebsite": "Analyze website",
+    "sendEmail": "Send email"
+  },
+  "legal": {
+    "privacy": {
+      "title": "Privacy Policy",
+      "lastUpdated": "Last updated",
+      "intro": "At Webstability, we value the protection of your personal data.",
+      "sections": {
+        "collect": {
+          "title": "What data do we collect?",
+          "content": "We collect data you provide to us, such as name, email, phone number and business information."
+        },
+        "use": {
+          "title": "How do we use your data?",
+          "content": "We use your data to provide our services, communication and improve our service."
+        },
+        "share": {
+          "title": "Do we share your data?",
+          "content": "We do not share your data with third parties unless necessary for our services."
+        },
+        "rights": {
+          "title": "Your rights",
+          "content": "You have the right to access, correct and delete your personal data."
+        },
+        "contact": {
+          "title": "Contact",
+          "content": "For questions about our privacy policy, please contact info@webstability.nl."
+        }
+      }
+    },
+    "terms": {
+      "title": "Terms & Conditions",
+      "lastUpdated": "Last updated",
+      "sections": {
+        "definitions": {
+          "title": "Definitions",
+          "content": "In these terms, 'Webstability' means: the service provider; 'Customer': the purchaser of services."
+        },
+        "services": {
+          "title": "Services",
+          "content": "Webstability provides website design and development services on a subscription basis."
+        },
+        "payment": {
+          "title": "Payment",
+          "content": "Payment is made monthly in advance via direct debit or invoice."
+        },
+        "cancellation": {
+          "title": "Cancellation",
+          "content": "The subscription can be cancelled monthly with a notice period of 1 month."
+        },
+        "liability": {
+          "title": "Liability",
+          "content": "Webstability is not liable for indirect or consequential damages."
+        },
+        "ip": {
+          "title": "Intellectual property",
+          "content": "After full payment, ownership of the website transfers to the customer."
+        }
+      }
+    },
+    "cookies": {
+      "title": "Cookie Policy",
+      "lastUpdated": "Last updated",
+      "intro": "This website uses cookies to improve your experience.",
+      "sections": {
+        "what": {
+          "title": "What are cookies?",
+          "content": "Cookies are small text files stored on your device."
+        },
+        "types": {
+          "title": "What cookies do we use?",
+          "content": "We use functional cookies, analytical cookies and marketing cookies."
+        },
+        "manage": {
+          "title": "Managing cookies",
+          "content": "You can manage cookies through your browser settings."
+        }
+      }
+    }
+  },
+  "errors": {
+    "404": {
+      "title": "Page not found",
+      "message": "The page you're looking for doesn't exist or has been moved.",
+      "button": "Back to home"
+    },
+    "500": {
+      "title": "Something went wrong",
+      "message": "An error occurred. Please try again later.",
+      "button": "Try again"
+    },
+    "network": "No internet connection",
+    "unauthorized": "You're not logged in",
+    "forbidden": "You don't have access to this page"
+  },
+  "language": {
+    "select": "Language",
+    "nl": "Nederlands",
+    "en": "English"
+  }
+}

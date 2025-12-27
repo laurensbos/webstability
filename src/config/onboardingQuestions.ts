@@ -281,7 +281,19 @@ export const ONBOARDING_SECTIONS: OnboardingSection[] = [
           { value: 'pricing', label: 'Prijzen' },
           { value: 'testimonials', label: 'Reviews' },
           { value: 'gallery', label: 'Galerij' },
-          { value: 'booking', label: 'Afspraken', description: 'Alleen Business pakket', requiresPackage: 'business' }
+          { value: 'booking', label: 'Afspraken', description: 'Alleen Business pakket', requiresPackage: 'business' },
+          { value: 'careers', label: 'Vacatures' },
+          { value: 'news', label: 'Nieuws' },
+          { value: 'cases', label: 'Cases / Projecten' },
+          { value: 'partners', label: 'Partners' },
+          { value: 'privacy', label: 'Privacybeleid' },
+          { value: 'terms', label: 'Algemene voorwaarden' },
+          { value: 'locations', label: 'Locaties / Vestigingen' },
+          { value: 'downloads', label: 'Downloads' },
+          { value: 'events', label: 'Evenementen', description: 'Alleen Professional+', requiresPackage: 'professional' },
+          { value: 'knowledge', label: 'Kennisbank', description: 'Alleen Professional+', requiresPackage: 'professional' },
+          { value: 'webinar', label: 'Webinars', description: 'Alleen Business pakket', requiresPackage: 'business' },
+          { value: 'custom', label: 'Eigen pagina (beschrijf in opmerkingen)' }
         ],
         packages: ['starter', 'professional', 'business', 'webshop']
       },

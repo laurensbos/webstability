@@ -1,0 +1,560 @@
+{
+  "common": {
+    "loading": "Laden...",
+    "save": "Opslaan",
+    "cancel": "Annuleren",
+    "delete": "Verwijderen",
+    "edit": "Bewerken",
+    "back": "Terug",
+    "next": "Volgende",
+    "previous": "Vorige",
+    "submit": "Versturen",
+    "close": "Sluiten",
+    "search": "Zoeken",
+    "filter": "Filter",
+    "all": "Alle",
+    "none": "Geen",
+    "yes": "Ja",
+    "no": "Nee",
+    "or": "of",
+    "and": "en",
+    "optional": "optioneel",
+    "required": "verplicht",
+    "success": "Gelukt!",
+    "error": "Fout",
+    "warning": "Waarschuwing",
+    "info": "Info",
+    "confirm": "Bevestigen",
+    "continue": "Doorgaan",
+    "tryAgain": "Probeer opnieuw",
+    "learnMore": "Meer informatie",
+    "viewAll": "Bekijk alles",
+    "seeMore": "Meer bekijken",
+    "showLess": "Minder tonen",
+    "perMonth": "/maand",
+    "free": "Gratis",
+    "popular": "Populair",
+    "new": "Nieuw",
+    "recommended": "Aanbevolen"
+  },
+  "nav": {
+    "home": "Home",
+    "services": "Diensten",
+    "pricing": "Prijzen",
+    "about": "Over ons",
+    "contact": "Contact",
+    "blog": "Blog",
+    "faq": "FAQ",
+    "login": "Inloggen",
+    "dashboard": "Dashboard",
+    "logout": "Uitloggen",
+    "myProject": "Mijn project",
+    "startProject": "Start project"
+  },
+  "hero": {
+    "badge": "Geen grote investering nodig",
+    "title": "Jouw professionele website",
+    "titleHighlight": "vanaf €49/maand",
+    "subtitle": "Vergeet dure websites van duizenden euro's. Wij bouwen jouw droomwebsite en je betaalt gewoon maandelijks. Inclusief hosting, onderhoud en support.",
+    "cta": "Start jouw website",
+    "secondaryCta": "Bekijk prijzen",
+    "trustBadge": "Al {{count}}+ ondernemers kozen voor ons",
+    "feature1": "Geen opstartkosten",
+    "feature2": "Klaar binnen 2 weken",
+    "feature3": "Altijd opzegbaar"
+  },
+  "benefits": {
+    "title": "Waarom kiezen voor een website abonnement?",
+    "subtitle": "Geen zorgen, geen gedoe. Wij regelen alles.",
+    "noInvestment": {
+      "title": "Geen grote investering",
+      "description": "Geen duizenden euro's vooraf. Start direct met een professionele website voor een vast maandbedrag."
+    },
+    "alwaysUpToDate": {
+      "title": "Altijd up-to-date",
+      "description": "Wij zorgen voor updates, beveiliging en backups. Jij focust op je bedrijf."
+    },
+    "fastOnline": {
+      "title": "Snel online",
+      "description": "Binnen 2 weken staat jouw website live. Inclusief mobiel-vriendelijk design."
+    },
+    "support": {
+      "title": "Persoonlijke support",
+      "description": "Direct contact met je eigen webdesigner. Geen callcenters of lange wachttijden."
+    },
+    "flexible": {
+      "title": "Flexibel aanpassen",
+      "description": "Wil je iets aanpassen? Kleine wijzigingen zijn inclusief. Geen extra kosten."
+    },
+    "noLock": {
+      "title": "Geen lange contracten",
+      "description": "Maandelijks opzegbaar. Je zit nergens aan vast."
+    }
+  },
+  "howItWorks": {
+    "title": "Zo werkt het",
+    "subtitle": "In 4 simpele stappen naar jouw nieuwe website",
+    "step1": {
+      "title": "Kies je pakket",
+      "description": "Selecteer het pakket dat past bij jouw bedrijf en wensen."
+    },
+    "step2": {
+      "title": "Vertel over je bedrijf",
+      "description": "Vul ons eenvoudige vragenformulier in. Dit kost maar 10 minuten."
+    },
+    "step3": {
+      "title": "Wij bouwen je website",
+      "description": "Ons team gaat aan de slag. Je krijgt een preview en kunt feedback geven."
+    },
+    "step4": {
+      "title": "Je website gaat live!",
+      "description": "Na goedkeuring zetten we je site live. Jij betaalt pas bij livegang."
+    }
+  },
+  "pricing": {
+    "title": "Transparante prijzen",
+    "subtitle": "Kies het pakket dat bij je past. Geen verborgen kosten.",
+    "monthly": "Maandelijks",
+    "yearly": "Jaarlijks",
+    "yearlyDiscount": "2 maanden gratis",
+    "mostPopular": "Meest gekozen",
+    "startNow": "Start nu",
+    "features": "Wat zit erin:",
+    "allFeatures": "Alle features",
+    "compare": "Vergelijk pakketten",
+    "packages": {
+      "starter": {
+        "name": "Starter",
+        "description": "Perfect voor starters en ZZP'ers",
+        "price": "49",
+        "features": [
+          "Tot 5 pagina's",
+          "Mobiel-vriendelijk design",
+          "Contactformulier",
+          "SSL certificaat",
+          "Snelle hosting",
+          "Maandelijks opzegbaar"
+        ]
+      },
+      "professional": {
+        "name": "Professional",
+        "description": "Voor groeiende bedrijven",
+        "price": "89",
+        "features": [
+          "Tot 10 pagina's",
+          "Alles van Starter",
+          "Blog functionaliteit",
+          "Google Analytics",
+          "SEO optimalisatie",
+          "Snellere support"
+        ]
+      },
+      "business": {
+        "name": "Business",
+        "description": "Voor gevestigde ondernemers",
+        "price": "149",
+        "features": [
+          "Tot 20 pagina's",
+          "Alles van Professional",
+          "Meertalig (NL/EN/DE)",
+          "Geavanceerde integraties",
+          "Prioriteit support",
+          "Maandelijks rapport"
+        ]
+      },
+      "webshop": {
+        "name": "Webshop",
+        "description": "Verkoop online",
+        "price": "199",
+        "features": [
+          "Tot 15 pagina's + shop",
+          "Onbeperkt producten",
+          "iDEAL & creditcard",
+          "Voorraad beheer",
+          "Bestel notificaties",
+          "Verzendkoppelingen"
+        ]
+      }
+    }
+  },
+  "testimonials": {
+    "title": "Wat klanten zeggen",
+    "subtitle": "Lees de ervaringen van ondernemers die je voorgingen"
+  },
+  "faq": {
+    "title": "Veelgestelde vragen",
+    "subtitle": "Alles wat je wilt weten over onze website abonnementen",
+    "q1": {
+      "question": "Wat zijn de opstartkosten?",
+      "answer": "Geen! Je betaalt alleen het maandelijkse abonnement. Wij investeren in de bouw van je website."
+    },
+    "q2": {
+      "question": "Hoe lang duurt het voordat mijn website live is?",
+      "answer": "Gemiddeld 2 weken na het invullen van het vragenformulier. Voor webshops kan dit iets langer duren."
+    },
+    "q3": {
+      "question": "Kan ik mijn website later aanpassen?",
+      "answer": "Absoluut! Kleine aanpassingen zijn gratis inbegrepen. Voor grote wijzigingen maken we een offerte."
+    },
+    "q4": {
+      "question": "Wat als ik wil stoppen?",
+      "answer": "Je kunt maandelijks opzeggen. Na opzegging kun je je website overnemen voor een eenmalig bedrag."
+    },
+    "q5": {
+      "question": "Is mijn website goed vindbaar in Google?",
+      "answer": "Ja! Alle websites zijn SEO-geoptimaliseerd. Bij Professional en Business krijg je extra SEO-tools."
+    },
+    "q6": {
+      "question": "Kan ik mijn eigen domein gebruiken?",
+      "answer": "Zeker! Je kunt je bestaande domein koppelen of wij registreren een nieuw domein voor je."
+    }
+  },
+  "cta": {
+    "title": "Klaar om te starten?",
+    "subtitle": "Start vandaag nog met jouw professionele website. Geen risico, geen opstartkosten.",
+    "button": "Begin nu",
+    "secondaryButton": "Plan een gesprek"
+  },
+  "footer": {
+    "description": "Professionele websites voor ondernemers. Geen grote investering, gewoon een vast maandbedrag.",
+    "services": "Diensten",
+    "company": "Bedrijf",
+    "legal": "Juridisch",
+    "contact": "Contact",
+    "privacy": "Privacybeleid",
+    "terms": "Algemene voorwaarden",
+    "cookies": "Cookiebeleid",
+    "rights": "Alle rechten voorbehouden"
+  },
+  "contact": {
+    "title": "Contact",
+    "subtitle": "Heb je een vraag? We helpen je graag!",
+    "form": {
+      "name": "Je naam",
+      "email": "E-mailadres",
+      "phone": "Telefoonnummer",
+      "subject": "Onderwerp",
+      "message": "Je bericht",
+      "submit": "Verstuur bericht",
+      "success": "Bedankt voor je bericht! We nemen zo snel mogelijk contact op.",
+      "error": "Er ging iets mis. Probeer het opnieuw."
+    },
+    "info": {
+      "email": "E-mail",
+      "phone": "Telefoon",
+      "hours": "Bereikbaar",
+      "hoursValue": "Ma-Vr 9:00 - 17:00"
+    }
+  },
+  "about": {
+    "title": "Over Webstability",
+    "subtitle": "Wij geloven dat elke ondernemer een professionele website verdient",
+    "mission": {
+      "title": "Onze missie",
+      "description": "Websites toegankelijk maken voor iedereen. Geen dure projecten, maar betaalbare maandelijkse abonnementen."
+    },
+    "team": {
+      "title": "Het team",
+      "description": "Een klein team van gepassioneerde webdesigners en developers."
+    },
+    "values": {
+      "title": "Onze waarden",
+      "quality": "Kwaliteit boven kwantiteit",
+      "transparency": "Transparantie in alles",
+      "personal": "Persoonlijke aandacht",
+      "innovation": "Continue innovatie"
+    }
+  },
+  "dashboard": {
+    "welcome": "Welkom terug",
+    "overview": "Overzicht",
+    "myProject": "Mijn project",
+    "messages": "Berichten",
+    "files": "Bestanden",
+    "settings": "Instellingen",
+    "help": "Hulp nodig?",
+    "status": {
+      "title": "Project status",
+      "intake": "Intake",
+      "design": "Ontwerp",
+      "development": "Ontwikkeling",
+      "review": "Review",
+      "live": "Live"
+    },
+    "progress": {
+      "title": "Voortgang",
+      "onboarding": "Vragenlijst invullen",
+      "onboardingDesc": "Vertel ons over je bedrijf",
+      "design": "Ontwerp goedkeuren",
+      "designDesc": "Bekijk en geef feedback op het ontwerp",
+      "content": "Content aanleveren",
+      "contentDesc": "Teksten en afbeeldingen uploaden",
+      "review": "Website reviewen",
+      "reviewDesc": "Test je website voor livegang",
+      "launch": "Livegang",
+      "launchDesc": "Je website gaat de lucht in!"
+    },
+    "quickActions": {
+      "title": "Snelle acties",
+      "uploadFiles": "Bestanden uploaden",
+      "sendMessage": "Bericht sturen",
+      "viewPreview": "Preview bekijken",
+      "scheduleMeeting": "Gesprek plannen"
+    }
+  },
+  "onboarding": {
+    "title": "Vertel ons over je bedrijf",
+    "subtitle": "Hoe meer we weten, hoe beter we je website kunnen maken",
+    "progress": "Voortgang",
+    "section": "Sectie {{current}} van {{total}}",
+    "saveProgress": "Opslaan en later doorgaan",
+    "submit": "Versturen",
+    "sections": {
+      "bedrijf": {
+        "title": "Over je bedrijf",
+        "description": "Vertel ons wie je bent"
+      },
+      "branding": {
+        "title": "Huisstijl & Design",
+        "description": "Hoe moet je website eruitzien?"
+      },
+      "content": {
+        "title": "Content & Media",
+        "description": "Teksten en beeldmateriaal"
+      },
+      "paginas": {
+        "title": "Pagina's & Functies",
+        "description": "Wat moet je website kunnen?"
+      },
+      "webshop": {
+        "title": "Webshop Details",
+        "description": "Specifiek voor je webshop"
+      },
+      "contact": {
+        "title": "Contact & Bereikbaarheid",
+        "description": "Je contactgegevens voor de website"
+      },
+      "strategie": {
+        "title": "Strategie & Doelen",
+        "description": "Help ons je bedrijf beter begrijpen"
+      },
+      "extra": {
+        "title": "Extra wensen",
+        "description": "Nog iets dat we moeten weten?"
+      }
+    },
+    "questions": {
+      "companyName": "Bedrijfsnaam",
+      "tagline": "Slogan of tagline",
+      "businessDescription": "Beschrijf je bedrijf",
+      "targetAudience": "Wie is je doelgroep?",
+      "uniqueSellingPoints": "Wat maakt je uniek?",
+      "hasLogo": "Heb je al een logo?",
+      "logoUpload": "Upload je logo",
+      "brandColors": "Kies je merkkeuren (max 4)",
+      "brandFont": "Welk lettertype past bij je bedrijf?",
+      "designStyle": "Welke stijl past bij je?",
+      "inspirationUrls": "Inspiratie websites",
+      "hasTexts": "Heb je al teksten voor je website?",
+      "textsUpload": "Upload je teksten",
+      "hasPhotos": "Heb je professionele foto's?",
+      "photosUpload": "Upload je foto's",
+      "wantsBlog": "Wil je een blog op je website?",
+      "pages": "Welke pagina's wil je?",
+      "contactMethods": "Hoe kunnen klanten contact opnemen?",
+      "languages": "In welke talen moet je website?",
+      "integrations": "Welke integraties wil je?",
+      "productCount": "Hoeveel producten heb je?",
+      "productCatalog": "Upload je productcatalogus",
+      "paymentMethods": "Welke betaalmethodes?",
+      "shippingOptions": "Verzendopties",
+      "vatNumber": "BTW-nummer",
+      "kvkNumber": "KVK-nummer",
+      "contactEmail": "E-mailadres voor de website",
+      "contactPhone": "Telefoonnummer",
+      "businessAddress": "Vestigingsadres",
+      "openingHours": "Openingstijden",
+      "socialMedia": "Welke social media kanalen heb je?",
+      "socialMediaUrls": "Social media links",
+      "competitors": "Wie zijn je concurrenten?",
+      "differentiation": "Waarin onderscheid je je van concurrenten?",
+      "mainCTA": "Wat is het belangrijkste doel van je website?",
+      "conversionGoal": "Wat is een succesvolle conversie voor jou?",
+      "deadline": "Wanneer moet je website live zijn?",
+      "additionalNotes": "Overige opmerkingen"
+    }
+  },
+  "chat": {
+    "title": "Berichten",
+    "placeholder": "Typ je bericht...",
+    "send": "Verstuur",
+    "noMessages": "Nog geen berichten",
+    "newMessage": "Nieuw bericht",
+    "from": "Van",
+    "attachFile": "Bestand bijvoegen",
+    "typing": "aan het typen..."
+  },
+  "notifications": {
+    "title": "Meldingen",
+    "empty": "Geen nieuwe meldingen",
+    "markAllRead": "Alles als gelezen markeren",
+    "push": {
+      "enable": "Meldingen inschakelen",
+      "enabled": "Meldingen ingeschakeld",
+      "disabled": "Meldingen uitgeschakeld",
+      "prompt": "Wil je meldingen ontvangen over je project?"
+    }
+  },
+  "files": {
+    "title": "Bestanden",
+    "upload": "Upload bestanden",
+    "download": "Download",
+    "delete": "Verwijderen",
+    "noFiles": "Nog geen bestanden",
+    "dragDrop": "Sleep bestanden hierheen of klik om te uploaden",
+    "maxSize": "Max {{size}}MB per bestand",
+    "types": "Ondersteund: {{types}}"
+  },
+  "developer": {
+    "dashboard": "Developer Dashboard",
+    "projects": "Projecten",
+    "clients": "Klanten",
+    "messages": "Berichten",
+    "analytics": "Analytics",
+    "settings": "Instellingen",
+    "newProject": "Nieuw project",
+    "allProjects": "Alle projecten",
+    "activeProjects": "Actieve projecten",
+    "completedProjects": "Afgeronde projecten",
+    "projectDetails": "Project details",
+    "clientInfo": "Klant informatie",
+    "timeline": "Tijdlijn",
+    "tasks": "Taken",
+    "notes": "Notities",
+    "status": {
+      "intake": "Intake",
+      "questionnaire": "Vragenlijst",
+      "design": "Ontwerp",
+      "feedback": "Feedback",
+      "development": "Ontwikkeling",
+      "review": "Review",
+      "live": "Live",
+      "paused": "Gepauzeerd"
+    },
+    "actions": {
+      "sendMessage": "Bericht sturen",
+      "updateStatus": "Status bijwerken",
+      "viewOnboarding": "Onboarding bekijken",
+      "openDrive": "Drive openen",
+      "sendReminder": "Herinnering sturen"
+    }
+  },
+  "marketing": {
+    "dashboard": "Marketing Dashboard",
+    "leads": "Leads",
+    "campaigns": "Campagnes",
+    "analytics": "Analytics",
+    "emails": "E-mails",
+    "searchBusinesses": "Bedrijven zoeken",
+    "analyzeWebsite": "Website analyseren",
+    "sendEmail": "E-mail versturen"
+  },
+  "legal": {
+    "privacy": {
+      "title": "Privacybeleid",
+      "lastUpdated": "Laatst bijgewerkt",
+      "intro": "Bij Webstability hechten wij veel waarde aan de bescherming van uw persoonsgegevens.",
+      "sections": {
+        "collect": {
+          "title": "Welke gegevens verzamelen wij?",
+          "content": "Wij verzamelen gegevens die u aan ons verstrekt, zoals naam, e-mail, telefoonnummer en bedrijfsgegevens."
+        },
+        "use": {
+          "title": "Waarvoor gebruiken wij uw gegevens?",
+          "content": "Wij gebruiken uw gegevens voor het leveren van onze diensten, communicatie en het verbeteren van onze service."
+        },
+        "share": {
+          "title": "Delen wij uw gegevens?",
+          "content": "Wij delen uw gegevens niet met derden, tenzij dit noodzakelijk is voor onze dienstverlening."
+        },
+        "rights": {
+          "title": "Uw rechten",
+          "content": "U heeft recht op inzage, correctie en verwijdering van uw persoonsgegevens."
+        },
+        "contact": {
+          "title": "Contact",
+          "content": "Voor vragen over ons privacybeleid kunt u contact opnemen via info@webstability.nl."
+        }
+      }
+    },
+    "terms": {
+      "title": "Algemene Voorwaarden",
+      "lastUpdated": "Laatst bijgewerkt",
+      "sections": {
+        "definitions": {
+          "title": "Definities",
+          "content": "In deze voorwaarden wordt verstaan onder 'Webstability': de dienstverlener; 'Klant': de afnemer van diensten."
+        },
+        "services": {
+          "title": "Diensten",
+          "content": "Webstability levert website design en development diensten op abonnementsbasis."
+        },
+        "payment": {
+          "title": "Betaling",
+          "content": "Betaling geschiedt maandelijks vooraf via automatische incasso of factuur."
+        },
+        "cancellation": {
+          "title": "Opzegging",
+          "content": "Het abonnement is maandelijks opzegbaar met een opzegtermijn van 1 maand."
+        },
+        "liability": {
+          "title": "Aansprakelijkheid",
+          "content": "Webstability is niet aansprakelijk voor indirecte schade of gevolgschade."
+        },
+        "ip": {
+          "title": "Intellectueel eigendom",
+          "content": "Na volledige betaling gaat het eigendom van de website over naar de klant."
+        }
+      }
+    },
+    "cookies": {
+      "title": "Cookiebeleid",
+      "lastUpdated": "Laatst bijgewerkt",
+      "intro": "Deze website maakt gebruik van cookies om uw ervaring te verbeteren.",
+      "sections": {
+        "what": {
+          "title": "Wat zijn cookies?",
+          "content": "Cookies zijn kleine tekstbestanden die op uw apparaat worden opgeslagen."
+        },
+        "types": {
+          "title": "Welke cookies gebruiken wij?",
+          "content": "Wij gebruiken functionele cookies, analytische cookies en marketing cookies."
+        },
+        "manage": {
+          "title": "Cookies beheren",
+          "content": "U kunt cookies beheren via uw browserinstellingen."
+        }
+      }
+    }
+  },
+  "errors": {
+    "404": {
+      "title": "Pagina niet gevonden",
+      "message": "De pagina die je zoekt bestaat niet of is verplaatst.",
+      "button": "Terug naar home"
+    },
+    "500": {
+      "title": "Er ging iets mis",
+      "message": "Er is een fout opgetreden. Probeer het later opnieuw.",
+      "button": "Probeer opnieuw"
+    },
+    "network": "Geen internetverbinding",
+    "unauthorized": "Je bent niet ingelogd",
+    "forbidden": "Je hebt geen toegang tot deze pagina"
+  },
+  "language": {
+    "select": "Taal",
+    "nl": "Nederlands",
+    "en": "English"
+  }
+}

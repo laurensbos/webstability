@@ -10,6 +10,9 @@ import { DarkModeProvider } from './contexts/DarkModeContext'
 import ProtectedRoute from './components/ProtectedRoute'
 import { initSentry } from './lib/sentry'
 
+// Initialize i18n
+import './lib/i18n'
+
 // Initialize Sentry error tracking
 initSentry()
 

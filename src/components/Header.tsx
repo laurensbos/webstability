@@ -4,6 +4,7 @@ import { motion, AnimatePresence } from 'framer-motion'
 import { Menu, X, ChevronDown, Image, Users, Mail, ArrowRight, ShoppingCart, Search, ClipboardList, Palette, Plane, Globe, Moon, Sun } from 'lucide-react'
 import Logo from './Logo'
 import { useDarkMode } from '../contexts/DarkModeContext'
+import { LanguageSelector, MobileLanguageSelector } from './LanguageSelector'
 
 // WhatsApp Icon Component
 const WhatsAppIcon = ({ className }: { className?: string }) => (
@@ -362,6 +363,9 @@ export default function Header({ urgencyBannerVisible = false }: HeaderProps) {
                 {darkMode ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4" />}
               </button>
 
+              {/* Language Selector */}
+              <LanguageSelector />
+
               {/* Mijn project button */}
               <button
                 onClick={() => setShowProjectModal(true)}
@@ -555,6 +559,9 @@ export default function Header({ urgencyBannerVisible = false }: HeaderProps) {
                   <ArrowRight className="w-4 h-4" />
                 </a>
               </div>
+
+              {/* Mobile Language Selector */}
+              <MobileLanguageSelector />
             </div>
           </motion.div>
         )}

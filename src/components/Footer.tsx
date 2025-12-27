@@ -3,6 +3,7 @@ import { ArrowRight, Mail, Phone, MapPin, ChevronDown, Sparkles, Star } from 'lu
 import { Link } from 'react-router-dom'
 import { useState } from 'react'
 import Logo from './Logo'
+import { LanguageSelector } from './LanguageSelector'
 
 const footerLinks = {
   diensten: [
@@ -481,6 +482,9 @@ export default function Footer({ ctaVariant = 'default' }: FooterProps) {
               <span className="text-gray-300 dark:text-gray-600">•</span>
               <span>BTW: NL004875371B72</span>
             </div>
+
+            {/* Language Selector */}
+            <LanguageSelector variant="footer" />
           </div>
         </div>
       </div>
