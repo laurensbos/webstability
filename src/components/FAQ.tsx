@@ -1,42 +1,38 @@
 import { motion, AnimatePresence } from 'framer-motion'
 import { useState } from 'react'
 import { Plus, Minus } from 'lucide-react'
-
-const faqs = [
-	{
-		question: 'Wat zijn de opstartkosten?',
-		answer:
-			'Voor websites betaal je eenmalig vanaf €149 opstartkosten, voor webshops is dit vanaf €299 (alle prijzen incl. BTW). Als ondernemer kun je de 21% BTW terugvragen bij je belastingaangifte. Daarna betaal je alleen het maandelijkse bedrag. Hosting, SSL-certificaat, domeinbeheer en onderhoud zijn allemaal inbegrepen.',
-	},
-	{
-		question: 'Hoe lang duurt het voordat mijn website online staat?',
-		answer:
-			'Je website staat binnen 7 werkdagen online. Na ons eerste gesprek ontvang je binnen 5 dagen een eerste ontwerp. Na jouw goedkeuring gaat de website direct live.',
-	},
-	{
-		question: 'Kan ik tussentijds opzeggen?',
-		answer:
-			'Ja, na de eerste 3 maanden kun je maandelijks opzeggen. We geloven in onze service en willen dat je blijft omdat je tevreden bent, niet omdat je vastzit aan een contract.',
-	},
-	{
-		question: 'Hoeveel aanpassingen kan ik per maand doen?',
-		answer:
-			'Dit hangt af van je pakket. Bij Starter kun je 1 aanpassing per maand doen, bij Professioneel zijn tekstaanpassingen onbeperkt, en bij Business heb je volledige flexibiliteit met een dedicated accountmanager.',
-	},
-	{
-		question: 'Kan ik mijn eigen domeinnaam gebruiken?',
-		answer:
-			'Zeker! Je kunt je bestaande domein gebruiken of wij helpen je met het registreren van een nieuw domein. Dit is bij alle pakketten inbegrepen.',
-	},
-	{
-		question: 'Wat als ik niet tevreden ben met het ontwerp?',
-		answer:
-			'Je ontvangt eerst een conceptontwerp ter goedkeuring. We blijven aanpassen tot je 100% tevreden bent. Daarnaast heb je 14 dagen niet-goed-geld-terug garantie.',
-	},
-]
+import { useTranslation } from 'react-i18next'
 
 export default function FAQ() {
+	const { t } = useTranslation()
 	const [openIndex, setOpenIndex] = useState<number | null>(0)
+
+	const faqs = [
+		{
+			question: t('faq.items.costs.question'),
+			answer: t('faq.items.costs.answer'),
+		},
+		{
+			question: t('faq.items.timeline.question'),
+			answer: t('faq.items.timeline.answer'),
+		},
+		{
+			question: t('faq.items.cancel.question'),
+			answer: t('faq.items.cancel.answer'),
+		},
+		{
+			question: t('faq.items.changes.question'),
+			answer: t('faq.items.changes.answer'),
+		},
+		{
+			question: t('faq.items.domain.question'),
+			answer: t('faq.items.domain.answer'),
+		},
+		{
+			question: t('faq.items.satisfaction.question'),
+			answer: t('faq.items.satisfaction.answer'),
+		},
+	]
 
 	return (
 		<section id="faq" className="py-16 lg:py-32 bg-gray-50 dark:bg-gray-900 relative">
@@ -49,7 +45,7 @@ export default function FAQ() {
 						viewport={{ once: true }}
 						className="inline-block text-primary-600 font-semibold text-sm tracking-wider uppercase mb-3 lg:mb-4"
 					>
-						Veelgestelde vragen
+						{t('faq.badge')}
 					</motion.span>
 					<motion.h2
 						initial={{ opacity: 0, y: 20 }}
@@ -58,7 +54,7 @@ export default function FAQ() {
 						transition={{ delay: 0.1 }}
 						className="text-2xl sm:text-3xl lg:text-5xl font-bold text-gray-900 dark:text-white"
 					>
-						Heb je vragen?
+						{t('faq.title')}
 					</motion.h2>
 				</div>
 
@@ -116,12 +112,12 @@ export default function FAQ() {
 					viewport={{ once: true }}
 					className="text-center mt-8 lg:mt-12"
 				>
-					<p className="text-gray-500 dark:text-gray-400 text-sm lg:text-base mb-3 lg:mb-4">Staat je vraag er niet bij?</p>
+					<p className="text-gray-500 dark:text-gray-400 text-sm lg:text-base mb-3 lg:mb-4">{t('faq.notFound')}</p>
 					<a
 						href="mailto:info@webstability.nl"
 						className="inline-flex items-center gap-2 text-primary-600 hover:text-primary-700 font-medium transition-colors text-sm lg:text-base"
 					>
-						Neem contact op
+						{t('faq.contactUs')}
 						<span>→</span>
 					</a>
 				</motion.div>

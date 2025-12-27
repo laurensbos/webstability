@@ -1,37 +1,37 @@
 import { motion } from 'framer-motion'
 import { MessageSquare, Palette, Rocket, HeartHandshake } from 'lucide-react'
-
-const steps = [
-	{
-		icon: MessageSquare,
-		step: '01',
-		title: 'Start je project',
-		description:
-			'Doorloop onze slimme wizard en krijg direct toegang tot je eigen klantportaal met live projectstatus.',
-	},
-	{
-		icon: Palette,
-		step: '02',
-		title: 'Design binnen 5 dagen',
-		description:
-			'Je ontvangt een volledig uitgewerkt ontwerp in je dashboard. Niet tevreden? We passen aan tot het perfect is.',
-	},
-	{
-		icon: Rocket,
-		step: '03',
-		title: 'Goedkeuren & live',
-		description: 'Blij met het design? Na betaling gaat je website direct live. Inclusief hosting, SSL en domein.',
-	},
-	{
-		icon: HeartHandshake,
-		step: '04',
-		title: 'Doorlopende support',
-		description:
-			'Wij blijven je partner. Wijzigingen aanvragen, berichten sturen — alles via je persoonlijke dashboard.',
-	},
-]
+import { useTranslation } from 'react-i18next'
 
 export default function HowItWorks() {
+	const { t } = useTranslation()
+	
+	const steps = [
+		{
+			icon: MessageSquare,
+			step: '01',
+			title: t('howItWorks.step1.title'),
+			description: t('howItWorks.step1.description'),
+		},
+		{
+			icon: Palette,
+			step: '02',
+			title: t('howItWorks.step2.title'),
+			description: t('howItWorks.step2.description'),
+		},
+		{
+			icon: Rocket,
+			step: '03',
+			title: t('howItWorks.step3.title'),
+			description: t('howItWorks.step3.description'),
+		},
+		{
+			icon: HeartHandshake,
+			step: '04',
+			title: t('howItWorks.step4.title'),
+			description: t('howItWorks.step4.description'),
+		},
+	]
+
 	return (
 		<section id="how-it-works" className="py-16 lg:py-32 bg-gray-50 dark:bg-gray-900 relative">
 			<div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -42,7 +42,7 @@ export default function HowItWorks() {
 						viewport={{ once: true }}
 						className="inline-block text-primary-600 font-semibold text-sm tracking-wider uppercase mb-3 lg:mb-4"
 					>
-						Simpel proces
+						{t('howItWorks.badge')}
 					</motion.span>
 					<motion.h2
 						initial={{ opacity: 0, y: 20 }}
@@ -51,9 +51,9 @@ export default function HowItWorks() {
 						transition={{ delay: 0.1 }}
 						className="text-2xl sm:text-3xl lg:text-5xl font-bold text-gray-900 dark:text-white mb-4 lg:mb-6"
 					>
-						In 4 stappen{' '}
+						{t('howItWorks.title')}{' '}
 						<span className="text-primary-600">
-							online
+							{t('howItWorks.titleHighlight')}
 						</span>
 					</motion.h2>
 				</div>

@@ -98,23 +98,25 @@
     }
   },
   "howItWorks": {
-    "title": "Zo werkt het",
+    "badge": "Simpel proces",
+    "title": "In 4 stappen",
+    "titleHighlight": "online",
     "subtitle": "In 4 simpele stappen naar jouw nieuwe website",
     "step1": {
-      "title": "Kies je pakket",
-      "description": "Selecteer het pakket dat past bij jouw bedrijf en wensen."
+      "title": "Start je project",
+      "description": "Doorloop onze slimme wizard en krijg direct toegang tot je eigen klantportaal met live projectstatus."
     },
     "step2": {
-      "title": "Vertel over je bedrijf",
-      "description": "Vul ons eenvoudige vragenformulier in. Dit kost maar 10 minuten."
+      "title": "Design binnen 5 dagen",
+      "description": "Je ontvangt een volledig uitgewerkt ontwerp in je dashboard. Niet tevreden? We passen aan tot het perfect is."
     },
     "step3": {
-      "title": "Wij bouwen je website",
-      "description": "Ons team gaat aan de slag. Je krijgt een preview en kunt feedback geven."
+      "title": "Goedkeuren & live",
+      "description": "Blij met het design? Na betaling gaat je website direct live. Inclusief hosting, SSL en domein."
     },
     "step4": {
-      "title": "Je website gaat live!",
-      "description": "Na goedkeuring zetten we je site live. Jij betaalt pas bij livegang."
+      "title": "Doorlopende support",
+      "description": "Wij blijven je partner. Wijzigingen aanvragen, berichten sturen — alles via je persoonlijke dashboard."
     }
   },
   "pricing": {
@@ -210,31 +212,36 @@
     "subtitle": "Lees de ervaringen van ondernemers die je voorgingen"
   },
   "faq": {
-    "title": "Veelgestelde vragen",
+    "badge": "Veelgestelde vragen",
+    "title": "Heb je vragen?",
     "subtitle": "Alles wat je wilt weten over onze website abonnementen",
-    "q1": {
-      "question": "Wat zijn de opstartkosten?",
-      "answer": "Geen! Je betaalt alleen het maandelijkse abonnement. Wij investeren in de bouw van je website."
-    },
-    "q2": {
-      "question": "Hoe lang duurt het voordat mijn website live is?",
-      "answer": "Gemiddeld 2 weken na het invullen van het vragenformulier. Voor webshops kan dit iets langer duren."
-    },
-    "q3": {
-      "question": "Kan ik mijn website later aanpassen?",
-      "answer": "Absoluut! Kleine aanpassingen zijn gratis inbegrepen. Voor grote wijzigingen maken we een offerte."
-    },
-    "q4": {
-      "question": "Wat als ik wil stoppen?",
-      "answer": "Je kunt maandelijks opzeggen. Na opzegging kun je je website overnemen voor een eenmalig bedrag."
-    },
-    "q5": {
-      "question": "Is mijn website goed vindbaar in Google?",
-      "answer": "Ja! Alle websites zijn SEO-geoptimaliseerd. Bij Professional en Business krijg je extra SEO-tools."
-    },
-    "q6": {
-      "question": "Kan ik mijn eigen domein gebruiken?",
-      "answer": "Zeker! Je kunt je bestaande domein koppelen of wij registreren een nieuw domein voor je."
+    "notFound": "Staat je vraag er niet bij?",
+    "contactUs": "Neem contact op",
+    "items": {
+      "costs": {
+        "question": "Wat zijn de opstartkosten?",
+        "answer": "Voor websites betaal je eenmalig vanaf €149 opstartkosten, voor webshops is dit vanaf €299 (alle prijzen incl. BTW). Als ondernemer kun je de 21% BTW terugvragen bij je belastingaangifte. Daarna betaal je alleen het maandelijkse bedrag. Hosting, SSL-certificaat, domeinbeheer en onderhoud zijn allemaal inbegrepen."
+      },
+      "timeline": {
+        "question": "Hoe lang duurt het voordat mijn website online staat?",
+        "answer": "Je website staat binnen 7 werkdagen online. Na ons eerste gesprek ontvang je binnen 5 dagen een eerste ontwerp. Na jouw goedkeuring gaat de website direct live."
+      },
+      "cancel": {
+        "question": "Kan ik tussentijds opzeggen?",
+        "answer": "Ja, na de eerste 3 maanden kun je maandelijks opzeggen. We geloven in onze service en willen dat je blijft omdat je tevreden bent, niet omdat je vastzit aan een contract."
+      },
+      "changes": {
+        "question": "Hoeveel aanpassingen kan ik per maand doen?",
+        "answer": "Dit hangt af van je pakket. Bij Starter kun je 1 aanpassing per maand doen, bij Professioneel zijn tekstaanpassingen onbeperkt, en bij Business heb je volledige flexibiliteit met een dedicated accountmanager."
+      },
+      "domain": {
+        "question": "Kan ik mijn eigen domeinnaam gebruiken?",
+        "answer": "Zeker! Je kunt je bestaande domein gebruiken of wij helpen je met het registreren van een nieuw domein. Dit is bij alle pakketten inbegrepen."
+      },
+      "satisfaction": {
+        "question": "Wat als ik niet tevreden ben met het ontwerp?",
+        "answer": "Je ontvangt eerst een conceptontwerp ter goedkeuring. We blijven aanpassen tot je 100% tevreden bent. Daarnaast heb je 14 dagen niet-goed-geld-terug garantie."
+      }
     }
   },
   "cta": {
@@ -257,15 +264,72 @@
   "contact": {
     "title": "Contact",
     "subtitle": "Heb je een vraag? We helpen je graag!",
+    "hero": {
+      "badge": "Neem contact op",
+      "title": "Laten we",
+      "titleHighlight": "samenwerken",
+      "subtitle": "Heb je een vraag of wil je een website laten maken? We reageren altijd binnen 24 uur en denken graag met je mee.",
+      "whatsappButton": "WhatsApp ons",
+      "messageButton": "Stuur een bericht"
+    },
+    "stats": {
+      "responseTime": "Reactietijd",
+      "satisfaction": "Klanttevredenheid",
+      "happyClients": "Tevreden klanten",
+      "daysAvailable": "Dagen bereikbaar"
+    },
+    "methods": {
+      "badge": "Bereik ons",
+      "title": "Kies jouw",
+      "titleHighlight": "favoriete manier",
+      "subtitle": "We zijn via meerdere kanalen bereikbaar. Kies wat voor jou het beste werkt.",
+      "whatsapp": {
+        "subtitle": "Snelste reactie",
+        "badge": "Aanbevolen"
+      },
+      "email": {
+        "title": "E-mail",
+        "subtitle": "Voor uitgebreide vragen"
+      },
+      "phone": {
+        "title": "Bellen",
+        "subtitle": "Ma-Vr 9:00 - 18:00"
+      }
+    },
+    "faqs": {
+      "responseTime": {
+        "q": "Hoe snel reageren jullie?",
+        "a": "Via WhatsApp reageren we vaak binnen een uur. E-mails beantwoorden we altijd binnen 24 uur op werkdagen."
+      },
+      "freeCall": {
+        "q": "Kan ik een vrijblijvend gesprek inplannen?",
+        "a": "Ja! We plannen graag een gratis videocall in om je project te bespreken. Geen verplichtingen."
+      },
+      "pricing": {
+        "q": "Wat kost een website?",
+        "a": "Onze abonnementen starten vanaf €119/maand (incl. BTW). De BTW kun je als ondernemer terugvragen via je belastingaangifte."
+      },
+      "location": {
+        "q": "Waar zijn jullie gevestigd?",
+        "a": "We zijn gevestigd in Nederland en werken remote. Zo kunnen we klanten door heel Nederland (en daarbuiten) helpen."
+      },
+      "timeline": {
+        "q": "Hoelang duurt het om een website te maken?",
+        "a": "De meeste websites zijn binnen 1-2 weken live. Complexere projecten kunnen 3-4 weken duren."
+      }
+    },
     "form": {
       "name": "Je naam",
       "email": "E-mailadres",
       "phone": "Telefoonnummer",
       "subject": "Onderwerp",
+      "company": "Bedrijfsnaam",
       "message": "Je bericht",
       "submit": "Verstuur bericht",
+      "sending": "Bezig met verzenden...",
       "success": "Bedankt voor je bericht! We nemen zo snel mogelijk contact op.",
-      "error": "Er ging iets mis. Probeer het opnieuw."
+      "error": "Er ging iets mis. Probeer het opnieuw.",
+      "optional": "optioneel"
     },
     "info": {
       "email": "E-mail",

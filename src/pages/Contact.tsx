@@ -16,6 +16,7 @@ import {
 } from 'lucide-react'
 import { useState } from 'react'
 import { Link } from 'react-router-dom'
+import { useTranslation } from 'react-i18next'
 import Header from '../components/Header'
 import Footer from '../components/Footer'
 
@@ -62,65 +63,10 @@ function FloatingParticles() {
   )
 }
 
-const stats = [
-  { value: '<24u', label: 'Reactietijd', icon: Clock },
-  { value: '4.9', label: 'Klanttevredenheid', icon: Star },
-  { value: '100+', label: 'Tevreden klanten', icon: Users },
-  { value: '7/7', label: 'Dagen bereikbaar', icon: HeadphonesIcon },
-]
-
-const contactMethods = [
-  {
-    icon: MessageCircle,
-    title: 'WhatsApp',
-    subtitle: 'Snelste reactie',
-    value: '06 44712573',
-    href: 'https://wa.me/31644712573?text=Hoi!%20Ik%20heb%20een%20vraag%20over%20een%20website.',
-    color: 'green',
-    badge: 'Aanbevolen',
-  },
-  {
-    icon: Mail,
-    title: 'E-mail',
-    subtitle: 'Voor uitgebreide vragen',
-    value: 'info@webstability.nl',
-    href: 'mailto:info@webstability.nl',
-    color: 'blue',
-  },
-  {
-    icon: Phone,
-    title: 'Bellen',
-    subtitle: 'Ma-Vr 9:00 - 18:00',
-    value: '06 44712573',
-    href: 'tel:+31644712573',
-    color: 'purple',
-  },
-]
-
-const faqs = [
-  {
-    q: 'Hoe snel reageren jullie?',
-    a: 'Via WhatsApp reageren we vaak binnen een uur. E-mails beantwoorden we altijd binnen 24 uur op werkdagen.',
-  },
-  {
-    q: 'Kan ik een vrijblijvend gesprek inplannen?',
-    a: 'Ja! We plannen graag een gratis videocall in om je project te bespreken. Geen verplichtingen.',
-  },
-  {
-    q: 'Wat kost een website?',
-    a: 'Onze abonnementen starten vanaf €119/maand (incl. BTW). De BTW kun je als ondernemer terugvragen via je belastingaangifte.',
-  },
-  {
-    q: 'Waar zijn jullie gevestigd?',
-    a: 'We zijn gevestigd in Nederland en werken remote. Zo kunnen we klanten door heel Nederland (en daarbuiten) helpen.',
-  },
-  {
-    q: 'Hoelang duurt het om een website te maken?',
-    a: 'De meeste websites zijn binnen 1-2 weken live. Complexere projecten kunnen 3-4 weken duren.',
-  },
-]
+// Stats, contactMethods and faqs are now defined inside the component for i18n
 
 export default function Contact() {
+  const { t } = useTranslation()
   const [formState, setFormState] = useState<'idle' | 'submitting' | 'success'>('idle')
   const [formData, setFormData] = useState({
     name: '',
@@ -130,6 +76,64 @@ export default function Contact() {
     message: '',
   })
   const [expandedFaq, setExpandedFaq] = useState<number | null>(null)
+
+  const stats = [
+    { value: '<24u', label: t('contact.stats.responseTime'), icon: Clock },
+    { value: '4.9', label: t('contact.stats.satisfaction'), icon: Star },
+    { value: '100+', label: t('contact.stats.happyClients'), icon: Users },
+    { value: '7/7', label: t('contact.stats.daysAvailable'), icon: HeadphonesIcon },
+  ]
+
+  const contactMethods = [
+    {
+      icon: MessageCircle,
+      title: 'WhatsApp',
+      subtitle: t('contact.methods.whatsapp.subtitle'),
+      value: '06 44712573',
+      href: 'https://wa.me/31644712573?text=Hoi!%20Ik%20heb%20een%20vraag%20over%20een%20website.',
+      color: 'green',
+      badge: t('contact.methods.whatsapp.badge'),
+    },
+    {
+      icon: Mail,
+      title: t('contact.methods.email.title'),
+      subtitle: t('contact.methods.email.subtitle'),
+      value: 'info@webstability.nl',
+      href: 'mailto:info@webstability.nl',
+      color: 'blue',
+    },
+    {
+      icon: Phone,
+      title: t('contact.methods.phone.title'),
+      subtitle: t('contact.methods.phone.subtitle'),
+      value: '06 44712573',
+      href: 'tel:+31644712573',
+      color: 'purple',
+    },
+  ]
+
+  const faqs = [
+    {
+      q: t('contact.faqs.responseTime.q'),
+      a: t('contact.faqs.responseTime.a'),
+    },
+    {
+      q: t('contact.faqs.freeCall.q'),
+      a: t('contact.faqs.freeCall.a'),
+    },
+    {
+      q: t('contact.faqs.pricing.q'),
+      a: t('contact.faqs.pricing.a'),
+    },
+    {
+      q: t('contact.faqs.location.q'),
+      a: t('contact.faqs.location.a'),
+    },
+    {
+      q: t('contact.faqs.timeline.q'),
+      a: t('contact.faqs.timeline.a'),
+    },
+  ]
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -204,19 +208,18 @@ export default function Contact() {
                   className="inline-flex items-center gap-2 bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-900/50 dark:to-indigo-900/50 border border-blue-200/50 dark:border-blue-700/50 rounded-full px-4 py-2 mb-6"
                 >
                   <Sparkles className="w-4 h-4 text-blue-600 dark:text-blue-400" />
-                  <span className="text-sm font-medium text-blue-700 dark:text-blue-300">Neem contact op</span>
+                  <span className="text-sm font-medium text-blue-700 dark:text-blue-300">{t('contact.hero.badge')}</span>
                 </motion.div>
 
                 <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold text-gray-900 dark:text-white mb-6 leading-tight">
-                  Laten we{' '}
+                  {t('contact.hero.title')}{' '}
                   <span className="bg-gradient-to-r from-blue-600 to-indigo-600 dark:from-blue-400 dark:to-indigo-400 bg-clip-text text-transparent">
-                    samenwerken
+                    {t('contact.hero.titleHighlight')}
                   </span>
                 </h1>
 
                 <p className="text-xl text-gray-600 dark:text-gray-300 mb-8 max-w-2xl mx-auto">
-                  Heb je een vraag of wil je een website laten maken? 
-                  We reageren altijd binnen 24 uur en denken graag met je mee.
+                  {t('contact.hero.subtitle')}
                 </p>
 
                 <div className="flex flex-col sm:flex-row gap-4 justify-center">
@@ -227,14 +230,14 @@ export default function Contact() {
                     className="group inline-flex items-center justify-center gap-2 px-8 py-4 bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white font-semibold rounded-xl transition-all shadow-lg shadow-green-500/25 hover:shadow-green-500/40 hover:-translate-y-0.5"
                   >
                     <MessageCircle className="w-5 h-5" />
-                    WhatsApp ons
+                    {t('contact.hero.whatsappButton')}
                     <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
                   </a>
                   <a
                     href="#formulier"
                     className="inline-flex items-center justify-center px-8 py-4 bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm hover:bg-white dark:hover:bg-gray-700 text-gray-700 dark:text-gray-200 font-semibold rounded-xl border border-gray-200 dark:border-gray-700 transition-all hover:shadow-lg"
                   >
-                    Stuur een bericht
+                    {t('contact.hero.messageButton')}
                   </a>
                 </div>
               </motion.div>
@@ -280,7 +283,7 @@ export default function Contact() {
                 viewport={{ once: true }}
                 className="inline-block text-blue-600 dark:text-blue-400 font-semibold text-sm tracking-wider uppercase mb-3"
               >
-                Bereik ons
+                {t('contact.methods.badge')}
               </motion.span>
               <motion.h2
                 initial={{ opacity: 0, y: 20 }}
@@ -288,9 +291,9 @@ export default function Contact() {
                 viewport={{ once: true }}
                 className="text-3xl sm:text-4xl font-bold text-gray-900 dark:text-white mb-4"
               >
-                Kies jouw{' '}
+                {t('contact.methods.title')}{' '}
                 <span className="bg-gradient-to-r from-blue-600 to-indigo-600 dark:from-blue-400 dark:to-indigo-400 bg-clip-text text-transparent">
-                  favoriete manier
+                  {t('contact.methods.titleHighlight')}
                 </span>
               </motion.h2>
               <motion.p
@@ -300,7 +303,7 @@ export default function Contact() {
                 transition={{ delay: 0.1 }}
                 className="text-gray-600 dark:text-gray-400 text-lg max-w-2xl mx-auto"
               >
-                We zijn via meerdere kanalen bereikbaar. Kies wat voor jou het beste werkt.
+                {t('contact.methods.subtitle')}
               </motion.p>
             </div>
 

@@ -98,23 +98,25 @@
     }
   },
   "howItWorks": {
-    "title": "How it works",
+    "badge": "Simple process",
+    "title": "Online in",
+    "titleHighlight": "4 steps",
     "subtitle": "4 simple steps to your new website",
     "step1": {
-      "title": "Choose your package",
-      "description": "Select the package that fits your business and needs."
+      "title": "Start your project",
+      "description": "Complete our smart wizard and get instant access to your own client portal with live project status."
     },
     "step2": {
-      "title": "Tell us about your business",
-      "description": "Fill out our simple questionnaire. It only takes 10 minutes."
+      "title": "Design within 5 days",
+      "description": "You'll receive a fully designed mockup in your dashboard. Not satisfied? We'll adjust until it's perfect."
     },
     "step3": {
-      "title": "We build your website",
-      "description": "Our team gets to work. You'll receive a preview and can give feedback."
+      "title": "Approve & go live",
+      "description": "Happy with the design? After payment, your website goes live immediately. Including hosting, SSL and domain."
     },
     "step4": {
-      "title": "Your website goes live!",
-      "description": "After approval, we launch your site. You only pay at launch."
+      "title": "Ongoing support",
+      "description": "We remain your partner. Request changes, send messages — all through your personal dashboard."
     }
   },
   "pricing": {
@@ -210,31 +212,36 @@
     "subtitle": "Read experiences from entrepreneurs who came before you"
   },
   "faq": {
-    "title": "Frequently asked questions",
+    "badge": "Frequently asked questions",
+    "title": "Got questions?",
     "subtitle": "Everything you want to know about our website subscriptions",
-    "q1": {
-      "question": "What are the startup costs?",
-      "answer": "None! You only pay the monthly subscription. We invest in building your website."
-    },
-    "q2": {
-      "question": "How long until my website is live?",
-      "answer": "On average 2 weeks after completing the questionnaire. Webshops may take slightly longer."
-    },
-    "q3": {
-      "question": "Can I modify my website later?",
-      "answer": "Absolutely! Small adjustments are included for free. For major changes, we'll provide a quote."
-    },
-    "q4": {
-      "question": "What if I want to cancel?",
-      "answer": "You can cancel monthly. After cancellation, you can take over your website for a one-time fee."
-    },
-    "q5": {
-      "question": "Will my website rank well on Google?",
-      "answer": "Yes! All websites are SEO-optimized. Professional and Business packages include extra SEO tools."
-    },
-    "q6": {
-      "question": "Can I use my own domain?",
-      "answer": "Certainly! You can connect your existing domain or we'll register a new one for you."
+    "notFound": "Can't find your question?",
+    "contactUs": "Contact us",
+    "items": {
+      "costs": {
+        "question": "What are the startup costs?",
+        "answer": "For websites you pay a one-time startup fee from €149, for webshops this is from €299 (all prices incl. VAT). As a business owner, you can reclaim the 21% VAT on your tax return. After that, you only pay the monthly fee. Hosting, SSL certificate, domain management and maintenance are all included."
+      },
+      "timeline": {
+        "question": "How long until my website is online?",
+        "answer": "Your website will be online within 7 business days. After our first conversation, you'll receive an initial design within 5 days. After your approval, the website goes live immediately."
+      },
+      "cancel": {
+        "question": "Can I cancel anytime?",
+        "answer": "Yes, after the first 3 months you can cancel monthly. We believe in our service and want you to stay because you're satisfied, not because you're locked into a contract."
+      },
+      "changes": {
+        "question": "How many changes can I make per month?",
+        "answer": "This depends on your package. With Starter you can make 1 change per month, with Professional text changes are unlimited, and with Business you have full flexibility with a dedicated account manager."
+      },
+      "domain": {
+        "question": "Can I use my own domain name?",
+        "answer": "Absolutely! You can use your existing domain or we'll help you register a new one. This is included in all packages."
+      },
+      "satisfaction": {
+        "question": "What if I'm not satisfied with the design?",
+        "answer": "You'll first receive a concept design for approval. We keep adjusting until you're 100% satisfied. Additionally, you have a 14-day money-back guarantee."
+      }
     }
   },
   "cta": {
@@ -257,15 +264,72 @@
   "contact": {
     "title": "Contact",
     "subtitle": "Have a question? We're happy to help!",
+    "hero": {
+      "badge": "Get in touch",
+      "title": "Let's",
+      "titleHighlight": "collaborate",
+      "subtitle": "Have a question or want a website built? We always respond within 24 hours and love to help you out.",
+      "whatsappButton": "WhatsApp us",
+      "messageButton": "Send a message"
+    },
+    "stats": {
+      "responseTime": "Response time",
+      "satisfaction": "Customer satisfaction",
+      "happyClients": "Happy clients",
+      "daysAvailable": "Days available"
+    },
+    "methods": {
+      "badge": "Reach us",
+      "title": "Choose your",
+      "titleHighlight": "preferred way",
+      "subtitle": "We're available through multiple channels. Choose what works best for you.",
+      "whatsapp": {
+        "subtitle": "Fastest response",
+        "badge": "Recommended"
+      },
+      "email": {
+        "title": "Email",
+        "subtitle": "For detailed questions"
+      },
+      "phone": {
+        "title": "Call",
+        "subtitle": "Mon-Fri 9:00 AM - 6:00 PM"
+      }
+    },
+    "faqs": {
+      "responseTime": {
+        "q": "How quickly do you respond?",
+        "a": "Via WhatsApp we often respond within an hour. Emails are always answered within 24 hours on business days."
+      },
+      "freeCall": {
+        "q": "Can I schedule a free consultation?",
+        "a": "Yes! We're happy to schedule a free video call to discuss your project. No obligations."
+      },
+      "pricing": {
+        "q": "How much does a website cost?",
+        "a": "Our subscriptions start from €119/month (incl. VAT). As a business owner, you can reclaim the VAT on your tax return."
+      },
+      "location": {
+        "q": "Where are you located?",
+        "a": "We're based in the Netherlands and work remotely. This way we can help clients throughout the Netherlands (and beyond)."
+      },
+      "timeline": {
+        "q": "How long does it take to build a website?",
+        "a": "Most websites go live within 1-2 weeks. More complex projects may take 3-4 weeks."
+      }
+    },
     "form": {
       "name": "Your name",
       "email": "Email address",
       "phone": "Phone number",
       "subject": "Subject",
+      "company": "Company name",
       "message": "Your message",
       "submit": "Send message",
+      "sending": "Sending...",
       "success": "Thank you for your message! We'll get back to you as soon as possible.",
-      "error": "Something went wrong. Please try again."
+      "error": "Something went wrong. Please try again.",
+      "optional": "optional"
     },
     "info": {
       "email": "Email",
