@@ -43,6 +43,7 @@ import HelpCenter from '../components/HelpCenter'
 import NotificationBell, { generateProjectNotifications } from '../components/NotificationBell'
 import OnboardingTour, { useOnboardingTour } from '../components/OnboardingTour'
 import MilestoneCelebration, { useMilestoneCelebration } from '../components/MilestoneCelebration'
+import SatisfactionSurveyModal from '../components/SatisfactionSurveyModal'
 import { ReferralWidget } from '../components/GrowthTools'
 import MobileBottomNav from '../components/MobileBottomNav'
 import QuickActions from '../components/QuickActions'
@@ -239,6 +240,9 @@ export default function ProjectStatusNew() {
   // Help center state
   const [showHelpCenter, setShowHelpCenter] = useState(false)
   
+  // Satisfaction survey state - shows after livegang
+  const [showSatisfactionSurvey, setShowSatisfactionSurvey] = useState(false)
+  
   // Onboarding tour
   const { shouldShowTour, dismissTour, resetTour } = useOnboardingTour()
   
@@ -360,6 +364,25 @@ export default function ProjectStatusNew() {
       return () => clearTimeout(timer)
     }
   }, [project?.status, celebrate])
+
+  // Show satisfaction survey after project goes live
+  // Check localStorage to avoid showing multiple times
+  useEffect(() => {
+    if (!project || project.status !== 'live' || !projectId) return
+    
+    const surveyKey = `satisfaction_survey_shown_${projectId}`
+    const hasShownSurvey = localStorage.getItem(surveyKey)
+    
+    if (hasShownSurvey) return
+    
+    // Show survey after 5 seconds on live page
+    const timer = setTimeout(() => {
+      setShowSatisfactionSurvey(true)
+      localStorage.setItem(surveyKey, new Date().toISOString())
+    }, 5000)
+    
+    return () => clearTimeout(timer)
+  }, [project?.status, projectId, project])
 
   // Mark messages as read when chat is opened
   useEffect(() => {
@@ -2142,6 +2165,18 @@ export default function ProjectStatusNew() {
         milestone={currentMilestone}
         onClose={closeCelebration}
       />
+
+      {/* Satisfaction Survey - shows after livegang */}
+      {project && (
+        <SatisfactionSurveyModal
+          isOpen={showSatisfactionSurvey}
+          onClose={() => setShowSatisfactionSurvey(false)}
+          projectId={project.projectId}
+          businessName={project.businessName}
+          contactName={project.contactName}
+          darkMode={darkMode}
+        />
+      )}
 
       {/* Mobile Bottom Navigation */}
       <MobileBottomNav
