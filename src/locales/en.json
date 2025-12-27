@@ -997,6 +997,92 @@
     },
     "viewWebsite": "View website"
   },
+  "startProject": {
+    "badge": "Start your project",
+    "title": "What can we",
+    "titleHighlight": "create for you?",
+    "subtitle": "Choose a service and go through our smart wizard. Request your project in just 5 minutes.",
+    "paymentNote": "Payment only after design approval — start without obligations",
+    "paymentNoteMobile": "Payment after design approval",
+    "trustpilot": "on Trustpilot",
+    "back": "Back",
+    "choosePackage": "Choose your package",
+    "freeDesign": "Free design — Only pay when satisfied",
+    "choose": "Choose",
+    "monthly": "/month",
+    "oneTime": "one-time",
+    "setupCosts": "setup costs",
+    "start": "Start",
+    "categories": {
+      "monthly": "Monthly",
+      "monthlyFull": "Monthly subscriptions",
+      "oneTime": "One-time",
+      "oneTimeFull": "One-time services"
+    },
+    "info": {
+      "drone": "Incl. VAT • Digital delivery",
+      "subscription": "Cancel monthly after 3 months • Hosting included"
+    },
+    "trust": {
+      "noObligations": "No obligations",
+      "response24h": "Response within 24 hours",
+      "happyCustomers": "150+ happy customers"
+    },
+    "services": {
+      "website": {
+        "name": "Website",
+        "description": "Professional website for your business",
+        "price": "From €119",
+        "priceNote": "per month incl. VAT",
+        "setupNote": "+ one-time setup costs from €149",
+        "features": ["Mobile-friendly", "SEO optimized", "Contact form", "Hosting included"]
+      },
+      "webshop": {
+        "name": "Webshop",
+        "description": "Sell online with your own shop",
+        "price": "From €399",
+        "priceNote": "per month incl. VAT",
+        "setupNote": "+ one-time setup costs from €299",
+        "features": ["Up to 500 products", "iDEAL, credit card & Klarna", "Inventory management", "Customer accounts"]
+      },
+      "drone": {
+        "name": "Drone footage",
+        "description": "Professional aerial photos and videos",
+        "price": "From €349",
+        "priceNote": "one-time incl. VAT",
+        "features": ["Certified pilot", "Edited photos", "Video content", "Fast delivery"]
+      },
+      "logo": {
+        "name": "Logo Design",
+        "description": "Unique logo design for your brand or business",
+        "price": "€169",
+        "priceNote": "one-time incl. VAT",
+        "features": ["Multiple concepts", "Revision rounds", "All file formats", "Color palette"]
+      }
+    },
+    "packages": {
+      "drone": {
+        "starter": {
+          "name": "Basic",
+          "price": 349,
+          "priceNote": "one-time incl. VAT",
+          "features": ["10 edited photos", "1 location", "Digital delivery", "Within 5 days"]
+        },
+        "professional": {
+          "name": "Professional",
+          "price": 549,
+          "priceNote": "one-time incl. VAT",
+          "features": ["25 edited photos", "1-2 locations", "1 min video", "Within 3 days"]
+        },
+        "business": {
+          "name": "Premium",
+          "price": 849,
+          "priceNote": "one-time incl. VAT",
+          "features": ["50+ photos", "Multiple locations", "3 min video", "Express delivery"]
+        }
+      }
+    }
+  },
   "thankYou": {
     "title": "Great, your project has been created! 🎉",
     "subtitle": "Now complete the onboarding so we can start with your design.",

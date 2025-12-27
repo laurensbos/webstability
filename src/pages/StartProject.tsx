@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import { motion } from 'framer-motion'
 import { useSearchParams } from 'react-router-dom'
+import { useTranslation } from 'react-i18next'
 import { 
   Globe, 
   ShoppingBag, 
@@ -100,56 +101,6 @@ const packagesByService: Record<ServiceType, PackageOption[]> = {
   ],
   logo: [],  // No packages for logo - single service
 }
-
-const services: ServiceOption[] = [
-  {
-    id: 'website',
-    name: 'Website',
-    description: 'Professionele website voor je bedrijf',
-    icon: Globe,
-    price: 'Vanaf €119',
-    priceNote: 'per maand incl. btw',
-    setupNote: '+ eenmalige opstartkosten vanaf €149',
-    color: 'primary',
-    gradient: 'from-primary-500 to-blue-600',
-    features: ['Mobiel-vriendelijk', 'SEO geoptimaliseerd', 'Contactformulier', 'Hosting inbegrepen'],
-    popular: true,
-  },
-  {
-    id: 'webshop',
-    name: 'Webshop',
-    description: 'Verkoop online met je eigen shop',
-    icon: ShoppingBag,
-    price: 'Vanaf €399',
-    priceNote: 'per maand incl. btw',
-    setupNote: '+ eenmalige opstartkosten vanaf €299',
-    color: 'emerald',
-    gradient: 'from-emerald-500 to-green-600',
-    features: ['Tot 500 producten', 'iDEAL, creditcard & Klarna', 'Voorraadbeheer', 'Klantaccounts'],
-  },
-  {
-    id: 'drone',
-    name: 'Dronebeelden',
-    description: "Professionele luchtfoto's en video's",
-    icon: Plane,
-    price: 'Vanaf €349',
-    priceNote: 'eenmalig incl. btw',
-    color: 'orange',
-    gradient: 'from-orange-500 to-amber-600',
-    features: ['Gecertificeerde piloot', 'Bewerkte foto\'s', 'Video content', 'Snelle levering'],
-  },
-  {
-    id: 'logo',
-    name: 'Logo Design',
-    description: "Uniek logo ontwerp voor je merk of bedrijf",
-    icon: PenTool,
-    price: '€169',
-    priceNote: 'eenmalig incl. btw',
-    color: 'purple',
-    gradient: 'from-purple-500 to-violet-600',
-    features: ['Meerdere concepten', 'Revisierondes', 'Alle bestandsformaten', 'Kleurenpalet'],
-  },
-]
 
 // Helper function to get service-specific styling
 function getServiceColors(serviceId: ServiceType) {
@@ -263,9 +214,61 @@ function FloatingParticles({ activeService }: { activeService: ServiceType }) {
 }
 
 export default function StartProject() {
+  const { t } = useTranslation()
   const [searchParams] = useSearchParams()
   const [selectedService, setSelectedService] = useState<SelectedServiceType>(null)
   const [selectedPackage, setSelectedPackage] = useState<PackageType | null>(null)
+
+  // Translated services
+  const services: ServiceOption[] = [
+    {
+      id: 'website',
+      name: t('startProject.services.website.name'),
+      description: t('startProject.services.website.description'),
+      icon: Globe,
+      price: t('startProject.services.website.price'),
+      priceNote: t('startProject.services.website.priceNote'),
+      setupNote: t('startProject.services.website.setupNote'),
+      color: 'primary',
+      gradient: 'from-primary-500 to-blue-600',
+      features: t('startProject.services.website.features', { returnObjects: true }) as string[],
+      popular: true,
+    },
+    {
+      id: 'webshop',
+      name: t('startProject.services.webshop.name'),
+      description: t('startProject.services.webshop.description'),
+      icon: ShoppingBag,
+      price: t('startProject.services.webshop.price'),
+      priceNote: t('startProject.services.webshop.priceNote'),
+      setupNote: t('startProject.services.webshop.setupNote'),
+      color: 'emerald',
+      gradient: 'from-emerald-500 to-green-600',
+      features: t('startProject.services.webshop.features', { returnObjects: true }) as string[],
+    },
+    {
+      id: 'drone',
+      name: t('startProject.services.drone.name'),
+      description: t('startProject.services.drone.description'),
+      icon: Plane,
+      price: t('startProject.services.drone.price'),
+      priceNote: t('startProject.services.drone.priceNote'),
+      color: 'orange',
+      gradient: 'from-orange-500 to-amber-600',
+      features: t('startProject.services.drone.features', { returnObjects: true }) as string[],
+    },
+    {
+      id: 'logo',
+      name: t('startProject.services.logo.name'),
+      description: t('startProject.services.logo.description'),
+      icon: PenTool,
+      price: t('startProject.services.logo.price'),
+      priceNote: t('startProject.services.logo.priceNote'),
+      color: 'purple',
+      gradient: 'from-purple-500 to-violet-600',
+      features: t('startProject.services.logo.features', { returnObjects: true }) as string[],
+    },
+  ]
 
   // Check for pre-selected service and package from URL
   useEffect(() => {
@@ -346,7 +349,7 @@ export default function StartProject() {
               className="inline-flex items-center gap-2 px-4 py-2 bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm text-gray-700 dark:text-gray-300 hover:bg-white dark:hover:bg-gray-800 rounded-full text-sm font-medium transition-all shadow-sm border border-gray-200/50 dark:border-gray-700/50 mb-4 sm:mb-6"
             >
               <ArrowLeft className="w-4 h-4" />
-              <span>Terug</span>
+              <span>{t('startProject.back')}</span>
             </motion.button>
 
             {/* Header - Compact */}
@@ -360,7 +363,7 @@ export default function StartProject() {
                 {serviceInfo.name}
               </div>
               <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-gray-900 dark:text-white mb-1 sm:mb-2">
-                Kies je pakket
+                {t('startProject.choosePackage')}
               </h1>
               
               {/* Trustpilot badge - compact */}
@@ -372,7 +375,7 @@ export default function StartProject() {
                     </svg>
                   ))}
                 </div>
-                <span className="text-xs sm:text-sm text-gray-500 dark:text-gray-400 font-medium">4.9 op Trustpilot</span>
+                <span className="text-xs sm:text-sm text-gray-500 dark:text-gray-400 font-medium">4.9 {t('startProject.trustpilot')}</span>
               </div>
             </motion.div>
 
@@ -384,7 +387,7 @@ export default function StartProject() {
                 className="bg-emerald-500/10 dark:bg-emerald-500/20 border border-emerald-500/30 rounded-xl p-3 mb-4 sm:mb-6 text-center"
               >
                 <p className="text-emerald-700 dark:text-emerald-400 font-medium text-sm">
-                  ✨ Gratis design — Betaal pas als je tevreden bent
+                  ✨ {t('startProject.freeDesign')}
                 </p>
               </motion.div>
             )}
@@ -408,11 +411,11 @@ export default function StartProject() {
                     <div className="mt-2 mb-4">
                       <span className="text-3xl font-bold text-gray-900 dark:text-white">€{pkg.price}</span>
                       <span className="text-gray-500 dark:text-gray-400 text-sm ml-1">
-                        {pkg.priceNote.includes('eenmalig') ? 'eenmalig' : '/maand'}
+                        {pkg.priceNote.includes('eenmalig') || pkg.priceNote.includes('one-time') ? t('startProject.oneTime') : t('startProject.monthly')}
                       </span>
                       {pkg.setupFee && (
                         <p className="text-xs text-gray-400 dark:text-gray-500 mt-1">
-                          + €{pkg.setupFee} opstartkosten
+                          + €{pkg.setupFee} {t('startProject.setupCosts')}
                         </p>
                       )}
                     </div>
@@ -427,7 +430,7 @@ export default function StartProject() {
                     </ul>
                     
                     <div className="w-full py-3 rounded-lg font-semibold text-center text-base transition-all bg-primary-500 hover:bg-primary-600 text-white">
-                      Kies {pkg.name} →
+                      {t('startProject.choose')} {pkg.name} →
                     </div>
                   </motion.button>
                 ))}
@@ -449,8 +452,8 @@ export default function StartProject() {
               className="text-center text-gray-400 dark:text-gray-500 text-sm mt-5 sm:mt-6"
             >
               {selectedService === 'drone' 
-                ? 'Incl. BTW • Digitale levering'
-                : 'Maandelijks opzegbaar na 3 maanden • Incl. hosting'
+                ? t('startProject.info.drone')
+                : t('startProject.info.subscription')
               }
             </motion.p>
           </div>
@@ -483,19 +486,18 @@ export default function StartProject() {
               className="hidden sm:inline-flex items-center gap-2 bg-primary-50 dark:bg-primary-900/30 border border-primary-200 dark:border-primary-700 rounded-full px-4 py-2 mb-6"
             >
               <Sparkles className="w-4 h-4 text-primary-600 dark:text-primary-400" />
-              <span className="text-sm font-medium text-primary-700 dark:text-primary-300">Start je project</span>
+              <span className="text-sm font-medium text-primary-700 dark:text-primary-300">{t('startProject.badge')}</span>
             </motion.div>
             
             <h1 className="text-2xl sm:text-4xl lg:text-5xl font-bold text-gray-900 dark:text-white mb-2 sm:mb-4">
-              Wat kunnen we voor je{' '}
+              {t('startProject.title')}{' '}
               <span className="bg-gradient-to-r from-primary-600 to-blue-600 bg-clip-text text-transparent">
-                maken?
+                {t('startProject.titleHighlight')}
               </span>
             </h1>
             
             <p className="text-sm sm:text-xl text-gray-600 dark:text-gray-300 max-w-2xl mx-auto hidden sm:block">
-              Kies een dienst en doorloop onze slimme wizard. 
-              Binnen 5 minuten heb je je project aangevraagd.
+              {t('startProject.subtitle')}
             </p>
             
             {/* Payment after design approval badge */}
@@ -506,8 +508,8 @@ export default function StartProject() {
               className="inline-flex items-center gap-2 px-4 py-2 mt-4 bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400 rounded-full text-sm font-medium"
             >
               <Check className="w-4 h-4" />
-              <span className="hidden sm:inline">Betaling pas na goedkeuring design — start vrijblijvend</span>
-              <span className="sm:hidden">Betaling na design goedkeuring</span>
+              <span className="hidden sm:inline">{t('startProject.paymentNote')}</span>
+              <span className="sm:hidden">{t('startProject.paymentNoteMobile')}</span>
             </motion.div>
             
             {/* Trustpilot badge */}
@@ -524,7 +526,7 @@ export default function StartProject() {
                   </svg>
                 ))}
               </div>
-              <span className="text-xs text-gray-500 dark:text-gray-400 font-medium">4.9 op Trustpilot</span>
+              <span className="text-xs text-gray-500 dark:text-gray-400 font-medium">4.9 {t('startProject.trustpilot')}</span>
             </motion.div>
           </motion.div>
 
@@ -534,7 +536,7 @@ export default function StartProject() {
             <div>
               <div className="flex items-center gap-3 mb-4">
                 <div className="h-px flex-1 bg-gradient-to-r from-transparent via-gray-300 dark:via-gray-600 to-transparent" />
-                <span className="text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider whitespace-nowrap">Maandelijks</span>
+                <span className="text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider whitespace-nowrap">{t('startProject.categories.monthly')}</span>
                 <div className="h-px flex-1 bg-gradient-to-r from-transparent via-gray-300 dark:via-gray-600 to-transparent" />
               </div>
               
@@ -583,7 +585,7 @@ export default function StartProject() {
                         
                         {/* CTA */}
                         <div className={`flex items-center justify-center gap-2 py-3 rounded-xl ${colors.buttonBg} text-white font-semibold transition-all`}>
-                          <span>Starten</span>
+                          <span>{t('startProject.start')}</span>
                           <ArrowRight className="w-4 h-4" />
                         </div>
                       </div>
@@ -602,7 +604,7 @@ export default function StartProject() {
             <div>
               <div className="flex items-center gap-3 mb-4">
                 <div className="h-px flex-1 bg-gradient-to-r from-transparent via-gray-300 dark:via-gray-600 to-transparent" />
-                <span className="text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider whitespace-nowrap">Eenmalig</span>
+                <span className="text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider whitespace-nowrap">{t('startProject.categories.oneTime')}</span>
                 <div className="h-px flex-1 bg-gradient-to-r from-transparent via-gray-300 dark:via-gray-600 to-transparent" />
               </div>
               
@@ -648,7 +650,7 @@ export default function StartProject() {
                         
                         {/* CTA */}
                         <div className={`flex items-center justify-center gap-2 py-3 rounded-xl ${colors.buttonBg} text-white font-semibold transition-all`}>
-                          <span>Starten</span>
+                          <span>{t('startProject.start')}</span>
                           <ArrowRight className="w-4 h-4" />
                         </div>
                       </div>
@@ -670,7 +672,7 @@ export default function StartProject() {
             <div>
               <div className="flex items-center gap-4 mb-6">
                 <div className="h-px flex-1 bg-gradient-to-r from-transparent via-gray-300 dark:via-gray-700 to-transparent" />
-                <span className="text-sm font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider whitespace-nowrap">Maandelijkse abonnementen</span>
+                <span className="text-sm font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider whitespace-nowrap">{t('startProject.categories.monthlyFull')}</span>
                 <div className="h-px flex-1 bg-gradient-to-r from-transparent via-gray-300 dark:via-gray-700 to-transparent" />
               </div>
               
@@ -719,7 +721,7 @@ export default function StartProject() {
                         
                         {/* CTA */}
                         <div className={`flex items-center justify-center gap-2 py-3.5 rounded-xl ${colors.buttonBg} text-white font-semibold transition-all`}>
-                          <span>Starten</span>
+                          <span>{t('startProject.start')}</span>
                           <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
                         </div>
                       </div>
@@ -733,7 +735,7 @@ export default function StartProject() {
             <div>
               <div className="flex items-center gap-4 mb-6">
                 <div className="h-px flex-1 bg-gradient-to-r from-transparent via-gray-300 dark:via-gray-700 to-transparent" />
-                <span className="text-sm font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider whitespace-nowrap">Eenmalige diensten</span>
+                <span className="text-sm font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider whitespace-nowrap">{t('startProject.categories.oneTimeFull')}</span>
                 <div className="h-px flex-1 bg-gradient-to-r from-transparent via-gray-300 dark:via-gray-700 to-transparent" />
               </div>
               
@@ -779,7 +781,7 @@ export default function StartProject() {
                         
                         {/* CTA */}
                         <div className={`flex items-center justify-center gap-2 py-3.5 rounded-xl ${colors.buttonBg} text-white font-semibold transition-all`}>
-                          <span>Starten</span>
+                          <span>{t('startProject.start')}</span>
                           <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
                         </div>
                       </div>
@@ -801,17 +803,17 @@ export default function StartProject() {
             <div className="sm:hidden flex items-center justify-center gap-4 text-xs text-gray-500 dark:text-gray-400">
               <div className="flex items-center gap-1.5">
                 <Check className="w-4 h-4 text-green-500" />
-                <span>Geen verplichtingen</span>
+                <span>{t('startProject.trust.noObligations')}</span>
               </div>
               <div className="flex items-center gap-1.5">
                 <Check className="w-4 h-4 text-green-500" />
-                <span>Reactie binnen 24 uur</span>
+                <span>{t('startProject.trust.response24h')}</span>
               </div>
             </div>
             <div className="sm:hidden flex items-center justify-center mt-2">
               <div className="flex items-center gap-1.5 text-xs text-gray-500 dark:text-gray-400">
                 <Check className="w-4 h-4 text-green-500" />
-                <span>150+ tevreden klanten</span>
+                <span>{t('startProject.trust.happyCustomers')}</span>
               </div>
             </div>
             
@@ -819,15 +821,15 @@ export default function StartProject() {
             <div className="hidden sm:flex flex-wrap items-center justify-center gap-6 sm:gap-10 text-sm text-gray-500 dark:text-gray-400">
               <div className="flex items-center gap-2">
                 <Check className="w-5 h-5 text-green-500" />
-                <span>Geen verplichtingen</span>
+                <span>{t('startProject.trust.noObligations')}</span>
               </div>
               <div className="flex items-center gap-2">
                 <Check className="w-5 h-5 text-green-500" />
-                <span>Reactie binnen 24 uur</span>
+                <span>{t('startProject.trust.response24h')}</span>
               </div>
               <div className="flex items-center gap-2">
                 <Check className="w-5 h-5 text-green-500" />
-                <span>150+ tevreden klanten</span>
+                <span>{t('startProject.trust.happyCustomers')}</span>
               </div>
             </div>
           </motion.div>

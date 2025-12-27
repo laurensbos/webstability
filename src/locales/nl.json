@@ -997,6 +997,92 @@
     },
     "viewWebsite": "Bekijk website"
   },
+  "startProject": {
+    "badge": "Start je project",
+    "title": "Wat kunnen we voor je",
+    "titleHighlight": "maken?",
+    "subtitle": "Kies een dienst en doorloop onze slimme wizard. Binnen 5 minuten heb je je project aangevraagd.",
+    "paymentNote": "Betaling pas na goedkeuring design — start vrijblijvend",
+    "paymentNoteMobile": "Betaling na design goedkeuring",
+    "trustpilot": "op Trustpilot",
+    "back": "Terug",
+    "choosePackage": "Kies je pakket",
+    "freeDesign": "Gratis design — Betaal pas als je tevreden bent",
+    "choose": "Kies",
+    "monthly": "/maand",
+    "oneTime": "eenmalig",
+    "setupCosts": "opstartkosten",
+    "start": "Starten",
+    "categories": {
+      "monthly": "Maandelijks",
+      "monthlyFull": "Maandelijkse abonnementen",
+      "oneTime": "Eenmalig",
+      "oneTimeFull": "Eenmalige diensten"
+    },
+    "info": {
+      "drone": "Incl. BTW • Digitale levering",
+      "subscription": "Maandelijks opzegbaar na 3 maanden • Incl. hosting"
+    },
+    "trust": {
+      "noObligations": "Geen verplichtingen",
+      "response24h": "Reactie binnen 24 uur",
+      "happyCustomers": "150+ tevreden klanten"
+    },
+    "services": {
+      "website": {
+        "name": "Website",
+        "description": "Professionele website voor je bedrijf",
+        "price": "Vanaf €119",
+        "priceNote": "per maand incl. btw",
+        "setupNote": "+ eenmalige opstartkosten vanaf €149",
+        "features": ["Mobiel-vriendelijk", "SEO geoptimaliseerd", "Contactformulier", "Hosting inbegrepen"]
+      },
+      "webshop": {
+        "name": "Webshop",
+        "description": "Verkoop online met je eigen shop",
+        "price": "Vanaf €399",
+        "priceNote": "per maand incl. btw",
+        "setupNote": "+ eenmalige opstartkosten vanaf €299",
+        "features": ["Tot 500 producten", "iDEAL, creditcard & Klarna", "Voorraadbeheer", "Klantaccounts"]
+      },
+      "drone": {
+        "name": "Dronebeelden",
+        "description": "Professionele luchtfoto's en video's",
+        "price": "Vanaf €349",
+        "priceNote": "eenmalig incl. btw",
+        "features": ["Gecertificeerde piloot", "Bewerkte foto's", "Video content", "Snelle levering"]
+      },
+      "logo": {
+        "name": "Logo Design",
+        "description": "Uniek logo ontwerp voor je merk of bedrijf",
+        "price": "€169",
+        "priceNote": "eenmalig incl. btw",
+        "features": ["Meerdere concepten", "Revisierondes", "Alle bestandsformaten", "Kleurenpalet"]
+      }
+    },
+    "packages": {
+      "drone": {
+        "starter": {
+          "name": "Basis",
+          "price": 349,
+          "priceNote": "eenmalig incl. btw",
+          "features": ["10 bewerkte foto's", "1 locatie", "Digitale levering", "Binnen 5 dagen"]
+        },
+        "professional": {
+          "name": "Professioneel",
+          "price": 549,
+          "priceNote": "eenmalig incl. btw",
+          "features": ["25 bewerkte foto's", "1-2 locaties", "1 min video", "Binnen 3 dagen"]
+        },
+        "business": {
+          "name": "Premium",
+          "price": 849,
+          "priceNote": "eenmalig incl. btw",
+          "features": ["50+ foto's", "Meerdere locaties", "3 min video", "Spoedlevering"]
+        }
+      }
+    }
+  },
   "thankYou": {
     "title": "Super, je project is aangemaakt! 🎉",
     "subtitle": "Vul nu de onboarding in zodat we kunnen beginnen met je ontwerp.",
