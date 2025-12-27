@@ -1218,5 +1218,57 @@
       "subtitle": "Request a free quote today",
       "button": "Start your request"
     }
+  },
+  "logoPage": {
+    "hero": {
+      "badge": "Logo design",
+      "title": "Professional",
+      "titleHighlight": "logo",
+      "titleEnd": "for your brand",
+      "subtitle": "Unique, timeless logo that fits your brand identity. One-time €169.",
+      "cta": "Request logo",
+      "whatYouGet": "What you get"
+    },
+    "features": [
+      { "title": "Unique design", "description": "Logo that stands out." },
+      { "title": "Multiple variants", "description": "Color, black-white, variants." },
+      { "title": "2 revision rounds", "description": "Until it's perfect." },
+      { "title": "All formats", "description": "PNG, SVG, PDF, JPG." }
+    ],
+    "included": {
+      "title": "What you get",
+      "items": [
+        "Intake meeting",
+        "Moodboard with style directions",
+        "3 initial concepts",
+        "2 revision rounds",
+        "All file formats",
+        "Color and black-white version",
+        "Favicon for website",
+        "Style guide with color codes"
+      ]
+    },
+    "price": {
+      "title": "One-time fee",
+      "subtitle": "No subscription, everything included",
+      "oneTime": "one-time",
+      "delivery": "3-5 business days",
+      "cta": "Start your logo project"
+    },
+    "process": {
+      "badge": "How it works",
+      "title": "Your logo in 4 steps",
+      "steps": [
+        { "title": "Intake", "desc": "Discussion about your wishes and brand identity" },
+        { "title": "Concepts", "desc": "You receive 3 unique logo concepts" },
+        { "title": "Revisions", "desc": "We refine until you're 100% satisfied" },
+        { "title": "Delivery", "desc": "All files + style guide within 5 days" }
+      ]
+    },
+    "cta": {
+      "title": "Ready for your new logo?",
+      "subtitle": "Start your logo design today. No obligations.",
+      "button": "Request logo"
+    }
   }
 }

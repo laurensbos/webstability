@@ -1,4 +1,5 @@
 import { motion } from 'framer-motion'
+import { useTranslation } from 'react-i18next'
 import { 
   Palette, 
   Layers, 
@@ -52,41 +53,18 @@ function FloatingParticles() {
   )
 }
 
-const features = [
-  {
-    icon: Palette,
-    title: 'Uniek ontwerp',
-    description: 'Logo dat onderscheidt.'
-  },
-  {
-    icon: Layers,
-    title: 'Meerdere varianten',
-    description: 'Kleur, zwart-wit, varianten.'
-  },
-  {
-    icon: RefreshCw,
-    title: '2 revisierondes',
-    description: 'Tot het perfect is.'
-  },
-  {
-    icon: FileImage,
-    title: 'Alle formaten',
-    description: 'PNG, SVG, PDF, JPG.'
-  },
-]
-
-const included = [
-  'Intake gesprek',
-  'Moodboard met stijlrichtingen',
-  '3 eerste concepten',
-  '2 revisierondes',
-  'Alle bestandsformaten',
-  'Kleur- en zwart-wit versie',
-  'Favicon voor website',
-  'Stijlgids met kleurcodes',
-]
-
 export default function LogoMaken() {
+  const { t } = useTranslation()
+  
+  const features = [
+    { icon: Palette, title: t('logoPage.features.0.title'), description: t('logoPage.features.0.description') },
+    { icon: Layers, title: t('logoPage.features.1.title'), description: t('logoPage.features.1.description') },
+    { icon: RefreshCw, title: t('logoPage.features.2.title'), description: t('logoPage.features.2.description') },
+    { icon: FileImage, title: t('logoPage.features.3.title'), description: t('logoPage.features.3.description') },
+  ]
+
+  const included = t('logoPage.included.items', { returnObjects: true }) as string[]
+
   return (
     <div className="min-h-screen bg-white dark:bg-gray-900">
       <Header />
@@ -116,17 +94,17 @@ export default function LogoMaken() {
                   className="inline-flex items-center gap-2 bg-gradient-to-r from-purple-50 to-violet-50 dark:from-purple-900/30 dark:to-violet-900/30 border border-purple-200/50 dark:border-purple-700/50 rounded-full px-3 py-1.5 mb-4 lg:mb-6"
                 >
                   <Palette className="w-3.5 h-3.5 lg:w-4 lg:h-4 text-purple-600 dark:text-purple-400" />
-                  <span className="text-xs lg:text-sm font-medium text-purple-700 dark:text-purple-300">Logo laten maken</span>
+                  <span className="text-xs lg:text-sm font-medium text-purple-700 dark:text-purple-300">{t('logoPage.hero.badge')}</span>
                 </motion.div>
 
                 <h1 className="text-2xl sm:text-3xl lg:text-5xl xl:text-6xl font-bold text-gray-900 dark:text-white mb-3 lg:mb-6 leading-tight">
-                  Professioneel{' '}
-                  <span className="bg-gradient-to-r from-purple-600 to-violet-600 bg-clip-text text-transparent">logo</span>
-                  {' '}voor jouw merk
+                  {t('logoPage.hero.title')}{' '}
+                  <span className="bg-gradient-to-r from-purple-600 to-violet-600 bg-clip-text text-transparent">{t('logoPage.hero.titleHighlight')}</span>
+                  {' '}{t('logoPage.hero.titleEnd')}
                 </h1>
 
                 <p className="text-sm sm:text-base lg:text-xl text-gray-600 dark:text-gray-300 mb-5 lg:mb-8 max-w-xl mx-auto">
-                  Uniek, tijdloos logo dat past bij jouw merkidentiteit. Eenmalig €169.
+                  {t('logoPage.hero.subtitle')}
                 </p>
 
                 <div className="flex flex-col sm:flex-row gap-3 justify-center">
@@ -134,14 +112,14 @@ export default function LogoMaken() {
                     to="/start?dienst=logo"
                     className="group inline-flex items-center justify-center gap-2 px-5 py-3 lg:px-8 lg:py-4 bg-gradient-to-r from-purple-500 to-purple-600 hover:from-purple-600 hover:to-purple-700 text-white font-semibold rounded-xl transition-all shadow-lg shadow-purple-500/25"
                   >
-                    Logo aanvragen
+                    {t('logoPage.hero.cta')}
                     <ArrowRight className="w-4 h-4 lg:w-5 lg:h-5 group-hover:translate-x-1 transition-transform" />
                   </Link>
                   <a
                     href="#features"
                     className="inline-flex items-center justify-center px-5 py-3 lg:px-8 lg:py-4 bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm text-gray-700 dark:text-gray-200 font-semibold rounded-xl border border-gray-200 dark:border-gray-700 transition-all"
                   >
-                    Wat je krijgt
+                    {t('logoPage.hero.whatYouGet')}
                   </a>
                 </div>
               </motion.div>
@@ -349,7 +327,7 @@ export default function LogoMaken() {
                 viewport={{ once: true }}
                 className="inline-block text-purple-600 dark:text-purple-400 font-semibold text-xs md:text-sm tracking-wider uppercase mb-2 md:mb-3"
               >
-                Wat je krijgt
+                {t('logoPage.included.title')}
               </motion.span>
               <motion.h2
                 initial={{ opacity: 0, y: 20 }}
@@ -357,7 +335,7 @@ export default function LogoMaken() {
                 viewport={{ once: true }}
                 className="text-2xl sm:text-3xl md:text-4xl font-bold text-gray-900 dark:text-white mb-2 md:mb-4"
               >
-                Compleet logo pakket{' '}
+                {t('logoPage.price.title')}{' '}
                 <span className="bg-gradient-to-r from-purple-600 to-violet-600 bg-clip-text text-transparent">€169</span>
               </motion.h2>
               <motion.p
@@ -367,7 +345,7 @@ export default function LogoMaken() {
                 transition={{ delay: 0.1 }}
                 className="text-gray-600 dark:text-gray-300 text-sm md:text-lg max-w-2xl mx-auto mb-3"
               >
-                Eenmalige investering inclusief alle bestandsformaten en revisierondes.
+                {t('logoPage.price.subtitle')}
               </motion.p>
               <motion.div
                 initial={{ opacity: 0, y: 10 }}
@@ -428,7 +406,7 @@ export default function LogoMaken() {
                 to="/start?dienst=logo"
                 className="group inline-flex items-center gap-2 px-6 py-3 md:px-8 md:py-4 bg-gradient-to-r from-purple-500 to-purple-600 hover:from-purple-600 hover:to-purple-700 text-white font-semibold rounded-xl transition-all shadow-lg shadow-purple-500/25 hover:shadow-purple-500/40 hover:-translate-y-0.5 text-sm md:text-base"
               >
-                Start je logo project
+                {t('logoPage.price.cta')}
                 <ArrowRight className="w-4 h-4 md:w-5 md:h-5 group-hover:translate-x-1 transition-transform" />
               </Link>
               <p className="text-gray-500 dark:text-gray-400 text-xs md:text-sm mt-3 md:mt-4">
@@ -517,27 +495,22 @@ export default function LogoMaken() {
             >
               <div className="inline-flex items-center gap-2 bg-gradient-to-r from-purple-50 to-violet-50 dark:from-purple-900/30 dark:to-violet-900/30 border border-purple-200 dark:border-purple-700 rounded-full px-4 py-2 mb-6">
                 <Sparkles className="w-4 h-4 text-purple-600 dark:text-purple-400" />
-                <span className="text-sm font-medium text-purple-700 dark:text-purple-300">Klaar om te starten?</span>
+                <span className="text-sm font-medium text-purple-700 dark:text-purple-300">{t('logoPage.cta.title')}</span>
               </div>
               
               <h2 className="text-3xl sm:text-4xl font-bold text-gray-900 dark:text-white mb-4">
-                Laten we jouw{' '}
-                <span className="bg-gradient-to-r from-purple-600 to-violet-600 bg-clip-text text-transparent">
-                  perfecte logo
-                </span>{' '}
-                maken
+                {t('logoPage.cta.subtitle')}
               </h2>
               
               <p className="text-gray-600 dark:text-gray-300 text-lg mb-8 max-w-2xl mx-auto">
-                Binnen 5 werkdagen de eerste concepten. 
-                2 revisierondes om tot het perfecte resultaat te komen.
+                {t('logoPage.price.delivery')}
               </p>
 
               <Link
                 to="/start?dienst=logo"
                 className="group inline-flex items-center gap-2 px-8 py-4 bg-gradient-to-r from-purple-500 to-purple-600 hover:from-purple-600 hover:to-purple-700 text-white font-semibold rounded-xl transition-all shadow-lg shadow-purple-500/25 hover:shadow-purple-500/40 hover:-translate-y-0.5"
               >
-                Start je logo project
+                {t('logoPage.cta.button')}
                 <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
               </Link>
             </motion.div>

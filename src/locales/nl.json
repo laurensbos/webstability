@@ -1218,5 +1218,57 @@
       "subtitle": "Vraag vandaag nog een vrijblijvende offerte aan",
       "button": "Start je aanvraag"
     }
+  },
+  "logoPage": {
+    "hero": {
+      "badge": "Logo laten maken",
+      "title": "Professioneel",
+      "titleHighlight": "logo",
+      "titleEnd": "voor jouw merk",
+      "subtitle": "Uniek, tijdloos logo dat past bij jouw merkidentiteit. Eenmalig €169.",
+      "cta": "Logo aanvragen",
+      "whatYouGet": "Wat je krijgt"
+    },
+    "features": [
+      { "title": "Uniek ontwerp", "description": "Logo dat onderscheidt." },
+      { "title": "Meerdere varianten", "description": "Kleur, zwart-wit, varianten." },
+      { "title": "2 revisierondes", "description": "Tot het perfect is." },
+      { "title": "Alle formaten", "description": "PNG, SVG, PDF, JPG." }
+    ],
+    "included": {
+      "title": "Wat je krijgt",
+      "items": [
+        "Intake gesprek",
+        "Moodboard met stijlrichtingen",
+        "3 eerste concepten",
+        "2 revisierondes",
+        "Alle bestandsformaten",
+        "Kleur- en zwart-wit versie",
+        "Favicon voor website",
+        "Stijlgids met kleurcodes"
+      ]
+    },
+    "price": {
+      "title": "Eénmalig tarief",
+      "subtitle": "Geen abonnement, alles inbegrepen",
+      "oneTime": "eenmalig",
+      "delivery": "3-5 werkdagen",
+      "cta": "Start je logo project"
+    },
+    "process": {
+      "badge": "Hoe het werkt",
+      "title": "In 4 stappen naar jouw logo",
+      "steps": [
+        { "title": "Intake", "desc": "Gesprek over jouw wensen en merkidentiteit" },
+        { "title": "Concepten", "desc": "Je ontvangt 3 unieke logo concepten" },
+        { "title": "Revisies", "desc": "We verfijnen tot je 100% tevreden bent" },
+        { "title": "Levering", "desc": "Alle bestanden + stijlgids binnen 5 dagen" }
+      ]
+    },
+    "cta": {
+      "title": "Klaar voor jouw nieuwe logo?",
+      "subtitle": "Start vandaag nog met je logo ontwerp. Geen verplichtingen.",
+      "button": "Logo aanvragen"
+    }
   }
 }
