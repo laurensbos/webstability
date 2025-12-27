@@ -854,6 +854,43 @@ function apiMock() {
           return
         }
 
+        // /api/developer/messages (POST) - developer stuurt bericht naar klant
+        if (req.url.startsWith('/api/developer/messages') && req.method === 'POST') {
+          ;(async () => {
+            try {
+              let body = ''
+              for await (const chunk of req) body += chunk
+              const data = JSON.parse(body || '{}')
+              const projectId = req.query?.projectId || req.url.split('projectId=')[1]?.split('&')[0] || data.projectId
+              const project = PROJECTS.find((p: any) => p.projectId === projectId || p.id === projectId)
+              if (!project) {
+                res.statusCode = 404
+                res.setHeader('content-type', 'application/json')
+                res.end(JSON.stringify({ success: false, message: 'Project niet gevonden' }))
+                return
+              }
+              const newMessage = {
+                id: `msg-${Date.now()}`,
+                date: new Date().toISOString(),
+                from: 'developer',
+                message: data.message,
+                read: false, // Client moet dit lezen
+                senderName: 'Laurens'
+              }
+              project.messages = project.messages || []
+              project.messages.push(newMessage)
+              project.updatedAt = new Date().toISOString()
+              res.setHeader('content-type', 'application/json')
+              res.end(JSON.stringify({ success: true, message: newMessage, project }))
+            } catch (e) {
+              res.statusCode = 500
+              res.setHeader('content-type', 'application/json')
+              res.end(JSON.stringify({ success: false, message: 'Er ging iets mis.' }))
+            }
+          })()
+          return
+        }
+
         next()
       })
     }

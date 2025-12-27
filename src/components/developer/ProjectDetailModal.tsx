@@ -123,23 +123,77 @@ export default function ProjectDetailModal({
     }
   }, [activeTab])
 
-  const handleSendMessage = () => {
-    if (!newMessage.trim()) return
+  // State for sending message
+  const [sendingMessage, setSendingMessage] = useState(false)
+
+  const handleSendMessage = async () => {
+    if (!newMessage.trim() || sendingMessage) return
     
-    const message: ChatMessage = {
-      id: `msg-${Date.now()}`,
-      date: new Date().toISOString(),
-      from: 'developer',
-      message: newMessage.trim(),
-      read: true
+    const messageText = newMessage.trim()
+    setNewMessage('') // Clear input immediately for better UX
+    setSendingMessage(true)
+    
+    try {
+      const token = sessionStorage.getItem('webstability_dev_token')
+      const response = await fetch(`/api/developer/messages?projectId=${project.projectId}`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify({
+          projectId: project.projectId,
+          message: messageText
+        })
+      })
+      
+      if (response.ok) {
+        const data = await response.json()
+        if (data.success && data.project) {
+          // Update with the server response
+          onUpdate(data.project)
+        } else if (data.success && data.message) {
+          // Fallback: add the message locally if server didn't return full project
+          onUpdate({
+            ...project,
+            messages: [...project.messages, data.message],
+            updatedAt: new Date().toISOString()
+          })
+        }
+      } else {
+        // If API fails, add message locally as fallback
+        console.error('Failed to send message via API, using local fallback')
+        const message: ChatMessage = {
+          id: `msg-${Date.now()}`,
+          date: new Date().toISOString(),
+          from: 'developer',
+          message: messageText,
+          read: false
+        }
+        onUpdate({
+          ...project,
+          messages: [...project.messages, message],
+          updatedAt: new Date().toISOString()
+        })
+      }
+    } catch (error) {
+      console.error('Error sending message:', error)
+      // Fallback: add message locally
+      const message: ChatMessage = {
+        id: `msg-${Date.now()}`,
+        date: new Date().toISOString(),
+        from: 'developer',
+        message: messageText,
+        read: false
+      }
+      onUpdate({
+        ...project,
+        messages: [...project.messages, message],
+        updatedAt: new Date().toISOString()
+      })
+    } finally {
+      setSendingMessage(false)
     }
-    
-    onUpdate({
-      ...project,
-      messages: [...project.messages, message],
-      updatedAt: new Date().toISOString()
-    })
-    setNewMessage('')
   }
 
   const handlePhaseChange = (newPhase: ProjectPhase) => {
@@ -969,16 +1023,21 @@ export default function ProjectDetailModal({
                     type="text"
                     value={newMessage}
                     onChange={e => setNewMessage(e.target.value)}
-                    onKeyDown={e => e.key === 'Enter' && handleSendMessage()}
+                    onKeyDown={e => e.key === 'Enter' && !sendingMessage && handleSendMessage()}
                     placeholder="Typ een bericht..."
-                    className="flex-1 bg-gray-800 border border-gray-700 rounded-xl px-4 py-3 text-sm text-white placeholder-gray-500 focus:outline-none focus:border-emerald-500"
+                    disabled={sendingMessage}
+                    className="flex-1 bg-gray-800 border border-gray-700 rounded-xl px-4 py-3 text-sm text-white placeholder-gray-500 focus:outline-none focus:border-emerald-500 disabled:opacity-50"
                   />
                   <button
                     onClick={handleSendMessage}
-                    disabled={!newMessage.trim()}
-                    className="px-4 py-3 bg-emerald-500 hover:bg-emerald-600 disabled:bg-gray-700 disabled:text-gray-500 text-white rounded-xl transition"
+                    disabled={!newMessage.trim() || sendingMessage}
+                    className="px-4 py-3 bg-emerald-500 hover:bg-emerald-600 disabled:bg-gray-700 disabled:text-gray-500 text-white rounded-xl transition flex items-center justify-center min-w-[52px]"
                   >
-                    <Send className="w-5 h-5" />
+                    {sendingMessage ? (
+                      <Loader2 className="w-5 h-5 animate-spin" />
+                    ) : (
+                      <Send className="w-5 h-5" />
+                    )}
                   </button>
                 </div>
               </motion.div>
