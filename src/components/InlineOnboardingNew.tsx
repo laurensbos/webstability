@@ -18,6 +18,7 @@ import {
   Phone,
   Target,
   ArrowUpRight,
+  Image,
   type LucideIcon
 } from 'lucide-react'
 import { 
@@ -28,6 +29,7 @@ import {
 } from '../config/onboardingQuestions'
 import type { PackageType } from '../config/packages'
 import { PACKAGES } from '../config/packages'
+import StockPhotoSuggestions from './StockPhotoSuggestions'
 
 // Icon mapping for sections
 const SECTION_ICONS: Record<string, LucideIcon> = {
@@ -810,6 +812,10 @@ interface SectionComponentProps {
   totalSections: number
   packageType?: PackageType
   onUpgradeClick?: () => void
+  // Stock photo props
+  selectedStockPhotos?: string[]
+  onSelectStockPhoto?: (url: string) => void
+  onDeselectStockPhoto?: (url: string) => void
 }
 
 function SectionComponent({
@@ -824,7 +830,10 @@ function SectionComponent({
   sectionNumber,
   totalSections,
   packageType,
-  onUpgradeClick
+  onUpgradeClick,
+  selectedStockPhotos = [],
+  onSelectStockPhoto,
+  onDeselectStockPhoto
 }: SectionComponentProps) {
   // Filter questions based on conditionalOn
   const visibleQuestions = section.questions.filter(q => {
@@ -994,6 +1003,34 @@ function SectionComponent({
                       <ExternalLink className="w-3 h-3" />
                     </a>
                   )}
+
+                  {/* Stock Photo Suggestions - show after hasPhotos question when user needs stock photos */}
+                  {question.id === 'hasPhotos' && (answers['hasPhotos'] === 'no' || answers['hasPhotos'] === 'some') && (
+                    <div className={`mt-4 p-4 rounded-xl border ${
+                      darkMode ? 'bg-gray-800/50 border-gray-700' : 'bg-gray-50 border-gray-200'
+                    }`}>
+                      <div className="flex items-center gap-2 mb-3">
+                        <Image className="w-5 h-5 text-purple-500" />
+                        <span className={`font-medium ${darkMode ? 'text-white' : 'text-gray-900'}`}>
+                          💡 Stockfoto suggesties
+                        </span>
+                      </div>
+                      <p className={`text-sm mb-4 ${darkMode ? 'text-gray-400' : 'text-gray-600'}`}>
+                        We zoeken gratis stockfoto's voor je op basis van je bedrijf. 
+                        Selecteer foto's die je mooi vindt - we gebruiken deze als inspiratie.
+                      </p>
+                      <StockPhotoSuggestions
+                        businessName={answers['companyName'] || ''}
+                        businessDescription={answers['businessDescription'] || ''}
+                        selectedPhotos={selectedStockPhotos}
+                        onSelectPhoto={(url) => onSelectStockPhoto?.(url)}
+                        onDeselectPhoto={(url) => onDeselectStockPhoto?.(url)}
+                        maxSelections={10}
+                        darkMode={darkMode}
+                        compact={true}
+                      />
+                    </div>
+                  )}
                 </div>
               ))}
 
@@ -1041,6 +1078,7 @@ export default function InlineOnboarding({
   const [answers, setAnswers] = useState<Record<string, any>>(initialData)
   const [isSaving, setIsSaving] = useState(false)
   const [lastSaved, setLastSaved] = useState<Date | null>(null)
+  const [selectedStockPhotos, setSelectedStockPhotos] = useState<string[]>([])
 
   // Get sections for this package
   const sections = getSectionsForPackage(packageType)
@@ -1055,6 +1093,10 @@ export default function InlineOnboarding({
           const data = await response.json()
           if (data.formData) {
             setAnswers(prev => ({ ...prev, ...data.formData }))
+            // Load saved stock photos if they exist
+            if (data.formData.selectedStockPhotos && Array.isArray(data.formData.selectedStockPhotos)) {
+              setSelectedStockPhotos(data.formData.selectedStockPhotos)
+            }
           }
         }
       } catch (error) {
@@ -1070,12 +1112,18 @@ export default function InlineOnboarding({
     
     setIsSaving(true)
     try {
+      // Include selected stock photos in the form data
+      const formDataWithPhotos = {
+        ...answers,
+        selectedStockPhotos: selectedStockPhotos.length > 0 ? selectedStockPhotos : undefined
+      }
+      
       await fetch('/api/client-onboarding', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           projectId,
-          formData: answers,
+          formData: formDataWithPhotos,
           completionPercentage
         })
       })
@@ -1086,12 +1134,12 @@ export default function InlineOnboarding({
     } finally {
       setIsSaving(false)
     }
-  }, [answers, projectId, completionPercentage, onDataChange])
+  }, [answers, projectId, completionPercentage, onDataChange, selectedStockPhotos])
 
   useEffect(() => {
     const timer = setTimeout(saveData, 1500)
     return () => clearTimeout(timer)
-  }, [answers, saveData])
+  }, [answers, saveData, selectedStockPhotos])
 
   const handleChange = (questionId: string, value: any) => {
     setAnswers(prev => ({ ...prev, [questionId]: value }))
@@ -1218,6 +1266,9 @@ export default function InlineOnboarding({
           sectionNumber={index + 1}
           totalSections={sections.length}
           packageType={packageType}
+          selectedStockPhotos={selectedStockPhotos}
+          onSelectStockPhoto={(url) => setSelectedStockPhotos(prev => [...prev, url])}
+          onDeselectStockPhoto={(url) => setSelectedStockPhotos(prev => prev.filter(p => p !== url))}
         />
       ))}
 
