@@ -702,5 +702,260 @@
     "select": "Taal",
     "nl": "Nederlands",
     "en": "English"
+  },
+  "websitesPage": {
+    "badge": "Website laten maken",
+    "heroTitle": "Professionele",
+    "heroTitleHighlight": "website",
+    "heroTitleEnd": "zonder zorgen",
+    "heroSubtitle": "Wij ontwerpen en bouwen jouw website. Hosting, updates en onderhoud inbegrepen.",
+    "startProject": "Start je project",
+    "viewPackages": "Bekijk pakketten",
+    "stats": {
+      "websites": "Websites",
+      "rating": "Beoordeling",
+      "daysLive": "Dagen live"
+    },
+    "features": {
+      "fast": {
+        "title": "Razendsnel",
+        "description": "Laadt binnen 2 seconden."
+      },
+      "secure": {
+        "title": "Veilig & betrouwbaar",
+        "description": "SSL, backups, 99.9% uptime."
+      },
+      "mobile": {
+        "title": "Mobiel-vriendelijk",
+        "description": "Perfect op elk apparaat."
+      },
+      "seo": {
+        "title": "SEO geoptimaliseerd",
+        "description": "Gevonden worden in Google."
+      }
+    },
+    "packages": {
+      "title": "Pakketten",
+      "heading": "Kies jouw",
+      "headingHighlight": "website pakket",
+      "subtitle": "Alle pakketten zijn maandelijks opzegbaar na 3 maanden. Inclusief hosting en onderhoud.",
+      "swipeHint": "Swipe om te vergelijken",
+      "perMonth": "/maand",
+      "setupFee": "eenmalige opstartkosten",
+      "choose": "Kies",
+      "mostChosen": "Meest gekozen"
+    },
+    "included": {
+      "title": "Inbegrepen",
+      "heading": "Standaard bij",
+      "headingHighlight": "elk pakket",
+      "items": {
+        "customDesign": "Custom design",
+        "responsiveLayout": "Responsive layout",
+        "contactForm": "Contactformulier",
+        "seoBasics": "SEO-basis",
+        "ssl": "SSL-certificaat",
+        "backups": "Dagelijkse backups",
+        "updates": "Maandelijkse updates",
+        "support": "Persoonlijke support"
+      }
+    },
+    "cta": {
+      "liveIn2Weeks": "Binnen 2 weken live • Persoonlijke begeleiding"
+    },
+    "benefits": {
+      "title": "Voordelen",
+      "heading": "Waarom kiezen voor",
+      "headingHighlight": "onze websites",
+      "headingEnd": "?"
+    },
+    "finalCta": {
+      "badge": "Klaar om te starten?",
+      "heading": "Laten we samen jouw",
+      "headingHighlight": "website bouwen",
+      "subtitle": "Binnen 2 weken heb je een professionele website. Wij begeleiden je bij elke stap."
+    }
+  },
+  "webshopPage": {
+    "badge": "Webshop laten maken",
+    "heroTitle": "Verkoop online met een",
+    "heroTitleHighlight": "professionele webshop",
+    "heroSubtitle": "Complete webshop met betalingen, verzending en voorraadbeheer. Jij focust op verkopen.",
+    "startWebshop": "Start je webshop",
+    "viewPackages": "Bekijk pakketten",
+    "stats": {
+      "webshops": "Webshops",
+      "rating": "Beoordeling",
+      "daysLive": "Dagen live"
+    },
+    "features": {
+      "products": {
+        "title": "Producten beheren",
+        "description": "Eenvoudig toevoegen met varianten."
+      },
+      "payments": {
+        "title": "Alle betaalmethodes",
+        "description": "iDEAL, creditcard, Klarna."
+      },
+      "shipping": {
+        "title": "Verzendintegraties",
+        "description": "PostNL, DHL, automatische tracking."
+      },
+      "security": {
+        "title": "SSL & beveiliging",
+        "description": "Veilige checkout, GDPR-compliant."
+      }
+    },
+    "packages": {
+      "title": "Pakketten",
+      "heading": "Kies jouw",
+      "headingHighlight": "webshop pakket",
+      "subtitle": "Start met verkopen. Alles inbegrepen, maandelijks opzegbaar.",
+      "swipeHint": "Swipe om te vergelijken",
+      "perMonth": "/maand",
+      "setupFee": "eenmalige opstartkosten",
+      "choose": "Kies",
+      "mostChosen": "Meest gekozen"
+    },
+    "included": {
+      "title": "Inbegrepen",
+      "heading": "Standaard bij",
+      "headingHighlight": "elke webshop",
+      "items": {
+        "customDesign": "Custom webshop design",
+        "productManagement": "Product management",
+        "inventory": "Voorraad beheer",
+        "payments": "iDEAL, creditcard, PayPal",
+        "notifications": "Order notificaties",
+        "labels": "Verzendlabels",
+        "seo": "SEO geoptimaliseerd",
+        "hosting": "Hosting & SSL"
+      }
+    },
+    "cta": {
+      "liveIn2Weeks": "Binnen 2 weken live • Persoonlijke begeleiding"
+    },
+    "benefits": {
+      "title": "Voordelen",
+      "heading": "Waarom kiezen voor",
+      "headingHighlight": "onze webshops",
+      "headingEnd": "?"
+    },
+    "finalCta": {
+      "badge": "Klaar om te starten?",
+      "heading": "Start vandaag met jouw",
+      "headingHighlight": "online verkoop",
+      "subtitle": "Binnen 2 weken verkoop je online. Wij begeleiden je bij elke stap."
+    }
+  },
+  "aboutPage": {
+    "badge": "Over Webstability",
+    "heroTitle": "Websites bouwen voor",
+    "heroTitleHighlight": "ondernemers",
+    "heroSubtitle": "Wij zijn een 100% remote team van developers en designers die geloven dat elke ondernemer een professionele online aanwezigheid verdient. Zonder gedoe, zonder technische kennis.",
+    "startProject": "Start je project",
+    "contact": "Neem contact op",
+    "stats": {
+      "websitesBuilt": "Websites gebouwd",
+      "remoteTeam": "Remote team",
+      "trustpilot": "Trustpilot score",
+      "responseTime": "Reactietijd"
+    },
+    "values": {
+      "title": "Onze Waarden",
+      "heading": "Waar we voor",
+      "headingHighlight": "staan",
+      "items": {
+        "honest": {
+          "title": "Eerlijk & Transparant",
+          "description": "Geen verborgen kosten, geen kleine lettertjes. Wat je ziet is wat je krijgt. Altijd."
+        },
+        "fast": {
+          "title": "Snel & Efficiënt",
+          "description": "Binnen 7 dagen een professionele website. Geen maandenlange trajecten."
+        },
+        "personal": {
+          "title": "Persoonlijke Aanpak",
+          "description": "Je bent geen nummer. We kennen je naam, je business en je doelen."
+        },
+        "results": {
+          "title": "Resultaatgericht",
+          "description": "Websites die niet alleen mooi zijn, maar ook daadwerkelijk klanten opleveren."
+        }
+      }
+    },
+    "workStyle": {
+      "title": "Werkwijze",
+      "heading": "Hoe wij",
+      "headingHighlight": "werken",
+      "items": {
+        "remote": {
+          "title": "100% Remote",
+          "description": "Geen kantoor, geen woon-werkverkeer. Werken vanuit waar we het beste presteren."
+        },
+        "modern": {
+          "title": "Moderne Technologie",
+          "description": "React, TypeScript, Tailwind CSS. De nieuwste tools voor de beste websites."
+        },
+        "delivery": {
+          "title": "Snelle Oplevering",
+          "description": "Door slimme workflows en herbruikbare componenten zijn we razendsnel."
+        },
+        "flexible": {
+          "title": "Flexibele Werkuren",
+          "description": "We werken wanneer we het meest productief zijn. Vaak ook 's avonds en weekends."
+        }
+      }
+    },
+    "timeline": {
+      "title": "Onze Reis",
+      "heading": "Van idee naar",
+      "headingHighlight": "150+ websites",
+      "milestones": {
+        "2023": {
+          "title": "Webstability opgericht",
+          "description": "Gestart vanuit de overtuiging dat websites simpeler en betaalbaarder kunnen."
+        },
+        "2024": {
+          "title": "100+ websites live",
+          "description": "Eerste honderd tevreden klanten bereikt. Uitgebreid met webshops en logo design."
+        },
+        "2025": {
+          "title": "Team & diensten groei",
+          "description": "Luchtvideografie toegevoegd. Focus op complete online aanwezigheid voor ondernemers."
+        }
+      }
+    },
+    "cta": {
+      "badge": "Klaar om te starten?",
+      "heading": "Laten we samen jouw",
+      "headingHighlight": "online aanwezigheid bouwen",
+      "subtitle": "Plan een gratis gesprek en ontdek wat we voor jouw onderneming kunnen betekenen."
+    }
+  },
+  "portfolioPage": {
+    "title": "Ons werk",
+    "subtitle": "Bekijk websites die we hebben gebouwd voor ondernemers in Nederland.",
+    "categories": {
+      "all": "Alle",
+      "services": "Dienstverlening",
+      "business": "Zakelijk",
+      "hospitality": "Horeca",
+      "creative": "Creatief"
+    },
+    "droneSection": {
+      "badge": "Luchtvideografie",
+      "title": "Dronebeelden",
+      "subtitle": "voor jouw project"
+    },
+    "cta": {
+      "badge": "Jouw website hier?",
+      "heading": "Wil je ook een",
+      "headingHighlight": "professionele website",
+      "headingEnd": "?",
+      "subtitle": "We bouwen jouw website binnen 2 weken. Inclusief hosting en onderhoud.",
+      "button": "Start je project"
+    },
+    "viewWebsite": "Bekijk website"
   }
 }

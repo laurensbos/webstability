@@ -702,5 +702,260 @@
     "select": "Language",
     "nl": "Nederlands",
     "en": "English"
+  },
+  "websitesPage": {
+    "badge": "Get a website built",
+    "heroTitle": "Professional",
+    "heroTitleHighlight": "website",
+    "heroTitleEnd": "without hassle",
+    "heroSubtitle": "We design and build your website. Hosting, updates and maintenance included.",
+    "startProject": "Start your project",
+    "viewPackages": "View packages",
+    "stats": {
+      "websites": "Websites",
+      "rating": "Rating",
+      "daysLive": "Days live"
+    },
+    "features": {
+      "fast": {
+        "title": "Lightning fast",
+        "description": "Loads within 2 seconds."
+      },
+      "secure": {
+        "title": "Safe & reliable",
+        "description": "SSL, backups, 99.9% uptime."
+      },
+      "mobile": {
+        "title": "Mobile-friendly",
+        "description": "Perfect on every device."
+      },
+      "seo": {
+        "title": "SEO optimized",
+        "description": "Get found on Google."
+      }
+    },
+    "packages": {
+      "title": "Packages",
+      "heading": "Choose your",
+      "headingHighlight": "website package",
+      "subtitle": "All packages are cancellable monthly after 3 months. Including hosting and maintenance.",
+      "swipeHint": "Swipe to compare",
+      "perMonth": "/month",
+      "setupFee": "one-time setup fee",
+      "choose": "Choose",
+      "mostChosen": "Most popular"
+    },
+    "included": {
+      "title": "Included",
+      "heading": "Standard with",
+      "headingHighlight": "every package",
+      "items": {
+        "customDesign": "Custom design",
+        "responsiveLayout": "Responsive layout",
+        "contactForm": "Contact form",
+        "seoBasics": "SEO basics",
+        "ssl": "SSL certificate",
+        "backups": "Daily backups",
+        "updates": "Monthly updates",
+        "support": "Personal support"
+      }
+    },
+    "cta": {
+      "liveIn2Weeks": "Live within 2 weeks • Personal guidance"
+    },
+    "benefits": {
+      "title": "Benefits",
+      "heading": "Why choose",
+      "headingHighlight": "our websites",
+      "headingEnd": "?"
+    },
+    "finalCta": {
+      "badge": "Ready to start?",
+      "heading": "Let's build your",
+      "headingHighlight": "website together",
+      "subtitle": "Within 2 weeks you'll have a professional website. We guide you every step of the way."
+    }
+  },
+  "webshopPage": {
+    "badge": "Get a webshop built",
+    "heroTitle": "Sell online with a",
+    "heroTitleHighlight": "professional webshop",
+    "heroSubtitle": "Complete webshop with payments, shipping and inventory management. You focus on selling.",
+    "startWebshop": "Start your webshop",
+    "viewPackages": "View packages",
+    "stats": {
+      "webshops": "Webshops",
+      "rating": "Rating",
+      "daysLive": "Days live"
+    },
+    "features": {
+      "products": {
+        "title": "Product management",
+        "description": "Easily add with variants."
+      },
+      "payments": {
+        "title": "All payment methods",
+        "description": "iDEAL, credit card, Klarna."
+      },
+      "shipping": {
+        "title": "Shipping integrations",
+        "description": "PostNL, DHL, automatic tracking."
+      },
+      "security": {
+        "title": "SSL & security",
+        "description": "Secure checkout, GDPR-compliant."
+      }
+    },
+    "packages": {
+      "title": "Packages",
+      "heading": "Choose your",
+      "headingHighlight": "webshop package",
+      "subtitle": "Start selling. Everything included, cancellable monthly.",
+      "swipeHint": "Swipe to compare",
+      "perMonth": "/month",
+      "setupFee": "one-time setup fee",
+      "choose": "Choose",
+      "mostChosen": "Most popular"
+    },
+    "included": {
+      "title": "Included",
+      "heading": "Standard with",
+      "headingHighlight": "every webshop",
+      "items": {
+        "customDesign": "Custom webshop design",
+        "productManagement": "Product management",
+        "inventory": "Inventory management",
+        "payments": "iDEAL, credit card, PayPal",
+        "notifications": "Order notifications",
+        "labels": "Shipping labels",
+        "seo": "SEO optimized",
+        "hosting": "Hosting & SSL"
+      }
+    },
+    "cta": {
+      "liveIn2Weeks": "Live within 2 weeks • Personal guidance"
+    },
+    "benefits": {
+      "title": "Benefits",
+      "heading": "Why choose",
+      "headingHighlight": "our webshops",
+      "headingEnd": "?"
+    },
+    "finalCta": {
+      "badge": "Ready to start?",
+      "heading": "Start selling",
+      "headingHighlight": "online today",
+      "subtitle": "Within 2 weeks you'll be selling online. We guide you every step of the way."
+    }
+  },
+  "aboutPage": {
+    "badge": "About Webstability",
+    "heroTitle": "Building websites for",
+    "heroTitleHighlight": "entrepreneurs",
+    "heroSubtitle": "We are a 100% remote team of developers and designers who believe every entrepreneur deserves a professional online presence. No hassle, no technical knowledge required.",
+    "startProject": "Start your project",
+    "contact": "Get in touch",
+    "stats": {
+      "websitesBuilt": "Websites built",
+      "remoteTeam": "Remote team",
+      "trustpilot": "Trustpilot score",
+      "responseTime": "Response time"
+    },
+    "values": {
+      "title": "Our Values",
+      "heading": "What we",
+      "headingHighlight": "stand for",
+      "items": {
+        "honest": {
+          "title": "Honest & Transparent",
+          "description": "No hidden costs, no fine print. What you see is what you get. Always."
+        },
+        "fast": {
+          "title": "Fast & Efficient",
+          "description": "A professional website within 7 days. No months-long projects."
+        },
+        "personal": {
+          "title": "Personal Approach",
+          "description": "You're not a number. We know your name, your business and your goals."
+        },
+        "results": {
+          "title": "Results-oriented",
+          "description": "Websites that are not only beautiful, but actually generate customers."
+        }
+      }
+    },
+    "workStyle": {
+      "title": "How we work",
+      "heading": "How we",
+      "headingHighlight": "operate",
+      "items": {
+        "remote": {
+          "title": "100% Remote",
+          "description": "No office, no commute. Working from wherever we perform best."
+        },
+        "modern": {
+          "title": "Modern Technology",
+          "description": "React, TypeScript, Tailwind CSS. The latest tools for the best websites."
+        },
+        "delivery": {
+          "title": "Fast Delivery",
+          "description": "Through smart workflows and reusable components we're lightning fast."
+        },
+        "flexible": {
+          "title": "Flexible Hours",
+          "description": "We work when we're most productive. Often evenings and weekends too."
+        }
+      }
+    },
+    "timeline": {
+      "title": "Our Journey",
+      "heading": "From idea to",
+      "headingHighlight": "150+ websites",
+      "milestones": {
+        "2023": {
+          "title": "Webstability founded",
+          "description": "Started from the belief that websites can be simpler and more affordable."
+        },
+        "2024": {
+          "title": "100+ websites live",
+          "description": "First hundred satisfied customers reached. Expanded with webshops and logo design."
+        },
+        "2025": {
+          "title": "Team & services growth",
+          "description": "Added drone videography. Focus on complete online presence for entrepreneurs."
+        }
+      }
+    },
+    "cta": {
+      "badge": "Ready to start?",
+      "heading": "Let's build your",
+      "headingHighlight": "online presence together",
+      "subtitle": "Schedule a free consultation and discover what we can do for your business."
+    }
+  },
+  "portfolioPage": {
+    "title": "Our work",
+    "subtitle": "View websites we've built for entrepreneurs in the Netherlands.",
+    "categories": {
+      "all": "All",
+      "services": "Services",
+      "business": "Business",
+      "hospitality": "Hospitality",
+      "creative": "Creative"
+    },
+    "droneSection": {
+      "badge": "Aerial videography",
+      "title": "Drone footage",
+      "subtitle": "for your project"
+    },
+    "cta": {
+      "badge": "Your website here?",
+      "heading": "Want a",
+      "headingHighlight": "professional website",
+      "headingEnd": "too?",
+      "subtitle": "We build your website within 2 weeks. Including hosting and maintenance.",
+      "button": "Start your project"
+    },
+    "viewWebsite": "View website"
   }
 }

@@ -14,6 +14,7 @@ import {
   Sparkles
 } from 'lucide-react'
 import { Link } from 'react-router-dom'
+import { useTranslation } from 'react-i18next'
 import Header from '../components/Header'
 import Footer from '../components/Footer'
 import TrustpilotReviews from '../components/TrustpilotReviews'
@@ -59,53 +60,55 @@ function FloatingParticles() {
   )
 }
 
-const stats = [
-  { value: '250+', label: 'Websites' },
-  { value: '4.9', label: 'Beoordeling', icon: Star },
-  { value: '7', label: 'Dagen live' },
-]
-
-const features = [
-  {
-    icon: Zap,
-    title: 'Razendsnel',
-    description: 'Laadt binnen 2 seconden.'
-  },
-  {
-    icon: Shield,
-    title: 'Veilig & betrouwbaar',
-    description: 'SSL, backups, 99.9% uptime.'
-  },
-  {
-    icon: Smartphone,
-    title: 'Mobiel-vriendelijk',
-    description: 'Perfect op elk apparaat.'
-  },
-  {
-    icon: TrendingUp,
-    title: 'SEO geoptimaliseerd',
-    description: 'Gevonden worden in Google.'
-  },
-]
-
 // Use packages from central data with icons
 const packagesWithIcons = websitePackages.map((pkg, index) => ({
   ...pkg,
   icon: index === 0 ? Rocket : index === 1 ? Users : HeartHandshake,
 }))
 
-const included = [
-  'Custom design',
-  'Responsive layout',
-  'Contactformulier',
-  'SEO-basis',
-  'SSL-certificaat',
-  'Dagelijkse backups',
-  'Maandelijkse updates',
-  'Persoonlijke support',
-]
-
 export default function Websites() {
+  const { t } = useTranslation()
+  
+  const stats = [
+    { value: '250+', label: t('websitesPage.stats.websites') },
+    { value: '4.9', label: t('websitesPage.stats.rating'), icon: Star },
+    { value: '7', label: t('websitesPage.stats.daysLive') },
+  ]
+
+  const features = [
+    {
+      icon: Zap,
+      title: t('websitesPage.features.fast.title'),
+      description: t('websitesPage.features.fast.description')
+    },
+    {
+      icon: Shield,
+      title: t('websitesPage.features.secure.title'),
+      description: t('websitesPage.features.secure.description')
+    },
+    {
+      icon: Smartphone,
+      title: t('websitesPage.features.mobile.title'),
+      description: t('websitesPage.features.mobile.description')
+    },
+    {
+      icon: TrendingUp,
+      title: t('websitesPage.features.seo.title'),
+      description: t('websitesPage.features.seo.description')
+    },
+  ]
+
+  const included = [
+    t('websitesPage.included.items.customDesign'),
+    t('websitesPage.included.items.responsiveLayout'),
+    t('websitesPage.included.items.contactForm'),
+    t('websitesPage.included.items.seoBasics'),
+    t('websitesPage.included.items.ssl'),
+    t('websitesPage.included.items.backups'),
+    t('websitesPage.included.items.updates'),
+    t('websitesPage.included.items.support'),
+  ]
+
   return (
     <div className="min-h-screen bg-white dark:bg-gray-900">
       <Header />
@@ -132,17 +135,17 @@ export default function Websites() {
                   className="inline-flex items-center gap-2 bg-gradient-to-r from-primary-50 to-blue-50 dark:from-primary-900/30 dark:to-blue-900/30 border border-primary-200/50 dark:border-primary-700/50 rounded-full px-3 py-1.5 mb-4 lg:mb-6"
                 >
                   <Monitor className="w-3.5 h-3.5 lg:w-4 lg:h-4 text-primary-600 dark:text-primary-400" />
-                  <span className="text-xs lg:text-sm font-medium text-primary-700 dark:text-primary-300">Website laten maken</span>
+                  <span className="text-xs lg:text-sm font-medium text-primary-700 dark:text-primary-300">{t('websitesPage.badge')}</span>
                 </motion.div>
 
                 <h1 className="text-2xl sm:text-3xl lg:text-5xl xl:text-6xl font-bold text-gray-900 dark:text-white mb-3 lg:mb-6 leading-tight">
-                  Professionele{' '}
-                  <span className="bg-gradient-to-r from-primary-600 to-blue-600 bg-clip-text text-transparent">website</span>
-                  {' '}zonder zorgen
+                  {t('websitesPage.heroTitle')}{' '}
+                  <span className="bg-gradient-to-r from-primary-600 to-blue-600 bg-clip-text text-transparent">{t('websitesPage.heroTitleHighlight')}</span>
+                  {' '}{t('websitesPage.heroTitleEnd')}
                 </h1>
 
                 <p className="text-sm sm:text-base lg:text-xl text-gray-600 dark:text-gray-300 mb-5 lg:mb-8 max-w-xl mx-auto">
-                  Wij ontwerpen en bouwen jouw website. Hosting, updates en onderhoud inbegrepen.
+                  {t('websitesPage.heroSubtitle')}
                 </p>
 
                 <div className="flex flex-col sm:flex-row gap-3 justify-center">
@@ -150,14 +153,14 @@ export default function Websites() {
                     to="/start?dienst=website"
                     className="group inline-flex items-center justify-center gap-2 px-5 py-3 lg:px-8 lg:py-4 bg-gradient-to-r from-primary-500 to-primary-600 hover:from-primary-600 hover:to-primary-700 text-white font-semibold rounded-xl transition-all shadow-lg shadow-primary-500/25"
                   >
-                    Start je project
+                    {t('websitesPage.startProject')}
                     <ArrowRight className="w-4 h-4 lg:w-5 lg:h-5 group-hover:translate-x-1 transition-transform" />
                   </Link>
                   <a
                     href="#pakketten"
                     className="inline-flex items-center justify-center px-5 py-3 lg:px-8 lg:py-4 bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm text-gray-700 dark:text-gray-200 font-semibold rounded-xl border border-gray-200 dark:border-gray-700 transition-all"
                   >
-                    Bekijk pakketten
+                    {t('websitesPage.viewPackages')}
                   </a>
                 </div>
 
@@ -210,7 +213,7 @@ export default function Websites() {
                 viewport={{ once: true }}
                 className="inline-block text-primary-600 dark:text-primary-400 font-semibold text-sm tracking-wider uppercase mb-3"
               >
-                Pakketten
+                {t('websitesPage.packages.title')}
               </motion.span>
               <motion.h2
                 initial={{ opacity: 0, y: 20 }}
@@ -218,8 +221,8 @@ export default function Websites() {
                 viewport={{ once: true }}
                 className="text-3xl sm:text-4xl font-bold text-gray-900 dark:text-white mb-4"
               >
-                Kies jouw{' '}
-                <span className="bg-gradient-to-r from-primary-600 to-blue-600 bg-clip-text text-transparent">website pakket</span>
+                {t('websitesPage.packages.heading')}{' '}
+                <span className="bg-gradient-to-r from-primary-600 to-blue-600 bg-clip-text text-transparent">{t('websitesPage.packages.headingHighlight')}</span>
               </motion.h2>
               <motion.p
                 initial={{ opacity: 0, y: 20 }}
@@ -228,14 +231,14 @@ export default function Websites() {
                 transition={{ delay: 0.1 }}
                 className="text-gray-600 dark:text-gray-300 text-lg max-w-2xl mx-auto"
               >
-                Alle pakketten zijn maandelijks opzegbaar na 3 maanden. Inclusief hosting en onderhoud.
+                {t('websitesPage.packages.subtitle')}
               </motion.p>
             </div>
 
             {/* Mobile: swipe to compare */}
             <div className="sm:hidden">
               <div className="flex items-center justify-center gap-2 text-xs text-gray-400 dark:text-gray-500 mb-3">
-                <span>Swipe om te vergelijken</span>
+                <span>{t('websitesPage.packages.swipeHint')}</span>
                 <ArrowRight className="w-3 h-3" />
               </div>
 
@@ -262,9 +265,9 @@ export default function Websites() {
                     <div className="text-center mb-6">
                       <div className="flex items-baseline justify-center gap-1">
                         <span className="text-4xl font-bold text-gray-900 dark:text-white">€{pkg.price}</span>
-                        <span className="text-gray-500 dark:text-gray-400">/maand</span>
+                        <span className="text-gray-500 dark:text-gray-400">{t('websitesPage.packages.perMonth')}</span>
                       </div>
-                      <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">+ €{pkg.setupFee} eenmalige opstartkosten</p>
+                      <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">+ €{pkg.setupFee} {t('websitesPage.packages.setupFee')}</p>
                     </div>
 
                     <ul className="space-y-3 mb-6">
@@ -278,7 +281,7 @@ export default function Websites() {
 
                     <Link to={`/start?dienst=website&pakket=${pkg.id}`} className={`block w-full text-center py-3 rounded-xl font-semibold transition-all ${
                       pkg.popular ? 'bg-gradient-to-r from-primary-500 to-primary-600 text-white' : 'bg-gray-100 dark:bg-gray-700 text-gray-900 dark:text-white'
-                    }`}>Kies {pkg.name}</Link>
+                    }`}>{t('websitesPage.packages.choose')} {pkg.name}</Link>
                   </motion.div>
                 ))}
               </div>
@@ -308,7 +311,7 @@ export default function Websites() {
                   {pkg.popular && (
                     <div className="absolute -top-3 left-1/2 -translate-x-1/2">
                       <span className="bg-gradient-to-r from-primary-500 to-blue-500 text-white text-xs font-semibold px-3 py-1 rounded-full">
-                        Meest gekozen
+                        {t('websitesPage.packages.mostChosen')}
                       </span>
                     </div>
                   )}
@@ -324,10 +327,10 @@ export default function Websites() {
                   <div className="text-center mb-6">
                     <div className="flex items-baseline justify-center gap-1">
                       <span className="text-4xl font-bold text-gray-900 dark:text-white">€{pkg.price}</span>
-                      <span className="text-gray-500 dark:text-gray-400">/maand</span>
+                      <span className="text-gray-500 dark:text-gray-400">{t('websitesPage.packages.perMonth')}</span>
                     </div>
                     <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
-                      + €{pkg.setupFee} eenmalige opstartkosten
+                      + €{pkg.setupFee} {t('websitesPage.packages.setupFee')}
                     </p>
                   </div>
 
@@ -348,7 +351,7 @@ export default function Websites() {
                         : 'bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 text-gray-900 dark:text-white'
                     }`}
                   >
-                    Kies {pkg.name}
+                    {t('websitesPage.packages.choose')} {pkg.name}
                   </Link>
                 </motion.div>
               ))}
@@ -366,7 +369,7 @@ export default function Websites() {
                 viewport={{ once: true }}
                 className="inline-block text-primary-600 dark:text-primary-400 font-semibold text-sm tracking-wider uppercase mb-3"
               >
-                Inbegrepen
+                {t('websitesPage.included.title')}
               </motion.span>
               <motion.h2
                 initial={{ opacity: 0, y: 20 }}
@@ -374,8 +377,8 @@ export default function Websites() {
                 viewport={{ once: true }}
                 className="text-3xl sm:text-4xl font-bold text-gray-900 dark:text-white mb-4"
               >
-                Standaard bij{' '}
-                <span className="bg-gradient-to-r from-primary-600 to-blue-600 bg-clip-text text-transparent">elk pakket</span>
+                {t('websitesPage.included.heading')}{' '}
+                <span className="bg-gradient-to-r from-primary-600 to-blue-600 bg-clip-text text-transparent">{t('websitesPage.included.headingHighlight')}</span>
               </motion.h2>
             </div>
 
@@ -406,11 +409,11 @@ export default function Websites() {
                 to="/start?dienst=website"
                 className="group inline-flex items-center gap-2 px-8 py-4 bg-gradient-to-r from-primary-500 to-primary-600 hover:from-primary-600 hover:to-primary-700 text-white font-semibold rounded-xl transition-all shadow-lg shadow-primary-500/25 hover:shadow-primary-500/40 hover:-translate-y-0.5"
               >
-                Start je project
+                {t('websitesPage.startProject')}
                 <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
               </Link>
               <p className="text-gray-500 dark:text-gray-400 text-sm mt-4">
-                Binnen 2 weken live • Persoonlijke begeleiding
+                {t('websitesPage.cta.liveIn2Weeks')}
               </p>
             </motion.div>
           </div>
@@ -434,7 +437,7 @@ export default function Websites() {
                 viewport={{ once: true }}
                 className="inline-block text-primary-600 dark:text-primary-400 font-semibold text-sm tracking-wider uppercase mb-3"
               >
-                Voordelen
+                {t('websitesPage.benefits.title')}
               </motion.span>
               <motion.h2
                 initial={{ opacity: 0, y: 20 }}
@@ -442,11 +445,11 @@ export default function Websites() {
                 viewport={{ once: true }}
                 className="text-3xl sm:text-4xl font-bold text-gray-900 dark:text-white mb-4"
               >
-                Waarom kiezen voor{' '}
+                {t('websitesPage.benefits.heading')}{' '}
                 <span className="bg-gradient-to-r from-primary-600 to-blue-600 bg-clip-text text-transparent">
-                  onze websites
+                  {t('websitesPage.benefits.headingHighlight')}
                 </span>
-                ?
+                {t('websitesPage.benefits.headingEnd')}
               </motion.h2>
             </div>
 
@@ -483,26 +486,25 @@ export default function Websites() {
             >
               <div className="inline-flex items-center gap-2 bg-gradient-to-r from-primary-50 to-blue-50 dark:from-primary-900/30 dark:to-blue-900/30 border border-primary-200 dark:border-primary-700 rounded-full px-4 py-2 mb-6">
                 <Sparkles className="w-4 h-4 text-primary-600 dark:text-primary-400" />
-                <span className="text-sm font-medium text-primary-700 dark:text-primary-300">Klaar om te starten?</span>
+                <span className="text-sm font-medium text-primary-700 dark:text-primary-300">{t('websitesPage.finalCta.badge')}</span>
               </div>
               
               <h2 className="text-3xl sm:text-4xl font-bold text-gray-900 dark:text-white mb-4">
-                Laten we samen jouw{' '}
+                {t('websitesPage.finalCta.heading')}{' '}
                 <span className="bg-gradient-to-r from-primary-600 to-blue-600 bg-clip-text text-transparent">
-                  website bouwen
+                  {t('websitesPage.finalCta.headingHighlight')}
                 </span>
               </h2>
               
               <p className="text-gray-600 dark:text-gray-300 text-lg mb-8 max-w-2xl mx-auto">
-                Binnen 2 weken heb je een professionele website. 
-                Wij begeleiden je bij elke stap.
+                {t('websitesPage.finalCta.subtitle')}
               </p>
 
               <Link
                 to="/start?dienst=website"
                 className="group inline-flex items-center gap-2 px-8 py-4 bg-gradient-to-r from-primary-500 to-primary-600 hover:from-primary-600 hover:to-primary-700 text-white font-semibold rounded-xl transition-all shadow-lg shadow-primary-500/25 hover:shadow-primary-500/40 hover:-translate-y-0.5"
               >
-                Start je project
+                {t('websitesPage.startProject')}
                 <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
               </Link>
             </motion.div>

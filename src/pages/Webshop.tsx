@@ -13,6 +13,7 @@ import {
   HeartHandshake
 } from 'lucide-react'
 import { Link } from 'react-router-dom'
+import { useTranslation } from 'react-i18next'
 import Header from '../components/Header'
 import Footer from '../components/Footer'
 import TrustpilotReviews from '../components/TrustpilotReviews'
@@ -58,53 +59,55 @@ function FloatingParticles() {
   )
 }
 
-const stats = [
-  { value: '50+', label: 'Webshops' },
-  { value: '4.9', label: 'Beoordeling', icon: Star },
-  { value: '14', label: 'Dagen live' },
-]
-
-const features = [
-  {
-    icon: ShoppingCart,
-    title: 'Producten beheren',
-    description: 'Eenvoudig toevoegen met varianten.'
-  },
-  {
-    icon: CreditCard,
-    title: 'Alle betaalmethodes',
-    description: 'iDEAL, creditcard, Klarna.'
-  },
-  {
-    icon: Truck,
-    title: 'Verzendintegraties',
-    description: 'PostNL, DHL, automatische tracking.'
-  },
-  {
-    icon: Shield,
-    title: 'SSL & beveiliging',
-    description: 'Veilige checkout, GDPR-compliant.'
-  },
-]
-
 // Use packages from central data with icons
 const packagesWithIcons = webshopPackages.map((pkg, index) => ({
   ...pkg,
   icon: index === 0 ? Package : index === 1 ? Users : HeartHandshake,
 }))
 
-const included = [
-  'Custom webshop design',
-  'Product management',
-  'Voorraad beheer',
-  'iDEAL, creditcard, PayPal',
-  'Order notificaties',
-  'Verzendlabels',
-  'SEO geoptimaliseerd',
-  'Hosting & SSL',
-]
-
 export default function Webshop() {
+  const { t } = useTranslation()
+
+  const stats = [
+    { value: '50+', label: t('webshopPage.stats.webshops') },
+    { value: '4.9', label: t('webshopPage.stats.rating'), icon: Star },
+    { value: '14', label: t('webshopPage.stats.daysLive') },
+  ]
+
+  const features = [
+    {
+      icon: ShoppingCart,
+      title: t('webshopPage.features.products.title'),
+      description: t('webshopPage.features.products.description')
+    },
+    {
+      icon: CreditCard,
+      title: t('webshopPage.features.payments.title'),
+      description: t('webshopPage.features.payments.description')
+    },
+    {
+      icon: Truck,
+      title: t('webshopPage.features.shipping.title'),
+      description: t('webshopPage.features.shipping.description')
+    },
+    {
+      icon: Shield,
+      title: t('webshopPage.features.security.title'),
+      description: t('webshopPage.features.security.description')
+    },
+  ]
+
+  const included = [
+    t('webshopPage.included.items.customDesign'),
+    t('webshopPage.included.items.productManagement'),
+    t('webshopPage.included.items.inventory'),
+    t('webshopPage.included.items.payments'),
+    t('webshopPage.included.items.notifications'),
+    t('webshopPage.included.items.labels'),
+    t('webshopPage.included.items.seo'),
+    t('webshopPage.included.items.hosting'),
+  ]
+
   return (
     <div className="min-h-screen bg-white dark:bg-gray-900">
       <Header />
@@ -131,16 +134,16 @@ export default function Webshop() {
                   className="inline-flex items-center gap-2 bg-gradient-to-r from-emerald-50 to-green-50 dark:from-emerald-900/30 dark:to-green-900/30 border border-emerald-200/50 dark:border-emerald-700/50 rounded-full px-3 py-1.5 mb-4 lg:mb-6"
                 >
                   <ShoppingCart className="w-3.5 h-3.5 lg:w-4 lg:h-4 text-emerald-600 dark:text-emerald-400" />
-                  <span className="text-xs lg:text-sm font-medium text-emerald-700 dark:text-emerald-300">Webshop laten maken</span>
+                  <span className="text-xs lg:text-sm font-medium text-emerald-700 dark:text-emerald-300">{t('webshopPage.badge')}</span>
                 </motion.div>
 
                 <h1 className="text-2xl sm:text-3xl lg:text-5xl xl:text-6xl font-bold text-gray-900 dark:text-white mb-3 lg:mb-6 leading-tight">
-                  Verkoop online met een{' '}
-                  <span className="bg-gradient-to-r from-emerald-600 to-green-600 bg-clip-text text-transparent">professionele webshop</span>
+                  {t('webshopPage.heroTitle')}{' '}
+                  <span className="bg-gradient-to-r from-emerald-600 to-green-600 bg-clip-text text-transparent">{t('webshopPage.heroTitleHighlight')}</span>
                 </h1>
 
                 <p className="text-sm sm:text-base lg:text-xl text-gray-600 dark:text-gray-300 mb-5 lg:mb-8 max-w-xl mx-auto">
-                  Complete webshop met betalingen, verzending en voorraadbeheer. Jij focust op verkopen.
+                  {t('webshopPage.heroSubtitle')}
                 </p>
 
                 <div className="flex flex-col sm:flex-row gap-3 justify-center">
@@ -148,14 +151,14 @@ export default function Webshop() {
                     to="/start?dienst=webshop"
                     className="group inline-flex items-center justify-center gap-2 px-5 py-3 lg:px-8 lg:py-4 bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-600 hover:to-emerald-700 text-white font-semibold rounded-xl transition-all shadow-lg shadow-emerald-500/25"
                   >
-                    Start je webshop
+                    {t('webshopPage.startWebshop')}
                     <ArrowRight className="w-4 h-4 lg:w-5 lg:h-5 group-hover:translate-x-1 transition-transform" />
                   </Link>
                   <a
                     href="#pakketten"
                     className="inline-flex items-center justify-center px-5 py-3 lg:px-8 lg:py-4 bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm text-gray-700 dark:text-gray-200 font-semibold rounded-xl border border-gray-200 dark:border-gray-700 transition-all"
                   >
-                    Bekijk pakketten
+                    {t('webshopPage.viewPackages')}
                   </a>
                 </div>
 
@@ -213,7 +216,7 @@ export default function Webshop() {
                 viewport={{ once: true }}
                 className="inline-block text-emerald-600 dark:text-emerald-400 font-semibold text-sm tracking-wider uppercase mb-3"
               >
-                Pakketten
+                {t('webshopPage.packages.title')}
               </motion.span>
               <motion.h2
                 initial={{ opacity: 0, y: 20 }}
@@ -221,8 +224,8 @@ export default function Webshop() {
                 viewport={{ once: true }}
                 className="text-3xl sm:text-4xl font-bold text-gray-900 dark:text-white mb-4"
               >
-                Kies jouw{' '}
-                <span className="bg-gradient-to-r from-emerald-600 to-green-600 bg-clip-text text-transparent">webshop pakket</span>
+                {t('webshopPage.packages.heading')}{' '}
+                <span className="bg-gradient-to-r from-emerald-600 to-green-600 bg-clip-text text-transparent">{t('webshopPage.packages.headingHighlight')}</span>
               </motion.h2>
               <motion.p
                 initial={{ opacity: 0, y: 20 }}
@@ -231,14 +234,14 @@ export default function Webshop() {
                 transition={{ delay: 0.1 }}
                 className="text-gray-600 dark:text-gray-300 text-lg max-w-2xl mx-auto"
               >
-                Alle pakketten zijn maandelijks opzegbaar na 3 maanden. Inclusief hosting en onderhoud.
+                {t('webshopPage.packages.subtitle')}
               </motion.p>
             </div>
 
             {/* Mobile: swipe to compare */}
             <div className="sm:hidden">
               <div className="flex items-center justify-center gap-2 text-xs text-gray-400 dark:text-gray-500 mb-3">
-                <span>Swipe om te vergelijken</span>
+                <span>{t('webshopPage.packages.swipeHint')}</span>
                 <ArrowRight className="w-3 h-3" />
               </div>
 
@@ -265,9 +268,9 @@ export default function Webshop() {
                     <div className="text-center mb-6">
                       <div className="flex items-baseline justify-center gap-1">
                         <span className="text-4xl font-bold text-gray-900 dark:text-white">€{pkg.price}</span>
-                        <span className="text-gray-500 dark:text-gray-400">/maand</span>
+                        <span className="text-gray-500 dark:text-gray-400">{t('webshopPage.packages.perMonth')}</span>
                       </div>
-                      <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">+ €{pkg.setupFee} eenmalige opstartkosten</p>
+                      <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">+ €{pkg.setupFee} {t('webshopPage.packages.setupFee')}</p>
                     </div>
 
                     <ul className="space-y-3 mb-6">
@@ -280,7 +283,7 @@ export default function Webshop() {
                     </ul>
 
                     <Link to={`/start?dienst=webshop&pakket=${pkg.id}`} className="block w-full text-center py-3 rounded-xl font-semibold transition-all bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 text-gray-900 dark:text-white">
-                      Kies {pkg.name}
+                      {t('webshopPage.packages.choose')} {pkg.name}
                     </Link>
                   </motion.div>
                 ))}
@@ -310,7 +313,7 @@ export default function Webshop() {
                   {pkg.popular && (
                     <div className="absolute -top-3 left-1/2 -translate-x-1/2">
                       <span className="bg-gradient-to-r from-emerald-500 to-green-500 text-white text-xs font-semibold px-3 py-1 rounded-full">
-                        Meest gekozen
+                        {t('webshopPage.packages.mostChosen')}
                       </span>
                     </div>
                   )}
@@ -326,9 +329,9 @@ export default function Webshop() {
                   <div className="text-center mb-6">
                     <div className="flex items-baseline justify-center gap-1">
                       <span className="text-4xl font-bold text-gray-900 dark:text-white">€{pkg.price}</span>
-                      <span className="text-gray-500 dark:text-gray-400">/maand</span>
+                      <span className="text-gray-500 dark:text-gray-400">{t('webshopPage.packages.perMonth')}</span>
                     </div>
-                    <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">+ €{pkg.setupFee} eenmalige opstartkosten</p>
+                    <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">+ €{pkg.setupFee} {t('webshopPage.packages.setupFee')}</p>
                   </div>
 
                   <ul className="space-y-3 mb-6">
@@ -348,7 +351,7 @@ export default function Webshop() {
                         : 'bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 text-gray-900 dark:text-white'
                     }`}
                   >
-                    Kies {pkg.name}
+                    {t('webshopPage.packages.choose')} {pkg.name}
                   </Link>
                 </motion.div>
               ))}
@@ -366,7 +369,7 @@ export default function Webshop() {
                 viewport={{ once: true }}
                 className="inline-block text-emerald-600 dark:text-emerald-400 font-semibold text-sm tracking-wider uppercase mb-3"
               >
-                Inbegrepen
+                {t('webshopPage.included.title')}
               </motion.span>
               <motion.h2
                 initial={{ opacity: 0, y: 20 }}
@@ -374,8 +377,8 @@ export default function Webshop() {
                 viewport={{ once: true }}
                 className="text-3xl sm:text-4xl font-bold text-gray-900 dark:text-white mb-4"
               >
-                Standaard bij{' '}
-                <span className="bg-gradient-to-r from-emerald-600 to-green-600 bg-clip-text text-transparent">elk pakket</span>
+                {t('webshopPage.included.heading')}{' '}
+                <span className="bg-gradient-to-r from-emerald-600 to-green-600 bg-clip-text text-transparent">{t('webshopPage.included.headingHighlight')}</span>
               </motion.h2>
             </div>
 
@@ -406,11 +409,11 @@ export default function Webshop() {
                 to="/start?dienst=webshop"
                 className="group inline-flex items-center gap-2 px-8 py-4 bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-600 hover:to-emerald-700 text-white font-semibold rounded-xl transition-all shadow-lg shadow-emerald-500/25 hover:shadow-emerald-500/40 hover:-translate-y-0.5"
               >
-                Start je webshop
+                {t('webshopPage.startWebshop')}
                 <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
               </Link>
               <p className="text-gray-500 dark:text-gray-400 text-sm mt-4">
-                Binnen 2 weken live • Persoonlijke begeleiding
+                {t('webshopPage.cta.liveIn2Weeks')}
               </p>
             </motion.div>
           </div>
@@ -434,7 +437,7 @@ export default function Webshop() {
                 viewport={{ once: true }}
                 className="inline-block text-emerald-600 dark:text-emerald-400 font-semibold text-sm tracking-wider uppercase mb-3"
               >
-                Functionaliteiten
+                {t('webshopPage.benefits.title')}
               </motion.span>
               <motion.h2
                 initial={{ opacity: 0, y: 20 }}
@@ -442,10 +445,11 @@ export default function Webshop() {
                 viewport={{ once: true }}
                 className="text-3xl sm:text-4xl font-bold text-gray-900 dark:text-white mb-4"
               >
-                Alles voor een{' '}
+                {t('webshopPage.benefits.heading')}{' '}
                 <span className="bg-gradient-to-r from-emerald-600 to-green-600 bg-clip-text text-transparent">
-                  succesvolle webshop
+                  {t('webshopPage.benefits.headingHighlight')}
                 </span>
+                {t('webshopPage.benefits.headingEnd')}
               </motion.h2>
             </div>
 
@@ -482,26 +486,25 @@ export default function Webshop() {
             >
               <div className="inline-flex items-center gap-2 bg-gradient-to-r from-emerald-50 to-green-50 dark:from-emerald-900/30 dark:to-green-900/30 border border-emerald-200 dark:border-emerald-700 rounded-full px-4 py-2 mb-6">
                 <Zap className="w-4 h-4 text-emerald-600 dark:text-emerald-400" />
-                <span className="text-sm font-medium text-emerald-700 dark:text-emerald-300">Klaar om te starten?</span>
+                <span className="text-sm font-medium text-emerald-700 dark:text-emerald-300">{t('webshopPage.finalCta.badge')}</span>
               </div>
               
               <h2 className="text-3xl sm:text-4xl font-bold text-gray-900 dark:text-white mb-4">
-                Start vandaag nog met{' '}
+                {t('webshopPage.finalCta.heading')}{' '}
                 <span className="bg-gradient-to-r from-emerald-600 to-green-600 bg-clip-text text-transparent">
-                  online verkopen
+                  {t('webshopPage.finalCta.headingHighlight')}
                 </span>
               </h2>
               
               <p className="text-gray-600 dark:text-gray-300 text-lg mb-8 max-w-2xl mx-auto">
-                Binnen 2 weken heb je een volledig werkende webshop. 
-                Wij begeleiden je bij elke stap.
+                {t('webshopPage.finalCta.subtitle')}
               </p>
 
               <Link
                 to="/start?dienst=webshop"
                 className="group inline-flex items-center gap-2 px-8 py-4 bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-600 hover:to-emerald-700 text-white font-semibold rounded-xl transition-all shadow-lg shadow-emerald-500/25 hover:shadow-emerald-500/40 hover:-translate-y-0.5"
               >
-                Start je webshop
+                {t('webshopPage.startWebshop')}
                 <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
               </Link>
             </motion.div>

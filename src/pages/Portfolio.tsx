@@ -2,6 +2,7 @@ import { useState, useRef } from 'react'
 import { motion } from 'framer-motion'
 import { ExternalLink, Play, Plane, ArrowRight, ChevronLeft, ChevronRight } from 'lucide-react'
 import { Link } from 'react-router-dom'
+import { useTranslation } from 'react-i18next'
 import Header from '../components/Header'
 import Footer from '../components/Footer'
 
@@ -14,8 +15,6 @@ interface Project {
   url?: string
   result?: string
 }
-
-const categories = ['Alle', 'Dienstverlening', 'Zakelijk', 'Horeca', 'Creatief']
 
 const portfolioVideos = [
   { id: '1124571038', title: 'Locatie overview' },
@@ -54,10 +53,19 @@ const projects: Project[] = [
 ]
 
 export default function Portfolio() {
-  const [activeCategory, setActiveCategory] = useState('Alle')
+  const { t } = useTranslation()
+  const [activeCategory, setActiveCategory] = useState(t('portfolioPage.categories.all'))
   const scrollContainerRef = useRef<HTMLDivElement>(null)
 
-  const filteredProjects = activeCategory === 'Alle' 
+  const categories = [
+    t('portfolioPage.categories.all'),
+    t('portfolioPage.categories.services'),
+    t('portfolioPage.categories.business'),
+    t('portfolioPage.categories.hospitality'),
+    t('portfolioPage.categories.creative')
+  ]
+
+  const filteredProjects = activeCategory === t('portfolioPage.categories.all') 
     ? projects 
     : projects.filter(p => p.category === activeCategory)
 
@@ -85,10 +93,10 @@ export default function Portfolio() {
               className="text-center max-w-2xl mx-auto"
             >
               <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-gray-900 dark:text-white mb-4">
-                Ons werk
+                {t('portfolioPage.title')}
               </h1>
               <p className="text-gray-600 dark:text-gray-300 text-lg">
-                Bekijk websites die we hebben gebouwd voor ondernemers in Nederland.
+                {t('portfolioPage.subtitle')}
               </p>
             </motion.div>
           </div>
@@ -194,10 +202,10 @@ export default function Portfolio() {
             <div className="text-center mb-12">
               <span className="inline-flex items-center gap-2 px-4 py-2 bg-orange-500/20 text-orange-400 rounded-full text-sm font-medium mb-4">
                 <Plane className="w-4 h-4" />
-                Luchtopnames
+                {t('portfolioPage.droneSection.badge')}
               </span>
               <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-white">
-                Onze dronebeelden
+                {t('portfolioPage.droneSection.title')}
               </h2>
             </div>
 
@@ -270,6 +278,7 @@ export default function Portfolio() {
 
 // Project Card Component
 function ProjectCard({ project, className = '' }: { project: Project; className?: string }) {
+  const { t } = useTranslation()
   return (
     <div className={`group bg-white dark:bg-gray-800 rounded-2xl overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 ${className}`}>
       {/* Image */}
@@ -297,7 +306,7 @@ function ProjectCard({ project, className = '' }: { project: Project; className?
             target="_blank"
             rel="noopener noreferrer"
             className="absolute top-3 right-3 w-9 h-9 bg-white/90 dark:bg-gray-800/90 backdrop-blur rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity hover:bg-white dark:hover:bg-gray-700"
-            aria-label={`Bezoek ${project.title}`}
+            aria-label={`${t('portfolioPage.viewWebsite')} ${project.title}`}
           >
             <ExternalLink className="w-4 h-4 text-gray-700 dark:text-gray-300" />
           </a>
@@ -323,7 +332,7 @@ function ProjectCard({ project, className = '' }: { project: Project; className?
             rel="noopener noreferrer"
             className="inline-flex items-center gap-1.5 text-primary-600 dark:text-primary-400 text-sm font-medium hover:gap-2.5 transition-all"
           >
-            Bekijk website
+            {t('portfolioPage.viewWebsite')}
             <ArrowRight className="w-4 h-4" />
           </a>
         )}

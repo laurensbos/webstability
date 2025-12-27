@@ -19,6 +19,7 @@ import {
   Wifi
 } from 'lucide-react'
 import { Link } from 'react-router-dom'
+import { useTranslation } from 'react-i18next'
 import Header from '../components/Header'
 import Footer from '../components/Footer'
 
@@ -63,70 +64,72 @@ function FloatingParticles() {
   )
 }
 
-const values = [
-  {
-    icon: Heart,
-    title: 'Eerlijk & Transparant',
-    description: 'Geen verborgen kosten, geen kleine lettertjes. Wat je ziet is wat je krijgt. Altijd.',
-  },
-  {
-    icon: Zap,
-    title: 'Snel & Efficiënt',
-    description: 'Binnen 7 dagen een professionele website. Geen maandenlange trajecten.',
-  },
-  {
-    icon: Users,
-    title: 'Persoonlijke Aanpak',
-    description: 'Je bent geen nummer. We kennen je naam, je business en je doelen.',
-  },
-  {
-    icon: Target,
-    title: 'Resultaatgericht',
-    description: 'Websites die niet alleen mooi zijn, maar ook daadwerkelijk klanten opleveren.',
-  },
-]
-
-const stats = [
-  { value: '150+', label: 'Websites gebouwd' },
-  { value: '100%', label: 'Remote team' },
-  { value: '4.9', label: 'Trustpilot score', icon: Star },
-  { value: '24u', label: 'Reactietijd' },
-]
-
 const techStack = [
   'React', 'Next.js', 'TypeScript', 'Tailwind CSS', 'Node.js', 'Vercel', 'Cloudflare', 'Framer Motion'
 ]
 
-const workStyle = [
-  {
-    icon: Wifi,
-    title: '100% Remote',
-    description: 'Geen kantoor, geen woon-werkverkeer. Werken vanuit waar we het beste presteren.',
-  },
-  {
-    icon: Code,
-    title: 'Moderne Technologie',
-    description: 'React, TypeScript, Tailwind CSS. De nieuwste tools voor de beste websites.',
-  },
-  {
-    icon: Rocket,
-    title: 'Snelle Oplevering',
-    description: 'Door slimme workflows en herbruikbare componenten zijn we razendsnel.',
-  },
-  {
-    icon: Coffee,
-    title: 'Flexibele Werkuren',
-    description: 'We werken wanneer we het meest productief zijn. Vaak ook \'s avonds en weekends.',
-  },
-]
-
-const milestones = [
-  { year: '2023', title: 'Webstability opgericht', description: 'Gestart vanuit de overtuiging dat websites simpeler en betaalbaarder kunnen.' },
-  { year: '2024', title: '100+ websites live', description: 'Eerste honderd tevreden klanten bereikt. Uitgebreid met webshops en logo design.' },
-  { year: '2025', title: 'Team & diensten groei', description: 'Luchtvideografie toegevoegd. Focus op complete online aanwezigheid voor ondernemers.' },
-]
-
 export default function OverOns() {
+  const { t } = useTranslation()
+
+  const values = [
+    {
+      icon: Heart,
+      title: t('aboutPage.values.items.honest.title'),
+      description: t('aboutPage.values.items.honest.description'),
+    },
+    {
+      icon: Zap,
+      title: t('aboutPage.values.items.fast.title'),
+      description: t('aboutPage.values.items.fast.description'),
+    },
+    {
+      icon: Users,
+      title: t('aboutPage.values.items.personal.title'),
+      description: t('aboutPage.values.items.personal.description'),
+    },
+    {
+      icon: Target,
+      title: t('aboutPage.values.items.results.title'),
+      description: t('aboutPage.values.items.results.description'),
+    },
+  ]
+
+  const stats = [
+    { value: '150+', label: t('aboutPage.stats.websitesBuilt') },
+    { value: '100%', label: t('aboutPage.stats.remoteTeam') },
+    { value: '4.9', label: t('aboutPage.stats.trustpilot'), icon: Star },
+    { value: '24u', label: t('aboutPage.stats.responseTime') },
+  ]
+
+  const workStyle = [
+    {
+      icon: Wifi,
+      title: t('aboutPage.workStyle.items.remote.title'),
+      description: t('aboutPage.workStyle.items.remote.description'),
+    },
+    {
+      icon: Code,
+      title: t('aboutPage.workStyle.items.modern.title'),
+      description: t('aboutPage.workStyle.items.modern.description'),
+    },
+    {
+      icon: Rocket,
+      title: t('aboutPage.workStyle.items.delivery.title'),
+      description: t('aboutPage.workStyle.items.delivery.description'),
+    },
+    {
+      icon: Coffee,
+      title: t('aboutPage.workStyle.items.flexible.title'),
+      description: t('aboutPage.workStyle.items.flexible.description'),
+    },
+  ]
+
+  const milestones = [
+    { year: '2023', title: t('aboutPage.timeline.milestones.2023.title'), description: t('aboutPage.timeline.milestones.2023.description') },
+    { year: '2024', title: t('aboutPage.timeline.milestones.2024.title'), description: t('aboutPage.timeline.milestones.2024.description') },
+    { year: '2025', title: t('aboutPage.timeline.milestones.2025.title'), description: t('aboutPage.timeline.milestones.2025.description') },
+  ]
+
   return (
     <div className="min-h-screen bg-white dark:bg-gray-900">
       <Header />
@@ -160,19 +163,18 @@ export default function OverOns() {
                   className="inline-flex items-center gap-2 bg-gradient-to-r from-primary-50 to-blue-50 dark:from-primary-900/50 dark:to-blue-900/50 border border-primary-200/50 dark:border-primary-700/50 rounded-full px-4 py-2 mb-6"
                 >
                   <Users className="w-4 h-4 text-primary-600 dark:text-primary-400" />
-                  <span className="text-sm font-medium text-primary-700 dark:text-primary-300">Over Webstability</span>
+                  <span className="text-sm font-medium text-primary-700 dark:text-primary-300">{t('aboutPage.badge')}</span>
                 </motion.div>
 
                 <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold text-gray-900 dark:text-white mb-6 leading-tight">
-                  Websites bouwen voor{' '}
+                  {t('aboutPage.heroTitle')}{' '}
                   <span className="bg-gradient-to-r from-primary-600 to-blue-600 dark:from-primary-400 dark:to-blue-400 bg-clip-text text-transparent">
-                    ondernemers
+                    {t('aboutPage.heroTitleHighlight')}
                   </span>
                 </h1>
 
                 <p className="text-xl text-gray-600 dark:text-gray-300 mb-8 max-w-2xl mx-auto leading-relaxed">
-                  Wij zijn een 100% remote team van developers en designers die geloven dat elke ondernemer 
-                  een professionele online aanwezigheid verdient. Zonder gedoe, zonder technische kennis.
+                  {t('aboutPage.heroSubtitle')}
                 </p>
 
                 <div className="flex flex-col sm:flex-row gap-4 justify-center">
@@ -180,14 +182,14 @@ export default function OverOns() {
                     to="/start"
                     className="group inline-flex items-center justify-center gap-2 px-8 py-4 bg-gradient-to-r from-primary-500 to-primary-600 hover:from-primary-600 hover:to-primary-700 text-white font-semibold rounded-xl transition-all shadow-lg shadow-primary-500/25 hover:shadow-primary-500/40 hover:-translate-y-0.5"
                   >
-                    Start je project
+                    {t('aboutPage.startProject')}
                     <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
                   </Link>
                   <Link
                     to="/contact"
                     className="inline-flex items-center justify-center px-8 py-4 bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm hover:bg-white dark:hover:bg-gray-700 text-gray-700 dark:text-gray-200 font-semibold rounded-xl border border-gray-200 dark:border-gray-700 transition-all hover:shadow-lg"
                   >
-                    Neem contact op
+                    {t('aboutPage.contact')}
                   </Link>
                 </div>
               </motion.div>
@@ -346,7 +348,7 @@ export default function OverOns() {
                 viewport={{ once: true }}
                 className="inline-block text-primary-600 dark:text-primary-400 font-semibold text-sm tracking-wider uppercase mb-3"
               >
-                Hoe wij werken
+                {t('aboutPage.workStyle.title')}
               </motion.span>
               <motion.h2
                 initial={{ opacity: 0, y: 20 }}
@@ -354,9 +356,9 @@ export default function OverOns() {
                 viewport={{ once: true }}
                 className="text-3xl sm:text-4xl font-bold text-gray-900 dark:text-white mb-4"
               >
-                100% remote,{' '}
+                {t('aboutPage.workStyle.heading')}{' '}
                 <span className="bg-gradient-to-r from-primary-600 to-blue-600 dark:from-primary-400 dark:to-blue-400 bg-clip-text text-transparent">
-                  100% efficiënt
+                  {t('aboutPage.workStyle.headingHighlight')}
                 </span>
               </motion.h2>
               <motion.p
@@ -422,12 +424,12 @@ export default function OverOns() {
               className="text-center mb-16"
             >
               <span className="inline-block text-primary-600 dark:text-primary-400 font-semibold text-sm tracking-wider uppercase mb-3">
-                Onze waarden
+                {t('aboutPage.values.title')}
               </span>
               <h2 className="text-3xl sm:text-4xl font-bold text-gray-900 dark:text-white mb-4">
-                Waar we{' '}
+                {t('aboutPage.values.heading')}{' '}
                 <span className="bg-gradient-to-r from-primary-600 to-blue-600 dark:from-primary-400 dark:to-blue-400 bg-clip-text text-transparent">
-                  voor staan
+                  {t('aboutPage.values.headingHighlight')}
                 </span>
               </h2>
               <p className="text-gray-600 dark:text-gray-400 max-w-2xl mx-auto">
@@ -466,12 +468,12 @@ export default function OverOns() {
               className="text-center mb-16"
             >
               <span className="inline-block text-primary-600 dark:text-primary-400 font-semibold text-sm tracking-wider uppercase mb-3">
-                Onze reis
+                {t('aboutPage.timeline.title')}
               </span>
               <h2 className="text-3xl sm:text-4xl font-bold text-gray-900 dark:text-white">
-                Van idee tot{' '}
+                {t('aboutPage.timeline.heading')}{' '}
                 <span className="bg-gradient-to-r from-primary-600 to-blue-600 dark:from-primary-400 dark:to-blue-400 bg-clip-text text-transparent">
-                  150+ websites
+                  {t('aboutPage.timeline.headingHighlight')}
                 </span>
               </h2>
             </motion.div>
@@ -578,7 +580,7 @@ export default function OverOns() {
               className="inline-flex items-center gap-2 bg-white/15 backdrop-blur-sm border border-white/20 rounded-full px-4 py-1.5 mb-6"
             >
               <Sparkles className="w-4 h-4 text-white" />
-              <span className="text-sm font-medium text-white/90">Klaar om te starten?</span>
+              <span className="text-sm font-medium text-white/90">{t('aboutPage.cta.badge')}</span>
             </motion.div>
             
             <motion.h2
@@ -587,7 +589,10 @@ export default function OverOns() {
               viewport={{ once: true }}
               className="text-3xl sm:text-4xl font-bold text-white mb-4"
             >
-              Laten we samen bouwen
+              {t('aboutPage.cta.heading')}{' '}
+              <span className="bg-gradient-to-r from-white to-primary-100 bg-clip-text text-transparent">
+                {t('aboutPage.cta.headingHighlight')}
+              </span>
             </motion.h2>
             <motion.p
               initial={{ opacity: 0, y: 20 }}
@@ -596,7 +601,7 @@ export default function OverOns() {
               transition={{ delay: 0.1 }}
               className="text-primary-100 text-lg mb-8 max-w-2xl mx-auto"
             >
-              Heb je een vraag of wil je direct starten? Neem contact op en we reageren binnen 24 uur.
+              {t('aboutPage.cta.subtitle')}
             </motion.p>
             <motion.div
               initial={{ opacity: 0, y: 20 }}
@@ -609,14 +614,14 @@ export default function OverOns() {
                 to="/start"
                 className="group inline-flex items-center justify-center gap-2 px-8 py-4 bg-white text-primary-600 font-semibold rounded-xl hover:bg-primary-50 transition-all hover:-translate-y-0.5 shadow-lg"
               >
-                <span>Start je project</span>
+                <span>{t('aboutPage.startProject')}</span>
                 <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
               </Link>
               <Link
                 to="/contact"
                 className="px-8 py-4 bg-white/15 backdrop-blur-sm text-white font-semibold rounded-xl hover:bg-white/25 transition-all border border-white/20"
               >
-                Neem contact op
+                {t('aboutPage.contact')}
               </Link>
             </motion.div>
           </div>
