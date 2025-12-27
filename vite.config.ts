@@ -559,6 +559,49 @@ function apiMock() {
           return
         }
 
+        // /api/project/:id/message (POST) - send a message
+        if (req.url.match(/^\/api\/project\/[^/]+\/message$/) && req.method === 'POST') {
+          ;(async () => {
+            try {
+              let body = ''
+              for await (const chunk of req) body += chunk
+              const data = JSON.parse(body || '{}')
+              
+              const projectId = req.url.split('/')[3] || ''
+              const project = PROJECTS.find((p: any) => p.projectId === projectId || p.id === projectId)
+              
+              if (!project) {
+                res.statusCode = 404
+                res.setHeader('content-type', 'application/json')
+                res.end(JSON.stringify({ success: false, message: 'Project niet gevonden' }))
+                return
+              }
+
+              const newMessage = {
+                id: `msg-${Date.now()}`,
+                date: new Date().toISOString(),
+                from: data.from === 'developer' ? 'developer' : 'client',
+                message: data.message,
+                read: data.from === 'client', // Developer messages are unread for client
+                senderName: data.from === 'developer' ? 'Laurens' : (data.senderName || project.contactName || 'Klant')
+              }
+
+              project.messages = project.messages || []
+              project.messages.push(newMessage)
+              
+              console.log(`[Mock] Message sent to ${projectId} from ${data.from}: "${data.message.substring(0, 50)}..."`)
+
+              res.setHeader('content-type', 'application/json')
+              res.end(JSON.stringify({ success: true, message: newMessage }))
+            } catch (e) {
+              res.statusCode = 500
+              res.setHeader('content-type', 'application/json')
+              res.end(JSON.stringify({ success: false, message: 'Er ging iets mis.' }))
+            }
+          })()
+          return
+        }
+
         // /api/verify-project (POST) - verify project credentials (mock - always succeeds with test1234)
         if (req.url.startsWith('/api/verify-project') && req.method === 'POST') {
           ;(async () => {
