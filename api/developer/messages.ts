@@ -248,7 +248,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         date: new Date().toISOString(),
         from: 'developer',
         message: message,
-        read: true, // Developer messages are automatically read
+        read: false, // Client needs to read this message
       }
 
       const messages = project.messages || []

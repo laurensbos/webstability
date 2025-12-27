@@ -108,7 +108,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       date: new Date().toISOString(),
       from: from === 'developer' ? 'developer' : 'client',
       message: message,
-      read: from === 'developer', // Client messages are unread, developer messages are read
+      read: from === 'client', // Client messages are read (by client), developer messages are unread (client needs to read)
       senderName: from === 'developer' ? 'Laurens' : (senderName || project.contactName || 'Klant'),
     }
 
