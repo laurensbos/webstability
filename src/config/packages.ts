@@ -72,8 +72,8 @@ export const PACKAGES: Record<PackageType, PackageConfig> = {
         ]
       },
       design: {
-        title: 'We bouwen je website',
-        description: 'Ons team werkt aan je website. Dit duurt gemiddeld 5-7 werkdagen.',
+        title: 'We designen je website',
+        description: 'Ons designteam werkt aan het ontwerp van je website. Dit duurt gemiddeld 5-7 werkdagen.',
         clientTasks: [],
         tips: [
           'Je ontvangt een e-mail zodra de preview klaar is',
@@ -299,8 +299,8 @@ export const PACKAGES: Record<PackageType, PackageConfig> = {
         ]
       },
       design: {
-        title: 'We bouwen je premium website',
-        description: 'Ons team werkt aan je uitgebreide website. Dit duurt gemiddeld 7 werkdagen.',
+        title: 'We designen je premium website',
+        description: 'Ons designteam werkt aan je uitgebreide website. Dit duurt gemiddeld 7 werkdagen.',
         clientTasks: [],
         tips: [
           'Je krijgt tussentijdse updates',
@@ -416,8 +416,8 @@ export const PACKAGES: Record<PackageType, PackageConfig> = {
         ]
       },
       design: {
-        title: 'We bouwen je webshop',
-        description: 'Ons team bouwt je complete webshop. Dit duurt gemiddeld 10 werkdagen.',
+        title: 'We designen je webshop',
+        description: 'Ons designteam ontwerpt je complete webshop. Dit duurt gemiddeld 10 werkdagen.',
         clientTasks: [],
         tips: [
           'We uploaden je eerste producten',
