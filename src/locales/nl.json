@@ -1129,5 +1129,94 @@
       "title": "Bevestiging verstuurd naar",
       "description": "Controleer ook je spam map"
     }
+  },
+  "login": {
+    "title": "Inloggen",
+    "subtitle": "Welkom terug bij Webstability",
+    "email": "Gebruikersnaam of e-mail",
+    "emailPlaceholder": "gebruikersnaam of email",
+    "password": "Wachtwoord",
+    "forgotPassword": "Wachtwoord vergeten?",
+    "submit": "Inloggen",
+    "loading": "Bezig met inloggen...",
+    "backToWebsite": "Terug naar website",
+    "footer": "Alle rechten voorbehouden.",
+    "invalidCredentials": "Ongeldige inloggegevens",
+    "error": "Er ging iets mis. Probeer het opnieuw."
+  },
+  "dronePage": {
+    "hero": {
+      "badge": "Luchtfoto & Videografie",
+      "title": "Professionele",
+      "titleHighlight": "luchtopnames",
+      "titleEnd": "voor jouw bedrijf",
+      "subtitle": "Maak indruk met spectaculaire drone foto's en video's. Eenmalig vanaf",
+      "cta": "Vraag offerte aan",
+      "viewExamples": "Bekijk voorbeelden"
+    },
+    "usps": {
+      "certified": { "title": "EU-gecertificeerd", "desc": "A1/A2/A3 dronebewijs" },
+      "netherlands": "Heel Nederland",
+      "delivery": "Binnen 5 dagen",
+      "video4k": { "title": "4K Video", "desc": "Kristalheldere kwaliteit" },
+      "fast": { "title": "Snelle levering", "desc": "Binnen 5 werkdagen" },
+      "insured": { "title": "Verzekerd", "desc": "Volledige dekking" }
+    },
+    "portfolio": {
+      "badge": "Ons werk",
+      "title": "Bekijk onze luchtopnames"
+    },
+    "packages": {
+      "title": "Pakketten & Prijzen",
+      "subtitle": "Transparante prijzen, geen verborgen kosten",
+      "starter": {
+        "name": "Basis",
+        "price": 349,
+        "description": "Perfect voor kleine projecten",
+        "features": ["10 bewerkte foto's", "1 locatie", "Digitale levering", "Binnen 5 werkdagen"]
+      },
+      "professional": {
+        "name": "Professioneel",
+        "price": 549,
+        "description": "Foto's + video voor maximale impact",
+        "features": ["25 bewerkte foto's", "1-2 locaties", "1 min bewerkte video", "Binnen 3 werkdagen", "Ruwe bestanden"]
+      },
+      "business": {
+        "name": "Premium",
+        "price": 849,
+        "description": "Complete coverage voor grote projecten",
+        "features": ["50+ foto's", "Meerdere locaties", "3 min video", "Spoedlevering", "Ruwe bestanden", "Revisies"]
+      },
+      "oneTime": "eenmalig",
+      "mostChosen": "Meest gekozen",
+      "choose": "Kies dit pakket",
+      "customQuote": "Grotere projecten of maatwerk? Vraag een offerte op maat aan."
+    },
+    "included": {
+      "title": "Altijd inbegrepen",
+      "items": [
+        "Voorbespreking & planning",
+        "Vliegvergunning aanvragen",
+        "Tot 2 uur op locatie",
+        "Professionele nabewerking",
+        "Commercieel gebruiksrecht",
+        "Reiskosten inbegrepen"
+      ]
+    },
+    "process": {
+      "badge": "Hoe het werkt",
+      "title": "In 4 stappen naar jouw luchtopnames",
+      "steps": [
+        { "title": "Aanvraag", "desc": "Vul het formulier in met je wensen en locatie" },
+        { "title": "Planning", "desc": "We regelen vergunningen en plannen de opnamedatum" },
+        { "title": "Vlucht", "desc": "Onze gecertificeerde piloot maakt de opnames" },
+        { "title": "Levering", "desc": "Je ontvangt de bewerkte bestanden binnen 5 dagen" }
+      ]
+    },
+    "cta": {
+      "title": "Klaar voor spectaculaire luchtopnames?",
+      "subtitle": "Vraag vandaag nog een vrijblijvende offerte aan",
+      "button": "Start je aanvraag"
+    }
   }
 }

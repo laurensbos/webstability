@@ -1,4 +1,5 @@
 import { motion } from 'framer-motion'
+import { useTranslation } from 'react-i18next'
 import { 
   Plane, 
   Video, 
@@ -19,35 +20,6 @@ import Header from '../components/Header'
 import Footer from '../components/Footer'
 import TrustpilotReviews from '../components/TrustpilotReviews'
 
-// Drone packages - centralized
-const dronePackages = [
-  {
-    id: 'starter',
-    name: 'Basis',
-    price: 349,
-    description: 'Perfect voor kleine projecten',
-    features: ["10 bewerkte foto's", '1 locatie', 'Digitale levering', 'Binnen 5 werkdagen'],
-    icon: Camera,
-  },
-  {
-    id: 'professional',
-    name: 'Professioneel',
-    price: 549,
-    popular: true,
-    description: "Foto's + video voor maximale impact",
-    features: ["25 bewerkte foto's", '1-2 locaties', '1 min bewerkte video', 'Binnen 3 werkdagen', 'Ruwe bestanden'],
-    icon: Video,
-  },
-  {
-    id: 'business',
-    name: 'Premium',
-    price: 849,
-    description: 'Complete coverage voor grote projecten',
-    features: ["50+ foto's", 'Meerdere locaties', '3 min video', 'Spoedlevering', 'Ruwe bestanden', 'Revisies'],
-    icon: Zap,
-  },
-]
-
 // Portfolio videos
 const portfolioVideos = [
   { id: '1124571038', title: 'Locatie overview' },
@@ -55,27 +27,50 @@ const portfolioVideos = [
   { id: '1124567381', title: 'Luchtfoto & video' },
 ]
 
-// Quick USPs for hero
-const heroUSPs = [
-  { icon: Shield, text: 'EU-gecertificeerd' },
-  { icon: MapPin, text: 'Heel Nederland' },
-  { icon: Clock, text: 'Binnen 5 dagen' },
-]
-
-// What's included - compact
-const included = [
-  'Voorbespreking & planning',
-  'Vliegvergunning aanvragen',
-  'Tot 2 uur op locatie',
-  'Professionele nabewerking',
-  'Commercieel gebruiksrecht',
-  'Reiskosten inbegrepen',
-]
-
 export default function Luchtvideografie() {
+  const { t } = useTranslation()
   const [activeVideo, setActiveVideo] = useState<string | null>(null)
   const scrollRef = useRef<HTMLDivElement>(null)
   const [activePkgIndex, setActivePkgIndex] = useState(1)
+
+  // Translated drone packages
+  const dronePackages = [
+    {
+      id: 'starter',
+      name: t('dronePage.packages.starter.name'),
+      price: 349,
+      description: t('dronePage.packages.starter.description'),
+      features: t('dronePage.packages.starter.features', { returnObjects: true }) as string[],
+      icon: Camera,
+    },
+    {
+      id: 'professional',
+      name: t('dronePage.packages.professional.name'),
+      price: 549,
+      popular: true,
+      description: t('dronePage.packages.professional.description'),
+      features: t('dronePage.packages.professional.features', { returnObjects: true }) as string[],
+      icon: Video,
+    },
+    {
+      id: 'business',
+      name: t('dronePage.packages.business.name'),
+      price: 849,
+      description: t('dronePage.packages.business.description'),
+      features: t('dronePage.packages.business.features', { returnObjects: true }) as string[],
+      icon: Zap,
+    },
+  ]
+
+  // Translated USPs
+  const heroUSPs = [
+    { icon: Shield, text: t('dronePage.usps.certified.title') },
+    { icon: MapPin, text: t('dronePage.usps.netherlands') },
+    { icon: Clock, text: t('dronePage.usps.delivery') },
+  ]
+
+  // Translated included items
+  const included = t('dronePage.included.items', { returnObjects: true }) as string[]
 
   const handlePkgScroll = () => {
     if (!scrollRef.current) return
@@ -120,18 +115,17 @@ export default function Luchtvideografie() {
                 {/* Badge */}
                 <div className="inline-flex items-center gap-2 bg-orange-500/20 border border-orange-400/30 backdrop-blur-sm rounded-full px-4 py-2 mb-6">
                   <Plane className="w-4 h-4 text-orange-400" />
-                  <span className="text-sm font-medium text-orange-300">Luchtfoto & Videografie</span>
+                  <span className="text-sm font-medium text-orange-300">{t('dronePage.hero.badge')}</span>
                 </div>
 
                 <h1 className="text-3xl sm:text-4xl lg:text-5xl xl:text-6xl font-bold text-white mb-4 lg:mb-6 leading-tight">
-                  Professionele{' '}
-                  <span className="bg-gradient-to-r from-orange-400 to-amber-400 bg-clip-text text-transparent">luchtopnames</span>
-                  {' '}voor jouw bedrijf
+                  {t('dronePage.hero.title')}{' '}
+                  <span className="bg-gradient-to-r from-orange-400 to-amber-400 bg-clip-text text-transparent">{t('dronePage.hero.titleHighlight')}</span>
+                  {' '}{t('dronePage.hero.titleEnd')}
                 </h1>
 
                 <p className="text-lg lg:text-xl text-gray-300 mb-6 lg:mb-8 max-w-xl">
-                  Maak indruk met spectaculaire drone foto's en video's. 
-                  Eenmalig vanaf <span className="text-white font-semibold">€349</span>.
+                  {t('dronePage.hero.subtitle')} <span className="text-white font-semibold">€349</span>.
                 </p>
 
                 {/* Quick USPs */}
@@ -152,7 +146,7 @@ export default function Luchtvideografie() {
                     to="/start?dienst=drone"
                     className="group inline-flex items-center justify-center gap-2 px-6 py-3.5 lg:px-8 lg:py-4 bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 text-white font-semibold rounded-xl transition-all shadow-lg shadow-orange-500/25"
                   >
-                    Vraag offerte aan
+                    {t('dronePage.hero.cta')}
                     <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
                   </Link>
                   <a
@@ -160,7 +154,7 @@ export default function Luchtvideografie() {
                     className="inline-flex items-center justify-center gap-2 px-6 py-3.5 lg:px-8 lg:py-4 bg-white/10 backdrop-blur-sm hover:bg-white/20 text-white font-semibold rounded-xl border border-white/20 transition-all"
                   >
                     <Play className="w-4 h-4" />
-                    Bekijk voorbeelden
+                    {t('dronePage.hero.viewExamples')}
                   </a>
                 </div>
               </motion.div>
@@ -173,10 +167,10 @@ export default function Luchtvideografie() {
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 lg:gap-8">
               {[
-                { icon: Shield, title: 'EU-gecertificeerd', desc: 'A1/A2/A3 dronebewijs' },
-                { icon: Video, title: '4K Video', desc: 'Kristalheldere kwaliteit' },
-                { icon: Clock, title: 'Snelle levering', desc: 'Binnen 5 werkdagen' },
-                { icon: Award, title: 'Verzekerd', desc: 'Volledige dekking' },
+                { icon: Shield, title: t('dronePage.usps.certified.title'), desc: t('dronePage.usps.certified.desc') },
+                { icon: Video, title: t('dronePage.usps.video4k.title'), desc: t('dronePage.usps.video4k.desc') },
+                { icon: Clock, title: t('dronePage.usps.fast.title'), desc: t('dronePage.usps.fast.desc') },
+                { icon: Award, title: t('dronePage.usps.insured.title'), desc: t('dronePage.usps.insured.desc') },
               ].map((item, i) => (
                 <div key={i} className="flex items-center gap-3">
                   <div className="w-10 h-10 lg:w-12 lg:h-12 bg-white/20 rounded-xl flex items-center justify-center flex-shrink-0">
@@ -208,7 +202,7 @@ export default function Luchtvideografie() {
                 className="inline-flex items-center gap-2 px-4 py-2 bg-orange-500/20 border border-orange-400/30 text-orange-300 rounded-full text-sm font-medium mb-4"
               >
                 <Play className="w-4 h-4" />
-                Ons werk
+                {t('dronePage.portfolio.badge')}
               </motion.span>
               <motion.h2 
                 initial={{ opacity: 0, y: 20 }}
@@ -216,7 +210,7 @@ export default function Luchtvideografie() {
                 viewport={{ once: true }}
                 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-white"
               >
-                Bekijk onze luchtopnames
+                {t('dronePage.portfolio.title')}
               </motion.h2>
             </div>
 
@@ -290,7 +284,7 @@ export default function Luchtvideografie() {
                 viewport={{ once: true }}
                 className="inline-block text-orange-600 dark:text-orange-400 font-semibold text-sm tracking-wider uppercase mb-3"
               >
-                Pakketten
+                {t('dronePage.packages.title')}
               </motion.span>
               <motion.h2
                 initial={{ opacity: 0, y: 20 }}
@@ -298,7 +292,7 @@ export default function Luchtvideografie() {
                 viewport={{ once: true }}
                 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-gray-900 dark:text-white mb-4"
               >
-                Kies je luchtfoto pakket
+                {t('dronePage.packages.subtitle')}
               </motion.h2>
               <motion.p
                 initial={{ opacity: 0 }}
@@ -306,7 +300,7 @@ export default function Luchtvideografie() {
                 viewport={{ once: true }}
                 className="text-gray-600 dark:text-gray-400 max-w-xl mx-auto"
               >
-                Eenmalige investering, inclusief alles. BTW aftrekbaar voor zakelijk gebruik.
+                {t('dronePage.packages.customQuote')}
               </motion.p>
             </div>
 
@@ -336,7 +330,7 @@ export default function Luchtvideografie() {
                       {pkg.popular && (
                         <div className="absolute -top-3 left-1/2 -translate-x-1/2">
                           <span className="bg-gradient-to-r from-orange-500 to-amber-500 text-white text-xs font-semibold px-3 py-1 rounded-full">
-                            Meest gekozen
+                            {t('dronePage.packages.mostChosen')}
                           </span>
                         </div>
                       )}
@@ -351,7 +345,7 @@ export default function Luchtvideografie() {
 
                       <div className="text-center mb-5">
                         <span className="text-4xl font-bold text-gray-900 dark:text-white">€{pkg.price}</span>
-                        <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">eenmalig incl. btw</p>
+                        <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">{t('dronePage.packages.oneTime')}</p>
                       </div>
 
                       <ul className="space-y-2 mb-5">
@@ -371,7 +365,7 @@ export default function Luchtvideografie() {
                             : 'bg-gray-100 dark:bg-gray-700 text-gray-900 dark:text-white hover:bg-gray-200'
                         }`}
                       >
-                        Kies {pkg.name}
+                        {t('dronePage.packages.choose')}
                       </Link>
                     </motion.div>
                   )
@@ -417,7 +411,7 @@ export default function Luchtvideografie() {
                     {pkg.popular && (
                       <div className="absolute -top-3 left-1/2 -translate-x-1/2">
                         <span className="bg-gradient-to-r from-orange-500 to-amber-500 text-white text-xs font-semibold px-3 py-1 rounded-full">
-                          Meest gekozen
+                          {t('dronePage.packages.mostChosen')}
                         </span>
                       </div>
                     )}
@@ -432,7 +426,7 @@ export default function Luchtvideografie() {
 
                     <div className="text-center mb-6">
                       <span className="text-5xl font-bold text-gray-900 dark:text-white">€{pkg.price}</span>
-                      <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">eenmalig incl. btw</p>
+                      <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">{t('dronePage.packages.oneTime')}</p>
                     </div>
 
                     <ul className="space-y-3 mb-6">
@@ -452,7 +446,7 @@ export default function Luchtvideografie() {
                           : 'bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 text-gray-900 dark:text-white'
                       }`}
                     >
-                      Kies {pkg.name}
+                      {t('dronePage.packages.choose')}
                     </Link>
                   </motion.div>
                 )
@@ -467,7 +461,7 @@ export default function Luchtvideografie() {
               className="mt-12 p-6 lg:p-8 bg-gradient-to-r from-orange-50 to-amber-50 dark:from-orange-900/20 dark:to-amber-900/20 border border-orange-100 dark:border-orange-800/30 rounded-2xl"
             >
               <h3 className="font-semibold text-gray-900 dark:text-white text-center mb-4">
-                Bij elk pakket inbegrepen
+                {t('dronePage.included.title')}
               </h3>
               <div className="grid grid-cols-2 lg:grid-cols-3 gap-3">
                 {included.map((item, i) => (
@@ -494,26 +488,22 @@ export default function Luchtvideografie() {
             >
               <div className="inline-flex items-center gap-2 bg-orange-500/20 border border-orange-400/30 rounded-full px-4 py-2 mb-6">
                 <Sparkles className="w-4 h-4 text-orange-400" />
-                <span className="text-sm font-medium text-orange-300">Klaar om te starten?</span>
+                <span className="text-sm font-medium text-orange-300">{t('dronePage.cta.title')}</span>
               </div>
               
               <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-white mb-4">
-                Vraag vandaag nog een{' '}
-                <span className="bg-gradient-to-r from-orange-400 to-amber-400 bg-clip-text text-transparent">
-                  offerte
-                </span>{' '}aan
+                {t('dronePage.cta.subtitle')}
               </h2>
               
               <p className="text-gray-400 text-lg mb-8 max-w-xl mx-auto">
-                Professionele luchtfoto's en video's binnen 5 werkdagen. 
-                Vrijblijvend advies, geen verplichtingen.
+                {t('dronePage.cta.subtitle')}
               </p>
 
               <Link
                 to="/start?dienst=drone"
                 className="group inline-flex items-center gap-2 px-8 py-4 bg-gradient-to-r from-orange-500 to-amber-500 hover:from-orange-600 hover:to-amber-600 text-white font-semibold rounded-xl transition-all shadow-lg shadow-orange-500/25"
               >
-                Start je luchtfoto project
+                {t('dronePage.cta.button')}
                 <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
               </Link>
             </motion.div>

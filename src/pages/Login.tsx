@@ -1,11 +1,13 @@
 import React, { useState, useEffect } from 'react'
 import { useNavigate, useLocation, Link } from 'react-router-dom'
 import { motion } from 'framer-motion'
+import { useTranslation } from 'react-i18next'
 import { Mail, Lock, Loader2, AlertCircle, ArrowLeft } from 'lucide-react'
 import { useAuth } from '@/contexts/AuthContext'
 import Logo from '@/components/Logo'
 
 const Login: React.FC = () => {
+  const { t } = useTranslation()
   const navigate = useNavigate()
   const location = useLocation()
   const { signIn, user, isConfigured, loading: authLoading } = useAuth()
@@ -48,19 +50,19 @@ const Login: React.FC = () => {
           localStorage.setItem('dev_user_email', email)
           navigate(from, { replace: true })
         } else {
-          setError('Ongeldige inloggegevens')
+          setError(t('login.invalidCredentials'))
         }
       } else {
         // Supabase auth
         const { error } = await signIn(email, password)
         if (error) {
           setError(error.message === 'Invalid login credentials' 
-            ? 'Ongeldige inloggegevens' 
+            ? t('login.invalidCredentials')
             : error.message)
         }
       }
     } catch {
-      setError('Er ging iets mis. Probeer het opnieuw.')
+      setError(t('login.error'))
     } finally {
       setLoading(false)
     }
@@ -79,7 +81,7 @@ const Login: React.FC = () => {
           className="inline-flex items-center gap-2 text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white mb-8 transition-colors"
         >
           <ArrowLeft className="w-4 h-4" />
-          Terug naar website
+          {t('login.backToWebsite')}
         </Link>
 
         <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-xl p-8">
@@ -89,16 +91,16 @@ const Login: React.FC = () => {
           </div>
 
           <div className="text-center mb-8">
-            <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Inloggen</h1>
+            <h1 className="text-2xl font-bold text-gray-900 dark:text-white">{t('login.title')}</h1>
             <p className="text-gray-600 dark:text-gray-400 mt-2">
-              Welkom terug bij Webstability
+              {t('login.subtitle')}
             </p>
           </div>
 
           <form onSubmit={handleSubmit} className="space-y-5">
             <div>
               <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">
-                Gebruikersnaam of e-mail
+                {t('login.email')}
               </label>
               <div className="relative">
                 <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400 dark:text-gray-500" />
@@ -107,7 +109,7 @@ const Login: React.FC = () => {
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   className="w-full pl-10 pr-4 py-3 border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all placeholder:text-gray-400 dark:placeholder:text-gray-500"
-                  placeholder="gebruikersnaam of email"
+                  placeholder={t('login.emailPlaceholder')}
                   required
                   autoComplete="username"
                 />
@@ -116,7 +118,7 @@ const Login: React.FC = () => {
 
             <div>
               <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">
-                Wachtwoord
+                {t('login.password')}
               </label>
               <div className="relative">
                 <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400 dark:text-gray-500" />
@@ -138,7 +140,7 @@ const Login: React.FC = () => {
                 to="/reset-password" 
                 className="text-sm text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300"
               >
-                Wachtwoord vergeten?
+                {t('login.forgotPassword')}
               </Link>
             </div>
 
@@ -161,10 +163,10 @@ const Login: React.FC = () => {
               {loading ? (
                 <>
                   <Loader2 className="w-5 h-5 animate-spin" />
-                  Bezig met inloggen...
+                  {t('login.loading')}
                 </>
               ) : (
-                'Inloggen'
+                t('login.submit')
               )}
             </button>
           </form>
@@ -181,7 +183,7 @@ const Login: React.FC = () => {
 
         {/* Footer */}
         <p className="text-center text-gray-500 dark:text-gray-400 text-sm mt-6">
-          &copy; {new Date().getFullYear()} Webstability. Alle rechten voorbehouden.
+          &copy; {new Date().getFullYear()} Webstability. {t('login.footer')}
         </p>
       </motion.div>
     </div>

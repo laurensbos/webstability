@@ -1129,5 +1129,94 @@
       "title": "Confirmation sent to",
       "description": "Also check your spam folder"
     }
+  },
+  "login": {
+    "title": "Login",
+    "subtitle": "Welcome back to Webstability",
+    "email": "Username or email",
+    "emailPlaceholder": "username or email",
+    "password": "Password",
+    "forgotPassword": "Forgot password?",
+    "submit": "Login",
+    "loading": "Logging in...",
+    "backToWebsite": "Back to website",
+    "footer": "All rights reserved.",
+    "invalidCredentials": "Invalid credentials",
+    "error": "Something went wrong. Please try again."
+  },
+  "dronePage": {
+    "hero": {
+      "badge": "Aerial Photography & Videography",
+      "title": "Professional",
+      "titleHighlight": "aerial footage",
+      "titleEnd": "for your business",
+      "subtitle": "Impress with spectacular drone photos and videos. One-time from",
+      "cta": "Request a quote",
+      "viewExamples": "View examples"
+    },
+    "usps": {
+      "certified": { "title": "EU certified", "desc": "A1/A2/A3 drone license" },
+      "netherlands": "All of Netherlands",
+      "delivery": "Within 5 days",
+      "video4k": { "title": "4K Video", "desc": "Crystal clear quality" },
+      "fast": { "title": "Fast delivery", "desc": "Within 5 business days" },
+      "insured": { "title": "Insured", "desc": "Full coverage" }
+    },
+    "portfolio": {
+      "badge": "Our work",
+      "title": "View our aerial footage"
+    },
+    "packages": {
+      "title": "Packages & Pricing",
+      "subtitle": "Transparent prices, no hidden costs",
+      "starter": {
+        "name": "Basic",
+        "price": 349,
+        "description": "Perfect for small projects",
+        "features": ["10 edited photos", "1 location", "Digital delivery", "Within 5 business days"]
+      },
+      "professional": {
+        "name": "Professional",
+        "price": 549,
+        "description": "Photos + video for maximum impact",
+        "features": ["25 edited photos", "1-2 locations", "1 min edited video", "Within 3 business days", "Raw files"]
+      },
+      "business": {
+        "name": "Premium",
+        "price": 849,
+        "description": "Complete coverage for large projects",
+        "features": ["50+ photos", "Multiple locations", "3 min video", "Express delivery", "Raw files", "Revisions"]
+      },
+      "oneTime": "one-time",
+      "mostChosen": "Most popular",
+      "choose": "Choose this package",
+      "customQuote": "Larger projects or custom work? Request a tailored quote."
+    },
+    "included": {
+      "title": "Always included",
+      "items": [
+        "Pre-consultation & planning",
+        "Flight permit application",
+        "Up to 2 hours on location",
+        "Professional post-processing",
+        "Commercial usage rights",
+        "Travel costs included"
+      ]
+    },
+    "process": {
+      "badge": "How it works",
+      "title": "Your aerial footage in 4 steps",
+      "steps": [
+        { "title": "Request", "desc": "Fill in the form with your wishes and location" },
+        { "title": "Planning", "desc": "We arrange permits and schedule the recording date" },
+        { "title": "Flight", "desc": "Our certified pilot captures the footage" },
+        { "title": "Delivery", "desc": "You receive the edited files within 5 days" }
+      ]
+    },
+    "cta": {
+      "title": "Ready for spectacular aerial footage?",
+      "subtitle": "Request a free quote today",
+      "button": "Start your request"
+    }
   }
 }
