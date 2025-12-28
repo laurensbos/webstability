@@ -1425,5 +1425,29 @@
       "justNow": "Zojuist",
       "minutesAgo": "{{count}} min geleden"
     }
+  },
+  "stickyCTA": {
+    "priceFrom": "Start nu vanaf",
+    "inclVat": "(incl. BTW)",
+    "oneTime": "Eenmalig €149",
+    "liveIn": "Online binnen 7 dagen",
+    "liveInShort": "7 dagen live",
+    "startProject": "Start je project",
+    "startNow": "Start nu",
+    "close": "Sluiten"
+  },
+  "floatingWhatsApp": {
+    "chatWithUs": "Chat met ons",
+    "responseTime": "Meestal binnen 5 min antwoord",
+    "welcome": "👋 Welkom! Wat is je naam?",
+    "namePlaceholder": "Je naam...",
+    "next": "Volgende",
+    "back": "Terug",
+    "helpQuestion": "Waar kunnen we je mee helpen?",
+    "messagePlaceholder": "Typ je bericht... (optioneel)",
+    "startChat": "Start chat",
+    "greeting": "👋 Hallo! Heb je een vraag? We reageren meestal binnen een paar minuten.",
+    "startConversation": "Start gesprek",
+    "defaultMessage": "Hoi! Ik heb een vraag over jullie diensten."
   }
 }

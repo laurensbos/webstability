@@ -1425,5 +1425,29 @@
       "justNow": "Just now",
       "minutesAgo": "{{count}} min ago"
     }
+  },
+  "stickyCTA": {
+    "priceFrom": "Start now from",
+    "inclVat": "(incl. VAT)",
+    "oneTime": "One-time €149",
+    "liveIn": "Online within 7 days",
+    "liveInShort": "7 days live",
+    "startProject": "Start your project",
+    "startNow": "Start now",
+    "close": "Close"
+  },
+  "floatingWhatsApp": {
+    "chatWithUs": "Chat with us",
+    "responseTime": "Usually reply within 5 min",
+    "welcome": "👋 Welcome! What's your name?",
+    "namePlaceholder": "Your name...",
+    "next": "Next",
+    "back": "Back",
+    "helpQuestion": "How can we help you?",
+    "messagePlaceholder": "Type your message... (optional)",
+    "startChat": "Start chat",
+    "greeting": "👋 Hello! Have a question? We usually respond within a few minutes.",
+    "startConversation": "Start conversation",
+    "defaultMessage": "Hi! I have a question about your services."
   }
 }

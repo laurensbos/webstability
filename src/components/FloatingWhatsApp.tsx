@@ -1,9 +1,11 @@
 import { motion, AnimatePresence } from 'framer-motion'
+import { useTranslation } from 'react-i18next'
 import { MessageCircle, X, Send } from 'lucide-react'
 import { useState, useEffect } from 'react'
 import { useLocation } from 'react-router-dom'
 
 export default function FloatingWhatsApp() {
+  const { t } = useTranslation()
   const location = useLocation()
   const [isVisible, setIsVisible] = useState(false)
   const [isExpanded, setIsExpanded] = useState(false)
@@ -54,8 +56,8 @@ export default function FloatingWhatsApp() {
 
   const handleStartChat = () => {
     const trimmedName = name.trim()
-    const trimmedMessage = message.trim() || 'Hoi! Ik heb een vraag over jullie diensten.'
-    const whatsappMessage = `Hoi! Mijn naam is ${trimmedName}. ${trimmedMessage}`
+    const trimmedMessage = message.trim() || t('floatingWhatsApp.defaultMessage')
+    const whatsappMessage = `${trimmedName}: ${trimmedMessage}`
     const whatsappLink = `https://wa.me/31644712573?text=${encodeURIComponent(whatsappMessage)}`
     window.open(whatsappLink, '_blank', 'noopener,noreferrer')
   }
@@ -88,16 +90,16 @@ export default function FloatingWhatsApp() {
                 exit={{ opacity: 0, x: 20, scale: 0.9 }}
                 className="bg-white dark:bg-gray-800 rounded-2xl shadow-2xl border border-gray-100 dark:border-gray-700 p-4 w-[300px]"
               >
-                <div className="flex items-start justify-between gap-2 mb-3">
+                  <div className="flex items-start justify-between gap-2 mb-3">
                   <div className="flex items-center gap-2">
                     <div className="w-10 h-10 bg-green-500 rounded-full flex items-center justify-center flex-shrink-0">
                       <MessageCircle className="w-5 h-5 text-white" />
                     </div>
                     <div>
-                      <p className="font-semibold text-gray-900 dark:text-white text-sm">Chat met ons</p>
+                      <p className="font-semibold text-gray-900 dark:text-white text-sm">{t('floatingWhatsApp.chatWithUs')}</p>
                       <p className="text-green-600 dark:text-green-400 text-xs flex items-center gap-1">
                         <span className="w-2 h-2 bg-green-500 rounded-full animate-pulse" />
-                        Meestal binnen 5 min antwoord
+                        {t('floatingWhatsApp.responseTime')}
                       </p>
                     </div>
                   </div>
@@ -114,13 +116,13 @@ export default function FloatingWhatsApp() {
                     {step === 'name' ? (
                       <>
                         <p className="text-gray-600 dark:text-gray-300 text-sm">
-                          👋 Welkom! Wat is je naam?
+                          {t('floatingWhatsApp.welcome')}
                         </p>
                         <input
                           type="text"
                           value={name}
                           onChange={(e) => setName(e.target.value)}
-                          placeholder="Je naam..."
+                          placeholder={t('floatingWhatsApp.namePlaceholder')}
                           className="w-full px-4 py-2.5 bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-xl text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-green-500/50 focus:border-green-500"
                           autoFocus
                           onKeyDown={(e) => {
@@ -134,18 +136,18 @@ export default function FloatingWhatsApp() {
                           disabled={!name.trim()}
                           className="w-full py-2.5 bg-green-500 hover:bg-green-600 disabled:bg-gray-300 disabled:dark:bg-gray-600 text-white font-semibold rounded-xl transition shadow-lg shadow-green-500/25 disabled:shadow-none"
                         >
-                          Volgende
+                          {t('floatingWhatsApp.next')}
                         </button>
                       </>
                     ) : (
                       <>
                         <p className="text-gray-600 dark:text-gray-300 text-sm">
-                          Hoi <span className="font-semibold text-gray-900 dark:text-white">{name}</span>! Waar kunnen we je mee helpen?
+                          {t('floatingWhatsApp.helpQuestion')} <span className="font-semibold text-gray-900 dark:text-white">{name}</span>
                         </p>
                         <textarea
                           value={message}
                           onChange={(e) => setMessage(e.target.value)}
-                          placeholder="Typ je bericht... (optioneel)"
+                          placeholder={t('floatingWhatsApp.messagePlaceholder')}
                           rows={3}
                           className="w-full px-4 py-2.5 bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-xl text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-green-500/50 focus:border-green-500 resize-none"
                           autoFocus
@@ -155,14 +157,14 @@ export default function FloatingWhatsApp() {
                             onClick={() => setStep('name')}
                             className="px-4 py-2.5 bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-300 font-medium rounded-xl transition"
                           >
-                            Terug
+                            {t('floatingWhatsApp.back')}
                           </button>
                           <button
                             onClick={handleStartChat}
                             className="flex-1 flex items-center justify-center gap-2 py-2.5 bg-green-500 hover:bg-green-600 text-white font-semibold rounded-xl transition shadow-lg shadow-green-500/25"
                           >
                             <Send className="w-4 h-4" />
-                            Start chat
+                            {t('floatingWhatsApp.startChat')}
                           </button>
                         </div>
                       </>
@@ -171,13 +173,13 @@ export default function FloatingWhatsApp() {
                 ) : (
                   <>
                     <p className="text-gray-600 dark:text-gray-300 text-sm mb-3">
-                      👋 Hallo! Heb je een vraag? We reageren meestal binnen een paar minuten.
+                      {t('floatingWhatsApp.greeting')}
                     </p>
                     <button
                       onClick={() => setIsExpanded(true)}
                       className="block w-full py-2.5 bg-green-500 hover:bg-green-600 text-white text-center font-semibold rounded-xl transition shadow-lg shadow-green-500/25"
                     >
-                      Start gesprek
+                      {t('floatingWhatsApp.startConversation')}
                     </button>
                   </>
                 )}

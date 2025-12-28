@@ -1,8 +1,10 @@
 import { useState, useEffect } from 'react'
+import { useTranslation } from 'react-i18next'
 import { motion, AnimatePresence } from 'framer-motion'
 import { ArrowRight, X, Sparkles } from 'lucide-react'
 
 export default function StickyCTA() {
+  const { t } = useTranslation()
   const [isVisible, setIsVisible] = useState(false)
   const [isDismissed, setIsDismissed] = useState(false)
 
@@ -41,10 +43,10 @@ export default function StickyCTA() {
                 </div>
                 <div>
                   <p className="text-gray-900 dark:text-white font-semibold">
-                    Start nu vanaf <span className="text-primary-600 dark:text-primary-400">€119/maand</span> <span className="text-gray-400 dark:text-gray-500 text-xs">(incl. BTW)</span>
+                    {t('stickyCTA.priceFrom')} <span className="text-primary-600 dark:text-primary-400">€119/maand</span> <span className="text-gray-400 dark:text-gray-500 text-xs">{t('stickyCTA.inclVat')}</span>
                   </p>
                   <p className="text-gray-500 dark:text-gray-400 text-sm">
-                    Eenmalig €149 • Online binnen 7 dagen
+                    {t('stickyCTA.oneTime')} • {t('stickyCTA.liveIn')}
                   </p>
                 </div>
               </div>
@@ -56,10 +58,10 @@ export default function StickyCTA() {
                 </div>
                 <div className="min-w-0">
                   <p className="text-gray-900 dark:text-white font-semibold text-sm truncate">
-                    Vanaf <span className="text-primary-600 dark:text-primary-400">€119/maand</span>
+                    {t('stickyCTA.priceFrom')} <span className="text-primary-600 dark:text-primary-400">€119/maand</span>
                   </p>
                   <p className="text-gray-500 dark:text-gray-400 text-xs truncate">
-                    Eenmalig €149 • 7 dagen live
+                    {t('stickyCTA.oneTime')} • {t('stickyCTA.liveInShort')}
                   </p>
                 </div>
               </div>
@@ -70,14 +72,14 @@ export default function StickyCTA() {
                   href="/start"
                   className="group inline-flex items-center gap-2 px-4 sm:px-5 py-2.5 bg-primary-500 hover:bg-primary-600 text-white font-semibold text-sm rounded-xl transition-all shadow-lg shadow-primary-500/25 hover:shadow-primary-500/40"
                 >
-                  <span className="hidden sm:inline">Start je project</span>
-                  <span className="sm:hidden">Start nu</span>
+                  <span className="hidden sm:inline">{t('stickyCTA.startProject')}</span>
+                  <span className="sm:hidden">{t('stickyCTA.startNow')}</span>
                   <ArrowRight className="w-4 h-4 group-hover:translate-x-0.5 transition-transform" />
                 </a>
                 <button
                   onClick={handleDismiss}
                   className="p-2 text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition-colors"
-                  aria-label="Sluiten"
+                  aria-label={t('stickyCTA.close')}
                 >
                   <X className="w-5 h-5" />
                 </button>
