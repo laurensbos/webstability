@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react'
+import { useTranslation } from 'react-i18next'
 import { motion, AnimatePresence } from 'framer-motion'
 import { useDarkMode } from '../contexts/DarkModeContext'
 import {
@@ -103,6 +104,7 @@ export default function AccountSection({
   onUpdateProject,
   initialTab = 'profile'
 }: AccountSectionProps) {
+  const { t } = useTranslation()
   const { darkMode } = useDarkMode()
   const [activeTab, setActiveTab] = useState<TabType>(initialTab)
   const [isEditing, setIsEditing] = useState(false)
@@ -129,9 +131,9 @@ export default function AccountSection({
   }, [project])
 
   const tabs: TabItem[] = [
-    { id: 'profile', label: 'Mijn gegevens', icon: User },
-    { id: 'payments', label: 'Betalingen', icon: CreditCard },
-    { id: 'package', label: 'Mijn pakket', icon: Package },
+    { id: 'profile', label: t('account.tabs.profile'), icon: User },
+    { id: 'payments', label: t('account.tabs.payments'), icon: CreditCard },
+    { id: 'package', label: t('account.tabs.package'), icon: Package },
   ]
 
   const handleSave = async () => {
@@ -183,7 +185,7 @@ export default function AccountSection({
             
             <div className="flex-1 min-w-0">
               <h2 className={`text-lg font-bold truncate ${darkMode ? 'text-white' : 'text-gray-900'}`}>
-                {project.businessName || 'Jouw bedrijf'}
+                {project.businessName || t('account.yourBusiness')}
               </h2>
               <p className={`text-sm truncate ${darkMode ? 'text-gray-400' : 'text-gray-600'}`}>
                 {project.contactName || project.contactEmail}

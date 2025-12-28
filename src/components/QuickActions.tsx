@@ -5,6 +5,7 @@
  * Gives users fast access to the most relevant actions
  */
 
+import { useTranslation } from 'react-i18next'
 import { motion } from 'framer-motion'
 import {
   Upload,
@@ -67,6 +68,8 @@ export default function QuickActions({
   googleDriveUrl,
   darkMode = true
 }: QuickActionsProps) {
+  const { t } = useTranslation()
+  
   // Define actions based on phase
   const getPhaseActions = (): QuickAction[] => {
     const baseActions: QuickAction[] = []
@@ -76,9 +79,9 @@ export default function QuickActions({
         if (googleDriveUrl) {
           baseActions.push({
             id: 'upload',
-            label: 'Upload bestanden',
-            mobileLabel: 'Uploaden',
-            description: 'Logo, foto\'s en teksten',
+            label: t('dashboard.quickActions.uploadFiles'),
+            mobileLabel: t('dashboard.quickActions.uploadFilesMobile'),
+            description: t('dashboard.quickActions.uploadFilesDesc'),
             icon: Upload,
             onClick: () => window.open(googleDriveUrl, '_blank'),
             variant: 'primary'
@@ -86,8 +89,8 @@ export default function QuickActions({
         }
         baseActions.push({
           id: 'message',
-          label: 'Stuur bericht',
-          description: 'Stel een vraag',
+          label: t('dashboard.quickActions.sendMessage'),
+          description: t('dashboard.quickActions.sendMessageDesc'),
           icon: MessageSquare,
           onClick: onSendMessage || (() => {}),
           variant: 'secondary'
@@ -97,9 +100,9 @@ export default function QuickActions({
       case 'design':
         baseActions.push({
           id: 'message',
-          label: 'Stel een vraag',
-          mobileLabel: 'Vraag stellen',
-          description: 'Over het design proces',
+          label: t('dashboard.quickActions.askQuestion'),
+          mobileLabel: t('dashboard.quickActions.askQuestionMobile'),
+          description: t('dashboard.quickActions.aboutDesign'),
           icon: MessageSquare,
           onClick: onSendMessage || (() => {}),
           variant: 'secondary'
@@ -107,8 +110,8 @@ export default function QuickActions({
         if (googleDriveUrl) {
           baseActions.push({
             id: 'files',
-            label: 'Bekijk bestanden',
-            mobileLabel: 'Bestanden',
+            label: t('dashboard.quickActions.viewFiles'),
+            mobileLabel: t('dashboard.quickActions.viewFilesMobile'),
             icon: FolderOpen,
             onClick: () => window.open(googleDriveUrl, '_blank'),
             variant: 'secondary'
@@ -120,29 +123,29 @@ export default function QuickActions({
         if (hasDesignPreview) {
           baseActions.push({
             id: 'view-design',
-            label: 'Bekijk ontwerp',
-            mobileLabel: 'Bekijken',
-            description: 'Geef je feedback',
+            label: t('dashboard.quickActions.viewDesign'),
+            mobileLabel: t('dashboard.quickActions.viewDesignMobile'),
+            description: t('dashboard.quickActions.viewDesignDesc'),
             icon: Eye,
             onClick: onViewDesign || (() => {}),
             variant: 'primary',
-            badge: 'Nieuw'
+            badge: t('dashboard.quickActions.new')
           })
         }
         baseActions.push({
           id: 'approve',
-          label: 'Goedkeuren',
-          mobileLabel: 'Goedkeuren',
-          description: 'Start bouw',
+          label: t('dashboard.quickActions.approve'),
+          mobileLabel: t('dashboard.quickActions.approve'),
+          description: t('dashboard.quickActions.approveDesc'),
           icon: CheckCircle2,
           onClick: onApprove || (() => {}),
           variant: 'success'
         })
         baseActions.push({
           id: 'changes',
-          label: 'Wijzigingen',
-          mobileLabel: 'Wijzigen',
-          description: 'Aanpassingen doorgeven',
+          label: t('dashboard.quickActions.changes'),
+          mobileLabel: t('dashboard.quickActions.changesMobile'),
+          description: t('dashboard.quickActions.changesDesc'),
           icon: RefreshCw,
           onClick: onRequestChanges || (() => {}),
           variant: 'warning'
@@ -153,7 +156,7 @@ export default function QuickActions({
         if (hasDesignPreview) {
           baseActions.push({
             id: 'view-design',
-            label: 'Bekijk aanpassingen',
+            label: t('dashboard.quickActions.viewChanges'),
             icon: Eye,
             onClick: onViewDesign || (() => {}),
             variant: 'primary'
@@ -161,7 +164,7 @@ export default function QuickActions({
         }
         baseActions.push({
           id: 'message',
-          label: 'Extra feedback',
+          label: t('dashboard.quickActions.extraFeedback'),
           icon: MessageSquare,
           onClick: onSendMessage || (() => {}),
           variant: 'secondary'
@@ -172,17 +175,17 @@ export default function QuickActions({
         if (hasUnpaidInvoice && paymentUrl) {
           baseActions.push({
             id: 'pay',
-            label: 'Betaal nu',
-            description: 'Veilig via iDEAL',
+            label: t('dashboard.quickActions.payNow'),
+            description: t('dashboard.quickActions.payNowDesc'),
             icon: CreditCard,
             onClick: () => window.open(paymentUrl, '_blank'),
             variant: 'primary',
-            badge: 'Actie vereist'
+            badge: t('dashboard.quickActions.actionRequired')
           })
         }
         baseActions.push({
           id: 'message',
-          label: 'Vraag over betaling',
+          label: t('dashboard.quickActions.paymentQuestion'),
           icon: MessageSquare,
           onClick: onSendMessage || (() => {}),
           variant: 'secondary'
@@ -192,8 +195,8 @@ export default function QuickActions({
       case 'domain':
         baseActions.push({
           id: 'domain-info',
-          label: 'Domein informatie',
-          description: 'Voeg je domeingegevens toe',
+          label: t('dashboard.quickActions.domainInfo'),
+          description: t('dashboard.quickActions.domainInfoDesc'),
           icon: Globe,
           onClick: () => {},
           variant: 'primary'
@@ -201,7 +204,7 @@ export default function QuickActions({
         if (hasDesignPreview) {
           baseActions.push({
             id: 'preview',
-            label: 'Preview bekijken',
+            label: t('dashboard.quickActions.previewView'),
             icon: Eye,
             onClick: onViewDesign || (() => {}),
             variant: 'secondary'
@@ -213,9 +216,9 @@ export default function QuickActions({
         if (liveUrl) {
           baseActions.push({
             id: 'website',
-            label: 'Bekijk website',
-            mobileLabel: 'Website',
-            description: 'Ga naar je site',
+            label: t('dashboard.quickActions.viewWebsite'),
+            mobileLabel: t('dashboard.quickActions.viewWebsiteMobile'),
+            description: t('dashboard.quickActions.viewWebsiteDesc'),
             icon: ExternalLink,
             onClick: () => window.open(liveUrl, '_blank'),
             variant: 'primary'
@@ -223,17 +226,17 @@ export default function QuickActions({
         }
         baseActions.push({
           id: 'review',
-          label: 'Laat review achter',
-          mobileLabel: 'Review',
-          description: '⭐ Help anderen',
+          label: t('dashboard.quickActions.leaveReview'),
+          mobileLabel: t('dashboard.quickActions.leaveReviewMobile'),
+          description: t('dashboard.quickActions.leaveReviewDesc'),
           icon: Star,
           onClick: onLeaveReview || (() => {}),
           variant: 'success'
         })
         baseActions.push({
           id: 'message',
-          label: 'Support nodig?',
-          mobileLabel: 'Support',
+          label: t('dashboard.quickActions.needSupport'),
+          mobileLabel: t('dashboard.quickActions.needSupportMobile'),
           icon: MessageSquare,
           onClick: onSendMessage || (() => {}),
           variant: 'secondary'
