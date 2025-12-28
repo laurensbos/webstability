@@ -115,35 +115,57 @@ const PHASE_INFO: Record<ProjectPhase, { title: string; description: string }> =
   }
 }
 
-// Get dynamic phase info based on package
-const getDynamicPhaseInfo = (phase: ProjectPhase, packageType?: string): { title: string; description: string } => {
+// Get dynamic phase info based on package - with translation support
+const getDynamicPhaseInfo = (phase: ProjectPhase, packageType?: string, t?: (key: string, options?: Record<string, unknown>) => string): { title: string; description: string } => {
   // If we have a valid package, use the package-specific info
   if (packageType && ['starter', 'professional', 'business', 'webshop'].includes(packageType)) {
     const pkgPhaseInfo = getPackagePhaseInfo(packageType as PackageType, phase)
     const pkg = PACKAGES[packageType as PackageType]
     
+    // Use translations if available, otherwise fallback to package info
+    const getTranslatedPhaseInfo = () => {
+      if (t) {
+        return {
+          title: t(`projectStatus.phaseInfo.${phase}.title`),
+          description: t(`projectStatus.phaseInfo.${phase}.description`)
+        }
+      }
+      return pkgPhaseInfo
+    }
+    
     // Add package-specific details to descriptions
     if (phase === 'feedback' && pkg.revisions > 1) {
+      const baseInfo = getTranslatedPhaseInfo()
       return {
-        title: pkgPhaseInfo.title,
-        description: `${pkgPhaseInfo.description} Je hebt ${pkg.revisions} revisierondes inclusief.`
+        title: baseInfo.title,
+        description: t 
+          ? `${baseInfo.description} ${t('projectStatus.revisionsIncluded', { count: pkg.revisions })}`
+          : `${pkgPhaseInfo.description} Je hebt ${pkg.revisions} revisierondes inclusief.`
       }
     }
     
     if (phase === 'payment') {
+      const baseInfo = getTranslatedPhaseInfo()
       return {
-        title: pkgPhaseInfo.title,
-        description: `Je design is goedgekeurd! Rond de betaling van €${pkg.price}/maand af om live te gaan.`
+        title: baseInfo.title,
+        description: t
+          ? t('projectStatus.paymentDescription', { price: pkg.price })
+          : `Je design is goedgekeurd! Rond de betaling van €${pkg.price}/maand af om live te gaan.`
       }
     }
     
+    return getTranslatedPhaseInfo()
+  }
+  
+  // Fallback to static translations if t is provided
+  if (t) {
     return {
-      title: pkgPhaseInfo.title,
-      description: pkgPhaseInfo.description
+      title: t(`projectStatus.phaseInfo.${phase}.title`),
+      description: t(`projectStatus.phaseInfo.${phase}.description`)
     }
   }
   
-  // Fallback to static info
+  // Fallback to static info (only when t is not available)
   return PHASE_INFO[phase]
 }
 
@@ -876,10 +898,10 @@ export default function ProjectStatusNew() {
       <div className="min-h-screen bg-gray-950 flex items-center justify-center p-4">
         <div className="text-center">
           <AlertCircle className="w-12 h-12 text-red-400 mx-auto mb-4" />
-          <h1 className="text-xl font-bold text-white mb-2">Kon project niet laden</h1>
+          <h1 className="text-xl font-bold text-white mb-2">{t('projectStatus.couldNotLoad')}</h1>
           <p className="text-gray-400 mb-4">{error}</p>
           <Link to="/status" className="text-blue-400 hover:text-blue-300">
-            Opnieuw inloggen
+            {t('projectStatus.tryAgain')}
           </Link>
         </div>
       </div>
@@ -1024,7 +1046,7 @@ export default function ProjectStatusNew() {
             }`}
           >
             <Rocket className="w-4 h-4" />
-            <span>Mijn project</span>
+            <span>{t('projectStatus.myProject')}</span>
           </button>
           <button
             onClick={() => setActiveView('account')}
@@ -1039,7 +1061,7 @@ export default function ProjectStatusNew() {
             }`}
           >
             <FolderOpen className="w-4 h-4" />
-            <span>Mijn gegevens</span>
+            <span>{t('projectStatus.myDetails')}</span>
           </button>
         </div>
 
@@ -1083,9 +1105,9 @@ export default function ProjectStatusNew() {
                   <Sparkles className="w-5 h-5 text-green-400" />
                 </div>
                 <div className="flex-1 min-w-0">
-                  <h3 className="font-semibold text-green-400 mb-1">Onboarding voltooid! 🎉</h3>
+                  <h3 className="font-semibold text-green-400 mb-1">{t('projectStatus.onboardingCompleted')}</h3>
                   <p className="text-sm text-gray-300">
-                    Bedankt voor het invullen. We gaan direct voor je aan de slag. Je kunt je voortgang hier volgen.
+                    {t('projectStatus.onboardingSection.completedMessage')}
                   </p>
                 </div>
                 <button
@@ -1114,7 +1136,7 @@ export default function ProjectStatusNew() {
           {/* Progress header */}
           <div className="flex items-center justify-between mb-4">
             <h3 className={`text-sm font-semibold ${darkMode ? 'text-white' : 'text-gray-900'}`}>
-              Project Voortgang
+              {t('projectStatus.projectProgress')}
             </h3>
             <span className={`text-2xl font-bold bg-gradient-to-r ${phaseColors.gradient} bg-clip-text text-transparent`}>
               {progress}%
@@ -1197,7 +1219,7 @@ export default function ProjectStatusNew() {
                       transition={{ duration: 0.5 }}
                       className="text-[10px] sm:text-xs mt-2 font-medium text-center"
                     >
-                      {phase.label}
+                      {t(`projectStatus.phases.${phase.key}`)}
                     </motion.span>
                   </div>
                   {!isLast && (
@@ -1243,8 +1265,8 @@ export default function ProjectStatusNew() {
                 })()}
               </div>
               <div className="flex-1">
-                <h2 className="font-bold text-lg sm:text-xl mb-1">{getDynamicPhaseInfo(project.status, project.package)?.title}</h2>
-                <p className="text-sm text-white/80 leading-relaxed">{getDynamicPhaseInfo(project.status, project.package)?.description}</p>
+                <h2 className="font-bold text-lg sm:text-xl mb-1">{getDynamicPhaseInfo(project.status, project.package, t)?.title}</h2>
+                <p className="text-sm text-white/80 leading-relaxed">{getDynamicPhaseInfo(project.status, project.package, t)?.description}</p>
               </div>
             </div>
 
@@ -1253,7 +1275,7 @@ export default function ProjectStatusNew() {
               <div className="mt-4 pt-4 border-t border-white/20 flex items-center gap-2">
                 <CheckCircle2 className="w-4 h-4 text-green-300" />
                 <span className="text-sm text-white/70">
-                  Feedback ontvangen op <span className="font-medium text-white">{new Date(project.feedbackReceivedAt).toLocaleDateString('nl-NL', { day: 'numeric', month: 'long', hour: '2-digit', minute: '2-digit' })}</span>
+                  {t('projectStatus.feedbackReceivedAt')} <span className="font-medium text-white">{new Date(project.feedbackReceivedAt).toLocaleDateString('nl-NL', { day: 'numeric', month: 'long', hour: '2-digit', minute: '2-digit' })}</span>
                 </span>
               </div>
             )}
@@ -1263,7 +1285,7 @@ export default function ProjectStatusNew() {
               <div className="mt-4 pt-4 border-t border-white/20 flex items-center gap-2">
                 <Timer className="w-4 h-4 text-white/70" />
                 <span className="text-sm text-white/70">
-                  Geschatte deadline: <span className="font-semibold text-white">{countdown.days}d {countdown.hours}u</span>
+                  {t('projectStatus.estimatedDeadline')}: <span className="font-semibold text-white">{countdown.days}d {countdown.hours}u</span>
                 </span>
               </div>
             )}
@@ -1313,13 +1335,13 @@ export default function ProjectStatusNew() {
                     </div>
                     <div className="text-left">
                       <div className="flex items-center gap-2">
-                        <span className="text-lg">�</span>
+                        <span className="text-lg">📋</span>
                         <h3 className={`font-semibold ${darkMode ? 'text-white' : 'text-gray-900'}`}>
-                          Vul je gegevens in
+                          {t('projectStatus.onboardingSection.fillYourDetails')}
                         </h3>
                       </div>
                       <p className={`text-sm ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>
-                        {onboardingExpanded ? 'Klik om in te klappen' : 'Klik om te starten'} • ±10 minuten
+                        {onboardingExpanded ? t('projectStatus.onboardingSection.clickToCollapse') : t('projectStatus.onboardingSection.clickToStart')} • {t('projectStatus.onboardingSection.minutes')}
                       </p>
                     </div>
                   </div>
@@ -1346,13 +1368,13 @@ export default function ProjectStatusNew() {
                     >
                       <div className="p-4">
                         <h4 className={`font-semibold mb-2 ${darkMode ? 'text-white' : 'text-gray-900'}`}>
-                          Wat heb je nodig?
+                          {t('projectStatus.onboardingSection.whatYouNeed')}
                         </h4>
                         <ul className={`text-sm mb-4 space-y-1 ${darkMode ? 'text-gray-400' : 'text-gray-600'}`}>
-                          <li>✓ Bedrijfsnaam en beschrijving</li>
-                          <li>✓ Logo (of wij maken er één)</li>
-                          <li>✓ Kleurkeuze en stijlvoorkeur</li>
-                          <li>✓ Contactgegevens voor de website</li>
+                          <li>✓ {t('projectStatus.onboardingSection.needBusinessName')}</li>
+                          <li>✓ {t('projectStatus.onboardingSection.needLogo')}</li>
+                          <li>✓ {t('projectStatus.onboardingSection.needColors')}</li>
+                          <li>✓ {t('projectStatus.onboardingSection.needContact')}</li>
                         </ul>
 
                         {/* Inline Onboarding Component */}
@@ -1400,9 +1422,9 @@ export default function ProjectStatusNew() {
                 </motion.div>
               </div>
               <div className="flex-1">
-                <h3 className={`font-semibold mb-1 ${darkMode ? 'text-white' : 'text-gray-900'}`}>We verwerken je feedback</h3>
+                <h3 className={`font-semibold mb-1 ${darkMode ? 'text-white' : 'text-gray-900'}`}>{t('projectStatus.processingFeedback')}</h3>
                 <p className={`text-sm mb-3 ${darkMode ? 'text-gray-400' : 'text-gray-600'}`}>
-                  Ons team is druk bezig met het doorvoeren van je aanpassingen. Je ontvangt binnenkort een nieuwe preview.
+                  {t('projectStatus.designerWorking')}
                 </p>
                 
                 {/* Revision counter */}
@@ -1410,7 +1432,7 @@ export default function ProjectStatusNew() {
                   <div className="flex items-center gap-2">
                     <CheckCircle2 className="w-4 h-4 text-cyan-400" />
                     <span className={darkMode ? 'text-gray-400' : 'text-gray-600'}>
-                      Revisieronde: <span className={`font-medium ${darkMode ? 'text-white' : 'text-gray-900'}`}>{project.revisionsUsed || 1}</span>
+                      {t('projectStatus.revisionRound')}: <span className={`font-medium ${darkMode ? 'text-white' : 'text-gray-900'}`}>{project.revisionsUsed || 1}</span>
                       {project.revisionsTotal && <span className="text-gray-500">/{project.revisionsTotal}</span>}
                     </span>
                   </div>
@@ -1445,18 +1467,18 @@ export default function ProjectStatusNew() {
                     <Palette className="w-6 h-6 text-amber-400" />
                   </div>
                   <div className="flex-1">
-                    <h3 className="font-semibold text-white text-lg mb-1">Design in ontwikkeling</h3>
+                    <h3 className="font-semibold text-white text-lg mb-1">{t('projectStatus.designInProgress')}</h3>
                     <p className="text-sm text-gray-300 mb-4">
-                      Onze designer werkt aan jouw unieke ontwerp. Je ontvangt een melding zodra de preview klaar is.
+                      {t('projectStatus.designerWorking')}
                     </p>
                     
                     {/* Progress Steps */}
                     <div className="space-y-2">
                       {[
-                        { label: 'Materialen ontvangen', done: true },
-                        { label: 'Wireframe schetsen', done: true },
-                        { label: 'Visueel ontwerp', done: false, current: true },
-                        { label: 'Preview klaarzetten', done: false },
+                        { label: t('projectStatus.designSteps.materialsReceived'), done: true },
+                        { label: t('projectStatus.designSteps.wireframeSketch'), done: true },
+                        { label: t('projectStatus.designSteps.visualDesign'), done: false, current: true },
+                        { label: t('projectStatus.designSteps.preparePreview'), done: false },
                       ].map((step, i) => (
                         <div key={i} className="flex items-center gap-3">
                           <div className={`w-5 h-5 rounded-full flex items-center justify-center ${
@@ -1480,19 +1502,19 @@ export default function ProjectStatusNew() {
 
             {/* What to expect */}
             <div className="bg-gray-900/50 border border-gray-800 rounded-xl p-4">
-              <p className="text-xs text-gray-500 mb-2 font-medium uppercase tracking-wide">Wat kun je verwachten?</p>
+              <p className="text-xs text-gray-500 mb-2 font-medium uppercase tracking-wide">{t('projectStatus.whatToExpect')}</p>
               <ul className="space-y-2 text-sm text-gray-400">
                 <li className="flex items-start gap-2">
                   <span className="text-amber-400 mt-0.5">→</span>
-                  <span>Je ontvangt een <strong className="text-white">email</strong> zodra de preview klaar is om te bekijken</span>
+                  <span>{t('projectStatus.expectEmail')}</span>
                 </li>
                 <li className="flex items-start gap-2">
                   <span className="text-amber-400 mt-0.5">→</span>
-                  <span>Bekijk het ontwerp en geef feedback via de <strong className="text-white">feedback knop</strong></span>
+                  <span>{t('projectStatus.expectFeedback')}</span>
                 </li>
                 <li className="flex items-start gap-2">
                   <span className="text-amber-400 mt-0.5">→</span>
-                  <span>Na goedkeuring starten we met <strong className="text-white">bouwen</strong></span>
+                  <span>{t('projectStatus.expectBuild')}</span>
                 </li>
               </ul>
             </div>
@@ -1578,8 +1600,8 @@ export default function ProjectStatusNew() {
                 <Palette className="w-6 h-6 text-white" />
               </div>
               <div className="flex-1">
-                <h3 className="font-bold text-white text-lg">Design Preview Klaar! ✨</h3>
-                <p className="text-sm text-gray-400">Bekijk je design en geef direct feedback</p>
+                <h3 className="font-bold text-white text-lg">{t('projectStatus.designPreviewReady')}</h3>
+                <p className="text-sm text-gray-400">{t('projectStatus.viewAndFeedback')}</p>
               </div>
             </div>
             
@@ -1588,7 +1610,7 @@ export default function ProjectStatusNew() {
               className="w-full py-4 bg-gradient-to-r from-purple-500 to-pink-500 text-white rounded-xl font-semibold hover:from-purple-400 hover:to-pink-400 transition flex items-center justify-center gap-3 shadow-lg hover:shadow-purple-500/25"
             >
               <Eye className="w-5 h-5" />
-              Bekijk & Beoordeel Design
+              {t('projectStatus.viewAndReviewDesign')}
               <ChevronRight className="w-5 h-5" />
             </button>
             
@@ -1600,7 +1622,7 @@ export default function ProjectStatusNew() {
                 className="text-sm text-gray-500 hover:text-purple-400 transition flex items-center gap-1"
               >
                 <ExternalLink className="w-3 h-3" />
-                Open in nieuw tabblad
+                {t('projectStatus.openInNewTab')}
               </a>
             </div>
           </motion.div>
@@ -1641,9 +1663,9 @@ export default function ProjectStatusNew() {
                 <CreditCard className="w-6 h-6 text-indigo-400" />
               </div>
               <div className="flex-1">
-                <h3 className="font-semibold text-white mb-1">Betaling afronden</h3>
+                <h3 className="font-semibold text-white mb-1">{t('projectStatus.completePayment')}</h3>
                 <p className="text-sm text-gray-400 mb-4">
-                  Je design is goedgekeurd! Rond de betaling af zodat we je website kunnen bouwen.
+                  {t('projectStatus.designApproved')}
                 </p>
                 {project.paymentUrl ? (
                   <a
@@ -1651,10 +1673,10 @@ export default function ProjectStatusNew() {
                     className="inline-flex items-center gap-2 px-4 py-2.5 bg-gradient-to-r from-indigo-500 to-purple-500 text-white font-medium rounded-lg hover:from-indigo-400 hover:to-purple-400 transition"
                   >
                     <CreditCard className="w-4 h-4" />
-                    Naar betaling
+                    {t('projectStatus.toPayment')}
                   </a>
                 ) : (
-                  <p className="text-sm text-indigo-400">Betaallink wordt binnenkort verzonden</p>
+                  <p className="text-sm text-indigo-400">{t('projectStatus.paymentLinkSoon')}</p>
                 )}
               </div>
             </div>
@@ -1770,9 +1792,9 @@ export default function ProjectStatusNew() {
                   <CreditCard className={`w-5 h-5 ${darkMode ? 'text-blue-400' : 'text-blue-600'}`} />
                 </div>
                 <div>
-                  <h3 className={`font-semibold ${darkMode ? 'text-white' : 'text-gray-900'}`}>Facturen</h3>
+                  <h3 className={`font-semibold ${darkMode ? 'text-white' : 'text-gray-900'}`}>{t('projectStatus.invoices')}</h3>
                   <p className={`text-xs ${darkMode ? 'text-gray-500' : 'text-gray-500'}`}>
-                    Overzicht van al je facturen
+                    {t('projectStatus.invoicesOverview')}
                   </p>
                 </div>
               </div>
@@ -1813,7 +1835,7 @@ export default function ProjectStatusNew() {
                         })}
                         {invoice.dueDate && invoice.status !== 'paid' && (
                           <span className="ml-2">
-                            · Vervaldatum: {new Date(invoice.dueDate).toLocaleDateString('nl-NL', { 
+                            · {t('projectStatus.dueDate')}: {new Date(invoice.dueDate).toLocaleDateString('nl-NL', { 
                               day: 'numeric', 
                               month: 'short' 
                             })}
@@ -1836,9 +1858,9 @@ export default function ProjectStatusNew() {
                               ? 'text-amber-500' 
                               : darkMode ? 'text-gray-500' : 'text-gray-400'
                       }`}>
-                        {invoice.status === 'paid' ? '✓ Betaald' :
-                         invoice.status === 'overdue' ? '⚠ Vervallen' :
-                         invoice.status === 'sent' ? 'Openstaand' : 'Concept'}
+                        {invoice.status === 'paid' ? `✓ ${t('projectStatus.paid')}` :
+                         invoice.status === 'overdue' ? `⚠ ${t('projectStatus.overdue')}` :
+                         invoice.status === 'sent' ? t('projectStatus.pending') : t('projectStatus.draft')}
                       </p>
                       {invoice.paidAt && invoice.status === 'paid' && (
                         <p className={`text-xs ${darkMode ? 'text-gray-600' : 'text-gray-400'}`}>
@@ -1861,7 +1883,7 @@ export default function ProjectStatusNew() {
                         }`}
                       >
                         <CreditCard className="w-4 h-4" />
-                        Betalen
+                        {t('projectStatus.pay')}
                       </a>
                     )}
                   </div>
@@ -1877,13 +1899,13 @@ export default function ProjectStatusNew() {
                 <div className="flex justify-between items-center">
                   <div>
                     <p className={`text-sm ${darkMode ? 'text-gray-400' : 'text-gray-600'}`}>
-                      {project.invoices.filter(i => i.status === 'paid').length} van {project.invoices.length} facturen betaald
+                      {t('projectStatus.invoicesPaidCount', { paid: project.invoices.filter(i => i.status === 'paid').length, total: project.invoices.length })}
                     </p>
                   </div>
                   <div className="flex gap-4">
                     {project.invoices.some(i => i.status !== 'paid' && i.status !== 'cancelled') && (
                       <div className="text-right">
-                        <p className={`text-xs ${darkMode ? 'text-gray-500' : 'text-gray-500'}`}>Openstaand</p>
+                        <p className={`text-xs ${darkMode ? 'text-gray-500' : 'text-gray-500'}`}>{t('projectStatus.outstanding')}</p>
                         <p className="font-semibold text-amber-500">
                           €{project.invoices
                             .filter(i => i.status !== 'paid' && i.status !== 'cancelled')
@@ -1893,7 +1915,7 @@ export default function ProjectStatusNew() {
                       </div>
                     )}
                     <div className="text-right">
-                      <p className={`text-xs ${darkMode ? 'text-gray-500' : 'text-gray-500'}`}>Totaal betaald</p>
+                      <p className={`text-xs ${darkMode ? 'text-gray-500' : 'text-gray-500'}`}>{t('projectStatus.totalPaid')}</p>
                       <p className="font-semibold text-green-500">
                         €{project.invoices
                           .filter(i => i.status === 'paid')
