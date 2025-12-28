@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react'
+import { useTranslation } from 'react-i18next'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Cookie, X, Settings, Check } from 'lucide-react'
 
@@ -50,6 +51,7 @@ interface CookieConsentProps {
 }
 
 const CookieConsent: React.FC<CookieConsentProps> = ({ onConsentChange }) => {
+  const { t } = useTranslation()
   const [visible, setVisible] = useState(false)
   const [showDetails, setShowDetails] = useState(false)
   const [preferences, setPreferences] = useState<CookiePreferences>({
@@ -147,7 +149,7 @@ const CookieConsent: React.FC<CookieConsentProps> = ({ onConsentChange }) => {
                   <button
                     onClick={() => saveConsent('necessary')}
                     className="sm:hidden p-2 hover:bg-gray-100 dark:hover:bg-slate-800 rounded-lg transition-colors flex-shrink-0 ml-auto"
-                    aria-label="Sluiten"
+                    aria-label={t('cookieConsent.close')}
                   >
                     <X className="w-5 h-5 text-gray-400 dark:text-slate-500" />
                   </button>
@@ -155,11 +157,10 @@ const CookieConsent: React.FC<CookieConsentProps> = ({ onConsentChange }) => {
                 
                 <div className="flex-1 w-full">
                   <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
-                    Wij gebruiken cookies 🍪
+                    {t('cookieConsent.title')}
                   </h3>
                   <p className="text-gray-600 dark:text-slate-400 mt-1 text-sm md:text-base">
-                    We gebruiken cookies om je ervaring te verbeteren en onze website te optimaliseren. 
-                    Je kunt zelf kiezen welke cookies je accepteert.
+                    {t('cookieConsent.description')}
                   </p>
                   
                   <div className="flex flex-col sm:flex-row sm:flex-wrap items-stretch sm:items-center gap-2 sm:gap-3 mt-4">
@@ -167,14 +168,14 @@ const CookieConsent: React.FC<CookieConsentProps> = ({ onConsentChange }) => {
                       onClick={() => saveConsent('all')}
                       className="w-full sm:w-auto px-5 py-3 sm:py-2.5 bg-blue-600 text-white rounded-xl sm:rounded-lg font-medium hover:bg-blue-700 transition-colors text-sm"
                     >
-                      Alles accepteren
+                      {t('cookieConsent.acceptAll')}
                     </button>
                     
                     <button
                       onClick={() => saveConsent('necessary')}
                       className="w-full sm:w-auto px-5 py-3 sm:py-2.5 bg-gray-100 dark:bg-slate-800 text-gray-700 dark:text-slate-300 rounded-xl sm:rounded-lg font-medium hover:bg-gray-200 dark:hover:bg-slate-700 transition-colors text-sm"
                     >
-                      Alleen noodzakelijk
+                      {t('cookieConsent.acceptNecessary')}
                     </button>
                     
                     <button
@@ -182,7 +183,7 @@ const CookieConsent: React.FC<CookieConsentProps> = ({ onConsentChange }) => {
                       className="w-full sm:w-auto px-5 py-3 sm:py-2.5 text-gray-600 dark:text-slate-400 rounded-xl sm:rounded-lg font-medium hover:bg-gray-50 dark:hover:bg-slate-800 transition-colors flex items-center justify-center sm:justify-start gap-2 text-sm"
                     >
                       <Settings className="w-4 h-4" />
-                      Aanpassen
+                      {t('cookieConsent.customize')}
                     </button>
                   </div>
                 </div>
@@ -191,7 +192,7 @@ const CookieConsent: React.FC<CookieConsentProps> = ({ onConsentChange }) => {
                 <button
                   onClick={() => saveConsent('necessary')}
                   className="hidden sm:block p-2 hover:bg-gray-100 dark:hover:bg-slate-800 rounded-lg transition-colors flex-shrink-0"
-                  aria-label="Sluiten"
+                  aria-label={t('cookieConsent.close')}
                 >
                   <X className="w-5 h-5 text-gray-400 dark:text-slate-500" />
                 </button>
@@ -211,33 +212,34 @@ const CookieConsent: React.FC<CookieConsentProps> = ({ onConsentChange }) => {
                   <div className="p-4 md:p-6 bg-gray-50 dark:bg-slate-800/50 space-y-3 md:space-y-4">
                     {/* Necessary cookies */}
                     <CookieToggle
-                      title="Noodzakelijke cookies"
-                      description="Deze cookies zijn essentieel voor het functioneren van de website."
+                      title={t('cookieConsent.cookies.necessary.title')}
+                      description={t('cookieConsent.cookies.necessary.description')}
                       checked={true}
                       disabled={true}
+                      alwaysOnLabel={t('cookieConsent.alwaysOn')}
                       onChange={() => {}}
                     />
                     
                     {/* Analytics cookies */}
                     <CookieToggle
-                      title="Analytische cookies"
-                      description="Helpen ons te begrijpen hoe bezoekers onze website gebruiken."
+                      title={t('cookieConsent.cookies.analytics.title')}
+                      description={t('cookieConsent.cookies.analytics.description')}
                       checked={preferences.analytics}
                       onChange={() => togglePreference('analytics')}
                     />
                     
                     {/* Functional cookies */}
                     <CookieToggle
-                      title="Functionele cookies"
-                      description="Onthouden je voorkeuren zoals taal en locatie."
+                      title={t('cookieConsent.cookies.functional.title')}
+                      description={t('cookieConsent.cookies.functional.description')}
                       checked={preferences.functional}
                       onChange={() => togglePreference('functional')}
                     />
                     
                     {/* Marketing cookies */}
                     <CookieToggle
-                      title="Marketing cookies"
-                      description="Worden gebruikt om gepersonaliseerde advertenties te tonen."
+                      title={t('cookieConsent.cookies.marketing.title')}
+                      description={t('cookieConsent.cookies.marketing.description')}
                       checked={preferences.marketing}
                       onChange={() => togglePreference('marketing')}
                     />
@@ -248,7 +250,7 @@ const CookieConsent: React.FC<CookieConsentProps> = ({ onConsentChange }) => {
                         className="w-full sm:w-auto px-6 py-3 sm:py-2.5 bg-blue-600 text-white rounded-xl sm:rounded-lg font-medium hover:bg-blue-700 transition-colors flex items-center justify-center sm:justify-start gap-2"
                       >
                         <Check className="w-4 h-4" />
-                        Voorkeuren opslaan
+                        {t('cookieConsent.savePreferences')}
                       </button>
                     </div>
                   </div>
@@ -267,6 +269,7 @@ interface CookieToggleProps {
   description: string
   checked: boolean
   disabled?: boolean
+  alwaysOnLabel?: string
   onChange: () => void
 }
 
@@ -275,6 +278,7 @@ const CookieToggle: React.FC<CookieToggleProps> = ({
   description,
   checked,
   disabled,
+  alwaysOnLabel,
   onChange,
 }) => {
   return (
@@ -300,8 +304,8 @@ const CookieToggle: React.FC<CookieToggleProps> = ({
       <div className="flex-1 min-w-0">
         <h4 className="font-medium text-gray-900 dark:text-white text-sm">
           {title}
-          {disabled && (
-            <span className="ml-2 text-xs text-gray-500 dark:text-slate-500 font-normal">(altijd aan)</span>
+          {disabled && alwaysOnLabel && (
+            <span className="ml-2 text-xs text-gray-500 dark:text-slate-500 font-normal">{alwaysOnLabel}</span>
           )}
         </h4>
         <p className="text-gray-600 dark:text-slate-400 text-xs sm:text-sm mt-0.5">{description}</p>

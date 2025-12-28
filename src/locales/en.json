@@ -1270,5 +1270,131 @@
       "subtitle": "Start your logo design today. No obligations.",
       "button": "Request logo"
     }
+  },
+  "quickStartForm": {
+    "services": {
+      "website": "Website",
+      "webshop": "Webshop",
+      "drone": "Drone Video",
+      "logo": "Logo Design"
+    },
+    "header": {
+      "title": "Almost there! 🚀",
+      "subtitle": "Fill in your details to start your {{service}} project"
+    },
+    "form": {
+      "name": {
+        "label": "Your name",
+        "placeholder": "First name"
+      },
+      "company": {
+        "label": "Company name",
+        "placeholder": "Your company"
+      },
+      "email": {
+        "label": "Email address",
+        "placeholder": "your@email.com"
+      },
+      "phone": {
+        "label": "Phone number",
+        "placeholder": "06-12345678"
+      },
+      "password": {
+        "label": "Password",
+        "placeholder": "Minimum 4 characters",
+        "helper": "You'll use this to log in to your dashboard"
+      }
+    },
+    "errors": {
+      "emailInUse": "This email address is already in use. Log in via the login page or use a different email address.",
+      "generic": "Something went wrong. Please try again."
+    },
+    "submit": {
+      "loading": "Creating...",
+      "default": "Submit request"
+    },
+    "trust": {
+      "freeDesign": "Receive free design",
+      "payAfterApproval": "Payment only after approval"
+    },
+    "back": "← Choose another service",
+    "whatHappensNext": {
+      "title": "What happens after your request?",
+      "step1": "You'll immediately receive a confirmation email with your login details",
+      "step2": "Complete the onboarding questions about style, colors, and content",
+      "step3": "We get to work and you'll receive your design within 5 days!"
+    }
+  },
+  "cookieConsent": {
+    "title": "We use cookies 🍪",
+    "description": "We use cookies to improve your experience and optimize our website. You can choose which cookies you accept.",
+    "acceptAll": "Accept all",
+    "acceptNecessary": "Necessary only",
+    "customize": "Customize",
+    "savePreferences": "Save preferences",
+    "close": "Close",
+    "alwaysOn": "(always on)",
+    "cookies": {
+      "necessary": {
+        "title": "Necessary cookies",
+        "description": "These cookies are essential for the website to function."
+      },
+      "analytics": {
+        "title": "Analytics cookies",
+        "description": "Help us understand how visitors use our website."
+      },
+      "functional": {
+        "title": "Functional cookies",
+        "description": "Remember your preferences like language and location."
+      },
+      "marketing": {
+        "title": "Marketing cookies",
+        "description": "Used to show personalized advertisements."
+      }
+    }
+  },
+  "knowledgeBase": {
+    "badge": "Knowledge Base",
+    "title": "Everything about websites",
+    "titleHighlight": "for entrepreneurs",
+    "subtitle": "Practical tips, guides, and insights to get the most out of your online presence.",
+    "searchPlaceholder": "Search articles...",
+    "stats": {
+      "articles": "Articles",
+      "readers": "Readers/month",
+      "free": "Free"
+    },
+    "featured": "Featured",
+    "readTime": "min read",
+    "readArticle": "Read article",
+    "readMore": "Read more",
+    "categories": {
+      "all": "All articles",
+      "costs": "Costs",
+      "tips": "Tips",
+      "zzp": "Freelance",
+      "seo": "SEO",
+      "tech": "Technology"
+    },
+    "trending": {
+      "title": "Popular articles",
+      "subtitle": "Most read this month",
+      "popular": "Popular"
+    },
+    "noResults": {
+      "title": "No articles found",
+      "subtitle": "Try a different search term or category",
+      "viewAll": "View all articles"
+    },
+    "articleCount": "{{count}} article",
+    "articleCountPlural": "{{count}} articles",
+    "cta": {
+      "badge": "Rather get started right away?",
+      "title": "Let us build your website",
+      "titleHighlight": "for you",
+      "subtitle": "No time to figure everything out yourself? We build your website while you focus on your business.",
+      "startProject": "Start your project",
+      "contact": "Contact us"
+    }
   }
 }

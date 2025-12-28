@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { useTranslation } from 'react-i18next'
 import { motion } from 'framer-motion'
 import { 
   ArrowRight, 
@@ -56,6 +57,7 @@ export default function QuickStartForm({
   initialPackage,
   onBack 
 }: QuickStartFormProps) {
+  const { t } = useTranslation()
   const navigate = useNavigate()
   const config = serviceConfig[serviceType]
   const packageId = initialPackage || 'starter'
@@ -107,9 +109,9 @@ export default function QuickStartForm({
 
       if (!response.ok) {
         if (data.code === 'EMAIL_IN_USE') {
-          setError('Dit e-mailadres is al in gebruik. Log in met je bestaande project of gebruik een ander e-mailadres.')
+          setError(t('quickStartForm.errors.emailInUse'))
         } else {
-          setError(data.error || 'Er ging iets mis. Probeer het opnieuw.')
+          setError(data.error || t('quickStartForm.errors.generic'))
         }
         return
       }
@@ -117,7 +119,7 @@ export default function QuickStartForm({
       navigate(`/bedankt?project=${projectId}&dienst=${serviceType}&email=${encodeURIComponent(formData.email)}`)
     } catch (err) {
       console.error('Error submitting project:', err)
-      setError('Er ging iets mis. Probeer het opnieuw.')
+      setError(t('quickStartForm.errors.generic'))
     } finally {
       setIsSubmitting(false)
     }
@@ -134,13 +136,13 @@ export default function QuickStartForm({
         >
           <div className={`inline-flex items-center gap-2 px-4 py-2 rounded-full bg-gradient-to-r ${config.gradient} text-white text-sm font-medium mb-4`}>
             <Sparkles className="w-4 h-4" />
-            {config.name}
+            {t(`quickStartForm.services.${serviceType}`)}
           </div>
           <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white mb-2">
-            Bijna klaar! 🚀
+            {t('quickStartForm.header.title')}
           </h1>
           <p className="text-gray-600 dark:text-gray-400 text-sm sm:text-base">
-            Vul je gegevens in en we gaan direct aan de slag.
+            {t('quickStartForm.header.subtitle', { service: t(`quickStartForm.services.${serviceType}`) })}
           </p>
         </motion.div>
 
@@ -156,13 +158,13 @@ export default function QuickStartForm({
             <div>
               <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                 <User className="w-4 h-4 inline mr-2" />
-                Jouw naam *
+                {t('quickStartForm.form.name.label')} *
               </label>
               <input
                 type="text"
                 value={formData.name}
                 onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                placeholder="Voornaam"
+                placeholder={t('quickStartForm.form.name.placeholder')}
                 className="w-full px-4 py-3 rounded-xl border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-400 focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all text-base"
                 required
               />
@@ -172,13 +174,13 @@ export default function QuickStartForm({
             <div>
               <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                 <Building2 className="w-4 h-4 inline mr-2" />
-                Bedrijfsnaam *
+                {t('quickStartForm.form.company.label')} *
               </label>
               <input
                 type="text"
                 value={formData.companyName}
                 onChange={(e) => setFormData({ ...formData, companyName: e.target.value })}
-                placeholder="Jouw bedrijf"
+                placeholder={t('quickStartForm.form.company.placeholder')}
                 className="w-full px-4 py-3 rounded-xl border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-400 focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all text-base"
                 required
               />
@@ -188,13 +190,13 @@ export default function QuickStartForm({
             <div>
               <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                 <Mail className="w-4 h-4 inline mr-2" />
-                E-mailadres *
+                {t('quickStartForm.form.email.label')} *
               </label>
               <input
                 type="email"
                 value={formData.email}
                 onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                placeholder="jouw@email.nl"
+                placeholder={t('quickStartForm.form.email.placeholder')}
                 className="w-full px-4 py-3 rounded-xl border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-400 focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all text-base"
                 required
               />
@@ -204,13 +206,13 @@ export default function QuickStartForm({
             <div>
               <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                 <Phone className="w-4 h-4 inline mr-2" />
-                Telefoonnummer <span className="text-gray-400 font-normal">(optioneel)</span>
+                {t('quickStartForm.form.phone.label')} <span className="text-gray-400 font-normal">({t('common.optional')})</span>
               </label>
               <input
                 type="tel"
                 value={formData.phone}
                 onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
-                placeholder="06-12345678"
+                placeholder={t('quickStartForm.form.phone.placeholder')}
                 className="w-full px-4 py-3 rounded-xl border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-400 focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all text-base"
               />
             </div>
@@ -219,14 +221,14 @@ export default function QuickStartForm({
             <div>
               <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                 <Lock className="w-4 h-4 inline mr-2" />
-                Wachtwoord *
+                {t('quickStartForm.form.password.label')} *
               </label>
               <div className="relative">
                 <input
                   type={showPassword ? 'text' : 'password'}
                   value={formData.password}
                   onChange={(e) => setFormData({ ...formData, password: e.target.value })}
-                  placeholder="Minimaal 4 tekens"
+                  placeholder={t('quickStartForm.form.password.placeholder')}
                   className="w-full px-4 py-3 pr-12 rounded-xl border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-400 focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all text-base"
                   required
                   minLength={4}
@@ -240,7 +242,7 @@ export default function QuickStartForm({
                 </button>
               </div>
               <p className="text-xs text-gray-500 dark:text-gray-400 mt-1.5">
-                Hiermee log je in op je persoonlijke project dashboard
+                {t('quickStartForm.form.password.helper')}
               </p>
             </div>
 
@@ -264,11 +266,11 @@ export default function QuickStartForm({
               {isSubmitting ? (
                 <>
                   <Loader2 className="w-5 h-5 animate-spin" />
-                  Bezig met aanmaken...
+                  {t('quickStartForm.submit.loading')}
                 </>
               ) : (
                 <>
-                  Aanvraag versturen
+                  {t('quickStartForm.submit.default')}
                   <ArrowRight className="w-5 h-5" />
                 </>
               )}
@@ -280,11 +282,11 @@ export default function QuickStartForm({
             <div className="flex flex-col sm:flex-row items-center justify-center gap-3 sm:gap-6 text-xs text-gray-500 dark:text-gray-400">
               <div className="flex items-center gap-1.5">
                 <Check className="w-4 h-4 text-green-500" />
-                <span>Gratis design ontvangen</span>
+                <span>{t('quickStartForm.trust.freeDesign')}</span>
               </div>
               <div className="flex items-center gap-1.5">
                 <Check className="w-4 h-4 text-green-500" />
-                <span>Betaling pas na goedkeuring</span>
+                <span>{t('quickStartForm.trust.payAfterApproval')}</span>
               </div>
             </div>
           </div>
@@ -299,7 +301,7 @@ export default function QuickStartForm({
             onClick={onBack}
             className="w-full mt-4 py-3 text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 transition-colors text-sm"
           >
-            ← Andere dienst kiezen
+            {t('quickStartForm.back')}
           </motion.button>
         )}
 
@@ -311,7 +313,7 @@ export default function QuickStartForm({
           className="mt-8 bg-gray-50 dark:bg-gray-800/50 rounded-2xl p-5"
         >
           <h3 className="font-semibold text-gray-900 dark:text-white text-sm mb-3">
-            Wat gebeurt er na je aanvraag?
+            {t('quickStartForm.whatHappensNext.title')}
           </h3>
           <div className="space-y-3">
             <div className="flex items-start gap-3">
@@ -319,7 +321,7 @@ export default function QuickStartForm({
                 <span className="text-primary-600 dark:text-primary-400 text-xs font-bold">1</span>
               </div>
               <p className="text-sm text-gray-600 dark:text-gray-400">
-                Je ontvangt direct een bevestigingsmail met je login gegevens
+                {t('quickStartForm.whatHappensNext.step1')}
               </p>
             </div>
             <div className="flex items-start gap-3">
@@ -327,7 +329,7 @@ export default function QuickStartForm({
                 <span className="text-primary-600 dark:text-primary-400 text-xs font-bold">2</span>
               </div>
               <p className="text-sm text-gray-600 dark:text-gray-400">
-                Vul de onboarding vragen in over stijl, kleuren en inhoud
+                {t('quickStartForm.whatHappensNext.step2')}
               </p>
             </div>
             <div className="flex items-start gap-3">
@@ -335,7 +337,7 @@ export default function QuickStartForm({
                 <span className="text-primary-600 dark:text-primary-400 text-xs font-bold">3</span>
               </div>
               <p className="text-sm text-gray-600 dark:text-gray-400">
-                Wij gaan aan de slag en je ontvangt binnen 5 dagen je design!
+                {t('quickStartForm.whatHappensNext.step3')}
               </p>
             </div>
           </div>

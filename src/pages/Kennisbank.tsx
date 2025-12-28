@@ -1,4 +1,5 @@
 import { motion } from 'framer-motion'
+import { useTranslation } from 'react-i18next'
 import { 
   Search, 
   Clock, 
@@ -73,24 +74,25 @@ const categoryConfig: Record<string, { icon: typeof BookOpen; color: string; dar
   'Techniek': { icon: Settings, color: 'text-rose-600', darkColor: 'dark:text-rose-400', bg: 'bg-rose-50', darkBg: 'dark:bg-rose-900/30', gradient: 'from-rose-500 to-pink-600' },
 }
 
-const categories = [
-  { name: 'Alle artikelen', count: articles.length, icon: Sparkles },
-  { name: 'Kosten', count: articles.filter(a => a.category === 'Kosten').length, icon: DollarSign },
-  { name: 'Tips', count: articles.filter(a => a.category === 'Tips').length, icon: Lightbulb },
-  { name: 'ZZP', count: articles.filter(a => a.category === 'ZZP').length, icon: Briefcase },
-  { name: 'SEO', count: articles.filter(a => a.category === 'SEO').length, icon: BarChart3 },
-  { name: 'Techniek', count: articles.filter(a => a.category === 'Techniek').length, icon: Settings },
-]
-
-const stats = [
-  { icon: BookOpen, value: `${articles.length}+`, label: 'Artikelen' },
-  { icon: Users, value: '5.000+', label: 'Lezers/maand' },
-  { icon: Zap, value: '100%', label: 'Gratis' },
-]
-
 export default function Kennisbank() {
+  const { t } = useTranslation()
   const [searchQuery, setSearchQuery] = useState('')
   const [activeCategory, setActiveCategory] = useState('Alle artikelen')
+
+  const categories = [
+    { name: t('knowledgeBase.categories.all'), key: 'Alle artikelen', count: articles.length, icon: Sparkles },
+    { name: t('knowledgeBase.categories.costs'), key: 'Kosten', count: articles.filter(a => a.category === 'Kosten').length, icon: DollarSign },
+    { name: t('knowledgeBase.categories.tips'), key: 'Tips', count: articles.filter(a => a.category === 'Tips').length, icon: Lightbulb },
+    { name: t('knowledgeBase.categories.zzp'), key: 'ZZP', count: articles.filter(a => a.category === 'ZZP').length, icon: Briefcase },
+    { name: t('knowledgeBase.categories.seo'), key: 'SEO', count: articles.filter(a => a.category === 'SEO').length, icon: BarChart3 },
+    { name: t('knowledgeBase.categories.tech'), key: 'Techniek', count: articles.filter(a => a.category === 'Techniek').length, icon: Settings },
+  ]
+
+  const stats = [
+    { icon: BookOpen, value: `${articles.length}+`, label: t('knowledgeBase.stats.articles') },
+    { icon: Users, value: '5.000+', label: t('knowledgeBase.stats.readers') },
+    { icon: Zap, value: '100%', label: t('knowledgeBase.stats.free') },
+  ]
 
   const filteredArticles = articles.filter(article => {
     const matchesSearch = article.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -138,18 +140,18 @@ export default function Kennisbank() {
                   className="inline-flex items-center gap-2 bg-gradient-to-r from-primary-50 to-blue-50 dark:from-primary-900/50 dark:to-blue-900/50 border border-primary-200/50 dark:border-primary-700/50 rounded-full px-4 py-2 mb-6"
                 >
                   <GraduationCap className="w-4 h-4 text-primary-600 dark:text-primary-400" />
-                  <span className="text-sm font-medium text-primary-700 dark:text-primary-300">Kennisbank</span>
+                  <span className="text-sm font-medium text-primary-700 dark:text-primary-300">{t('knowledgeBase.badge')}</span>
                 </motion.div>
 
                 <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold text-gray-900 dark:text-white mb-6 leading-tight">
-                  Alles over websites{' '}
+                  {t('knowledgeBase.title')}{' '}
                   <span className="bg-gradient-to-r from-primary-600 to-blue-600 dark:from-primary-400 dark:to-blue-400 bg-clip-text text-transparent">
-                    voor ondernemers
+                    {t('knowledgeBase.titleHighlight')}
                   </span>
                 </h1>
 
                 <p className="text-xl text-gray-600 dark:text-gray-300 mb-8 max-w-2xl mx-auto">
-                  Praktische tips, handleidingen en inzichten om het maximale uit je online aanwezigheid te halen.
+                  {t('knowledgeBase.subtitle')}
                 </p>
 
                 {/* Search bar */}
@@ -159,7 +161,7 @@ export default function Kennisbank() {
                     type="text"
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
-                    placeholder="Zoek artikelen..."
+                    placeholder={t('knowledgeBase.searchPlaceholder')}
                     className="w-full pl-12 pr-4 py-4 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-2xl text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500 focus:outline-none focus:border-primary-500 dark:focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 transition-all shadow-lg shadow-gray-100/50 dark:shadow-gray-900/50"
                   />
                 </div>
@@ -208,11 +210,11 @@ export default function Kennisbank() {
                   <div className="flex flex-wrap items-center gap-3 mb-4">
                     <span className="px-3 py-1 bg-primary-500 text-white rounded-full text-xs font-semibold flex items-center gap-1.5">
                       <Sparkles className="w-3 h-3" />
-                      Uitgelicht
+                      {t('knowledgeBase.featured')}
                     </span>
                     <span className="flex items-center gap-1.5 text-gray-300 text-sm">
                       <Clock className="w-4 h-4" />
-                      {featuredArticle.readTime} min lezen
+                      {featuredArticle.readTime} {t('knowledgeBase.readTime')}
                     </span>
                   </div>
                   
@@ -225,7 +227,7 @@ export default function Kennisbank() {
                   </p>
                   
                   <span className="inline-flex items-center gap-2 text-white font-semibold group-hover:gap-3 transition-all">
-                    Lees artikel
+                    {t('knowledgeBase.readArticle')}
                     <ArrowRight className="w-5 h-5" />
                   </span>
                 </div>
@@ -240,11 +242,11 @@ export default function Kennisbank() {
             <div className="flex items-center gap-2 overflow-x-auto pb-2 -mx-4 px-4 sm:mx-0 sm:px-0 scrollbar-hide">
               {categories.map((category) => {
                 const Icon = category.icon
-                const isActive = activeCategory === category.name
+                const isActive = activeCategory === category.key
                 return (
                   <button
-                    key={category.name}
-                    onClick={() => setActiveCategory(category.name)}
+                    key={category.key}
+                    onClick={() => setActiveCategory(category.key)}
                     className={`flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-medium whitespace-nowrap transition-all flex-shrink-0 ${
                       isActive
                         ? 'bg-gray-900 dark:bg-white text-white dark:text-gray-900 shadow-lg'
@@ -274,8 +276,8 @@ export default function Kennisbank() {
                   <TrendingUp className="w-5 h-5 text-white" />
                 </div>
                 <div>
-                  <h2 className="text-xl font-bold text-gray-900 dark:text-white">Populaire artikelen</h2>
-                  <p className="text-gray-500 dark:text-gray-400 text-sm">Meest gelezen deze maand</p>
+                  <h2 className="text-xl font-bold text-gray-900 dark:text-white">{t('knowledgeBase.trending.title')}</h2>
+                  <p className="text-gray-500 dark:text-gray-400 text-sm">{t('knowledgeBase.trending.subtitle')}</p>
                 </div>
               </div>
 
@@ -303,7 +305,7 @@ export default function Kennisbank() {
                         
                         <span className="absolute top-3 left-3 px-2.5 py-1 bg-orange-500 text-white rounded-full text-xs font-semibold flex items-center gap-1">
                           <TrendingUp className="w-3 h-3" />
-                          #{index + 1} Populair
+                          #{index + 1} {t('knowledgeBase.trending.popular')}
                         </span>
                         
                         <div className={`absolute bottom-3 right-3 w-10 h-10 rounded-xl bg-gradient-to-br ${config.gradient} flex items-center justify-center shadow-lg`}>
@@ -333,7 +335,7 @@ export default function Kennisbank() {
                             {article.excerpt}
                           </p>
                           <span className="inline-flex items-center gap-1.5 text-primary-600 dark:text-primary-400 font-medium text-sm group-hover:gap-2.5 transition-all">
-                            Lees meer
+                            {t('knowledgeBase.readMore')}
                             <ArrowRight className="w-4 h-4" />
                           </span>
                         </Link>
@@ -351,23 +353,25 @@ export default function Kennisbank() {
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="flex items-center justify-between mb-8">
               <h2 className="text-2xl font-bold text-gray-900 dark:text-white">
-                {activeCategory}
+                {categories.find(c => c.key === activeCategory)?.name || activeCategory}
               </h2>
               <span className="text-gray-500 dark:text-gray-400 text-sm bg-white dark:bg-gray-900 px-3 py-1 rounded-full border border-gray-200 dark:border-gray-700">
-                {filteredArticles.length} artikel{filteredArticles.length !== 1 ? 'en' : ''}
+                {filteredArticles.length === 1 
+                  ? t('knowledgeBase.articleCount', { count: filteredArticles.length })
+                  : t('knowledgeBase.articleCountPlural', { count: filteredArticles.length })}
               </span>
             </div>
 
             {filteredArticles.length === 0 ? (
               <div className="text-center py-16 bg-white dark:bg-gray-900 rounded-2xl border border-gray-200 dark:border-gray-700">
                 <Search className="w-12 h-12 text-gray-300 dark:text-gray-600 mx-auto mb-4" />
-                <p className="text-gray-500 dark:text-gray-400 text-lg mb-2">Geen artikelen gevonden</p>
-                <p className="text-gray-400 dark:text-gray-500 text-sm mb-4">Probeer een andere zoekterm of categorie</p>
+                <p className="text-gray-500 dark:text-gray-400 text-lg mb-2">{t('knowledgeBase.noResults.title')}</p>
+                <p className="text-gray-400 dark:text-gray-500 text-sm mb-4">{t('knowledgeBase.noResults.subtitle')}</p>
                 <button 
                   onClick={() => { setSearchQuery(''); setActiveCategory('Alle artikelen'); }}
                   className="text-primary-600 dark:text-primary-400 font-medium hover:underline"
                 >
-                  Bekijk alle artikelen
+                  {t('knowledgeBase.noResults.viewAll')}
                 </button>
               </div>
             ) : (
@@ -410,7 +414,7 @@ export default function Kennisbank() {
                       <div className="p-5">
                         <div className="flex items-center gap-2 text-gray-400 dark:text-gray-500 text-xs mb-3">
                           <Clock className="w-3.5 h-3.5" />
-                          <span>{article.readTime} min lezen</span>
+                          <span>{article.readTime} {t('knowledgeBase.readTime')}</span>
                         </div>
 
                         <Link to={`/kennisbank/${article.id}`}>
@@ -427,7 +431,7 @@ export default function Kennisbank() {
                           to={`/kennisbank/${article.id}`}
                           className="inline-flex items-center gap-1.5 text-primary-600 dark:text-primary-400 font-medium text-sm group-hover:gap-2.5 transition-all"
                         >
-                          Lees artikel
+                          {t('knowledgeBase.readArticle')}
                           <ArrowRight className="w-4 h-4" />
                         </Link>
                       </div>
@@ -454,18 +458,18 @@ export default function Kennisbank() {
             >
               <div className="inline-flex items-center gap-2 bg-primary-500/20 border border-primary-400/30 rounded-full px-4 py-1.5 mb-6">
                 <Sparkles className="w-4 h-4 text-primary-400" />
-                <span className="text-sm font-medium text-primary-300">Liever direct aan de slag?</span>
+                <span className="text-sm font-medium text-primary-300">{t('knowledgeBase.cta.badge')}</span>
               </div>
 
               <h2 className="text-3xl sm:text-4xl font-bold text-white mb-4">
-                Laat ons je website{' '}
+                {t('knowledgeBase.cta.title')}{' '}
                 <span className="bg-gradient-to-r from-primary-400 to-blue-400 bg-clip-text text-transparent">
-                  bouwen
+                  {t('knowledgeBase.cta.titleHighlight')}
                 </span>
               </h2>
 
               <p className="text-gray-400 text-lg mb-8 max-w-2xl mx-auto">
-                Geen tijd om alles zelf uit te zoeken? Wij bouwen je website terwijl jij je focust op ondernemen.
+                {t('knowledgeBase.cta.subtitle')}
               </p>
 
               <div className="flex flex-col sm:flex-row gap-4 justify-center">
@@ -473,14 +477,14 @@ export default function Kennisbank() {
                   to="/start"
                   className="group inline-flex items-center justify-center gap-2 px-8 py-4 bg-gradient-to-r from-primary-500 to-primary-600 hover:from-primary-600 hover:to-primary-700 text-white font-semibold rounded-xl transition-all shadow-lg shadow-primary-500/25 hover:shadow-primary-500/40 hover:-translate-y-0.5"
                 >
-                  Start je project
+                  {t('knowledgeBase.cta.startProject')}
                   <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
                 </Link>
                 <Link
                   to="/contact"
                   className="inline-flex items-center justify-center px-8 py-4 bg-white/10 hover:bg-white/20 text-white font-semibold rounded-xl border border-white/20 transition-all"
                 >
-                  Neem contact op
+                  {t('knowledgeBase.cta.contact')}
                 </Link>
               </div>
             </motion.div>

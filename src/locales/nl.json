@@ -1270,5 +1270,131 @@
       "subtitle": "Start vandaag nog met je logo ontwerp. Geen verplichtingen.",
       "button": "Logo aanvragen"
     }
+  },
+  "quickStartForm": {
+    "services": {
+      "website": "Website",
+      "webshop": "Webshop",
+      "drone": "Drone Video",
+      "logo": "Logo Design"
+    },
+    "header": {
+      "title": "Bijna klaar! 🚀",
+      "subtitle": "Vul je gegevens in om je {{service}} project te starten"
+    },
+    "form": {
+      "name": {
+        "label": "Jouw naam",
+        "placeholder": "Voornaam"
+      },
+      "company": {
+        "label": "Bedrijfsnaam",
+        "placeholder": "Jouw bedrijf"
+      },
+      "email": {
+        "label": "E-mailadres",
+        "placeholder": "jouw@email.nl"
+      },
+      "phone": {
+        "label": "Telefoonnummer",
+        "placeholder": "06-12345678"
+      },
+      "password": {
+        "label": "Wachtwoord",
+        "placeholder": "Minimaal 4 tekens",
+        "helper": "Je gebruikt dit om in te loggen op je dashboard"
+      }
+    },
+    "errors": {
+      "emailInUse": "Dit e-mailadres is al in gebruik. Log in via de login pagina of gebruik een ander e-mailadres.",
+      "generic": "Er ging iets mis. Probeer het opnieuw."
+    },
+    "submit": {
+      "loading": "Bezig met aanmaken...",
+      "default": "Aanvraag versturen"
+    },
+    "trust": {
+      "freeDesign": "Gratis design ontvangen",
+      "payAfterApproval": "Betaling pas na goedkeuring"
+    },
+    "back": "← Andere dienst kiezen",
+    "whatHappensNext": {
+      "title": "Wat gebeurt er na je aanvraag?",
+      "step1": "Je ontvangt direct een bevestigingsmail met je login gegevens",
+      "step2": "Vul de onboarding vragen in over stijl, kleuren en inhoud",
+      "step3": "Wij gaan aan de slag en je ontvangt binnen 5 dagen je design!"
+    }
+  },
+  "cookieConsent": {
+    "title": "Wij gebruiken cookies 🍪",
+    "description": "We gebruiken cookies om je ervaring te verbeteren en onze website te optimaliseren. Je kunt zelf kiezen welke cookies je accepteert.",
+    "acceptAll": "Alles accepteren",
+    "acceptNecessary": "Alleen noodzakelijk",
+    "customize": "Aanpassen",
+    "savePreferences": "Voorkeuren opslaan",
+    "close": "Sluiten",
+    "alwaysOn": "(altijd aan)",
+    "cookies": {
+      "necessary": {
+        "title": "Noodzakelijke cookies",
+        "description": "Deze cookies zijn essentieel voor het functioneren van de website."
+      },
+      "analytics": {
+        "title": "Analytische cookies",
+        "description": "Helpen ons te begrijpen hoe bezoekers onze website gebruiken."
+      },
+      "functional": {
+        "title": "Functionele cookies",
+        "description": "Onthouden je voorkeuren zoals taal en locatie."
+      },
+      "marketing": {
+        "title": "Marketing cookies",
+        "description": "Worden gebruikt om gepersonaliseerde advertenties te tonen."
+      }
+    }
+  },
+  "knowledgeBase": {
+    "badge": "Kennisbank",
+    "title": "Alles over websites",
+    "titleHighlight": "voor ondernemers",
+    "subtitle": "Praktische tips, handleidingen en inzichten om het maximale uit je online aanwezigheid te halen.",
+    "searchPlaceholder": "Zoek artikelen...",
+    "stats": {
+      "articles": "Artikelen",
+      "readers": "Lezers/maand",
+      "free": "Gratis"
+    },
+    "featured": "Uitgelicht",
+    "readTime": "min lezen",
+    "readArticle": "Lees artikel",
+    "readMore": "Lees meer",
+    "categories": {
+      "all": "Alle artikelen",
+      "costs": "Kosten",
+      "tips": "Tips",
+      "zzp": "ZZP",
+      "seo": "SEO",
+      "tech": "Techniek"
+    },
+    "trending": {
+      "title": "Populaire artikelen",
+      "subtitle": "Meest gelezen deze maand",
+      "popular": "Populair"
+    },
+    "noResults": {
+      "title": "Geen artikelen gevonden",
+      "subtitle": "Probeer een andere zoekterm of categorie",
+      "viewAll": "Bekijk alle artikelen"
+    },
+    "articleCount": "{{count}} artikel",
+    "articleCountPlural": "{{count}} artikelen",
+    "cta": {
+      "badge": "Liever direct aan de slag?",
+      "title": "Laat ons je website",
+      "titleHighlight": "bouwen",
+      "subtitle": "Geen tijd om alles zelf uit te zoeken? Wij bouwen je website terwijl jij je focust op ondernemen.",
+      "startProject": "Start je project",
+      "contact": "Neem contact op"
+    }
   }
 }
