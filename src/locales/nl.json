@@ -463,6 +463,18 @@
       "contact": "Neem contact op"
     }
   },
+  "packagePhaseCard": {
+    "estimatedTime": "Geschatte tijd",
+    "workday": "werkdag",
+    "workdays": "werkdagen",
+    "revision": "revisie",
+    "revisions": "revisies",
+    "yourTasks": "Jouw taken",
+    "uploadFiles": "Upload bestanden",
+    "tips": "Tips",
+    "includedInPackage": "Inclusief in je pakket",
+    "andMore": "+{{count}} meer"
+  },
   "dashboard": {
     "welcome": "Welkom terug",
     "overview": "Overzicht",

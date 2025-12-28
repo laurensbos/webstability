@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next'
 import { motion } from 'framer-motion'
 import { Link } from 'react-router-dom'
 import { 
@@ -34,6 +35,7 @@ export default function PackagePhaseCard({
   projectId,
   googleDriveUrl
 }: PackagePhaseCardProps) {
+  const { t } = useTranslation()
   const pkg = getPackage(packageType)
   const phaseInfo = getPhaseInfo(packageType, currentPhase)
   const remainingRevisions = getRemainingRevisions(packageType, usedRevisions)
@@ -85,7 +87,7 @@ export default function PackagePhaseCard({
             }`}>
               <RefreshCw className={`w-3 h-3 sm:w-4 sm:h-4 ${colors.icon}`} />
               <span className={`text-xs sm:text-sm font-medium ${darkMode ? 'text-white' : 'text-gray-900'}`}>
-                {remainingRevisions} revisie{remainingRevisions !== 1 ? 's' : ''}
+                {remainingRevisions} {remainingRevisions !== 1 ? t('packagePhaseCard.revisions') : t('packagePhaseCard.revision')}
               </span>
             </div>
           )}
@@ -105,7 +107,7 @@ export default function PackagePhaseCard({
         {estimatedDays > 0 && currentPhase !== 'live' && (
           <div className={`flex items-center gap-2 mb-3 sm:mb-4 text-xs sm:text-sm ${darkMode ? 'text-gray-500' : 'text-gray-400'}`}>
             <Clock className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
-            <span>Geschatte tijd: {estimatedDays} werkdag{estimatedDays !== 1 ? 'en' : ''}</span>
+            <span>{t('packagePhaseCard.estimatedTime')}: {estimatedDays} {estimatedDays !== 1 ? t('packagePhaseCard.workdays') : t('packagePhaseCard.workday')}</span>
           </div>
         )}
 
@@ -113,7 +115,7 @@ export default function PackagePhaseCard({
         {phaseInfo.clientTasks.length > 0 && (
           <div className="mb-3 sm:mb-4 hidden sm:block">
             <h5 className={`text-sm font-medium mb-2 ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>
-              Jouw taken:
+              {t('packagePhaseCard.yourTasks')}:
             </h5>
             <div className="space-y-2">
               {phaseInfo.clientTasks.map((task, index) => {
@@ -198,7 +200,7 @@ export default function PackagePhaseCard({
             }`}
           >
             <Upload className="w-4 h-4" />
-            Upload bestanden
+            {t('packagePhaseCard.uploadFiles')}
             <ExternalLink className="w-3.5 h-3.5" />
           </a>
         )}
@@ -212,7 +214,7 @@ export default function PackagePhaseCard({
               <Lightbulb className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-amber-500 flex-shrink-0 mt-0.5" />
               <div>
                 <p className={`text-xs sm:text-sm font-medium mb-0.5 sm:mb-1 ${darkMode ? 'text-amber-300' : 'text-amber-700'}`}>
-                  Tips
+                  {t('packagePhaseCard.tips')}
                 </p>
                 <ul className="space-y-0.5 sm:space-y-1">
                   {phaseInfo.tips.slice(0, 2).map((tip, index) => (
@@ -231,7 +233,7 @@ export default function PackagePhaseCard({
       {currentPhase === 'live' && (
         <div className={`p-3 sm:p-4 border-t ${colors.border}`}>
           <p className={`text-xs sm:text-sm font-medium mb-1.5 sm:mb-2 ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>
-            Inclusief in je pakket:
+            {t('packagePhaseCard.includedInPackage')}:
           </p>
           <div className="flex flex-wrap gap-1.5 sm:gap-2">
             {pkg.features.slice(0, 3).map((feature, index) => (
@@ -246,7 +248,7 @@ export default function PackagePhaseCard({
             ))}
             {pkg.features.length > 3 && (
               <span className={`px-2 py-0.5 sm:py-1 rounded-lg text-[10px] sm:text-xs ${colors.icon}`}>
-                +{pkg.features.length - 3} meer
+                {t('packagePhaseCard.andMore', { count: pkg.features.length - 3 })}
               </span>
             )}
           </div>

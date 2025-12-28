@@ -463,6 +463,18 @@
       "contact": "Contact us"
     }
   },
+  "packagePhaseCard": {
+    "estimatedTime": "Estimated time",
+    "workday": "workday",
+    "workdays": "workdays",
+    "revision": "revision",
+    "revisions": "revisions",
+    "yourTasks": "Your tasks",
+    "uploadFiles": "Upload files",
+    "tips": "Tips",
+    "includedInPackage": "Included in your package",
+    "andMore": "+{{count}} more"
+  },
   "dashboard": {
     "welcome": "Welcome back",
     "overview": "Overview",
