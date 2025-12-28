@@ -1872,5 +1872,89 @@
         }
       }
     }
+  },
+  "projectStatus": {
+    "login": {
+      "title": "Log in",
+      "subtitle": "Enter your password to continue",
+      "email": "Email address",
+      "emailPlaceholder": "your@email.com",
+      "password": "Password",
+      "passwordPlaceholder": "Your password",
+      "submit": "Log in",
+      "forgotPassword": "Forgot password?",
+      "project": "Project",
+      "sslSecure": "SSL secured",
+      "alwaysAccess": "24/7 access"
+    },
+    "loading": {
+      "title": "Loading project...",
+      "subtitle": "Please wait"
+    },
+    "error": {
+      "title": "Something went wrong",
+      "projectNotFound": "Project not found",
+      "tryAgain": "Try again"
+    },
+    "phases": {
+      "onboarding": "Onboarding",
+      "design": "Design",
+      "feedback": "Feedback",
+      "revisie": "Revision",
+      "payment": "Payment",
+      "domain": "Domain",
+      "live": "Live"
+    },
+    "phaseInfo": {
+      "onboarding": {
+        "title": "We're collecting your information",
+        "description": "Fill out the onboarding so we understand your business well."
+      },
+      "design": {
+        "title": "Your design is being created",
+        "description": "We're working on the design of your website."
+      },
+      "feedback": {
+        "title": "View your design preview",
+        "description": "Your design is ready! View the preview and give your feedback."
+      },
+      "revisie": {
+        "title": "Your feedback is being processed ✨",
+        "description": "Thank you for your feedback! We're processing the changes."
+      },
+      "payment": {
+        "title": "Waiting for payment",
+        "description": "Your design is approved! After payment, we'll put your website live."
+      },
+      "domain": {
+        "title": "Configuring domain",
+        "description": "Your payment has been received! We're now moving and configuring your domain."
+      },
+      "live": {
+        "title": "Congratulations! 🎉",
+        "description": "Your website is live and accessible to the world. Welcome!"
+      }
+    },
+    "welcome": "Welcome, {{name}}",
+    "logout": "Log out",
+    "myAccount": "My account",
+    "projectFiles": "Project files",
+    "openDrive": "Open Drive",
+    "viewPreview": "View preview",
+    "chat": {
+      "title": "Messages",
+      "empty": "No messages yet",
+      "placeholder": "Type a message...",
+      "send": "Send"
+    },
+    "onboardingSection": {
+      "title": "Fill in questions",
+      "completed": "Completed",
+      "readyForDesign": "Ready for design",
+      "confirmReady": "Confirm you're ready",
+      "confirmMessage": "Are you sure you're ready for the design phase? Make sure you've filled in all information and uploaded files.",
+      "yes": "Yes, start with design",
+      "no": "No, not yet"
+    }
   }
 }

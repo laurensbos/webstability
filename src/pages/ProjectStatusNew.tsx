@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef } from 'react'
+import { useTranslation } from 'react-i18next'
 import { useParams, Link, useNavigate, useSearchParams } from 'react-router-dom'
 import { motion, AnimatePresence } from 'framer-motion'
 import { ProjectStatusSkeleton } from '../components/LoadingSkeletons'
@@ -190,6 +191,7 @@ const useDeadlineCountdown = (deadline?: string) => {
 }
 
 export default function ProjectStatusNew() {
+  const { t } = useTranslation()
   const { projectId } = useParams<{ projectId: string }>()
   const navigate = useNavigate()
   const [searchParams] = useSearchParams()
@@ -768,13 +770,13 @@ export default function ProjectStatusNew() {
                 <div className="w-14 h-14 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-xl flex items-center justify-center mx-auto mb-4">
                   <Lock className="w-7 h-7 text-white" />
                 </div>
-                <h1 className="text-xl font-bold text-white mb-1">Inloggen</h1>
-                <p className="text-sm text-gray-400">Voer je wachtwoord in om door te gaan</p>
+                <h1 className="text-xl font-bold text-white mb-1">{t('projectStatus.login.title')}</h1>
+                <p className="text-sm text-gray-400">{t('projectStatus.login.subtitle')}</p>
               </div>
 
               {projectId && projectId !== ':projectId' && (
                 <div className="mb-4 p-3 bg-gray-800/50 rounded-lg border border-gray-700">
-                  <p className="text-xs text-gray-500">Project</p>
+                  <p className="text-xs text-gray-500">{t('projectStatus.login.project')}</p>
                   <p className="font-mono text-sm text-white">{projectId}</p>
                 </div>
               )}
@@ -782,14 +784,14 @@ export default function ProjectStatusNew() {
               <form onSubmit={handleLogin} className="space-y-4">
                 {(!projectId || projectId === ':projectId') && (
                   <div>
-                    <label className="block text-sm font-medium text-gray-300 mb-2">E-mailadres</label>
+                    <label className="block text-sm font-medium text-gray-300 mb-2">{t('projectStatus.login.email')}</label>
                     <div className="relative">
                       <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-500" />
                       <input
                         type="email"
                         value={emailInput}
                         onChange={(e) => setEmailInput(e.target.value)}
-                        placeholder="jouw@email.nl"
+                        placeholder={t('projectStatus.login.emailPlaceholder')}
                         className="w-full pl-11 pr-4 py-3 bg-gray-800 border border-gray-700 rounded-xl text-white placeholder-gray-500 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition"
                         required
                         autoFocus
@@ -799,14 +801,14 @@ export default function ProjectStatusNew() {
                 )}
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-300 mb-2">Wachtwoord</label>
+                  <label className="block text-sm font-medium text-gray-300 mb-2">{t('projectStatus.login.password')}</label>
                   <div className="relative">
                     <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-500" />
                     <input
                       type={showPassword ? 'text' : 'password'}
                       value={passwordInput}
                       onChange={(e) => setPasswordInput(e.target.value)}
-                      placeholder="Je wachtwoord"
+                      placeholder={t('projectStatus.login.passwordPlaceholder')}
                       className="w-full pl-11 pr-11 py-3 bg-gray-800 border border-gray-700 rounded-xl text-white placeholder-gray-500 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition"
                       required
                       autoFocus={!!projectId && projectId !== ':projectId'}
@@ -836,14 +838,14 @@ export default function ProjectStatusNew() {
                   {verifyLoading ? (
                     <Loader2 className="w-5 h-5 animate-spin" />
                   ) : (
-                    <>Inloggen <ArrowRight className="w-4 h-4" /></>
+                    <>{t('projectStatus.login.submit')} <ArrowRight className="w-4 h-4" /></>
                   )}
                 </button>
               </form>
 
               <div className="mt-4 text-center">
                 <Link to="/wachtwoord-vergeten" className="text-sm text-blue-400 hover:text-blue-300">
-                  Wachtwoord vergeten?
+                  {t('projectStatus.login.forgotPassword')}
                 </Link>
               </div>
             </motion.div>
@@ -852,11 +854,11 @@ export default function ProjectStatusNew() {
             <div className="mt-6 flex justify-center gap-6 text-xs text-gray-500">
               <div className="flex items-center gap-1.5">
                 <Shield className="w-4 h-4 text-green-500" />
-                SSL beveiligd
+                {t('projectStatus.login.sslSecure')}
               </div>
               <div className="flex items-center gap-1.5">
                 <Clock className="w-4 h-4 text-blue-500" />
-                24/7 toegang
+                {t('projectStatus.login.alwaysAccess')}
               </div>
             </div>
           </div>

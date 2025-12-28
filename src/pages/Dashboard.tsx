@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react'
+import { useTranslation } from 'react-i18next'
 import { motion, AnimatePresence } from 'framer-motion'
 import { 
   Lock, 
@@ -185,6 +186,7 @@ const STORAGE_KEY = 'webstability_submissions'
 const AUTH_KEY = 'webstability_dashboard_auth'
 
 export default function Dashboard() {
+  const { t: _t } = useTranslation() // TODO: use translations
   const [isAuthenticated, setIsAuthenticated] = useState(false)
   const [password, setPassword] = useState('')
   const [error, setError] = useState('')

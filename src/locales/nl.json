@@ -1872,5 +1872,89 @@
         "placeholder": "Speciale wensen, vragen, opmerkingen..."
       }
     }
+  },
+  "projectStatus": {
+    "login": {
+      "title": "Inloggen",
+      "subtitle": "Voer je wachtwoord in om door te gaan",
+      "email": "E-mailadres",
+      "emailPlaceholder": "jouw@email.nl",
+      "password": "Wachtwoord",
+      "passwordPlaceholder": "Je wachtwoord",
+      "submit": "Inloggen",
+      "forgotPassword": "Wachtwoord vergeten?",
+      "project": "Project",
+      "sslSecure": "SSL beveiligd",
+      "alwaysAccess": "24/7 toegang"
+    },
+    "loading": {
+      "title": "Project laden...",
+      "subtitle": "Even geduld"
+    },
+    "error": {
+      "title": "Er ging iets mis",
+      "projectNotFound": "Project niet gevonden",
+      "tryAgain": "Probeer opnieuw"
+    },
+    "phases": {
+      "onboarding": "Onboarding",
+      "design": "Design",
+      "feedback": "Feedback",
+      "revisie": "Revisie",
+      "payment": "Betaling",
+      "domain": "Domein",
+      "live": "Live"
+    },
+    "phaseInfo": {
+      "onboarding": {
+        "title": "We verzamelen je informatie",
+        "description": "Vul de onboarding in zodat we je bedrijf goed begrijpen."
+      },
+      "design": {
+        "title": "Je design wordt gemaakt",
+        "description": "We werken aan het ontwerp van jouw website."
+      },
+      "feedback": {
+        "title": "Bekijk je design preview",
+        "description": "Je design is klaar! Bekijk de preview en geef je feedback."
+      },
+      "revisie": {
+        "title": "Je feedback wordt verwerkt ✨",
+        "description": "Bedankt voor je feedback! We zijn de aanpassingen aan het verwerken."
+      },
+      "payment": {
+        "title": "Wachten op betaling",
+        "description": "Je design is goedgekeurd! Na de betaling zetten we je website live."
+      },
+      "domain": {
+        "title": "Domein configureren",
+        "description": "Je betaling is ontvangen! We gaan nu je domein verhuizen en configureren."
+      },
+      "live": {
+        "title": "Gefeliciteerd! 🎉",
+        "description": "Je website is live en bereikbaar voor de wereld. Welkom!"
+      }
+    },
+    "welcome": "Welkom, {{name}}",
+    "logout": "Uitloggen",
+    "myAccount": "Mijn account",
+    "projectFiles": "Projectbestanden",
+    "openDrive": "Open Drive",
+    "viewPreview": "Bekijk preview",
+    "chat": {
+      "title": "Berichten",
+      "empty": "Nog geen berichten",
+      "placeholder": "Typ een bericht...",
+      "send": "Verstuur"
+    },
+    "onboardingSection": {
+      "title": "Vragen invullen",
+      "completed": "Voltooid",
+      "readyForDesign": "Klaar voor design",
+      "confirmReady": "Bevestig dat je klaar bent",
+      "confirmMessage": "Weet je zeker dat je klaar bent voor de design fase? Zorg dat je alle informatie hebt ingevuld en bestanden hebt geüpload.",
+      "yes": "Ja, start met design",
+      "no": "Nee, nog niet"
+    }
   }
 }
