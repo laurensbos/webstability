@@ -1570,5 +1570,53 @@
     "helpTitle": "Need help?",
     "helpDescription": "If you think you should have access, please contact us.",
     "goBack": "Go back"
+  },
+  "deal": {
+    "title": "New Year Deal — 30% off",
+    "description": "Claim 30% off our Business package with annual payment. Limited availability.",
+    "standardPrice": "Standard price",
+    "perMonth": "/mo",
+    "couponLabel": "Coupon",
+    "checkButton": "Apply",
+    "checking": "Checking…",
+    "processing": "Processing...",
+    "claimButton": "Claim & checkout",
+    "startProject": "Start your project",
+    "discountApplied": "Discount applied — new price:",
+    "code": "code",
+    "expires": "expires",
+    "enterCoupon": "Enter a coupon and click Apply.",
+    "invalidCoupon": "Coupon invalid or expired.",
+    "guarantee": "14 day money-back guarantee — coupon only valid for new customers."
+  },
+  "thankYouService": {
+    "title": "Request received! 🎉",
+    "description": "Thank you for your {{service}} request. We'll get started right away!",
+    "requestId": "Your request number:",
+    "copyId": "Copy",
+    "whatsNext": "What happens next?",
+    "questions": "Questions?",
+    "contactUs": "We're here to help!",
+    "backToHome": "Back to homepage",
+    "services": {
+      "drone": {
+        "title": "Aerial Photo & Videography",
+        "steps": {
+          "1": "We'll confirm your appointment by email",
+          "2": "We'll contact you 24 hours in advance",
+          "3": "On the day, we'll arrive 15 min early",
+          "4": "You'll receive the footage within 5 business days"
+        }
+      },
+      "logo": {
+        "title": "Logo design",
+        "steps": {
+          "1": "We'll review your request",
+          "2": "We'll contact you within 24 hours",
+          "3": "After approval, you'll receive 3 concepts within 5 days",
+          "4": "Unlimited revisions until you're 100% satisfied"
+        }
+      }
+    }
   }
 }

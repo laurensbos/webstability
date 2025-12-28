@@ -1,6 +1,8 @@
 import { useState } from 'react'
+import { useTranslation } from 'react-i18next'
 
 export default function Deal(){
+  const { t } = useTranslation()
   const [coupon, setCoupon] = useState('NEWYEAR30')
   const [applied, setApplied] = useState(true)
   const [processing, setProcessing] = useState(false)
@@ -61,38 +63,38 @@ export default function Deal(){
   return (
     <main className="max-w-4xl mx-auto px-6 py-16">
       <div className="card text-[var(--brand-dark)] rounded-xl p-6 shadow-md">
-        <h1 className="text-2xl font-extrabold">Nieuwjaarsdeal — 30% korting</h1>
-        <p className="mt-2 text-[var(--muted)]">Claim 30% korting op ons Business-pakket bij jaarbetaling. Beperkte beschikbaarheid.</p>
+        <h1 className="text-2xl font-extrabold">{t('deal.title')}</h1>
+        <p className="mt-2 text-[var(--muted)]">{t('deal.description')}</p>
 
         <div className="mt-4 grid md:grid-cols-2 gap-4 items-center">
           <div>
-            <div className="text-sm text-[var(--muted)]">Standaard prijs</div>
-            <div className="text-3xl font-bold text-[var(--brand-dark)]">€{basePrice}<span className="text-sm">/mnd</span></div>
+            <div className="text-sm text-[var(--muted)]">{t('deal.standardPrice')}</div>
+            <div className="text-3xl font-bold text-[var(--brand-dark)]">€{basePrice}<span className="text-sm">{t('deal.perMonth')}</span></div>
           </div>
 
           <div>
-            <label className="text-xs text-[var(--muted)]">Coupon</label>
+            <label className="text-xs text-[var(--muted)]">{t('deal.couponLabel')}</label>
             <div className="mt-2 flex gap-2">
               <input value={coupon} onChange={e=>setCoupon(e.target.value)} className="flex-1 px-3 py-2 rounded-md bg-[rgba(255,255,255,0.02)] text-[var(--brand-dark)]" />
-              <button onClick={applyCoupon} className="px-3 rounded-md font-semibold bg-[rgba(255,217,138,0.12)] text-[#ffd98a]" disabled={processing}>{processing ? 'Controleren…' : 'Toepassen'}</button>
+              <button onClick={applyCoupon} className="px-3 rounded-md font-semibold bg-[rgba(255,217,138,0.12)] text-[#ffd98a]" disabled={processing}>{processing ? t('deal.checking') : t('deal.checkButton')}</button>
             </div>
 
             {couponInfo && applied ? (
-              <div className="mt-2 text-sm text-[var(--muted)]">Korting toegepast — nieuwe prijs: <strong>€{discounted}/mnd</strong> (code {couponInfo.code}, verloopt {couponInfo.expires})</div>
+              <div className="mt-2 text-sm text-[var(--muted)]">{t('deal.discountApplied')} <strong>€{discounted}{t('deal.perMonth')}</strong> ({t('deal.code')} {couponInfo.code}, {t('deal.expires')} {couponInfo.expires})</div>
             ) : (
-              <div className="mt-2 text-sm text-[var(--muted)]">{applied ? 'Voer een coupon in en klik Toepassen.' : 'Coupon ongeldig of verlopen.'}</div>
+              <div className="mt-2 text-sm text-[var(--muted)]">{applied ? t('deal.enterCoupon') : t('deal.invalidCoupon')}</div>
             )}
           </div>
         </div>
 
         <div className="mt-6 flex gap-3">
           <button disabled={!applied || processing} onClick={claimDeal} className="btn-primary">
-            {processing ? 'Bezig...' : 'Claim & naar afrekenen'}
+            {processing ? t('deal.processing') : t('deal.claimButton')}
           </button>
-          <a href="/start" className="text-[var(--muted)] underline">Start je project</a>
+          <a href="/start" className="text-[var(--muted)] underline">{t('deal.startProject')}</a>
         </div>
 
-        <p className="mt-3 text-xs text-[var(--muted)]">14 dagen niet-goed-geld-terug — coupon alleen geldig voor nieuwe klanten.</p>
+        <p className="mt-3 text-xs text-[var(--muted)]">{t('deal.guarantee')}</p>
       </div>
     </main>
   )

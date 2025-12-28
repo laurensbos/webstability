@@ -1570,5 +1570,53 @@
     "helpTitle": "Hulp nodig?",
     "helpDescription": "Als je denkt dat je wel toegang zou moeten hebben, neem dan contact met ons op.",
     "goBack": "Ga terug"
+  },
+  "deal": {
+    "title": "Nieuwjaarsdeal — 30% korting",
+    "description": "Claim 30% korting op ons Business-pakket bij jaarbetaling. Beperkte beschikbaarheid.",
+    "standardPrice": "Standaard prijs",
+    "perMonth": "/mnd",
+    "couponLabel": "Coupon",
+    "checkButton": "Toepassen",
+    "checking": "Controleren…",
+    "processing": "Bezig...",
+    "claimButton": "Claim & naar afrekenen",
+    "startProject": "Start je project",
+    "discountApplied": "Korting toegepast — nieuwe prijs:",
+    "code": "code",
+    "expires": "verloopt",
+    "enterCoupon": "Voer een coupon in en klik Toepassen.",
+    "invalidCoupon": "Coupon ongeldig of verlopen.",
+    "guarantee": "14 dagen niet-goed-geld-terug — coupon alleen geldig voor nieuwe klanten."
+  },
+  "thankYouService": {
+    "title": "Aanvraag ontvangen! 🎉",
+    "description": "Bedankt voor je {{service}} aanvraag. We gaan direct voor je aan de slag!",
+    "requestId": "Je aanvraagnummer:",
+    "copyId": "Kopieer",
+    "whatsNext": "Wat gebeurt er nu?",
+    "questions": "Vragen?",
+    "contactUs": "We staan klaar om je te helpen!",
+    "backToHome": "Naar homepage",
+    "services": {
+      "drone": {
+        "title": "Luchtfoto & Videografie",
+        "steps": {
+          "1": "We bevestigen je afspraak per email",
+          "2": "We nemen 24 uur van tevoren contact op",
+          "3": "Op de dag zelf zijn we 15 min eerder aanwezig",
+          "4": "Binnen 5 werkdagen ontvang je de beelden"
+        }
+      },
+      "logo": {
+        "title": "Logo ontwerp",
+        "steps": {
+          "1": "We nemen je aanvraag door",
+          "2": "Binnen 24 uur nemen we contact op",
+          "3": "Na akkoord ontvang je binnen 5 dagen 3 concepten",
+          "4": "Onbeperkte revisies tot je 100% tevreden bent"
+        }
+      }
+    }
   }
 }

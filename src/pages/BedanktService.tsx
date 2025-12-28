@@ -1,4 +1,5 @@
 import { useEffect } from 'react'
+import { useTranslation } from 'react-i18next'
 import { motion } from 'framer-motion'
 import { useSearchParams, Link } from 'react-router-dom'
 import { 
@@ -14,38 +15,31 @@ import {
 import Header from '../components/Header'
 import Footer from '../components/Footer'
 
-const serviceInfo = {
-  drone: {
-    title: 'Luchtfoto & Videografie',
-    icon: Camera,
-    color: 'from-blue-500 to-cyan-500',
-    nextSteps: [
-      'We bevestigen je afspraak per email',
-      'We nemen 24 uur van tevoren contact op',
-      'Op de dag zelf zijn we 15 min eerder aanwezig',
-      'Binnen 5 werkdagen ontvang je de beelden'
-    ],
-  },
-  logo: {
-    title: 'Logo ontwerp',
-    icon: Palette,
-    color: 'from-purple-500 to-pink-500',
-    nextSteps: [
-      'We nemen je aanvraag door',
-      'Binnen 24 uur nemen we contact op',
-      'Na akkoord ontvang je binnen 5 dagen 3 concepten',
-      'Onbeperkte revisies tot je 100% tevreden bent'
-    ],
-  },
+const serviceIcons = {
+  drone: Camera,
+  logo: Palette
+}
+
+const serviceColors = {
+  drone: 'from-blue-500 to-cyan-500',
+  logo: 'from-purple-500 to-pink-500'
 }
 
 export default function BedanktService() {
+  const { t } = useTranslation()
   const [searchParams] = useSearchParams()
   const serviceType = searchParams.get('type') as 'drone' | 'logo'
   const requestId = searchParams.get('id')
   
-  const service = serviceInfo[serviceType] || serviceInfo.drone
-  const ServiceIcon = service.icon
+  const ServiceIcon = serviceIcons[serviceType] || serviceIcons.drone
+  const color = serviceColors[serviceType] || serviceColors.drone
+  const serviceTitle = t(`thankYouService.services.${serviceType}.title`)
+  const nextSteps = [
+    t(`thankYouService.services.${serviceType}.steps.1`),
+    t(`thankYouService.services.${serviceType}.steps.2`),
+    t(`thankYouService.services.${serviceType}.steps.3`),
+    t(`thankYouService.services.${serviceType}.steps.4`)
+  ]
 
   useEffect(() => {
     window.scrollTo(0, 0)
@@ -62,7 +56,7 @@ export default function BedanktService() {
             initial={{ scale: 0 }}
             animate={{ scale: 1 }}
             transition={{ type: 'spring', duration: 0.6 }}
-            className={`w-24 h-24 bg-gradient-to-br ${service.color} rounded-full flex items-center justify-center mx-auto mb-8 shadow-xl`}
+            className={`w-24 h-24 bg-gradient-to-br ${color} rounded-full flex items-center justify-center mx-auto mb-8 shadow-xl`}
           >
             <motion.div
               initial={{ scale: 0 }}
@@ -79,7 +73,7 @@ export default function BedanktService() {
             transition={{ delay: 0.2 }}
             className="text-3xl sm:text-4xl font-bold text-gray-900 dark:text-white mb-4"
           >
-            Aanvraag ontvangen! 🎉
+            {t('thankYouService.title')}
           </motion.h1>
 
           <motion.p
@@ -88,7 +82,7 @@ export default function BedanktService() {
             transition={{ delay: 0.3 }}
             className="text-lg text-gray-600 dark:text-gray-400 mb-8"
           >
-            Bedankt voor je {service.title.toLowerCase()} aanvraag. We gaan direct voor je aan de slag!
+            {t('thankYouService.description', { service: serviceTitle.toLowerCase() })}
           </motion.p>
 
           {/* Request ID */}
@@ -97,11 +91,11 @@ export default function BedanktService() {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.4 }}
-              className={`inline-flex items-center gap-3 bg-gradient-to-r ${service.color} text-white rounded-2xl px-6 py-4 mb-10`}
+              className={`inline-flex items-center gap-3 bg-gradient-to-r ${color} text-white rounded-2xl px-6 py-4 mb-10`}
             >
               <ServiceIcon className="w-6 h-6" />
               <div className="text-left">
-                <p className="text-sm opacity-80">Je aanvraagnummer</p>
+                <p className="text-sm opacity-80">{t('thankYouService.requestId')}</p>
                 <p className="font-bold text-xl font-mono">{requestId}</p>
               </div>
             </motion.div>
@@ -116,13 +110,13 @@ export default function BedanktService() {
           >
             <h2 className="text-xl font-bold text-gray-900 mb-6 flex items-center gap-2">
               <Sparkles className="w-5 h-5 text-primary-600" />
-              Wat gebeurt er nu?
+              {t('thankYouService.whatsNext')}
             </h2>
             
             <div className="space-y-4">
-              {service.nextSteps.map((step, index) => (
+              {nextSteps.map((step, index) => (
                 <div key={index} className="flex items-start gap-4">
-                  <div className={`w-8 h-8 rounded-full bg-gradient-to-br ${service.color} flex items-center justify-center text-white text-sm font-bold flex-shrink-0`}>
+                  <div className={`w-8 h-8 rounded-full bg-gradient-to-br ${color} flex items-center justify-center text-white text-sm font-bold flex-shrink-0`}>
                     {index + 1}
                   </div>
                   <p className="text-gray-700 pt-1">{step}</p>
@@ -139,7 +133,7 @@ export default function BedanktService() {
             className="bg-gray-50 dark:bg-gray-800 rounded-xl p-6 mb-8"
           >
             <p className="text-gray-600 dark:text-gray-400 mb-4">
-              Vragen? Neem gerust contact met ons op:
+              {t('thankYouService.questions')} {t('thankYouService.contactUs')}
             </p>
             <div className="flex flex-wrap items-center justify-center gap-4">
               <a 
@@ -170,7 +164,7 @@ export default function BedanktService() {
               to="/"
               className="inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-primary-500 to-blue-500 text-white font-semibold rounded-xl hover:from-primary-600 hover:to-blue-600 transition-all shadow-lg"
             >
-              <span>Terug naar home</span>
+              <span>{t('thankYouService.backToHome')}</span>
               <ArrowRight className="w-4 h-4" />
             </Link>
             
