@@ -1,10 +1,13 @@
 import { motion } from 'framer-motion'
+import { useTranslation } from 'react-i18next'
 import { Link } from 'react-router-dom'
 import { ShieldOff, Home, ArrowLeft, Lock } from 'lucide-react'
 import Header from '../components/Header'
 import Footer from '../components/Footer'
 
 export default function Unauthorized() {
+  const { t } = useTranslation()
+  
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100">
       <Header />
@@ -27,13 +30,12 @@ export default function Unauthorized() {
 
           {/* Title */}
           <h1 className="text-4xl sm:text-5xl font-bold text-gray-900 dark:text-white mb-4">
-            Geen toegang
+            {t('unauthorized.title')}
           </h1>
 
           {/* Description */}
           <p className="text-lg text-gray-600 dark:text-gray-400 mb-8 max-w-md mx-auto">
-            Je hebt geen toestemming om deze pagina te bekijken. 
-            Dit kan zijn omdat je niet bent ingelogd of niet de juiste rechten hebt.
+            {t('unauthorized.description')}
           </p>
 
           {/* Action buttons */}
@@ -43,7 +45,7 @@ export default function Unauthorized() {
               className="inline-flex items-center justify-center gap-2 px-6 py-3 bg-primary-600 text-white font-semibold rounded-xl hover:bg-primary-700 transition-colors shadow-lg shadow-primary-500/20"
             >
               <Lock className="w-5 h-5" />
-              Inloggen
+              {t('unauthorized.loginButton')}
             </Link>
             
             <Link
@@ -51,7 +53,7 @@ export default function Unauthorized() {
               className="inline-flex items-center justify-center gap-2 px-6 py-3 bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 font-semibold rounded-xl hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors"
             >
               <Home className="w-5 h-5" />
-              Naar homepage
+              {t('unauthorized.homeButton')}
             </Link>
           </div>
 
@@ -62,9 +64,9 @@ export default function Unauthorized() {
             transition={{ delay: 0.4 }}
             className="mt-12 p-6 bg-white dark:bg-gray-800 rounded-2xl border border-gray-200 dark:border-gray-700 max-w-md mx-auto"
           >
-            <h3 className="font-semibold text-gray-900 dark:text-white mb-2">Hulp nodig?</h3>
+            <h3 className="font-semibold text-gray-900 dark:text-white mb-2">{t('unauthorized.helpTitle')}</h3>
             <p className="text-gray-600 dark:text-gray-400 text-sm mb-4">
-              Als je denkt dat je wel toegang zou moeten hebben, neem dan contact met ons op.
+              {t('unauthorized.helpDescription')}
             </p>
             <a
               href="mailto:info@webstability.nl"
@@ -83,7 +85,7 @@ export default function Unauthorized() {
             className="inline-flex items-center gap-2 mt-8 text-gray-500 hover:text-gray-700 transition-colors"
           >
             <ArrowLeft className="w-4 h-4" />
-            Ga terug
+            {t('unauthorized.goBack')}
           </motion.button>
         </motion.div>
       </main>

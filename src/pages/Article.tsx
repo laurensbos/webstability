@@ -1,4 +1,5 @@
 import { useParams, Link, Navigate } from 'react-router-dom'
+import { useTranslation } from 'react-i18next'
 import { motion } from 'framer-motion'
 import { ArrowLeft, Clock, Calendar, Tag, Share2, Bookmark, ChevronRight, Sparkles, ArrowRight, BookOpen } from 'lucide-react'
 import Header from '../components/Header'
@@ -50,6 +51,7 @@ function FloatingParticles({ variant = 'blue' }: { variant?: 'blue' | 'white' })
 }
 
 export default function Article() {
+  const { t, i18n } = useTranslation()
   const { slug } = useParams<{ slug: string }>()
   const article = slug ? getArticleById(slug) : undefined
   const relatedArticles = slug ? getRelatedArticles(slug, 3) : []
@@ -61,7 +63,7 @@ export default function Article() {
   // Format date
   const formatDate = (dateString: string) => {
     const date = new Date(dateString)
-    return date.toLocaleDateString('nl-NL', {
+    return date.toLocaleDateString(i18n.language === 'en' ? 'en-US' : 'nl-NL', {
       day: 'numeric',
       month: 'long',
       year: 'numeric'
@@ -301,7 +303,7 @@ export default function Article() {
                 className="inline-flex items-center gap-1.5 sm:gap-2 text-primary-600 dark:text-primary-400 hover:text-primary-700 dark:hover:text-primary-300 transition-colors mb-6 sm:mb-8 text-sm sm:text-base group"
               >
                 <ArrowLeft className="w-3.5 h-3.5 sm:w-4 sm:h-4 group-hover:-translate-x-1 transition-transform" />
-                <span>Terug naar Kennisbank</span>
+                <span>{t('article.backToKnowledgeBase')}</span>
               </Link>
             </motion.div>
 
@@ -342,7 +344,7 @@ export default function Article() {
                 </div>
                 <div className="flex items-center gap-1.5 sm:gap-2 text-gray-500 dark:text-gray-400">
                   <Clock className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-gray-400 dark:text-gray-500" />
-                  <span>{article.readTime} min leestijd</span>
+                  <span>{t('article.readTime', { minutes: article.readTime })}</span>
                 </div>
               </div>
             </motion.div>
@@ -380,7 +382,7 @@ export default function Article() {
 
                 {/* Share */}
                 <div className="mt-6 lg:mt-8 flex items-center gap-4 not-prose">
-                  <span className="text-gray-600 dark:text-gray-400 font-medium text-sm sm:text-base">Deel dit artikel:</span>
+                  <span className="text-gray-600 dark:text-gray-400 font-medium text-sm sm:text-base">{t('article.share')}:</span>
                   <div className="flex items-center gap-2">
                     <button 
                       onClick={() => {
@@ -413,15 +415,15 @@ export default function Article() {
                       <div className="w-10 h-10 bg-white/20 rounded-xl flex items-center justify-center mb-4">
                         <Sparkles className="w-5 h-5 text-white" />
                       </div>
-                      <h3 className="font-bold text-lg mb-2">Klaar voor je eigen website?</h3>
+                      <h3 className="font-bold text-lg mb-2">{t('article.ctaTitle')}</h3>
                       <p className="text-primary-100 text-sm mb-5 leading-relaxed">
-                        Professionele website vanaf €119/maand (incl. BTW).
+                        {t('article.ctaDescription')}
                       </p>
                       <Link
                         to="/start"
                         className="flex items-center justify-center gap-2 w-full py-3 bg-white text-primary-600 font-semibold rounded-xl hover:bg-primary-50 transition-all group"
                       >
-                        <span>Start je project</span>
+                        <span>{t('article.ctaButton')}</span>
                         <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
                       </Link>
                     </div>
@@ -432,7 +434,7 @@ export default function Article() {
                     <div className="bg-gray-50 dark:bg-gray-800 rounded-2xl p-5 border border-gray-100 dark:border-gray-700">
                       <h4 className="font-semibold text-gray-900 dark:text-white mb-4 flex items-center gap-2">
                         <BookOpen className="w-4 h-4 text-primary-600 dark:text-primary-400" />
-                        Gerelateerde artikelen
+                        {t('article.relatedArticles')}
                       </h4>
                       <div className="space-y-3">
                         {relatedArticles.map((related) => (
@@ -464,7 +466,7 @@ export default function Article() {
         {relatedArticles.length > 0 && (
           <section className="py-8 sm:py-12 bg-gray-50 dark:bg-gray-800 lg:hidden">
             <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-              <h3 className="text-lg sm:text-xl font-bold text-gray-900 dark:text-white mb-4 sm:mb-6">Gerelateerde artikelen</h3>
+              <h3 className="text-lg sm:text-xl font-bold text-gray-900 dark:text-white mb-4 sm:mb-6">{t('article.relatedArticles')}</h3>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
                 {relatedArticles.map((related) => (
                   <Link
@@ -511,7 +513,7 @@ export default function Article() {
               viewport={{ once: true }}
               className="text-2xl lg:text-3xl font-bold text-white mb-3 lg:mb-4"
             >
-              Klaar om te beginnen?
+              {t('article.ctaTitle')}
             </motion.h2>
             <motion.p
               initial={{ opacity: 0, y: 20 }}
@@ -520,7 +522,7 @@ export default function Article() {
               transition={{ delay: 0.1 }}
               className="text-primary-100 text-sm sm:text-base lg:text-lg mb-6 lg:mb-8 max-w-2xl mx-auto"
             >
-              Een professionele website hoeft niet ingewikkeld te zijn. Wij regelen alles voor je, zodat jij kunt focussen op ondernemen.
+              {t('article.ctaDescription')}
             </motion.p>
             <motion.div
               initial={{ opacity: 0, y: 20 }}
@@ -533,14 +535,14 @@ export default function Article() {
                 to="/start"
                 className="group inline-flex items-center justify-center gap-2 px-6 lg:px-8 py-3 lg:py-4 bg-white text-primary-600 font-semibold rounded-xl hover:bg-primary-50 transition-all hover:-translate-y-0.5 shadow-lg text-sm lg:text-base"
               >
-                <span>Start je project</span>
+                <span>{t('article.ctaButton')}</span>
                 <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
               </Link>
               <Link
                 to="/kennisbank"
                 className="px-6 lg:px-8 py-3 lg:py-4 bg-white/15 backdrop-blur-sm text-white font-semibold rounded-xl hover:bg-white/25 transition-all border border-white/20 text-sm lg:text-base"
               >
-                Lees meer artikelen
+                {t('article.readMore')}
               </Link>
             </motion.div>
           </div>

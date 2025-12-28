@@ -7,6 +7,7 @@
  */
 
 import { useState, useEffect } from 'react'
+import { useTranslation } from 'react-i18next'
 import { Link, useNavigate, useSearchParams } from 'react-router-dom'
 import { motion, AnimatePresence } from 'framer-motion'
 import {
@@ -43,21 +44,22 @@ interface ProjectSummary {
 }
 
 const STATUS_CONFIG: Record<string, { label: string; color: string; bg: string; icon: typeof FileText }> = {
-  onboarding: { label: 'Onboarding', color: 'text-blue-500', bg: 'bg-blue-500/20', icon: FileText },
-  design: { label: 'Design', color: 'text-amber-500', bg: 'bg-amber-500/20', icon: Palette },
-  feedback: { label: 'Feedback', color: 'text-indigo-500', bg: 'bg-indigo-500/20', icon: MessageSquare },
-  payment: { label: 'Betaling', color: 'text-purple-500', bg: 'bg-purple-500/20', icon: CreditCard },
-  live: { label: 'Live', color: 'text-green-500', bg: 'bg-green-500/20', icon: Rocket }
+  onboarding: { label: 'myProjects.status.onboarding', color: 'text-blue-500', bg: 'bg-blue-500/20', icon: FileText },
+  design: { label: 'myProjects.status.design', color: 'text-amber-500', bg: 'bg-amber-500/20', icon: Palette },
+  feedback: { label: 'myProjects.status.feedback', color: 'text-indigo-500', bg: 'bg-indigo-500/20', icon: MessageSquare },
+  payment: { label: 'myProjects.status.payment', color: 'text-purple-500', bg: 'bg-purple-500/20', icon: CreditCard },
+  live: { label: 'myProjects.status.live', color: 'text-green-500', bg: 'bg-green-500/20', icon: Rocket }
 }
 
 const TYPE_LABELS: Record<string, string> = {
-  website: 'Website',
-  webshop: 'Webshop',
-  drone: 'Drone Video',
-  logo: 'Logo Design'
+  website: 'myProjects.types.website',
+  webshop: 'myProjects.types.webshop',
+  drone: 'myProjects.types.drone',
+  logo: 'myProjects.types.logo'
 }
 
 export default function MijnProjecten() {
+  const { t } = useTranslation()
   const navigate = useNavigate()
   const [searchParams] = useSearchParams()
   const { darkMode, toggleDarkMode } = useDarkMode()
@@ -76,9 +78,9 @@ export default function MijnProjecten() {
   // SEO - Set page title and description
   useSEO({
     title: isLoggedIn 
-      ? `Mijn Projecten - ${projects.length} project${projects.length !== 1 ? 'en' : ''}` 
-      : 'Mijn Projecten - Inloggen',
-    description: 'Bekijk en beheer al je website projecten bij Webstability. Volg de voortgang, bekijk je facturen en chat met ons team.',
+      ? `${t('myProjects.pageTitle')} - ${projects.length} ${projects.length !== 1 ? t('myProjects.types.website') : t('myProjects.types.website')}` 
+      : `${t('myProjects.pageTitle')} - ${t('nav.login')}`,
+    description: t('myProjects.subtitle'),
     noindex: true // Klantenpagina's moeten niet geïndexeerd worden
   })
   
@@ -129,11 +131,11 @@ export default function MijnProjecten() {
         sessionStorage.setItem('customer_email', email.trim())
         sessionStorage.setItem('customer_projects', JSON.stringify(data.projects))
       } else {
-        setLoginError('Geen projecten gevonden met dit e-mailadres.')
+        setLoginError(t('myProjects.errors.noProjects'))
       }
     } catch (err) {
       console.error('Login error:', err)
-      setLoginError('Er ging iets mis. Probeer het opnieuw.')
+      setLoginError(t('myProjects.errors.somethingWrong'))
     }
     
     setLoginLoading(false)
@@ -198,8 +200,8 @@ export default function MijnProjecten() {
                   ? 'text-gray-400 hover:text-yellow-400 hover:bg-yellow-500/10' 
                   : 'text-gray-600 hover:text-gray-900 hover:bg-gray-100'
               }`}
-              title={darkMode ? 'Lichte modus' : 'Donkere modus'}
-              aria-label={darkMode ? 'Schakel naar lichte modus' : 'Schakel naar donkere modus'}
+              title={darkMode ? t('myProjects.lightMode') : t('myProjects.darkMode')}
+              aria-label={darkMode ? t('myProjects.lightMode') : t('myProjects.darkMode')}
             >
               {darkMode ? <Sun className="w-5 h-5" /> : <Moon className="w-5 h-5" />}
             </button>
@@ -220,7 +222,7 @@ export default function MijnProjecten() {
               className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/10 backdrop-blur-sm border border-white/20 text-white/90 text-sm mb-6"
             >
               <FolderOpen className="w-4 h-4" />
-              Mijn Projecten
+              {t('myProjects.badge')}
             </motion.div>
             
             <motion.h1
@@ -228,7 +230,7 @@ export default function MijnProjecten() {
               animate={{ opacity: 1, y: 0 }}
               className="text-3xl sm:text-4xl font-bold text-white mb-4"
             >
-              Bekijk al je projecten
+              {t('myProjects.title')}
             </motion.h1>
             
             <motion.p
@@ -237,7 +239,7 @@ export default function MijnProjecten() {
               transition={{ delay: 0.1 }}
               className="text-gray-400 max-w-xl mx-auto"
             >
-              Log in met je e-mailadres om al je projecten te bekijken en beheren
+              {t('myProjects.subtitle')}
             </motion.p>
           </div>
         </div>
@@ -252,7 +254,7 @@ export default function MijnProjecten() {
             <form onSubmit={handleLogin}>
               <div className="mb-6">
                 <label className="block text-sm font-medium text-gray-300 mb-2">
-                  E-mailadres
+                  {t('myProjects.emailLabel')}
                 </label>
                 <div className="relative">
                   <Mail className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-500" />
@@ -260,13 +262,13 @@ export default function MijnProjecten() {
                     type="email"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
-                    placeholder="jouw@email.nl"
+                    placeholder={t('myProjects.emailPlaceholder')}
                     className="w-full pl-12 pr-4 py-4 bg-gray-900/50 border border-gray-700 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition text-white placeholder-gray-500"
                     required
                   />
                 </div>
                 <p className="text-xs text-gray-500 mt-2">
-                  Gebruik het e-mailadres waarmee je je project(en) hebt aangemaakt
+                  {t('myProjects.emailHelp')}
                 </p>
               </div>
 
@@ -291,11 +293,11 @@ export default function MijnProjecten() {
                 {loginLoading ? (
                   <>
                     <Loader2 className="w-5 h-5 animate-spin" />
-                    Zoeken...
+                    {t('myProjects.searching')}
                   </>
                 ) : (
                   <>
-                    Bekijk mijn projecten
+                    {t('myProjects.viewProjects')}
                     <ChevronRight className="w-5 h-5" />
                   </>
                 )}
@@ -303,13 +305,13 @@ export default function MijnProjecten() {
             </form>
 
             <div className="mt-6 pt-6 border-t border-gray-700/50 text-center">
-              <p className="text-sm text-gray-500 mb-2">Weet je je Project ID?</p>
+              <p className="text-sm text-gray-500 mb-2">{t('myProjects.knowProjectId')}</p>
               <Link 
                 to="/project"
                 className="text-sm text-blue-400 hover:text-blue-300 font-medium transition inline-flex items-center gap-1"
               >
                 <Search className="w-4 h-4" />
-                Zoek op Project ID
+                {t('myProjects.searchById')}
               </Link>
             </div>
           </motion.div>
@@ -321,13 +323,13 @@ export default function MijnProjecten() {
             transition={{ delay: 0.2 }}
             className="mt-6 text-center"
           >
-            <p className="text-gray-500 text-sm mb-2">Nog geen project?</p>
+            <p className="text-gray-500 text-sm mb-2">{t('myProjects.noProjectYet')}</p>
             <Link
               to="/start"
               className="inline-flex items-center gap-2 text-emerald-400 hover:text-emerald-300 font-medium transition"
             >
               <Plus className="w-4 h-4" />
-              Start een nieuw project
+              {t('myProjects.startNewProject')}
             </Link>
           </motion.div>
         </main>
@@ -362,7 +364,7 @@ export default function MijnProjecten() {
                   ? 'text-gray-400 hover:text-yellow-400 hover:bg-yellow-500/10' 
                   : 'text-gray-600 hover:text-gray-900 hover:bg-gray-100'
               }`}
-              title={darkMode ? 'Lichte modus' : 'Donkere modus'}
+              title={darkMode ? t('myProjects.lightMode') : t('myProjects.darkMode')}
             >
               {darkMode ? <Sun className="w-5 h-5" /> : <Moon className="w-5 h-5" />}
             </button>
@@ -380,7 +382,7 @@ export default function MijnProjecten() {
               }`}
             >
               <LogOut className="w-4 h-4" />
-              <span className="hidden sm:inline">Uitloggen</span>
+              <span className="hidden sm:inline">{t('myProjects.logout')}</span>
             </button>
           </div>
         </div>
@@ -392,10 +394,10 @@ export default function MijnProjecten() {
         <div className="flex items-center justify-between mb-8">
           <div>
             <h1 className={`text-2xl sm:text-3xl font-bold mb-2 ${darkMode ? 'text-white' : 'text-gray-900'}`}>
-              Mijn Projecten
+              {t('myProjects.pageTitle')}
             </h1>
             <p className={darkMode ? 'text-gray-400' : 'text-gray-600'}>
-              {projects.length} project{projects.length !== 1 ? 'en' : ''} gevonden
+              {projects.length} {projects.length !== 1 ? t('myProjects.projectsFound_plural', { count: projects.length }) : t('myProjects.projectsFound', { count: projects.length })}
             </p>
           </div>
           
@@ -410,14 +412,14 @@ export default function MijnProjecten() {
               }`}
             >
               <RefreshCw className={`w-4 h-4 ${refreshing ? 'animate-spin' : ''}`} />
-              <span className="hidden sm:inline">Ververs</span>
+              <span className="hidden sm:inline">{t('myProjects.refresh')}</span>
             </button>
             <Link
               to="/start"
               className="flex items-center gap-2 px-4 py-2 bg-emerald-600 hover:bg-emerald-500 text-white rounded-lg transition"
             >
               <Plus className="w-4 h-4" />
-              <span className="hidden sm:inline">Nieuw project</span>
+              <span className="hidden sm:inline">{t('myProjects.newProject')}</span>
             </Link>
           </div>
         </div>
@@ -470,12 +472,12 @@ export default function MijnProjecten() {
                           {/* Tags */}
                           <div className="flex flex-wrap gap-2 mt-3">
                             <span className={`px-3 py-1 rounded-full text-xs font-medium ${statusConfig.bg} ${statusConfig.color}`}>
-                              {statusConfig.label}
+                              {t(statusConfig.label)}
                             </span>
                             <span className={`px-3 py-1 rounded-full text-xs font-medium ${
                               darkMode ? 'bg-gray-700/50 text-gray-400' : 'bg-gray-100 text-gray-600'
                             }`}>
-                              {TYPE_LABELS[project.type] || project.type}
+                              {t(TYPE_LABELS[project.type] || project.type)}
                             </span>
                             <span className={`px-3 py-1 rounded-full text-xs font-medium capitalize ${
                               darkMode ? 'bg-gray-700/50 text-gray-400' : 'bg-gray-100 text-gray-600'

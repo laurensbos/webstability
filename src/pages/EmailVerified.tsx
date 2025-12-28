@@ -6,6 +6,7 @@
  */
 
 import { useState, useEffect } from 'react'
+import { useTranslation } from 'react-i18next'
 import { useSearchParams, useNavigate } from 'react-router-dom'
 import { motion } from 'framer-motion'
 import {
@@ -22,6 +23,7 @@ import {
 import Logo from '../components/Logo'
 
 export default function EmailVerified() {
+  const { t } = useTranslation()
   const [searchParams] = useSearchParams()
   const navigate = useNavigate()
   
@@ -78,10 +80,10 @@ export default function EmailVerified() {
         
         navigate(`/project/${projectIdUpper}`)
       } else {
-        setLoginError(data.error || 'Ongeldige gegevens')
+        setLoginError(data.error || t('emailVerified.errors.invalidCredentials'))
       }
     } catch {
-      setLoginError('Er ging iets mis. Probeer het opnieuw.')
+      setLoginError(t('emailVerified.errors.somethingWrong'))
     } finally {
       setLoading(false)
     }
@@ -90,13 +92,13 @@ export default function EmailVerified() {
   const getErrorMessage = (errorCode: string | null) => {
     switch (errorCode) {
       case 'invalid_token':
-        return 'De verificatielink is ongeldig of verlopen. Vraag een nieuwe aan.'
+        return t('emailVerified.errors.invalidToken')
       case 'project_not_found':
-        return 'Project niet gevonden. Controleer je project ID.'
+        return t('emailVerified.errors.projectNotFound')
       case 'already_verified':
-        return 'Je e-mailadres is al geverifieerd.'
+        return t('emailVerified.errors.alreadyVerified')
       default:
-        return 'Er ging iets mis bij de verificatie.'
+        return t('emailVerified.errors.generic')
     }
   }
 
@@ -144,10 +146,10 @@ export default function EmailVerified() {
                     transition={{ delay: 0.4 }}
                   >
                     <h1 className="text-2xl sm:text-3xl font-bold text-white mb-2">
-                      E-mail bevestigd! 🎉
+                      {t('emailVerified.successTitle')} 🎉
                     </h1>
                     <p className="text-gray-400 text-sm sm:text-base">
-                      Je e-mailadres is succesvol geverifieerd.
+                      {t('emailVerified.successDescription')}
                     </p>
                   </motion.div>
 
@@ -176,20 +178,20 @@ export default function EmailVerified() {
                   <div className="p-6 sm:p-8 bg-gray-900/30">
                     <div className="flex items-center gap-2 mb-4">
                       <Sparkles className="w-5 h-5 text-primary-400" />
-                      <h2 className="font-semibold text-white">Log nu in op je portaal</h2>
+                      <h2 className="font-semibold text-white">{t('emailVerified.loginTitle')}</h2>
                     </div>
 
                     <form onSubmit={handleLogin} className="space-y-4">
                       {/* Email */}
                       <div>
                         <label className="block text-sm font-medium text-gray-400 mb-1.5">
-                          E-mailadres
+                          {t('emailVerified.emailLabel')}
                         </label>
                         <input
                           type="email"
                           value={email}
                           onChange={(e) => setEmail(e.target.value)}
-                          placeholder="je@email.nl"
+                          placeholder={t('emailVerified.emailPlaceholder')}
                           className="w-full px-4 py-3 bg-gray-800 border border-gray-600 rounded-xl text-white placeholder-gray-500 focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all"
                         />
                       </div>
@@ -197,14 +199,14 @@ export default function EmailVerified() {
                       {/* Password */}
                       <div>
                         <label className="block text-sm font-medium text-gray-400 mb-1.5">
-                          Wachtwoord
+                          {t('emailVerified.passwordLabel')}
                         </label>
                         <div className="relative">
                           <input
                             type={showPassword ? 'text' : 'password'}
                             value={password}
                             onChange={(e) => setPassword(e.target.value)}
-                            placeholder="Je wachtwoord"
+                            placeholder={t('emailVerified.passwordPlaceholder')}
                             className="w-full px-4 py-3 pr-12 bg-gray-800 border border-gray-600 rounded-xl text-white placeholder-gray-500 focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all"
                           />
                           <button
@@ -238,11 +240,11 @@ export default function EmailVerified() {
                         {loading ? (
                           <>
                             <Loader2 className="w-5 h-5 animate-spin" />
-                            <span>Inloggen...</span>
+                            <span>{t('emailVerified.loggingIn')}</span>
                           </>
                         ) : (
                           <>
-                            <span>Naar mijn portaal</span>
+                            <span>{t('emailVerified.goToDashboard')}</span>
                             <ArrowRight className="w-5 h-5" />
                           </>
                         )}

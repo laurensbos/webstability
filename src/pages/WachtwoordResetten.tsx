@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react'
+import { useTranslation } from 'react-i18next'
 import { motion } from 'framer-motion'
 import { useSearchParams, Link, useNavigate } from 'react-router-dom'
 import { 
@@ -44,6 +45,7 @@ function FloatingParticles() {
 }
 
 export default function WachtwoordResetten() {
+  const { t } = useTranslation()
   const [searchParams] = useSearchParams()
   const navigate = useNavigate()
   
@@ -93,10 +95,10 @@ export default function WachtwoordResetten() {
       if (data.success) {
         setRequestSent(true)
       } else {
-        setRequestError(data.message || 'Er ging iets mis')
+        setRequestError(data.message || t('passwordReset.errors.somethingWrong'))
       }
     } catch {
-      setRequestError('Er ging iets mis. Probeer het later opnieuw.')
+      setRequestError(t('passwordReset.errors.tryLater'))
     }
 
     setRequestLoading(false)
@@ -107,12 +109,12 @@ export default function WachtwoordResetten() {
     e.preventDefault()
     
     if (newPassword !== confirmPassword) {
-      setResetError('Wachtwoorden komen niet overeen')
+      setResetError(t('passwordReset.errors.passwordMismatch'))
       return
     }
 
     if (newPassword.length < 6) {
-      setResetError('Wachtwoord moet minimaal 6 tekens bevatten')
+      setResetError(t('passwordReset.errors.passwordTooShort'))
       return
     }
 
@@ -139,10 +141,10 @@ export default function WachtwoordResetten() {
           navigate(`/status/${projectId}`)
         }, 3000)
       } else {
-        setResetError(data.message || 'Er ging iets mis')
+        setResetError(data.message || t('passwordReset.errors.somethingWrong'))
       }
     } catch {
-      setResetError('Er ging iets mis. Probeer het later opnieuw.')
+      setResetError(t('passwordReset.errors.tryLater'))
     }
 
     setResetLoading(false)
@@ -179,7 +181,7 @@ export default function WachtwoordResetten() {
             className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/10 backdrop-blur-sm border border-white/20 text-white/90 text-sm mb-6"
           >
             <KeyRound className="w-4 h-4" />
-            {hasToken ? 'Nieuw wachtwoord instellen' : 'Wachtwoord vergeten'}
+            {hasToken ? t('passwordReset.badgeNew') : t('passwordReset.badge')}
           </motion.div>
           
           <motion.h1
@@ -189,9 +191,9 @@ export default function WachtwoordResetten() {
             className="text-3xl sm:text-4xl lg:text-5xl font-bold text-white mb-4"
           >
             {hasToken ? (
-              <>Stel je nieuwe <span className="bg-gradient-to-r from-blue-400 to-indigo-400 bg-clip-text text-transparent">wachtwoord</span> in</>
+              <>{t('passwordReset.titleNew')} <span className="bg-gradient-to-r from-blue-400 to-indigo-400 bg-clip-text text-transparent">{t('passwordReset.titlePassword')}</span> {t('passwordReset.titleNewEnd')}</>
             ) : (
-              <>Wachtwoord <span className="bg-gradient-to-r from-blue-400 to-indigo-400 bg-clip-text text-transparent">resetten</span></>
+              <>{t('passwordReset.title')} <span className="bg-gradient-to-r from-blue-400 to-indigo-400 bg-clip-text text-transparent">{t('passwordReset.titleAction')}</span></>
             )}
           </motion.h1>
           
@@ -202,8 +204,8 @@ export default function WachtwoordResetten() {
             className="text-base sm:text-lg text-gray-400 max-w-2xl mx-auto"
           >
             {hasToken 
-              ? 'Kies een nieuw wachtwoord voor je project.'
-              : 'Vul je e-mailadres of Project ID in om een reset link te ontvangen.'
+              ? t('passwordReset.descriptionNew')
+              : t('passwordReset.descriptionRequest')
             }
           </motion.p>
         </div>
@@ -222,32 +224,32 @@ export default function WachtwoordResetten() {
               <div className="space-y-4 mb-6">
                 <div>
                   <label className="block text-sm font-medium text-gray-300 mb-2">
-                    E-mailadres
+                    {t('passwordReset.emailLabel')}
                   </label>
                   <input
                     type="email"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
-                    placeholder="jouw@email.nl"
+                    placeholder={t('passwordReset.emailPlaceholder')}
                     className="w-full px-4 py-3 bg-gray-900/50 border border-gray-700 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-white placeholder-gray-500 transition"
                   />
                 </div>
                 
                 <div className="flex items-center gap-4">
                   <div className="flex-1 h-px bg-gray-700" />
-                  <span className="text-gray-500 text-sm">of</span>
+                  <span className="text-gray-500 text-sm">{t('common.or')}</span>
                   <div className="flex-1 h-px bg-gray-700" />
                 </div>
                 
                 <div>
                   <label className="block text-sm font-medium text-gray-300 mb-2">
-                    Project ID
+                    {t('passwordReset.projectIdLabel')}
                   </label>
                   <input
                     type="text"
                     value={projectIdInput}
                     onChange={(e) => setProjectIdInput(e.target.value.toUpperCase())}
-                    placeholder="WS-XXXXXXXX"
+                    placeholder={t('passwordReset.projectIdPlaceholder')}
                     className="w-full px-4 py-3 bg-gray-900/50 border border-gray-700 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-white placeholder-gray-500 font-mono transition"
                   />
                 </div>
@@ -274,12 +276,12 @@ export default function WachtwoordResetten() {
                 {requestLoading ? (
                   <>
                     <Loader2 className="w-5 h-5 animate-spin" />
-                    Versturen...
+                    {t('passwordReset.sending')}
                   </>
                 ) : (
                   <>
                     <Lock className="w-5 h-5" />
-                    Reset link versturen
+                    {t('passwordReset.sendResetLink')}
                   </>
                 )}
               </motion.button>
@@ -290,7 +292,7 @@ export default function WachtwoordResetten() {
                   className="text-sm text-gray-400 hover:text-white transition flex items-center justify-center gap-2"
                 >
                   <ArrowLeft className="w-4 h-4" />
-                  Terug naar inloggen
+                  {t('passwordReset.backToLogin')}
                 </Link>
               </div>
             </form>
@@ -302,17 +304,17 @@ export default function WachtwoordResetten() {
               <div className="w-16 h-16 bg-green-500/20 rounded-full flex items-center justify-center mx-auto mb-4">
                 <CheckCircle2 className="w-8 h-8 text-green-400" />
               </div>
-              <h3 className="text-xl font-bold text-white mb-2">Email verstuurd!</h3>
+              <h3 className="text-xl font-bold text-white mb-2">{t('passwordReset.emailSent')}</h3>
               <p className="text-gray-400 mb-6">
-                Als dit project bestaat, ontvang je binnen enkele minuten een email met een reset link.
+                {t('passwordReset.emailSentDescription')}
               </p>
               <p className="text-sm text-gray-500">
-                Geen email ontvangen? Check je spam folder of{' '}
+                {t('passwordReset.noEmail')}{' '}
                 <button 
                   onClick={() => setRequestSent(false)}
                   className="text-blue-400 hover:text-blue-300 underline"
                 >
-                  probeer opnieuw
+                  {t('passwordReset.tryAgain')}
                 </button>
               </p>
             </div>
@@ -323,14 +325,14 @@ export default function WachtwoordResetten() {
             <form onSubmit={handleResetPassword}>
               <div className="mb-4 p-4 bg-blue-500/10 border border-blue-500/30 rounded-xl">
                 <p className="text-sm text-blue-400">
-                  Project ID: <span className="font-mono font-bold">{projectId}</span>
+                  {t('passwordReset.projectIdInfo')} <span className="font-mono font-bold">{projectId}</span>
                 </p>
               </div>
 
               <div className="space-y-4 mb-6">
                 <div>
                   <label className="block text-sm font-medium text-gray-300 mb-2">
-                    Nieuw wachtwoord
+                    {t('passwordReset.newPassword')}
                   </label>
                   <div className="relative">
                     <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-500" />
@@ -338,7 +340,7 @@ export default function WachtwoordResetten() {
                       type={showPassword ? 'text' : 'password'}
                       value={newPassword}
                       onChange={(e) => setNewPassword(e.target.value)}
-                      placeholder="Minimaal 6 tekens"
+                      placeholder={t('passwordReset.minChars')}
                       className="w-full pl-12 pr-12 py-3 bg-gray-900/50 border border-gray-700 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-white placeholder-gray-500 transition"
                       required
                     />
@@ -354,7 +356,7 @@ export default function WachtwoordResetten() {
 
                 <div>
                   <label className="block text-sm font-medium text-gray-300 mb-2">
-                    Bevestig wachtwoord
+                    {t('passwordReset.confirmPassword')}
                   </label>
                   <div className="relative">
                     <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-500" />
@@ -362,7 +364,7 @@ export default function WachtwoordResetten() {
                       type={showPassword ? 'text' : 'password'}
                       value={confirmPassword}
                       onChange={(e) => setConfirmPassword(e.target.value)}
-                      placeholder="Herhaal je wachtwoord"
+                      placeholder={t('passwordReset.repeatPassword')}
                       className="w-full pl-12 pr-4 py-3 bg-gray-900/50 border border-gray-700 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-white placeholder-gray-500 transition"
                       required
                     />
@@ -391,12 +393,12 @@ export default function WachtwoordResetten() {
                 {resetLoading ? (
                   <>
                     <Loader2 className="w-5 h-5 animate-spin" />
-                    Wachtwoord wijzigen...
+                    {t('passwordReset.saving')}
                   </>
                 ) : (
                   <>
                     <Shield className="w-5 h-5" />
-                    Wachtwoord opslaan
+                    {t('passwordReset.savePassword')}
                   </>
                 )}
               </motion.button>
@@ -409,15 +411,15 @@ export default function WachtwoordResetten() {
               <div className="w-16 h-16 bg-green-500/20 rounded-full flex items-center justify-center mx-auto mb-4">
                 <CheckCircle2 className="w-8 h-8 text-green-400" />
               </div>
-              <h3 className="text-xl font-bold text-white mb-2">Wachtwoord gewijzigd!</h3>
+              <h3 className="text-xl font-bold text-white mb-2">{t('passwordReset.passwordChanged')}</h3>
               <p className="text-gray-400 mb-6">
-                Je wordt automatisch doorgestuurd naar je project...
+                {t('passwordReset.redirecting')}
               </p>
               <Link
                 to={`/status/${projectId}`}
                 className="text-blue-400 hover:text-blue-300 font-medium"
               >
-                Of klik hier om direct te gaan
+                {t('passwordReset.clickHere')}
               </Link>
             </div>
           )}
@@ -432,11 +434,11 @@ export default function WachtwoordResetten() {
         >
           <div className="flex items-center gap-2">
             <Shield className="w-4 h-4 text-green-500" />
-            <span>SSL beveiligd</span>
+            <span>{t('passwordReset.sslSecure')}</span>
           </div>
           <div className="flex items-center gap-2">
             <Lock className="w-4 h-4 text-blue-500" />
-            <span>Veilig opgeslagen</span>
+            <span>{t('passwordReset.safelyStored')}</span>
           </div>
         </motion.div>
       </main>
