@@ -1945,16 +1945,19 @@
       "title": "Messages",
       "empty": "No messages yet",
       "placeholder": "Type a message...",
-      "send": "Send"
+      "send": "Send",
+      "startConversation": "Start a conversation with us"
     },
     "onboardingSection": {
       "title": "Fill in questions",
       "completed": "Completed",
-      "readyForDesign": "Ready for design",
-      "confirmReady": "Confirm you're ready",
-      "confirmMessage": "Are you sure you're ready for the design phase? Make sure you've filled in all information and uploaded files.",
-      "yes": "Yes, start with design",
-      "no": "No, not yet"
+      "readyForDesign": "Ready to start?",
+      "readyDescription": "Have you uploaded all files and are you ready? Click the button below to start the design phase.",
+      "startDesign": "Start with design",
+      "warning": "Note:",
+      "warningMessage": "After confirmation, we can start working on the design immediately. Make sure all your files (logo, photos, texts) are uploaded to Google Drive.",
+      "cancel": "Cancel",
+      "yesStartDesign": "Yes, start design"
     }
   }
 }

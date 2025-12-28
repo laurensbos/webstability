@@ -985,7 +985,7 @@ export default function ProjectStatusNew() {
                   <FolderOpen className="w-5 h-5" />
                 </button>
                 <span className="absolute -bottom-8 left-1/2 -translate-x-1/2 px-2 py-1 text-xs font-medium rounded bg-gray-900 text-white opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap pointer-events-none">
-                  Mijn Account
+                  {t('projectStatus.myAccount')}
                 </span>
               </div>
             </div>
@@ -1514,9 +1514,9 @@ export default function ProjectStatusNew() {
                   <Rocket className="w-6 h-6 text-blue-400" />
                 </div>
                 <div>
-                  <h3 className="font-semibold text-white text-lg mb-1">Klaar om te starten?</h3>
+                  <h3 className="font-semibold text-white text-lg mb-1">{t('projectStatus.onboardingSection.readyForDesign')}</h3>
                   <p className="text-sm text-gray-300">
-                    Heb je alle bestanden geüpload en ben je klaar? Klik dan op de knop hieronder om de design fase te starten.
+                    {t('projectStatus.onboardingSection.readyDescription')}
                   </p>
                 </div>
               </div>
@@ -1527,13 +1527,13 @@ export default function ProjectStatusNew() {
                   className="w-full py-3 bg-gradient-to-r from-blue-500 to-indigo-500 hover:from-blue-600 hover:to-indigo-600 text-white font-semibold rounded-xl transition flex items-center justify-center gap-2"
                 >
                   <Sparkles className="w-5 h-5" />
-                  Start met design
+                  {t('projectStatus.onboardingSection.startDesign')}
                 </button>
               ) : (
                 <div className="space-y-3">
                   <div className="p-3 bg-amber-500/10 border border-amber-500/30 rounded-xl">
                     <p className="text-sm text-amber-300">
-                      <strong>Let op:</strong> Na bevestiging kunnen we direct beginnen met het ontwerp. Zorg dat al je bestanden (logo, foto's, teksten) zijn geüpload naar Google Drive.
+                      <strong>{t('projectStatus.onboardingSection.warning')}</strong> {t('projectStatus.onboardingSection.warningMessage')}
                     </p>
                   </div>
                   <div className="flex gap-3">
@@ -1541,7 +1541,7 @@ export default function ProjectStatusNew() {
                       onClick={() => setConfirmingReadyForDesign(false)}
                       className="flex-1 py-3 bg-gray-800 hover:bg-gray-700 text-white font-medium rounded-xl transition"
                     >
-                      Annuleren
+                      {t('projectStatus.onboardingSection.cancel')}
                     </button>
                     <button
                       onClick={confirmReadyForDesign}
@@ -1553,7 +1553,7 @@ export default function ProjectStatusNew() {
                       ) : (
                         <>
                           <CheckCircle2 className="w-5 h-5" />
-                          Ja, start design
+                          {t('projectStatus.onboardingSection.yesStartDesign')}
                         </>
                       )}
                     </button>
@@ -2027,8 +2027,8 @@ export default function ProjectStatusNew() {
                   {messages.length === 0 ? (
                     <div className="h-full flex flex-col items-center justify-center text-gray-500">
                       <MessageSquare className="w-10 h-10 mb-2 opacity-50" />
-                      <p className="text-sm">Nog geen berichten</p>
-                      <p className={`text-xs mt-1 ${darkMode ? 'text-gray-600' : 'text-gray-400'}`}>Start een gesprek met ons</p>
+                      <p className="text-sm">{t('projectStatus.chat.empty')}</p>
+                      <p className={`text-xs mt-1 ${darkMode ? 'text-gray-600' : 'text-gray-400'}`}>{t('chat.placeholder')}</p>
                     </div>
                   ) : (
                     messages.map((msg) => (

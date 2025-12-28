@@ -1945,16 +1945,19 @@
       "title": "Berichten",
       "empty": "Nog geen berichten",
       "placeholder": "Typ een bericht...",
-      "send": "Verstuur"
+      "send": "Verstuur",
+      "startConversation": "Start een gesprek met ons"
     },
     "onboardingSection": {
       "title": "Vragen invullen",
       "completed": "Voltooid",
-      "readyForDesign": "Klaar voor design",
-      "confirmReady": "Bevestig dat je klaar bent",
-      "confirmMessage": "Weet je zeker dat je klaar bent voor de design fase? Zorg dat je alle informatie hebt ingevuld en bestanden hebt geüpload.",
-      "yes": "Ja, start met design",
-      "no": "Nee, nog niet"
+      "readyForDesign": "Klaar om te starten?",
+      "readyDescription": "Heb je alle bestanden geüpload en ben je klaar? Klik dan op de knop hieronder om de design fase te starten.",
+      "startDesign": "Start met design",
+      "warning": "Let op:",
+      "warningMessage": "Na bevestiging kunnen we direct beginnen met het ontwerp. Zorg dat al je bestanden (logo, foto's, teksten) zijn geüpload naar Google Drive.",
+      "cancel": "Annuleren",
+      "yesStartDesign": "Ja, start design"
     }
   }
 }
