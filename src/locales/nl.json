@@ -487,88 +487,6 @@
       "scheduleMeeting": "Gesprek plannen"
     }
   },
-  "onboarding": {
-    "title": "Vertel ons over je bedrijf",
-    "subtitle": "Hoe meer we weten, hoe beter we je website kunnen maken",
-    "progress": "Voortgang",
-    "section": "Sectie {{current}} van {{total}}",
-    "saveProgress": "Opslaan en later doorgaan",
-    "submit": "Versturen",
-    "sections": {
-      "bedrijf": {
-        "title": "Over je bedrijf",
-        "description": "Vertel ons wie je bent"
-      },
-      "branding": {
-        "title": "Huisstijl & Design",
-        "description": "Hoe moet je website eruitzien?"
-      },
-      "content": {
-        "title": "Content & Media",
-        "description": "Teksten en beeldmateriaal"
-      },
-      "paginas": {
-        "title": "Pagina's & Functies",
-        "description": "Wat moet je website kunnen?"
-      },
-      "webshop": {
-        "title": "Webshop Details",
-        "description": "Specifiek voor je webshop"
-      },
-      "contact": {
-        "title": "Contact & Bereikbaarheid",
-        "description": "Je contactgegevens voor de website"
-      },
-      "strategie": {
-        "title": "Strategie & Doelen",
-        "description": "Help ons je bedrijf beter begrijpen"
-      },
-      "extra": {
-        "title": "Extra wensen",
-        "description": "Nog iets dat we moeten weten?"
-      }
-    },
-    "questions": {
-      "companyName": "Bedrijfsnaam",
-      "tagline": "Slogan of tagline",
-      "businessDescription": "Beschrijf je bedrijf",
-      "targetAudience": "Wie is je doelgroep?",
-      "uniqueSellingPoints": "Wat maakt je uniek?",
-      "hasLogo": "Heb je al een logo?",
-      "logoUpload": "Upload je logo",
-      "brandColors": "Kies je merkkeuren (max 4)",
-      "brandFont": "Welk lettertype past bij je bedrijf?",
-      "designStyle": "Welke stijl past bij je?",
-      "inspirationUrls": "Inspiratie websites",
-      "hasTexts": "Heb je al teksten voor je website?",
-      "textsUpload": "Upload je teksten",
-      "hasPhotos": "Heb je professionele foto's?",
-      "photosUpload": "Upload je foto's",
-      "wantsBlog": "Wil je een blog op je website?",
-      "pages": "Welke pagina's wil je?",
-      "contactMethods": "Hoe kunnen klanten contact opnemen?",
-      "languages": "In welke talen moet je website?",
-      "integrations": "Welke integraties wil je?",
-      "productCount": "Hoeveel producten heb je?",
-      "productCatalog": "Upload je productcatalogus",
-      "paymentMethods": "Welke betaalmethodes?",
-      "shippingOptions": "Verzendopties",
-      "vatNumber": "BTW-nummer",
-      "kvkNumber": "KVK-nummer",
-      "contactEmail": "E-mailadres voor de website",
-      "contactPhone": "Telefoonnummer",
-      "businessAddress": "Vestigingsadres",
-      "openingHours": "Openingstijden",
-      "socialMedia": "Welke social media kanalen heb je?",
-      "socialMediaUrls": "Social media links",
-      "competitors": "Wie zijn je concurrenten?",
-      "differentiation": "Waarin onderscheid je je van concurrenten?",
-      "mainCTA": "Wat is het belangrijkste doel van je website?",
-      "conversionGoal": "Wat is een succesvolle conversie voor jou?",
-      "deadline": "Wanneer moet je website live zijn?",
-      "additionalNotes": "Overige opmerkingen"
-    }
-  },
   "chat": {
     "title": "Berichten",
     "placeholder": "Typ je bericht...",
@@ -1616,6 +1534,342 @@
           "3": "Na akkoord ontvang je binnen 5 dagen 3 concepten",
           "4": "Onbeperkte revisies tot je 100% tevreden bent"
         }
+      }
+    }
+  },
+  "onboarding": {
+    "title": "Vertel ons over je bedrijf",
+    "subtitle": "Hoe meer we weten, hoe beter we je website kunnen maken",
+    "progress": "Voortgang",
+    "section": "Sectie {{current}} van {{total}}",
+    "saveProgress": "Opslaan en later doorgaan",
+    "submit": "Versturen",
+    "next": "Volgende",
+    "previous": "Vorige",
+    "skip": "Overslaan",
+    "required": "Dit veld is verplicht",
+    "optional": "Optioneel",
+    "pagesSelected": "{{count}} / {{limit}} pagina's geselecteerd",
+    "limitReached": "Limiet bereikt",
+    "remaining": "{{count}} over",
+    "needMorePages": "Meer pagina's nodig?",
+    "upgradeToPackage": "Upgrade naar {{package}} voor tot {{limit}} pagina's",
+    "viewUpgradeOptions": "Bekijk upgrade opties",
+    "sections": {
+      "bedrijf": {
+        "title": "Over je bedrijf",
+        "description": "Vertel ons wie je bent"
+      },
+      "branding": {
+        "title": "Huisstijl & Design",
+        "description": "Hoe moet je website eruitzien?"
+      },
+      "content": {
+        "title": "Content & Media",
+        "description": "Teksten en beeldmateriaal"
+      },
+      "paginas": {
+        "title": "Pagina's & Functies",
+        "description": "Wat moet je website kunnen?"
+      },
+      "webshop": {
+        "title": "Webshop Details",
+        "description": "Specifiek voor je webshop"
+      },
+      "contact": {
+        "title": "Contact & Bereikbaarheid",
+        "description": "Je contactgegevens voor de website"
+      },
+      "strategie": {
+        "title": "Strategie & Doelen",
+        "description": "Help ons je bedrijf beter begrijpen"
+      },
+      "extra": {
+        "title": "Extra wensen",
+        "description": "Nog iets dat we moeten weten?"
+      }
+    },
+    "questions": {
+      "companyName": {
+        "label": "Bedrijfsnaam",
+        "placeholder": "Jouw Bedrijf B.V."
+      },
+      "tagline": {
+        "label": "Slogan of tagline",
+        "description": "Een korte zin die beschrijft wat je doet",
+        "placeholder": "bijv. \"De beste kapper van Amsterdam\""
+      },
+      "businessDescription": {
+        "label": "Beschrijf je bedrijf",
+        "description": "Wat doe je en voor wie? (2-3 zinnen)",
+        "placeholder": "Wij zijn een...",
+        "helpText": "Dit gebruiken we als basis voor je homepage tekst"
+      },
+      "targetAudience": {
+        "label": "Wie is je doelgroep?",
+        "description": "Beschrijf je ideale klant",
+        "placeholder": "bijv. \"Ondernemers tussen 25-45 jaar die...\""
+      },
+      "uniqueSellingPoints": {
+        "label": "Wat maakt je uniek?",
+        "description": "Noem 3-5 sterke punten (druk Enter per punt)",
+        "placeholder": "bijv. \"10 jaar ervaring\""
+      },
+      "hasLogo": {
+        "label": "Heb je al een logo?",
+        "options": {
+          "yes": { "label": "Ja, ik heb een logo", "description": "Upload hieronder" },
+          "no": { "label": "Nee, nog niet", "description": "We kunnen er één voor je maken" },
+          "refresh": { "label": "Ja, maar ik wil een nieuw logo", "description": "We ontwerpen een nieuw logo" }
+        }
+      },
+      "logoUpload": {
+        "label": "Upload je logo",
+        "description": "PNG of SVG met transparante achtergrond werkt het beste",
+        "uploadButtonText": "Logo uploaden"
+      },
+      "brandColors": {
+        "label": "Kies je merkkeuren (max 4)",
+        "description": "Selecteer de kleuren die bij je merk passen. Begin met je hoofdkleur.",
+        "helpText": "Geen idee? Geen probleem! Onze designers kiezen passende kleuren op basis van je branche en stijl."
+      },
+      "brandFont": {
+        "label": "Welk lettertype past bij je bedrijf?",
+        "description": "Kies een font dat de uitstraling van je merk versterkt.",
+        "helpText": "Dit is een voorkeur - onze designers kunnen een ander font adviseren als dat beter past."
+      },
+      "designStyle": {
+        "label": "Welke stijl past bij je?",
+        "options": {
+          "modern": { "label": "Modern & Minimalistisch", "description": "Strak, veel witruimte" },
+          "professional": { "label": "Zakelijk & Professioneel", "description": "Betrouwbaar, corporate" },
+          "creative": { "label": "Creatief & Speels", "description": "Kleurrijk, uniek" },
+          "luxury": { "label": "Luxe & Elegant", "description": "Premium uitstraling" }
+        }
+      },
+      "inspirationUrls": {
+        "label": "Inspiratie websites",
+        "description": "Links naar websites die je mooi vindt",
+        "placeholder": "https://..."
+      },
+      "hasTexts": {
+        "label": "Heb je al teksten voor je website?",
+        "options": {
+          "yes": { "label": "Ja, ik heb teksten klaar", "description": "Upload of plak ze hieronder" },
+          "partial": { "label": "Gedeeltelijk", "description": "Ik heb hulp nodig bij sommige pagina's" },
+          "no": { "label": "Nee, schrijf ze voor mij", "description": "We maken AI-teksten op basis van je input" }
+        }
+      },
+      "textsUpload": {
+        "label": "Upload je teksten",
+        "description": "Word document of PDF met je content",
+        "uploadButtonText": "Teksten uploaden"
+      },
+      "hasPhotos": {
+        "label": "Heb je professionele foto's?",
+        "options": {
+          "yes": { "label": "Ja, ik heb goede foto's", "description": "Upload ze naar de Drive" },
+          "some": { "label": "Een paar, maar niet genoeg" },
+          "no": { "label": "Nee, gebruik stockfoto's", "description": "We zoeken passende foto's" }
+        }
+      },
+      "photosUpload": {
+        "label": "Upload je foto's",
+        "description": "Hoge resolutie foto's (min. 1200px breed)",
+        "uploadButtonText": "Foto's uploaden"
+      },
+      "wantsBlog": {
+        "label": "Wil je een blog op je website?",
+        "options": {
+          "yes": { "label": "Ja", "description": "We zetten de blog klaar" },
+          "later": { "label": "Misschien later" },
+          "no": { "label": "Nee" }
+        }
+      },
+      "pages": {
+        "label": "Welke pagina's wil je?",
+        "description": "Selecteer de pagina's die je nodig hebt",
+        "options": {
+          "home": "Homepage",
+          "about": "Over ons",
+          "services": "Diensten",
+          "portfolio": "Portfolio",
+          "contact": "Contact",
+          "faq": "FAQ",
+          "team": "Team",
+          "blog": "Blog",
+          "pricing": "Prijzen",
+          "testimonials": "Reviews",
+          "gallery": "Galerij",
+          "booking": "Afspraken",
+          "careers": "Vacatures",
+          "news": "Nieuws",
+          "cases": "Cases / Projecten",
+          "partners": "Partners",
+          "privacy": "Privacybeleid",
+          "terms": "Algemene voorwaarden",
+          "locations": "Locaties / Vestigingen",
+          "downloads": "Downloads",
+          "events": "Evenementen",
+          "knowledge": "Kennisbank",
+          "webinar": "Webinars",
+          "custom": "Eigen pagina (beschrijf in opmerkingen)"
+        },
+        "packageRequired": {
+          "business": "Alleen Business pakket",
+          "professional": "Alleen Professional+"
+        }
+      },
+      "contactMethods": {
+        "label": "Hoe kunnen klanten contact opnemen?",
+        "options": {
+          "form": "Contactformulier",
+          "whatsapp": "WhatsApp knop",
+          "phone": "Telefoonnummer",
+          "email": "E-mail link",
+          "booking": "Online afspraken"
+        }
+      },
+      "languages": {
+        "label": "In welke talen moet je website?",
+        "options": {
+          "nl": "Nederlands",
+          "en": "Engels",
+          "de": "Duits",
+          "fr": "Frans"
+        }
+      },
+      "integrations": {
+        "label": "Welke integraties wil je?",
+        "options": {
+          "analytics": "Google Analytics",
+          "newsletter": "Nieuwsbrief (Mailchimp/ActiveCampaign)",
+          "crm": "CRM koppeling",
+          "booking": "Boekingssysteem",
+          "reviews": "Reviews (Google/Trustpilot)"
+        }
+      },
+      "productCount": {
+        "label": "Hoeveel producten heb je?",
+        "options": {
+          "1-10": "1-10 producten",
+          "11-50": "11-50 producten",
+          "51-100": "51-100 producten",
+          "100+": "Meer dan 100"
+        }
+      },
+      "productCatalog": {
+        "label": "Upload je productcatalogus",
+        "description": "Excel/CSV met productnamen, prijzen, beschrijvingen",
+        "uploadButtonText": "Catalogus uploaden",
+        "helpText": "Download onze template voor het juiste formaat"
+      },
+      "paymentMethods": {
+        "label": "Welke betaalmethodes?",
+        "options": {
+          "ideal": "iDEAL",
+          "creditcard": "Creditcard",
+          "paypal": "PayPal",
+          "klarna": "Klarna (achteraf betalen)",
+          "bancontact": "Bancontact (België)"
+        }
+      },
+      "shippingOptions": {
+        "label": "Verzendopties",
+        "options": {
+          "postnl": "PostNL",
+          "dhl": "DHL",
+          "pickup": "Afhalen",
+          "free": "Gratis verzending (vanaf bedrag)"
+        }
+      },
+      "vatNumber": {
+        "label": "BTW-nummer",
+        "placeholder": "NL123456789B01"
+      },
+      "kvkNumber": {
+        "label": "KVK-nummer",
+        "placeholder": "12345678"
+      },
+      "contactEmail": {
+        "label": "E-mailadres voor de website",
+        "description": "Dit e-mailadres komt op je contactpagina",
+        "placeholder": "info@jouwbedrijf.nl"
+      },
+      "contactPhone": {
+        "label": "Telefoonnummer",
+        "description": "Optioneel - voor de contactpagina",
+        "placeholder": "06 12345678"
+      },
+      "businessAddress": {
+        "label": "Vestigingsadres",
+        "description": "Je adres voor de contactpagina en Google Maps",
+        "placeholder": "Straatnaam 123\n1234 AB Plaatsnaam"
+      },
+      "openingHours": {
+        "label": "Openingstijden",
+        "description": "Wanneer ben je bereikbaar?",
+        "placeholder": "Ma-Vr: 9:00 - 17:00\nZa-Zo: Gesloten"
+      },
+      "socialMedia": {
+        "label": "Welke social media kanalen heb je?",
+        "description": "We voegen knoppen toe naar je actieve kanalen",
+        "options": {
+          "instagram": "Instagram",
+          "facebook": "Facebook",
+          "linkedin": "LinkedIn",
+          "twitter": "X (Twitter)",
+          "tiktok": "TikTok",
+          "youtube": "YouTube",
+          "pinterest": "Pinterest"
+        }
+      },
+      "socialMediaUrls": {
+        "label": "Social media links",
+        "description": "Plak hier de links naar je profielen",
+        "placeholder": "Instagram: https://instagram.com/jouwbedrijf\nLinkedIn: https://linkedin.com/company/..."
+      },
+      "competitors": {
+        "label": "Wie zijn je concurrenten?",
+        "description": "Noem bedrijfsnamen of websites van concurrenten",
+        "placeholder": "bijv. \"Concurrent B.V.\" of \"www.concurrent.nl\"",
+        "helpText": "We gebruiken dit om te zien wat goed werkt in jouw branche"
+      },
+      "differentiation": {
+        "label": "Waarin onderscheid je je van concurrenten?",
+        "description": "Wat doe jij beter of anders?",
+        "placeholder": "bijv. \"Snellere levering, persoonlijke service, uniek product...\""
+      },
+      "mainCTA": {
+        "label": "Wat is het belangrijkste doel van je website?",
+        "description": "Wat wil je dat bezoekers doen?",
+        "options": {
+          "contact": { "label": "Contact opnemen", "description": "Bellen, mailen of formulier invullen" },
+          "quote": { "label": "Offerte aanvragen", "description": "Lead generatie" },
+          "booking": { "label": "Afspraak maken", "description": "Online reserveren of boeken" },
+          "buy": { "label": "Product kopen", "description": "E-commerce transactie" },
+          "info": { "label": "Informatie vinden", "description": "Brochure website" },
+          "subscribe": { "label": "Nieuwsbrief inschrijven", "description": "E-mail lijst opbouwen" }
+        }
+      },
+      "conversionGoal": {
+        "label": "Wat is een succesvolle conversie voor jou?",
+        "description": "Beschrijf het ideale resultaat van een websitebezoek",
+        "placeholder": "bijv. \"Een offerte aanvraag voor een verbouwingsproject\""
+      },
+      "deadline": {
+        "label": "Wanneer moet je website live zijn?",
+        "options": {
+          "asap": "Zo snel mogelijk",
+          "2weeks": "Binnen 2 weken",
+          "month": "Binnen een maand",
+          "flexible": "Geen haast"
+        }
+      },
+      "additionalNotes": {
+        "label": "Overige opmerkingen",
+        "description": "Is er nog iets dat we moeten weten?",
+        "placeholder": "Speciale wensen, vragen, opmerkingen..."
       }
     }
   }

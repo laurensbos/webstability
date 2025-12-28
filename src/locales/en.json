@@ -494,6 +494,17 @@
     "section": "Section {{current}} of {{total}}",
     "saveProgress": "Save and continue later",
     "submit": "Submit",
+    "next": "Next",
+    "previous": "Previous",
+    "skip": "Skip",
+    "required": "This field is required",
+    "optional": "Optional",
+    "pagesSelected": "{{count}} / {{limit}} pages selected",
+    "limitReached": "Limit reached",
+    "remaining": "{{count}} remaining",
+    "needMorePages": "Need more pages?",
+    "upgradeToPackage": "Upgrade to {{package}} for up to {{limit}} pages",
+    "viewUpgradeOptions": "View upgrade options",
     "sections": {
       "bedrijf": {
         "title": "About your business",
@@ -529,44 +540,287 @@
       }
     },
     "questions": {
-      "companyName": "Company name",
-      "tagline": "Slogan or tagline",
-      "businessDescription": "Describe your business",
-      "targetAudience": "Who is your target audience?",
-      "uniqueSellingPoints": "What makes you unique?",
-      "hasLogo": "Do you have a logo?",
-      "logoUpload": "Upload your logo",
-      "brandColors": "Choose your brand colors (max 4)",
-      "brandFont": "Which font suits your business?",
-      "designStyle": "Which style suits you?",
-      "inspirationUrls": "Inspiration websites",
-      "hasTexts": "Do you have texts for your website?",
-      "textsUpload": "Upload your texts",
-      "hasPhotos": "Do you have professional photos?",
-      "photosUpload": "Upload your photos",
-      "wantsBlog": "Do you want a blog on your website?",
-      "pages": "Which pages do you want?",
-      "contactMethods": "How can customers contact you?",
-      "languages": "In which languages should your website be?",
-      "integrations": "Which integrations do you want?",
-      "productCount": "How many products do you have?",
-      "productCatalog": "Upload your product catalog",
-      "paymentMethods": "Which payment methods?",
-      "shippingOptions": "Shipping options",
-      "vatNumber": "VAT number",
-      "kvkNumber": "Chamber of Commerce number",
-      "contactEmail": "Email address for the website",
-      "contactPhone": "Phone number",
-      "businessAddress": "Business address",
-      "openingHours": "Opening hours",
-      "socialMedia": "Which social media channels do you have?",
-      "socialMediaUrls": "Social media links",
-      "competitors": "Who are your competitors?",
-      "differentiation": "What sets you apart from competitors?",
-      "mainCTA": "What is the main goal of your website?",
-      "conversionGoal": "What is a successful conversion for you?",
-      "deadline": "When should your website be live?",
-      "additionalNotes": "Additional remarks"
+      "companyName": {
+        "label": "Company name",
+        "placeholder": "Your Business Ltd."
+      },
+      "tagline": {
+        "label": "Slogan or tagline",
+        "description": "A short sentence describing what you do",
+        "placeholder": "e.g. \"The best barber in Amsterdam\""
+      },
+      "businessDescription": {
+        "label": "Describe your business",
+        "description": "What do you do and for whom? (2-3 sentences)",
+        "placeholder": "We are a...",
+        "helpText": "We'll use this as the basis for your homepage text"
+      },
+      "targetAudience": {
+        "label": "Who is your target audience?",
+        "description": "Describe your ideal customer",
+        "placeholder": "e.g. \"Entrepreneurs aged 25-45 who...\""
+      },
+      "uniqueSellingPoints": {
+        "label": "What makes you unique?",
+        "description": "Name 3-5 strong points (press Enter per point)",
+        "placeholder": "e.g. \"10 years of experience\""
+      },
+      "hasLogo": {
+        "label": "Do you have a logo?",
+        "options": {
+          "yes": { "label": "Yes, I have a logo", "description": "Upload below" },
+          "no": { "label": "No, not yet", "description": "We can create one for you" },
+          "refresh": { "label": "Yes, but I want a new logo", "description": "We'll design a new logo" }
+        }
+      },
+      "logoUpload": {
+        "label": "Upload your logo",
+        "description": "PNG or SVG with transparent background works best",
+        "uploadButtonText": "Upload logo"
+      },
+      "brandColors": {
+        "label": "Choose your brand colors (max 4)",
+        "description": "Select the colors that match your brand. Start with your main color.",
+        "helpText": "No idea? No problem! Our designers will choose suitable colors based on your industry and style."
+      },
+      "brandFont": {
+        "label": "Which font suits your business?",
+        "description": "Choose a font that enhances your brand's appearance.",
+        "helpText": "This is a preference - our designers may suggest a different font if it fits better."
+      },
+      "designStyle": {
+        "label": "Which style suits you?",
+        "options": {
+          "modern": { "label": "Modern & Minimalist", "description": "Clean, lots of white space" },
+          "professional": { "label": "Business & Professional", "description": "Reliable, corporate" },
+          "creative": { "label": "Creative & Playful", "description": "Colorful, unique" },
+          "luxury": { "label": "Luxury & Elegant", "description": "Premium appearance" }
+        }
+      },
+      "inspirationUrls": {
+        "label": "Inspiration websites",
+        "description": "Links to websites you like",
+        "placeholder": "https://..."
+      },
+      "hasTexts": {
+        "label": "Do you have texts for your website?",
+        "options": {
+          "yes": { "label": "Yes, I have texts ready", "description": "Upload or paste them below" },
+          "partial": { "label": "Partially", "description": "I need help with some pages" },
+          "no": { "label": "No, write them for me", "description": "We'll create AI texts based on your input" }
+        }
+      },
+      "textsUpload": {
+        "label": "Upload your texts",
+        "description": "Word document or PDF with your content",
+        "uploadButtonText": "Upload texts"
+      },
+      "hasPhotos": {
+        "label": "Do you have professional photos?",
+        "options": {
+          "yes": { "label": "Yes, I have good photos", "description": "Upload them to the Drive" },
+          "some": { "label": "A few, but not enough" },
+          "no": { "label": "No, use stock photos", "description": "We'll find suitable photos" }
+        }
+      },
+      "photosUpload": {
+        "label": "Upload your photos",
+        "description": "High resolution photos (min. 1200px wide)",
+        "uploadButtonText": "Upload photos"
+      },
+      "wantsBlog": {
+        "label": "Do you want a blog on your website?",
+        "options": {
+          "yes": { "label": "Yes", "description": "We'll set up the blog" },
+          "later": { "label": "Maybe later" },
+          "no": { "label": "No" }
+        }
+      },
+      "pages": {
+        "label": "Which pages do you want?",
+        "description": "Select the pages you need",
+        "options": {
+          "home": "Homepage",
+          "about": "About us",
+          "services": "Services",
+          "portfolio": "Portfolio",
+          "contact": "Contact",
+          "faq": "FAQ",
+          "team": "Team",
+          "blog": "Blog",
+          "pricing": "Pricing",
+          "testimonials": "Reviews",
+          "gallery": "Gallery",
+          "booking": "Appointments",
+          "careers": "Careers",
+          "news": "News",
+          "cases": "Cases / Projects",
+          "partners": "Partners",
+          "privacy": "Privacy policy",
+          "terms": "Terms and conditions",
+          "locations": "Locations / Branches",
+          "downloads": "Downloads",
+          "events": "Events",
+          "knowledge": "Knowledge base",
+          "webinar": "Webinars",
+          "custom": "Custom page (describe in remarks)"
+        },
+        "packageRequired": {
+          "business": "Business package only",
+          "professional": "Professional+ only"
+        }
+      },
+      "contactMethods": {
+        "label": "How can customers contact you?",
+        "options": {
+          "form": "Contact form",
+          "whatsapp": "WhatsApp button",
+          "phone": "Phone number",
+          "email": "Email link",
+          "booking": "Online appointments"
+        }
+      },
+      "languages": {
+        "label": "In which languages should your website be?",
+        "options": {
+          "nl": "Dutch",
+          "en": "English",
+          "de": "German",
+          "fr": "French"
+        }
+      },
+      "integrations": {
+        "label": "Which integrations do you want?",
+        "options": {
+          "analytics": "Google Analytics",
+          "newsletter": "Newsletter (Mailchimp/ActiveCampaign)",
+          "crm": "CRM integration",
+          "booking": "Booking system",
+          "reviews": "Reviews (Google/Trustpilot)"
+        }
+      },
+      "productCount": {
+        "label": "How many products do you have?",
+        "options": {
+          "1-10": "1-10 products",
+          "11-50": "11-50 products",
+          "51-100": "51-100 products",
+          "100+": "More than 100"
+        }
+      },
+      "productCatalog": {
+        "label": "Upload your product catalog",
+        "description": "Excel/CSV with product names, prices, descriptions",
+        "uploadButtonText": "Upload catalog",
+        "helpText": "Download our template for the correct format"
+      },
+      "paymentMethods": {
+        "label": "Which payment methods?",
+        "options": {
+          "ideal": "iDEAL",
+          "creditcard": "Credit card",
+          "paypal": "PayPal",
+          "klarna": "Klarna (buy now pay later)",
+          "bancontact": "Bancontact (Belgium)"
+        }
+      },
+      "shippingOptions": {
+        "label": "Shipping options",
+        "options": {
+          "postnl": "PostNL",
+          "dhl": "DHL",
+          "pickup": "Pickup",
+          "free": "Free shipping (from amount)"
+        }
+      },
+      "vatNumber": {
+        "label": "VAT number",
+        "placeholder": "NL123456789B01"
+      },
+      "kvkNumber": {
+        "label": "Chamber of Commerce number",
+        "placeholder": "12345678"
+      },
+      "contactEmail": {
+        "label": "Email address for the website",
+        "description": "This email will appear on your contact page",
+        "placeholder": "info@yourbusiness.com"
+      },
+      "contactPhone": {
+        "label": "Phone number",
+        "description": "Optional - for the contact page",
+        "placeholder": "+31 6 12345678"
+      },
+      "businessAddress": {
+        "label": "Business address",
+        "description": "Your address for the contact page and Google Maps",
+        "placeholder": "Street Name 123\n1234 AB City"
+      },
+      "openingHours": {
+        "label": "Opening hours",
+        "description": "When are you available?",
+        "placeholder": "Mon-Fri: 9:00 AM - 5:00 PM\nSat-Sun: Closed"
+      },
+      "socialMedia": {
+        "label": "Which social media channels do you have?",
+        "description": "We'll add buttons to your active channels",
+        "options": {
+          "instagram": "Instagram",
+          "facebook": "Facebook",
+          "linkedin": "LinkedIn",
+          "twitter": "X (Twitter)",
+          "tiktok": "TikTok",
+          "youtube": "YouTube",
+          "pinterest": "Pinterest"
+        }
+      },
+      "socialMediaUrls": {
+        "label": "Social media links",
+        "description": "Paste the links to your profiles here",
+        "placeholder": "Instagram: https://instagram.com/yourbusiness\nLinkedIn: https://linkedin.com/company/..."
+      },
+      "competitors": {
+        "label": "Who are your competitors?",
+        "description": "Name company names or competitor websites",
+        "placeholder": "e.g. \"Competitor Ltd.\" or \"www.competitor.com\"",
+        "helpText": "We use this to see what works well in your industry"
+      },
+      "differentiation": {
+        "label": "What sets you apart from competitors?",
+        "description": "What do you do better or differently?",
+        "placeholder": "e.g. \"Faster delivery, personal service, unique product...\""
+      },
+      "mainCTA": {
+        "label": "What is the main goal of your website?",
+        "description": "What do you want visitors to do?",
+        "options": {
+          "contact": { "label": "Get in touch", "description": "Call, email or fill out form" },
+          "quote": { "label": "Request a quote", "description": "Lead generation" },
+          "booking": { "label": "Make an appointment", "description": "Online booking or reservation" },
+          "buy": { "label": "Buy product", "description": "E-commerce transaction" },
+          "info": { "label": "Find information", "description": "Brochure website" },
+          "subscribe": { "label": "Subscribe to newsletter", "description": "Build email list" }
+        }
+      },
+      "conversionGoal": {
+        "label": "What is a successful conversion for you?",
+        "description": "Describe the ideal result of a website visit",
+        "placeholder": "e.g. \"A quote request for a renovation project\""
+      },
+      "deadline": {
+        "label": "When should your website be live?",
+        "options": {
+          "asap": "As soon as possible",
+          "2weeks": "Within 2 weeks",
+          "month": "Within a month",
+          "flexible": "No rush"
+        }
+      },
+      "additionalNotes": {
+        "label": "Additional remarks",
+        "description": "Is there anything else we should know?",
+        "placeholder": "Special requests, questions, comments..."
+      }
     }
   },
   "chat": {

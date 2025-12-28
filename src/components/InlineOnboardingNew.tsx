@@ -1,4 +1,5 @@
 import { useState, useEffect, useCallback } from 'react'
+import { useTranslation } from 'react-i18next'
 import { motion, AnimatePresence } from 'framer-motion'
 import { 
   ChevronDown, 
@@ -42,6 +43,29 @@ const SECTION_ICONS: Record<string, LucideIcon> = {
   Target,
   Sparkles
 }
+
+// ===========================================
+// TRANSLATION HELPERS
+// ===========================================
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const createTranslationHelpers = (t: any) => ({
+  getQuestionText: (questionId: string, field: 'label' | 'description' | 'placeholder' | 'helpText' | 'uploadButtonText', fallback?: string) => {
+    const key = `onboarding.questions.${questionId}.${field}`
+    const translated = t(key, { defaultValue: '' })
+    return translated && translated !== key ? translated : fallback || ''
+  },
+  getOptionText: (questionId: string, optionValue: string, field: 'label' | 'description', fallback?: string) => {
+    const key = `onboarding.questions.${questionId}.options.${optionValue}.${field}`
+    const translated = t(key, { defaultValue: '' })
+    return translated && translated !== key ? translated : fallback || ''
+  },
+  getSectionText: (sectionId: string, field: 'title' | 'description', fallback: string) => {
+    const key = `onboarding.sections.${sectionId}.${field}`
+    const translated = t(key, { defaultValue: '' })
+    return translated && translated !== key ? translated : fallback
+  }
+})
 
 // ===========================================
 // QUESTION COMPONENTS
@@ -98,6 +122,9 @@ function TextareaQuestion({ question, value, onChange, disabled, darkMode }: Que
 
 // Radio Group
 function RadioQuestion({ question, value, onChange, disabled, darkMode }: QuestionProps) {
+  const { t } = useTranslation()
+  const { getOptionText } = createTranslationHelpers(t)
+  
   return (
     <div className="space-y-2">
       {question.options?.map((option) => (
@@ -125,11 +152,11 @@ function RadioQuestion({ question, value, onChange, disabled, darkMode }: Questi
           </div>
           <div className="flex-1">
             <span className={`font-medium ${darkMode ? 'text-white' : 'text-gray-900'}`}>
-              {option.label}
+              {getOptionText(question.id, option.value, 'label', option.label)}
             </span>
             {option.description && (
               <p className={`text-sm mt-0.5 ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>
-                {option.description}
+                {getOptionText(question.id, option.value, 'description', option.description)}
               </p>
             )}
           </div>
@@ -146,6 +173,8 @@ interface PagesSelectorProps extends QuestionProps {
 }
 
 function PagesSelector({ question, value, onChange, disabled, darkMode, packageType = 'starter', onUpgradeClick }: PagesSelectorProps) {
+  const { t } = useTranslation()
+  const { getOptionText } = createTranslationHelpers(t)
   const selectedValues = Array.isArray(value) ? value : []
   const packageLimit = question.packageLimits?.[packageType] || 5
   const isAtLimit = selectedValues.length >= packageLimit
@@ -192,7 +221,7 @@ function PagesSelector({ question, value, onChange, disabled, darkMode, packageT
         <div className="flex items-center gap-2">
           <LayoutGrid className={`w-4 h-4 ${darkMode ? 'text-gray-400' : 'text-gray-500'}`} />
           <span className={`text-sm font-medium ${darkMode ? 'text-white' : 'text-gray-900'}`}>
-            {selectedValues.length} / {packageLimit} pagina's geselecteerd
+            {t('onboarding.pagesSelected', { count: selectedValues.length, limit: packageLimit })}
           </span>
         </div>
         <span className={`text-xs px-2 py-1 rounded-full ${
@@ -200,7 +229,7 @@ function PagesSelector({ question, value, onChange, disabled, darkMode, packageT
             ? 'bg-amber-500/20 text-amber-500' 
             : 'bg-green-500/20 text-green-500'
         }`}>
-          {isAtLimit ? 'Limiet bereikt' : `${packageLimit - selectedValues.length} over`}
+          {isAtLimit ? t('onboarding.limitReached') : t('onboarding.remaining', { count: packageLimit - selectedValues.length })}
         </span>
       </div>
       
@@ -250,11 +279,11 @@ function PagesSelector({ question, value, onChange, disabled, darkMode, packageT
               </div>
               <div className="flex-1">
                 <span className={`text-sm ${darkMode ? 'text-white' : 'text-gray-900'}`}>
-                  {option.label}
+                  {getOptionText(question.id, option.value, 'label', option.label)}
                 </span>
                 {option.description && (
                   <p className={`text-xs ${isLocked ? 'text-amber-500' : darkMode ? 'text-gray-500' : 'text-gray-400'}`}>
-                    {option.description}
+                    {getOptionText(question.id, option.value, 'description', option.description)}
                   </p>
                 )}
               </div>
@@ -285,17 +314,17 @@ function PagesSelector({ question, value, onChange, disabled, darkMode, packageT
             </div>
             <div className="flex-1">
               <h4 className={`font-semibold ${darkMode ? 'text-white' : 'text-gray-900'}`}>
-                Meer pagina's nodig?
+                {t('onboarding.needMorePages')}
               </h4>
               <p className={`text-sm mt-1 ${darkMode ? 'text-gray-400' : 'text-gray-600'}`}>
-                Upgrade naar <span className="font-medium">{nextPkgInfo.name}</span> voor tot {question.packageLimits?.[nextPkg!]} pagina's
+                {t('onboarding.upgradeToPackage', { package: nextPkgInfo.name, limit: question.packageLimits?.[nextPkg!] })}
               </p>
               {onUpgradeClick && (
                 <button
                   onClick={onUpgradeClick}
                   className="mt-2 text-sm font-medium text-primary-500 hover:text-primary-400 transition-colors flex items-center gap-1"
                 >
-                  Bekijk upgrade opties
+                  {t('onboarding.viewUpgradeOptions')}
                   <ArrowUpRight className="w-4 h-4" />
                 </button>
               )}
@@ -314,6 +343,8 @@ interface CheckboxQuestionProps extends QuestionProps {
 }
 
 function CheckboxQuestion({ question, value, onChange, disabled, darkMode, packageType = 'starter', onUpgradeClick }: CheckboxQuestionProps) {
+  const { t } = useTranslation()
+  const { getOptionText } = createTranslationHelpers(t)
   const selectedValues = Array.isArray(value) ? value : []
   
   // Package hierarchy for checking requirements
@@ -377,7 +408,7 @@ function CheckboxQuestion({ question, value, onChange, disabled, darkMode, packa
             </div>
             <div className="flex-1">
               <span className={`text-sm ${darkMode ? 'text-white' : 'text-gray-900'}`}>
-                {option.label}
+                {getOptionText(question.id, option.value, 'label', option.label)}
               </span>
               {option.description && (
                 <p className={`text-xs mt-0.5 ${
@@ -385,7 +416,7 @@ function CheckboxQuestion({ question, value, onChange, disabled, darkMode, packa
                     ? 'text-amber-500' 
                     : darkMode ? 'text-gray-500' : 'text-gray-400'
                 }`}>
-                  {option.description}
+                  {getOptionText(question.id, option.value, 'description', option.description)}
                 </p>
               )}
             </div>
@@ -835,6 +866,9 @@ function SectionComponent({
   onSelectStockPhoto,
   onDeselectStockPhoto
 }: SectionComponentProps) {
+  const { t } = useTranslation()
+  const { getQuestionText, getSectionText } = createTranslationHelpers(t)
+  
   // Filter questions based on conditionalOn
   const visibleQuestions = section.questions.filter(q => {
     if (!q.conditionalOn) return true
@@ -914,12 +948,12 @@ function SectionComponent({
                 ? 'text-green-500' 
                 : darkMode ? 'text-white' : 'text-gray-900'
             }`}>
-              {section.title}
+              {getSectionText(section.id, 'title', section.title)}
             </span>
           </div>
           <div className="flex items-center gap-2 mt-0.5">
             <p className={`text-sm ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>
-              {section.description}
+              {getSectionText(section.id, 'description', section.description)}
             </p>
             {!isExpanded && (
               <span className={`text-xs px-2 py-0.5 rounded-full ${
@@ -955,12 +989,12 @@ function SectionComponent({
                   <div className="flex items-start justify-between gap-2">
                     <div>
                       <label className={`font-medium ${darkMode ? 'text-white' : 'text-gray-900'}`}>
-                        {question.label}
+                        {getQuestionText(question.id, 'label', question.label)}
                         {question.required && <span className="text-red-500 ml-1">*</span>}
                       </label>
                       {question.description && (
                         <p className={`text-sm mt-0.5 ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>
-                          {question.description}
+                          {getQuestionText(question.id, 'description', question.description)}
                         </p>
                       )}
                     </div>
@@ -968,7 +1002,7 @@ function SectionComponent({
                       <div className="group relative">
                         <HelpCircle className={`w-4 h-4 ${darkMode ? 'text-gray-500' : 'text-gray-400'}`} />
                         <div className="absolute right-0 top-6 w-48 p-2 rounded-lg bg-gray-900 text-white text-xs hidden group-hover:block z-10">
-                          {question.helpText}
+                          {getQuestionText(question.id, 'helpText', question.helpText)}
                         </div>
                       </div>
                     )}
