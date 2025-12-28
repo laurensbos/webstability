@@ -1396,5 +1396,34 @@
       "startProject": "Start your project",
       "contact": "Contact us"
     }
+  },
+  "notFound": {
+    "title": "Page not found",
+    "description": "Oops! The page you're looking for doesn't exist or has been moved. Don't worry, we'll help you find your way.",
+    "goHome": "Go to homepage",
+    "goBack": "Go back",
+    "helpTitle": "Maybe you're looking for one of these pages?",
+    "links": {
+      "pricing": "Pricing",
+      "portfolio": "Portfolio",
+      "contact": "Contact",
+      "projectStatus": "Project status"
+    },
+    "needHelp": "Need help?",
+    "contactUs": "Contact us"
+  },
+  "reviews": {
+    "title": "What our customers say",
+    "subtitle": "Real reviews from entrepreneurs on Trustpilot",
+    "reviews": "reviews"
+  },
+  "socialProof": {
+    "signedUp": "Has signed up",
+    "from": "from",
+    "close": "Close",
+    "times": {
+      "justNow": "Just now",
+      "minutesAgo": "{{count}} min ago"
+    }
   }
 }

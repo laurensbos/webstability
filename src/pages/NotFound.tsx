@@ -1,9 +1,12 @@
 import { motion } from 'framer-motion'
+import { useTranslation } from 'react-i18next'
 import { Home, ArrowLeft, Search, MessageCircle } from 'lucide-react'
 import { Link } from 'react-router-dom'
 import Header from '../components/Header'
 
 export default function NotFound() {
+  const { t } = useTranslation()
+  
   return (
     <div className="min-h-screen bg-gradient-to-b from-gray-900 via-gray-900 to-gray-950">
       {/* Animated Background */}
@@ -105,7 +108,7 @@ export default function NotFound() {
               transition={{ delay: 0.3 }}
               className="text-2xl sm:text-3xl lg:text-4xl font-bold text-white mb-3 sm:mb-4"
             >
-              Pagina niet gevonden
+              {t('notFound.title')}
             </motion.h1>
             
             <motion.p
@@ -114,8 +117,7 @@ export default function NotFound() {
               transition={{ delay: 0.4 }}
               className="text-gray-400 text-base sm:text-lg mb-6 sm:mb-8 max-w-md mx-auto px-4"
             >
-              Oeps! De pagina die je zoekt bestaat niet of is verplaatst. 
-              Geen zorgen, we helpen je terug op weg.
+              {t('notFound.description')}
             </motion.p>
 
             <motion.div
@@ -129,14 +131,14 @@ export default function NotFound() {
                 className="inline-flex items-center justify-center gap-2 px-6 sm:px-8 py-3 sm:py-4 bg-gradient-to-r from-primary-500 to-primary-600 hover:from-primary-600 hover:to-primary-700 text-white font-semibold rounded-xl transition-all shadow-lg shadow-primary-500/25 hover:shadow-primary-500/40 hover:-translate-y-0.5"
               >
                 <Home className="w-5 h-5" />
-                Naar homepage
+                {t('notFound.goHome')}
               </Link>
               <button
                 onClick={() => window.history.back()}
                 className="inline-flex items-center justify-center gap-2 px-6 sm:px-8 py-3 sm:py-4 bg-white/5 backdrop-blur-xl border border-white/10 text-white font-semibold rounded-xl hover:bg-white/10 hover:border-white/20 transition-all"
               >
                 <ArrowLeft className="w-5 h-5" />
-                Ga terug
+                {t('notFound.goBack')}
               </button>
             </motion.div>
 
@@ -147,13 +149,13 @@ export default function NotFound() {
               transition={{ delay: 0.7 }}
               className="mt-12 sm:mt-16 pt-6 sm:pt-8 border-t border-white/10"
             >
-              <p className="text-gray-500 text-sm mb-4">Misschien zoek je een van deze pagina's?</p>
+              <p className="text-gray-500 text-sm mb-4">{t('notFound.helpTitle')}</p>
               <div className="flex flex-wrap justify-center gap-2 sm:gap-3 px-4">
                 {[
-                  { label: 'Prijzen', href: '/#pricing' },
-                  { label: 'Portfolio', href: '/portfolio' },
-                  { label: 'Contact', href: '/contact' },
-                  { label: 'Project status', href: '/project' },
+                  { label: t('notFound.links.pricing'), href: '/#pricing' },
+                  { label: t('notFound.links.portfolio'), href: '/portfolio' },
+                  { label: t('notFound.links.contact'), href: '/contact' },
+                  { label: t('notFound.links.projectStatus'), href: '/project' },
                 ].map((link) => (
                   <Link
                     key={link.href}
@@ -176,7 +178,7 @@ export default function NotFound() {
               <div className="flex items-center justify-center gap-3">
                 <MessageCircle className="w-5 h-5 text-primary-400" />
                 <p className="text-gray-300 text-sm">
-                  Hulp nodig? <Link to="/contact" className="font-semibold text-primary-400 hover:text-primary-300 underline hover:no-underline">Neem contact op</Link>
+                  {t('notFound.needHelp')} <Link to="/contact" className="font-semibold text-primary-400 hover:text-primary-300 underline hover:no-underline">{t('notFound.contactUs')}</Link>
                 </p>
               </div>
             </motion.div>

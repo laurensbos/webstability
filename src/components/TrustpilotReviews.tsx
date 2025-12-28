@@ -1,4 +1,5 @@
 import { motion } from 'framer-motion'
+import { useTranslation } from 'react-i18next'
 import { Star, ExternalLink } from 'lucide-react'
 import AutoScrollCarousel from './AutoScrollCarousel'
 
@@ -62,6 +63,8 @@ interface TrustpilotReviewsProps {
 }
 
 export default function TrustpilotReviews({ className = '' }: TrustpilotReviewsProps) {
+  const { t } = useTranslation()
+  
   return (
     <section className={`py-20 lg:py-28 bg-white dark:bg-gray-900 relative overflow-hidden ${className}`}>
       <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -92,7 +95,7 @@ export default function TrustpilotReviews({ className = '' }: TrustpilotReviewsP
                 ))}
               </div>
               <span className="text-sm font-semibold text-gray-900 dark:text-white">{trustpilotData.score}</span>
-              <span className="text-xs text-gray-500 dark:text-gray-400">({trustpilotData.totalReviews} reviews)</span>
+              <span className="text-xs text-gray-500 dark:text-gray-400">({trustpilotData.totalReviews} {t('reviews.reviews')})</span>
               <ExternalLink className="w-3 h-3 text-gray-400 group-hover:text-primary-500 transition-colors" />
             </a>
           </motion.div>
@@ -103,7 +106,7 @@ export default function TrustpilotReviews({ className = '' }: TrustpilotReviewsP
             transition={{ delay: 0.1 }}
             className="text-2xl sm:text-3xl lg:text-5xl font-bold text-gray-900 dark:text-white mb-3 lg:mb-4"
           >
-            Wat onze klanten zeggen
+            {t('reviews.title')}
           </motion.h2>
           <motion.p
             initial={{ opacity: 0, y: 20 }}
@@ -112,7 +115,7 @@ export default function TrustpilotReviews({ className = '' }: TrustpilotReviewsP
             transition={{ delay: 0.2 }}
             className="text-gray-600 dark:text-gray-400 text-base lg:text-lg"
           >
-            Echte reviews van ondernemers op Trustpilot
+            {t('reviews.subtitle')}
           </motion.p>
         </div>
 

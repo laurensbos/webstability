@@ -1,17 +1,19 @@
 import { useState, useEffect } from 'react'
+import { useTranslation } from 'react-i18next'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Check, X } from 'lucide-react'
 
 const recentSignups = [
-  { name: 'Lisa', location: 'Amsterdam', time: 'Zojuist' },
-  { name: 'Mark', location: 'Rotterdam', time: '2 min geleden' },
-  { name: 'Sophie', location: 'Utrecht', time: '5 min geleden' },
-  { name: 'Jeroen', location: 'Eindhoven', time: '8 min geleden' },
-  { name: 'Anna', location: 'Den Haag', time: '12 min geleden' },
-  { name: 'Thomas', location: 'Groningen', time: '15 min geleden' },
+  { name: 'Lisa', location: 'Amsterdam', timeKey: 'justNow' },
+  { name: 'Mark', location: 'Rotterdam', timeKey: '2' },
+  { name: 'Sophie', location: 'Utrecht', timeKey: '5' },
+  { name: 'Jeroen', location: 'Eindhoven', timeKey: '8' },
+  { name: 'Anna', location: 'Den Haag', timeKey: '12' },
+  { name: 'Thomas', location: 'Groningen', timeKey: '15' },
 ]
 
 export default function SocialProof() {
+  const { t } = useTranslation()
   const [currentIndex, setCurrentIndex] = useState(0)
   const [isVisible, setIsVisible] = useState(false)
   const [isDismissed, setIsDismissed] = useState(false)
@@ -65,7 +67,7 @@ export default function SocialProof() {
             <button
               onClick={handleDismiss}
               className="absolute top-2 right-2 p-1 text-gray-400 hover:text-gray-600 transition-colors"
-              aria-label="Sluiten"
+              aria-label={t('socialProof.close')}
             >
               <X className="w-4 h-4" />
             </button>
@@ -76,10 +78,10 @@ export default function SocialProof() {
               </div>
               <div>
                 <p className="text-gray-900 text-sm font-medium">
-                  {current.name} uit {current.location}
+                  {current.name} {t('socialProof.from')} {current.location}
                 </p>
                 <p className="text-gray-500 text-xs">
-                  Heeft zich aangemeld • {current.time}
+                  {t('socialProof.signedUp')} • {current.timeKey === 'justNow' ? t('socialProof.times.justNow') : t('socialProof.times.minutesAgo', { count: parseInt(current.timeKey) })}
                 </p>
               </div>
             </div>

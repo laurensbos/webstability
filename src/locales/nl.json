@@ -1396,5 +1396,34 @@
       "startProject": "Start je project",
       "contact": "Neem contact op"
     }
+  },
+  "notFound": {
+    "title": "Pagina niet gevonden",
+    "description": "Oeps! De pagina die je zoekt bestaat niet of is verplaatst. Geen zorgen, we helpen je terug op weg.",
+    "goHome": "Naar homepage",
+    "goBack": "Ga terug",
+    "helpTitle": "Misschien zoek je een van deze pagina's?",
+    "links": {
+      "pricing": "Prijzen",
+      "portfolio": "Portfolio",
+      "contact": "Contact",
+      "projectStatus": "Project status"
+    },
+    "needHelp": "Hulp nodig?",
+    "contactUs": "Neem contact op"
+  },
+  "reviews": {
+    "title": "Wat onze klanten zeggen",
+    "subtitle": "Echte reviews van ondernemers op Trustpilot",
+    "reviews": "reviews"
+  },
+  "socialProof": {
+    "signedUp": "Heeft zich aangemeld",
+    "from": "uit",
+    "close": "Sluiten",
+    "times": {
+      "justNow": "Zojuist",
+      "minutesAgo": "{{count}} min geleden"
+    }
   }
 }
