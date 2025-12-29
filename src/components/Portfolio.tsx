@@ -1,4 +1,5 @@
 import { motion } from 'framer-motion'
+import { useTranslation } from 'react-i18next'
 import { ExternalLink, Sparkles } from 'lucide-react'
 import { useState } from 'react'
 import AutoScrollCarousel from './AutoScrollCarousel'
@@ -43,41 +44,42 @@ function FloatingParticles() {
   )
 }
 
-const portfolioItems = [
-  {
-    id: 1,
-    name: 'Lissers Rijschool',
-    url: 'https://lissers.nl',
-    description: 'Moderne website voor autorijschool met online inschrijving en pakketoverzicht.',
-    category: 'Rijschool',
-    icon: '🚗',
-    result: 'Online leerlingen werven',
-    screenshot: '/portfolio/lissers.jpg',
-  },
-  {
-    id: 2,
-    name: 'Hoogduin Onderhoud',
-    url: 'https://hoogduinonderhoud.nl',
-    description: 'Professionele website voor onderhoud en renovatie in de Bollenstreek.',
-    category: 'Dienstverlening',
-    icon: '🏡',
-    result: 'Meer offerteaanvragen',
-    screenshot: '/portfolio/hoogduin.jpg',
-  },
-  {
-    id: 3,
-    name: 'Rietveld Hoveniers',
-    url: 'https://rietveld-hoveniers.nl',
-    description: 'Stijlvolle website voor hoveniersbedrijf met portfolio van projecten.',
-    category: 'Hoveniers',
-    icon: '🌿',
-    result: 'Professionele uitstraling',
-    screenshot: '/portfolio/rietveld.jpg',
-  },
-]
-
 export default function Portfolio() {
+  const { t } = useTranslation()
   const [hoveredItem, setHoveredItem] = useState<number | null>(null)
+
+  const portfolioItems = [
+    {
+      id: 1,
+      name: 'Lissers Rijschool',
+      url: 'https://lissers.nl',
+      description: t('portfolio.items.lissers.description'),
+      category: t('portfolio.items.lissers.category'),
+      icon: '🚗',
+      result: t('portfolio.items.lissers.result'),
+      screenshot: '/portfolio/lissers.jpg',
+    },
+    {
+      id: 2,
+      name: 'Hoogduin Onderhoud',
+      url: 'https://hoogduinonderhoud.nl',
+      description: t('portfolio.items.hoogduin.description'),
+      category: t('portfolio.items.hoogduin.category'),
+      icon: '🏡',
+      result: t('portfolio.items.hoogduin.result'),
+      screenshot: '/portfolio/hoogduin.jpg',
+    },
+    {
+      id: 3,
+      name: 'Rietveld Hoveniers',
+      url: 'https://rietveld-hoveniers.nl',
+      description: t('portfolio.items.rietveld.description'),
+      category: t('portfolio.items.rietveld.category'),
+      icon: '🌿',
+      result: t('portfolio.items.rietveld.result'),
+      screenshot: '/portfolio/rietveld.jpg',
+    },
+  ]
 
   return (
     <section id="portfolio" className="py-16 lg:py-24 bg-gradient-to-b from-white via-gray-50 to-white dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 relative overflow-hidden">
@@ -105,14 +107,14 @@ export default function Portfolio() {
             className="inline-flex items-center gap-2 bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm border border-primary-200 dark:border-primary-800 rounded-full px-4 py-2 mb-6 shadow-sm"
           >
             <Sparkles className="w-4 h-4 text-primary-500" />
-            <span className="text-primary-700 dark:text-primary-400 font-medium text-sm">Ons werk</span>
+            <span className="text-primary-700 dark:text-primary-400 font-medium text-sm">{t('portfolio.badge')}</span>
           </motion.div>
           <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-gray-900 dark:text-white mb-3 lg:mb-4">
-            Websites die we hebben{' '}
-            <span className="bg-gradient-to-r from-primary-600 to-blue-600 bg-clip-text text-transparent">gebouwd</span>
+            {t('portfolio.title.part1')}{' '}
+            <span className="bg-gradient-to-r from-primary-600 to-blue-600 bg-clip-text text-transparent">{t('portfolio.title.part2')}</span>
           </h2>
           <p className="text-gray-600 dark:text-gray-400 text-base lg:text-lg max-w-2xl mx-auto">
-            Bekijk een selectie van websites die we voor onze klanten hebben gemaakt. 
+            {t('portfolio.description')}
           </p>
         </motion.div>
 
@@ -156,7 +158,7 @@ export default function Portfolio() {
                     <div className="absolute inset-0 bg-primary-500/0 group-hover:bg-primary-500/10 dark:group-hover:bg-primary-500/20 flex items-center justify-center transition-all">
                       <span className="opacity-0 group-hover:opacity-100 text-primary-600 dark:text-primary-400 text-xs font-semibold flex items-center gap-1 bg-white dark:bg-gray-800 px-2 py-1 rounded-full shadow-lg transition-opacity">
                         <ExternalLink className="w-3 h-3" />
-                        Bekijk live
+                        {t('portfolio.viewLive')}
                       </span>
                     </div>
                   </div>
@@ -247,7 +249,7 @@ export default function Portfolio() {
                   >
                     <div className="flex items-center gap-2 text-primary-600 dark:text-primary-400 font-semibold bg-white dark:bg-gray-800 rounded-full px-4 py-2 shadow-xl">
                       <ExternalLink className="w-4 h-4" />
-                      <span>Bekijk live</span>
+                      <span>{t('portfolio.viewLive')}</span>
                     </div>
                   </motion.div>
                 </div>

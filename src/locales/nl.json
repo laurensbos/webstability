@@ -2771,5 +2771,31 @@
         "seoComplete": "SEO optimalisatie voltooid"
       }
     }
+  },
+  "portfolio": {
+    "badge": "Ons werk",
+    "title": {
+      "part1": "Websites die we hebben",
+      "part2": "gebouwd"
+    },
+    "description": "Bekijk een selectie van websites die we voor onze klanten hebben gemaakt.",
+    "viewLive": "Bekijk live",
+    "items": {
+      "lissers": {
+        "description": "Moderne website voor autorijschool met online inschrijving en pakketoverzicht.",
+        "category": "Rijschool",
+        "result": "Online leerlingen werven"
+      },
+      "hoogduin": {
+        "description": "Professionele website voor onderhoud en renovatie in de Bollenstreek.",
+        "category": "Dienstverlening",
+        "result": "Meer offerteaanvragen"
+      },
+      "rietveld": {
+        "description": "Stijlvolle website voor hoveniersbedrijf met portfolio van projecten.",
+        "category": "Hoveniers",
+        "result": "Professionele uitstraling"
+      }
+    }
   }
 }

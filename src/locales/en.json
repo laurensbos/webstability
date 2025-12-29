@@ -2771,5 +2771,31 @@
         "seoComplete": "SEO optimization completed"
       }
     }
+  },
+  "portfolio": {
+    "badge": "Our work",
+    "title": {
+      "part1": "Websites we have",
+      "part2": "built"
+    },
+    "description": "View a selection of websites we've created for our clients.",
+    "viewLive": "View live",
+    "items": {
+      "lissers": {
+        "description": "Modern website for driving school with online registration and package overview.",
+        "category": "Driving School",
+        "result": "Recruit students online"
+      },
+      "hoogduin": {
+        "description": "Professional website for maintenance and renovation in the Bollenstreek region.",
+        "category": "Services",
+        "result": "More quote requests"
+      },
+      "rietveld": {
+        "description": "Stylish website for landscaping company with project portfolio.",
+        "category": "Landscaping",
+        "result": "Professional appearance"
+      }
+    }
   }
 }
