@@ -723,10 +723,16 @@
     "needMorePages": "Need more pages?",
     "upgradeToPackage": "Upgrade to {{package}} for up to {{limit}} pages",
     "viewUpgradeOptions": "View upgrade options",
+    "prefilled": {
+      "title": "Details transferred from your registration",
+      "company": "Company",
+      "email": "Email",
+      "industry": "Industry"
+    },
     "sections": {
       "bedrijf": {
         "title": "About your business",
-        "description": "Tell us who you are"
+        "description": "Review and complete"
       },
       "branding": {
         "title": "Branding & Design",
@@ -777,6 +783,19 @@
         "label": "Who is your target audience?",
         "description": "Describe your ideal customer",
         "placeholder": "e.g. \"Entrepreneurs aged 25-45 who...\""
+      },
+      "preferredDomain": {
+        "label": "Preferred domain name",
+        "placeholder": "e.g. yourbusiness.com",
+        "hint": "If you already have a domain, enter it here. Otherwise, enter your preferred domain name."
+      },
+      "needsBusinessEmail": {
+        "label": "Do you need a business email address?",
+        "options": {
+          "yes": { "label": "Yes, please", "description": "e.g. info@yourbusiness.com" },
+          "already": { "label": "I already have one" },
+          "no": { "label": "No, not necessary" }
+        }
       },
       "uniqueSellingPoints": {
         "label": "What makes you unique?",
@@ -1038,6 +1057,335 @@
         "label": "Additional remarks",
         "description": "Is there anything else we should know?",
         "placeholder": "Special requests, questions, comments..."
+      }
+    },
+    "formSteps": {
+      "branding": {
+        "title": "Branding & Brand Identity",
+        "subtitle": "Make your website unique",
+        "colors": {
+          "title": "Colors",
+          "hint": "Choose up to 4 colors for your website",
+          "selected": "{{count}}/4 selected",
+          "yourColors": "Your colors:",
+          "clickColor": "Click on a color below"
+        },
+        "fonts": {
+          "title": "Font",
+          "hint": "Choose a style that suits you"
+        },
+        "designStyle": {
+          "title": "Design Style",
+          "hint": "Which atmosphere suits you?"
+        },
+        "selection": {
+          "title": "Your selection",
+          "colors": "Colors",
+          "font": "Font",
+          "style": "Style"
+        },
+        "logo": {
+          "label": "Do you have a logo?",
+          "options": {
+            "yes": { "label": "Yes, I have a logo", "description": "Upload via the Drive link we'll prepare" },
+            "no": { "label": "No, not yet", "description": "We can design a logo for you" },
+            "needRefresh": { "label": "Yes, but I want a new logo" }
+          },
+          "describe": "Describe your logo",
+          "describePlaceholder": "Briefly describe your logo (colors, shape, style)",
+          "describeHint": "Upload your logo files via the Drive link we'll prepare for you",
+          "upsell": {
+            "titleNew": "Need a new logo?",
+            "titleNo": "Want a logo designed?",
+            "description": "A professional logo is the foundation of your brand. We design a unique logo that perfectly suits your business.",
+            "cta": "View logo package",
+            "price": "From €149,-"
+          }
+        },
+        "inspiration": {
+          "label": "Inspiration websites",
+          "hint": "Websites you like design-wise (press Enter)",
+          "placeholder": "https://..."
+        },
+        "designNotes": {
+          "label": "Additional design wishes",
+          "placeholder": "Are there specific elements you want? Or things you want to avoid?"
+        }
+      },
+      "goals": {
+        "title": "Goals & Conversion",
+        "subtitle": "How can we make your website work for you?",
+        "prefilledGoal": {
+          "title": "Your main goal",
+          "description": "As indicated during registration"
+        },
+        "callToAction": {
+          "label": "What should a visitor do on your website?",
+          "placeholder": "e.g. contact you, request a quote, call directly, view products...",
+          "hint": "The main action you want visitors to take"
+        },
+        "conversionSpeed": {
+          "label": "How quickly should visitors take action?",
+          "options": {
+            "direct": { "label": "Direct contact", "description": "Phone/WhatsApp prominently visible" },
+            "considered": { "label": "After informing", "description": "First read about services, then contact" },
+            "long": { "label": "Longer orientation", "description": "First view blog, cases, reviews" }
+          }
+        },
+        "contactMethods": {
+          "label": "Which contact options do you want to offer?",
+          "hint": "Available in your {{package}} package",
+          "options": {
+            "form": "Contact form",
+            "email": "Email link",
+            "phone": "Phone number",
+            "whatsapp": "WhatsApp button",
+            "booking": "Online booking",
+            "chat": "Live chat"
+          },
+          "upgradeHint": "Online booking & Live chat available from the <strong>Business</strong> package.",
+          "upgradeNow": "Upgrade now →"
+        },
+        "urgency": {
+          "label": "When do you want to go live?",
+          "options": {
+            "asap": "As soon as possible",
+            "2weeks": "Within 2 weeks",
+            "month": "Within a month",
+            "flexible": "No rush"
+          }
+        }
+      },
+      "pages": {
+        "title": "Page Details",
+        "subtitle": "More info about your pages",
+        "prefilledPages": {
+          "title": "Selected pages",
+          "description": "As chosen during registration"
+        },
+        "additionalPages": {
+          "label": "Additional pages",
+          "hint": "Select additional pages you need"
+        },
+        "limitReached": "Page limit reached for your package",
+        "upgradeHint": "Upgrade to {{package}} for more pages",
+        "pagesCount": "{{count}} pages",
+        "pagesUsed": "{{current}} / {{max}} pages",
+        "packageFull": "Your {{package}} package is full",
+        "pagesRemaining": "{{count}} more page(s) available in {{package}}",
+        "unlimited": "Unlimited pages in {{package}}",
+        "morePages": "More pages",
+        "whichPages": "Which pages do you want on your website?",
+        "pageOptions": {
+          "home": "Home",
+          "about": "About us",
+          "services": "Services",
+          "contact": "Contact",
+          "portfolio": "Portfolio",
+          "blog": "Blog",
+          "faq": "FAQ",
+          "pricing": "Pricing",
+          "team": "Team"
+        },
+        "customPages": {
+          "label": "Other pages",
+          "hint": "Name custom pages (press Enter)",
+          "placeholder": "e.g. Project X, Location Y..."
+        },
+        "pageInfo": "What should be on the {{page}} page?",
+        "pageInfoPlaceholder": "Describe what should be on this page...",
+        "pageDetails": {
+          "title": "Details per page (optional)",
+          "home": {
+            "label": "What should be on the homepage?",
+            "placeholder": "Main message, USPs, featured content..."
+          },
+          "services": {
+            "label": "Which services do you want to show?",
+            "placeholder": "List of services, prices, packages..."
+          },
+          "about": {
+            "label": "What should be on 'About us'?",
+            "placeholder": "Team photos, history, mission/vision..."
+          }
+        }
+      },
+      "content": {
+        "title": "Content & Media",
+        "subtitle": "Texts and visual materials",
+        "hasTexts": {
+          "label": "Do you have texts for your website?",
+          "options": {
+            "yes": { "label": "Yes, I'll provide the texts", "description": "Upload via the Drive link we'll prepare" },
+            "partial": { "label": "Partially, I need help" },
+            "no": { "label": "No, I want help writing", "description": "We'll create AI-generated texts (included free)" }
+          }
+        },
+        "hasPhotos": {
+          "label": "Do you have professional photos?",
+          "options": {
+            "yes": { "label": "Yes, I have good photos", "description": "Upload via the Drive link we'll prepare for you" },
+            "some": { "label": "A few, but not enough" },
+            "no": { "label": "No, use stock photos", "description": "We'll find suitable stock photos" }
+          }
+        },
+        "photoUpsell": {
+          "title": "Need professional photos?",
+          "description": "Good photos make a world of difference. We offer professional photography and drone footage for unique images of your business.",
+          "cta": "View options"
+        },
+        "blog": {
+          "label": "Do you want blog articles on your website?",
+          "options": {
+            "yes": { "label": "Yes, I want a blog", "description": "We'll help with setup and first articles" },
+            "later": { "label": "Maybe later", "description": "We'll prepare the functionality" },
+            "no": { "label": "No, no blog needed" }
+          },
+          "locked": {
+            "title": "Blog functionality",
+            "description": "Available from the Professional package.",
+            "upgrade": "Upgrade →"
+          }
+        },
+        "contentNotes": {
+          "label": "Specific content wishes",
+          "placeholder": "Do you have special wishes for texts, photos or videos?"
+        },
+        "tip": "<strong>Tip:</strong> After registration you'll receive a Google Drive link where you can upload all your files (texts, logo, photos).",
+        "uploadTexts": "Upload texts",
+        "uploadPhotos": "Upload photos"
+      },
+      "extra": {
+        "title": "Planning & Finalization",
+        "subtitle": "Final details for your project",
+        "packageSummary": {
+          "package": "{{name}} package",
+          "upgrade": "Upgrade",
+          "maxPages": "Max {{count}} pages",
+          "unlimited": "Unlimited pages",
+          "features": {
+            "blog": "Blog",
+            "booking": "Bookings",
+            "newsletter": "Newsletter",
+            "multilang": "Multiple languages"
+          }
+        },
+        "deadline": {
+          "label": "When do you want the website live?",
+          "options": {
+            "asap": { "label": "As soon as possible", "description": "Within 1-2 weeks" },
+            "month": { "label": "Within a month" },
+            "quarter": { "label": "Within 3 months" },
+            "flexible": { "label": "No rush", "description": "Quality over speed" },
+            "specific": { "label": "Specific date" }
+          }
+        },
+        "specificDeadline": {
+          "label": "Desired launch date",
+          "placeholder": "e.g. February 1, 2025"
+        },
+        "multilang": {
+          "label": "Do you want the website in multiple languages?",
+          "options": {
+            "no": { "label": "No, only Dutch" },
+            "en": { "label": "Dutch + English" },
+            "multi": { "label": "Multiple languages", "description": "Specify below" }
+          },
+          "languages": {
+            "label": "Which languages?",
+            "placeholder": "e.g. Dutch, English, German, French"
+          }
+        },
+        "socialMedia": {
+          "title": "Social media links (optional)",
+          "hint": "Links you want to show on the website",
+          "other": "Other"
+        },
+        "additionalNotes": {
+          "label": "Other wishes or remarks",
+          "placeholder": "Is there anything else we should know? Special requests, questions, or other comments..."
+        }
+      },
+      "summary": {
+        "title": "Check your details",
+        "subtitle": "Everything correct? Then we can start!",
+        "websiteCount": "{{count}} website(s)",
+        "packageInfo": {
+          "label": "Chosen package",
+          "upgradeHint": "Upgrade to {{package}} →"
+        },
+        "sections": {
+          "business": {
+            "title": "Business details",
+            "company": "Company",
+            "industry": "Industry",
+            "description": "Description",
+            "targetAudience": "Target audience",
+            "domain": "Domain",
+            "email": "Email"
+          },
+          "branding": {
+            "title": "Logo & Brand Identity",
+            "style": "Style",
+            "logo": "Logo",
+            "colors": "Colors",
+            "inspiration": "Inspiration"
+          },
+          "goals": {
+            "title": "Goals & Conversion",
+            "mainGoal": "Main goal",
+            "callToAction": "Call-to-action",
+            "contactMethods": "Contact methods"
+          },
+          "pages": {
+            "title": "Pages"
+          },
+          "content": {
+            "title": "Content & Media",
+            "texts": "Texts",
+            "photos": "Photos",
+            "blog": "Blog"
+          },
+          "planning": {
+            "title": "Planning",
+            "deadline": "Deadline",
+            "languages": "Languages"
+          }
+        },
+        "edit": "Edit",
+        "approval": {
+          "label": "Ready for design",
+          "description": "I've checked all details and they are correct. Start designing!",
+          "warning": "Check the box above to approve your data for design.",
+          "readyTitle": "Ready to submit!",
+          "afterSubmit": "After submitting:",
+          "steps": {
+            "driveFolder": "We'll create a Google Drive folder for you",
+            "uploadContent": "Upload your logo, photos and content there",
+            "designersStart": "Then the designers will get to work"
+          },
+          "confirmLabel": "I confirm that these details are correct",
+          "confirmDescription": "After submitting you'll receive a Google Drive link where you can upload your files."
+        },
+        "fields": {
+          "company": "Company",
+          "industry": "Industry",
+          "description": "Description",
+          "targetAudience": "Target audience",
+          "domain": "Domain",
+          "email": "Email",
+          "colors": "Colors",
+          "font": "Font",
+          "style": "Style",
+          "logo": "Logo",
+          "mainGoal": "Main goal",
+          "contactMethods": "Contact options",
+          "deadline": "Deadline",
+          "texts": "Texts",
+          "photos": "Photos",
+          "blog": "Blog",
+          "languages": "Languages"
+        }
       }
     }
   },
@@ -2916,5 +3264,132 @@
         "result": "Professional appearance"
       }
     }
+  },
+  "clientDashboard": {
+    "liveSince": "Online since {{date}}",
+    "viewWebsite": "View website",
+    "files": "Files",
+    "packages": {
+      "starter": {
+        "features": ["2 changes/month", "Email support"]
+      },
+      "professional": {
+        "features": ["5 changes/month", "Priority support", "Analytics"]
+      },
+      "business": {
+        "features": ["Unlimited changes", "WhatsApp support", "Analytics", "Priority"]
+      },
+      "webshop": {
+        "features": ["Unlimited changes", "WhatsApp support", "Analytics", "E-commerce"]
+      }
+    },
+    "categories": {
+      "text": {
+        "label": "Text",
+        "description": "Edit or add text"
+      },
+      "design": {
+        "label": "Design",
+        "description": "Colors, layout, styling"
+      },
+      "images": {
+        "label": "Images",
+        "description": "Add or replace photos"
+      },
+      "functionality": {
+        "label": "Functionality",
+        "description": "New features or fixes"
+      },
+      "other": {
+        "label": "Other",
+        "description": "Other adjustments"
+      }
+    },
+    "priority": {
+      "low": {
+        "label": "Low",
+        "description": "No rush"
+      },
+      "normal": {
+        "label": "Normal",
+        "description": "Within a week"
+      },
+      "urgent": {
+        "label": "Urgent",
+        "description": "As soon as possible"
+      }
+    },
+    "tabs": {
+      "overview": "Overview",
+      "changes": "Changes",
+      "analytics": "Analytics"
+    },
+    "stats": {
+      "changes": "Changes",
+      "thisMonth": "This month",
+      "available": "available",
+      "of": "of",
+      "openRequests": "Open requests",
+      "waitingProcessing": "Waiting for processing",
+      "inProgress": "in progress",
+      "completed": "Completed",
+      "totalProcessed": "Total processed"
+    },
+    "quickActions": {
+      "title": "Quick actions",
+      "requestChange": "Request change",
+      "viewWebsite": "View website",
+      "contact": "Contact",
+      "files": "Files"
+    },
+    "recentActivity": {
+      "title": "Recent activity",
+      "viewAll": "View all {{count}} requests →"
+    },
+    "changeRequests": {
+      "title": "Request changes",
+      "unlimitedDesc": "You have unlimited changes with your package",
+      "limitedDesc": "You have {{left}} of {{total}} changes left this month",
+      "newRequest": "New request",
+      "successMessage": "Your change request has been submitted!",
+      "formTitle": "Request new change",
+      "titleLabel": "Title (optional)",
+      "titlePlaceholder": "E.g.: Update homepage banner",
+      "categoryLabel": "Category",
+      "descriptionLabel": "Description *",
+      "descriptionPlaceholder": "Describe as clearly as possible what you want changed...\n\nE.g.:\n- On which page?\n- What needs to change?\n- Do you have examples?",
+      "priorityLabel": "Priority",
+      "cancel": "Cancel",
+      "submit": "Submit",
+      "inProgress": "In progress",
+      "waiting": "Waiting",
+      "completed": "Completed",
+      "noChanges": "No changes yet",
+      "noChangesDesc": "Want something adjusted on your website?",
+      "firstRequest": "Submit first request"
+    },
+    "status": {
+      "new": "New",
+      "inProgress": "In progress",
+      "completed": "Completed",
+      "unknown": "Unknown"
+    },
+    "analytics": {
+      "loading": "Loading analytics...",
+      "visitors": "Visitors",
+      "pageViews": "Page views",
+      "avgSession": "Avg. session duration",
+      "bounceRate": "Bounce rate",
+      "vsPrevMonth": "vs. previous month",
+      "popularPages": "Popular pages",
+      "trafficSources": "Traffic sources",
+      "viewFull": "View full analytics",
+      "notAvailable": "Analytics not available",
+      "upgradeDesc": "Upgrade to Professional or higher for detailed analytics",
+      "upgradePackage": "Upgrade package",
+      "beingSetup": "Analytics is being set up",
+      "checkLater": "We're configuring your analytics. Check back later!"
+    },
+    "developerResponse": "Response from developer:"
   }
 }

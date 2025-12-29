@@ -1,4 +1,5 @@
 import { motion } from 'framer-motion'
+import { useTranslation } from 'react-i18next'
 import {
   Building2,
   Palette,
@@ -16,7 +17,7 @@ import {
 import { useState, useEffect } from 'react'
 
 // ===========================================
-// PACKAGE CONFIGURATION
+// PAKKET CONFIGURATIE
 // ===========================================
 
 export type PackageId = 'starter' | 'professional' | 'business'
@@ -89,14 +90,14 @@ export const PACKAGE_CONFIGS: Record<PackageId, PackageConfig> = {
   }
 }
 
-// Get the minimum package required for a feature
+// Verkrijg het minimale pakket vereist voor een feature
 export function getMinPackageForFeature(feature: keyof PackageConfig['features']): PackageId {
   if (PACKAGE_CONFIGS.starter.features[feature]) return 'starter'
   if (PACKAGE_CONFIGS.professional.features[feature]) return 'professional'
   return 'business'
 }
 
-// Helper to format max pages (show "Onbeperkt" for high values)
+// Hulpfunctie om max pagina's te formatteren (toon "Onbeperkt" voor hoge waarden)
 function formatMaxPages(maxPages: number): string {
   return maxPages >= 100 ? 'Onbeperkt pagina\'s' : `Max ${maxPages} pagina's`
 }
@@ -112,7 +113,7 @@ interface UpgradePromptProps {
   onUpgrade?: (packageId: PackageId) => void
 }
 
-// Exported for use in other components
+// Geëxporteerd voor gebruik in andere componenten
 export function UpgradePrompt({ currentPackage, requiredPackage, featureName, onUpgrade }: UpgradePromptProps) {
   const requiredConfig = PACKAGE_CONFIGS[requiredPackage]
   const currentConfig = PACKAGE_CONFIGS[currentPackage]
@@ -149,7 +150,7 @@ export function UpgradePrompt({ currentPackage, requiredPackage, featureName, on
 }
 
 // ===========================================
-// SHARED COMPONENTS
+// GEDEELDE COMPONENTEN
 // ===========================================
 
 interface InputProps {
@@ -208,7 +209,7 @@ function TextArea({ label, name, value, onChange, placeholder, required, disable
   )
 }
 
-// Select component - exported for potential use in other form steps
+// Select component - geëxporteerd voor gebruik in andere formulier stappen
 interface SelectProps {
   label: string
   name: string
@@ -254,7 +255,7 @@ interface CheckboxGroupProps {
   columns?: number
 }
 
-// Exported for use in other components
+// Geëxporteerd voor gebruik in andere componenten
 export function CheckboxGroup({ label, name, values, onChange, options, disabled, hint, columns = 2 }: CheckboxGroupProps) {
   const toggleValue = (val: string) => {
     if (disabled) return
@@ -264,7 +265,7 @@ export function CheckboxGroup({ label, name, values, onChange, options, disabled
     onChange(name, newValues)
   }
 
-  // Responsive grid - 1 column on mobile, requested columns on desktop
+  // Responsive grid - 1 kolom op mobiel, gevraagde kolommen op desktop
   const gridClass = columns === 3 
     ? 'grid-cols-1 sm:grid-cols-2 md:grid-cols-3'
     : columns === 4
@@ -360,7 +361,7 @@ function RadioGroup({ label, name, value, onChange, options, disabled, hint }: R
   )
 }
 
-// ColorPicker component - kept for potential future use
+// ColorPicker component - bewaard voor toekomstig gebruik
 interface ColorPickerProps {
   label: string
   name: string
@@ -383,7 +384,7 @@ const COLOR_OPTIONS = [
   { name: 'Wit', hex: '#F9FAFB' },
 ]
 
-// Exported for potential use in other form steps
+// Geëxporteerd voor gebruik in andere formulier stappen
 export function ColorPicker({ label, name, values, onChange, disabled, hint }: ColorPickerProps) {
   const [customColor, setCustomColor] = useState('')
 
@@ -427,7 +428,7 @@ export function ColorPicker({ label, name, values, onChange, disabled, hint }: C
           </button>
         ))}
         
-        {/* Custom color input */}
+    {/* Aangepaste kleuren invoer */}
         <div className="flex items-center gap-2">
           <input
             type="color"
@@ -447,7 +448,7 @@ export function ColorPicker({ label, name, values, onChange, disabled, hint }: C
         </div>
       </div>
       
-      {/* Selected custom colors */}
+      {/* Geselecteerde aangepaste kleuren */}
       {values.filter(v => !COLOR_OPTIONS.find(c => c.hex === v)).length > 0 && (
         <div className="mt-3 flex flex-wrap gap-2">
           {values.filter(v => !COLOR_OPTIONS.find(c => c.hex === v)).map(hex => (
@@ -549,34 +550,35 @@ function TagInput({ label, name, values, onChange, placeholder, disabled, hint }
 }
 
 // ===========================================
-// WEBSITE FORM STEPS
+// WEBSITE FORMULIER STAPPEN
 // ===========================================
-// NOTE: These steps are for ADDITIONAL information only.
-// Basic info like companyName, designStyle, goal, pages, etc.
-// is already collected during /start onboarding.
-// Questions are filtered based on the selected package.
+// OPMERKING: Deze stappen zijn alleen voor AANVULLENDE informatie.
+// Basisinformatie zoals companyName, designStyle, goal, pages, etc.
+// is al verzameld tijdens /start onboarding.
+// Vragen worden gefilterd op basis van het geselecteerde pakket.
 
 interface FormStepProps {
   data: Record<string, any>
   onChange: (field: string, value: any) => void
   disabled?: boolean
-  packageId?: PackageId // Current package from /start
-  onUpgrade?: (packageId: PackageId) => void // Callback for upgrade
-  approvedForDesign?: boolean // For samenvatting step
-  onApprovalChange?: (approved: boolean) => void // For samenvatting step
+  packageId?: PackageId // Huidig pakket van /start
+  onUpgrade?: (packageId: PackageId) => void // Callback voor upgrade
+  approvedForDesign?: boolean // Voor samenvatting stap
+  onApprovalChange?: (approved: boolean) => void // Voor samenvatting stap
 }
 
-// Helper to get package config safely
+// Hulpfunctie om pakket config veilig op te halen
 function getPackageConfig(packageId?: string): PackageConfig {
   if (packageId && packageId in PACKAGE_CONFIGS) {
     return PACKAGE_CONFIGS[packageId as PackageId]
   }
-  return PACKAGE_CONFIGS.starter // Default to starter
+  return PACKAGE_CONFIGS.starter // Standaard naar starter
 }
 
-// Step 1: Samenvatting & aanvullende bedrijfsinfo
+// Stap 1: Samenvatting & aanvullende bedrijfsinfo
 export function WebsiteBedrijfStep({ data, onChange, disabled }: FormStepProps) {
-  // Show pre-filled data from /start as read-only summary
+  const { t } = useTranslation()
+  // Toon vooraf ingevulde data van /start als alleen-lezen samenvatting
   const hasPrefilledData = data.businessName || data.companyName || data.contactEmail
 
   return (
@@ -590,75 +592,75 @@ export function WebsiteBedrijfStep({ data, onChange, disabled }: FormStepProps) 
           <Building2 className="w-5 h-5 text-primary-600 dark:text-primary-400" />
         </div>
         <div>
-          <h3 className="font-semibold text-gray-900 dark:text-white">Bedrijfsgegevens</h3>
-          <p className="text-sm text-gray-500 dark:text-gray-400">Controleer en vul aan</p>
+          <h3 className="font-semibold text-gray-900 dark:text-white">{t('onboarding.sections.bedrijf.title')}</h3>
+          <p className="text-sm text-gray-500 dark:text-gray-400">{t('onboarding.sections.bedrijf.description')}</p>
         </div>
       </div>
 
-      {/* Show pre-filled summary from /start */}
+      {/* Toon vooraf ingevulde samenvatting van /start */}
       {hasPrefilledData && (
         <div className="bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-xl p-4 mb-6">
           <div className="flex items-center gap-2 text-green-700 dark:text-green-400 font-medium mb-2">
             <Check className="w-4 h-4" />
-            Gegevens overgenomen van je aanmelding
+            {t('onboarding.prefilled.title')}
           </div>
           <div className="space-y-1 text-sm text-green-600 dark:text-green-300">
             {(data.businessName || data.companyName) && (
-              <div>Bedrijf: <strong>{data.businessName || data.companyName}</strong></div>
+              <div>{t('onboarding.prefilled.company')}: <strong>{data.businessName || data.companyName}</strong></div>
             )}
             {data.contactEmail && (
-              <div className="break-all">Email: <strong>{data.contactEmail}</strong></div>
+              <div className="break-all">{t('onboarding.prefilled.email')}: <strong>{data.contactEmail}</strong></div>
             )}
             {data.industry && (
-              <div>Branche: <strong>{data.industry}</strong></div>
+              <div>{t('onboarding.prefilled.industry')}: <strong>{data.industry}</strong></div>
             )}
           </div>
         </div>
       )}
 
-      {/* Only ask for ADDITIONAL info not collected at /start */}
+      {/* Vraag alleen naar AANVULLENDE info die niet verzameld is bij /start */}
       <TextArea
-        label="Beschrijf je bedrijf uitgebreider"
+        label={t('onboarding.questions.businessDescription.label')}
         name="aboutBusiness"
         value={data.aboutBusiness || data.uniqueFeatures || ''}
         onChange={onChange}
-        placeholder="Vertel ons meer over wat je bedrijf uniek maakt, je diensten/producten, en je verhaal..."
+        placeholder={t('onboarding.questions.businessDescription.placeholder')}
         required
         disabled={disabled}
-        hint="Dit helpt ons de juiste toon en stijl te vinden voor je website"
+        hint={t('onboarding.questions.businessDescription.helpText')}
         rows={4}
       />
 
       <TextArea
-        label="Meer over je doelgroep"
+        label={t('onboarding.questions.targetAudience.label')}
         name="targetAudienceDetails"
         value={data.targetAudienceDetails || ''}
         onChange={onChange}
-        placeholder="Wie zijn je ideale klanten? Leeftijd, interesses, problemen die je oplost..."
+        placeholder={t('onboarding.questions.targetAudience.placeholder')}
         disabled={disabled}
-        hint="Hoe beter we je doelgroep kennen, hoe effectiever de website"
+        hint={t('onboarding.questions.targetAudience.description')}
       />
 
       <TextInput
-        label="Gewenste domeinnaam (optioneel)"
+        label={t('onboarding.questions.preferredDomain.label')}
         name="preferredDomain"
         value={data.preferredDomain || data.existingDomain || ''}
         onChange={onChange}
-        placeholder="bijv. www.jouwbedrijf.nl"
+        placeholder={t('onboarding.questions.preferredDomain.placeholder')}
         disabled={disabled}
-        hint="Heb je al een domeinnaam of een voorkeur? Laat het leeg als je hulp wilt"
+        hint={t('onboarding.questions.preferredDomain.hint')}
       />
 
       <RadioGroup
-        label="Heb je een zakelijk e-mailadres nodig?"
+        label={t('onboarding.questions.needsBusinessEmail.label')}
         name="needsBusinessEmail"
         value={data.needsBusinessEmail || ''}
         onChange={onChange}
         disabled={disabled}
         options={[
-          { value: 'yes', label: 'Ja, ik wil een zakelijk e-mail', description: 'Bijv. info@jouwbedrijf.nl' },
-          { value: 'already', label: 'Ik heb al een zakelijk e-mailadres' },
-          { value: 'no', label: 'Nee, niet nodig' },
+          { value: 'yes', label: t('onboarding.questions.needsBusinessEmail.options.yes.label'), description: t('onboarding.questions.needsBusinessEmail.options.yes.description') },
+          { value: 'already', label: t('onboarding.questions.needsBusinessEmail.options.already.label') },
+          { value: 'no', label: t('onboarding.questions.needsBusinessEmail.options.no.label') },
         ]}
       />
     </motion.div>
@@ -666,26 +668,26 @@ export function WebsiteBedrijfStep({ data, onChange, disabled }: FormStepProps) 
 }
 
 // ===========================================
-// BRANDING CONSTANTS
+// BRANDING CONSTANTEN
 // ===========================================
 
-// Curated color palettes for easy selection
+// Samengestelde kleurpaletten voor eenvoudige selectie
 const COLOR_PALETTES = [
-  { name: 'Modern Blue', colors: ['#3B82F6', '#1E40AF', '#60A5FA', '#DBEAFE'] },
-  { name: 'Fresh Green', colors: ['#10B981', '#047857', '#34D399', '#D1FAE5'] },
-  { name: 'Warm Orange', colors: ['#F97316', '#C2410C', '#FB923C', '#FFEDD5'] },
-  { name: 'Royal Purple', colors: ['#8B5CF6', '#5B21B6', '#A78BFA', '#EDE9FE'] },
-  { name: 'Elegant Rose', colors: ['#EC4899', '#BE185D', '#F472B6', '#FCE7F3'] },
-  { name: 'Ocean Teal', colors: ['#14B8A6', '#0F766E', '#2DD4BF', '#CCFBF1'] },
-  { name: 'Sunset Coral', colors: ['#F43F5E', '#BE123C', '#FB7185', '#FFE4E6'] },
-  { name: 'Business Gray', colors: ['#475569', '#1E293B', '#64748B', '#F1F5F9'] },
+  { name: 'Modern Blauw', colors: ['#3B82F6', '#1E40AF', '#60A5FA', '#DBEAFE'] },
+  { name: 'Fris Groen', colors: ['#10B981', '#047857', '#34D399', '#D1FAE5'] },
+  { name: 'Warm Oranje', colors: ['#F97316', '#C2410C', '#FB923C', '#FFEDD5'] },
+  { name: 'Koninklijk Paars', colors: ['#8B5CF6', '#5B21B6', '#A78BFA', '#EDE9FE'] },
+  { name: 'Elegant Roze', colors: ['#EC4899', '#BE185D', '#F472B6', '#FCE7F3'] },
+  { name: 'Oceaan Teal', colors: ['#14B8A6', '#0F766E', '#2DD4BF', '#CCFBF1'] },
+  { name: 'Zonsondergang Koraal', colors: ['#F43F5E', '#BE123C', '#FB7185', '#FFE4E6'] },
+  { name: 'Zakelijk Grijs', colors: ['#475569', '#1E293B', '#64748B', '#F1F5F9'] },
 ]
 
-// Font combinations with real previews
+// Lettertypecombinaties met echte previews
 const FONT_COMBINATIONS = [
   { 
     id: 'modern',
-    name: 'Modern & Clean',
+    name: 'Modern & Strak',
     heading: 'Inter',
     body: 'Inter',
     style: 'font-sans',
@@ -694,7 +696,7 @@ const FONT_COMBINATIONS = [
   },
   { 
     id: 'elegant',
-    name: 'Elegant & Classy',
+    name: 'Elegant & Klassiek',
     heading: 'Playfair Display',
     body: 'Lato',
     style: 'font-serif',
@@ -703,7 +705,7 @@ const FONT_COMBINATIONS = [
   },
   { 
     id: 'bold',
-    name: 'Bold & Impactful',
+    name: 'Krachtig & Opvallend',
     heading: 'Montserrat',
     body: 'Open Sans',
     style: 'font-sans font-bold',
@@ -712,7 +714,7 @@ const FONT_COMBINATIONS = [
   },
   { 
     id: 'friendly',
-    name: 'Friendly & Warm',
+    name: 'Vriendelijk & Warm',
     heading: 'Poppins',
     body: 'Nunito',
     style: 'font-sans',
@@ -721,7 +723,7 @@ const FONT_COMBINATIONS = [
   },
   { 
     id: 'creative',
-    name: 'Creative & Unique',
+    name: 'Creatief & Uniek',
     heading: 'Space Grotesk',
     body: 'DM Sans',
     style: 'font-sans',
@@ -730,7 +732,7 @@ const FONT_COMBINATIONS = [
   },
   { 
     id: 'funky',
-    name: 'Funky & Bold',
+    name: 'Speels & Gedurfd',
     heading: 'Bebas Neue',
     body: 'Quicksand',
     style: 'font-sans',
@@ -739,7 +741,7 @@ const FONT_COMBINATIONS = [
   },
   { 
     id: 'retro',
-    name: 'Retro Vibes',
+    name: 'Retro Sfeer',
     heading: 'Righteous',
     body: 'Josefin Sans',
     style: 'font-sans',
@@ -757,7 +759,7 @@ const FONT_COMBINATIONS = [
   },
   { 
     id: 'luxury',
-    name: 'Luxury & Premium',
+    name: 'Luxe & Premium',
     heading: 'Cormorant Garamond',
     body: 'Raleway',
     style: 'font-serif',
@@ -766,7 +768,7 @@ const FONT_COMBINATIONS = [
   },
   { 
     id: 'playful',
-    name: 'Playful & Fun',
+    name: 'Speels & Vrolijk',
     heading: 'Fredoka',
     body: 'Nunito Sans',
     style: 'font-sans',
@@ -775,7 +777,7 @@ const FONT_COMBINATIONS = [
   },
 ]
 
-// Design styles with visual examples
+// Design stijlen met visuele voorbeelden
 const DESIGN_STYLES = [
   { 
     id: 'minimalist',
@@ -819,13 +821,14 @@ const DESIGN_STYLES = [
   },
 ]
 
-// Step 2: Logo & Huisstijl - Enhanced with visual pickers
+// Stap 2: Logo & Huisstijl - Verbeterd met visuele pickers
 export function WebsiteBrandingStep({ data, onChange, disabled }: FormStepProps) {
+  const { t } = useTranslation()
   const [activeColorPicker, setActiveColorPicker] = useState<number | null>(null)
   const [customColor, setCustomColor] = useState('')
   const [fontsLoaded, setFontsLoaded] = useState(false)
   
-  // Load Google Fonts for preview
+  // Laad Google Fonts voor preview
   useEffect(() => {
     const fontFamilies = [
       'Inter:wght@400;700',
@@ -862,15 +865,15 @@ export function WebsiteBrandingStep({ data, onChange, disabled }: FormStepProps)
     }
   }, [])
   
-  // Prevent unused variable warning
+  // Voorkom unused variable waarschuwing
   void fontsLoaded
   
-  // Get selected colors (support both field names)
+  // Haal geselecteerde kleuren op (ondersteuning voor beide veldnamen)
   const selectedColors: string[] = data.brandColors || data.colorPreferences || []
   const selectedFont = data.fontStyle || ''
   const selectedStyle = data.designStyle || ''
   
-  // Add a color to selection
+  // Voeg een kleur toe aan selectie
   const addColor = (color: string) => {
     if (selectedColors.length >= 4) return
     if (!selectedColors.includes(color)) {
@@ -878,12 +881,12 @@ export function WebsiteBrandingStep({ data, onChange, disabled }: FormStepProps)
     }
   }
   
-  // Remove a color
+  // Verwijder een kleur
   const removeColor = (color: string) => {
     onChange('brandColors', selectedColors.filter(c => c !== color))
   }
   
-  // Add custom color
+  // Voeg aangepaste kleur toe
   const addCustomColor = () => {
     if (customColor && /^#[0-9A-Fa-f]{6}$/.test(customColor)) {
       addColor(customColor)
@@ -907,32 +910,32 @@ export function WebsiteBrandingStep({ data, onChange, disabled }: FormStepProps)
           <Palette className="w-6 h-6 text-white" />
         </motion.div>
         <div>
-          <h3 className="font-bold text-lg text-white">Branding & Huisstijl</h3>
-          <p className="text-sm text-gray-400">Maak je website uniek</p>
+          <h3 className="font-bold text-lg text-white">{t('onboarding.formSteps.branding.title')}</h3>
+          <p className="text-sm text-gray-400">{t('onboarding.formSteps.branding.subtitle')}</p>
         </div>
       </div>
 
-      {/* ===== COLOR SELECTION ===== */}
+      {/* ===== KLEUR SELECTIE ===== */}
       <div className="space-y-4">
         <div className="flex items-center justify-between">
           <div>
             <h4 className="font-semibold text-white flex items-center gap-2">
               <span className="w-5 h-5 rounded-full bg-gradient-to-r from-red-500 via-yellow-500 to-blue-500" />
-              Kleuren
+              {t('onboarding.formSteps.branding.colors.title')}
             </h4>
-            <p className="text-xs text-gray-500 mt-0.5">Kies tot 4 kleuren voor je website</p>
+            <p className="text-xs text-gray-500 mt-0.5">{t('onboarding.formSteps.branding.colors.hint')}</p>
           </div>
           <span className="text-xs text-gray-500 bg-gray-800 px-2 py-1 rounded-full">
-            {selectedColors.length}/4 gekozen
+            {t('onboarding.formSteps.branding.colors.selected', { count: selectedColors.length })}
           </span>
         </div>
 
-        {/* Selected colors preview */}
+        {/* Geselecteerde kleuren preview */}
         <div className="bg-gray-800/50 rounded-xl p-4 border border-gray-700">
           <div className="flex items-center gap-3 mb-3">
-            <span className="text-sm text-gray-400">Jouw kleuren:</span>
+            <span className="text-sm text-gray-400">{t('onboarding.formSteps.branding.colors.yourColors')}</span>
             {selectedColors.length === 0 && (
-              <span className="text-xs text-gray-500 italic">Klik op een kleur hieronder</span>
+              <span className="text-xs text-gray-500 italic">{t('onboarding.formSteps.branding.colors.clickColor')}</span>
             )}
           </div>
           
@@ -970,14 +973,14 @@ export function WebsiteBrandingStep({ data, onChange, disabled }: FormStepProps)
                   <Plus className="w-5 h-5 text-gray-500" />
                 </button>
                 
-                {/* Custom color picker */}
+                {/* Aangepaste kleurenkiezer */}
                 {activeColorPicker === -1 && (
                   <motion.div
                     initial={{ opacity: 0, y: 10 }}
                     animate={{ opacity: 1, y: 0 }}
                     className="absolute top-14 left-0 z-10 bg-gray-800 border border-gray-700 rounded-xl p-3 shadow-xl"
                   >
-                    {/* Close button */}
+                    {/* Sluit knop */}
                     <button
                       onClick={() => setActiveColorPicker(null)}
                       className="absolute -top-2 -right-2 w-6 h-6 bg-gray-700 hover:bg-gray-600 rounded-full flex items-center justify-center transition-colors"
@@ -1012,7 +1015,7 @@ export function WebsiteBrandingStep({ data, onChange, disabled }: FormStepProps)
           </div>
         </div>
 
-        {/* Color palettes */}
+        {/* Kleurpaletten */}
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
           {COLOR_PALETTES.map((palette, i) => (
             <motion.button
@@ -1022,7 +1025,7 @@ export function WebsiteBrandingStep({ data, onChange, disabled }: FormStepProps)
               transition={{ delay: i * 0.05 }}
               onClick={() => {
                 if (disabled) return
-                // Add the primary color of this palette
+                  // Voeg de primaire kleur van dit palet toe
                 addColor(palette.colors[0])
               }}
               disabled={disabled}
@@ -1050,14 +1053,14 @@ export function WebsiteBrandingStep({ data, onChange, disabled }: FormStepProps)
         </div>
       </div>
 
-      {/* ===== FONT SELECTION ===== */}
+      {/* ===== LETTERTYPE SELECTIE ===== */}
       <div className="space-y-4">
         <div>
           <h4 className="font-semibold text-white flex items-center gap-2">
             <span className="text-xl">Aa</span>
-            Lettertype
+            {t('onboarding.formSteps.branding.fonts.title')}
           </h4>
-          <p className="text-xs text-gray-500 mt-0.5">Kies een stijl die bij je past</p>
+          <p className="text-xs text-gray-500 mt-0.5">{t('onboarding.formSteps.branding.fonts.hint')}</p>
         </div>
 
         <div className="grid gap-3">
@@ -1092,7 +1095,7 @@ export function WebsiteBrandingStep({ data, onChange, disabled }: FormStepProps)
                   )}
                 </div>
                 
-                {/* Font preview */}
+                {/* Lettertype preview */}
                 <div 
                   className={`text-2xl text-white mb-1 ${font.id === 'bold' ? 'font-bold' : ''}`}
                   style={{ fontFamily: `'${font.heading}', sans-serif` }}
@@ -1113,14 +1116,14 @@ export function WebsiteBrandingStep({ data, onChange, disabled }: FormStepProps)
         </div>
       </div>
 
-      {/* ===== DESIGN STYLE ===== */}
+      {/* ===== DESIGN STIJL ===== */}
       <div className="space-y-4">
         <div>
           <h4 className="font-semibold text-white flex items-center gap-2">
             <Sparkles className="w-5 h-5 text-amber-400" />
-            Design Stijl
+            {t('onboarding.formSteps.branding.designStyle.title')}
           </h4>
-          <p className="text-xs text-gray-500 mt-0.5">Welke sfeer past bij jou?</p>
+          <p className="text-xs text-gray-500 mt-0.5">{t('onboarding.formSteps.branding.designStyle.hint')}</p>
         </div>
 
         <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
@@ -1142,7 +1145,7 @@ export function WebsiteBrandingStep({ data, onChange, disabled }: FormStepProps)
                     : 'border-gray-700 bg-gray-800/30 hover:border-gray-600 hover:bg-gray-800/50'}
                 `}
               >
-                {/* Visual indicator - smaller and cleaner */}
+                {/* Visuele indicator - kleiner en strakker */}
                 <div className={`text-xl mb-3 transition-colors ${isSelected ? 'text-primary-400' : 'text-gray-500 group-hover:text-gray-400'}`}>
                   {style.visual}
                 </div>
@@ -1169,7 +1172,7 @@ export function WebsiteBrandingStep({ data, onChange, disabled }: FormStepProps)
         </div>
       </div>
 
-      {/* ===== SELECTION SUMMARY ===== */}
+      {/* ===== SELECTIE SAMENVATTING ===== */}
       {(selectedColors.length > 0 || selectedFont || selectedStyle) && (
         <motion.div
           initial={{ opacity: 0, y: 10 }}
@@ -1178,14 +1181,14 @@ export function WebsiteBrandingStep({ data, onChange, disabled }: FormStepProps)
         >
           <div className="flex items-center gap-2 mb-3">
             <Sparkles className="w-4 h-4 text-emerald-400" />
-            <span className="text-sm font-medium text-white">Jouw selectie</span>
+            <span className="text-sm font-medium text-white">{t('onboarding.formSteps.branding.selection.title')}</span>
           </div>
           
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-            {/* Colors */}
+            {/* Kleuren */}
             {selectedColors.length > 0 && (
               <div className="space-y-1.5">
-                <span className="text-xs text-gray-500">Kleuren</span>
+                <span className="text-xs text-gray-500">{t('onboarding.formSteps.branding.selection.colors')}</span>
                 <div className="flex gap-1">
                   {selectedColors.map((color: string) => (
                     <div 
@@ -1198,20 +1201,20 @@ export function WebsiteBrandingStep({ data, onChange, disabled }: FormStepProps)
               </div>
             )}
             
-            {/* Font */}
+            {/* Lettertype */}
             {selectedFont && (
               <div className="space-y-1.5">
-                <span className="text-xs text-gray-500">Lettertype</span>
+                <span className="text-xs text-gray-500">{t('onboarding.formSteps.branding.selection.font')}</span>
                 <span className="text-sm text-white font-medium">
                   {FONT_COMBINATIONS.find(f => f.id === selectedFont)?.name || selectedFont}
                 </span>
               </div>
             )}
             
-            {/* Style */}
+            {/* Stijl */}
             {selectedStyle && (
               <div className="space-y-1.5">
-                <span className="text-xs text-gray-500">Stijl</span>
+                <span className="text-xs text-gray-500">{t('onboarding.formSteps.branding.selection.style')}</span>
                 <span className="text-sm text-white font-medium">
                   {DESIGN_STYLES.find(s => s.id === selectedStyle)?.name || selectedStyle}
                 </span>
@@ -1221,35 +1224,35 @@ export function WebsiteBrandingStep({ data, onChange, disabled }: FormStepProps)
         </motion.div>
       )}
 
-      {/* ===== LOGO SECTION ===== */}
+      {/* ===== LOGO SECTIE ===== */}
       <div className="space-y-4 pt-4 border-t border-gray-800">
         <RadioGroup
-          label="Heb je al een logo?"
+          label={t('onboarding.formSteps.branding.logo.label')}
           name="hasLogo"
           value={data.hasLogo || ''}
           onChange={onChange}
           disabled={disabled}
           options={[
-            { value: 'yes', label: 'Ja, ik heb een logo', description: 'Upload via de Drive link die we klaarzetten' },
-            { value: 'no', label: 'Nee, nog niet', description: 'We kunnen een logo voor je ontwerpen' },
-            { value: 'need_refresh', label: 'Ja, maar ik wil een nieuw logo' },
+            { value: 'yes', label: t('onboarding.formSteps.branding.logo.options.yes.label'), description: t('onboarding.formSteps.branding.logo.options.yes.description') },
+            { value: 'no', label: t('onboarding.formSteps.branding.logo.options.no.label'), description: t('onboarding.formSteps.branding.logo.options.no.description') },
+            { value: 'need_refresh', label: t('onboarding.formSteps.branding.logo.options.needRefresh.label') },
           ]}
         />
 
         {data.hasLogo === 'yes' && (
           <TextArea
-            label="Beschrijf je logo"
+            label={t('onboarding.formSteps.branding.logo.describe')}
             name="logoDescription"
             value={data.logoDescription || ''}
             onChange={onChange}
-            placeholder="Beschrijf je logo kort (kleuren, vorm, stijl)"
+            placeholder={t('onboarding.formSteps.branding.logo.describePlaceholder')}
             disabled={disabled}
             rows={2}
-            hint="Upload je logobestanden via de Drive link die we voor je klaarzetten"
+            hint={t('onboarding.formSteps.branding.logo.describeHint')}
           />
         )}
 
-        {/* Logo upsell for no logo or need refresh */}
+        {/* Logo upsell voor geen logo of vernieuwen */}
         {(data.hasLogo === 'no' || data.hasLogo === 'need_refresh') && (
           <motion.div
             initial={{ opacity: 0, y: 10 }}
@@ -1262,10 +1265,10 @@ export function WebsiteBrandingStep({ data, onChange, disabled }: FormStepProps)
               </div>
               <div className="flex-1">
                 <h4 className="font-semibold text-white mb-1">
-                  {data.hasLogo === 'need_refresh' ? 'Nieuw logo nodig?' : 'Logo laten ontwerpen?'}
+                  {data.hasLogo === 'need_refresh' ? t('onboarding.formSteps.branding.logo.upsell.titleNew') : t('onboarding.formSteps.branding.logo.upsell.titleNo')}
                 </h4>
                 <p className="text-sm text-gray-400 mb-3">
-                  Een professioneel logo is de basis van je merk. We ontwerpen een uniek logo dat perfect bij je bedrijf past.
+                  {t('onboarding.formSteps.branding.logo.upsell.description')}
                 </p>
                 <div className="flex items-center gap-3">
                   <a 
@@ -1274,10 +1277,10 @@ export function WebsiteBrandingStep({ data, onChange, disabled }: FormStepProps)
                     className="inline-flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-purple-500 to-pink-500 text-white text-sm font-medium rounded-lg hover:from-purple-600 hover:to-pink-600 transition-all"
                   >
                     <Palette className="w-4 h-4" />
-                    Bekijk logo pakket
+                    {t('onboarding.formSteps.branding.logo.upsell.cta')}
                     <ArrowUpRight className="w-3 h-3" />
                   </a>
-                  <span className="text-xs text-gray-500">Vanaf €149,-</span>
+                  <span className="text-xs text-gray-500">{t('onboarding.formSteps.branding.logo.upsell.price')}</span>
                 </div>
               </div>
             </div>
@@ -1285,24 +1288,24 @@ export function WebsiteBrandingStep({ data, onChange, disabled }: FormStepProps)
         )}
       </div>
 
-      {/* ===== INSPIRATION ===== */}
+      {/* ===== INSPIRATIE ===== */}
       <div className="space-y-4">
         <TagInput
-          label="Inspiratie websites"
+          label={t('onboarding.formSteps.branding.inspiration.label')}
           name="inspirationUrls"
           values={data.inspirationUrls || []}
           onChange={onChange}
-          placeholder="https://..."
+          placeholder={t('onboarding.formSteps.branding.inspiration.placeholder')}
           disabled={disabled}
-          hint="Websites die je mooi vindt qua design (druk Enter)"
+          hint={t('onboarding.formSteps.branding.inspiration.hint')}
         />
 
         <TextArea
-          label="Extra wensen voor het design"
+          label={t('onboarding.formSteps.branding.designNotes.label')}
           name="designNotes"
           value={data.designNotes || ''}
           onChange={onChange}
-          placeholder="Zijn er specifieke elementen die je wilt? Of juist dingen die je wilt vermijden?"
+          placeholder={t('onboarding.formSteps.branding.designNotes.placeholder')}
           disabled={disabled}
           rows={3}
         />
@@ -1311,20 +1314,21 @@ export function WebsiteBrandingStep({ data, onChange, disabled }: FormStepProps)
   )
 }
 
-// Step 3: Doelen - alleen aanvullende details, pakket-afhankelijk
+// Stap 3: Doelen - alleen aanvullende details, pakket-afhankelijk
 export function WebsiteDoelenStep({ data, onChange, disabled, packageId, onUpgrade }: FormStepProps) {
-  // Check for pre-filled goal from /start
+  const { t } = useTranslation()
+  // Controleer op vooraf ingevuld doel van /start
   const hasPrefilledGoal = data.goal || data.mainGoal
   const pkg = getPackageConfig(packageId || data.package || data.packageType)
 
-  // Filter contact options based on package
+  // Filter contactopties op basis van pakket
   const contactOptions = [
-    { value: 'form', label: 'Contactformulier', available: true },
-    { value: 'email', label: 'E-mail link', available: true },
-    { value: 'phone', label: 'Telefoonnummer', available: true },
-    { value: 'whatsapp', label: 'WhatsApp knop', available: true },
-    { value: 'booking', label: 'Online afspraak maken', available: pkg.features.booking, requiredPkg: 'business' as PackageId },
-    { value: 'chat', label: 'Live chat', available: pkg.features.chat, requiredPkg: 'business' as PackageId },
+    { value: 'form', label: t('onboarding.formSteps.goals.contactMethods.options.form'), available: true },
+    { value: 'email', label: t('onboarding.formSteps.goals.contactMethods.options.email'), available: true },
+    { value: 'phone', label: t('onboarding.formSteps.goals.contactMethods.options.phone'), available: true },
+    { value: 'whatsapp', label: t('onboarding.formSteps.goals.contactMethods.options.whatsapp'), available: true },
+    { value: 'booking', label: t('onboarding.formSteps.goals.contactMethods.options.booking'), available: pkg.features.booking, requiredPkg: 'business' as PackageId },
+    { value: 'chat', label: t('onboarding.formSteps.goals.contactMethods.options.chat'), available: pkg.features.chat, requiredPkg: 'business' as PackageId },
   ]
 
   return (
@@ -1338,53 +1342,53 @@ export function WebsiteDoelenStep({ data, onChange, disabled, packageId, onUpgra
           <Target className="w-5 h-5 text-emerald-600 dark:text-emerald-400" />
         </div>
         <div>
-          <h3 className="font-semibold text-gray-900 dark:text-white">Doelen & Conversie</h3>
-          <p className="text-sm text-gray-500 dark:text-gray-400">Hoe kunnen we je website laten werken?</p>
+          <h3 className="font-semibold text-gray-900 dark:text-white">{t('onboarding.formSteps.goals.title')}</h3>
+          <p className="text-sm text-gray-500 dark:text-gray-400">{t('onboarding.formSteps.goals.subtitle')}</p>
         </div>
       </div>
 
-      {/* Show pre-filled goal */}
+      {/* Toon vooraf ingevuld doel */}
       {hasPrefilledGoal && (
         <div className="bg-emerald-50 dark:bg-emerald-900/20 border border-emerald-200 dark:border-emerald-800 rounded-xl p-4 mb-6">
           <div className="flex items-center gap-2 text-emerald-700 dark:text-emerald-400 font-medium">
             <Check className="w-4 h-4" />
-            Hoofddoel: <strong>{data.goal || data.mainGoal}</strong>
+            {t('onboarding.formSteps.goals.prefilledGoal.title')}: <strong>{data.goal || data.mainGoal}</strong>
           </div>
         </div>
       )}
 
       {/* Aanvullende vragen over conversie */}
       <TextArea
-        label="Wat moet een bezoeker doen op je website?"
+        label={t('onboarding.formSteps.goals.callToAction.label')}
         name="callToAction"
         value={data.callToAction || ''}
         onChange={onChange}
-        placeholder="Bijv. contact opnemen, offerte aanvragen, direct bellen, producten bekijken..."
+        placeholder={t('onboarding.formSteps.goals.callToAction.placeholder')}
         required
         disabled={disabled}
-        hint="De belangrijkste actie die je bezoekers wilt laten nemen"
+        hint={t('onboarding.formSteps.goals.callToAction.hint')}
       />
 
       <RadioGroup
-        label="Hoe snel wil je dat bezoekers actie ondernemen?"
+        label={t('onboarding.formSteps.goals.conversionSpeed.label')}
         name="conversionSpeed"
         value={data.conversionSpeed || ''}
         onChange={onChange}
         disabled={disabled}
         options={[
-          { value: 'direct', label: 'Direct contact', description: 'Telefoon/WhatsApp prominent zichtbaar' },
-          { value: 'considered', label: 'Na informeren', description: 'Eerst lezen over diensten, dan contact' },
-          { value: 'long', label: 'Langere oriëntatie', description: 'Blog, cases, reviews eerst bekijken' },
+          { value: 'direct', label: t('onboarding.formSteps.goals.conversionSpeed.options.direct.label'), description: t('onboarding.formSteps.goals.conversionSpeed.options.direct.description') },
+          { value: 'considered', label: t('onboarding.formSteps.goals.conversionSpeed.options.considered.label'), description: t('onboarding.formSteps.goals.conversionSpeed.options.considered.description') },
+          { value: 'long', label: t('onboarding.formSteps.goals.conversionSpeed.options.long.label'), description: t('onboarding.formSteps.goals.conversionSpeed.options.long.description') },
         ]}
       />
 
-      {/* Contact methods - filtered by package */}
+      {/* Contactmethodes - gefilterd op pakket */}
       <div>
         <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
-          Welke contactmogelijkheden wil je aanbieden?
+          {t('onboarding.formSteps.goals.contactMethods.label')}
         </span>
         <p className="text-xs text-gray-500 dark:text-gray-400 mt-0.5">
-          Beschikbaar in je {pkg.name} pakket
+          {t('onboarding.formSteps.goals.contactMethods.hint', { package: pkg.name })}
         </p>
         <div className="mt-3 grid grid-cols-1 sm:grid-cols-2 gap-2">
           {contactOptions.map(opt => {
@@ -1433,18 +1437,18 @@ export function WebsiteDoelenStep({ data, onChange, disabled, packageId, onUpgra
           })}
         </div>
         
-        {/* Upgrade hint for locked features */}
+        {/* Upgrade hint voor vergrendelde features */}
         {!pkg.features.booking && (
           <div className="mt-3 p-3 bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800 rounded-lg">
             <p className="text-xs text-amber-700 dark:text-amber-400">
               <Sparkles className="w-3 h-3 inline mr-1" />
-              Online afspraken & Live chat beschikbaar vanaf het <strong>Business</strong> pakket.
+              <span dangerouslySetInnerHTML={{ __html: t('onboarding.formSteps.goals.contactMethods.upgradeHint') }} />
               {onUpgrade && (
                 <button 
                   onClick={() => onUpgrade('business')}
                   className="ml-1 underline hover:no-underline font-medium"
                 >
-                  Upgrade nu →
+                  {t('onboarding.formSteps.goals.contactMethods.upgradeNow')}
                 </button>
               )}
             </p>
@@ -1455,20 +1459,21 @@ export function WebsiteDoelenStep({ data, onChange, disabled, packageId, onUpgra
   )
 }
 
-// Step 4: Pagina's - details over gekozen pagina's, met pakket limiet
+// Stap 4: Pagina's - details over gekozen pagina's, met pakket limiet
 export function WebsitePaginasStep({ data, onChange, disabled, packageId, onUpgrade }: FormStepProps) {
-  // Show pre-filled pages from /start
+  const { t } = useTranslation()
+  // Toon vooraf ingevulde pagina's van /start
   const prefilledPages = data.pages || data.selectedPages || []
   const customPages = data.customPages || []
   const pkg = getPackageConfig(packageId || data.package || data.packageType)
   
-  // Calculate total including any selected pages
+  // Bereken totaal inclusief geselecteerde pagina's
   const allSelectedPages = data.selectedPages || data.pages || []
   const totalPages = allSelectedPages.length + customPages.length
   const pagesRemaining = pkg.maxPages - totalPages
   const isAtLimit = pagesRemaining <= 0
 
-  // Determine next upgrade package
+  // Bepaal volgende upgrade pakket
   const getNextPackage = (): PackageId | null => {
     if (pkg.id === 'starter') return 'professional'
     if (pkg.id === 'professional') return 'business'
@@ -1486,12 +1491,12 @@ export function WebsitePaginasStep({ data, onChange, disabled, packageId, onUpgr
           <FileText className="w-5 h-5 text-amber-600 dark:text-amber-400" />
         </div>
         <div>
-          <h3 className="font-semibold text-gray-900 dark:text-white">Pagina Details</h3>
-          <p className="text-sm text-gray-500 dark:text-gray-400">Meer info over je pagina's</p>
+          <h3 className="font-semibold text-gray-900 dark:text-white">{t('onboarding.formSteps.pages.title')}</h3>
+          <p className="text-sm text-gray-500 dark:text-gray-400">{t('onboarding.formSteps.pages.subtitle')}</p>
         </div>
       </div>
 
-      {/* Package page limit indicator */}
+      {/* Pakket pagina limiet indicator */}
       <div className={`rounded-xl p-4 border ${
         isAtLimit 
           ? 'bg-red-50 dark:bg-red-900/20 border-red-200 dark:border-red-800' 
@@ -1500,14 +1505,14 @@ export function WebsitePaginasStep({ data, onChange, disabled, packageId, onUpgr
         <div className="flex items-center justify-between">
           <div>
             <span className={`font-medium ${isAtLimit ? 'text-red-700 dark:text-red-400' : 'text-blue-700 dark:text-blue-400'}`}>
-              {pkg.maxPages >= 100 ? `${totalPages} pagina's` : `${totalPages} / ${pkg.maxPages} pagina's`}
+              {pkg.maxPages >= 100 ? t('onboarding.formSteps.pages.pagesCount', { count: totalPages }) : t('onboarding.formSteps.pages.pagesUsed', { current: totalPages, max: pkg.maxPages })}
             </span>
             <p className={`text-xs mt-0.5 ${isAtLimit ? 'text-red-600 dark:text-red-300' : 'text-blue-600 dark:text-blue-300'}`}>
               {isAtLimit 
-                ? `Je ${pkg.name} pakket zit vol` 
+                ? t('onboarding.formSteps.pages.packageFull', { package: pkg.name })
                 : pkg.maxPages >= 100 
-                  ? `Onbeperkt pagina's in ${pkg.name}`
-                  : `Nog ${pagesRemaining} pagina${pagesRemaining === 1 ? '' : "'s"} beschikbaar in ${pkg.name}`
+                  ? t('onboarding.formSteps.pages.unlimited', { package: pkg.name })
+                  : t('onboarding.formSteps.pages.pagesRemaining', { count: pagesRemaining, package: pkg.name })
               }
             </p>
           </div>
@@ -1517,20 +1522,21 @@ export function WebsitePaginasStep({ data, onChange, disabled, packageId, onUpgr
               className="px-3 py-1.5 bg-gradient-to-r from-amber-500 to-orange-500 text-white rounded-lg text-sm font-medium hover:from-amber-600 hover:to-orange-600 transition-all flex items-center gap-1"
             >
               <Sparkles className="w-3 h-3" />
-              Meer pagina's
+              {t('onboarding.formSteps.pages.morePages')}
             </button>
           )}
         </div>
       </div>
 
-      {/* Page selection - show when no pages are pre-selected */}
+      {/* Pagina selectie - toon wanneer geen pagina's vooraf geselecteerd zijn */}
       {prefilledPages.length === 0 && (
         <div className="space-y-3">
           <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
-            Welke pagina's wil je op je website?
+            {t('onboarding.formSteps.pages.whichPages')}
           </span>
           <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
-            {['Home', 'Over ons', 'Diensten', 'Contact', 'Portfolio', 'Blog', 'FAQ', 'Prijzen', 'Team'].map((page) => {
+            {(['home', 'about', 'services', 'contact', 'portfolio', 'blog', 'faq', 'pricing', 'team'] as const).map((pageKey) => {
+              const page = t(`onboarding.formSteps.pages.pageOptions.${pageKey}`)
               const selectedPages = data.selectedPages || []
               const isSelected = selectedPages.includes(page)
               const wouldExceedLimit = !isSelected && selectedPages.length >= pkg.maxPages
@@ -1575,12 +1581,12 @@ export function WebsitePaginasStep({ data, onChange, disabled, packageId, onUpgr
         </div>
       )}
 
-      {/* Show pre-selected pages */}
+      {/* Toon vooraf geselecteerde pagina's */}
       {prefilledPages.length > 0 && (
         <div className="bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800 rounded-xl p-4 mb-6">
           <div className="flex items-center gap-2 text-amber-700 dark:text-amber-400 font-medium mb-2">
             <Check className="w-4 h-4" />
-            Geselecteerde pagina's ({prefilledPages.length})
+            {t('onboarding.formSteps.pages.prefilledPages.title')} ({prefilledPages.length})
           </div>
           <div className="flex flex-wrap gap-2">
             {prefilledPages.map((page: string) => (
@@ -1592,15 +1598,15 @@ export function WebsitePaginasStep({ data, onChange, disabled, packageId, onUpgr
         </div>
       )}
 
-      {/* Extra pagina's toevoegen - met limiet check */}
+      {/* Extra pagina's toevoegen - met limiet controle */}
       <TagInput
-        label="Extra pagina's toevoegen"
+        label={t('onboarding.formSteps.pages.customPages.label')}
         name="customPages"
         values={customPages}
         onChange={(name, values) => {
-          // Check if adding would exceed limit
+          // Controleer of toevoegen limiet zou overschrijden
           if (values.length > customPages.length && allSelectedPages.length + values.length > pkg.maxPages) {
-            // Would exceed limit - show upgrade prompt instead
+            // Zou limiet overschrijden - toon upgrade prompt
             if (onUpgrade && getNextPackage()) {
               onUpgrade(getNextPackage()!)
             }
@@ -1608,24 +1614,24 @@ export function WebsitePaginasStep({ data, onChange, disabled, packageId, onUpgr
           }
           onChange(name, values)
         }}
-        placeholder={isAtLimit ? "Upgrade voor meer pagina's" : "Bijv. Vacatures, Partners, Projecten..."}
+        placeholder={isAtLimit ? t('onboarding.formSteps.pages.upgradeHint', { package: getNextPackage() || 'Business' }) : t('onboarding.formSteps.pages.customPages.placeholder')}
         disabled={disabled || isAtLimit}
-        hint={isAtLimit ? undefined : "Mis je een pagina in de lijst hierboven? Voeg hem hier toe"}
+        hint={isAtLimit ? undefined : t('onboarding.formSteps.pages.customPages.hint')}
       />
 
-      {/* Per-page details for important pages */}
+      {/* Per-pagina details voor belangrijke pagina's */}
       <div className="space-y-4">
         <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
-          Details per pagina (optioneel)
+          {t('onboarding.formSteps.pages.pageDetails.title')}
         </span>
         
         {(prefilledPages.includes('Home') || prefilledPages.includes('home')) && (
           <TextArea
-            label="Wat moet op de homepage staan?"
+            label={t('onboarding.formSteps.pages.pageDetails.home.label')}
             name="homePageDetails"
             value={data.homePageDetails || ''}
             onChange={onChange}
-            placeholder="Belangrijkste boodschap, USP's, featured content..."
+            placeholder={t('onboarding.formSteps.pages.pageDetails.home.placeholder')}
             disabled={disabled}
             rows={2}
           />
@@ -1633,11 +1639,11 @@ export function WebsitePaginasStep({ data, onChange, disabled, packageId, onUpgr
 
         {(prefilledPages.includes('Diensten') || prefilledPages.includes('services') || prefilledPages.includes('Services')) && (
           <TextArea
-            label="Welke diensten wil je tonen?"
+            label={t('onboarding.formSteps.pages.pageDetails.services.label')}
             name="servicesDetails"
             value={data.servicesDetails || ''}
             onChange={onChange}
-            placeholder="Lijst van diensten, prijzen, pakketten..."
+            placeholder={t('onboarding.formSteps.pages.pageDetails.services.placeholder')}
             disabled={disabled}
             rows={2}
           />
@@ -1645,11 +1651,11 @@ export function WebsitePaginasStep({ data, onChange, disabled, packageId, onUpgr
 
         {(prefilledPages.includes('Over ons') || prefilledPages.includes('about') || prefilledPages.includes('About')) && (
           <TextArea
-            label="Wat moet op 'Over ons' komen?"
+            label={t('onboarding.formSteps.pages.pageDetails.about.label')}
             name="aboutPageDetails"
             value={data.aboutPageDetails || ''}
             onChange={onChange}
-            placeholder="Team foto's, geschiedenis, missie/visie..."
+            placeholder={t('onboarding.formSteps.pages.pageDetails.about.placeholder')}
             disabled={disabled}
             rows={2}
           />
@@ -1659,8 +1665,9 @@ export function WebsitePaginasStep({ data, onChange, disabled, packageId, onUpgr
   )
 }
 
-// Step 5: Content - teksten en foto's, pakket-specifiek
+// Stap 5: Content - teksten en foto's, pakket-specifiek
 export function WebsiteContentStep({ data, onChange, disabled, packageId, onUpgrade }: FormStepProps) {
+  const { t } = useTranslation()
   const pkg = getPackageConfig(packageId || data.package || data.packageType)
 
   return (
@@ -1674,38 +1681,38 @@ export function WebsiteContentStep({ data, onChange, disabled, packageId, onUpgr
           <Image className="w-5 h-5 text-cyan-600 dark:text-cyan-400" />
         </div>
         <div>
-          <h3 className="font-semibold text-gray-900 dark:text-white">Content & Media</h3>
-          <p className="text-sm text-gray-500 dark:text-gray-400">Teksten en beeldmateriaal</p>
+          <h3 className="font-semibold text-gray-900 dark:text-white">{t('onboarding.formSteps.content.title')}</h3>
+          <p className="text-sm text-gray-500 dark:text-gray-400">{t('onboarding.formSteps.content.subtitle')}</p>
         </div>
       </div>
 
       <RadioGroup
-        label="Heb je al teksten voor je website?"
+        label={t('onboarding.formSteps.content.hasTexts.label')}
         name="hasContent"
         value={data.hasContent || ''}
         onChange={onChange}
         disabled={disabled}
         options={[
-          { value: 'yes', label: 'Ja, ik lever de teksten aan', description: 'Upload via de Drive link die we klaarzetten' },
-          { value: 'partial', label: 'Gedeeltelijk, ik heb hulp nodig' },
-          { value: 'no', label: 'Nee, ik wil hulp bij het schrijven', description: 'We maken AI-gegenereerde teksten (gratis inbegrepen)' },
+          { value: 'yes', label: t('onboarding.formSteps.content.hasTexts.options.yes.label'), description: t('onboarding.formSteps.content.hasTexts.options.yes.description') },
+          { value: 'partial', label: t('onboarding.formSteps.content.hasTexts.options.partial.label') },
+          { value: 'no', label: t('onboarding.formSteps.content.hasTexts.options.no.label'), description: t('onboarding.formSteps.content.hasTexts.options.no.description') },
         ]}
       />
 
       <RadioGroup
-        label="Heb je professionele foto's?"
+        label={t('onboarding.formSteps.content.hasPhotos.label')}
         name="hasPhotos"
         value={data.hasPhotos || ''}
         onChange={onChange}
         disabled={disabled}
         options={[
-          { value: 'yes', label: 'Ja, ik heb goede foto\'s', description: 'Upload via de Drive link die we voor je klaarzetten' },
-          { value: 'some', label: 'Een paar, maar niet genoeg' },
-          { value: 'no', label: 'Nee, gebruik stockfoto\'s', description: 'We zoeken passende stockfoto\'s uit' },
+          { value: 'yes', label: t('onboarding.formSteps.content.hasPhotos.options.yes.label'), description: t('onboarding.formSteps.content.hasPhotos.options.yes.description') },
+          { value: 'some', label: t('onboarding.formSteps.content.hasPhotos.options.some.label') },
+          { value: 'no', label: t('onboarding.formSteps.content.hasPhotos.options.no.label'), description: t('onboarding.formSteps.content.hasPhotos.options.no.description') },
         ]}
       />
 
-      {/* Photo/Drone upsell for no or partial photos */}
+      {/* Foto/Drone upsell voor geen of gedeeltelijke foto's */}
       {(data.hasPhotos === 'some' || data.hasPhotos === 'no') && (
         <motion.div
           initial={{ opacity: 0, y: 10 }}
@@ -1718,10 +1725,10 @@ export function WebsiteContentStep({ data, onChange, disabled, packageId, onUpgr
             </div>
             <div className="flex-1">
               <h4 className="font-semibold text-white mb-1">
-                Professionele foto's nodig?
+                {t('onboarding.formSteps.content.photoUpsell.title')}
               </h4>
               <p className="text-sm text-gray-400 mb-3">
-                Goede foto's maken een wereld van verschil. We bieden professionele fotografie én drone-opnames voor unieke beelden van je bedrijf.
+                {t('onboarding.formSteps.content.photoUpsell.description')}
               </p>
               <a 
                 href="/diensten/fotografie" 
@@ -1729,7 +1736,7 @@ export function WebsiteContentStep({ data, onChange, disabled, packageId, onUpgr
                 className="inline-flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-sky-500 to-blue-500 text-white text-sm font-medium rounded-lg hover:from-sky-600 hover:to-blue-600 transition-all"
               >
                 <Image className="w-4 h-4" />
-                Bekijk opties
+                {t('onboarding.formSteps.content.photoUpsell.cta')}
                 <ArrowUpRight className="w-3 h-3" />
               </a>
             </div>
@@ -1737,34 +1744,34 @@ export function WebsiteContentStep({ data, onChange, disabled, packageId, onUpgr
         </motion.div>
       )}
 
-      {/* Blog content - only for Professional and Business */}
+      {/* Blog content - alleen voor Professional en Business */}
       {pkg.features.blog ? (
         <RadioGroup
-          label="Wil je blog artikelen op je website?"
+          label={t('onboarding.formSteps.content.blog.label')}
           name="wantsBlog"
           value={data.wantsBlog || ''}
           onChange={onChange}
           disabled={disabled}
           options={[
-            { value: 'yes', label: 'Ja, ik wil een blog', description: 'We helpen met de opzet en eerste artikelen' },
-            { value: 'later', label: 'Misschien later', description: 'We bereiden de functie voor' },
-            { value: 'no', label: 'Nee, geen blog nodig' },
+            { value: 'yes', label: t('onboarding.formSteps.content.blog.options.yes.label'), description: t('onboarding.formSteps.content.blog.options.yes.description') },
+            { value: 'later', label: t('onboarding.formSteps.content.blog.options.later.label'), description: t('onboarding.formSteps.content.blog.options.later.description') },
+            { value: 'no', label: t('onboarding.formSteps.content.blog.options.no.label') },
           ]}
         />
       ) : (
         <div className="bg-gray-50 dark:bg-gray-800/50 border border-gray-200 dark:border-gray-700 rounded-xl p-4 opacity-60">
           <div className="flex items-center gap-2 text-gray-500 dark:text-gray-400">
             <Lock className="w-4 h-4" />
-            <span className="font-medium">Blog functionaliteit</span>
+            <span className="font-medium">{t('onboarding.formSteps.content.blog.locked.title')}</span>
           </div>
           <p className="text-xs text-gray-400 dark:text-gray-500 mt-1">
-            Beschikbaar vanaf het Professioneel pakket.
+            {t('onboarding.formSteps.content.blog.locked.description')}
             {onUpgrade && (
               <button 
                 onClick={() => onUpgrade('professional')}
                 className="ml-1 text-primary-500 underline hover:no-underline"
               >
-                Upgrade →
+                {t('onboarding.formSteps.content.blog.locked.upgrade')}
               </button>
             )}
           </p>
@@ -1772,26 +1779,27 @@ export function WebsiteContentStep({ data, onChange, disabled, packageId, onUpgr
       )}
 
       <TextArea
-        label="Specifieke content wensen"
+        label={t('onboarding.formSteps.content.contentNotes.label')}
         name="contentNotes"
         value={data.contentNotes || ''}
         onChange={onChange}
-        placeholder="Heb je speciale wensen voor teksten, foto's of video's?"
+        placeholder={t('onboarding.formSteps.content.contentNotes.placeholder')}
         disabled={disabled}
         rows={3}
       />
 
       <div className="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-xl p-4">
         <p className="text-sm text-blue-700 dark:text-blue-300">
-          💡 <strong>Tip:</strong> Na je aanmelding ontvang je van ons een Google Drive link waar je al je bestanden (teksten, logo, foto's) kunt uploaden.
+          💡 <span dangerouslySetInnerHTML={{ __html: t('onboarding.formSteps.content.tip') }} />
         </p>
       </div>
     </motion.div>
   )
 }
 
-// Step 6: Planning & Extra - deadline en aanvullingen, pakket samenvatting
+// Stap 6: Planning & Extra - deadline en aanvullingen, pakket samenvatting
 export function WebsiteExtraStep({ data, onChange, disabled, packageId, onUpgrade }: FormStepProps) {
+  const { t } = useTranslation()
   const pkg = getPackageConfig(packageId || data.package || data.packageType)
 
   return (
@@ -1805,16 +1813,16 @@ export function WebsiteExtraStep({ data, onChange, disabled, packageId, onUpgrad
           <Settings className="w-5 h-5 text-violet-600 dark:text-violet-400" />
         </div>
         <div>
-          <h3 className="font-semibold text-gray-900 dark:text-white">Planning & Afronding</h3>
-          <p className="text-sm text-gray-500 dark:text-gray-400">Laatste details voor je project</p>
+          <h3 className="font-semibold text-gray-900 dark:text-white">{t('onboarding.formSteps.extra.title')}</h3>
+          <p className="text-sm text-gray-500 dark:text-gray-400">{t('onboarding.formSteps.extra.subtitle')}</p>
         </div>
       </div>
 
-      {/* Package summary */}
+      {/* Pakket samenvatting */}
       <div className="bg-gradient-to-r from-primary-50 to-blue-50 dark:from-primary-900/20 dark:to-blue-900/20 border border-primary-200 dark:border-primary-800 rounded-xl p-4">
         <div className="flex items-center justify-between mb-3">
           <div>
-            <span className="font-semibold text-primary-700 dark:text-primary-300">{pkg.name} pakket</span>
+            <span className="font-semibold text-primary-700 dark:text-primary-300">{t('onboarding.formSteps.extra.packageSummary.package', { name: pkg.name })}</span>
             <span className="text-sm text-primary-600 dark:text-primary-400 ml-2">{pkg.price}</span>
           </div>
           {pkg.id !== 'business' && onUpgrade && (
@@ -1822,32 +1830,32 @@ export function WebsiteExtraStep({ data, onChange, disabled, packageId, onUpgrad
               onClick={() => onUpgrade(pkg.id === 'starter' ? 'professional' : 'business')}
               className="text-xs px-3 py-1 bg-primary-500 text-white rounded-full hover:bg-primary-600 transition-colors"
             >
-              Upgrade
+              {t('onboarding.formSteps.extra.packageSummary.upgrade')}
             </button>
           )}
         </div>
         <div className="flex flex-wrap gap-2 text-xs">
           <span className="px-2 py-1 bg-white dark:bg-gray-800 rounded text-gray-600 dark:text-gray-400">
-            {formatMaxPages(pkg.maxPages)}
+            {pkg.maxPages >= 100 ? t('onboarding.formSteps.extra.packageSummary.unlimited') : t('onboarding.formSteps.extra.packageSummary.maxPages', { count: pkg.maxPages })}
           </span>
           {pkg.features.blog && (
             <span className="px-2 py-1 bg-green-100 dark:bg-green-900/30 rounded text-green-700 dark:text-green-400">
-              ✓ Blog
+              ✓ {t('onboarding.formSteps.extra.packageSummary.features.blog')}
             </span>
           )}
           {pkg.features.booking && (
             <span className="px-2 py-1 bg-green-100 dark:bg-green-900/30 rounded text-green-700 dark:text-green-400">
-              ✓ Boekingen
+              ✓ {t('onboarding.formSteps.extra.packageSummary.features.booking')}
             </span>
           )}
           {pkg.features.newsletter && (
             <span className="px-2 py-1 bg-green-100 dark:bg-green-900/30 rounded text-green-700 dark:text-green-400">
-              ✓ Nieuwsbrief
+              ✓ {t('onboarding.formSteps.extra.packageSummary.features.newsletter')}
             </span>
           )}
           {pkg.features.multilang && (
             <span className="px-2 py-1 bg-green-100 dark:bg-green-900/30 rounded text-green-700 dark:text-green-400">
-              ✓ Meerdere talen
+              ✓ {t('onboarding.formSteps.extra.packageSummary.features.multilang')}
             </span>
           )}
         </div>
@@ -1855,62 +1863,62 @@ export function WebsiteExtraStep({ data, onChange, disabled, packageId, onUpgrad
 
       {/* Deadline */}
       <RadioGroup
-        label="Wanneer wil je de website live hebben?"
+        label={t('onboarding.formSteps.extra.deadline.label')}
         name="deadline"
         value={data.deadline || ''}
         onChange={onChange}
         disabled={disabled}
         options={[
-          { value: 'asap', label: 'Zo snel mogelijk', description: 'Binnen 1-2 weken' },
-          { value: 'month', label: 'Binnen een maand' },
-          { value: 'quarter', label: 'Binnen 3 maanden' },
-          { value: 'flexible', label: 'Geen haast', description: 'Kwaliteit boven snelheid' },
-          { value: 'specific', label: 'Specifieke datum' },
+          { value: 'asap', label: t('onboarding.formSteps.extra.deadline.options.asap.label'), description: t('onboarding.formSteps.extra.deadline.options.asap.description') },
+          { value: 'month', label: t('onboarding.formSteps.extra.deadline.options.month.label') },
+          { value: 'quarter', label: t('onboarding.formSteps.extra.deadline.options.quarter.label') },
+          { value: 'flexible', label: t('onboarding.formSteps.extra.deadline.options.flexible.label'), description: t('onboarding.formSteps.extra.deadline.options.flexible.description') },
+          { value: 'specific', label: t('onboarding.formSteps.extra.deadline.options.specific.label') },
         ]}
       />
 
       {data.deadline === 'specific' && (
         <TextInput
-          label="Gewenste lanceerdatum"
+          label={t('onboarding.formSteps.extra.specificDeadline.label')}
           name="specificDeadline"
           value={data.specificDeadline || ''}
           onChange={onChange}
-          placeholder="Bijv. 1 februari 2025"
+          placeholder={t('onboarding.formSteps.extra.specificDeadline.placeholder')}
           disabled={disabled}
         />
       )}
 
-      {/* Multilang - only for Business */}
+      {/* Meertalig - alleen voor Business */}
       {pkg.features.multilang && (
         <RadioGroup
-          label="Wil je de website in meerdere talen?"
+          label={t('onboarding.formSteps.extra.multilang.label')}
           name="wantsMultilang"
           value={data.wantsMultilang || ''}
           onChange={onChange}
           disabled={disabled}
           options={[
-            { value: 'no', label: 'Nee, alleen Nederlands' },
-            { value: 'en', label: 'Nederlands + Engels' },
-            { value: 'multi', label: 'Meerdere talen', description: 'Specificeer hieronder' },
+            { value: 'no', label: t('onboarding.formSteps.extra.multilang.options.no.label') },
+            { value: 'en', label: t('onboarding.formSteps.extra.multilang.options.en.label') },
+            { value: 'multi', label: t('onboarding.formSteps.extra.multilang.options.multi.label'), description: t('onboarding.formSteps.extra.multilang.options.multi.description') },
           ]}
         />
       )}
 
       {data.wantsMultilang === 'multi' && (
         <TextInput
-          label="Welke talen?"
+          label={t('onboarding.formSteps.extra.multilang.languages.label')}
           name="languages"
           value={data.languages || ''}
           onChange={onChange}
-          placeholder="Bijv. Nederlands, Engels, Duits, Frans"
+          placeholder={t('onboarding.formSteps.extra.multilang.languages.placeholder')}
           disabled={disabled}
         />
       )}
 
       {/* Social media links */}
       <div>
-        <span className="text-sm font-medium text-gray-700 dark:text-gray-300">Social media links (optioneel)</span>
-        <p className="text-xs text-gray-500 dark:text-gray-400 mt-0.5">Links die je op de website wilt tonen</p>
+        <span className="text-sm font-medium text-gray-700 dark:text-gray-300">{t('onboarding.formSteps.extra.socialMedia.title')}</span>
+        <p className="text-xs text-gray-500 dark:text-gray-400 mt-0.5">{t('onboarding.formSteps.extra.socialMedia.hint')}</p>
         <div className="mt-3 grid grid-cols-1 md:grid-cols-2 gap-3">
           <TextInput
             label="Facebook"
@@ -1937,7 +1945,7 @@ export function WebsiteExtraStep({ data, onChange, disabled, packageId, onUpgrad
             disabled={disabled}
           />
           <TextInput
-            label="Overige"
+            label={t('onboarding.formSteps.extra.socialMedia.other')}
             name="socialOther"
             value={data.socialOther || ''}
             onChange={onChange}
@@ -1947,13 +1955,13 @@ export function WebsiteExtraStep({ data, onChange, disabled, packageId, onUpgrad
         </div>
       </div>
 
-      {/* Final notes */}
+      {/* Laatste opmerkingen */}
       <TextArea
-        label="Overige wensen of opmerkingen"
+        label={t('onboarding.formSteps.extra.additionalNotes.label')}
         name="additionalNotes"
         value={data.additionalNotes || data.extraFeatures || ''}
         onChange={onChange}
-        placeholder="Is er nog iets dat we moeten weten? Speciale wensen, vragen, of andere opmerkingen..."
+        placeholder={t('onboarding.formSteps.extra.additionalNotes.placeholder')}
         disabled={disabled}
         rows={4}
       />
@@ -1962,12 +1970,13 @@ export function WebsiteExtraStep({ data, onChange, disabled, packageId, onUpgrad
   )
 }
 
-// Step 7: Samenvatting - overzicht van alle ingevulde gegevens
+// Stap 7: Samenvatting - overzicht van alle ingevulde gegevens
 interface SamenvattingStepProps extends FormStepProps {
   onGoToStep?: (stepIndex: number) => void
 }
 
 export function WebsiteSamenvattingStep({ data, packageId, onUpgrade, onGoToStep, approvedForDesign, onApprovalChange }: SamenvattingStepProps) {
+  const { t } = useTranslation()
   const pkg = getPackageConfig(packageId || data.package || data.packageType)
   const prefilledPages = data.pages || data.selectedPages || []
   const customPages = data.customPages || []
@@ -1983,7 +1992,7 @@ export function WebsiteSamenvattingStep({ data, packageId, onUpgrade, onGoToStep
     )
   }
 
-  // Edit button component
+  // Wijzig knop component
   const EditButton = ({ step }: { step: number }) => {
     if (!onGoToStep) return null
     return (
@@ -1992,7 +2001,7 @@ export function WebsiteSamenvattingStep({ data, packageId, onUpgrade, onGoToStep
         className="ml-auto text-xs px-2 py-1 text-gray-500 hover:text-primary-600 hover:bg-primary-50 dark:hover:bg-primary-900/20 rounded-lg transition-colors flex items-center gap-1"
       >
         <ArrowUpRight className="w-3 h-3" />
-        Wijzig
+        {t('onboarding.formSteps.summary.edit')}
       </button>
     )
   }
@@ -2008,21 +2017,21 @@ export function WebsiteSamenvattingStep({ data, packageId, onUpgrade, onGoToStep
           <Check className="w-5 h-5 text-green-600 dark:text-green-400" />
         </div>
         <div>
-          <h3 className="font-semibold text-gray-900 dark:text-white">Controleer je gegevens</h3>
-          <p className="text-sm text-gray-500 dark:text-gray-400">Alles correct? Dan kunnen we beginnen!</p>
+          <h3 className="font-semibold text-gray-900 dark:text-white">{t('onboarding.formSteps.summary.title')}</h3>
+          <p className="text-sm text-gray-500 dark:text-gray-400">{t('onboarding.formSteps.summary.subtitle')}</p>
         </div>
       </div>
 
-      {/* Package info */}
+      {/* Pakket info */}
       <div className="bg-gradient-to-r from-primary-500 to-blue-500 rounded-xl p-4 text-white">
         <div className="flex items-center justify-between">
           <div>
-            <span className="text-sm opacity-80">Gekozen pakket</span>
+            <span className="text-sm opacity-80">{t('onboarding.formSteps.summary.packageInfo.label')}</span>
             <div className="text-xl font-bold">{pkg.name}</div>
           </div>
           <div className="text-right">
             <div className="text-2xl font-bold">{pkg.price}</div>
-            <span className="text-sm opacity-80">{formatMaxPages(pkg.maxPages)}</span>
+            <span className="text-sm opacity-80">{pkg.maxPages >= 100 ? t('onboarding.formSteps.extra.packageSummary.unlimited') : t('onboarding.formSteps.extra.packageSummary.maxPages', { count: pkg.maxPages })}</span>
           </div>
         </div>
         {pkg.id !== 'business' && onUpgrade && (
@@ -2030,7 +2039,7 @@ export function WebsiteSamenvattingStep({ data, packageId, onUpgrade, onGoToStep
             onClick={() => onUpgrade(pkg.id === 'starter' ? 'professional' : 'business')}
             className="mt-3 w-full py-2 bg-white/20 hover:bg-white/30 rounded-lg text-sm font-medium transition-colors"
           >
-            Upgrade naar {pkg.id === 'starter' ? 'Professioneel' : 'Business'} →
+            {t('onboarding.formSteps.summary.packageInfo.upgradeHint', { package: pkg.id === 'starter' ? 'Professioneel' : 'Business' })}
           </button>
         )}
       </div>
@@ -2041,22 +2050,22 @@ export function WebsiteSamenvattingStep({ data, packageId, onUpgrade, onGoToStep
           <div className="w-8 h-8 rounded-lg bg-primary-100 dark:bg-primary-900/30 flex items-center justify-center">
             <Building2 className="w-4 h-4 text-primary-600 dark:text-primary-400" />
           </div>
-          <span className="font-medium text-primary-700 dark:text-primary-300">Bedrijfsgegevens</span>
+          <span className="font-medium text-primary-700 dark:text-primary-300">{t('onboarding.formSteps.summary.sections.business.title')}</span>
           <EditButton step={1} />
         </div>
         <div className="space-y-2 text-sm">
-          <SummaryItem label="Bedrijfsnaam" value={data.businessName || data.companyName} />
-          <SummaryItem label="E-mail" value={data.contactEmail} />
-          <SummaryItem label="Branche" value={data.industry} />
-          <SummaryItem label="Domein" value={data.preferredDomain || data.existingDomain} />
-          <SummaryItem label="Zakelijk e-mail" value={
-            data.needsBusinessEmail === 'yes' ? 'Ja, nodig' :
-            data.needsBusinessEmail === 'already' ? 'Heb ik al' :
-            data.needsBusinessEmail === 'no' ? 'Niet nodig' : undefined
+          <SummaryItem label={t('onboarding.formSteps.summary.sections.business.company')} value={data.businessName || data.companyName} />
+          <SummaryItem label={t('onboarding.formSteps.summary.sections.business.email')} value={data.contactEmail} />
+          <SummaryItem label={t('onboarding.formSteps.summary.sections.business.industry')} value={data.industry} />
+          <SummaryItem label={t('onboarding.formSteps.summary.sections.business.domain')} value={data.preferredDomain || data.existingDomain} />
+          <SummaryItem label={t('onboarding.business.email.business.label')} value={
+            data.needsBusinessEmail === 'yes' ? t('onboarding.business.email.business.options.yes') :
+            data.needsBusinessEmail === 'already' ? t('onboarding.business.email.business.options.already') :
+            data.needsBusinessEmail === 'no' ? t('onboarding.business.email.business.options.no') : undefined
           } />
           {data.aboutBusiness && (
             <div className="pt-2 border-t border-primary-200 dark:border-primary-700">
-              <span className="text-gray-500 dark:text-gray-400 block mb-1">Over het bedrijf:</span>
+              <span className="text-gray-500 dark:text-gray-400 block mb-1">{t('onboarding.formSteps.summary.sections.business.description')}:</span>
               <p className="text-gray-700 dark:text-gray-300 text-sm line-clamp-3">{data.aboutBusiness}</p>
             </div>
           )}
@@ -2069,19 +2078,19 @@ export function WebsiteSamenvattingStep({ data, packageId, onUpgrade, onGoToStep
           <div className="w-8 h-8 rounded-lg bg-purple-100 dark:bg-purple-900/30 flex items-center justify-center">
             <Palette className="w-4 h-4 text-purple-600 dark:text-purple-400" />
           </div>
-          <span className="font-medium text-purple-700 dark:text-purple-300">Logo & Huisstijl</span>
+          <span className="font-medium text-purple-700 dark:text-purple-300">{t('onboarding.formSteps.summary.sections.branding.title')}</span>
           <EditButton step={2} />
         </div>
         <div className="space-y-2 text-sm">
-          <SummaryItem label="Design stijl" value={data.designStyle} />
-          <SummaryItem label="Logo" value={
-            data.hasLogo === 'yes' ? 'Ja, ik heb een logo' :
-            data.hasLogo === 'no' ? 'Nee, nog niet' :
-            data.hasLogo === 'need_refresh' ? 'Wil nieuw logo' : undefined
+          <SummaryItem label={t('onboarding.formSteps.summary.sections.branding.style')} value={data.designStyle} />
+          <SummaryItem label={t('onboarding.formSteps.summary.sections.branding.logo')} value={
+            data.hasLogo === 'yes' ? t('onboarding.formSteps.branding.logo.options.yes.label') :
+            data.hasLogo === 'no' ? t('onboarding.formSteps.branding.logo.options.no.label') :
+            data.hasLogo === 'need_refresh' ? t('onboarding.formSteps.branding.logo.options.needRefresh.label') : undefined
           } />
           {(data.brandColors || data.colorPreferences)?.length > 0 && (
             <div className="flex items-center gap-2 flex-wrap">
-              <span className="text-gray-500 dark:text-gray-400">Kleuren:</span>
+              <span className="text-gray-500 dark:text-gray-400">{t('onboarding.formSteps.summary.sections.branding.colors')}:</span>
               {(data.brandColors || data.colorPreferences)?.map((color: string) => (
                 <span 
                   key={color} 
@@ -2094,8 +2103,8 @@ export function WebsiteSamenvattingStep({ data, packageId, onUpgrade, onGoToStep
           )}
           {data.inspirationUrls?.length > 0 && (
             <div>
-              <span className="text-gray-500 dark:text-gray-400">Inspiratie:</span>
-              <span className="ml-2 text-purple-600 dark:text-purple-400">{data.inspirationUrls.length} website(s)</span>
+              <span className="text-gray-500 dark:text-gray-400">{t('onboarding.formSteps.summary.sections.branding.inspiration')}:</span>
+              <span className="ml-2 text-purple-600 dark:text-purple-400">{t('onboarding.formSteps.summary.websiteCount', { count: data.inspirationUrls.length })}</span>
             </div>
           )}
         </div>
@@ -2107,29 +2116,24 @@ export function WebsiteSamenvattingStep({ data, packageId, onUpgrade, onGoToStep
           <div className="w-8 h-8 rounded-lg bg-emerald-100 dark:bg-emerald-900/30 flex items-center justify-center">
             <Target className="w-4 h-4 text-emerald-600 dark:text-emerald-400" />
           </div>
-          <span className="font-medium text-emerald-700 dark:text-emerald-300">Doelen & Conversie</span>
+          <span className="font-medium text-emerald-700 dark:text-emerald-300">{t('onboarding.formSteps.summary.sections.goals.title')}</span>
           <EditButton step={3} />
         </div>
         <div className="space-y-2 text-sm">
-          <SummaryItem label="Hoofddoel" value={data.goal || data.mainGoal} />
-          <SummaryItem label="Call-to-action" value={data.callToAction} />
-          <SummaryItem label="Conversie" value={
-            data.conversionSpeed === 'direct' ? 'Direct contact' :
-            data.conversionSpeed === 'considered' ? 'Na informeren' :
-            data.conversionSpeed === 'long' ? 'Langere oriëntatie' : undefined
+          <SummaryItem label={t('onboarding.formSteps.summary.sections.goals.mainGoal')} value={data.goal || data.mainGoal} />
+          <SummaryItem label={t('onboarding.formSteps.summary.sections.goals.callToAction')} value={data.callToAction} />
+          <SummaryItem label={t('onboarding.formSteps.goals.conversionSpeed.label')} value={
+            data.conversionSpeed === 'direct' ? t('onboarding.formSteps.goals.conversionSpeed.options.direct.label') :
+            data.conversionSpeed === 'considered' ? t('onboarding.formSteps.goals.conversionSpeed.options.considered.label') :
+            data.conversionSpeed === 'long' ? t('onboarding.formSteps.goals.conversionSpeed.options.long.label') : undefined
           } />
           {data.contactMethods?.length > 0 && (
             <div>
-              <span className="text-gray-500 dark:text-gray-400">Contactmethodes:</span>
+              <span className="text-gray-500 dark:text-gray-400">{t('onboarding.formSteps.summary.sections.goals.contactMethods')}:</span>
               <div className="flex flex-wrap gap-1 mt-1">
                 {data.contactMethods.map((method: string) => (
                   <span key={method} className="px-2 py-0.5 bg-emerald-100 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-300 rounded text-xs">
-                    {method === 'form' ? 'Formulier' :
-                     method === 'email' ? 'E-mail' :
-                     method === 'phone' ? 'Telefoon' :
-                     method === 'whatsapp' ? 'WhatsApp' :
-                     method === 'booking' ? 'Afspraken' :
-                     method === 'chat' ? 'Live chat' : method}
+                    {t(`onboarding.formSteps.goals.contactMethods.options.${method}`)}
                   </span>
                 ))}
               </div>
@@ -2144,7 +2148,7 @@ export function WebsiteSamenvattingStep({ data, packageId, onUpgrade, onGoToStep
           <div className="w-8 h-8 rounded-lg bg-amber-100 dark:bg-amber-900/30 flex items-center justify-center">
             <FileText className="w-4 h-4 text-amber-600 dark:text-amber-400" />
           </div>
-          <span className="font-medium text-amber-700 dark:text-amber-300">Pagina's ({allPages.length})</span>
+          <span className="font-medium text-amber-700 dark:text-amber-300">{t('onboarding.formSteps.summary.sections.pages.title')} ({allPages.length})</span>
           <EditButton step={4} />
         </div>
         <div className="flex flex-wrap gap-1.5">
@@ -2162,25 +2166,25 @@ export function WebsiteSamenvattingStep({ data, packageId, onUpgrade, onGoToStep
           <div className="w-8 h-8 rounded-lg bg-cyan-100 dark:bg-cyan-900/30 flex items-center justify-center">
             <Image className="w-4 h-4 text-cyan-600 dark:text-cyan-400" />
           </div>
-          <span className="font-medium text-cyan-700 dark:text-cyan-300">Content & Media</span>
+          <span className="font-medium text-cyan-700 dark:text-cyan-300">{t('onboarding.formSteps.summary.sections.content.title')}</span>
           <EditButton step={5} />
         </div>
         <div className="space-y-2 text-sm">
-          <SummaryItem label="Teksten" value={
-            data.hasContent === 'yes' ? 'Lever ik aan' :
-            data.hasContent === 'partial' ? 'Gedeeltelijk hulp nodig' :
-            data.hasContent === 'no' ? 'AI-gegenereerd' : undefined
+          <SummaryItem label={t('onboarding.formSteps.summary.sections.content.texts')} value={
+            data.hasContent === 'yes' ? t('onboarding.formSteps.content.texts.options.yes') :
+            data.hasContent === 'partial' ? t('onboarding.formSteps.content.texts.options.partial') :
+            data.hasContent === 'no' ? t('onboarding.formSteps.content.texts.options.no') : undefined
           } />
-          <SummaryItem label="Foto's" value={
-            data.hasPhotos === 'yes' ? 'Eigen foto\'s' :
-            data.hasPhotos === 'some' ? 'Gedeeltelijk' :
-            data.hasPhotos === 'no' ? 'Stockfoto\'s' : undefined
+          <SummaryItem label={t('onboarding.formSteps.summary.sections.content.photos')} value={
+            data.hasPhotos === 'yes' ? t('onboarding.formSteps.content.photos.options.yes') :
+            data.hasPhotos === 'some' ? t('onboarding.formSteps.content.photos.options.some') :
+            data.hasPhotos === 'no' ? t('onboarding.formSteps.content.photos.options.no') : undefined
           } />
           {pkg.features.blog && (
-            <SummaryItem label="Blog" value={
-              data.wantsBlog === 'yes' ? 'Ja' :
-              data.wantsBlog === 'later' ? 'Later' :
-              data.wantsBlog === 'no' ? 'Nee' : undefined
+            <SummaryItem label={t('onboarding.formSteps.summary.sections.content.blog')} value={
+              data.wantsBlog === 'yes' ? t('common.yes') :
+              data.wantsBlog === 'later' ? t('common.later') :
+              data.wantsBlog === 'no' ? t('common.no') : undefined
             } />
           )}
         </div>
@@ -2192,51 +2196,51 @@ export function WebsiteSamenvattingStep({ data, packageId, onUpgrade, onGoToStep
           <div className="w-8 h-8 rounded-lg bg-violet-100 dark:bg-violet-900/30 flex items-center justify-center">
             <Settings className="w-4 h-4 text-violet-600 dark:text-violet-400" />
           </div>
-          <span className="font-medium text-violet-700 dark:text-violet-300">Planning</span>
+          <span className="font-medium text-violet-700 dark:text-violet-300">{t('onboarding.formSteps.summary.sections.planning.title')}</span>
           <EditButton step={6} />
         </div>
         <div className="space-y-2 text-sm">
-          <SummaryItem label="Deadline" value={
-            data.deadline === 'asap' ? 'Zo snel mogelijk' :
-            data.deadline === 'month' ? 'Binnen een maand' :
-            data.deadline === 'quarter' ? 'Binnen 3 maanden' :
-            data.deadline === 'flexible' ? 'Geen haast' :
+          <SummaryItem label={t('onboarding.formSteps.summary.sections.planning.deadline')} value={
+            data.deadline === 'asap' ? t('onboarding.formSteps.extra.deadline.options.asap') :
+            data.deadline === 'month' ? t('onboarding.formSteps.extra.deadline.options.month') :
+            data.deadline === 'quarter' ? t('onboarding.formSteps.extra.deadline.options.quarter') :
+            data.deadline === 'flexible' ? t('onboarding.formSteps.extra.deadline.options.flexible') :
             data.deadline === 'specific' ? data.specificDeadline : undefined
           } />
           {pkg.features.multilang && data.wantsMultilang && data.wantsMultilang !== 'no' && (
-            <SummaryItem label="Talen" value={
-              data.wantsMultilang === 'en' ? 'Nederlands + Engels' :
+            <SummaryItem label={t('onboarding.formSteps.summary.sections.planning.languages')} value={
+              data.wantsMultilang === 'en' ? t('onboarding.formSteps.extra.multilang.options.en') :
               data.wantsMultilang === 'multi' ? data.languages : undefined
             } />
           )}
         </div>
       </div>
 
-      {/* Confirmation with Approval Checkbox */}
+      {/* Bevestiging met goedkeuring checkbox */}
       <div className="bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-xl p-4">
         <div className="flex items-center gap-2 text-green-700 dark:text-green-400 font-medium mb-3">
           <Check className="w-5 h-5" />
-          Klaar om te versturen!
+          {t('onboarding.formSteps.summary.approval.readyTitle')}
         </div>
         <p className="text-sm text-green-600 dark:text-green-300 mb-4">
-          Na het indienen:
+          {t('onboarding.formSteps.summary.approval.afterSubmit')}
         </p>
         <ul className="mb-4 space-y-1 text-sm text-green-600 dark:text-green-300">
           <li className="flex items-center gap-2">
             <span className="w-1.5 h-1.5 rounded-full bg-green-500" />
-            We maken een Google Drive map voor je aan
+            {t('onboarding.formSteps.summary.approval.steps.driveFolder')}
           </li>
           <li className="flex items-center gap-2">
             <span className="w-1.5 h-1.5 rounded-full bg-green-500" />
-            Upload daar je logo, foto's en content
+            {t('onboarding.formSteps.summary.approval.steps.uploadContent')}
           </li>
           <li className="flex items-center gap-2">
             <span className="w-1.5 h-1.5 rounded-full bg-green-500" />
-            Daarna gaan de designers aan de slag
+            {t('onboarding.formSteps.summary.approval.steps.designersStart')}
           </li>
         </ul>
 
-        {/* Approval Checkbox */}
+        {/* Goedkeuring checkbox */}
         <div className="border-t border-green-200 dark:border-green-700 pt-4 mt-4">
           <label className="flex items-start gap-3 cursor-pointer group">
             <div className="relative mt-0.5">
@@ -2252,10 +2256,10 @@ export function WebsiteSamenvattingStep({ data, packageId, onUpgrade, onGoToStep
             </div>
             <div>
               <span className="font-medium text-green-700 dark:text-green-300 group-hover:text-green-800 dark:group-hover:text-green-200 transition-colors">
-                Ik bevestig dat deze gegevens correct zijn
+                {t('onboarding.formSteps.summary.approval.confirmLabel')}
               </span>
               <p className="text-xs text-green-600 dark:text-green-400 mt-1">
-                Na het insturen ontvang je een Google Drive link waar je je bestanden kunt uploaden.
+                {t('onboarding.formSteps.summary.approval.confirmDescription')}
               </p>
             </div>
           </label>
@@ -2266,7 +2270,7 @@ export function WebsiteSamenvattingStep({ data, packageId, onUpgrade, onGoToStep
 }
 
 // ===========================================
-// EXPORT ALL WEBSITE STEPS
+// EXPORTEER ALLE WEBSITE STAPPEN
 // ===========================================
 
 export const WebsiteSteps = {

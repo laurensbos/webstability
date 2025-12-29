@@ -1828,6 +1828,19 @@
         "description": "Beschrijf je ideale klant",
         "placeholder": "bijv. \"Ondernemers tussen 25-45 jaar die...\""
       },
+      "preferredDomain": {
+        "label": "Gewenste domeinnaam",
+        "placeholder": "bijv. jouwbedrijf.nl",
+        "hint": "Heb je al een domein? Vul het hier in. Anders kun je je gewenste domeinnaam invullen."
+      },
+      "needsBusinessEmail": {
+        "label": "Heb je een zakelijk e-mailadres nodig?",
+        "options": {
+          "yes": { "label": "Ja, graag", "description": "bijv. info@jouwbedrijf.nl" },
+          "already": { "label": "Ik heb er al een" },
+          "no": { "label": "Nee, niet nodig" }
+        }
+      },
       "uniqueSellingPoints": {
         "label": "Wat maakt je uniek?",
         "description": "Noem 3-5 sterke punten (druk Enter per punt)",
@@ -2088,6 +2101,335 @@
         "label": "Overige opmerkingen",
         "description": "Is er nog iets dat we moeten weten?",
         "placeholder": "Speciale wensen, vragen, opmerkingen..."
+      }
+    },
+    "formSteps": {
+      "branding": {
+        "title": "Branding & Huisstijl",
+        "subtitle": "Maak je website uniek",
+        "colors": {
+          "title": "Kleuren",
+          "hint": "Kies tot 4 kleuren voor je website",
+          "selected": "{{count}}/4 gekozen",
+          "yourColors": "Jouw kleuren:",
+          "clickColor": "Klik op een kleur hieronder"
+        },
+        "fonts": {
+          "title": "Lettertype",
+          "hint": "Kies een stijl die bij je past"
+        },
+        "designStyle": {
+          "title": "Design Stijl",
+          "hint": "Welke sfeer past bij jou?"
+        },
+        "selection": {
+          "title": "Jouw selectie",
+          "colors": "Kleuren",
+          "font": "Lettertype",
+          "style": "Stijl"
+        },
+        "logo": {
+          "label": "Heb je al een logo?",
+          "options": {
+            "yes": { "label": "Ja, ik heb een logo", "description": "Upload via de Drive link die we klaarzetten" },
+            "no": { "label": "Nee, nog niet", "description": "We kunnen een logo voor je ontwerpen" },
+            "needRefresh": { "label": "Ja, maar ik wil een nieuw logo" }
+          },
+          "describe": "Beschrijf je logo",
+          "describePlaceholder": "Beschrijf je logo kort (kleuren, vorm, stijl)",
+          "describeHint": "Upload je logobestanden via de Drive link die we voor je klaarzetten",
+          "upsell": {
+            "titleNew": "Nieuw logo nodig?",
+            "titleNo": "Logo laten ontwerpen?",
+            "description": "Een professioneel logo is de basis van je merk. We ontwerpen een uniek logo dat perfect bij je bedrijf past.",
+            "cta": "Bekijk logo pakket",
+            "price": "Vanaf €149,-"
+          }
+        },
+        "inspiration": {
+          "label": "Inspiratie websites",
+          "hint": "Websites die je mooi vindt qua design (druk Enter)",
+          "placeholder": "https://..."
+        },
+        "designNotes": {
+          "label": "Extra wensen voor het design",
+          "placeholder": "Zijn er specifieke elementen die je wilt? Of juist dingen die je wilt vermijden?"
+        }
+      },
+      "goals": {
+        "title": "Doelen & Conversie",
+        "subtitle": "Hoe kunnen we je website laten werken?",
+        "prefilledGoal": {
+          "title": "Je hoofddoel",
+          "description": "Zoals aangegeven bij registratie"
+        },
+        "callToAction": {
+          "label": "Wat moet een bezoeker doen op je website?",
+          "placeholder": "Bijv. contact opnemen, offerte aanvragen, direct bellen, producten bekijken...",
+          "hint": "De belangrijkste actie die je bezoekers wilt laten nemen"
+        },
+        "conversionSpeed": {
+          "label": "Hoe snel wil je dat bezoekers actie ondernemen?",
+          "options": {
+            "direct": { "label": "Direct contact", "description": "Telefoon/WhatsApp prominent zichtbaar" },
+            "considered": { "label": "Na informeren", "description": "Eerst lezen over diensten, dan contact" },
+            "long": { "label": "Langere oriëntatie", "description": "Blog, cases, reviews eerst bekijken" }
+          }
+        },
+        "contactMethods": {
+          "label": "Welke contactmogelijkheden wil je aanbieden?",
+          "hint": "Beschikbaar in je {{package}} pakket",
+          "options": {
+            "form": "Contactformulier",
+            "email": "E-mail link",
+            "phone": "Telefoonnummer",
+            "whatsapp": "WhatsApp knop",
+            "booking": "Online afspraak maken",
+            "chat": "Live chat"
+          },
+          "upgradeHint": "Online afspraken & Live chat beschikbaar vanaf het <strong>Business</strong> pakket.",
+          "upgradeNow": "Upgrade nu →"
+        },
+        "urgency": {
+          "label": "Wanneer wil je live gaan?",
+          "options": {
+            "asap": "Zo snel mogelijk",
+            "2weeks": "Binnen 2 weken",
+            "month": "Binnen een maand",
+            "flexible": "Geen haast"
+          }
+        }
+      },
+      "pages": {
+        "title": "Pagina Details",
+        "subtitle": "Meer info over je pagina's",
+        "prefilledPages": {
+          "title": "Geselecteerde pagina's",
+          "description": "Zoals gekozen bij registratie"
+        },
+        "additionalPages": {
+          "label": "Extra pagina's",
+          "hint": "Selecteer extra pagina's die je nodig hebt"
+        },
+        "limitReached": "Paginalimiet bereikt voor je pakket",
+        "upgradeHint": "Upgrade naar {{package}} voor meer pagina's",
+        "pagesCount": "{{count}} pagina's",
+        "pagesUsed": "{{current}} / {{max}} pagina's",
+        "packageFull": "Je {{package}} pakket zit vol",
+        "pagesRemaining": "Nog {{count}} pagina('s) beschikbaar in {{package}}",
+        "unlimited": "Onbeperkt pagina's in {{package}}",
+        "morePages": "Meer pagina's",
+        "whichPages": "Welke pagina's wil je op je website?",
+        "pageOptions": {
+          "home": "Home",
+          "about": "Over ons",
+          "services": "Diensten",
+          "contact": "Contact",
+          "portfolio": "Portfolio",
+          "blog": "Blog",
+          "faq": "FAQ",
+          "pricing": "Prijzen",
+          "team": "Team"
+        },
+        "customPages": {
+          "label": "Andere pagina's",
+          "hint": "Noem aangepaste pagina's (druk Enter)",
+          "placeholder": "bijv. Project X, Locatie Y..."
+        },
+        "pageInfo": "Wat moet er op de {{page}} pagina?",
+        "pageInfoPlaceholder": "Beschrijf wat er op deze pagina moet komen...",
+        "pageDetails": {
+          "title": "Details per pagina (optioneel)",
+          "home": {
+            "label": "Wat moet op de homepage staan?",
+            "placeholder": "Belangrijkste boodschap, USP's, featured content..."
+          },
+          "services": {
+            "label": "Welke diensten wil je tonen?",
+            "placeholder": "Lijst van diensten, prijzen, pakketten..."
+          },
+          "about": {
+            "label": "Wat moet op 'Over ons' komen?",
+            "placeholder": "Team foto's, geschiedenis, missie/visie..."
+          }
+        }
+      },
+      "content": {
+        "title": "Content & Media",
+        "subtitle": "Teksten en beeldmateriaal",
+        "hasTexts": {
+          "label": "Heb je al teksten voor je website?",
+          "options": {
+            "yes": { "label": "Ja, ik lever de teksten aan", "description": "Upload via de Drive link die we klaarzetten" },
+            "partial": { "label": "Gedeeltelijk, ik heb hulp nodig" },
+            "no": { "label": "Nee, ik wil hulp bij het schrijven", "description": "We maken AI-gegenereerde teksten (gratis inbegrepen)" }
+          }
+        },
+        "hasPhotos": {
+          "label": "Heb je professionele foto's?",
+          "options": {
+            "yes": { "label": "Ja, ik heb goede foto's", "description": "Upload via de Drive link die we voor je klaarzetten" },
+            "some": { "label": "Een paar, maar niet genoeg" },
+            "no": { "label": "Nee, gebruik stockfoto's", "description": "We zoeken passende stockfoto's uit" }
+          }
+        },
+        "photoUpsell": {
+          "title": "Professionele foto's nodig?",
+          "description": "Goede foto's maken een wereld van verschil. We bieden professionele fotografie én drone-opnames voor unieke beelden van je bedrijf.",
+          "cta": "Bekijk opties"
+        },
+        "blog": {
+          "label": "Wil je blog artikelen op je website?",
+          "options": {
+            "yes": { "label": "Ja, ik wil een blog", "description": "We helpen met de opzet en eerste artikelen" },
+            "later": { "label": "Misschien later", "description": "We bereiden de functie voor" },
+            "no": { "label": "Nee, geen blog nodig" }
+          },
+          "locked": {
+            "title": "Blog functionaliteit",
+            "description": "Beschikbaar vanaf het Professioneel pakket.",
+            "upgrade": "Upgrade →"
+          }
+        },
+        "contentNotes": {
+          "label": "Specifieke content wensen",
+          "placeholder": "Heb je speciale wensen voor teksten, foto's of video's?"
+        },
+        "tip": "<strong>Tip:</strong> Na je aanmelding ontvang je van ons een Google Drive link waar je al je bestanden (teksten, logo, foto's) kunt uploaden.",
+        "uploadTexts": "Teksten uploaden",
+        "uploadPhotos": "Foto's uploaden"
+      },
+      "extra": {
+        "title": "Planning & Afronding",
+        "subtitle": "Laatste details voor je project",
+        "packageSummary": {
+          "package": "{{name}} pakket",
+          "upgrade": "Upgrade",
+          "maxPages": "Max {{count}} pagina's",
+          "unlimited": "Onbeperkt pagina's",
+          "features": {
+            "blog": "Blog",
+            "booking": "Boekingen",
+            "newsletter": "Nieuwsbrief",
+            "multilang": "Meerdere talen"
+          }
+        },
+        "deadline": {
+          "label": "Wanneer wil je de website live hebben?",
+          "options": {
+            "asap": { "label": "Zo snel mogelijk", "description": "Binnen 1-2 weken" },
+            "month": { "label": "Binnen een maand" },
+            "quarter": { "label": "Binnen 3 maanden" },
+            "flexible": { "label": "Geen haast", "description": "Kwaliteit boven snelheid" },
+            "specific": { "label": "Specifieke datum" }
+          }
+        },
+        "specificDeadline": {
+          "label": "Gewenste lanceerdatum",
+          "placeholder": "Bijv. 1 februari 2025"
+        },
+        "multilang": {
+          "label": "Wil je de website in meerdere talen?",
+          "options": {
+            "no": { "label": "Nee, alleen Nederlands" },
+            "en": { "label": "Nederlands + Engels" },
+            "multi": { "label": "Meerdere talen", "description": "Specificeer hieronder" }
+          },
+          "languages": {
+            "label": "Welke talen?",
+            "placeholder": "Bijv. Nederlands, Engels, Duits, Frans"
+          }
+        },
+        "socialMedia": {
+          "title": "Social media links (optioneel)",
+          "hint": "Links die je op de website wilt tonen",
+          "other": "Overige"
+        },
+        "additionalNotes": {
+          "label": "Overige wensen of opmerkingen",
+          "placeholder": "Is er nog iets dat we moeten weten? Speciale wensen, vragen, of andere opmerkingen..."
+        }
+      },
+      "summary": {
+        "title": "Controleer je gegevens",
+        "subtitle": "Alles correct? Dan kunnen we beginnen!",
+        "websiteCount": "{{count}} website(s)",
+        "packageInfo": {
+          "label": "Gekozen pakket",
+          "upgradeHint": "Upgrade naar {{package}} →"
+        },
+        "sections": {
+          "business": {
+            "title": "Bedrijfsgegevens",
+            "company": "Bedrijf",
+            "industry": "Branche",
+            "description": "Omschrijving",
+            "targetAudience": "Doelgroep",
+            "domain": "Domein",
+            "email": "E-mail"
+          },
+          "branding": {
+            "title": "Logo & Huisstijl",
+            "style": "Stijl",
+            "logo": "Logo",
+            "colors": "Kleuren",
+            "inspiration": "Inspiratie"
+          },
+          "goals": {
+            "title": "Doelen & Conversie",
+            "mainGoal": "Hoofddoel",
+            "callToAction": "Call-to-action",
+            "contactMethods": "Contactmethoden"
+          },
+          "pages": {
+            "title": "Pagina's"
+          },
+          "content": {
+            "title": "Content & Media",
+            "texts": "Teksten",
+            "photos": "Foto's",
+            "blog": "Blog"
+          },
+          "planning": {
+            "title": "Planning",
+            "deadline": "Deadline",
+            "languages": "Talen"
+          }
+        },
+        "edit": "Wijzig",
+        "approval": {
+          "label": "Klaar voor ontwerp",
+          "description": "Ik heb alle gegevens gecontroleerd en ze kloppen. Start met ontwerpen!",
+          "warning": "Vink het vakje hierboven aan om je gegevens goed te keuren voor ontwerp.",
+          "readyTitle": "Klaar om te versturen!",
+          "afterSubmit": "Na het indienen:",
+          "steps": {
+            "driveFolder": "We maken een Google Drive map voor je aan",
+            "uploadContent": "Upload daar je logo, foto's en content",
+            "designersStart": "Daarna gaan de designers aan de slag"
+          },
+          "confirmLabel": "Ik bevestig dat deze gegevens correct zijn",
+          "confirmDescription": "Na het insturen ontvang je een Google Drive link waar je je bestanden kunt uploaden."
+        },
+        "fields": {
+          "company": "Bedrijf",
+          "industry": "Branche",
+          "description": "Omschrijving",
+          "targetAudience": "Doelgroep",
+          "domain": "Domein",
+          "email": "E-mail",
+          "colors": "Kleuren",
+          "font": "Lettertype",
+          "style": "Stijl",
+          "logo": "Logo",
+          "mainGoal": "Hoofddoel",
+          "contactMethods": "Contactopties",
+          "deadline": "Deadline",
+          "texts": "Teksten",
+          "photos": "Foto's",
+          "blog": "Blog",
+          "languages": "Talen"
+        }
       }
     }
   },
@@ -2916,5 +3258,132 @@
         "result": "Professionele uitstraling"
       }
     }
+  },
+  "clientDashboard": {
+    "liveSince": "Online sinds {{date}}",
+    "viewWebsite": "Bekijk website",
+    "files": "Bestanden",
+    "packages": {
+      "starter": {
+        "features": ["2 wijzigingen/maand", "E-mail support"]
+      },
+      "professional": {
+        "features": ["5 wijzigingen/maand", "Priority support", "Analytics"]
+      },
+      "business": {
+        "features": ["Onbeperkte wijzigingen", "WhatsApp support", "Analytics", "Priority"]
+      },
+      "webshop": {
+        "features": ["Onbeperkte wijzigingen", "WhatsApp support", "Analytics", "E-commerce"]
+      }
+    },
+    "categories": {
+      "text": {
+        "label": "Tekst",
+        "description": "Tekst aanpassen of toevoegen"
+      },
+      "design": {
+        "label": "Design",
+        "description": "Kleuren, layout, styling"
+      },
+      "images": {
+        "label": "Afbeeldingen",
+        "description": "Foto's toevoegen of vervangen"
+      },
+      "functionality": {
+        "label": "Functionaliteit",
+        "description": "Nieuwe features of fixes"
+      },
+      "other": {
+        "label": "Anders",
+        "description": "Overige aanpassingen"
+      }
+    },
+    "priority": {
+      "low": {
+        "label": "Laag",
+        "description": "Geen haast"
+      },
+      "normal": {
+        "label": "Normaal",
+        "description": "Binnen een week"
+      },
+      "urgent": {
+        "label": "Urgent",
+        "description": "Zo snel mogelijk"
+      }
+    },
+    "tabs": {
+      "overview": "Overzicht",
+      "changes": "Wijzigingen",
+      "analytics": "Analytics"
+    },
+    "stats": {
+      "changes": "Wijzigingen",
+      "thisMonth": "Deze maand",
+      "available": "beschikbaar",
+      "of": "van",
+      "openRequests": "Open aanvragen",
+      "waitingProcessing": "Wachtend op verwerking",
+      "inProgress": "in behandeling",
+      "completed": "Afgerond",
+      "totalProcessed": "Totaal verwerkt"
+    },
+    "quickActions": {
+      "title": "Snelle acties",
+      "requestChange": "Wijziging aanvragen",
+      "viewWebsite": "Website bekijken",
+      "contact": "Contact opnemen",
+      "files": "Bestanden"
+    },
+    "recentActivity": {
+      "title": "Recente activiteit",
+      "viewAll": "Bekijk alle {{count}} aanvragen →"
+    },
+    "changeRequests": {
+      "title": "Wijzigingen aanvragen",
+      "unlimitedDesc": "Je hebt onbeperkte wijzigingen met je pakket",
+      "limitedDesc": "Je hebt nog {{left}} van {{total}} wijzigingen over deze maand",
+      "newRequest": "Nieuwe aanvraag",
+      "successMessage": "Je wijzigingsverzoek is ingediend!",
+      "formTitle": "Nieuwe wijziging aanvragen",
+      "titleLabel": "Titel (optioneel)",
+      "titlePlaceholder": "Bijv: Homepage banner aanpassen",
+      "categoryLabel": "Categorie",
+      "descriptionLabel": "Beschrijving *",
+      "descriptionPlaceholder": "Beschrijf zo duidelijk mogelijk wat je aangepast wilt hebben...\n\nBijv:\n- Op welke pagina?\n- Wat moet er veranderen?\n- Heb je voorbeelden?",
+      "priorityLabel": "Prioriteit",
+      "cancel": "Annuleren",
+      "submit": "Versturen",
+      "inProgress": "In behandeling",
+      "waiting": "Wachtend",
+      "completed": "Afgerond",
+      "noChanges": "Nog geen wijzigingen",
+      "noChangesDesc": "Wil je iets aangepast hebben aan je website?",
+      "firstRequest": "Eerste aanvraag indienen"
+    },
+    "status": {
+      "new": "Nieuw",
+      "inProgress": "In behandeling",
+      "completed": "Afgerond",
+      "unknown": "Onbekend"
+    },
+    "analytics": {
+      "loading": "Analytics laden...",
+      "visitors": "Bezoekers",
+      "pageViews": "Paginaweergaven",
+      "avgSession": "Gem. sessieduur",
+      "bounceRate": "Bounce rate",
+      "vsPrevMonth": "vs. vorige maand",
+      "popularPages": "Populaire pagina's",
+      "trafficSources": "Verkeersbronnen",
+      "viewFull": "Bekijk volledige analytics",
+      "notAvailable": "Analytics niet beschikbaar",
+      "upgradeDesc": "Upgrade naar Professional of hoger voor uitgebreide analytics",
+      "upgradePackage": "Upgrade pakket",
+      "beingSetup": "Analytics wordt ingesteld",
+      "checkLater": "We zijn je analytics aan het configureren. Check later terug!"
+    },
+    "developerResponse": "Reactie van developer:"
   }
 }

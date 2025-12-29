@@ -142,7 +142,7 @@ const PACKAGE_CONFIG = {
 
 const PHASE_CONFIG: Record<ProjectPhase, { label: string; color: string; bg: string; icon: typeof FileText }> = {
   onboarding: { label: 'Onboarding', color: 'text-blue-600', bg: 'bg-blue-100', icon: FileText },
-  design: { label: 'Design', color: 'text-amber-600', bg: 'bg-amber-100', icon: Palette },
+  design: { label: 'Ontwerp', color: 'text-amber-600', bg: 'bg-amber-100', icon: Palette },
   feedback: { label: 'Feedback', color: 'text-indigo-600', bg: 'bg-indigo-100', icon: MessageSquare },
   payment: { label: 'Betaling', color: 'text-purple-600', bg: 'bg-purple-100', icon: CreditCard },
   live: { label: 'Live', color: 'text-green-600', bg: 'bg-green-100', icon: Rocket },

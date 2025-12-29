@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react'
+import { useTranslation } from 'react-i18next'
 import { motion, AnimatePresence } from 'framer-motion'
 import {
   Globe,
@@ -34,55 +35,52 @@ import { useDarkMode } from '../contexts/DarkModeContext'
 import { PACKAGES } from '../config/packages'
 import type { PackageType } from '../config/packages'
 
-// Package configuration with limits - now using centralized config
+// Pakket configuratie met limieten - nu met gecentraliseerde config
 const PACKAGE_CONFIG: Record<string, { 
   changes: number
   label: string
   color: string
-  features: string[]
 }> = {
   starter: { 
     changes: PACKAGES.starter.changesPerMonth, 
     label: PACKAGES.starter.name,
-    color: 'bg-blue-500',
-    features: ['2 wijzigingen/maand', 'E-mail support']
+    color: 'bg-blue-500'
   },
   professional: { 
     changes: PACKAGES.professional.changesPerMonth, 
     label: PACKAGES.professional.name,
-    color: 'bg-purple-500',
-    features: ['5 wijzigingen/maand', 'Priority support', 'Analytics']
+    color: 'bg-purple-500'
   },
   business: { 
     changes: PACKAGES.business.changesPerMonth, 
     label: PACKAGES.business.name,
-    color: 'bg-amber-500',
-    features: ['Onbeperkte wijzigingen', 'WhatsApp support', 'Analytics', 'Priority']
+    color: 'bg-amber-500'
   },
   webshop: { 
     changes: PACKAGES.webshop.changesPerMonth, 
     label: PACKAGES.webshop.name,
-    color: 'bg-emerald-500',
-    features: ['Onbeperkte wijzigingen', 'WhatsApp support', 'Analytics', 'E-commerce']
+    color: 'bg-emerald-500'
   }
 }
-void (0 as unknown as PackageType) // Ensure PackageType is used
+void (0 as unknown as PackageType) // Zorgt ervoor dat PackageType gebruikt wordt
 
-// Change request categories
-const CHANGE_CATEGORIES = [
-  { key: 'text', label: 'Tekst', icon: FileText, description: 'Tekst aanpassen of toevoegen' },
-  { key: 'design', label: 'Design', icon: Palette, description: 'Kleuren, layout, styling' },
-  { key: 'images', label: 'Afbeeldingen', icon: Image, description: 'Foto\'s toevoegen of vervangen' },
-  { key: 'functionality', label: 'Functionaliteit', icon: Settings, description: 'Nieuwe features of fixes' },
-  { key: 'other', label: 'Anders', icon: Edit3, description: 'Overige aanpassingen' }
-]
+// Wijzigingsverzoek categorie keys en icons
+const CHANGE_CATEGORY_KEYS = ['text', 'design', 'images', 'functionality', 'other'] as const
+const CHANGE_CATEGORY_ICONS: Record<string, typeof FileText> = {
+  text: FileText,
+  design: Palette,
+  images: Image,
+  functionality: Settings,
+  other: Edit3
+}
 
-// Priority options
-const PRIORITY_OPTIONS = [
-  { key: 'low', label: 'Laag', color: 'text-gray-400', description: 'Geen haast' },
-  { key: 'normal', label: 'Normaal', color: 'text-blue-400', description: 'Binnen een week' },
-  { key: 'urgent', label: 'Urgent', color: 'text-red-400', description: 'Zo snel mogelijk' }
-]
+// Prioriteit keys en kleuren
+const PRIORITY_KEYS = ['low', 'normal', 'urgent'] as const
+const PRIORITY_COLORS: Record<string, string> = {
+  low: 'text-gray-400',
+  normal: 'text-blue-400',
+  urgent: 'text-red-400'
+}
 
 interface ChangeRequest {
   id?: string
@@ -110,7 +108,7 @@ interface ClientLiveDashboardProps {
   liveUrl?: string
   liveDate?: string
   googleDriveUrl?: string
-  analyticsUrl?: string // Embedded analytics URL from developer
+  analyticsUrl?: string // Ingebedde analytics URL van developer
   changeRequests?: ChangeRequest[]
   changesThisMonth?: number
   onRequestChange: (request: ChangeRequest) => Promise<void>
@@ -130,13 +128,14 @@ export default function ClientLiveDashboard({
   onContactDeveloper
 }: ClientLiveDashboardProps) {
   const { darkMode } = useDarkMode()
+  const { t, i18n } = useTranslation()
   const [activeTab, setActiveTab] = useState<'overview' | 'changes' | 'analytics'>('overview')
   const [showChangeForm, setShowChangeForm] = useState(false)
   const [loading, setLoading] = useState(false)
   const [showSuccess, setShowSuccess] = useState(false)
   const [expandedRequest, setExpandedRequest] = useState<string | null>(null)
   
-  // New change request form state
+  // Nieuw wijzigingsverzoek formulier state
   const [newChange, setNewChange] = useState<Partial<ChangeRequest>>({
     title: '',
     description: '',
@@ -144,7 +143,7 @@ export default function ClientLiveDashboard({
     category: 'text'
   })
 
-  // Mock analytics data (in production, this would come from the analyticsUrl or API)
+  // Mock analytics data (in productie zou dit van analyticsUrl of API komen)
   const [analytics, setAnalytics] = useState<AnalyticsData | null>(null)
   const [analyticsLoading, setAnalyticsLoading] = useState(false)
 
@@ -153,12 +152,12 @@ export default function ClientLiveDashboard({
   const isUnlimited = packageConfig.changes === 999
   const canRequestChange = isUnlimited || changesLeft > 0
 
-  // Categorize change requests
+  // Categoriseer wijzigingsverzoeken
   const pendingRequests = changeRequests.filter(r => r.status === 'pending')
   const inProgressRequests = changeRequests.filter(r => r.status === 'in_progress')
   const completedRequests = changeRequests.filter(r => r.status === 'done' || r.status === 'completed')
 
-  // Load analytics when tab changes
+  // Laad analytics wanneer tab verandert
   useEffect(() => {
     if (activeTab === 'analytics' && analyticsUrl && !analytics) {
       loadAnalytics()
@@ -168,8 +167,8 @@ export default function ClientLiveDashboard({
   const loadAnalytics = async () => {
     setAnalyticsLoading(true)
     try {
-      // In production, fetch from analyticsUrl or API
-      // For now, simulate with mock data
+      // In productie, ophalen van analyticsUrl of API
+      // Voor nu, simuleer met mock data
       await new Promise(resolve => setTimeout(resolve, 1000))
       setAnalytics({
         visitors: { current: 1247, previous: 1089, change: 14.5 },
@@ -223,31 +222,34 @@ export default function ClientLiveDashboard({
   }
 
   const formatDate = (dateString?: string) => {
-    if (!dateString) return 'Onbekend'
-    return new Date(dateString).toLocaleDateString('nl-NL', {
+    if (!dateString) return t('clientDashboard.status.unknown')
+    return new Date(dateString).toLocaleDateString(i18n.language === 'nl' ? 'nl-NL' : 'en-US', {
       day: 'numeric',
       month: 'long',
       year: 'numeric'
     })
   }
 
+  // Haal features op uit vertalingen
+  const packageFeatures = t(`clientDashboard.packages.${projectPackage}.features`, { returnObjects: true }) as string[] || []
+
   const getStatusBadge = (status?: string) => {
     switch (status) {
       case 'pending':
-        return <span className="px-2 py-0.5 bg-yellow-500/20 text-yellow-400 text-xs rounded-full">Nieuw</span>
+        return <span className="px-2 py-0.5 bg-yellow-500/20 text-yellow-400 text-xs rounded-full">{t('clientDashboard.status.new')}</span>
       case 'in_progress':
-        return <span className="px-2 py-0.5 bg-blue-500/20 text-blue-400 text-xs rounded-full">In behandeling</span>
+        return <span className="px-2 py-0.5 bg-blue-500/20 text-blue-400 text-xs rounded-full">{t('clientDashboard.status.inProgress')}</span>
       case 'done':
       case 'completed':
-        return <span className="px-2 py-0.5 bg-emerald-500/20 text-emerald-400 text-xs rounded-full">Afgerond</span>
+        return <span className="px-2 py-0.5 bg-emerald-500/20 text-emerald-400 text-xs rounded-full">{t('clientDashboard.status.completed')}</span>
       default:
-        return <span className="px-2 py-0.5 bg-gray-500/20 text-gray-400 text-xs rounded-full">Onbekend</span>
+        return <span className="px-2 py-0.5 bg-gray-500/20 text-gray-400 text-xs rounded-full">{t('clientDashboard.status.unknown')}</span>
     }
   }
 
   return (
     <div className="space-y-6">
-      {/* Header with Website Status */}
+      {/* Header met Website Status */}
       <div className={`border rounded-2xl p-6 ${
         darkMode 
           ? 'bg-gradient-to-br from-emerald-500/20 via-green-500/15 to-teal-500/10 border-emerald-500/30' 
@@ -269,7 +271,7 @@ export default function ClientLiveDashboard({
                 </span>
               </div>
               <p className={`text-sm ${darkMode ? 'text-gray-400' : 'text-gray-600'}`}>
-                Online sinds {formatDate(liveDate)}
+                {t('clientDashboard.liveSince', { date: formatDate(liveDate) })}
               </p>
             </div>
           </div>
@@ -283,7 +285,7 @@ export default function ClientLiveDashboard({
                 className="flex items-center gap-2 px-5 py-2.5 bg-emerald-500 hover:bg-emerald-600 text-white font-medium rounded-xl transition shadow-lg shadow-emerald-500/25"
               >
                 <Globe className="w-4 h-4" />
-                Bekijk website
+                {t('clientDashboard.viewWebsite')}
                 <ExternalLink className="w-4 h-4" />
               </a>
             )}
@@ -297,13 +299,13 @@ export default function ClientLiveDashboard({
                 }`}
               >
                 <FolderOpen className="w-4 h-4" />
-                Bestanden
+                {t('clientDashboard.files')}
               </a>
             )}
           </div>
         </div>
 
-        {/* Package Info */}
+        {/* Pakket Info */}
         <div className={`mt-6 pt-6 border-t ${darkMode ? 'border-emerald-500/20' : 'border-emerald-200'}`}>
           <div className="flex flex-wrap items-center gap-4">
             <div className="flex items-center gap-2">
@@ -312,7 +314,7 @@ export default function ClientLiveDashboard({
               </span>
             </div>
             <div className="flex items-center gap-6 text-sm">
-              {packageConfig.features.map((feature, i) => (
+              {packageFeatures.map((feature: string, i: number) => (
                 <div key={i} className={`flex items-center gap-1.5 ${darkMode ? 'text-gray-400' : 'text-gray-600'}`}>
                   <CheckCircle2 className="w-4 h-4 text-emerald-400" />
                   {feature}
@@ -323,7 +325,7 @@ export default function ClientLiveDashboard({
         </div>
       </div>
 
-      {/* Tab Navigation */}
+      {/* Tab Navigatie */}
       <div className={`flex items-center gap-1 p-1 rounded-xl w-fit ${
         darkMode ? 'bg-gray-800/50' : 'bg-gray-100'
       }`}>
@@ -336,7 +338,7 @@ export default function ClientLiveDashboard({
           }`}
         >
           <Sparkles className="w-4 h-4" />
-          Overzicht
+          {t('clientDashboard.tabs.overview')}
         </button>
         <button
           onClick={() => setActiveTab('changes')}
@@ -347,7 +349,7 @@ export default function ClientLiveDashboard({
           }`}
         >
           <Edit3 className="w-4 h-4" />
-          Wijzigingen
+          {t('clientDashboard.tabs.changes')}
           {pendingRequests.length + inProgressRequests.length > 0 && (
             <span className={`px-1.5 py-0.5 text-xs rounded-full ${
               activeTab === 'changes' ? 'bg-white/20' : darkMode ? 'bg-gray-600' : 'bg-gray-300'
@@ -366,14 +368,14 @@ export default function ClientLiveDashboard({
             }`}
           >
             <BarChart3 className="w-4 h-4" />
-            Analytics
+            {t('clientDashboard.tabs.analytics')}
           </button>
         )}
       </div>
 
-      {/* Tab Content */}
+      {/* Tab Inhoud */}
       <AnimatePresence mode="wait">
-        {/* Overview Tab */}
+        {/* Overzicht Tab */}
         {activeTab === 'overview' && (
           <motion.div
             key="overview"
@@ -382,7 +384,7 @@ export default function ClientLiveDashboard({
             exit={{ opacity: 0, y: -20 }}
             className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4"
           >
-            {/* Quick Stats */}
+            {/* Snelle Statistieken */}
             <div className={`border rounded-xl p-5 ${
               darkMode ? 'bg-gray-800/50 border-gray-700' : 'bg-white border-gray-200 shadow-sm'
             }`}>
@@ -393,8 +395,8 @@ export default function ClientLiveDashboard({
                   <Edit3 className={`w-5 h-5 ${darkMode ? 'text-blue-400' : 'text-blue-600'}`} />
                 </div>
                 <div>
-                  <h3 className={`font-semibold ${darkMode ? 'text-white' : 'text-gray-900'}`}>Wijzigingen</h3>
-                  <p className="text-xs text-gray-500">Deze maand</p>
+                  <h3 className={`font-semibold ${darkMode ? 'text-white' : 'text-gray-900'}`}>{t('clientDashboard.stats.changes')}</h3>
+                  <p className="text-xs text-gray-500">{t('clientDashboard.stats.thisMonth')}</p>
                 </div>
               </div>
               <div className="flex items-end justify-between">
@@ -403,7 +405,7 @@ export default function ClientLiveDashboard({
                     {isUnlimited ? '∞' : changesLeft}
                   </span>
                   <span className="text-gray-500 ml-2">
-                    {isUnlimited ? 'beschikbaar' : `van ${packageConfig.changes}`}
+                    {isUnlimited ? t('clientDashboard.stats.available') : `${t('clientDashboard.stats.of')} ${packageConfig.changes}`}
                   </span>
                 </div>
                 {!isUnlimited && (
@@ -417,7 +419,7 @@ export default function ClientLiveDashboard({
               </div>
             </div>
 
-            {/* Pending Requests */}
+            {/* Openstaande Aanvragen */}
             <div className={`border rounded-xl p-5 ${
               darkMode ? 'bg-gray-800/50 border-gray-700' : 'bg-white border-gray-200 shadow-sm'
             }`}>
@@ -428,19 +430,19 @@ export default function ClientLiveDashboard({
                   <Clock className={`w-5 h-5 ${darkMode ? 'text-yellow-400' : 'text-yellow-600'}`} />
                 </div>
                 <div>
-                  <h3 className={`font-semibold ${darkMode ? 'text-white' : 'text-gray-900'}`}>Open aanvragen</h3>
-                  <p className="text-xs text-gray-500">Wachtend op verwerking</p>
+                  <h3 className={`font-semibold ${darkMode ? 'text-white' : 'text-gray-900'}`}>{t('clientDashboard.stats.openRequests')}</h3>
+                  <p className="text-xs text-gray-500">{t('clientDashboard.stats.waitingProcessing')}</p>
                 </div>
               </div>
               <div className="flex items-end justify-between">
                 <span className={`text-3xl font-bold ${darkMode ? 'text-white' : 'text-gray-900'}`}>{pendingRequests.length + inProgressRequests.length}</span>
                 {inProgressRequests.length > 0 && (
-                  <span className="text-sm text-blue-400">{inProgressRequests.length} in behandeling</span>
+                  <span className="text-sm text-blue-400">{inProgressRequests.length} {t('clientDashboard.stats.inProgress')}</span>
                 )}
               </div>
             </div>
 
-            {/* Completed */}
+            {/* Afgerond */}
             <div className={`border rounded-xl p-5 ${
               darkMode ? 'bg-gray-800/50 border-gray-700' : 'bg-white border-gray-200 shadow-sm'
             }`}>
@@ -451,18 +453,18 @@ export default function ClientLiveDashboard({
                   <CheckCircle2 className={`w-5 h-5 ${darkMode ? 'text-emerald-400' : 'text-emerald-600'}`} />
                 </div>
                 <div>
-                  <h3 className={`font-semibold ${darkMode ? 'text-white' : 'text-gray-900'}`}>Afgerond</h3>
-                  <p className="text-xs text-gray-500">Totaal verwerkt</p>
+                  <h3 className={`font-semibold ${darkMode ? 'text-white' : 'text-gray-900'}`}>{t('clientDashboard.stats.completed')}</h3>
+                  <p className="text-xs text-gray-500">{t('clientDashboard.stats.totalProcessed')}</p>
                 </div>
               </div>
               <span className={`text-3xl font-bold ${darkMode ? 'text-white' : 'text-gray-900'}`}>{completedRequests.length}</span>
             </div>
 
-            {/* Quick Actions */}
+            {/* Snelle Acties */}
             <div className={`md:col-span-2 lg:col-span-3 border rounded-xl p-5 ${
               darkMode ? 'bg-gray-800/50 border-gray-700' : 'bg-white border-gray-200 shadow-sm'
             }`}>
-              <h3 className={`font-semibold mb-4 ${darkMode ? 'text-white' : 'text-gray-900'}`}>Snelle acties</h3>
+              <h3 className={`font-semibold mb-4 ${darkMode ? 'text-white' : 'text-gray-900'}`}>{t('clientDashboard.quickActions.title')}</h3>
               <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
                 <button
                   onClick={() => {
@@ -477,7 +479,7 @@ export default function ClientLiveDashboard({
                   }`}
                 >
                   <Plus className="w-6 h-6" />
-                  <span className="text-sm font-medium">Wijziging aanvragen</span>
+                  <span className="text-sm font-medium">{t('clientDashboard.quickActions.requestChange')}</span>
                 </button>
                 
                 {liveUrl && (
@@ -488,7 +490,7 @@ export default function ClientLiveDashboard({
                     className="flex flex-col items-center gap-2 p-4 bg-blue-500/10 border border-blue-500/30 rounded-xl hover:bg-blue-500/20 text-blue-400 transition"
                   >
                     <Globe className="w-6 h-6" />
-                    <span className="text-sm font-medium">Website bekijken</span>
+                    <span className="text-sm font-medium">{t('clientDashboard.quickActions.viewWebsite')}</span>
                   </a>
                 )}
                 
@@ -498,7 +500,7 @@ export default function ClientLiveDashboard({
                     className="flex flex-col items-center gap-2 p-4 bg-purple-500/10 border border-purple-500/30 rounded-xl hover:bg-purple-500/20 text-purple-400 transition"
                   >
                     <MessageCircle className="w-6 h-6" />
-                    <span className="text-sm font-medium">Contact opnemen</span>
+                    <span className="text-sm font-medium">{t('clientDashboard.quickActions.contact')}</span>
                   </button>
                 )}
                 
@@ -510,16 +512,16 @@ export default function ClientLiveDashboard({
                     className="flex flex-col items-center gap-2 p-4 bg-amber-500/10 border border-amber-500/30 rounded-xl hover:bg-amber-500/20 text-amber-400 transition"
                   >
                     <FolderOpen className="w-6 h-6" />
-                    <span className="text-sm font-medium">Bestanden</span>
+                    <span className="text-sm font-medium">{t('clientDashboard.quickActions.files')}</span>
                   </a>
                 )}
               </div>
             </div>
 
-            {/* Recent Activity */}
+            {/* Recente Activiteit */}
             {changeRequests.length > 0 && (
               <div className="md:col-span-2 lg:col-span-3 bg-gray-800/50 border border-gray-700 rounded-xl p-5">
-                <h3 className="font-semibold text-white mb-4">Recente activiteit</h3>
+                <h3 className="font-semibold text-white mb-4">{t('clientDashboard.recentActivity.title')}</h3>
                 <div className="space-y-3">
                   {changeRequests.slice(0, 3).map((request, i) => (
                     <div key={i} className="flex items-start gap-3 p-3 bg-gray-700/30 rounded-lg">
@@ -557,7 +559,7 @@ export default function ClientLiveDashboard({
                     onClick={() => setActiveTab('changes')}
                     className="mt-4 text-sm text-emerald-400 hover:text-emerald-300 transition"
                   >
-                    Bekijk alle {changeRequests.length} aanvragen →
+                    {t('clientDashboard.recentActivity.viewAll', { count: changeRequests.length })}
                   </button>
                 )}
               </div>
@@ -565,7 +567,7 @@ export default function ClientLiveDashboard({
           </motion.div>
         )}
 
-        {/* Changes Tab */}
+        {/* Wijzigingen Tab */}
         {activeTab === 'changes' && (
           <motion.div
             key="changes"
@@ -574,14 +576,14 @@ export default function ClientLiveDashboard({
             exit={{ opacity: 0, y: -20 }}
             className="space-y-6"
           >
-            {/* Change Request Header */}
+            {/* Wijzigingsverzoek Header */}
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
               <div>
-                <h3 className="text-xl font-bold text-white">Wijzigingen aanvragen</h3>
+                <h3 className="text-xl font-bold text-white">{t('clientDashboard.changeRequests.title')}</h3>
                 <p className="text-gray-400 text-sm mt-1">
                   {isUnlimited 
-                    ? 'Je hebt onbeperkte wijzigingen met je pakket'
-                    : `Je hebt nog ${changesLeft} van ${packageConfig.changes} wijzigingen over deze maand`
+                    ? t('clientDashboard.changeRequests.unlimitedDesc')
+                    : t('clientDashboard.changeRequests.limitedDesc', { left: changesLeft, total: packageConfig.changes })
                   }
                 </p>
               </div>
@@ -595,11 +597,11 @@ export default function ClientLiveDashboard({
                 }`}
               >
                 <Plus className="w-5 h-5" />
-                Nieuwe aanvraag
+                {t('clientDashboard.changeRequests.newRequest')}
               </button>
             </div>
 
-            {/* Success Message */}
+            {/* Succesbericht */}
             <AnimatePresence>
               {showSuccess && (
                 <motion.div
@@ -609,12 +611,12 @@ export default function ClientLiveDashboard({
                   className="bg-emerald-500/20 border border-emerald-500/30 rounded-xl p-4 flex items-center gap-3"
                 >
                   <CheckCircle2 className="w-5 h-5 text-emerald-400" />
-                  <p className="text-emerald-400 font-medium">Je wijzigingsverzoek is ingediend!</p>
+                  <p className="text-emerald-400 font-medium">{t('clientDashboard.changeRequests.successMessage')}</p>
                 </motion.div>
               )}
             </AnimatePresence>
 
-            {/* New Change Form */}
+            {/* Nieuw Wijzigingsformulier */}
             <AnimatePresence>
               {showChangeForm && (
                 <motion.div
@@ -625,7 +627,7 @@ export default function ClientLiveDashboard({
                 >
                   <div className="bg-gray-800/50 border border-gray-700 rounded-xl p-6 space-y-5">
                     <div className="flex items-center justify-between">
-                      <h4 className="font-semibold text-white text-lg">Nieuwe wijziging aanvragen</h4>
+                      <h4 className="font-semibold text-white text-lg">{t('clientDashboard.changeRequests.formTitle')}</h4>
                       <button
                         onClick={() => setShowChangeForm(false)}
                         className="p-2 hover:bg-gray-700 rounded-lg transition"
@@ -634,86 +636,89 @@ export default function ClientLiveDashboard({
                       </button>
                     </div>
 
-                    {/* Title (optional) */}
+                    {/* Titel (optioneel) */}
                     <div>
                       <label className="block text-sm font-medium text-gray-300 mb-2">
-                        Titel (optioneel)
+                        {t('clientDashboard.changeRequests.titleLabel')}
                       </label>
                       <input
                         type="text"
                         value={newChange.title || ''}
                         onChange={(e) => setNewChange({ ...newChange, title: e.target.value })}
-                        placeholder="Bijv: Homepage banner aanpassen"
+                        placeholder={t('clientDashboard.changeRequests.titlePlaceholder')}
                         className="w-full bg-gray-900 border border-gray-700 rounded-xl px-4 py-3 text-white placeholder-gray-500 focus:outline-none focus:border-emerald-500"
                       />
                     </div>
 
-                    {/* Category Selection */}
+                    {/* Categorie Selectie */}
                     <div>
                       <label className="block text-sm font-medium text-gray-300 mb-2">
-                        Categorie
+                        {t('clientDashboard.changeRequests.categoryLabel')}
                       </label>
                       <div className="grid grid-cols-2 md:grid-cols-5 gap-2">
-                        {CHANGE_CATEGORIES.map((cat) => (
-                          <button
-                            key={cat.key}
-                            onClick={() => setNewChange({ ...newChange, category: cat.key as any })}
-                            className={`flex flex-col items-center gap-2 p-3 rounded-xl border transition ${
-                              newChange.category === cat.key
-                                ? 'bg-emerald-500/20 border-emerald-500 text-emerald-400'
-                                : 'bg-gray-700/50 border-gray-600 text-gray-400 hover:border-gray-500'
-                            }`}
-                          >
-                            <cat.icon className="w-5 h-5" />
-                            <span className="text-xs font-medium">{cat.label}</span>
-                          </button>
-                        ))}
+                        {CHANGE_CATEGORY_KEYS.map((catKey) => {
+                          const CatIcon = CHANGE_CATEGORY_ICONS[catKey] || Edit3
+                          return (
+                            <button
+                              key={catKey}
+                              onClick={() => setNewChange({ ...newChange, category: catKey as any })}
+                              className={`flex flex-col items-center gap-2 p-3 rounded-xl border transition ${
+                                newChange.category === catKey
+                                  ? 'bg-emerald-500/20 border-emerald-500 text-emerald-400'
+                                  : 'bg-gray-700/50 border-gray-600 text-gray-400 hover:border-gray-500'
+                              }`}
+                            >
+                              <CatIcon className="w-5 h-5" />
+                              <span className="text-xs font-medium">{t(`clientDashboard.categories.${catKey}.label`)}</span>
+                            </button>
+                          )
+                        })}
                       </div>
                     </div>
 
-                    {/* Description */}
+                    {/* Beschrijving */}
                     <div>
                       <label className="block text-sm font-medium text-gray-300 mb-2">
-                        Beschrijving *
+                        {t('clientDashboard.changeRequests.descriptionLabel')}
                       </label>
                       <textarea
                         value={newChange.description || ''}
                         onChange={(e) => setNewChange({ ...newChange, description: e.target.value })}
-                        placeholder="Beschrijf zo duidelijk mogelijk wat je aangepast wilt hebben...&#10;&#10;Bijv:&#10;- Op welke pagina?&#10;- Wat moet er veranderen?&#10;- Heb je voorbeelden?"
+                        placeholder={t('clientDashboard.changeRequests.descriptionPlaceholder')}
                         className="w-full h-32 bg-gray-900 border border-gray-700 rounded-xl px-4 py-3 text-white placeholder-gray-500 focus:outline-none focus:border-emerald-500 resize-none"
                       />
                     </div>
 
-                    {/* Priority Selection */}
+                    {/* Prioriteit Selectie */}
                     <div>
                       <label className="block text-sm font-medium text-gray-300 mb-2">
-                        Prioriteit
+                        {t('clientDashboard.changeRequests.priorityLabel')}
                       </label>
                       <div className="flex gap-3">
-                        {PRIORITY_OPTIONS.map((priority) => (
+                        {PRIORITY_KEYS.map((priorityKey) => (
                           <button
-                            key={priority.key}
-                            onClick={() => setNewChange({ ...newChange, priority: priority.key as any })}
+                            key={priorityKey}
+                            onClick={() => setNewChange({ ...newChange, priority: priorityKey as any })}
                             className={`flex-1 flex flex-col items-center gap-1 p-3 rounded-xl border transition ${
-                              newChange.priority === priority.key
+                              newChange.priority === priorityKey
                                 ? 'bg-gray-700 border-gray-500'
                                 : 'bg-gray-800/50 border-gray-700 hover:border-gray-600'
                             }`}
                           >
-                            <span className={`font-medium ${priority.color}`}>{priority.label}</span>
-                            <span className="text-xs text-gray-500">{priority.description}</span>
+                            <span className={`font-medium ${PRIORITY_COLORS[priorityKey]}`}>{t(`clientDashboard.priority.${priorityKey}.label`)}</span>
+                            <span className="text-xs text-gray-500">{t(`clientDashboard.priority.${priorityKey}.description`)}</span>
                           </button>
                         ))}
                       </div>
                     </div>
 
-                    {/* Submit */}
+                    {/* Versturen */}
                     <div className="flex gap-3 pt-2">
                       <button
                         onClick={() => setShowChangeForm(false)}
                         className="flex-1 px-4 py-3 bg-gray-700 hover:bg-gray-600 text-white font-medium rounded-xl transition"
                       >
-                        Annuleren
+                        {t('clientDashboard.changeRequests.cancel')}
                       </button>
                       <button
                         onClick={handleSubmitChange}
@@ -725,7 +730,7 @@ export default function ClientLiveDashboard({
                         ) : (
                           <>
                             <Send className="w-5 h-5" />
-                            Versturen
+                            {t('clientDashboard.changeRequests.submit')}
                           </>
                         )}
                       </button>
@@ -735,14 +740,14 @@ export default function ClientLiveDashboard({
               )}
             </AnimatePresence>
 
-            {/* Change Requests List */}
+            {/* Wijzigingsverzoeken Lijst */}
             <div className="space-y-4">
-              {/* In Progress */}
+              {/* In Behandeling */}
               {inProgressRequests.length > 0 && (
                 <div>
                   <h4 className="text-sm font-medium text-gray-400 mb-3 flex items-center gap-2">
                     <RefreshCw className="w-4 h-4 text-blue-400 animate-spin" />
-                    In behandeling ({inProgressRequests.length})
+                    {t('clientDashboard.changeRequests.inProgress')} ({inProgressRequests.length})
                   </h4>
                   <div className="space-y-2">
                     {inProgressRequests.map((request, i) => (
@@ -757,12 +762,12 @@ export default function ClientLiveDashboard({
                 </div>
               )}
 
-              {/* Pending */}
+              {/* Wachtend */}
               {pendingRequests.length > 0 && (
                 <div>
                   <h4 className="text-sm font-medium text-gray-400 mb-3 flex items-center gap-2">
                     <Clock className="w-4 h-4 text-yellow-400" />
-                    Wachtend ({pendingRequests.length})
+                    {t('clientDashboard.changeRequests.waiting')} ({pendingRequests.length})
                   </h4>
                   <div className="space-y-2">
                     {pendingRequests.map((request, i) => (
@@ -777,12 +782,12 @@ export default function ClientLiveDashboard({
                 </div>
               )}
 
-              {/* Completed */}
+              {/* Afgerond */}
               {completedRequests.length > 0 && (
                 <div>
                   <h4 className="text-sm font-medium text-gray-400 mb-3 flex items-center gap-2">
                     <CheckCircle2 className="w-4 h-4 text-emerald-400" />
-                    Afgerond ({completedRequests.length})
+                    {t('clientDashboard.changeRequests.completed')} ({completedRequests.length})
                   </h4>
                   <div className="space-y-2">
                     {completedRequests.slice(0, 5).map((request, i) => (
@@ -797,15 +802,15 @@ export default function ClientLiveDashboard({
                 </div>
               )}
 
-              {/* Empty State */}
+              {/* Lege Status */}
               {changeRequests.length === 0 && !showChangeForm && (
                 <div className="text-center py-12">
                   <div className="w-16 h-16 rounded-2xl bg-gray-700/50 flex items-center justify-center mx-auto mb-4">
                     <Edit3 className="w-8 h-8 text-gray-500" />
                   </div>
-                  <h4 className="font-medium text-white mb-2">Nog geen wijzigingen</h4>
+                  <h4 className="font-medium text-white mb-2">{t('clientDashboard.changeRequests.noChanges')}</h4>
                   <p className="text-gray-400 text-sm mb-4">
-                    Wil je iets aangepast hebben aan je website?
+                    {t('clientDashboard.changeRequests.noChangesDesc')}
                   </p>
                   <button
                     onClick={() => setShowChangeForm(true)}
@@ -813,7 +818,7 @@ export default function ClientLiveDashboard({
                     className="inline-flex items-center gap-2 px-5 py-2.5 bg-emerald-500 hover:bg-emerald-600 text-white font-medium rounded-xl transition"
                   >
                     <Plus className="w-5 h-5" />
-                    Eerste aanvraag indienen
+                    {t('clientDashboard.changeRequests.firstRequest')}
                   </button>
                 </div>
               )}
@@ -834,51 +839,51 @@ export default function ClientLiveDashboard({
               <div className="flex items-center justify-center py-16">
                 <div className="text-center">
                   <Loader2 className="w-10 h-10 text-emerald-400 animate-spin mx-auto mb-4" />
-                  <p className="text-gray-400">Analytics laden...</p>
+                  <p className="text-gray-400">{t('clientDashboard.analytics.loading')}</p>
                 </div>
               </div>
             ) : analytics ? (
               <>
-                {/* Stats Grid */}
+                {/* Statistieken Grid */}
                 <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
                   <StatCard
                     icon={Users}
-                    label="Bezoekers"
-                    value={analytics.visitors.current.toLocaleString('nl-NL')}
+                    label={t('clientDashboard.analytics.visitors')}
+                    value={analytics.visitors.current.toLocaleString(i18n.language === 'nl' ? 'nl-NL' : 'en-US')}
                     change={analytics.visitors.change}
-                    period="vs. vorige maand"
+                    period={t('clientDashboard.analytics.vsPrevMonth')}
                   />
                   <StatCard
                     icon={Eye}
-                    label="Paginaweergaven"
-                    value={analytics.pageViews.current.toLocaleString('nl-NL')}
+                    label={t('clientDashboard.analytics.pageViews')}
+                    value={analytics.pageViews.current.toLocaleString(i18n.language === 'nl' ? 'nl-NL' : 'en-US')}
                     change={analytics.pageViews.change}
-                    period="vs. vorige maand"
+                    period={t('clientDashboard.analytics.vsPrevMonth')}
                   />
                   <StatCard
                     icon={Clock}
-                    label="Gem. sessieduur"
+                    label={t('clientDashboard.analytics.avgSession')}
                     value={analytics.avgTime.current}
                     change={analytics.avgTime.change}
-                    period="vs. vorige maand"
+                    period={t('clientDashboard.analytics.vsPrevMonth')}
                   />
                   <StatCard
                     icon={MousePointer}
-                    label="Bounce rate"
+                    label={t('clientDashboard.analytics.bounceRate')}
                     value={`${analytics.bounceRate.current}%`}
                     change={analytics.bounceRate.change}
-                    period="vs. vorige maand"
+                    period={t('clientDashboard.analytics.vsPrevMonth')}
                     invertChange
                   />
                 </div>
 
-                {/* Charts Row */}
+                {/* Grafieken Rij */}
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-                  {/* Top Pages */}
+                  {/* Populaire Pagina's */}
                   <div className="bg-gray-800/50 border border-gray-700 rounded-xl p-5">
                     <h4 className="font-semibold text-white mb-4 flex items-center gap-2">
                       <BarChart3 className="w-5 h-5 text-blue-400" />
-                      Populaire pagina's
+                      {t('clientDashboard.analytics.popularPages')}
                     </h4>
                     <div className="space-y-3">
                       {analytics.topPages.map((page, i) => (
@@ -903,11 +908,11 @@ export default function ClientLiveDashboard({
                     </div>
                   </div>
 
-                  {/* Traffic Sources */}
+                  {/* Verkeersbronnen */}
                   <div className="bg-gray-800/50 border border-gray-700 rounded-xl p-5">
                     <h4 className="font-semibold text-white mb-4 flex items-center gap-2">
                       <TrendingUp className="w-5 h-5 text-emerald-400" />
-                      Verkeersbronnen
+                      {t('clientDashboard.analytics.trafficSources')}
                     </h4>
                     <div className="space-y-3">
                       {analytics.sources.map((source, i) => {
@@ -934,7 +939,7 @@ export default function ClientLiveDashboard({
                   </div>
                 </div>
 
-                {/* External Analytics Link */}
+                {/* Externe Analytics Link */}
                 {analyticsUrl && (
                   <a
                     href={analyticsUrl}
@@ -943,7 +948,7 @@ export default function ClientLiveDashboard({
                     className="flex items-center justify-center gap-2 p-4 bg-gray-800/50 border border-gray-700 rounded-xl hover:bg-gray-700/50 transition text-gray-400 hover:text-white"
                   >
                     <ExternalLink className="w-5 h-5" />
-                    Bekijk volledige analytics
+                    {t('clientDashboard.analytics.viewFull')}
                   </a>
                 )}
               </>
@@ -952,13 +957,13 @@ export default function ClientLiveDashboard({
                 <div className="w-16 h-16 rounded-2xl bg-gray-700/50 flex items-center justify-center mx-auto mb-4">
                   <BarChart3 className="w-8 h-8 text-gray-500" />
                 </div>
-                <h4 className="font-medium text-white mb-2">Analytics niet beschikbaar</h4>
+                <h4 className="font-medium text-white mb-2">{t('clientDashboard.analytics.notAvailable')}</h4>
                 <p className="text-gray-400 text-sm mb-4">
-                  Upgrade naar Professional of hoger voor uitgebreide analytics
+                  {t('clientDashboard.analytics.upgradeDesc')}
                 </p>
                 <button className="inline-flex items-center gap-2 px-5 py-2.5 bg-gradient-to-r from-blue-500 to-purple-600 text-white font-medium rounded-xl transition hover:opacity-90">
                   <Zap className="w-5 h-5" />
-                  Upgrade pakket
+                  {t('clientDashboard.analytics.upgradePackage')}
                 </button>
               </div>
             ) : (
@@ -966,9 +971,9 @@ export default function ClientLiveDashboard({
                 <div className="w-16 h-16 rounded-2xl bg-gray-700/50 flex items-center justify-center mx-auto mb-4">
                   <BarChart3 className="w-8 h-8 text-gray-500" />
                 </div>
-                <h4 className="font-medium text-white mb-2">Analytics wordt ingesteld</h4>
+                <h4 className="font-medium text-white mb-2">{t('clientDashboard.analytics.beingSetup')}</h4>
                 <p className="text-gray-400 text-sm">
-                  We zijn je analytics aan het configureren. Check later terug!
+                  {t('clientDashboard.analytics.checkLater')}
                 </p>
               </div>
             )}
@@ -979,7 +984,7 @@ export default function ClientLiveDashboard({
   )
 }
 
-// Stat Card Component
+// Statistiek Kaart Component
 function StatCard({ 
   icon: Icon, 
   label, 
@@ -1021,7 +1026,7 @@ function StatCard({
   )
 }
 
-// Change Request Card Component
+// Wijzigingsverzoek Kaart Component
 function ChangeRequestCard({ 
   request, 
   expanded, 
@@ -1031,8 +1036,8 @@ function ChangeRequestCard({
   expanded: boolean
   onToggle: () => void
 }) {
-  const category = CHANGE_CATEGORIES.find(c => c.key === request.category)
-  const CategoryIcon = category?.icon || Edit3
+  const { t, i18n } = useTranslation()
+  const CategoryIcon = CHANGE_CATEGORY_ICONS[request.category] || Edit3
   
   const getStatusColor = (status?: string) => {
     switch (status) {
@@ -1059,23 +1064,23 @@ function ChangeRequestCard({
               {request.title || request.description.substring(0, 50)}
             </span>
             {request.status === 'pending' && (
-              <span className="px-2 py-0.5 bg-yellow-500/20 text-yellow-400 text-xs rounded-full">Nieuw</span>
+              <span className="px-2 py-0.5 bg-yellow-500/20 text-yellow-400 text-xs rounded-full">{t('clientDashboard.status.new')}</span>
             )}
             {request.status === 'in_progress' && (
-              <span className="px-2 py-0.5 bg-blue-500/20 text-blue-400 text-xs rounded-full">In behandeling</span>
+              <span className="px-2 py-0.5 bg-blue-500/20 text-blue-400 text-xs rounded-full">{t('clientDashboard.status.inProgress')}</span>
             )}
             {(request.status === 'done' || request.status === 'completed') && (
-              <span className="px-2 py-0.5 bg-emerald-500/20 text-emerald-400 text-xs rounded-full">Afgerond</span>
+              <span className="px-2 py-0.5 bg-emerald-500/20 text-emerald-400 text-xs rounded-full">{t('clientDashboard.status.completed')}</span>
             )}
           </div>
           <div className="flex items-center gap-3 text-xs text-gray-500">
-            <span>{category?.label || 'Anders'}</span>
+            <span>{t(`clientDashboard.categories.${request.category}.label`)}</span>
             <span>•</span>
-            <span>{request.createdAt ? new Date(request.createdAt).toLocaleDateString('nl-NL') : 'Onbekend'}</span>
+            <span>{request.createdAt ? new Date(request.createdAt).toLocaleDateString(i18n.language === 'nl' ? 'nl-NL' : 'en-US') : t('clientDashboard.status.unknown')}</span>
             {request.priority === 'urgent' && (
               <>
                 <span>•</span>
-                <span className="text-red-400">Urgent</span>
+                <span className="text-red-400">{t('clientDashboard.priority.urgent.label')}</span>
               </>
             )}
           </div>
@@ -1102,7 +1107,7 @@ function ChangeRequestCard({
                 </p>
                 {request.response && (
                   <div className="mt-4 p-3 bg-emerald-500/10 border border-emerald-500/20 rounded-lg">
-                    <p className="text-xs text-emerald-400 font-medium mb-1">Reactie van developer:</p>
+                    <p className="text-xs text-emerald-400 font-medium mb-1">{t('clientDashboard.developerResponse')}</p>
                     <p className="text-sm text-gray-300">{request.response}</p>
                   </div>
                 )}
