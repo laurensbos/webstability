@@ -45,6 +45,12 @@ interface Project {
   revisionsUsed?: number
   revisionsTotal?: number
   updatedAt?: string
+  // Support for raw database format
+  customer?: {
+    name?: string
+    email?: string
+    companyName?: string
+  }
   [key: string]: unknown
 }
 
@@ -81,8 +87,8 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
   try {
     if (req.method === 'GET') {
-      // Get all change requests across all projects
-      const projectKeys = await kv.keys('project:*')
+      // Get all project IDs from the set
+      const projectIds = await kv.smembers('projects') as string[]
       
       const allChangeRequests: Array<{
         projectId: string
@@ -94,15 +100,15 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         revisionsTotal: number
       }> = []
 
-      for (const key of projectKeys) {
-        const project = await kv.get<Project>(key)
+      for (const id of projectIds) {
+        const project = await kv.get<Project>(`project:${id}`)
         if (project && project.changeRequests && project.changeRequests.length > 0) {
           for (const cr of project.changeRequests) {
             allChangeRequests.push({
               projectId: project.projectId || project.id,
-              businessName: project.businessName || 'Onbekend',
-              contactName: project.contactName || '',
-              contactEmail: project.contactEmail || '',
+              businessName: project.businessName || project.customer?.companyName || project.customer?.name || 'Onbekend',
+              contactName: project.contactName || project.customer?.name || '',
+              contactEmail: project.contactEmail || project.customer?.email || '',
               changeRequest: cr,
               revisionsUsed: project.revisionsUsed || 0,
               revisionsTotal: project.revisionsTotal || 5
