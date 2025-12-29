@@ -2112,5 +2112,156 @@
     "draft": "Concept",
     "pay": "Betalen",
     "invoicesPaidCount": "{{paid}} van {{total}} facturen betaald"
+  },
+  "designFeedback": {
+    "title": "Design Feedback",
+    "descriptionLogo": "Geef feedback op de logo concepten",
+    "descriptionDrone": "Geef feedback op de beelden",
+    "descriptionWebshop": "Geef feedback op je webshop design",
+    "descriptionWebsite": "Geef feedback op je website design",
+    "viewDesign": "Bekijk design →",
+    "feedbackPoints_one": "{{count}} feedback punt",
+    "feedbackPoints_other": "{{count}} feedback punten",
+    "quickFeedback": {
+      "looksGood": "Ziet er goed uit!",
+      "differentColors": "Andere kleuren graag",
+      "adjustText": "Tekst aanpassen",
+      "differentImage": "Andere afbeelding",
+      "sizeChange": "Iets groter/kleiner",
+      "rearrange": "Anders indelen"
+    },
+    "categories": {
+      "website": {
+        "algemeen": { "label": "Algemene indruk", "description": "Eerste indruk van het ontwerp" },
+        "kleuren": { "label": "Kleuren & stijl", "description": "Kleurenpalet en visuele stijl" },
+        "teksten": { "label": "Teksten & content", "description": "Koppen, teksten en opmaak" },
+        "layout": { "label": "Layout & structuur", "description": "Indeling en navigatie" },
+        "afbeeldingen": { "label": "Afbeeldingen", "description": "Foto's en graphics" },
+        "mobiel": { "label": "Mobiele weergave", "description": "Hoe het eruitziet op telefoon" }
+      },
+      "webshop": {
+        "algemeen": { "label": "Algemene indruk", "description": "Eerste indruk van de webshop" },
+        "kleuren": { "label": "Kleuren & branding", "description": "Kleurenpalet past bij merk" },
+        "producten": { "label": "Product weergave", "description": "Hoe producten worden getoond" },
+        "layout": { "label": "Layout & navigatie", "description": "Menu, categorieën, zoeken" },
+        "checkout": { "label": "Bestellen & betalen", "description": "Winkelwagen en checkout flow" },
+        "mobiel": { "label": "Mobiele weergave", "description": "Hoe het eruitziet op telefoon" }
+      },
+      "logo": {
+        "algemeen": { "label": "Algemene indruk", "description": "Wat vind je van de concepten?" },
+        "vorm": { "label": "Vorm & symbool", "description": "Het icoon/symbool van het logo" },
+        "typografie": { "label": "Lettertype", "description": "De letters en tekststijl" },
+        "kleuren": { "label": "Kleuren", "description": "Kleurkeuze en combinaties" },
+        "varianten": { "label": "Varianten", "description": "Verschillende versies van het logo" }
+      },
+      "drone": {
+        "algemeen": { "label": "Algemene indruk", "description": "Wat vind je van de beelden?" },
+        "video": { "label": "Video kwaliteit", "description": "Scherpte en vloeiendheid" },
+        "foto": { "label": "Foto's", "description": "Kwaliteit van de foto's" },
+        "editing": { "label": "Bewerking", "description": "Kleuren, snelheid, overgangen" },
+        "muziek": { "label": "Muziek & geluid", "description": "Audio en muziekkeuze" }
+      }
+    },
+    "rating": {
+      "type": "Type:",
+      "positive": "Positief",
+      "neutral": "Neutraal",
+      "negative": "Wijziging nodig"
+    },
+    "priority": {
+      "label": "Prioriteit:",
+      "low": "Laag - nice to have",
+      "normal": "Normaal",
+      "urgent": "Urgent - moet echt anders"
+    },
+    "feedbackPlaceholder": "Beschrijf je feedback zo duidelijk mogelijk...",
+    "add": "Toevoegen",
+    "cancel": "Annuleren",
+    "addFeedback": "Feedback toevoegen",
+    "feedbackSent": "Feedback verzonden!",
+    "feedbackSentDesc": "We gaan er direct mee aan de slag",
+    "clickToGiveFeedback": "Klik op een onderdeel hierboven om feedback te geven",
+    "changesNeeded": "wijziging nodig",
+    "changesNeeded_other": "wijzigingen nodig",
+    "approveDesign": "Design goedkeuren ✨",
+    "sendFeedback": "Feedback versturen",
+    "afterProcessing": "Na het verwerken van de feedback kun je het design opnieuw bekijken",
+    "urgent": "Urgent"
+  },
+  "feedbackModule": {
+    "viewPreview": "Preview bekijken",
+    "opensInNewWindow": "Opent in een nieuw venster",
+    "giveFeedback": "Feedback geven",
+    "describeChange": "Beschrijf wat je wilt laten aanpassen",
+    "feedbackReceived": "Feedback ontvangen!",
+    "weWillWorkOnIt": "We gaan ermee aan de slag en houden je op de hoogte.",
+    "whichPage": "Welke pagina betreft het?",
+    "selectPage": "Selecteer een pagina...",
+    "typeOfChange": "Type aanpassing",
+    "description": "Beschrijving",
+    "descriptionPlaceholder": "Beschrijf zo specifiek mogelijk wat je wilt laten aanpassen...",
+    "tip": "Tip: Hoe specifieker, hoe sneller we het kunnen aanpassen!",
+    "errorGeneric": "Er ging iets mis. Probeer het opnieuw.",
+    "sending": "Versturen...",
+    "sendFeedback": "Feedback versturen",
+    "previousFeedback": "Eerdere feedback",
+    "waiting": "wachtend",
+    "inProgress": "bezig",
+    "resolved": "opgelost",
+    "developerResponse": "Reactie developer:",
+    "pages": {
+      "homepage": "Homepage",
+      "aboutUs": "Over ons",
+      "services": "Diensten",
+      "contact": "Contact",
+      "general": "Algemeen / Hele website"
+    },
+    "categories": {
+      "text": "Tekst",
+      "design": "Design",
+      "functionality": "Functionaliteit",
+      "image": "Afbeelding",
+      "other": "Anders"
+    },
+    "status": {
+      "pending": "In wachtrij",
+      "inProgress": "In behandeling",
+      "completed": "Opgelost"
+    }
+  },
+  "paymentSection": {
+    "paymentReceived": "Betaling ontvangen!",
+    "goingLiveSoon": "Je website gaat binnenkort live",
+    "settingOnline": "We zetten je website nu online. Je ontvangt een e-mail zodra alles klaar is!",
+    "waitingApproval": "Wacht op goedkeuring",
+    "approveDesignFirst": "Keur eerst het design goed om verder te gaan",
+    "approveDesignInstructions": "Bekijk de design preview hierboven en klik op <strong>\"Goedkeuren\"</strong> als je tevreden bent. Daarna kun je betalen en gaat je website live.",
+    "paymentFailed": "Betaling niet gelukt",
+    "retryAttempt": "Poging {{count}} - Probeer het opnieuw",
+    "tryAgainOrContact": "Probeer het opnieuw of neem contact op",
+    "reason": "Reden:",
+    "lastAttempt": "Laatste poging:",
+    "possibleSolutions": "Mogelijke oplossingen",
+    "checkBalance": "Controleer of je genoeg saldo hebt",
+    "tryDifferentMethod": "Probeer een andere betaalmethode (iDEAL, creditcard)",
+    "checkBankBlocking": "Check of je bank geen online transacties blokkeert",
+    "contactIfPersists": "Neem contact met ons op als het probleem aanhoudt",
+    "contactViaWhatsApp": "Contact via WhatsApp",
+    "hideHelp": "Verberg hulp",
+    "needHelp": "Hulp nodig?",
+    "tryAgain": "Opnieuw proberen",
+    "readyToGoLive": "Klaar om live te gaan!",
+    "startSubscription": "Start je abonnement en we zetten je website online",
+    "designApproved": "Design goedgekeurd",
+    "package": "Pakket",
+    "perMonthInclVat": "per maand incl. BTW",
+    "continueToPayment": "Doorgaan naar betaling",
+    "pleaseWait": "Moment geduld...",
+    "startSubscriptionAndGoLive": "Start abonnement & ga live",
+    "securePayment": "Veilig betalen",
+    "cancelMonthly": "Maandelijks opzegbaar",
+    "payWith": "Betaal met:",
+    "connectionError": "Kon geen verbinding maken met de betaalserver.",
+    "paymentCreationError": "Er ging iets mis bij het aanmaken van de betaling."
   }
 }

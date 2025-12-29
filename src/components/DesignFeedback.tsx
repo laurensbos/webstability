@@ -7,6 +7,7 @@
  */
 
 import { useState } from 'react'
+import { useTranslation } from 'react-i18next'
 import { motion, AnimatePresence } from 'framer-motion'
 import {
   MessageSquare,
@@ -32,48 +33,40 @@ import {
   Zap
 } from 'lucide-react'
 
-// Service-specific feedback categories
-const FEEDBACK_CATEGORIES = {
-  website: [
-    { id: 'algemeen', label: 'Algemene indruk', icon: Sparkles, description: 'Eerste indruk van het ontwerp' },
-    { id: 'kleuren', label: 'Kleuren & stijl', icon: Palette, description: 'Kleurenpalet en visuele stijl' },
-    { id: 'teksten', label: 'Teksten & content', icon: Type, description: 'Koppen, teksten en opmaak' },
-    { id: 'layout', label: 'Layout & structuur', icon: Layout, description: 'Indeling en navigatie' },
-    { id: 'afbeeldingen', label: 'Afbeeldingen', icon: Image, description: "Foto's en graphics" },
-    { id: 'mobiel', label: 'Mobiele weergave', icon: Smartphone, description: 'Hoe het eruitziet op telefoon' },
-  ],
-  webshop: [
-    { id: 'algemeen', label: 'Algemene indruk', icon: Sparkles, description: 'Eerste indruk van de webshop' },
-    { id: 'kleuren', label: 'Kleuren & branding', icon: Palette, description: 'Kleurenpalet past bij merk' },
-    { id: 'producten', label: 'Product weergave', icon: ShoppingCart, description: 'Hoe producten worden getoond' },
-    { id: 'layout', label: 'Layout & navigatie', icon: Layout, description: 'Menu, categorieën, zoeken' },
-    { id: 'checkout', label: 'Bestellen & betalen', icon: Globe, description: 'Winkelwagen en checkout flow' },
-    { id: 'mobiel', label: 'Mobiele weergave', icon: Smartphone, description: 'Hoe het eruitziet op telefoon' },
-  ],
-  logo: [
-    { id: 'algemeen', label: 'Algemene indruk', icon: Sparkles, description: 'Wat vind je van de concepten?' },
-    { id: 'vorm', label: 'Vorm & symbool', icon: PenTool, description: 'Het icoon/symbool van het logo' },
-    { id: 'typografie', label: 'Lettertype', icon: Type, description: 'De letters en tekststijl' },
-    { id: 'kleuren', label: 'Kleuren', icon: Palette, description: 'Kleurkeuze en combinaties' },
-    { id: 'varianten', label: 'Varianten', icon: Layout, description: 'Verschillende versies van het logo' },
-  ],
-  drone: [
-    { id: 'algemeen', label: 'Algemene indruk', icon: Sparkles, description: 'Wat vind je van de beelden?' },
-    { id: 'video', label: 'Video kwaliteit', icon: Video, description: 'Scherpte en vloeiendheid' },
-    { id: 'foto', label: "Foto's", icon: Camera, description: "Kwaliteit van de foto's" },
-    { id: 'editing', label: 'Bewerking', icon: Zap, description: 'Kleuren, snelheid, overgangen' },
-    { id: 'muziek', label: 'Muziek & geluid', icon: Sparkles, description: 'Audio en muziekkeuze' },
-  ],
+// Service-specific feedback categories - now using translation keys
+const FEEDBACK_CATEGORY_KEYS = {
+  website: ['algemeen', 'kleuren', 'teksten', 'layout', 'afbeeldingen', 'mobiel'],
+  webshop: ['algemeen', 'kleuren', 'producten', 'layout', 'checkout', 'mobiel'],
+  logo: ['algemeen', 'vorm', 'typografie', 'kleuren', 'varianten'],
+  drone: ['algemeen', 'video', 'foto', 'editing', 'muziek'],
 }
 
-// Quick feedback options
-const QUICK_FEEDBACK_OPTIONS = [
-  { emoji: '👍', label: 'Ziet er goed uit!' },
-  { emoji: '🎨', label: 'Andere kleuren graag' },
-  { emoji: '📝', label: 'Tekst aanpassen' },
-  { emoji: '📷', label: 'Andere afbeelding' },
-  { emoji: '↔️', label: 'Iets groter/kleiner' },
-  { emoji: '🔄', label: 'Anders indelen' },
+const CATEGORY_ICONS = {
+  algemeen: Sparkles,
+  kleuren: Palette,
+  teksten: Type,
+  layout: Layout,
+  afbeeldingen: Image,
+  mobiel: Smartphone,
+  producten: ShoppingCart,
+  checkout: Globe,
+  vorm: PenTool,
+  typografie: Type,
+  varianten: Layout,
+  video: Video,
+  foto: Camera,
+  editing: Zap,
+  muziek: Sparkles,
+}
+
+// Quick feedback option keys
+const QUICK_FEEDBACK_KEYS = [
+  { emoji: '👍', key: 'looksGood' },
+  { emoji: '🎨', key: 'differentColors' },
+  { emoji: '📝', key: 'adjustText' },
+  { emoji: '📷', key: 'differentImage' },
+  { emoji: '↔️', key: 'sizeChange' },
+  { emoji: '🔄', key: 'rearrange' },
 ]
 
 interface FeedbackEntry {
@@ -101,6 +94,7 @@ export function DesignFeedback({
   onClose,
   existingFeedback = []
 }: DesignFeedbackProps) {
+  const { t } = useTranslation()
   const [feedbackEntries, setFeedbackEntries] = useState<FeedbackEntry[]>(existingFeedback)
   const [activeCategory, setActiveCategory] = useState<string | null>(null)
   const [currentFeedback, setCurrentFeedback] = useState('')
@@ -110,7 +104,14 @@ export function DesignFeedback({
   const [showSuccess, setShowSuccess] = useState(false)
   const [expandedCategory, setExpandedCategory] = useState<string | null>(null)
 
-  const categories = FEEDBACK_CATEGORIES[serviceType] || FEEDBACK_CATEGORIES.website
+  // Build categories from translation keys
+  const categoryKeys = FEEDBACK_CATEGORY_KEYS[serviceType] || FEEDBACK_CATEGORY_KEYS.website
+  const categories = categoryKeys.map((id: string) => ({
+    id,
+    label: t(`designFeedback.categories.${serviceType}.${id}.label`),
+    description: t(`designFeedback.categories.${serviceType}.${id}.description`),
+    icon: CATEGORY_ICONS[id as keyof typeof CATEGORY_ICONS] || Sparkles
+  }))
 
   // Add feedback for a category
   const addFeedback = () => {
@@ -205,12 +206,12 @@ export function DesignFeedback({
               <MessageSquare className="w-5 h-5 text-purple-400" />
             </div>
             <div>
-              <h3 className="text-lg font-semibold text-white">Design Feedback</h3>
+              <h3 className="text-lg font-semibold text-white">{t('designFeedback.title')}</h3>
               <p className="text-sm text-gray-500">
-                {serviceType === 'logo' ? 'Geef feedback op de logo concepten' :
-                 serviceType === 'drone' ? 'Geef feedback op de beelden' :
-                 serviceType === 'webshop' ? 'Geef feedback op je webshop design' :
-                 'Geef feedback op je website design'}
+                {serviceType === 'logo' ? t('designFeedback.descriptionLogo') :
+                 serviceType === 'drone' ? t('designFeedback.descriptionDrone') :
+                 serviceType === 'webshop' ? t('designFeedback.descriptionWebshop') :
+                 t('designFeedback.descriptionWebsite')}
               </p>
             </div>
           </div>
@@ -222,7 +223,7 @@ export function DesignFeedback({
               rel="noopener noreferrer"
               className="px-4 py-2 bg-purple-500/20 text-purple-400 rounded-lg text-sm font-medium hover:bg-purple-500/30 transition"
             >
-              Bekijk design →
+              {t('designFeedback.viewDesign')}
             </a>
           )}
         </div>
@@ -243,7 +244,7 @@ export function DesignFeedback({
               <span className="text-sm text-amber-400">{negativeCount}</span>
             </div>
             <span className="text-xs text-gray-500 ml-auto">
-              {feedbackEntries.length} feedback punt{feedbackEntries.length !== 1 ? 'en' : ''}
+              {t('designFeedback.feedbackPoints', { count: feedbackEntries.length })}
             </span>
           </div>
         )}
@@ -302,16 +303,19 @@ export function DesignFeedback({
                     <div className="px-4 pb-4 space-y-4">
                       {/* Quick options */}
                       <div className="flex flex-wrap gap-2">
-                        {QUICK_FEEDBACK_OPTIONS.map((option, i) => (
-                          <button
-                            key={i}
-                            onClick={() => addQuickFeedback(category.id, `${option.emoji} ${option.label}`)}
-                            className="px-3 py-1.5 bg-gray-800 hover:bg-gray-700 rounded-lg text-sm text-gray-300 transition flex items-center gap-1.5"
-                          >
-                            <span>{option.emoji}</span>
-                            <span>{option.label}</span>
-                          </button>
-                        ))}
+                        {QUICK_FEEDBACK_KEYS.map((option, i) => {
+                          const label = t(`designFeedback.quickFeedback.${option.key}`)
+                          return (
+                            <button
+                              key={i}
+                              onClick={() => addQuickFeedback(category.id, `${option.emoji} ${label}`)}
+                              className="px-3 py-1.5 bg-gray-800 hover:bg-gray-700 rounded-lg text-sm text-gray-300 transition flex items-center gap-1.5"
+                            >
+                              <span>{option.emoji}</span>
+                              <span>{label}</span>
+                            </button>
+                          )
+                        })}
                       </div>
 
                       {/* Existing feedback for this category */}
@@ -343,7 +347,7 @@ export function DesignFeedback({
                                 <p className="text-sm text-white break-words">{entry.feedback}</p>
                                 {entry.priority === 'urgent' && (
                                   <span className="inline-block mt-1 px-2 py-0.5 bg-red-500/20 text-red-400 text-xs rounded">
-                                    Urgent
+                                    {t('designFeedback.urgent')}
                                   </span>
                                 )}
                               </div>
@@ -363,7 +367,7 @@ export function DesignFeedback({
                         <div className="space-y-3 p-4 bg-gray-800/50 rounded-xl border border-gray-700">
                           {/* Rating selector */}
                           <div className="flex items-center gap-2">
-                            <span className="text-sm text-gray-400 w-20">Type:</span>
+                            <span className="text-sm text-gray-400 w-20">{t('designFeedback.rating.type')}</span>
                             <div className="flex gap-2">
                               <button
                                 onClick={() => setCurrentRating('positive')}
@@ -400,15 +404,15 @@ export function DesignFeedback({
 
                           {/* Priority selector */}
                           <div className="flex items-center gap-2">
-                            <span className="text-sm text-gray-400 w-20">Prioriteit:</span>
+                            <span className="text-sm text-gray-400 w-20">{t('designFeedback.priority.label')}</span>
                             <select
                               value={currentPriority}
                               onChange={(e) => setCurrentPriority(e.target.value as 'low' | 'normal' | 'urgent')}
                               className="bg-gray-700 border border-gray-600 rounded-lg px-3 py-1.5 text-sm text-white focus:border-purple-500 outline-none"
                             >
-                              <option value="low">Laag - nice to have</option>
-                              <option value="normal">Normaal</option>
-                              <option value="urgent">Urgent - moet echt anders</option>
+                              <option value="low">{t('designFeedback.priority.low')}</option>
+                              <option value="normal">{t('designFeedback.priority.normal')}</option>
+                              <option value="urgent">{t('designFeedback.priority.urgent')}</option>
                             </select>
                           </div>
 
@@ -416,7 +420,7 @@ export function DesignFeedback({
                           <textarea
                             value={currentFeedback}
                             onChange={(e) => setCurrentFeedback(e.target.value)}
-                            placeholder="Beschrijf je feedback zo duidelijk mogelijk..."
+                            placeholder={t('designFeedback.feedbackPlaceholder')}
                             className="w-full bg-gray-700 border border-gray-600 rounded-lg px-4 py-3 text-white placeholder-gray-500 focus:border-purple-500 outline-none resize-none"
                             rows={3}
                           />
@@ -429,13 +433,13 @@ export function DesignFeedback({
                               className="px-4 py-2 bg-purple-500 text-white rounded-lg font-medium hover:bg-purple-400 transition disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
                             >
                               <Plus className="w-4 h-4" />
-                              Toevoegen
+                              {t('designFeedback.add')}
                             </button>
                             <button
                               onClick={() => setActiveCategory(null)}
                               className="px-4 py-2 text-gray-400 hover:text-white transition"
                             >
-                              Annuleren
+                              {t('designFeedback.cancel')}
                             </button>
                           </div>
                         </div>
@@ -445,7 +449,7 @@ export function DesignFeedback({
                           className="w-full p-3 border-2 border-dashed border-gray-700 rounded-xl text-gray-500 hover:border-purple-500 hover:text-purple-400 transition flex items-center justify-center gap-2"
                         >
                           <Plus className="w-4 h-4" />
-                          Feedback toevoegen
+                          {t('designFeedback.addFeedback')}
                         </button>
                       )}
                     </div>
@@ -466,22 +470,22 @@ export function DesignFeedback({
             className="text-center py-4"
           >
             <CheckCircle2 className="w-12 h-12 text-green-400 mx-auto mb-3" />
-            <p className="text-lg font-medium text-white">Feedback verzonden!</p>
-            <p className="text-sm text-gray-400">We gaan er direct mee aan de slag</p>
+            <p className="text-lg font-medium text-white">{t('designFeedback.feedbackSent')}</p>
+            <p className="text-sm text-gray-400">{t('designFeedback.feedbackSentDesc')}</p>
           </motion.div>
         ) : (
           <>
             {feedbackEntries.length === 0 ? (
               <p className="text-center text-gray-500 text-sm py-4">
-                Klik op een onderdeel hierboven om feedback te geven
+                {t('designFeedback.clickToGiveFeedback')}
               </p>
             ) : (
               <div className="space-y-4">
                 {/* Summary */}
                 <div className="text-sm text-gray-400">
-                  <strong className="text-white">{feedbackEntries.length}</strong> feedback punt{feedbackEntries.length !== 1 ? 'en' : ''} 
+                  {t('designFeedback.feedbackPoints', { count: feedbackEntries.length })}
                   {negativeCount > 0 && (
-                    <span className="text-amber-400"> • {negativeCount} wijziging{negativeCount !== 1 ? 'en' : ''} nodig</span>
+                    <span className="text-amber-400"> • {t('designFeedback.changesNeeded', { count: negativeCount })}</span>
                   )}
                 </div>
 
@@ -499,7 +503,7 @@ export function DesignFeedback({
                       ) : (
                         <ThumbsUp className="w-5 h-5" />
                       )}
-                      Design goedkeuren ✨
+                      {t('designFeedback.approveDesign')}
                     </button>
                   ) : (
                     // Has changes needed - submit feedback
@@ -513,14 +517,14 @@ export function DesignFeedback({
                       ) : (
                         <Send className="w-5 h-5" />
                       )}
-                      Feedback versturen
+                      {t('designFeedback.sendFeedback')}
                     </button>
                   )}
                 </div>
 
                 {negativeCount > 0 && (
                   <p className="text-xs text-center text-gray-500">
-                    Na het verwerken van de feedback kun je het design opnieuw bekijken
+                    {t('designFeedback.afterProcessing')}
                   </p>
                 )}
               </div>

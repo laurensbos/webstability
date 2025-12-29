@@ -1,4 +1,5 @@
 import { motion, AnimatePresence } from 'framer-motion'
+import { useTranslation } from 'react-i18next'
 import { 
   CreditCard, 
   CheckCircle2, 
@@ -44,6 +45,7 @@ export default function PaymentSection({
   paymentFailureReason,
   paymentRetryCount = 0
 }: PaymentSectionProps) {
+  const { t } = useTranslation()
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
   const [showHelp, setShowHelp] = useState(false)
@@ -73,11 +75,11 @@ export default function PaymentSection({
         window.location.href = data.checkoutUrl
         onPaymentInitiated?.()
       } else {
-        setError(data.error || 'Er ging iets mis bij het aanmaken van de betaling.')
+        setError(data.error || t('paymentSection.paymentCreationError'))
       }
     } catch (err) {
       console.error('Payment initiation error:', err)
-      setError('Kon geen verbinding maken met de betaalserver.')
+      setError(t('paymentSection.connectionError'))
     }
 
     setLoading(false)
@@ -96,8 +98,8 @@ export default function PaymentSection({
             <CheckCircle2 className="w-8 h-8 text-white" />
           </div>
           <div>
-            <h3 className="text-xl font-bold text-green-900">Betaling ontvangen!</h3>
-            <p className="text-green-700">Je website gaat binnenkort live</p>
+            <h3 className="text-xl font-bold text-green-900">{t('paymentSection.paymentReceived')}</h3>
+            <p className="text-green-700">{t('paymentSection.goingLiveSoon')}</p>
           </div>
         </div>
 
@@ -105,7 +107,7 @@ export default function PaymentSection({
           <div className="flex items-center gap-3 text-green-800">
             <Rocket className="w-5 h-5" />
             <p className="font-medium">
-              We zetten je website nu online. Je ontvangt een e-mail zodra alles klaar is!
+              {t('paymentSection.settingOnline')}
             </p>
           </div>
         </div>
@@ -126,16 +128,13 @@ export default function PaymentSection({
             <Clock className="w-8 h-8 text-white" />
           </div>
           <div>
-            <h3 className="text-xl font-bold text-amber-900">Wacht op goedkeuring</h3>
-            <p className="text-amber-700">Keur eerst het design goed om verder te gaan</p>
+            <h3 className="text-xl font-bold text-amber-900">{t('paymentSection.waitingApproval')}</h3>
+            <p className="text-amber-700">{t('paymentSection.approveDesignFirst')}</p>
           </div>
         </div>
 
         <div className="bg-white/60 rounded-xl p-4 border border-amber-200">
-          <p className="text-amber-800">
-            Bekijk de design preview hierboven en klik op <strong>"Goedkeuren"</strong> als je tevreden bent. 
-            Daarna kun je betalen en gaat je website live.
-          </p>
+          <p className="text-amber-800" dangerouslySetInnerHTML={{ __html: t('paymentSection.approveDesignInstructions') }} />
         </div>
       </motion.div>
     )
@@ -154,11 +153,11 @@ export default function PaymentSection({
             <AlertCircle className="w-8 h-8 text-white" />
           </div>
           <div>
-            <h3 className="text-xl font-bold text-red-900">Betaling niet gelukt</h3>
+            <h3 className="text-xl font-bold text-red-900">{t('paymentSection.paymentFailed')}</h3>
             <p className="text-red-700">
               {paymentRetryCount > 0 
-                ? `Poging ${paymentRetryCount + 1} - Probeer het opnieuw`
-                : 'Probeer het opnieuw of neem contact op'}
+                ? t('paymentSection.retryAttempt', { count: paymentRetryCount + 1 })
+                : t('paymentSection.tryAgainOrContact')}
             </p>
           </div>
         </div>
@@ -167,7 +166,7 @@ export default function PaymentSection({
         {paymentFailureReason && (
           <div className="bg-red-100 rounded-xl p-4 mb-4 border border-red-200">
             <p className="text-sm text-red-800">
-              <strong>Reden:</strong> {paymentFailureReason}
+              <strong>{t('paymentSection.reason')}</strong> {paymentFailureReason}
             </p>
           </div>
         )}
@@ -177,7 +176,7 @@ export default function PaymentSection({
           <div className="flex items-center gap-2 text-sm text-red-600 mb-4">
             <Calendar className="w-4 h-4" />
             <span>
-              Laatste poging: {new Date(lastPaymentAttempt).toLocaleDateString('nl-NL', {
+              {t('paymentSection.lastAttempt')} {new Date(lastPaymentAttempt).toLocaleDateString('nl-NL', {
                 day: 'numeric',
                 month: 'long',
                 hour: '2-digit',
@@ -199,24 +198,24 @@ export default function PaymentSection({
               <div className="bg-white rounded-xl p-4 border border-red-200">
                 <h4 className="font-semibold text-gray-900 mb-3 flex items-center gap-2">
                   <HelpCircle className="w-4 h-4" />
-                  Mogelijke oplossingen
+                  {t('paymentSection.possibleSolutions')}
                 </h4>
                 <ul className="space-y-2 text-sm text-gray-700">
                   <li className="flex items-start gap-2">
                     <CheckCircle2 className="w-4 h-4 text-green-500 mt-0.5 flex-shrink-0" />
-                    <span>Controleer of je genoeg saldo hebt</span>
+                    <span>{t('paymentSection.checkBalance')}</span>
                   </li>
                   <li className="flex items-start gap-2">
                     <CheckCircle2 className="w-4 h-4 text-green-500 mt-0.5 flex-shrink-0" />
-                    <span>Probeer een andere betaalmethode (iDEAL, creditcard)</span>
+                    <span>{t('paymentSection.tryDifferentMethod')}</span>
                   </li>
                   <li className="flex items-start gap-2">
                     <CheckCircle2 className="w-4 h-4 text-green-500 mt-0.5 flex-shrink-0" />
-                    <span>Check of je bank geen online transacties blokkeert</span>
+                    <span>{t('paymentSection.checkBankBlocking')}</span>
                   </li>
                   <li className="flex items-start gap-2">
                     <CheckCircle2 className="w-4 h-4 text-green-500 mt-0.5 flex-shrink-0" />
-                    <span>Neem contact met ons op als het probleem aanhoudt</span>
+                    <span>{t('paymentSection.contactIfPersists')}</span>
                   </li>
                 </ul>
 
@@ -227,7 +226,7 @@ export default function PaymentSection({
                   className="mt-4 flex items-center justify-center gap-2 w-full px-4 py-2 bg-green-500 hover:bg-green-600 text-white rounded-lg text-sm font-medium transition"
                 >
                   <Mail className="w-4 h-4" />
-                  Contact via WhatsApp
+                  {t('paymentSection.contactViaWhatsApp')}
                 </a>
               </div>
             </motion.div>
@@ -241,12 +240,12 @@ export default function PaymentSection({
           {showHelp ? (
             <>
               <ChevronUp className="w-4 h-4" />
-              Verberg hulp
+              {t('paymentSection.hideHelp')}
             </>
           ) : (
             <>
               <ChevronDown className="w-4 h-4" />
-              Hulp nodig?
+              {t('paymentSection.needHelp')}
             </>
           )}
         </button>
@@ -263,7 +262,7 @@ export default function PaymentSection({
           ) : (
             <>
               <RefreshCw className="w-5 h-5" />
-              Opnieuw proberen
+              {t('paymentSection.tryAgain')}
             </>
           )}
         </motion.button>
@@ -288,27 +287,27 @@ export default function PaymentSection({
             <CreditCard className="w-8 h-8 text-white" />
           </div>
           <div>
-            <h3 className="text-xl font-bold text-gray-900 dark:text-white">Klaar om live te gaan!</h3>
-            <p className="text-gray-600 dark:text-gray-400">Start je abonnement en we zetten je website online</p>
+            <h3 className="text-xl font-bold text-gray-900 dark:text-white">{t('paymentSection.readyToGoLive')}</h3>
+            <p className="text-gray-600 dark:text-gray-400">{t('paymentSection.startSubscription')}</p>
           </div>
         </div>
 
         {/* Design goedgekeurd badge */}
         <div className="flex items-center gap-2 mb-6 text-green-700 bg-green-100 rounded-lg px-3 py-2 w-fit">
           <CheckCircle2 className="w-4 h-4" />
-          <span className="text-sm font-medium">Design goedgekeurd</span>
+          <span className="text-sm font-medium">{t('paymentSection.designApproved')}</span>
         </div>
 
         {/* Pakket info */}
         <div className="bg-white dark:bg-gray-900 rounded-xl p-5 mb-6 border border-gray-200 shadow-sm">
           <div className="flex justify-between items-start mb-4">
             <div>
-              <h4 className="font-bold text-gray-900 text-lg">{pkg.name} Pakket</h4>
+              <h4 className="font-bold text-gray-900 text-lg">{pkg.name} {t('paymentSection.package')}</h4>
               <p className="text-gray-600 text-sm">{pkg.description}</p>
             </div>
             <div className="text-right">
               <p className="text-2xl font-bold text-gray-900 dark:text-white">€{pkg.priceInclVat.toFixed(2)}</p>
-              <p className="text-xs text-gray-500 dark:text-gray-400">per maand incl. BTW</p>
+              <p className="text-xs text-gray-500 dark:text-gray-400">{t('paymentSection.perMonthInclVat')}</p>
             </div>
           </div>
 
@@ -340,7 +339,7 @@ export default function PaymentSection({
             className="w-full flex items-center justify-center gap-3 px-6 py-4 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-semibold rounded-xl transition shadow-lg shadow-blue-500/25"
           >
             <CreditCard className="w-5 h-5" />
-            Doorgaan naar betaling
+            {t('paymentSection.continueToPayment')}
             <ExternalLink className="w-4 h-4" />
           </a>
         ) : (
@@ -354,12 +353,12 @@ export default function PaymentSection({
             {loading ? (
               <>
                 <Loader2 className="w-5 h-5 animate-spin" />
-                Moment geduld...
+                {t('paymentSection.pleaseWait')}
               </>
             ) : (
               <>
                 <CreditCard className="w-5 h-5" />
-                Start abonnement & ga live
+                {t('paymentSection.startSubscriptionAndGoLive')}
               </>
             )}
           </motion.button>
@@ -369,17 +368,17 @@ export default function PaymentSection({
         <div className="flex items-center justify-center gap-6 mt-6 pt-6 border-t border-gray-200 dark:border-gray-700">
           <div className="flex items-center gap-2 text-gray-600 text-sm">
             <Lock className="w-4 h-4" />
-            <span>Veilig betalen</span>
+            <span>{t('paymentSection.securePayment')}</span>
           </div>
           <div className="flex items-center gap-2 text-gray-600 text-sm">
             <Shield className="w-4 h-4" />
-            <span>Maandelijks opzegbaar</span>
+            <span>{t('paymentSection.cancelMonthly')}</span>
           </div>
         </div>
 
         {/* Betaalmethodes */}
         <div className="flex items-center justify-center gap-3 mt-4">
-          <span className="text-xs text-gray-500 dark:text-gray-400">Betaal met:</span>
+          <span className="text-xs text-gray-500 dark:text-gray-400">{t('paymentSection.payWith')}</span>
           <div className="flex items-center gap-2">
             <img src="https://www.mollie.com/external/icons/payment-methods/ideal.svg" alt="iDEAL" className="h-6" />
             <img src="https://www.mollie.com/external/icons/payment-methods/creditcard.svg" alt="Creditcard" className="h-6" />

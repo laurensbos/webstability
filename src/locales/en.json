@@ -2112,5 +2112,156 @@
     "draft": "Draft",
     "pay": "Pay",
     "invoicesPaidCount": "{{paid}} of {{total}} invoices paid"
+  },
+  "designFeedback": {
+    "title": "Design Feedback",
+    "descriptionLogo": "Provide feedback on the logo concepts",
+    "descriptionDrone": "Provide feedback on the footage",
+    "descriptionWebshop": "Provide feedback on your webshop design",
+    "descriptionWebsite": "Provide feedback on your website design",
+    "viewDesign": "View design →",
+    "feedbackPoints_one": "{{count}} feedback point",
+    "feedbackPoints_other": "{{count}} feedback points",
+    "quickFeedback": {
+      "looksGood": "Looks good!",
+      "differentColors": "Different colors please",
+      "adjustText": "Adjust text",
+      "differentImage": "Different image",
+      "sizeChange": "Make it bigger/smaller",
+      "rearrange": "Rearrange layout"
+    },
+    "categories": {
+      "website": {
+        "algemeen": { "label": "Overall impression", "description": "First impression of the design" },
+        "kleuren": { "label": "Colors & style", "description": "Color palette and visual style" },
+        "teksten": { "label": "Text & content", "description": "Headings, text and formatting" },
+        "layout": { "label": "Layout & structure", "description": "Arrangement and navigation" },
+        "afbeeldingen": { "label": "Images", "description": "Photos and graphics" },
+        "mobiel": { "label": "Mobile view", "description": "How it looks on phone" }
+      },
+      "webshop": {
+        "algemeen": { "label": "Overall impression", "description": "First impression of the webshop" },
+        "kleuren": { "label": "Colors & branding", "description": "Color palette matches brand" },
+        "producten": { "label": "Product display", "description": "How products are shown" },
+        "layout": { "label": "Layout & navigation", "description": "Menu, categories, search" },
+        "checkout": { "label": "Order & payment", "description": "Shopping cart and checkout flow" },
+        "mobiel": { "label": "Mobile view", "description": "How it looks on phone" }
+      },
+      "logo": {
+        "algemeen": { "label": "Overall impression", "description": "What do you think of the concepts?" },
+        "vorm": { "label": "Shape & symbol", "description": "The icon/symbol of the logo" },
+        "typografie": { "label": "Typography", "description": "The letters and text style" },
+        "kleuren": { "label": "Colors", "description": "Color choice and combinations" },
+        "varianten": { "label": "Variants", "description": "Different versions of the logo" }
+      },
+      "drone": {
+        "algemeen": { "label": "Overall impression", "description": "What do you think of the footage?" },
+        "video": { "label": "Video quality", "description": "Sharpness and smoothness" },
+        "foto": { "label": "Photos", "description": "Quality of the photos" },
+        "editing": { "label": "Editing", "description": "Colors, speed, transitions" },
+        "muziek": { "label": "Music & sound", "description": "Audio and music choice" }
+      }
+    },
+    "rating": {
+      "type": "Type:",
+      "positive": "Positive",
+      "neutral": "Neutral",
+      "negative": "Change needed"
+    },
+    "priority": {
+      "label": "Priority:",
+      "low": "Low - nice to have",
+      "normal": "Normal",
+      "urgent": "Urgent - must be changed"
+    },
+    "feedbackPlaceholder": "Describe your feedback as clearly as possible...",
+    "add": "Add",
+    "cancel": "Cancel",
+    "addFeedback": "Add feedback",
+    "feedbackSent": "Feedback sent!",
+    "feedbackSentDesc": "We'll start working on it right away",
+    "clickToGiveFeedback": "Click on a section above to give feedback",
+    "changesNeeded": "change needed",
+    "changesNeeded_other": "changes needed",
+    "approveDesign": "Approve design ✨",
+    "sendFeedback": "Send feedback",
+    "afterProcessing": "After processing the feedback, you can review the design again",
+    "urgent": "Urgent"
+  },
+  "feedbackModule": {
+    "viewPreview": "View preview",
+    "opensInNewWindow": "Opens in a new window",
+    "giveFeedback": "Give feedback",
+    "describeChange": "Describe what you want to change",
+    "feedbackReceived": "Feedback received!",
+    "weWillWorkOnIt": "We'll start working on it and keep you updated.",
+    "whichPage": "Which page is this about?",
+    "selectPage": "Select a page...",
+    "typeOfChange": "Type of change",
+    "description": "Description",
+    "descriptionPlaceholder": "Describe as specifically as possible what you want to change...",
+    "tip": "Tip: The more specific, the faster we can make the change!",
+    "errorGeneric": "Something went wrong. Please try again.",
+    "sending": "Sending...",
+    "sendFeedback": "Send feedback",
+    "previousFeedback": "Previous feedback",
+    "waiting": "waiting",
+    "inProgress": "in progress",
+    "resolved": "resolved",
+    "developerResponse": "Developer response:",
+    "pages": {
+      "homepage": "Homepage",
+      "aboutUs": "About us",
+      "services": "Services",
+      "contact": "Contact",
+      "general": "General / Entire website"
+    },
+    "categories": {
+      "text": "Text",
+      "design": "Design",
+      "functionality": "Functionality",
+      "image": "Image",
+      "other": "Other"
+    },
+    "status": {
+      "pending": "Pending",
+      "inProgress": "In progress",
+      "completed": "Resolved"
+    }
+  },
+  "paymentSection": {
+    "paymentReceived": "Payment received!",
+    "goingLiveSoon": "Your website is going live soon",
+    "settingOnline": "We're putting your website online now. You'll receive an email when everything is ready!",
+    "waitingApproval": "Waiting for approval",
+    "approveDesignFirst": "First approve the design to continue",
+    "approveDesignInstructions": "View the design preview above and click <strong>\"Approve\"</strong> if you're satisfied. Then you can pay and your website will go live.",
+    "paymentFailed": "Payment failed",
+    "retryAttempt": "Attempt {{count}} - Try again",
+    "tryAgainOrContact": "Try again or contact us",
+    "reason": "Reason:",
+    "lastAttempt": "Last attempt:",
+    "possibleSolutions": "Possible solutions",
+    "checkBalance": "Check if you have sufficient balance",
+    "tryDifferentMethod": "Try a different payment method (iDEAL, credit card)",
+    "checkBankBlocking": "Check if your bank is not blocking online transactions",
+    "contactIfPersists": "Contact us if the problem persists",
+    "contactViaWhatsApp": "Contact via WhatsApp",
+    "hideHelp": "Hide help",
+    "needHelp": "Need help?",
+    "tryAgain": "Try again",
+    "readyToGoLive": "Ready to go live!",
+    "startSubscription": "Start your subscription and we'll put your website online",
+    "designApproved": "Design approved",
+    "package": "Package",
+    "perMonthInclVat": "per month incl. VAT",
+    "continueToPayment": "Continue to payment",
+    "pleaseWait": "Please wait...",
+    "startSubscriptionAndGoLive": "Start subscription & go live",
+    "securePayment": "Secure payment",
+    "cancelMonthly": "Cancel monthly",
+    "payWith": "Pay with:",
+    "connectionError": "Could not connect to the payment server.",
+    "paymentCreationError": "Something went wrong while creating the payment."
   }
 }

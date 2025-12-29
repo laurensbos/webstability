@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { useTranslation } from 'react-i18next'
 import { motion, AnimatePresence } from 'framer-motion'
 import {
   Send,
@@ -31,26 +32,16 @@ interface FeedbackModuleProps {
   onSubmit: (feedback: Omit<FeedbackItem, 'id' | 'date' | 'status'>) => Promise<void>
 }
 
-const PAGES = [
-  { value: 'homepage', label: 'Homepage' },
-  { value: 'over-ons', label: 'Over ons' },
-  { value: 'diensten', label: 'Diensten' },
-  { value: 'contact', label: 'Contact' },
-  { value: 'algemeen', label: 'Algemeen / Hele website' },
-]
+// Page value keys for translation lookup
+const PAGE_KEYS = ['homepage', 'aboutUs', 'services', 'contact', 'general'] as const
 
-const CATEGORIES = [
-  { value: 'tekst', label: 'Tekst', icon: Type, color: 'blue' },
-  { value: 'design', label: 'Design', icon: Palette, color: 'purple' },
-  { value: 'functionaliteit', label: 'Functionaliteit', icon: Settings, color: 'amber' },
-  { value: 'afbeelding', label: 'Afbeelding', icon: Image, color: 'green' },
-  { value: 'anders', label: 'Anders', icon: MessageSquare, color: 'gray' },
-]
-
-const STATUS_CONFIG = {
-  pending: { label: 'In wachtrij', color: 'bg-gray-100 text-gray-700', icon: Clock },
-  in_progress: { label: 'In behandeling', color: 'bg-blue-100 text-blue-700', icon: Loader2 },
-  completed: { label: 'Opgelost', color: 'bg-green-100 text-green-700', icon: CheckCircle2 },
+// Category config (icons and colors only - labels from translations)
+const CATEGORY_CONFIG = {
+  tekst: { icon: Type, color: 'blue', key: 'text' },
+  design: { icon: Palette, color: 'purple', key: 'design' },
+  functionaliteit: { icon: Settings, color: 'amber', key: 'functionality' },
+  afbeelding: { icon: Image, color: 'green', key: 'image' },
+  anders: { icon: MessageSquare, color: 'gray', key: 'other' },
 }
 
 export default function FeedbackModule({ 
@@ -59,6 +50,7 @@ export default function FeedbackModule({
   existingFeedback = [],
   onSubmit 
 }: FeedbackModuleProps) {
+  const { t } = useTranslation()
   // projectId is used by parent component for API calls
   void _projectId
   const [page, setPage] = useState('')
@@ -90,7 +82,7 @@ export default function FeedbackModule({
       // Reset na 3 seconden
       setTimeout(() => setSubmitted(false), 3000)
     } catch (err) {
-      setError('Er ging iets mis. Probeer het opnieuw.')
+      setError(t('feedbackModule.errorGeneric'))
     } finally {
       setLoading(false)
     }
@@ -115,9 +107,9 @@ export default function FeedbackModule({
           <div className="w-16 h-16 bg-white dark:bg-gray-800 rounded-xl shadow-lg flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition">
             <Palette className="w-8 h-8 text-purple-600 dark:text-purple-400" />
           </div>
-          <h3 className="font-bold text-gray-900 dark:text-white text-lg mb-1">Preview bekijken</h3>
+          <h3 className="font-bold text-gray-900 dark:text-white text-lg mb-1">{t('feedbackModule.viewPreview')}</h3>
           <p className="text-purple-600 dark:text-purple-400 text-sm">{previewUrl}</p>
-          <p className="text-gray-500 dark:text-gray-400 text-xs mt-2">Opent in een nieuw venster</p>
+          <p className="text-gray-500 dark:text-gray-400 text-xs mt-2">{t('feedbackModule.opensInNewWindow')}</p>
         </motion.a>
       )}
 
@@ -131,10 +123,10 @@ export default function FeedbackModule({
         <div className="p-6 border-b border-gray-100 dark:border-gray-700">
           <h3 className="font-bold text-gray-900 dark:text-white text-lg flex items-center gap-2">
             <MessageSquare className="w-5 h-5 text-primary-600 dark:text-primary-400" />
-            Feedback geven
+            {t('feedbackModule.giveFeedback')}
           </h3>
           <p className="text-gray-500 dark:text-gray-400 text-sm mt-1">
-            Beschrijf wat je wilt laten aanpassen
+            {t('feedbackModule.describeChange')}
           </p>
         </div>
 
@@ -150,9 +142,9 @@ export default function FeedbackModule({
               <div className="w-16 h-16 bg-green-100 dark:bg-green-900/30 rounded-full flex items-center justify-center mx-auto mb-4">
                 <CheckCircle2 className="w-8 h-8 text-green-600 dark:text-green-400" />
               </div>
-              <h4 className="font-semibold text-gray-900 dark:text-white text-lg">Feedback ontvangen!</h4>
+              <h4 className="font-semibold text-gray-900 dark:text-white text-lg">{t('feedbackModule.feedbackReceived')}</h4>
               <p className="text-gray-500 dark:text-gray-400 text-sm mt-1">
-                We gaan ermee aan de slag en houden je op de hoogte.
+                {t('feedbackModule.weWillWorkOnIt')}
               </p>
             </motion.div>
           ) : (
@@ -167,7 +159,7 @@ export default function FeedbackModule({
               {/* Page Selection */}
               <div>
                 <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                  Welke pagina betreft het?
+                  {t('feedbackModule.whichPage')}
                 </label>
                 <select
                   value={page}
@@ -175,9 +167,9 @@ export default function FeedbackModule({
                   className="w-full px-4 py-3 border border-gray-200 dark:border-gray-600 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-primary-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
                   required
                 >
-                  <option value="">Selecteer een pagina...</option>
-                  {PAGES.map(p => (
-                    <option key={p.value} value={p.value}>{p.label}</option>
+                  <option value="">{t('feedbackModule.selectPage')}</option>
+                  {PAGE_KEYS.map(key => (
+                    <option key={key} value={key}>{t(`feedbackModule.pages.${key}`)}</option>
                   ))}
                 </select>
               </div>
@@ -185,26 +177,26 @@ export default function FeedbackModule({
               {/* Category Selection */}
               <div>
                 <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                  Type aanpassing
+                  {t('feedbackModule.typeOfChange')}
                 </label>
                 <div className="grid grid-cols-2 sm:grid-cols-5 gap-2">
-                  {CATEGORIES.map(cat => {
-                    const Icon = cat.icon
-                    const isSelected = category === cat.value
+                  {Object.entries(CATEGORY_CONFIG).map(([value, config]) => {
+                    const Icon = config.icon
+                    const isSelected = category === value
                     return (
                       <button
-                        key={cat.value}
+                        key={value}
                         type="button"
-                        onClick={() => setCategory(cat.value as FeedbackItem['category'])}
+                        onClick={() => setCategory(value as FeedbackItem['category'])}
                         className={`flex flex-col items-center gap-1 p-3 rounded-xl border-2 transition ${
                           isSelected
-                            ? `border-${cat.color}-500 bg-${cat.color}-50 dark:bg-${cat.color}-900/30`
+                            ? `border-${config.color}-500 bg-${config.color}-50 dark:bg-${config.color}-900/30`
                             : 'border-gray-200 dark:border-gray-600 hover:border-gray-300 dark:hover:border-gray-500'
                         }`}
                       >
-                        <Icon className={`w-5 h-5 ${isSelected ? `text-${cat.color}-600 dark:text-${cat.color}-400` : 'text-gray-400'}`} />
-                        <span className={`text-xs font-medium ${isSelected ? `text-${cat.color}-700 dark:text-${cat.color}-300` : 'text-gray-600 dark:text-gray-400'}`}>
-                          {cat.label}
+                        <Icon className={`w-5 h-5 ${isSelected ? `text-${config.color}-600 dark:text-${config.color}-400` : 'text-gray-400'}`} />
+                        <span className={`text-xs font-medium ${isSelected ? `text-${config.color}-700 dark:text-${config.color}-300` : 'text-gray-600 dark:text-gray-400'}`}>
+                          {t(`feedbackModule.categories.${config.key}`)}
                         </span>
                       </button>
                     )
@@ -215,18 +207,18 @@ export default function FeedbackModule({
               {/* Description */}
               <div>
                 <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                  Beschrijving
+                  {t('feedbackModule.description')}
                 </label>
                 <textarea
                   value={description}
                   onChange={(e) => setDescription(e.target.value)}
-                  placeholder="Beschrijf zo specifiek mogelijk wat je wilt laten aanpassen..."
+                  placeholder={t('feedbackModule.descriptionPlaceholder')}
                   rows={4}
                   className="w-full px-4 py-3 border border-gray-200 dark:border-gray-600 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-primary-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-white resize-none"
                   required
                 />
                 <p className="text-xs text-gray-400 mt-1">
-                  Tip: Hoe specifieker, hoe sneller we het kunnen aanpassen!
+                  {t('feedbackModule.tip')}
                 </p>
               </div>
 
@@ -245,12 +237,12 @@ export default function FeedbackModule({
                 {loading ? (
                   <>
                     <Loader2 className="w-5 h-5 animate-spin" />
-                    Versturen...
+                    {t('feedbackModule.sending')}
                   </>
                 ) : (
                   <>
                     <Send className="w-5 h-5" />
-                    Feedback versturen
+                    {t('feedbackModule.sendFeedback')}
                   </>
                 )}
               </button>
@@ -272,21 +264,21 @@ export default function FeedbackModule({
             className="w-full p-4 flex items-center justify-between hover:bg-gray-50 dark:hover:bg-gray-700 transition"
           >
             <div className="flex items-center gap-4">
-              <h3 className="font-semibold text-gray-900 dark:text-white">Eerdere feedback</h3>
+              <h3 className="font-semibold text-gray-900 dark:text-white">{t('feedbackModule.previousFeedback')}</h3>
               <div className="flex gap-2">
                 {pendingCount > 0 && (
                   <span className="px-2 py-1 bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-400 text-xs rounded-full">
-                    {pendingCount} wachtend
+                    {pendingCount} {t('feedbackModule.waiting')}
                   </span>
                 )}
                 {inProgressCount > 0 && (
                   <span className="px-2 py-1 bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 text-xs rounded-full">
-                    {inProgressCount} bezig
+                    {inProgressCount} {t('feedbackModule.inProgress')}
                   </span>
                 )}
                 {completedCount > 0 && (
                   <span className="px-2 py-1 bg-green-100 dark:bg-green-900/30 text-green-600 dark:text-green-400 text-xs rounded-full">
-                    {completedCount} opgelost
+                    {completedCount} {t('feedbackModule.resolved')}
                   </span>
                 )}
               </div>
@@ -304,8 +296,14 @@ export default function FeedbackModule({
               >
                 <div className="p-4 pt-0 space-y-3">
                   {existingFeedback.slice().reverse().map(item => {
-                    const StatusIcon = STATUS_CONFIG[item.status].icon
-                    const categoryConfig = CATEGORIES.find(c => c.value === item.category)
+                    const statusKey = item.status === 'in_progress' ? 'inProgress' : item.status
+                    const statusConfig = {
+                      pending: { color: 'bg-gray-100 text-gray-700', icon: Clock },
+                      in_progress: { color: 'bg-blue-100 text-blue-700', icon: Loader2 },
+                      completed: { color: 'bg-green-100 text-green-700', icon: CheckCircle2 },
+                    }
+                    const StatusIcon = statusConfig[item.status].icon
+                    const categoryConfig = CATEGORY_CONFIG[item.category as keyof typeof CATEGORY_CONFIG]
                     const CategoryIcon = categoryConfig?.icon || MessageSquare
 
                     return (
@@ -324,7 +322,7 @@ export default function FeedbackModule({
                             <div className="flex items-center gap-2 mb-2">
                               <CategoryIcon className="w-4 h-4 text-gray-500" />
                               <span className="text-sm font-medium text-gray-700">
-                                {PAGES.find(p => p.value === item.page)?.label || item.page}
+                                {t(`feedbackModule.pages.${PAGE_KEYS.find(k => k === item.page) || 'general'}`)}
                               </span>
                               <span className="text-gray-300">•</span>
                               <span className="text-xs text-gray-500">
@@ -337,14 +335,14 @@ export default function FeedbackModule({
                             <p className="text-gray-900 text-sm">{item.description}</p>
                             {item.response && (
                               <div className="mt-3 pt-3 border-t border-gray-200">
-                                <p className="text-xs font-medium text-gray-500 mb-1">Reactie developer:</p>
+                                <p className="text-xs font-medium text-gray-500 mb-1">{t('feedbackModule.developerResponse')}</p>
                                 <p className="text-sm text-gray-700">{item.response}</p>
                               </div>
                             )}
                           </div>
-                          <span className={`flex items-center gap-1 px-2 py-1 rounded-full text-xs font-medium whitespace-nowrap ${STATUS_CONFIG[item.status].color}`}>
+                          <span className={`flex items-center gap-1 px-2 py-1 rounded-full text-xs font-medium whitespace-nowrap ${statusConfig[item.status].color}`}>
                             <StatusIcon className={`w-3 h-3 ${item.status === 'in_progress' ? 'animate-spin' : ''}`} />
-                            {STATUS_CONFIG[item.status].label}
+                            {t(`feedbackModule.status.${statusKey}`)}
                           </span>
                         </div>
                       </div>
