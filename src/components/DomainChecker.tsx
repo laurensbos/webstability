@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { useTranslation } from 'react-i18next'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Search, Check, X, Loader2, Globe, ArrowRight } from 'lucide-react'
 
@@ -108,6 +109,7 @@ async function checkSingleDomain(domain: string): Promise<boolean> {
 }
 
 export default function DomainChecker() {
+  const { t } = useTranslation()
   const [query, setQuery] = useState('')
   const [results, setResults] = useState<DomainResult[]>([])
   const [isLoading, setIsLoading] = useState(false)
@@ -125,12 +127,12 @@ export default function DomainChecker() {
     try {
       const domainResults = await checkDomainAvailability(query.trim())
       if (domainResults.length === 0) {
-        setError('Voer een geldige domeinnaam in (minimaal 2 karakters)')
+        setError(t('domainChecker.invalidDomain'))
       }
       setResults(domainResults)
     } catch (err) {
       console.error('Error checking domain:', err)
-      setError('Er ging iets mis bij het controleren. Probeer het opnieuw.')
+      setError(t('domainChecker.errorChecking'))
       setResults([])
     } finally {
       setIsLoading(false)
@@ -156,7 +158,7 @@ export default function DomainChecker() {
             viewport={{ once: true }}
             className="inline-block text-primary-600 dark:text-primary-400 font-semibold text-sm tracking-wider uppercase mb-3 lg:mb-4"
           >
-            Domeinchecker
+            {t('domainChecker.badge')}
           </motion.span>
           <motion.h2
             initial={{ opacity: 0, y: 20 }}
@@ -165,9 +167,9 @@ export default function DomainChecker() {
             transition={{ delay: 0.1 }}
             className="text-2xl sm:text-3xl lg:text-5xl font-bold text-gray-900 dark:text-white mb-3 lg:mb-4"
           >
-            Vind jouw perfecte{' '}
+            {t('domainChecker.title')}{' '}
             <span className="text-primary-600 dark:text-primary-400">
-              domeinnaam
+              {t('domainChecker.titleHighlight')}
             </span>
           </motion.h2>
           <motion.p
@@ -177,8 +179,7 @@ export default function DomainChecker() {
             transition={{ delay: 0.2 }}
             className="text-gray-600 dark:text-gray-400 text-base lg:text-lg max-w-2xl mx-auto"
           >
-            Check direct of jouw gewenste domeinnaam nog beschikbaar is. 
-            Domeinregistratie is bij alle pakketten inbegrepen.
+            {t('domainChecker.subtitle')}
           </motion.p>
         </div>
 
@@ -198,7 +199,7 @@ export default function DomainChecker() {
                 type="text"
                 value={query}
                 onChange={(e) => setQuery(e.target.value)}
-                placeholder="Zoek je domeinnaam (bijv. mijnbedrijf)"
+                placeholder={t('domainChecker.placeholder')}
                 className="w-full pl-10 lg:pl-12 pr-4 py-3 lg:py-4 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl text-gray-900 dark:text-white placeholder-gray-400 focus:outline-none focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 transition-all text-base lg:text-lg shadow-sm"
               />
             </div>
@@ -212,7 +213,7 @@ export default function DomainChecker() {
               ) : (
                 <Search className="w-4 h-4 lg:w-5 lg:h-5" />
               )}
-              <span>Controleer</span>
+              <span>{t('domainChecker.check')}</span>
             </button>
           </div>
         </motion.form>
@@ -228,7 +229,7 @@ export default function DomainChecker() {
               className="text-center py-8 lg:py-12"
             >
               <Loader2 className="w-6 h-6 lg:w-8 lg:h-8 text-primary-500 animate-spin mx-auto mb-3 lg:mb-4" />
-              <p className="text-gray-600 dark:text-gray-400 text-sm lg:text-base">Domeinen controleren...</p>
+              <p className="text-gray-600 dark:text-gray-400 text-sm lg:text-base">{t('domainChecker.checking')}</p>
             </motion.div>
           )}
 
@@ -245,7 +246,7 @@ export default function DomainChecker() {
                 <div className="space-y-2 lg:space-y-3">
                   <h3 className="text-gray-900 dark:text-white font-semibold flex items-center gap-2 text-sm lg:text-base">
                     <Check className="w-4 h-4 lg:w-5 lg:h-5 text-green-500" />
-                    Beschikbaar ({availableDomains.length})
+                    {t('domainChecker.available')} ({availableDomains.length})
                   </h3>
                   {availableDomains.map((result, index) => (
                     <motion.div
@@ -268,7 +269,7 @@ export default function DomainChecker() {
                         href={`/start?domain=${encodeURIComponent(result.domain)}`}
                         className="group px-4 lg:px-5 py-2 lg:py-2.5 bg-green-500 hover:bg-green-600 text-white font-semibold rounded-lg transition-all duration-200 flex items-center justify-center gap-2 shadow-lg shadow-green-500/25 hover:shadow-green-500/40 text-sm"
                       >
-                        Start project
+                        {t('domainChecker.startProject')}
                         <ArrowRight className="w-3.5 h-3.5 lg:w-4 lg:h-4 group-hover:translate-x-1 transition-transform" />
                       </a>
                     </motion.div>
@@ -281,7 +282,7 @@ export default function DomainChecker() {
                 <div className="space-y-3 mt-6">
                   <h3 className="text-gray-500 dark:text-gray-400 font-semibold flex items-center gap-2">
                     <X className="w-5 h-5 text-red-400" />
-                    Niet beschikbaar ({unavailableDomains.length})
+                    {t('domainChecker.notAvailable')} ({unavailableDomains.length})
                   </h3>
                   {unavailableDomains.map((result, index) => (
                     <motion.div
@@ -296,7 +297,7 @@ export default function DomainChecker() {
                       </div>
                       <div>
                         <div className="text-gray-600 dark:text-gray-300 font-medium">{result.domain}</div>
-                        <div className="text-gray-400 text-sm">Reeds geregistreerd</div>
+                        <div className="text-gray-400 text-sm">{t('domainChecker.alreadyRegistered')}</div>
                       </div>
                     </motion.div>
                   ))}
@@ -312,17 +313,16 @@ export default function DomainChecker() {
                   className="mt-8 p-6 bg-primary-50 dark:bg-primary-900/20 border border-primary-100 dark:border-primary-800 rounded-2xl text-center"
                 >
                   <p className="text-gray-900 dark:text-white font-medium mb-2">
-                    🎉 Goed nieuws! Er zijn domeinen beschikbaar.
+                    {t('domainChecker.goodNews')}
                   </p>
                   <p className="text-gray-600 dark:text-gray-400 text-sm mb-4">
-                    Domeinregistratie is inbegrepen bij al onze pakketten. 
-                    Klik hierboven op je favoriete domein om direct te starten.
+                    {t('domainChecker.domainIncluded')}
                   </p>
                   <a
                     href={`/start?domain=${encodeURIComponent(availableDomains[0].domain)}`}
                     className="inline-flex items-center gap-2 text-primary-600 dark:text-primary-400 hover:text-primary-700 dark:hover:text-primary-300 font-medium transition-colors"
                   >
-                    Start met {availableDomains[0].domain}
+                    {t('domainChecker.startWith')} {availableDomains[0].domain}
                     <ArrowRight className="w-4 h-4" />
                   </a>
                 </motion.div>
@@ -341,7 +341,7 @@ export default function DomainChecker() {
               <div className="w-16 h-16 bg-gray-100 dark:bg-gray-800 rounded-full flex items-center justify-center mx-auto mb-4">
                 <Search className="w-8 h-8 text-gray-400" />
               </div>
-              <p className="text-gray-600 dark:text-gray-400">{error || 'Geen resultaten gevonden. Probeer een andere zoekterm.'}</p>
+              <p className="text-gray-600 dark:text-gray-400">{error || t('domainChecker.noResults')}</p>
             </motion.div>
           )}
         </AnimatePresence>
@@ -354,7 +354,7 @@ export default function DomainChecker() {
             transition={{ delay: 0.4 }}
             className="text-center"
           >
-            <p className="text-gray-500 dark:text-gray-400 text-sm mb-4">Populaire extensies:</p>
+            <p className="text-gray-500 dark:text-gray-400 text-sm mb-4">{t('domainChecker.popularExtensions')}</p>
             <div className="flex flex-wrap justify-center gap-2">
               {['.nl', '.com', '.eu', '.online', '.shop'].map((ext) => (
                 <span

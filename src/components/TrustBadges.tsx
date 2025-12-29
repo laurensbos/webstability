@@ -1,19 +1,6 @@
 import { motion } from 'framer-motion'
 import { CheckCircle, Lock, Zap, Shield, Clock, Award, Headphones } from 'lucide-react'
-
-const badges = [
-	{ icon: CheckCircle, label: '99.9% uptime', color: 'text-green-500', bg: 'bg-green-50 dark:bg-green-900/30' },
-	{ icon: Lock, label: 'SSL & backups', color: 'text-blue-500', bg: 'bg-blue-50 dark:bg-blue-900/30' },
-	{ icon: Zap, label: 'Supersnel (CDN)', color: 'text-amber-500', bg: 'bg-amber-50 dark:bg-amber-900/30' },
-	{ icon: Headphones, label: '24u support', color: 'text-purple-500', bg: 'bg-purple-50 dark:bg-purple-900/30' },
-]
-
-const extendedBadges = [
-	{ icon: Shield, label: 'GDPR compliant', description: 'Privacy gewaarborgd' },
-	{ icon: Clock, label: '7 dagen live', description: 'Snelle oplevering' },
-	{ icon: Award, label: '120+ klanten', description: 'Tevreden ondernemers' },
-	{ icon: Headphones, label: 'Persoonlijk contact', description: 'Geen robots' },
-]
+import { useTranslation } from 'react-i18next'
 
 interface TrustBadgesProps {
 	compact?: boolean
@@ -22,6 +9,22 @@ interface TrustBadgesProps {
 }
 
 export default function TrustBadges({ compact = false, variant = 'light', showExtended = false }: TrustBadgesProps) {
+	const { t } = useTranslation()
+	
+	const badges = [
+		{ icon: CheckCircle, label: t('trustBadges.uptime'), color: 'text-green-500', bg: 'bg-green-50 dark:bg-green-900/30' },
+		{ icon: Lock, label: t('trustBadges.sslBackups'), color: 'text-blue-500', bg: 'bg-blue-50 dark:bg-blue-900/30' },
+		{ icon: Zap, label: t('trustBadges.superfast'), color: 'text-amber-500', bg: 'bg-amber-50 dark:bg-amber-900/30' },
+		{ icon: Headphones, label: t('trustBadges.support'), color: 'text-purple-500', bg: 'bg-purple-50 dark:bg-purple-900/30' },
+	]
+
+	const extendedBadges = [
+		{ icon: Shield, label: t('trustBadges.extended.gdpr'), description: t('trustBadges.extended.gdprDesc') },
+		{ icon: Clock, label: t('trustBadges.extended.sevenDays'), description: t('trustBadges.extended.sevenDaysDesc') },
+		{ icon: Award, label: t('trustBadges.extended.clients'), description: t('trustBadges.extended.clientsDesc') },
+		{ icon: Headphones, label: t('trustBadges.extended.personal'), description: t('trustBadges.extended.personalDesc') },
+	]
+	
 	const bgColor = variant === 'dark' ? 'bg-gray-900' : variant === 'transparent' ? '' : 'bg-gray-50 dark:bg-gray-800/50'
 	const textColor = variant === 'dark' ? 'text-gray-300' : 'text-gray-600 dark:text-gray-300'
 	const iconBg = variant === 'dark' ? 'bg-gray-800' : 'bg-white dark:bg-gray-800'

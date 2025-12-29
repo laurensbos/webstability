@@ -2496,5 +2496,41 @@
     "cancel": "Cancel",
     "submit": "Submit",
     "thankYou": "Thank you! We'll be in touch."
+  },
+  "trustBadges": {
+    "uptime": "99.9% uptime",
+    "sslBackups": "SSL & backups",
+    "superfast": "Superfast (CDN)",
+    "support": "24h support",
+    "extended": {
+      "gdpr": "GDPR compliant",
+      "gdprDesc": "Privacy guaranteed",
+      "sevenDays": "7 days live",
+      "sevenDaysDesc": "Fast delivery",
+      "clients": "120+ clients",
+      "clientsDesc": "Satisfied entrepreneurs",
+      "personal": "Personal contact",
+      "personalDesc": "No robots"
+    }
+  },
+  "domainChecker": {
+    "badge": "Domain Checker",
+    "title": "Find your perfect",
+    "titleHighlight": "domain name",
+    "subtitle": "Check instantly if your desired domain name is still available. Domain registration is included with all packages.",
+    "placeholder": "Search your domain name (e.g. mycompany)",
+    "check": "Check",
+    "checking": "Checking domains...",
+    "available": "Available",
+    "notAvailable": "Not available",
+    "alreadyRegistered": "Already registered",
+    "startProject": "Start project",
+    "goodNews": "🎉 Good news! Domains are available.",
+    "domainIncluded": "Domain registration is included with all our packages. Click on your favorite domain above to get started.",
+    "startWith": "Start with",
+    "noResults": "No results found. Try a different search term.",
+    "invalidDomain": "Enter a valid domain name (minimum 2 characters)",
+    "errorChecking": "Something went wrong while checking. Please try again.",
+    "popularExtensions": "Popular extensions:"
   }
 }

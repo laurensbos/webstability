@@ -2496,5 +2496,41 @@
     "cancel": "Annuleer",
     "submit": "Verstuur",
     "thankYou": "Bedankt! We nemen contact op."
+  },
+  "trustBadges": {
+    "uptime": "99.9% uptime",
+    "sslBackups": "SSL & backups",
+    "superfast": "Supersnel (CDN)",
+    "support": "24u support",
+    "extended": {
+      "gdpr": "GDPR compliant",
+      "gdprDesc": "Privacy gewaarborgd",
+      "sevenDays": "7 dagen live",
+      "sevenDaysDesc": "Snelle oplevering",
+      "clients": "120+ klanten",
+      "clientsDesc": "Tevreden ondernemers",
+      "personal": "Persoonlijk contact",
+      "personalDesc": "Geen robots"
+    }
+  },
+  "domainChecker": {
+    "badge": "Domeinchecker",
+    "title": "Vind jouw perfecte",
+    "titleHighlight": "domeinnaam",
+    "subtitle": "Check direct of jouw gewenste domeinnaam nog beschikbaar is. Domeinregistratie is bij alle pakketten inbegrepen.",
+    "placeholder": "Zoek je domeinnaam (bijv. mijnbedrijf)",
+    "check": "Controleer",
+    "checking": "Domeinen controleren...",
+    "available": "Beschikbaar",
+    "notAvailable": "Niet beschikbaar",
+    "alreadyRegistered": "Reeds geregistreerd",
+    "startProject": "Start project",
+    "goodNews": "🎉 Goed nieuws! Er zijn domeinen beschikbaar.",
+    "domainIncluded": "Domeinregistratie is inbegrepen bij al onze pakketten. Klik hierboven op je favoriete domein om direct te starten.",
+    "startWith": "Start met",
+    "noResults": "Geen resultaten gevonden. Probeer een andere zoekterm.",
+    "invalidDomain": "Voer een geldige domeinnaam in (minimaal 2 karakters)",
+    "errorChecking": "Er ging iets mis bij het controleren. Probeer het opnieuw.",
+    "popularExtensions": "Populaire extensies:"
   }
 }
