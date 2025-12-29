@@ -1378,6 +1378,7 @@
       "clickToVisit": "Klik om je website te bezoeken",
       "daysLive": "Dagen live",
       "changesUsed": "Wijzigingen deze maand",
+      "changesUsedShort": "wijzigingen gebruikt",
       "requestChange": "Wijziging aanvragen",
       "pending": "wachtend",
       "viewAnalytics": "Analytics",
@@ -1386,7 +1387,14 @@
       "inProgress": "In behandeling",
       "leaveReview": "Laat een review achter",
       "reviewHelp": "Help andere ondernemers ons te vinden",
-      "needHelp": "Hulp of support nodig?"
+      "needHelp": "Hulp of support nodig?",
+      "newUpdates": "nieuw",
+      "developerResponse": "Reactie van developer",
+      "changeSubmitted": "Wijzigingsverzoek verstuurd!",
+      "changeSubmittedDesc": "We nemen snel contact met je op",
+      "changeDescriptionPlaceholder": "Beschrijf wat je wilt wijzigen...",
+      "expectedBy": "Verwacht op",
+      "urgent": "Urgent"
     }
   },
   "language": {
@@ -5057,9 +5065,12 @@
       "markDone": "Afronden",
       "viewProject": "Bekijk project",
       "completeRequest": "Verzoek afronden",
+      "startRequest": "Start met verzoek",
       "responseHint": "Voeg optioneel een korte reactie toe voor de klant.",
       "responsePlaceholder": "Bijv: Aanpassing is doorgevoerd op de website.",
-      "complete": "Afronden"
+      "etaHint": "Stel een verwachte afronddatum in (optioneel).",
+      "complete": "Afronden",
+      "start": "Start"
     }
   }
 }

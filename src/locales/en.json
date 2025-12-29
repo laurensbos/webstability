@@ -2508,6 +2508,7 @@
       "clickToVisit": "Click to visit your website",
       "daysLive": "Days live",
       "changesUsed": "Changes this month",
+      "changesUsedShort": "changes used",
       "requestChange": "Request change",
       "pending": "pending",
       "viewAnalytics": "Analytics",
@@ -2516,7 +2517,14 @@
       "inProgress": "In progress",
       "leaveReview": "Leave a review",
       "reviewHelp": "Help other entrepreneurs find us",
-      "needHelp": "Need help or support?"
+      "needHelp": "Need help or support?",
+      "newUpdates": "new",
+      "developerResponse": "Developer response",
+      "changeSubmitted": "Change request submitted!",
+      "changeSubmittedDesc": "We'll get back to you soon",
+      "changeDescriptionPlaceholder": "Describe what you would like to change...",
+      "expectedBy": "Expected by",
+      "urgent": "Urgent"
     }
   },
   "language": {
@@ -5059,9 +5067,12 @@
       "markDone": "Complete",
       "viewProject": "View project",
       "completeRequest": "Complete request",
+      "startRequest": "Start working",
       "responseHint": "Optionally add a short response for the client.",
       "responsePlaceholder": "E.g.: Change has been applied to the website.",
-      "complete": "Complete"
+      "etaHint": "Set an estimated completion date (optional).",
+      "complete": "Complete",
+      "start": "Start"
     }
   }
 }

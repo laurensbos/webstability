@@ -8,6 +8,7 @@
 
 import type { VercelRequest, VercelResponse } from '@vercel/node'
 import { Redis } from '@upstash/redis'
+import { sendChangeRequestUpdateEmail } from '../lib/smtp'
 
 // Initialize Redis
 const REDIS_URL = process.env.UPSTASH_REDIS_REST_URL
@@ -31,6 +32,7 @@ interface ChangeRequest {
   response?: string
   completedAt?: string
   createdAt?: string
+  estimatedCompletionDate?: string
   attachments?: string[]
 }
 
@@ -141,7 +143,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     }
 
     if (req.method === 'PATCH') {
-      const { projectId, changeRequestId, status, response } = req.body
+      const { projectId, changeRequestId, status, response, estimatedCompletionDate } = req.body
 
       if (!projectId || !changeRequestId) {
         return res.status(400).json({ 
@@ -177,6 +179,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       changeRequests[crIndex] = {
         ...changeRequests[crIndex],
         status,
+        ...(estimatedCompletionDate && { estimatedCompletionDate }),
         ...(response && { response }),
         ...(status === 'completed' && { completedAt: new Date().toISOString() })
       }
@@ -191,6 +194,28 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       await kv.set(projectKey, updatedProject)
 
       console.log(`Change request ${changeRequestId} updated to ${status} for project ${projectId}`)
+
+      // Send email notification to customer
+      const customerEmail = project.customer?.email || (project.contactEmail as string | undefined)
+      const customerName = project.customer?.name || project.contactName || 'Klant'
+      
+      if (customerEmail && typeof customerEmail === 'string') {
+        try {
+          await sendChangeRequestUpdateEmail({
+            email: customerEmail,
+            name: customerName,
+            projectId: projectId,
+            businessName: project.businessName || project.customer?.companyName || 'Je project',
+            changeDescription: changeRequests[crIndex].description || '',
+            status: status as 'pending' | 'in_progress' | 'completed',
+            response: response
+          })
+          console.log(`Email notification sent to ${customerEmail} for change request status: ${status}`)
+        } catch (emailError) {
+          console.error('Failed to send change request update email:', emailError)
+          // Don't fail the request if email fails
+        }
+      }
 
       return res.status(200).json({
         success: true,

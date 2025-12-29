@@ -122,6 +122,7 @@ export default function ChangeRequestsManager({
     newStatus: string
   } | null>(null)
   const [responseText, setResponseText] = useState('')
+  const [etaDate, setEtaDate] = useState('')
   const [updating, setUpdating] = useState(false)
   
   // Stats
@@ -167,7 +168,8 @@ export default function ChangeRequestsManager({
     projectId: string, 
     changeRequestId: string, 
     newStatus: 'pending' | 'in_progress' | 'completed',
-    response?: string
+    response?: string,
+    estimatedCompletionDate?: string
   ) => {
     setUpdating(true)
     try {
@@ -182,7 +184,8 @@ export default function ChangeRequestsManager({
           projectId,
           changeRequestId,
           status: newStatus,
-          response
+          response,
+          estimatedCompletionDate
         })
       })
 
@@ -191,6 +194,7 @@ export default function ChangeRequestsManager({
         await fetchChangeRequests(true)
         setResponseModal(null)
         setResponseText('')
+        setEtaDate('')
       }
     } catch (err) {
       console.error('Update status error:', err)
@@ -206,8 +210,8 @@ export default function ChangeRequestsManager({
     currentStatus: string,
     newStatus: 'pending' | 'in_progress' | 'completed'
   ) => {
-    if (newStatus === 'completed') {
-      // Show response modal for completed status
+    if (newStatus === 'completed' || newStatus === 'in_progress') {
+      // Show modal for completed (response) or in_progress (ETA)
       setResponseModal({
         projectId,
         changeRequestId,
@@ -553,7 +557,7 @@ export default function ChangeRequestsManager({
         </AnimatePresence>
       </div>
 
-      {/* Response Modal */}
+      {/* Response/ETA Modal */}
       <AnimatePresence>
         {responseModal && (
           <motion.div
@@ -574,7 +578,10 @@ export default function ChangeRequestsManager({
             >
               <div className="flex items-center justify-between mb-4">
                 <h3 className={`text-lg font-semibold ${darkMode ? 'text-white' : 'text-gray-900'}`}>
-                  {t('developerDashboard.changeRequests.completeRequest', 'Verzoek afronden')}
+                  {responseModal.newStatus === 'completed' 
+                    ? t('developerDashboard.changeRequests.completeRequest', 'Verzoek afronden')
+                    : t('developerDashboard.changeRequests.startRequest', 'Start met verzoek')
+                  }
                 </h3>
                 <button
                   onClick={() => setResponseModal(null)}
@@ -586,25 +593,51 @@ export default function ChangeRequestsManager({
                 </button>
               </div>
               
-              <p className={`text-sm mb-4 ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>
-                {t('developerDashboard.changeRequests.responseHint', 'Voeg optioneel een korte reactie toe voor de klant.')}
-              </p>
-              
-              <textarea
-                value={responseText}
-                onChange={e => setResponseText(e.target.value)}
-                placeholder={t('developerDashboard.changeRequests.responsePlaceholder', 'Bijv: Aanpassing is doorgevoerd op de website.')}
-                rows={3}
-                className={`w-full px-4 py-3 rounded-xl border focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition ${
-                  darkMode 
-                    ? 'bg-gray-900 border-gray-700 text-white placeholder-gray-500' 
-                    : 'bg-gray-50 border-gray-200 text-gray-900 placeholder-gray-400'
-                }`}
-              />
+              {responseModal.newStatus === 'completed' ? (
+                <>
+                  <p className={`text-sm mb-4 ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>
+                    {t('developerDashboard.changeRequests.responseHint', 'Voeg optioneel een korte reactie toe voor de klant.')}
+                  </p>
+                  
+                  <textarea
+                    value={responseText}
+                    onChange={e => setResponseText(e.target.value)}
+                    placeholder={t('developerDashboard.changeRequests.responsePlaceholder', 'Bijv: Aanpassing is doorgevoerd op de website.')}
+                    rows={3}
+                    className={`w-full px-4 py-3 rounded-xl border focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition ${
+                      darkMode 
+                        ? 'bg-gray-900 border-gray-700 text-white placeholder-gray-500' 
+                        : 'bg-gray-50 border-gray-200 text-gray-900 placeholder-gray-400'
+                    }`}
+                  />
+                </>
+              ) : (
+                <>
+                  <p className={`text-sm mb-4 ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>
+                    {t('developerDashboard.changeRequests.etaHint', 'Stel een verwachte afronddatum in (optioneel).')}
+                  </p>
+                  
+                  <input
+                    type="date"
+                    value={etaDate}
+                    onChange={e => setEtaDate(e.target.value)}
+                    min={new Date().toISOString().split('T')[0]}
+                    className={`w-full px-4 py-3 rounded-xl border focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition ${
+                      darkMode 
+                        ? 'bg-gray-900 border-gray-700 text-white' 
+                        : 'bg-gray-50 border-gray-200 text-gray-900'
+                    }`}
+                  />
+                </>
+              )}
               
               <div className="flex gap-3 mt-4">
                 <button
-                  onClick={() => setResponseModal(null)}
+                  onClick={() => {
+                    setResponseModal(null)
+                    setEtaDate('')
+                    setResponseText('')
+                  }}
                   className={`flex-1 py-2.5 rounded-xl font-medium transition ${
                     darkMode 
                       ? 'bg-gray-700 text-gray-300 hover:bg-gray-600' 
@@ -614,21 +647,42 @@ export default function ChangeRequestsManager({
                   {t('common.cancel', 'Annuleren')}
                 </button>
                 <button
-                  onClick={() => updateStatus(
-                    responseModal.projectId, 
-                    responseModal.changeRequestId, 
-                    'completed', 
-                    responseText.trim() || undefined
-                  )}
+                  onClick={() => {
+                    if (responseModal.newStatus === 'completed') {
+                      updateStatus(
+                        responseModal.projectId, 
+                        responseModal.changeRequestId, 
+                        'completed', 
+                        responseText.trim() || undefined
+                      )
+                    } else {
+                      updateStatus(
+                        responseModal.projectId, 
+                        responseModal.changeRequestId, 
+                        'in_progress',
+                        undefined,
+                        etaDate || undefined
+                      )
+                    }
+                  }}
                   disabled={updating}
-                  className="flex-1 py-2.5 bg-green-500 hover:bg-green-600 text-white font-medium rounded-xl transition flex items-center justify-center gap-2 disabled:opacity-50"
+                  className={`flex-1 py-2.5 font-medium rounded-xl transition flex items-center justify-center gap-2 disabled:opacity-50 ${
+                    responseModal.newStatus === 'completed'
+                      ? 'bg-green-500 hover:bg-green-600 text-white'
+                      : 'bg-blue-500 hover:bg-blue-600 text-white'
+                  }`}
                 >
                   {updating ? (
                     <RefreshCw className="w-4 h-4 animate-spin" />
-                  ) : (
+                  ) : responseModal.newStatus === 'completed' ? (
                     <>
                       <CheckCircle2 className="w-4 h-4" />
                       {t('developerDashboard.changeRequests.complete', 'Afronden')}
+                    </>
+                  ) : (
+                    <>
+                      <PlayCircle className="w-4 h-4" />
+                      {t('developerDashboard.changeRequests.start', 'Start')}
                     </>
                   )}
                 </button>

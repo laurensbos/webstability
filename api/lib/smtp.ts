@@ -1661,6 +1661,81 @@ Open je dashboard: ${dashboardUrl}`
   })
 }
 
+// Change Request Status Update Email
+export const sendChangeRequestUpdateEmail = async (data: {
+  email: string
+  name: string
+  projectId: string
+  businessName: string
+  changeDescription: string
+  status: 'pending' | 'in_progress' | 'completed'
+  response?: string
+}) => {
+  const statusConfig = {
+    pending: {
+      emoji: '🔔',
+      title: 'Wijzigingsverzoek Ontvangen',
+      color: BRAND_COLORS.textMuted,
+      message: 'We hebben je wijzigingsverzoek ontvangen en zullen er zo snel mogelijk naar kijken.'
+    },
+    in_progress: {
+      emoji: '⚡',
+      title: 'Wijziging In Behandeling',
+      color: '#f59e0b', // amber
+      message: 'We zijn begonnen met het doorvoeren van je wijziging. Je ontvangt een bericht zodra deze klaar is.'
+    },
+    completed: {
+      emoji: '✅',
+      title: 'Wijziging Afgerond!',
+      color: BRAND_COLORS.primary,
+      message: 'Je wijziging is doorgevoerd! Bekijk je website om het resultaat te zien.'
+    }
+  }
+
+  const config = statusConfig[data.status]
+  const dashboardUrl = `https://webstability.nl/status/${data.projectId}`
+
+  const content = `
+    <div style="text-align: center; margin-bottom: 32px;">
+      <div style="width: 80px; height: 80px; background: linear-gradient(135deg, ${config.color} 0%, ${config.color}dd 100%); border-radius: 50%; margin: 0 auto 20px; display: flex; align-items: center; justify-content: center;">
+        <span style="font-size: 36px;">${config.emoji}</span>
+      </div>
+      <h1 style="margin: 0 0 8px; font-size: 28px; font-weight: 700; color: ${BRAND_COLORS.textWhite};">${config.title}</h1>
+      <p style="margin: 0; color: ${BRAND_COLORS.textMuted}; font-size: 16px;">${data.businessName}</p>
+    </div>
+    
+    <p style="color: ${BRAND_COLORS.textLight}; font-size: 16px; line-height: 1.6; margin-bottom: 24px;">
+      Hoi ${data.name},<br><br>
+      ${config.message}
+    </p>
+    
+    <div style="background: ${BRAND_COLORS.bgDark}; border-left: 4px solid ${config.color}; border-radius: 0 12px 12px 0; padding: 20px 24px; margin-bottom: 24px;">
+      <p style="margin: 0 0 8px; color: ${BRAND_COLORS.textMuted}; font-size: 12px; text-transform: uppercase; letter-spacing: 0.5px;">Je wijzigingsverzoek</p>
+      <p style="margin: 0; color: ${BRAND_COLORS.textLight}; font-size: 16px; line-height: 1.6;">${data.changeDescription}</p>
+    </div>
+    
+    ${data.response ? `
+    <div style="background: ${BRAND_COLORS.bgDark}; border-left: 4px solid ${BRAND_COLORS.info}; border-radius: 0 12px 12px 0; padding: 20px 24px; margin-bottom: 24px;">
+      <p style="margin: 0 0 8px; color: ${BRAND_COLORS.info}; font-size: 12px; text-transform: uppercase; letter-spacing: 0.5px;">💬 Reactie van developer</p>
+      <p style="margin: 0; color: ${BRAND_COLORS.textLight}; font-size: 16px; line-height: 1.6;">${data.response}</p>
+    </div>
+    ` : ''}
+    
+    <div style="text-align: center;">
+      <a href="${dashboardUrl}" style="display: inline-block; background: linear-gradient(135deg, ${BRAND_COLORS.primary} 0%, ${BRAND_COLORS.primaryDark} 100%); color: white; padding: 16px 40px; border-radius: 10px; text-decoration: none; font-weight: 600; font-size: 16px;">
+        Bekijk Project Dashboard →
+      </a>
+    </div>
+  `
+
+  return sendEmail({
+    to: data.email,
+    subject: `${config.emoji} ${config.title} - ${data.businessName}`,
+    html: baseTemplate(content, config.color),
+    replyTo: SMTP_USER || 'info@webstability.nl',
+  })
+}
+
 export default {
   sendEmail,
   isSmtpConfigured,
@@ -1677,5 +1752,6 @@ export default {
   sendDeadlineReminderEmail,
   sendOnboardingCompleteEmail,
   sendDeveloperNotificationEmail,
+  sendChangeRequestUpdateEmail,
 }
 

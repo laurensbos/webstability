@@ -685,8 +685,7 @@ export default function ProjectStatusNew() {
     setReadyForDesignLoading(false)
   }
 
-  // Handle change request submission (for live projects) - Used for future inline change request form
-  // @ts-expect-error Reserved for future use
+  // Handle change request submission (for live projects)
   const handleChangeRequest = async (request: {
     title?: string
     description: string
@@ -1588,7 +1587,15 @@ export default function ProjectStatusNew() {
             analyticsUrl={project.analyticsUrl}
             changeRequests={project.changeRequests}
             changesThisMonth={project.changesThisMonth}
+            changesLimit={PACKAGES[project.package as keyof typeof PACKAGES]?.features?.includes('Onbeperkt wijzigingen') ? undefined : 5}
             darkMode={darkMode}
+            onSubmitChangeRequest={async (description) => {
+              await handleChangeRequest({ 
+                description,
+                priority: 'normal',
+                category: 'other'
+              })
+            }}
             onRequestChange={() => setShowChat(true)}
             onContactSupport={() => setShowChat(true)}
             onViewAnalytics={() => project.analyticsUrl && window.open(project.analyticsUrl, '_blank')}
