@@ -3365,7 +3365,89 @@
     "approveDesign": "Design goedkeuren ✨",
     "sendFeedback": "Feedback versturen",
     "afterProcessing": "Na het verwerken van de feedback kun je het design opnieuw bekijken",
-    "urgent": "Urgent"
+    "urgent": "Urgent",
+    "sections": {
+      "hero": { "name": "Header & Hero", "description": "Logo, navigatie en eerste indruk" },
+      "about": { "name": "Over Ons / Intro", "description": "Introductie en wie jullie zijn" },
+      "services": { "name": "Diensten / Aanbod", "description": "Wat jullie aanbieden" },
+      "features": { "name": "Kenmerken / USPs", "description": "Waarom kiezen voor jullie" },
+      "testimonials": { "name": "Reviews / Referenties", "description": "Wat anderen zeggen" },
+      "contact": { "name": "Contact", "description": "Contactgegevens en formulier" },
+      "footer": { "name": "Footer", "description": "Onderaan de pagina" }
+    },
+    "presets": {
+      "colors": { "label": "Kleuren", "description": "Andere kleuren gewenst" },
+      "text": { "label": "Tekst", "description": "Tekst aanpassen/herschrijven" },
+      "image": { "label": "Afbeelding", "description": "Andere foto/afbeelding" },
+      "layout": { "label": "Indeling", "description": "Layout/positie aanpassen" },
+      "font": { "label": "Lettertype", "description": "Ander font gewenst" },
+      "size": { "label": "Formaat", "description": "Groter/kleiner maken" },
+      "remove": { "label": "Verwijderen", "description": "Deze sectie weghalen" },
+      "spacing": { "label": "Ruimte", "description": "Meer/minder witruimte" }
+    },
+    "intro": {
+      "title": "Welkom!",
+      "subtitle": "Je design preview is klaar om te bekijken",
+      "explanation": "We gaan stap voor stap door elke sectie. Per onderdeel geef je aan of je tevreden bent of iets wilt aanpassen.",
+      "startButton": "Begin met feedback",
+      "approveButton": "Alles ziet er perfect uit! ✨",
+      "tipMobile": "💻 Tip: Voor de beste ervaring, open dit op een desktop of laptop"
+    },
+    "sectionRating": {
+      "good": "Goed zo!",
+      "change": "Aanpassen",
+      "question": "Wat vind je van dit onderdeel?",
+      "extraLabel": "Extra toelichting",
+      "optional": "(optioneel)",
+      "addCommentAnyway": "Toch een opmerking toevoegen?",
+      "yesGood": "Ja, goed",
+      "noChange": "Nee, aanpassen",
+      "whatToChange": "Wat moet er aangepast worden?"
+    },
+    "comments": {
+      "placeholder": "Beschrijf hier wat je precies wilt veranderen...",
+      "generalPlaceholder": "Nog iets wat je kwijt wilt?",
+      "selectPresets": "Wat wil je aanpassen?",
+      "addComment": "Voeg een opmerking toe"
+    },
+    "navigation": {
+      "previous": "Vorige",
+      "next": "Volgende",
+      "viewSummary": "Bekijk overzicht",
+      "backToSections": "Terug"
+    },
+    "questions": {
+      "title": "Nog een paar vragen",
+      "subtitle": "Help ons je voorkeuren beter te begrijpen"
+    },
+    "summary": {
+      "title": "Overzicht",
+      "subtitle": "Bekijk je feedback voordat je verstuurt",
+      "allGood": "Alles ziet er goed uit!",
+      "allGoodDesc": "Je bent tevreden over alle onderdelen. Klik hieronder om het design goed te keuren.",
+      "changesNeeded": "{{count}} sectie(s) moeten aangepast worden",
+      "approved": "goedgekeurd",
+      "changes": "aanpassingen",
+      "generalComments": "Algemene opmerkingen"
+    },
+    "success": {
+      "approved": "Design goedgekeurd!",
+      "approvedDesc": "Geweldig! Je ontvangt zo een e-mail met de volgende stappen.",
+      "feedback": "Bedankt voor je feedback!",
+      "feedbackDesc": "We gaan direct aan de slag met je aanpassingen. Je ziet de status terug op je projectpagina.",
+      "whatNow": "Wat gebeurt er nu?",
+      "whatNowDesc": "We verwerken je feedback en sturen een nieuwe preview zodra deze klaar is."
+    },
+    "actions": {
+      "approve": "Design goedkeuren!",
+      "approveMobile": "Goedkeuren!",
+      "submitFeedback": "Feedback versturen",
+      "submitting": "Versturen...",
+      "sendAnyway": "Toch feedback versturen"
+    },
+    "zoom": {
+      "reset": "Reset"
+    }
   },
   "feedbackModule": {
     "viewPreview": "Preview bekijken",

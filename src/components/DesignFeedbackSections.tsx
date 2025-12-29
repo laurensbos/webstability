@@ -1,14 +1,15 @@
 /**
- * DesignFeedbackSections - Sectie-gebaseerde feedback voor leken
+ * DesignFeedbackSections - Section-based feedback for non-technical users
  * 
- * Simpele flow:
- * 1. Bekijk het design in iframe
- * 2. Geef per sectie feedback (👍/👎)
- * 3. Voeg optioneel opmerkingen toe
- * 4. Verstuur of keur goed
+ * Simple flow:
+ * 1. View the design in iframe
+ * 2. Give feedback per section (👍/👎)
+ * 3. Optionally add comments
+ * 4. Submit or approve
  */
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useMemo } from 'react'
+import { useTranslation } from 'react-i18next'
 import { motion, AnimatePresence } from 'framer-motion'
 import confetti from 'canvas-confetti'
 import {
@@ -34,34 +35,50 @@ import {
 import { AVAILABLE_FEEDBACK_QUESTIONS } from '../types/project'
 import type { FeedbackQuestionAnswer } from '../types/project'
 
-// Standaard secties voor een website
-const DEFAULT_SECTIONS = [
-  { id: 'hero', name: 'Header & Hero', description: 'Logo, navigatie en de eerste indruk', icon: '🏠' },
-  { id: 'about', name: 'Over Ons / Intro', description: 'Introductie en wie jullie zijn', icon: '👋' },
-  { id: 'services', name: 'Diensten / Aanbod', description: 'Wat jullie aanbieden', icon: '⭐' },
-  { id: 'features', name: 'Kenmerken / USPs', description: 'Waarom kiezen voor jullie', icon: '✨' },
-  { id: 'testimonials', name: 'Reviews / Referenties', description: 'Wat anderen zeggen', icon: '💬' },
-  { id: 'contact', name: 'Contact', description: 'Contactgegevens en formulier', icon: '📞' },
-  { id: 'footer', name: 'Footer', description: 'Onderaan de pagina', icon: '📋' },
-]
+// Section IDs and icons (translations loaded dynamically)
+const SECTION_IDS = ['hero', 'about', 'services', 'features', 'testimonials', 'contact', 'footer'] as const
+const SECTION_ICONS: Record<string, string> = {
+  hero: '🏠',
+  about: '👋',
+  services: '⭐',
+  features: '✨',
+  testimonials: '💬',
+  contact: '📞',
+  footer: '📋',
+}
 
-// Feedback presets - klikbare opties voor gedetailleerde feedback
-const FEEDBACK_PRESETS = [
-  { id: 'colors', label: 'Kleuren', emoji: '🎨', description: 'Andere kleuren gewenst' },
-  { id: 'text', label: 'Tekst', emoji: '📝', description: 'Tekst aanpassen/herschrijven' },
-  { id: 'image', label: 'Afbeelding', emoji: '📷', description: 'Andere foto/afbeelding' },
-  { id: 'layout', label: 'Indeling', emoji: '📐', description: 'Layout/positie aanpassen' },
-  { id: 'font', label: 'Lettertype', emoji: '🔤', description: 'Ander font gewenst' },
-  { id: 'size', label: 'Formaat', emoji: '📏', description: 'Groter/kleiner maken' },
-  { id: 'remove', label: 'Verwijderen', emoji: '🗑️', description: 'Deze sectie weghalen' },
-  { id: 'spacing', label: 'Ruimte', emoji: '↔️', description: 'Meer/minder witruimte' },
-]
+// Preset IDs and emojis (translations loaded dynamically)
+const PRESET_IDS = ['colors', 'text', 'image', 'layout', 'font', 'size', 'remove', 'spacing'] as const
+const PRESET_EMOJIS: Record<string, string> = {
+  colors: '🎨',
+  text: '�',
+  image: '📷',
+  layout: '�',
+  font: '🔤',
+  size: '📏',
+  remove: '🗑️',
+  spacing: '↔️',
+}
 
 interface SectionFeedback {
   sectionId: string
   rating: 'good' | 'change' | null
   comment: string
-  presets: string[] // NEW: selected preset IDs
+  presets: string[]
+}
+
+interface Section {
+  id: string
+  name: string
+  description: string
+  icon: string
+}
+
+interface FeedbackPreset {
+  id: string
+  label: string
+  emoji: string
+  description: string
 }
 
 interface DesignFeedbackSectionsProps {
@@ -69,12 +86,11 @@ interface DesignFeedbackSectionsProps {
   onClose: () => void
   projectId: string
   designPreviewUrl: string
-  sections?: typeof DEFAULT_SECTIONS
+  sections?: Section[]
   onFeedbackSubmit?: () => Promise<void>
   onApprove?: () => Promise<void>
-  // Custom questions from developer
-  feedbackQuestionIds?: string[]  // IDs from AVAILABLE_FEEDBACK_QUESTIONS
-  customQuestions?: string[]      // Free-form custom questions
+  feedbackQuestionIds?: string[]
+  customQuestions?: string[]
 }
 
 export default function DesignFeedbackSections({
@@ -82,12 +98,33 @@ export default function DesignFeedbackSections({
   onClose,
   projectId,
   designPreviewUrl,
-  sections = DEFAULT_SECTIONS,
+  sections: sectionsProp,
   onFeedbackSubmit,
   onApprove,
   feedbackQuestionIds = [],
   customQuestions = []
 }: DesignFeedbackSectionsProps) {
+  const { t } = useTranslation()
+  
+  // Build translated sections
+  const DEFAULT_SECTIONS: Section[] = useMemo(() => SECTION_IDS.map(id => ({
+    id,
+    name: t(`designFeedback.sections.${id}.name`),
+    description: t(`designFeedback.sections.${id}.description`),
+    icon: SECTION_ICONS[id]
+  })), [t])
+
+  // Build translated presets
+  const FEEDBACK_PRESETS: FeedbackPreset[] = useMemo(() => PRESET_IDS.map(id => ({
+    id,
+    label: t(`designFeedback.presets.${id}.label`),
+    emoji: PRESET_EMOJIS[id],
+    description: t(`designFeedback.presets.${id}.description`)
+  })), [t])
+
+  // Use prop sections or defaults
+  const sections = sectionsProp || DEFAULT_SECTIONS
+
   // Debug: log incoming questions
   console.log('[DesignFeedbackSections] RECEIVED PROPS:')
   console.log('  - feedbackQuestionIds:', JSON.stringify(feedbackQuestionIds))
@@ -123,7 +160,7 @@ export default function DesignFeedbackSections({
   
   // Feedback state
   const [sectionFeedback, setSectionFeedback] = useState<SectionFeedback[]>(
-    sections.map(s => ({ sectionId: s.id, rating: null, comment: '', presets: [] }))
+    sections.map((s: Section) => ({ sectionId: s.id, rating: null, comment: '', presets: [] }))
   )
   const [currentSectionIndex, setCurrentSectionIndex] = useState(0)
   const [generalComment, setGeneralComment] = useState('')
@@ -169,7 +206,7 @@ export default function DesignFeedbackSections({
   useEffect(() => {
     if (isOpen) {
       setDevice(isMobile ? 'mobile' : 'desktop')
-      setSectionFeedback(sections.map(s => ({ sectionId: s.id, rating: null, comment: '', presets: [] })))
+      setSectionFeedback(sections.map((s: Section) => ({ sectionId: s.id, rating: null, comment: '', presets: [] })))
       setCurrentSectionIndex(0)
       setGeneralComment('')
       setStep('intro')
@@ -353,12 +390,12 @@ export default function DesignFeedbackSections({
             {showSuccess === 'approved' ? '🎉' : '✨'}
           </div>
           <h2 className="text-3xl font-bold text-white mb-3">
-            {showSuccess === 'approved' ? 'Design goedgekeurd!' : 'Bedankt voor je feedback!'}
+            {showSuccess === 'approved' ? t('designFeedback.success.approved') : t('designFeedback.success.feedback')}
           </h2>
           <p className="text-lg text-zinc-300 mb-6">
             {showSuccess === 'approved'
-              ? 'Geweldig! Je ontvangt zo een e-mail met de volgende stappen.'
-              : 'We gaan direct aan de slag met je aanpassingen. Je ziet de status terug op je projectpagina.'}
+              ? t('designFeedback.success.approvedDesc')
+              : t('designFeedback.success.feedbackDesc')}
           </p>
           
           {showSuccess === 'feedback' && (
@@ -368,8 +405,8 @@ export default function DesignFeedbackSections({
                   <Clock className="w-5 h-5 text-purple-400" />
                 </div>
                 <div>
-                  <p className="text-sm font-medium text-white">Wat gebeurt er nu?</p>
-                  <p className="text-xs text-zinc-400">We verwerken je feedback en sturen een nieuwe preview zodra deze klaar is.</p>
+                  <p className="text-sm font-medium text-white">{t('designFeedback.success.whatNow')}</p>
+                  <p className="text-xs text-zinc-400">{t('designFeedback.success.whatNowDesc')}</p>
                 </div>
               </div>
             </div>
@@ -391,7 +428,7 @@ export default function DesignFeedbackSections({
         {isMobile && step === 'intro' && (
           <div className="flex-shrink-0 bg-purple-600/20 border-b border-purple-500/30 px-3 sm:px-4 py-2 text-center safe-area-inset-top">
             <p className="text-[11px] sm:text-xs text-purple-300">
-              💻 Tip: Voor de beste ervaring, open dit op een desktop of laptop
+              {t('designFeedback.intro.tipMobile')}
             </p>
           </div>
         )}
@@ -401,6 +438,7 @@ export default function DesignFeedbackSections({
           <div className="flex items-center gap-2 sm:gap-4">
             <button
               onClick={onClose}
+              aria-label={t('common.close')}
               className="p-1.5 sm:p-2 text-zinc-400 hover:text-white hover:bg-zinc-800 rounded-lg transition-colors"
             >
               <X className="w-4 h-4 sm:w-5 sm:h-5" />
@@ -450,7 +488,7 @@ export default function DesignFeedbackSections({
                   onClick={handleZoomOut}
                   disabled={zoomLevel <= 50}
                   className="p-1.5 rounded-md text-zinc-400 hover:text-white hover:bg-zinc-700 transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
-                  title="Uitzoomen"
+                  aria-label="Zoom out"
                 >
                   <ZoomOut className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
                 </button>
@@ -461,7 +499,7 @@ export default function DesignFeedbackSections({
                   onClick={handleZoomIn}
                   disabled={zoomLevel >= 200}
                   className="p-1.5 rounded-md text-zinc-400 hover:text-white hover:bg-zinc-700 transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
-                  title="Inzoomen"
+                  aria-label="Zoom in"
                 >
                   <ZoomIn className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
                 </button>
@@ -469,7 +507,7 @@ export default function DesignFeedbackSections({
                   <button
                     onClick={handleResetZoom}
                     className="p-1.5 rounded-md text-zinc-400 hover:text-white hover:bg-zinc-700 transition-colors"
-                    title="Reset zoom"
+                    aria-label={t('designFeedback.zoom.reset')}
                   >
                     <RotateCcw className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
                   </button>
@@ -663,25 +701,25 @@ export default function DesignFeedbackSections({
                   className="max-w-md w-full"
                 >
                   <div className="text-5xl sm:text-7xl md:text-8xl mb-4 sm:mb-6">👋</div>
-                  <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-white mb-3 sm:mb-4">Welkom!</h2>
+                  <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-white mb-3 sm:mb-4">{t('designFeedback.intro.title')}</h2>
                   <p className="text-sm sm:text-base md:text-lg text-zinc-400 mb-5 sm:mb-8">
-                    We gaan samen door je website design. Per onderdeel kun je aangeven of het goed is of aangepast moet worden.
+                    {t('designFeedback.intro.explanation')}
                   </p>
                   
                   <div className="bg-zinc-800/50 rounded-xl sm:rounded-2xl p-4 sm:p-6 mb-5 sm:mb-8 text-left">
-                    <p className="text-sm sm:text-base text-zinc-300 mb-3 sm:mb-4 font-medium">Zo werkt het:</p>
+                    <p className="text-sm sm:text-base text-zinc-300 mb-3 sm:mb-4 font-medium">{t('common.howItWorks', 'How it works:')}</p>
                     <div className="space-y-3 sm:space-y-4 text-sm sm:text-base text-zinc-400">
                       <div className="flex items-center gap-2 sm:gap-3">
                         <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-green-500/20 flex items-center justify-center flex-shrink-0">
                           <ThumbsUp className="w-4 h-4 sm:w-5 sm:h-5 text-green-400" />
                         </div>
-                        <span><strong className="text-green-400">Goed</strong> = dit is prima zo</span>
+                        <span><strong className="text-green-400">{t('designFeedback.sectionRating.good')}</strong></span>
                       </div>
                       <div className="flex items-center gap-2 sm:gap-3">
                         <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-amber-500/20 flex items-center justify-center flex-shrink-0">
                           <ThumbsDown className="w-4 h-4 sm:w-5 sm:h-5 text-amber-400" />
                         </div>
-                        <span><strong className="text-amber-400">Aanpassen</strong> = hier wil ik iets veranderen</span>
+                        <span><strong className="text-amber-400">{t('designFeedback.sectionRating.change')}</strong></span>
                       </div>
                     </div>
                   </div>
@@ -690,7 +728,7 @@ export default function DesignFeedbackSections({
                     onClick={() => setStep('sections')}
                     className="w-full sm:w-auto px-8 sm:px-10 py-3 sm:py-4 bg-purple-600 text-white text-base sm:text-lg rounded-xl font-medium hover:bg-purple-700 transition-colors flex items-center justify-center gap-2"
                   >
-                    Start feedback
+                    {t('designFeedback.intro.startButton')}
                     <ChevronRight className="w-5 h-5 sm:w-6 sm:h-6" />
                   </button>
                 </motion.div>
@@ -722,7 +760,7 @@ export default function DesignFeedbackSections({
 
                 {/* Feedback content - scrollable */}
                 <div className="flex-1 overflow-y-auto p-3 sm:p-4">
-                  <p className="text-xs sm:text-sm text-zinc-400 mb-3 sm:mb-4">Wat vind je van dit onderdeel?</p>
+                  <p className="text-xs sm:text-sm text-zinc-400 mb-3 sm:mb-4">{t('designFeedback.sectionRating.question')}</p>
                   
                   <div className="grid grid-cols-2 gap-2 sm:gap-3 mb-3 sm:mb-4">
                     <button
@@ -734,7 +772,7 @@ export default function DesignFeedbackSections({
                       }`}
                     >
                       <ThumbsUp className="w-5 h-5 sm:w-6 sm:h-6 md:w-8 md:h-8" />
-                      <span className="font-medium text-xs sm:text-sm md:text-base">Goed zo!</span>
+                      <span className="font-medium text-xs sm:text-sm md:text-base">{t('designFeedback.sectionRating.good')}</span>
                     </button>
                     
                     <button
@@ -749,7 +787,7 @@ export default function DesignFeedbackSections({
                       }`}
                     >
                       <ThumbsDown className="w-5 h-5 sm:w-6 sm:h-6 md:w-8 md:h-8" />
-                      <span className="font-medium text-xs sm:text-sm md:text-base">Aanpassen</span>
+                      <span className="font-medium text-xs sm:text-sm md:text-base">{t('designFeedback.sectionRating.change')}</span>
                     </button>
                   </div>
 
@@ -763,7 +801,7 @@ export default function DesignFeedbackSections({
                         className="mb-4"
                       >
                         {/* Preset buttons */}
-                        <p className="text-xs sm:text-sm text-zinc-400 mb-2">Wat wil je aanpassen?</p>
+                        <p className="text-xs sm:text-sm text-zinc-400 mb-2">{t('designFeedback.comments.selectPresets')}</p>
                         <div className="flex flex-wrap gap-1 sm:gap-1.5 md:gap-2 mb-2 sm:mb-3">
                           {FEEDBACK_PRESETS.map(preset => {
                             const isSelected = currentFeedback?.presets.includes(preset.id)
@@ -786,12 +824,12 @@ export default function DesignFeedbackSections({
 
                         {/* Custom comment */}
                         <label className="text-xs sm:text-sm text-zinc-400 mb-1 sm:mb-1.5 block">
-                          Extra toelichting <span className="text-zinc-600">(optioneel)</span>
+                          {t('designFeedback.sectionRating.extraLabel')} <span className="text-zinc-600">{t('designFeedback.sectionRating.optional')}</span>
                         </label>
                         <textarea
                           value={currentFeedback?.comment || ''}
                           onChange={(e) => updateFeedback(currentSection.id, { comment: e.target.value })}
-                          placeholder="Beschrijf hier wat je precies wilt veranderen..."
+                          placeholder={t('designFeedback.comments.placeholder')}
                           className="w-full h-14 sm:h-16 md:h-20 px-2.5 sm:px-3 py-2 bg-zinc-800 border border-zinc-700 rounded-lg text-white text-xs sm:text-sm placeholder-zinc-500 resize-none focus:outline-none focus:ring-2 focus:ring-purple-500"
                         />
                       </motion.div>
@@ -805,7 +843,7 @@ export default function DesignFeedbackSections({
                       className="text-sm text-zinc-500 hover:text-zinc-300 flex items-center gap-1 mb-4"
                     >
                       <MessageSquare className="w-4 h-4" />
-                      Toch een opmerking toevoegen?
+                      {t('designFeedback.sectionRating.addCommentAnyway')}
                     </button>
                   )}
                 </div>
@@ -819,7 +857,7 @@ export default function DesignFeedbackSections({
                         className="px-2.5 sm:px-3 md:px-4 py-2.5 sm:py-3 bg-zinc-800 text-white rounded-xl font-medium hover:bg-zinc-700 transition-colors flex items-center gap-1 sm:gap-2"
                       >
                         <ChevronLeft className="w-4 h-4 sm:w-5 sm:h-5" />
-                        <span className="hidden sm:inline">Vorige</span>
+                        <span className="hidden sm:inline">{t('designFeedback.navigation.previous')}</span>
                       </button>
                     )}
                     
@@ -830,13 +868,13 @@ export default function DesignFeedbackSections({
                     >
                       {currentSectionIndex < sections.length - 1 ? (
                         <>
-                          <span>Volgende</span>
+                          <span>{t('designFeedback.navigation.next')}</span>
                           <ChevronRight className="w-4 h-4 sm:w-5 sm:h-5" />
                         </>
                       ) : (
                         <>
-                          <span className="hidden sm:inline">Bekijk overzicht</span>
-                          <span className="sm:hidden">Overzicht</span>
+                          <span className="hidden sm:inline">{t('designFeedback.navigation.viewSummary')}</span>
+                          <span className="sm:hidden">{t('designFeedback.summary.title')}</span>
                           <Check className="w-4 h-4 sm:w-5 sm:h-5" />
                         </>
                       )}
@@ -852,10 +890,10 @@ export default function DesignFeedbackSections({
                 <div className="p-3 sm:p-4 border-b border-zinc-800">
                   <h3 className="text-base sm:text-lg font-semibold text-white flex items-center gap-2">
                     <HelpCircle className="w-4 h-4 sm:w-5 sm:h-5 text-purple-400" />
-                    Nog een paar vragen
+                    {t('designFeedback.questions.title')}
                   </h3>
                   <p className="text-xs sm:text-sm text-zinc-400 mt-1">
-                    Je developer heeft nog een paar specifieke vragen voor je.
+                    {t('designFeedback.questions.subtitle')}
                   </p>
                 </div>
 
@@ -893,7 +931,7 @@ export default function DesignFeedbackSections({
                             }`}
                           >
                             <ThumbsUp className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
-                            <span className="text-xs sm:text-sm font-medium">Ja, goed</span>
+                            <span className="text-xs sm:text-sm font-medium">{t('designFeedback.sectionRating.yesGood')}</span>
                           </button>
                           <button
                             onClick={() => updateQuestionAnswer(question.id, 'no')}
@@ -904,7 +942,7 @@ export default function DesignFeedbackSections({
                             }`}
                           >
                             <ThumbsDown className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
-                            <span className="text-xs sm:text-sm font-medium">Nee, aanpassen</span>
+                            <span className="text-xs sm:text-sm font-medium">{t('designFeedback.sectionRating.noChange')}</span>
                           </button>
                         </div>
                         
@@ -917,7 +955,7 @@ export default function DesignFeedbackSections({
                             <textarea
                               value={answer.comment || ''}
                               onChange={(e) => updateQuestionAnswer(question.id, 'no', e.target.value)}
-                              placeholder="Wat moet er aangepast worden?"
+                              placeholder={t('designFeedback.sectionRating.whatToChange')}
                               className="w-full h-14 sm:h-16 px-2.5 sm:px-3 py-2 bg-zinc-900 border border-zinc-700 rounded-lg text-white placeholder-zinc-500 resize-none focus:outline-none focus:ring-2 focus:ring-purple-500 text-xs sm:text-sm"
                             />
                           </motion.div>
@@ -937,14 +975,14 @@ export default function DesignFeedbackSections({
                     className="px-3 sm:px-4 py-2 sm:py-2.5 text-zinc-400 hover:text-white transition-colors flex items-center gap-1"
                   >
                     <ChevronLeft className="w-4 h-4" />
-                    <span className="text-sm">Terug</span>
+                    <span className="text-sm">{t('designFeedback.navigation.backToSections')}</span>
                   </button>
                   <button
                     onClick={() => setStep('summary')}
                     className="flex-1 py-2 sm:py-2.5 bg-purple-600 text-white rounded-xl font-medium hover:bg-purple-700 transition-colors flex items-center justify-center gap-2 text-sm sm:text-base"
                   >
-                    <span className="hidden sm:inline">Bekijk overzicht</span>
-                    <span className="sm:hidden">Overzicht</span>
+                    <span className="hidden sm:inline">{t('designFeedback.navigation.viewSummary')}</span>
+                    <span className="sm:hidden">{t('designFeedback.summary.title')}</span>
                     <ChevronRight className="w-4 h-4 sm:w-5 sm:h-5" />
                   </button>
                 </div>
@@ -957,19 +995,19 @@ export default function DesignFeedbackSections({
                 <div className="p-3 sm:p-4 md:p-6 border-b border-zinc-800">
                   <h3 className="text-base sm:text-lg md:text-xl font-semibold text-white flex items-center gap-2">
                     <Sparkles className="w-4 h-4 sm:w-5 sm:h-5 md:w-6 md:h-6 text-purple-400" />
-                    Overzicht
+                    {t('designFeedback.summary.title')}
                   </h3>
                   <p className="text-xs sm:text-sm md:text-base text-zinc-400 mt-1">
                     {allGood 
-                      ? 'Alles ziet er goed uit! Je kunt het design goedkeuren.'
-                      : `${changeCount} onderdeel${changeCount !== 1 ? 'en' : ''} moet${changeCount === 1 ? '' : 'en'} aangepast worden.`
+                      ? t('designFeedback.summary.allGoodDesc')
+                      : t('designFeedback.summary.changesNeeded', { count: changeCount })
                     }
                   </p>
                 </div>
 
                 {/* Summary list - improved layout */}
                 <div className="flex-1 overflow-y-auto p-3 sm:p-4 md:p-6 space-y-2 sm:space-y-3">
-                  {sections.map((section, index) => {
+                  {sections.map((section: Section, index: number) => {
                     const feedback = sectionFeedback.find(f => f.sectionId === section.id)
                     const hasDetails = (feedback?.presets && feedback.presets.length > 0) || feedback?.comment
                     const isExpanded = expandedComment === section.id
@@ -1012,10 +1050,10 @@ export default function DesignFeedbackSections({
                           >
                             <div className="flex items-center gap-1.5 sm:gap-2 text-xs sm:text-sm text-amber-400 hover:text-amber-300 transition-colors">
                               <ChevronRight className={`w-3.5 h-3.5 sm:w-4 sm:h-4 transition-transform ${isExpanded ? 'rotate-90' : ''}`} />
-                              <span>Toon details</span>
+                              <span>{t('common.showMore', 'Show details')}</span>
                               {hasDetails && !isExpanded && (
                                 <span className="text-[10px] sm:text-xs text-amber-500/70">
-                                  ({feedback.presets?.length || 0} tags{feedback.comment ? ', opmerking' : ''})
+                                  ({feedback.presets?.length || 0} {t('common.tags', 'tags')}{feedback.comment ? `, ${t('common.comment', 'comment')}` : ''})
                                 </span>
                               )}
                             </div>
@@ -1059,7 +1097,7 @@ export default function DesignFeedbackSections({
                                   }}
                                   className="text-xs sm:text-sm text-purple-400 hover:text-purple-300 font-medium"
                                 >
-                                  ✏️ Aanpassen
+                                  ✏️ {t('common.edit')}
                                 </button>
                               </div>
                             </motion.div>
@@ -1074,7 +1112,7 @@ export default function DesignFeedbackSections({
                     <div className="mt-3 sm:mt-4 pt-3 sm:pt-4 border-t border-zinc-700">
                       <p className="text-sm sm:text-base md:text-lg text-zinc-300 mb-2 sm:mb-3 flex items-center gap-2 font-medium">
                         <HelpCircle className="w-4 h-4 sm:w-5 sm:h-5 text-purple-400" />
-                        Extra vragen
+                        {t('designFeedback.questions.title')}
                       </p>
                       <div className="space-y-2 sm:space-y-3">
                         {questionAnswers.filter(qa => qa.answer !== null).map(qa => (
@@ -1106,7 +1144,7 @@ export default function DesignFeedbackSections({
                         onClick={() => setStep('questions')}
                         className="mt-2 sm:mt-3 text-xs sm:text-sm text-purple-400 hover:text-purple-300 font-medium"
                       >
-                        ✏️ Aanpassen
+                        ✏️ {t('common.edit')}
                       </button>
                     </div>
                   )}
@@ -1114,12 +1152,12 @@ export default function DesignFeedbackSections({
                   {/* General comment */}
                   <div className="mt-4 sm:mt-6">
                     <label className="text-xs sm:text-sm md:text-base text-zinc-400 mb-1.5 sm:mb-2 block">
-                      Algemene opmerkingen <span className="text-zinc-600">(optioneel)</span>
+                      {t('designFeedback.summary.generalComments')} <span className="text-zinc-600">({t('common.optional')})</span>
                     </label>
                     <textarea
                       value={generalComment}
                       onChange={(e) => setGeneralComment(e.target.value)}
-                      placeholder="Nog iets wat je kwijt wilt?"
+                      placeholder={t('designFeedback.comments.generalPlaceholder')}
                       className="w-full h-20 sm:h-24 md:h-28 px-3 sm:px-4 py-2 sm:py-3 bg-zinc-800 border border-zinc-700 rounded-xl text-white placeholder-zinc-500 resize-none focus:outline-none focus:ring-2 focus:ring-purple-500 text-xs sm:text-sm md:text-base"
                     />
                   </div>
@@ -1138,7 +1176,7 @@ export default function DesignFeedbackSections({
                       ) : (
                         <>
                           <Send className="w-4 h-4 sm:w-5 sm:h-5 md:w-6 md:h-6" />
-                          Feedback versturen
+                          {t('designFeedback.actions.submitFeedback')}
                         </>
                       )}
                     </button>
@@ -1153,8 +1191,8 @@ export default function DesignFeedbackSections({
                       ) : (
                         <>
                           <ThumbsUp className="w-4 h-4 sm:w-5 sm:h-5 md:w-6 md:h-6" />
-                          <span className="hidden sm:inline">Design goedkeuren!</span>
-                          <span className="sm:hidden">Goedkeuren!</span>
+                          <span className="hidden sm:inline">{t('designFeedback.actions.approve')}</span>
+                          <span className="sm:hidden">{t('designFeedback.actions.approveMobile')}</span>
                           <span>🎉</span>
                         </>
                       )}
@@ -1167,7 +1205,7 @@ export default function DesignFeedbackSections({
                       disabled={isSubmitting}
                       className="w-full py-2 sm:py-3 text-zinc-400 text-xs sm:text-sm md:text-base hover:text-white transition-colors"
                     >
-                      Toch feedback versturen
+                      {t('designFeedback.actions.sendAnyway')}
                     </button>
                   )}
                 </div>

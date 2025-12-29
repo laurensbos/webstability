@@ -3371,7 +3371,89 @@
     "approveDesign": "Approve design ✨",
     "sendFeedback": "Send feedback",
     "afterProcessing": "After processing the feedback, you can review the design again",
-    "urgent": "Urgent"
+    "urgent": "Urgent",
+    "sections": {
+      "hero": { "name": "Header & Hero", "description": "Logo, navigation and first impression" },
+      "about": { "name": "About Us / Intro", "description": "Introduction and who you are" },
+      "services": { "name": "Services / Offer", "description": "What you offer" },
+      "features": { "name": "Features / USPs", "description": "Why choose you" },
+      "testimonials": { "name": "Reviews / References", "description": "What others say" },
+      "contact": { "name": "Contact", "description": "Contact details and form" },
+      "footer": { "name": "Footer", "description": "Bottom of the page" }
+    },
+    "presets": {
+      "colors": { "label": "Colors", "description": "Different colors wanted" },
+      "text": { "label": "Text", "description": "Adjust/rewrite text" },
+      "image": { "label": "Image", "description": "Different photo/image" },
+      "layout": { "label": "Layout", "description": "Adjust layout/position" },
+      "font": { "label": "Font", "description": "Different font wanted" },
+      "size": { "label": "Size", "description": "Make bigger/smaller" },
+      "remove": { "label": "Remove", "description": "Remove this section" },
+      "spacing": { "label": "Spacing", "description": "More/less whitespace" }
+    },
+    "intro": {
+      "title": "Welcome!",
+      "subtitle": "Your design preview is ready to review",
+      "explanation": "We'll go through each section step by step. For each part you indicate whether you're satisfied or want something changed.",
+      "startButton": "Start feedback",
+      "approveButton": "Everything looks perfect! ✨",
+      "tipMobile": "💻 Tip: For the best experience, open this on a desktop or laptop"
+    },
+    "sectionRating": {
+      "good": "Looks good!",
+      "change": "Change",
+      "question": "What do you think of this section?",
+      "extraLabel": "Extra explanation",
+      "optional": "(optional)",
+      "addCommentAnyway": "Add a comment anyway?",
+      "yesGood": "Yes, good",
+      "noChange": "No, change",
+      "whatToChange": "What needs to be changed?"
+    },
+    "comments": {
+      "placeholder": "Describe here what exactly you want to change...",
+      "generalPlaceholder": "Anything else you want to share?",
+      "selectPresets": "What would you like to change?",
+      "addComment": "Add a comment"
+    },
+    "navigation": {
+      "previous": "Previous",
+      "next": "Next",
+      "viewSummary": "View summary",
+      "backToSections": "Back"
+    },
+    "questions": {
+      "title": "A few more questions",
+      "subtitle": "Help us understand your preferences better"
+    },
+    "summary": {
+      "title": "Summary",
+      "subtitle": "Review your feedback before sending",
+      "allGood": "Everything looks great!",
+      "allGoodDesc": "You're satisfied with all sections. Click below to approve the design.",
+      "changesNeeded": "{{count}} section(s) need changes",
+      "approved": "approved",
+      "changes": "changes",
+      "generalComments": "General comments"
+    },
+    "success": {
+      "approved": "Design approved!",
+      "approvedDesc": "Great! You'll receive an email with the next steps.",
+      "feedback": "Thanks for your feedback!",
+      "feedbackDesc": "We'll start working on your changes right away. You'll see the status on your project page.",
+      "whatNow": "What happens now?",
+      "whatNowDesc": "We're processing your feedback and will send a new preview when ready."
+    },
+    "actions": {
+      "approve": "Approve design!",
+      "approveMobile": "Approve!",
+      "submitFeedback": "Send feedback",
+      "submitting": "Sending...",
+      "sendAnyway": "Send feedback anyway"
+    },
+    "zoom": {
+      "reset": "Reset"
+    }
   },
   "feedbackModule": {
     "viewPreview": "View preview",
