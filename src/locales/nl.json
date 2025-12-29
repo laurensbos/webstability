@@ -1636,6 +1636,125 @@
       }
     }
   },
+  "inlineOnboarding": {
+    "saving": "Opslaan...",
+    "autoSaved": "Automatisch opgeslagen",
+    "nextStep": "Volgende stap",
+    "uploadFiles": "Upload bestanden",
+    "sections": {
+      "bedrijf": {
+        "title": "Vul je bedrijfsgegevens in"
+      },
+      "branding": {
+        "title": "Upload je logo (of laat ons er één maken)"
+      },
+      "doelen": {
+        "title": "Beschrijf kort wat je doet"
+      },
+      "content": {
+        "title": "Lever teksten aan voor je pagina's"
+      }
+    },
+    "tips": {
+      "title": "Tips",
+      "noLogo": "Heb je nog geen logo? Geen probleem, we kunnen er één voor je ontwerpen",
+      "choosePhotos": "Kies 2-3 foto's die je bedrijf het beste representeren"
+    }
+  },
+  "liveGoingWizard": {
+    "header": {
+      "title": "Klaar voor livegang!",
+      "subtitle": "Configureer je domein en email"
+    },
+    "steps": {
+      "domain": "Domein",
+      "email": "E-mail",
+      "summary": "Overzicht",
+      "done": "Klaar"
+    },
+    "nav": {
+      "confirm": "Bevestigen"
+    },
+    "domain": {
+      "hasQuestion": "Heb je al een domeinnaam?",
+      "description": "Een domeinnaam is je website adres, zoals www.{{domain}}.nl",
+      "yesHaveDomain": "Ja, ik heb een domein",
+      "yesHaveDomainDesc": "We helpen je om je bestaande domein te koppelen",
+      "noNoDomain": "Nee, nog niet",
+      "noNoDomainDesc": "We kunnen een nieuw domein voor je registreren",
+      "whatIsDomain": "Wat is je domeinnaam?",
+      "domainPlaceholder": "jouwbedrijf.nl",
+      "whereRegistered": "Waar is je domein geregistreerd?",
+      "selectProvider": "Selecteer provider...",
+      "preferredDomain": "Welke domeinnaam wil je? (optioneel)",
+      "preferredDomainDesc": "We checken of deze beschikbaar is en nemen contact op over de opties",
+      "includedTitle": "Inclusief bij je pakket",
+      "includedDesc": "Domeinregistratie (.nl) is inbegrepen in je maandelijkse abonnement. We regelen dit voor je!"
+    },
+    "dns": {
+      "title": "DNS-instellingen aanpassen",
+      "instructions": "Om je domein te koppelen moet je de volgende DNS-records instellen bij {{registrar}}:",
+      "aRecord": "Verwijst je domein naar onze servers",
+      "cnameRecord": "Voor www.jouwdomein.nl",
+      "copied": "Gekopieerd",
+      "copy": "Kopieer",
+      "propagationNote": "Het kan tot 24 uur duren voordat DNS-wijzigingen actief zijn"
+    },
+    "email": {
+      "title": "Zakelijke e-mail",
+      "description": "Een professioneel e-mailadres zoals info@{{domain}}",
+      "yesHaveEmail": "Ja, ik heb al zakelijke email",
+      "yesHaveEmailDesc": "Google Workspace, Microsoft 365, of andere provider",
+      "noNoEmail": "Nee, nog niet",
+      "noNoEmailDesc": "Ik wil graag een zakelijk e-mailadres",
+      "whichProvider": "Welke e-mail provider gebruik je?",
+      "selectProvider": "Selecteer provider...",
+      "mxRecordsTitle": "MX-records behouden",
+      "mxRecordsDesc": "We zorgen ervoor dat je bestaande e-mail blijft werken. De MX-records van je huidige provider blijven behouden.",
+      "whatDoYouWant": "Wat wil je voor e-mail?",
+      "businessMailbox": "Zakelijke mailbox",
+      "businessMailboxDesc": "Volledige mailbox met opslag (€5/maand per mailbox)",
+      "emailForwarding": "E-mail doorsturen (gratis)",
+      "emailForwardingDesc": "info@jouwdomein.nl → jouw.email@gmail.com",
+      "noEmailNeeded": "Geen zakelijke email nodig",
+      "noEmailNeededDesc": "Ik regel dit later zelf",
+      "forwardingAddress": "Naar welk e-mailadres wil je doorsturen?",
+      "forwardingPlaceholder": "jouw.email@gmail.com"
+    },
+    "summary": {
+      "title": "Overzicht",
+      "description": "Controleer je keuzes voor de livegang",
+      "domain": "Domein",
+      "email": "E-mail",
+      "domainName": "Domeinnaam",
+      "provider": "Provider",
+      "status": "Status",
+      "dnsNeeded": "DNS aanpassen nodig",
+      "newDomain": "Nieuw domein",
+      "weHandleIt": "Wij regelen dit",
+      "preferredName": "Gewenste naam",
+      "currentProvider": "Huidige provider",
+      "willBeKept": "Blijft behouden",
+      "type": "Type",
+      "emailForwarding": "E-mail doorsturen",
+      "forwardTo": "Doorsturen naar",
+      "businessMailbox": "Zakelijke mailbox",
+      "costs": "Kosten",
+      "mailboxCost": "€5/maand per mailbox",
+      "notNeeded": "Niet nodig",
+      "notes": "Opmerkingen (optioneel)",
+      "notesPlaceholder": "Bijv. specifieke wensen voor de livegang..."
+    },
+    "done": {
+      "title": "Gegevens opgeslagen!",
+      "description": "We nemen contact op over de volgende stappen voor je livegang.",
+      "whatHappensNow": "Wat gebeurt er nu?",
+      "step1": "We controleren je domein en DNS-instellingen",
+      "step2": "SSL-certificaat wordt geïnstalleerd",
+      "step3": "E-mail wordt geconfigureerd (indien van toepassing)",
+      "step4": "Finale check en livegang! 🚀"
+    }
+  },
   "onboarding": {
     "title": "Vertel ons over je bedrijf",
     "subtitle": "Hoe meer we weten, hoe beter we je website kunnen maken",

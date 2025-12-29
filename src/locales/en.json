@@ -586,6 +586,125 @@
       "scheduleMeeting": "Schedule meeting"
     }
   },
+  "inlineOnboarding": {
+    "saving": "Saving...",
+    "autoSaved": "Automatically saved",
+    "nextStep": "Next step",
+    "uploadFiles": "Upload files",
+    "sections": {
+      "bedrijf": {
+        "title": "Fill in your company details"
+      },
+      "branding": {
+        "title": "Upload your logo (or let us create one)"
+      },
+      "doelen": {
+        "title": "Briefly describe what you do"
+      },
+      "content": {
+        "title": "Provide texts for your pages"
+      }
+    },
+    "tips": {
+      "title": "Tips",
+      "noLogo": "Don't have a logo yet? No problem, we can design one for you",
+      "choosePhotos": "Choose 2-3 photos that best represent your business"
+    }
+  },
+  "liveGoingWizard": {
+    "header": {
+      "title": "Ready to go live!",
+      "subtitle": "Configure your domain and email"
+    },
+    "steps": {
+      "domain": "Domain",
+      "email": "Email",
+      "summary": "Summary",
+      "done": "Done"
+    },
+    "nav": {
+      "confirm": "Confirm"
+    },
+    "domain": {
+      "hasQuestion": "Do you already have a domain name?",
+      "description": "A domain name is your website address, like www.{{domain}}.com",
+      "yesHaveDomain": "Yes, I have a domain",
+      "yesHaveDomainDesc": "We'll help you connect your existing domain",
+      "noNoDomain": "No, not yet",
+      "noNoDomainDesc": "We can register a new domain for you",
+      "whatIsDomain": "What is your domain name?",
+      "domainPlaceholder": "yourbusiness.com",
+      "whereRegistered": "Where is your domain registered?",
+      "selectProvider": "Select provider...",
+      "preferredDomain": "What domain name would you like? (optional)",
+      "preferredDomainDesc": "We'll check if it's available and contact you about the options",
+      "includedTitle": "Included in your package",
+      "includedDesc": "Domain registration is included in your monthly subscription. We'll take care of it!"
+    },
+    "dns": {
+      "title": "Update DNS settings",
+      "instructions": "To connect your domain, you need to set the following DNS records at {{registrar}}:",
+      "aRecord": "Points your domain to our servers",
+      "cnameRecord": "For www.yourdomain.com",
+      "copied": "Copied",
+      "copy": "Copy",
+      "propagationNote": "It can take up to 24 hours for DNS changes to take effect"
+    },
+    "email": {
+      "title": "Business email",
+      "description": "A professional email address like info@{{domain}}",
+      "yesHaveEmail": "Yes, I already have business email",
+      "yesHaveEmailDesc": "Google Workspace, Microsoft 365, or other provider",
+      "noNoEmail": "No, not yet",
+      "noNoEmailDesc": "I would like a business email address",
+      "whichProvider": "Which email provider do you use?",
+      "selectProvider": "Select provider...",
+      "mxRecordsTitle": "Keep MX records",
+      "mxRecordsDesc": "We'll make sure your existing email keeps working. The MX records from your current provider will be preserved.",
+      "whatDoYouWant": "What would you like for email?",
+      "businessMailbox": "Business mailbox",
+      "businessMailboxDesc": "Full mailbox with storage (€5/month per mailbox)",
+      "emailForwarding": "Email forwarding (free)",
+      "emailForwardingDesc": "info@yourdomain.com → your.email@gmail.com",
+      "noEmailNeeded": "No business email needed",
+      "noEmailNeededDesc": "I'll handle this myself later",
+      "forwardingAddress": "Which email address should we forward to?",
+      "forwardingPlaceholder": "your.email@gmail.com"
+    },
+    "summary": {
+      "title": "Summary",
+      "description": "Review your choices before going live",
+      "domain": "Domain",
+      "email": "Email",
+      "domainName": "Domain name",
+      "provider": "Provider",
+      "status": "Status",
+      "dnsNeeded": "DNS update required",
+      "newDomain": "New domain",
+      "weHandleIt": "We'll handle this",
+      "preferredName": "Preferred name",
+      "currentProvider": "Current provider",
+      "willBeKept": "Will be kept",
+      "type": "Type",
+      "emailForwarding": "Email forwarding",
+      "forwardTo": "Forward to",
+      "businessMailbox": "Business mailbox",
+      "costs": "Costs",
+      "mailboxCost": "€5/month per mailbox",
+      "notNeeded": "Not needed",
+      "notes": "Notes (optional)",
+      "notesPlaceholder": "E.g. specific requests for going live..."
+    },
+    "done": {
+      "title": "Data saved!",
+      "description": "We'll contact you about the next steps for going live.",
+      "whatHappensNow": "What happens now?",
+      "step1": "We'll verify your domain and DNS settings",
+      "step2": "SSL certificate will be installed",
+      "step3": "Email will be configured (if applicable)",
+      "step4": "Final check and go live! 🚀"
+    }
+  },
   "onboarding": {
     "title": "Tell us about your business",
     "subtitle": "The more we know, the better we can build your website",

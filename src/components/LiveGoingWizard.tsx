@@ -5,6 +5,7 @@
  */
 
 import { useState } from 'react'
+import { useTranslation } from 'react-i18next'
 import { motion, AnimatePresence } from 'framer-motion'
 import {
   Globe,
@@ -75,6 +76,7 @@ export default function LiveGoingWizard({
   onSave,
   onClose
 }: LiveGoingWizardProps) {
+  const { t } = useTranslation()
   const [step, setStep] = useState(1)
   const [saving, setSaving] = useState(false)
   const [copied, setCopied] = useState<string | null>(null)
@@ -138,8 +140,8 @@ export default function LiveGoingWizard({
 
   // DNS records to show
   const dnsRecords = [
-    { type: 'A', name: '@', value: '76.76.21.21', description: 'Verwijst je domein naar onze servers' },
-    { type: 'CNAME', name: 'www', value: 'cname.vercel-dns.com', description: 'Voor www.jouwdomein.nl' },
+    { type: 'A', name: '@', value: '76.76.21.21', description: t('liveGoingWizard.dns.aRecord') },
+    { type: 'CNAME', name: 'www', value: 'cname.vercel-dns.com', description: t('liveGoingWizard.dns.cnameRecord') },
   ]
 
   return (
@@ -153,8 +155,8 @@ export default function LiveGoingWizard({
               <Globe className="w-6 h-6 text-white" />
             </div>
             <div>
-              <h2 className="text-lg font-bold text-white">Klaar voor livegang!</h2>
-              <p className="text-white/80 text-sm">Configureer je domein en email</p>
+              <h2 className="text-lg font-bold text-white">{t('liveGoingWizard.header.title')}</h2>
+              <p className="text-white/80 text-sm">{t('liveGoingWizard.header.subtitle')}</p>
             </div>
           </div>
           {onClose && (
@@ -176,10 +178,10 @@ export default function LiveGoingWizard({
           ))}
         </div>
         <div className="flex justify-between mt-2 text-xs text-white/70">
-          <span>Domein</span>
-          <span>E-mail</span>
-          <span>Overzicht</span>
-          <span>Klaar</span>
+          <span>{t('liveGoingWizard.steps.domain')}</span>
+          <span>{t('liveGoingWizard.steps.email')}</span>
+          <span>{t('liveGoingWizard.steps.summary')}</span>
+          <span>{t('liveGoingWizard.steps.done')}</span>
         </div>
       </div>
 
@@ -196,9 +198,9 @@ export default function LiveGoingWizard({
               className="space-y-5"
             >
               <div>
-                <h3 className="text-lg font-semibold text-white mb-1">Heb je al een domeinnaam?</h3>
+                <h3 className="text-lg font-semibold text-white mb-1">{t('liveGoingWizard.domain.hasQuestion')}</h3>
                 <p className="text-gray-400 text-sm">
-                  Een domeinnaam is je website adres, zoals www.{businessName.toLowerCase().replace(/\s+/g, '')}.nl
+                  {t('liveGoingWizard.domain.description', { domain: businessName.toLowerCase().replace(/\s+/g, '') })}
                 </p>
               </div>
 
@@ -218,10 +220,10 @@ export default function LiveGoingWizard({
                     }`}>
                       <Check className="w-4 h-4 text-white" />
                     </div>
-                    <span className="font-medium text-white">Ja, ik heb een domein</span>
+                    <span className="font-medium text-white">{t('liveGoingWizard.domain.yesHaveDomain')}</span>
                   </div>
                   <p className="text-xs text-gray-400">
-                    We helpen je om je bestaande domein te koppelen
+                    {t('liveGoingWizard.domain.yesHaveDomainDesc')}
                   </p>
                 </button>
 
@@ -244,10 +246,10 @@ export default function LiveGoingWizard({
                     }`}>
                       <Sparkles className="w-4 h-4 text-white" />
                     </div>
-                    <span className="font-medium text-white">Nee, nog niet</span>
+                    <span className="font-medium text-white">{t('liveGoingWizard.domain.noNoDomain')}</span>
                   </div>
                   <p className="text-xs text-gray-400">
-                    We kunnen een nieuw domein voor je registreren
+                    {t('liveGoingWizard.domain.noNoDomainDesc')}
                   </p>
                 </button>
               </div>
@@ -261,27 +263,27 @@ export default function LiveGoingWizard({
                 >
                   <div>
                     <label className="block text-sm font-medium text-gray-300 mb-2">
-                      Wat is je domeinnaam?
+                      {t('liveGoingWizard.domain.whatIsDomain')}
                     </label>
                     <input
                       type="text"
                       value={domainInfo.domainName || ''}
                       onChange={e => setDomainInfo({ ...domainInfo, domainName: e.target.value })}
-                      placeholder="jouwbedrijf.nl"
+                      placeholder={t('liveGoingWizard.domain.domainPlaceholder')}
                       className="w-full px-4 py-3 bg-gray-800 border border-gray-700 rounded-xl text-white placeholder-gray-500 focus:outline-none focus:border-emerald-500"
                     />
                   </div>
 
                   <div>
                     <label className="block text-sm font-medium text-gray-300 mb-2">
-                      Waar is je domein geregistreerd?
+                      {t('liveGoingWizard.domain.whereRegistered')}
                     </label>
                     <select
                       value={domainInfo.registrar || ''}
                       onChange={e => setDomainInfo({ ...domainInfo, registrar: e.target.value })}
                       className="w-full px-4 py-3 bg-gray-800 border border-gray-700 rounded-xl text-white focus:outline-none focus:border-emerald-500"
                     >
-                      <option value="">Selecteer provider...</option>
+                      <option value="">{t('liveGoingWizard.domain.selectProvider')}</option>
                       {DOMAIN_REGISTRARS.map(r => (
                         <option key={r.value} value={r.value}>{r.label}</option>
                       ))}
@@ -299,12 +301,12 @@ export default function LiveGoingWizard({
                         <Info className="w-5 h-5 text-blue-400 mt-0.5 flex-shrink-0" />
                         <div>
                           <p className="text-blue-300 font-medium text-sm mb-2">
-                            DNS-instellingen aanpassen
+                            {t('liveGoingWizard.dns.title')}
                           </p>
                           <p className="text-blue-200/70 text-sm mb-3">
-                            Om je domein te koppelen moet je de volgende DNS-records instellen bij {
-                              DOMAIN_REGISTRARS.find(r => r.value === domainInfo.registrar)?.label || domainInfo.registrar
-                            }:
+                            {t('liveGoingWizard.dns.instructions', {
+                              registrar: DOMAIN_REGISTRARS.find(r => r.value === domainInfo.registrar)?.label || domainInfo.registrar
+                            })}
                           </p>
                           
                           <div className="space-y-2">
@@ -319,9 +321,9 @@ export default function LiveGoingWizard({
                                     className="text-xs text-blue-400 hover:text-blue-300 flex items-center gap-1"
                                   >
                                     {copied === record.name ? (
-                                      <><Check className="w-3 h-3" /> Gekopieerd</>
+                                      <><Check className="w-3 h-3" /> {t('liveGoingWizard.dns.copied')}</>
                                     ) : (
-                                      <><Copy className="w-3 h-3" /> Kopieer</>
+                                      <><Copy className="w-3 h-3" /> {t('liveGoingWizard.dns.copy')}</>
                                     )}
                                   </button>
                                 </div>
@@ -332,7 +334,7 @@ export default function LiveGoingWizard({
                           </div>
                           
                           <p className="text-xs text-blue-200/50 mt-3">
-                            💡 Het kan tot 24 uur duren voordat DNS-wijzigingen actief zijn
+                            💡 {t('liveGoingWizard.dns.propagationNote')}
                           </p>
                         </div>
                       </div>
@@ -350,7 +352,7 @@ export default function LiveGoingWizard({
                 >
                   <div>
                     <label className="block text-sm font-medium text-gray-300 mb-2">
-                      Welke domeinnaam wil je? (optioneel)
+                      {t('liveGoingWizard.domain.preferredDomain')}
                     </label>
                     <input
                       type="text"
@@ -360,7 +362,7 @@ export default function LiveGoingWizard({
                       className="w-full px-4 py-3 bg-gray-800 border border-gray-700 rounded-xl text-white placeholder-gray-500 focus:outline-none focus:border-emerald-500"
                     />
                     <p className="text-xs text-gray-500 mt-2">
-                      We checken of deze beschikbaar is en nemen contact op over de opties
+                      {t('liveGoingWizard.domain.preferredDomainDesc')}
                     </p>
                   </div>
 
@@ -368,9 +370,9 @@ export default function LiveGoingWizard({
                     <div className="flex items-start gap-3">
                       <Sparkles className="w-5 h-5 text-emerald-400 mt-0.5 flex-shrink-0" />
                       <div>
-                        <p className="text-emerald-300 font-medium text-sm">Inclusief bij je pakket</p>
+                        <p className="text-emerald-300 font-medium text-sm">{t('liveGoingWizard.domain.includedTitle')}</p>
                         <p className="text-emerald-200/70 text-sm mt-1">
-                          Domeinregistratie (.nl) is inbegrepen in je maandelijkse abonnement. We regelen dit voor je!
+                          {t('liveGoingWizard.domain.includedDesc')}
                         </p>
                       </div>
                     </div>
@@ -390,9 +392,9 @@ export default function LiveGoingWizard({
               className="space-y-5"
             >
               <div>
-                <h3 className="text-lg font-semibold text-white mb-1">Zakelijke e-mail</h3>
+                <h3 className="text-lg font-semibold text-white mb-1">{t('liveGoingWizard.email.title')}</h3>
                 <p className="text-gray-400 text-sm">
-                  Een professioneel e-mailadres zoals info@{domainInfo.domainName || 'jouwbedrijf.nl'}
+                  {t('liveGoingWizard.email.description', { domain: domainInfo.domainName || 'jouwbedrijf.nl' })}
                 </p>
               </div>
 
@@ -412,10 +414,10 @@ export default function LiveGoingWizard({
                     }`}>
                       <Mail className="w-4 h-4 text-white" />
                     </div>
-                    <span className="font-medium text-white">Ja, ik heb al zakelijke email</span>
+                    <span className="font-medium text-white">{t('liveGoingWizard.email.yesHaveEmail')}</span>
                   </div>
                   <p className="text-xs text-gray-400">
-                    Google Workspace, Microsoft 365, of andere provider
+                    {t('liveGoingWizard.email.yesHaveEmailDesc')}
                   </p>
                 </button>
 
@@ -433,10 +435,10 @@ export default function LiveGoingWizard({
                     }`}>
                       <Sparkles className="w-4 h-4 text-white" />
                     </div>
-                    <span className="font-medium text-white">Nee, nog niet</span>
+                    <span className="font-medium text-white">{t('liveGoingWizard.email.noNoEmail')}</span>
                   </div>
                   <p className="text-xs text-gray-400">
-                    Ik wil graag een zakelijk e-mailadres
+                    {t('liveGoingWizard.email.noNoEmailDesc')}
                   </p>
                 </button>
               </div>
@@ -450,14 +452,14 @@ export default function LiveGoingWizard({
                 >
                   <div>
                     <label className="block text-sm font-medium text-gray-300 mb-2">
-                      Welke e-mail provider gebruik je?
+                      {t('liveGoingWizard.email.whichProvider')}
                     </label>
                     <select
                       value={emailInfo.currentProvider || ''}
                       onChange={e => setEmailInfo({ ...emailInfo, currentProvider: e.target.value })}
                       className="w-full px-4 py-3 bg-gray-800 border border-gray-700 rounded-xl text-white focus:outline-none focus:border-emerald-500"
                     >
-                      <option value="">Selecteer provider...</option>
+                      <option value="">{t('liveGoingWizard.email.selectProvider')}</option>
                       {EMAIL_PROVIDERS.filter(p => p.value !== 'none').map(p => (
                         <option key={p.value} value={p.value}>{p.label}</option>
                       ))}
@@ -468,10 +470,9 @@ export default function LiveGoingWizard({
                     <div className="flex items-start gap-3">
                       <Info className="w-5 h-5 text-blue-400 mt-0.5 flex-shrink-0" />
                       <div>
-                        <p className="text-blue-300 font-medium text-sm">MX-records behouden</p>
+                        <p className="text-blue-300 font-medium text-sm">{t('liveGoingWizard.email.mxRecordsTitle')}</p>
                         <p className="text-blue-200/70 text-sm mt-1">
-                          We zorgen ervoor dat je bestaande e-mail blijft werken. 
-                          De MX-records van je huidige provider blijven behouden.
+                          {t('liveGoingWizard.email.mxRecordsDesc')}
                         </p>
                       </div>
                     </div>
@@ -488,7 +489,7 @@ export default function LiveGoingWizard({
                 >
                   <div className="space-y-3">
                     <label className="block text-sm font-medium text-gray-300 mb-2">
-                      Wat wil je voor e-mail?
+                      {t('liveGoingWizard.email.whatDoYouWant')}
                     </label>
                     
                     <button
@@ -506,9 +507,9 @@ export default function LiveGoingWizard({
                       <div className="flex items-center gap-3">
                         <Server className="w-5 h-5 text-gray-400" />
                         <div>
-                          <span className="font-medium text-white">Zakelijke mailbox</span>
+                          <span className="font-medium text-white">{t('liveGoingWizard.email.businessMailbox')}</span>
                           <p className="text-xs text-gray-400 mt-0.5">
-                            Volledige mailbox met opslag (€5/maand per mailbox)
+                            {t('liveGoingWizard.email.businessMailboxDesc')}
                           </p>
                         </div>
                       </div>
@@ -529,9 +530,9 @@ export default function LiveGoingWizard({
                       <div className="flex items-center gap-3">
                         <ArrowRight className="w-5 h-5 text-gray-400" />
                         <div>
-                          <span className="font-medium text-white">E-mail doorsturen (gratis)</span>
+                          <span className="font-medium text-white">{t('liveGoingWizard.email.emailForwarding')}</span>
                           <p className="text-xs text-gray-400 mt-0.5">
-                            info@jouwdomein.nl → jouw.email@gmail.com
+                            {t('liveGoingWizard.email.emailForwardingDesc')}
                           </p>
                         </div>
                       </div>
@@ -553,9 +554,9 @@ export default function LiveGoingWizard({
                       <div className="flex items-center gap-3">
                         <X className="w-5 h-5 text-gray-500" />
                         <div>
-                          <span className="font-medium text-gray-400">Geen zakelijke email nodig</span>
+                          <span className="font-medium text-gray-400">{t('liveGoingWizard.email.noEmailNeeded')}</span>
                           <p className="text-xs text-gray-500 mt-0.5">
-                            Ik regel dit later zelf
+                            {t('liveGoingWizard.email.noEmailNeededDesc')}
                           </p>
                         </div>
                       </div>
@@ -566,13 +567,13 @@ export default function LiveGoingWizard({
                   {emailInfo.wantsEmailForwarding && (
                     <div>
                       <label className="block text-sm font-medium text-gray-300 mb-2">
-                        Naar welk e-mailadres wil je doorsturen?
+                        {t('liveGoingWizard.email.forwardingAddress')}
                       </label>
                       <input
                         type="email"
                         value={emailInfo.forwardingAddress || ''}
                         onChange={e => setEmailInfo({ ...emailInfo, forwardingAddress: e.target.value })}
-                        placeholder="jouw.email@gmail.com"
+                        placeholder={t('liveGoingWizard.email.forwardingPlaceholder')}
                         className="w-full px-4 py-3 bg-gray-800 border border-gray-700 rounded-xl text-white placeholder-gray-500 focus:outline-none focus:border-emerald-500"
                       />
                     </div>
@@ -592,9 +593,9 @@ export default function LiveGoingWizard({
               className="space-y-5"
             >
               <div>
-                <h3 className="text-lg font-semibold text-white mb-1">Overzicht</h3>
+                <h3 className="text-lg font-semibold text-white mb-1">{t('liveGoingWizard.summary.title')}</h3>
                 <p className="text-gray-400 text-sm">
-                  Controleer je keuzes voor de livegang
+                  {t('liveGoingWizard.summary.description')}
                 </p>
               </div>
 
@@ -602,35 +603,35 @@ export default function LiveGoingWizard({
               <div className="bg-gray-800/50 rounded-xl p-4 border border-gray-700">
                 <div className="flex items-center gap-3 mb-3">
                   <Globe className="w-5 h-5 text-emerald-400" />
-                  <h4 className="font-medium text-white">Domein</h4>
+                  <h4 className="font-medium text-white">{t('liveGoingWizard.summary.domain')}</h4>
                 </div>
                 <div className="space-y-2 text-sm">
                   {domainInfo.hasDomain ? (
                     <>
                       <div className="flex justify-between">
-                        <span className="text-gray-400">Domeinnaam</span>
+                        <span className="text-gray-400">{t('liveGoingWizard.summary.domainName')}</span>
                         <span className="text-white font-medium">{domainInfo.domainName || '-'}</span>
                       </div>
                       <div className="flex justify-between">
-                        <span className="text-gray-400">Provider</span>
+                        <span className="text-gray-400">{t('liveGoingWizard.summary.provider')}</span>
                         <span className="text-white">
                           {DOMAIN_REGISTRARS.find(r => r.value === domainInfo.registrar)?.label || '-'}
                         </span>
                       </div>
                       <div className="flex justify-between">
-                        <span className="text-gray-400">Status</span>
-                        <span className="text-amber-400">DNS aanpassen nodig</span>
+                        <span className="text-gray-400">{t('liveGoingWizard.summary.status')}</span>
+                        <span className="text-amber-400">{t('liveGoingWizard.summary.dnsNeeded')}</span>
                       </div>
                     </>
                   ) : (
                     <>
                       <div className="flex justify-between">
-                        <span className="text-gray-400">Nieuw domein</span>
-                        <span className="text-emerald-400">Wij regelen dit</span>
+                        <span className="text-gray-400">{t('liveGoingWizard.summary.newDomain')}</span>
+                        <span className="text-emerald-400">{t('liveGoingWizard.summary.weHandleIt')}</span>
                       </div>
                       {domainInfo.preferredDomain && (
                         <div className="flex justify-between">
-                          <span className="text-gray-400">Gewenste naam</span>
+                          <span className="text-gray-400">{t('liveGoingWizard.summary.preferredName')}</span>
                           <span className="text-white">{domainInfo.preferredDomain}</span>
                         </div>
                       )}
@@ -643,48 +644,48 @@ export default function LiveGoingWizard({
               <div className="bg-gray-800/50 rounded-xl p-4 border border-gray-700">
                 <div className="flex items-center gap-3 mb-3">
                   <Mail className="w-5 h-5 text-blue-400" />
-                  <h4 className="font-medium text-white">E-mail</h4>
+                  <h4 className="font-medium text-white">{t('liveGoingWizard.summary.email')}</h4>
                 </div>
                 <div className="space-y-2 text-sm">
                   {emailInfo.hasBusinessEmail ? (
                     <>
                       <div className="flex justify-between">
-                        <span className="text-gray-400">Huidige provider</span>
+                        <span className="text-gray-400">{t('liveGoingWizard.summary.currentProvider')}</span>
                         <span className="text-white">
                           {EMAIL_PROVIDERS.find(p => p.value === emailInfo.currentProvider)?.label || '-'}
                         </span>
                       </div>
                       <div className="flex justify-between">
-                        <span className="text-gray-400">Status</span>
-                        <span className="text-emerald-400">Blijft behouden</span>
+                        <span className="text-gray-400">{t('liveGoingWizard.summary.status')}</span>
+                        <span className="text-emerald-400">{t('liveGoingWizard.summary.willBeKept')}</span>
                       </div>
                     </>
                   ) : emailInfo.wantsEmailForwarding ? (
                     <>
                       <div className="flex justify-between">
-                        <span className="text-gray-400">Type</span>
-                        <span className="text-white">E-mail doorsturen</span>
+                        <span className="text-gray-400">{t('liveGoingWizard.summary.type')}</span>
+                        <span className="text-white">{t('liveGoingWizard.summary.emailForwarding')}</span>
                       </div>
                       <div className="flex justify-between">
-                        <span className="text-gray-400">Doorsturen naar</span>
+                        <span className="text-gray-400">{t('liveGoingWizard.summary.forwardTo')}</span>
                         <span className="text-white">{emailInfo.forwardingAddress || '-'}</span>
                       </div>
                     </>
                   ) : emailInfo.wantsWebstabilityEmail ? (
                     <>
                       <div className="flex justify-between">
-                        <span className="text-gray-400">Type</span>
-                        <span className="text-white">Zakelijke mailbox</span>
+                        <span className="text-gray-400">{t('liveGoingWizard.summary.type')}</span>
+                        <span className="text-white">{t('liveGoingWizard.summary.businessMailbox')}</span>
                       </div>
                       <div className="flex justify-between">
-                        <span className="text-gray-400">Kosten</span>
-                        <span className="text-white">€5/maand per mailbox</span>
+                        <span className="text-gray-400">{t('liveGoingWizard.summary.costs')}</span>
+                        <span className="text-white">{t('liveGoingWizard.summary.mailboxCost')}</span>
                       </div>
                     </>
                   ) : (
                     <div className="flex justify-between">
-                      <span className="text-gray-400">E-mail</span>
-                      <span className="text-gray-500">Niet nodig</span>
+                      <span className="text-gray-400">{t('liveGoingWizard.summary.email')}</span>
+                      <span className="text-gray-500">{t('liveGoingWizard.summary.notNeeded')}</span>
                     </div>
                   )}
                 </div>
@@ -693,12 +694,12 @@ export default function LiveGoingWizard({
               {/* Notes */}
               <div>
                 <label className="block text-sm font-medium text-gray-300 mb-2">
-                  Opmerkingen (optioneel)
+                  {t('liveGoingWizard.summary.notes')}
                 </label>
                 <textarea
                   value={notes}
                   onChange={e => setNotes(e.target.value)}
-                  placeholder="Bijv. specifieke wensen voor de livegang..."
+                  placeholder={t('liveGoingWizard.summary.notesPlaceholder')}
                   rows={3}
                   className="w-full px-4 py-3 bg-gray-800 border border-gray-700 rounded-xl text-white placeholder-gray-500 focus:outline-none focus:border-emerald-500 resize-none"
                 />
@@ -717,29 +718,29 @@ export default function LiveGoingWizard({
               <div className="w-16 h-16 bg-emerald-500 rounded-full flex items-center justify-center mx-auto mb-4">
                 <CheckCircle2 className="w-8 h-8 text-white" />
               </div>
-              <h3 className="text-xl font-bold text-white mb-2">Gegevens opgeslagen!</h3>
+              <h3 className="text-xl font-bold text-white mb-2">{t('liveGoingWizard.done.title')}</h3>
               <p className="text-gray-400 mb-6">
-                We nemen contact op over de volgende stappen voor je livegang.
+                {t('liveGoingWizard.done.description')}
               </p>
 
               <div className="bg-emerald-500/10 border border-emerald-500/30 rounded-xl p-4 text-left">
-                <h4 className="font-medium text-emerald-400 mb-2">Wat gebeurt er nu?</h4>
+                <h4 className="font-medium text-emerald-400 mb-2">{t('liveGoingWizard.done.whatHappensNow')}</h4>
                 <ul className="space-y-2 text-sm text-emerald-200/80">
                   <li className="flex items-start gap-2">
                     <Check className="w-4 h-4 mt-0.5 flex-shrink-0" />
-                    <span>We controleren je domein en DNS-instellingen</span>
+                    <span>{t('liveGoingWizard.done.step1')}</span>
                   </li>
                   <li className="flex items-start gap-2">
                     <Check className="w-4 h-4 mt-0.5 flex-shrink-0" />
-                    <span>SSL-certificaat wordt geïnstalleerd</span>
+                    <span>{t('liveGoingWizard.done.step2')}</span>
                   </li>
                   <li className="flex items-start gap-2">
                     <Check className="w-4 h-4 mt-0.5 flex-shrink-0" />
-                    <span>E-mail wordt geconfigureerd (indien van toepassing)</span>
+                    <span>{t('liveGoingWizard.done.step3')}</span>
                   </li>
                   <li className="flex items-start gap-2">
                     <Check className="w-4 h-4 mt-0.5 flex-shrink-0" />
-                    <span>Finale check en livegang! 🚀</span>
+                    <span>{t('liveGoingWizard.done.step4')}</span>
                   </li>
                 </ul>
               </div>
@@ -756,7 +757,7 @@ export default function LiveGoingWizard({
           className="flex items-center gap-2 px-4 py-2.5 text-gray-400 hover:text-white disabled:opacity-30 disabled:cursor-not-allowed transition rounded-xl hover:bg-gray-800"
         >
           <ArrowLeft className="w-4 h-4" />
-          Vorige
+          {t('common.previous')}
         </button>
 
         {step < 4 ? (
@@ -768,9 +769,9 @@ export default function LiveGoingWizard({
             {saving ? (
               <Loader2 className="w-4 h-4 animate-spin" />
             ) : step === 3 ? (
-              <>Bevestigen <CheckCircle2 className="w-4 h-4" /></>
+              <>{t('liveGoingWizard.nav.confirm')} <CheckCircle2 className="w-4 h-4" /></>
             ) : (
-              <>Volgende <ArrowRight className="w-4 h-4" /></>
+              <>{t('common.next')} <ArrowRight className="w-4 h-4" /></>
             )}
           </button>
         ) : (
@@ -778,7 +779,7 @@ export default function LiveGoingWizard({
             onClick={onClose}
             className="flex items-center gap-2 px-6 py-2.5 bg-emerald-500 hover:bg-emerald-600 text-white font-medium rounded-xl transition"
           >
-            Sluiten
+            {t('common.close')}
           </button>
         )}
       </div>

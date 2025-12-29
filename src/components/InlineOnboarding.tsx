@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react'
+import { useTranslation } from 'react-i18next'
 import { motion, AnimatePresence } from 'framer-motion'
 import { 
   ChevronDown, 
@@ -22,29 +23,29 @@ import {
 } from './onboarding/WebsiteFormSteps'
 import type { PackageType } from '../config/packages'
 
-// Onboarding sections configuration
-const ONBOARDING_SECTIONS = [
+// Onboarding sections configuration - keys for i18n
+const ONBOARDING_SECTION_KEYS = [
   { 
     id: 'bedrijf', 
-    title: 'Vul je bedrijfsgegevens in', 
+    titleKey: 'inlineOnboarding.sections.bedrijf.title',
     icon: Building2,
     component: WebsiteBedrijfStep 
   },
   { 
     id: 'branding', 
-    title: 'Upload je logo (of laat ons er één maken)', 
+    titleKey: 'inlineOnboarding.sections.branding.title',
     icon: Palette,
     component: WebsiteBrandingStep 
   },
   { 
     id: 'doelen', 
-    title: 'Beschrijf kort wat je doet', 
+    titleKey: 'inlineOnboarding.sections.doelen.title',
     icon: Target,
     component: WebsiteDoelenStep 
   },
   { 
     id: 'content', 
-    title: 'Lever teksten aan voor je pagina\'s', 
+    titleKey: 'inlineOnboarding.sections.content.title',
     icon: FileText,
     component: WebsiteContentStep 
   },
@@ -67,6 +68,7 @@ export default function InlineOnboarding({
   onDataChange,
   initialData = {}
 }: InlineOnboardingProps) {
+  const { t } = useTranslation()
   const [expandedSection, setExpandedSection] = useState<string | null>(null)
   const [formData, setFormData] = useState<Record<string, any>>(initialData)
   const [completedSections, setCompletedSections] = useState<string[]>([])
@@ -140,9 +142,9 @@ export default function InlineOnboarding({
       setCompletedSections(prev => [...prev, sectionId])
     }
     // Move to next section
-    const currentIndex = ONBOARDING_SECTIONS.findIndex(s => s.id === sectionId)
-    if (currentIndex < ONBOARDING_SECTIONS.length - 1) {
-      setExpandedSection(ONBOARDING_SECTIONS[currentIndex + 1].id)
+    const currentIndex = ONBOARDING_SECTION_KEYS.findIndex(s => s.id === sectionId)
+    if (currentIndex < ONBOARDING_SECTION_KEYS.length - 1) {
+      setExpandedSection(ONBOARDING_SECTION_KEYS[currentIndex + 1].id)
     } else {
       setExpandedSection(null)
     }
@@ -160,7 +162,7 @@ export default function InlineOnboarding({
             className="flex items-center gap-2 text-sm text-gray-500"
           >
             <Loader2 className="w-3 h-3 animate-spin" />
-            <span>Opslaan...</span>
+            <span>{t('inlineOnboarding.saving')}</span>
           </motion.div>
         )}
         {!isSaving && lastSaved && (
@@ -170,13 +172,13 @@ export default function InlineOnboarding({
             className="flex items-center gap-2 text-sm text-green-500"
           >
             <Save className="w-3 h-3" />
-            <span>Automatisch opgeslagen</span>
+            <span>{t('inlineOnboarding.autoSaved')}</span>
           </motion.div>
         )}
       </AnimatePresence>
 
       {/* Onboarding Sections */}
-      {ONBOARDING_SECTIONS.map((section) => {
+      {ONBOARDING_SECTION_KEYS.map((section) => {
         const isExpanded = expandedSection === section.id
         const isCompleted = completedSections.includes(section.id)
         const SectionIcon = section.icon
@@ -229,7 +231,7 @@ export default function InlineOnboarding({
                     ? 'text-green-500' 
                     : darkMode ? 'text-white' : 'text-gray-900'
                 }`}>
-                  {section.title}
+                  {t(section.titleKey)}
                 </span>
               </div>
 
@@ -265,7 +267,7 @@ export default function InlineOnboarding({
                           onClick={() => markSectionComplete(section.id)}
                           className="px-4 py-2 bg-primary-500 hover:bg-primary-600 text-white text-sm font-medium rounded-lg transition-colors"
                         >
-                          Volgende stap
+                          {t('inlineOnboarding.nextStep')}
                         </button>
                       </div>
                     </div>
@@ -290,7 +292,7 @@ export default function InlineOnboarding({
           }`}
         >
           <Upload className="w-4 h-4" />
-          Upload bestanden
+          {t('inlineOnboarding.uploadFiles')}
           <ExternalLink className="w-3.5 h-3.5" />
         </a>
       )}
@@ -303,14 +305,14 @@ export default function InlineOnboarding({
           <Lightbulb className="w-4 h-4 text-amber-500 flex-shrink-0 mt-0.5" />
           <div>
             <p className={`text-sm font-medium mb-1 ${darkMode ? 'text-amber-300' : 'text-amber-700'}`}>
-              Tips
+              {t('inlineOnboarding.tips.title')}
             </p>
             <ul className="space-y-1">
               <li className={`text-sm ${darkMode ? 'text-amber-200/70' : 'text-amber-600'}`}>
-                • Heb je nog geen logo? Geen probleem, we kunnen er één voor je ontwerpen
+                • {t('inlineOnboarding.tips.noLogo')}
               </li>
               <li className={`text-sm ${darkMode ? 'text-amber-200/70' : 'text-amber-600'}`}>
-                • Kies 2-3 foto's die je bedrijf het beste representeren
+                • {t('inlineOnboarding.tips.choosePhotos')}
               </li>
             </ul>
           </div>
