@@ -9,6 +9,7 @@
  */
 
 import { useState, useEffect } from 'react'
+import { useTranslation } from 'react-i18next'
 import { motion, AnimatePresence } from 'framer-motion'
 import {
   X,
@@ -28,145 +29,81 @@ import {
 type ProjectPhase = 'onboarding' | 'design' | 'feedback' | 'revisie' | 'payment' | 'domain' | 'live'
 
 interface FAQItem {
-  question: string
-  answer: string
+  key: string
   phases?: ProjectPhase[] // Relevante fases, leeg = altijd tonen
 }
 
 interface Tutorial {
   id: string
-  title: string
-  description: string
+  key: string
   duration: string
   videoUrl?: string
   articleUrl?: string
   phases?: ProjectPhase[]
 }
 
-// FAQ database
-const FAQ_ITEMS: FAQItem[] = [
+// FAQ keys - translations are in locale files
+const FAQ_KEYS: FAQItem[] = [
   // Algemeen
-  { 
-    question: 'Hoe lang duurt het voordat mijn website klaar is?',
-    answer: 'De doorlooptijd hangt af van je gekozen pakket. Starter: 5-7 werkdagen, Professioneel: 7-10 werkdagen, Business: 10-14 werkdagen. Dit is exclusief de tijd die nodig is voor jouw feedback en goedkeuring.',
-    phases: []
-  },
-  {
-    question: 'Kan ik mijn abonnement opzeggen?',
-    answer: 'Ja, je kunt na de eerste 3 maanden maandelijks opzeggen met een opzegtermijn van 1 maand. De eerste 3 maanden is er een minimale looptijd.',
-    phases: []
-  },
-  {
-    question: 'Wat gebeurt er als ik opzeg?',
-    answer: 'Als je opzegt, wordt je website na de opzegtermijn offline gehaald. Je ontvangt een backup van alle content. Het domein blijft van jou.',
-    phases: ['live']
-  },
+  { key: 'howLong', phases: [] },
+  { key: 'cancel', phases: [] },
+  { key: 'whatHappens', phases: ['live'] },
   
   // Onboarding
-  {
-    question: 'Welke informatie moet ik aanleveren?',
-    answer: 'We hebben nodig: je bedrijfsgegevens, logo (indien aanwezig), teksten voor de website, foto\'s van je werk/team, en je voorkeuren qua stijl en kleuren.',
-    phases: ['onboarding']
-  },
-  {
-    question: 'Ik heb nog geen logo, wat nu?',
-    answer: 'Geen probleem! Je kunt apart een logo laten ontwerpen (€169) of we gebruiken een stijlvolle tekst-logo met je bedrijfsnaam.',
-    phases: ['onboarding']
-  },
-  {
-    question: 'Welk formaat moeten mijn foto\'s zijn?',
-    answer: 'Lever foto\'s aan in de hoogst mogelijke kwaliteit, minimaal 1200px breed. JPG of PNG formaat. We optimaliseren ze voor het web.',
-    phases: ['onboarding']
-  },
+  { key: 'whatInfo', phases: ['onboarding'] },
+  { key: 'noLogo', phases: ['onboarding'] },
+  { key: 'photoFormat', phases: ['onboarding'] },
 
   // Design & Feedback
-  {
-    question: 'Hoe geef ik feedback op het ontwerp?',
-    answer: 'Klik op "Bekijk ontwerp" om de preview te openen. Je kunt per sectie aangeven wat je goed vindt of wat je wilt aanpassen. Wees zo specifiek mogelijk.',
-    phases: ['design', 'feedback']
-  },
-  {
-    question: 'Hoeveel revisierondes heb ik?',
-    answer: 'Het aantal revisies hangt af van je pakket: Starter: 2 rondes, Professioneel: 4 rondes, Business: 6 rondes. Extra revisies kunnen worden bijgekocht.',
-    phases: ['feedback', 'revisie']
-  },
-  {
-    question: 'Wat is het verschil tussen feedback en revisie?',
-    answer: 'Feedback is wanneer jij aangeeft wat je wilt veranderen. Revisie is wanneer wij die aanpassingen doorvoeren. Elke feedbackronde telt als één revisie.',
-    phases: ['feedback', 'revisie']
-  },
+  { key: 'howFeedback', phases: ['design', 'feedback'] },
+  { key: 'revisionRounds', phases: ['feedback', 'revisie'] },
+  { key: 'feedbackVsRevision', phases: ['feedback', 'revisie'] },
 
   // Betaling
-  {
-    question: 'Welke betaalmethodes worden geaccepteerd?',
-    answer: 'We accepteren iDEAL, creditcard (Visa, Mastercard), bankoverschrijving en Klarna (betaal later).',
-    phases: ['payment']
-  },
-  {
-    question: 'Wanneer start mijn abonnement?',
-    answer: 'Je maandelijkse abonnement start op de dag dat je website live gaat. De eenmalige opstartkosten betaal je vooraf.',
-    phases: ['payment']
-  },
+  { key: 'paymentMethods', phases: ['payment'] },
+  { key: 'subscriptionStart', phases: ['payment'] },
 
   // Live
-  {
-    question: 'Hoe vraag ik een wijziging aan?',
-    answer: 'Ga naar je dashboard en klik op "Wijziging aanvragen". Beschrijf wat je wilt veranderen en voeg eventueel een screenshot toe. We verwerken wijzigingen binnen 48 uur.',
-    phases: ['live']
-  },
-  {
-    question: 'Hoeveel wijzigingen mag ik per maand aanvragen?',
-    answer: 'Dit hangt af van je pakket: Starter: 2 wijzigingen, Professioneel & Business: onbeperkt. Grote wijzigingen (nieuwe pagina\'s, functionaliteiten) worden apart geoffreerd.',
-    phases: ['live']
-  },
-  {
-    question: 'Kan ik zelf content aanpassen?',
-    answer: 'Op dit moment verzorgen wij alle aanpassingen voor je. Dit garandeert dat je website er altijd professioneel uitziet. Zelf-beheer is in ontwikkeling.',
-    phases: ['live']
-  },
+  { key: 'requestChange', phases: ['live'] },
+  { key: 'changesPerMonth', phases: ['live'] },
+  { key: 'selfEdit', phases: ['live'] },
 ]
 
-// Video tutorials
-const TUTORIALS: Tutorial[] = [
+// Tutorial keys - translations are in locale files
+const TUTORIAL_KEYS: Tutorial[] = [
   {
     id: 'onboarding-guide',
-    title: 'Onboarding invullen',
-    description: 'Stap voor stap door het onboarding formulier',
+    key: 'onboardingGuide',
     duration: '3 min',
     phases: ['onboarding']
   },
   {
     id: 'feedback-guide',
-    title: 'Feedback geven op je ontwerp',
-    description: 'Hoe geef je effectieve feedback?',
+    key: 'feedbackGuide',
     duration: '4 min',
     phases: ['design', 'feedback']
   },
   {
     id: 'preview-guide',
-    title: 'De preview bekijken',
-    description: 'Navigeren door je website preview',
+    key: 'previewGuide',
     duration: '2 min',
     phases: ['design', 'feedback']
   },
   {
     id: 'payment-guide',
-    title: 'Betaling afronden',
-    description: 'Betaalmethodes en facturen uitgelegd',
+    key: 'paymentGuide',
     duration: '2 min',
     phases: ['payment']
   },
   {
     id: 'dashboard-guide',
-    title: 'Je dashboard gebruiken',
-    description: 'Overzicht van alle functies na livegang',
+    key: 'dashboardGuide',
     duration: '5 min',
     phases: ['live']
   },
   {
     id: 'changes-guide',
-    title: 'Wijzigingen aanvragen',
-    description: 'Hoe vraag je aanpassingen aan?',
+    key: 'changesGuide',
     duration: '3 min',
     phases: ['live']
   },
@@ -187,12 +124,27 @@ export default function HelpCenter({
   darkMode = true,
   onRestartTour
 }: HelpCenterProps) {
+  const { t } = useTranslation()
   const [searchQuery, setSearchQuery] = useState('')
   const [expandedFAQ, setExpandedFAQ] = useState<string | null>(null)
   const [activeTab, setActiveTab] = useState<'faq' | 'tutorials' | 'contact'>('faq')
 
+  // Get translated FAQ items
+  const getTranslatedFAQ = () => FAQ_KEYS.map(item => ({
+    ...item,
+    question: t(`helpCenter.faq.${item.key}.question`),
+    answer: t(`helpCenter.faq.${item.key}.answer`)
+  }))
+
+  // Get translated tutorials
+  const getTranslatedTutorials = () => TUTORIAL_KEYS.map(tutorial => ({
+    ...tutorial,
+    title: t(`helpCenter.tutorials.${tutorial.key}.title`),
+    description: t(`helpCenter.tutorials.${tutorial.key}.description`)
+  }))
+
   // Filter FAQ based on phase and search
-  const filteredFAQ = FAQ_ITEMS.filter(item => {
+  const filteredFAQ = getTranslatedFAQ().filter(item => {
     const matchesSearch = searchQuery === '' || 
       item.question.toLowerCase().includes(searchQuery.toLowerCase()) ||
       item.answer.toLowerCase().includes(searchQuery.toLowerCase())
@@ -204,7 +156,7 @@ export default function HelpCenter({
   })
 
   // Filter tutorials based on phase
-  const filteredTutorials = TUTORIALS.filter(tutorial => {
+  const filteredTutorials = getTranslatedTutorials().filter(tutorial => {
     const matchesSearch = searchQuery === '' ||
       tutorial.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
       tutorial.description.toLowerCase().includes(searchQuery.toLowerCase())
@@ -255,10 +207,10 @@ export default function HelpCenter({
                   </div>
                   <div>
                     <h2 className={`font-semibold ${darkMode ? 'text-white' : 'text-gray-900'}`}>
-                      Hulp & Support
+                      {t('helpCenter.title')}
                     </h2>
                     <p className={`text-sm ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>
-                      Hoe kunnen we je helpen?
+                      {t('helpCenter.subtitle')}
                     </p>
                   </div>
                 </div>
@@ -279,7 +231,7 @@ export default function HelpCenter({
                 }`} />
                 <input
                   type="text"
-                  placeholder="Zoek in hulp..."
+                  placeholder={t('helpCenter.searchPlaceholder')}
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
                   className={`w-full pl-10 pr-4 py-2.5 rounded-xl text-sm ${
@@ -293,9 +245,9 @@ export default function HelpCenter({
               {/* Tabs */}
               <div className="flex gap-1 mt-4">
                 {[
-                  { id: 'faq', label: 'FAQ', icon: BookOpen },
-                  { id: 'tutorials', label: 'Tutorials', icon: PlayCircle },
-                  { id: 'contact', label: 'Contact', icon: MessageCircle },
+                  { id: 'faq', labelKey: 'helpCenter.tabs.faq', icon: BookOpen },
+                  { id: 'tutorials', labelKey: 'helpCenter.tabs.tutorials', icon: PlayCircle },
+                  { id: 'contact', labelKey: 'helpCenter.tabs.contact', icon: MessageCircle },
                 ].map(tab => (
                   <button
                     key={tab.id}
@@ -311,7 +263,7 @@ export default function HelpCenter({
                     }`}
                   >
                     <tab.icon className="w-4 h-4" />
-                    <span className="hidden sm:inline">{tab.label}</span>
+                    <span className="hidden sm:inline">{t(tab.labelKey)}</span>
                   </button>
                 ))}
               </div>
@@ -325,7 +277,7 @@ export default function HelpCenter({
                   {filteredFAQ.length === 0 ? (
                     <div className={`text-center py-8 ${darkMode ? 'text-gray-500' : 'text-gray-400'}`}>
                       <HelpCircle className="w-12 h-12 mx-auto mb-3 opacity-50" />
-                      <p>Geen resultaten gevonden</p>
+                      <p>{t('helpCenter.noResults')}</p>
                     </div>
                   ) : (
                     filteredFAQ.map((item, index) => (
@@ -386,7 +338,7 @@ export default function HelpCenter({
                   {filteredTutorials.length === 0 ? (
                     <div className={`text-center py-8 ${darkMode ? 'text-gray-500' : 'text-gray-400'}`}>
                       <PlayCircle className="w-12 h-12 mx-auto mb-3 opacity-50" />
-                      <p>Geen tutorials voor deze fase</p>
+                      <p>{t('helpCenter.noTutorials')}</p>
                     </div>
                   ) : (
                     filteredTutorials.map((tutorial, index) => (
@@ -426,7 +378,7 @@ export default function HelpCenter({
                     darkMode ? 'bg-blue-500/10 border border-blue-500/20' : 'bg-blue-50 border border-blue-200'
                   }`}>
                     <p className={`text-sm ${darkMode ? 'text-blue-400' : 'text-blue-600'}`}>
-                      🎬 Video tutorials komen binnenkort!
+                      {t('helpCenter.tutorialsComingSoon')}
                     </p>
                   </div>
                 </div>
@@ -436,7 +388,7 @@ export default function HelpCenter({
               {activeTab === 'contact' && (
                 <div className="space-y-4">
                   <p className={`text-sm ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>
-                    Kom je er niet uit? Neem contact met ons op.
+                    {t('helpCenter.contactIntro')}
                   </p>
 
                   {/* Contact options */}
@@ -454,10 +406,10 @@ export default function HelpCenter({
                       </div>
                       <div>
                         <h4 className={`font-medium ${darkMode ? 'text-white' : 'text-gray-900'}`}>
-                          E-mail
+                          {t('helpCenter.contactMethods.email.title')}
                         </h4>
                         <p className={`text-sm ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>
-                          support@webstability.nl
+                          {t('helpCenter.contactMethods.email.value')}
                         </p>
                       </div>
                       <ExternalLink className={`w-4 h-4 ml-auto ${darkMode ? 'text-gray-500' : 'text-gray-400'}`} />
@@ -478,10 +430,10 @@ export default function HelpCenter({
                       </div>
                       <div>
                         <h4 className={`font-medium ${darkMode ? 'text-white' : 'text-gray-900'}`}>
-                          WhatsApp
+                          {t('helpCenter.contactMethods.whatsapp.title')}
                         </h4>
                         <p className={`text-sm ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>
-                          Reactie binnen 4 uur
+                          {t('helpCenter.contactMethods.whatsapp.description')}
                         </p>
                       </div>
                       <ExternalLink className={`w-4 h-4 ml-auto ${darkMode ? 'text-gray-500' : 'text-gray-400'}`} />
@@ -500,10 +452,10 @@ export default function HelpCenter({
                       </div>
                       <div>
                         <h4 className={`font-medium ${darkMode ? 'text-white' : 'text-gray-900'}`}>
-                          Telefoon
+                          {t('helpCenter.contactMethods.phone.title')}
                         </h4>
                         <p className={`text-sm ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>
-                          Ma-Vr 9:00 - 17:00
+                          {t('helpCenter.contactMethods.phone.description')}
                         </p>
                       </div>
                       <ExternalLink className={`w-4 h-4 ml-auto ${darkMode ? 'text-gray-500' : 'text-gray-400'}`} />
@@ -515,20 +467,20 @@ export default function HelpCenter({
                     darkMode ? 'bg-gray-800' : 'bg-gray-50'
                   }`}>
                     <h4 className={`font-medium mb-2 ${darkMode ? 'text-white' : 'text-gray-900'}`}>
-                      Reactietijden
+                      {t('helpCenter.responseTimes.title')}
                     </h4>
                     <div className="space-y-2 text-sm">
                       <div className="flex justify-between">
-                        <span className={darkMode ? 'text-gray-400' : 'text-gray-500'}>Starter pakket</span>
-                        <span className={darkMode ? 'text-white' : 'text-gray-900'}>48 uur</span>
+                        <span className={darkMode ? 'text-gray-400' : 'text-gray-500'}>{t('helpCenter.responseTimes.starter')}</span>
+                        <span className={darkMode ? 'text-white' : 'text-gray-900'}>{t('helpCenter.responseTimes.starterTime')}</span>
                       </div>
                       <div className="flex justify-between">
-                        <span className={darkMode ? 'text-gray-400' : 'text-gray-500'}>Professioneel pakket</span>
-                        <span className={darkMode ? 'text-white' : 'text-gray-900'}>24 uur</span>
+                        <span className={darkMode ? 'text-gray-400' : 'text-gray-500'}>{t('helpCenter.responseTimes.professional')}</span>
+                        <span className={darkMode ? 'text-white' : 'text-gray-900'}>{t('helpCenter.responseTimes.professionalTime')}</span>
                       </div>
                       <div className="flex justify-between">
-                        <span className={darkMode ? 'text-gray-400' : 'text-gray-500'}>Business pakket</span>
-                        <span className={darkMode ? 'text-white' : 'text-gray-900'}>4 uur</span>
+                        <span className={darkMode ? 'text-gray-400' : 'text-gray-500'}>{t('helpCenter.responseTimes.business')}</span>
+                        <span className={darkMode ? 'text-white' : 'text-gray-900'}>{t('helpCenter.responseTimes.businessTime')}</span>
                       </div>
                     </div>
                   </div>
@@ -539,10 +491,10 @@ export default function HelpCenter({
                       darkMode ? 'border-gray-700' : 'border-gray-200'
                     }`}>
                       <h4 className={`font-medium mb-1 ${darkMode ? 'text-white' : 'text-gray-900'}`}>
-                        Rondleiding opnieuw bekijken?
+                        {t('helpCenter.tour.title')}
                       </h4>
                       <p className={`text-sm mb-3 ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>
-                        We laten je stap voor stap zien hoe alles werkt.
+                        {t('helpCenter.tour.description')}
                       </p>
                       <button
                         onClick={() => {
@@ -556,7 +508,7 @@ export default function HelpCenter({
                         }`}
                       >
                         <BookOpen className="w-4 h-4" />
-                        Start rondleiding
+                        {t('helpCenter.tour.button')}
                       </button>
                     </div>
                   )}

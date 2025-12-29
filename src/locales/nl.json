@@ -248,7 +248,8 @@
   },
   "testimonials": {
     "title": "Wat klanten zeggen",
-    "subtitle": "Lees de ervaringen van ondernemers die je voorgingen"
+    "subtitle": "Echte reviews van ondernemers op Trustpilot",
+    "verified": "Geverifieerd"
   },
   "faq": {
     "badge": "Veelgestelde vragen",
@@ -2263,5 +2264,237 @@
     "payWith": "Betaal met:",
     "connectionError": "Kon geen verbinding maken met de betaalserver.",
     "paymentCreationError": "Er ging iets mis bij het aanmaken van de betaling."
+  },
+  "features": {
+    "badge": "Waarom Webstability",
+    "title": "Alles wat je nodig hebt,",
+    "titleHighlight": "niets wat je niet nodig hebt",
+    "subtitle": "Geen verborgen kosten, geen technisch gedoe. Focus op je bedrijf terwijl wij zorgen voor je online aanwezigheid.",
+    "items": {
+      "fast": {
+        "title": "Razendsnel online",
+        "description": "Je website is binnen 7 werkdagen live. Wij regelen alles: hosting, domein en SSL."
+      },
+      "custom": {
+        "title": "Op maat gemaakt",
+        "description": "Geen standaard templates. Jouw website wordt volledig afgestemd op jouw merk en doelen."
+      },
+      "secure": {
+        "title": "Veilig & betrouwbaar",
+        "description": "SSL-certificaat, dagelijkse backups en 99.9% uptime garantie zijn standaard inbegrepen."
+      },
+      "support": {
+        "title": "Persoonlijke support",
+        "description": "Direct contact met je eigen websitebeheerder. Geen ticketsystemen of wachtrijen."
+      },
+      "seo": {
+        "title": "SEO geoptimaliseerd",
+        "description": "Gevonden worden in Google? Elke website wordt gebouwd met SEO best practices."
+      },
+      "updates": {
+        "title": "Maandelijkse updates",
+        "description": "Tekst wijzigen? Nieuwe foto's? Wij voeren elke maand gratis aanpassingen door."
+      }
+    }
+  },
+  "comparison": {
+    "badge": "Stop met tijd verspillen",
+    "title": "Traditioneel vs.",
+    "titleBrand": "webstability",
+    "subtitle": "Geen grote voorafbetaling, geen verrassingen. Alles inbegrepen.",
+    "traditional": "Traditioneel",
+    "categories": {
+      "startupCosts": "Opstartkosten",
+      "timeline": "Doorlooptijd",
+      "maintenance": "Onderhoud",
+      "changes": "Wijzigingen",
+      "flexibility": "Flexibiliteit"
+    },
+    "values": {
+      "traditional": {
+        "startupCosts": "€3.000 - €10.000+",
+        "timeline": "4-12 weken",
+        "maintenance": "€500+/jaar extra",
+        "changes": "€75-150/uur",
+        "flexibility": "Vast contract"
+      },
+      "webstability": {
+        "startupCosts": "Vanaf €149 eenmalig",
+        "timeline": "7 dagen",
+        "maintenance": "Inbegrepen",
+        "changes": "Onbeperkt inbegrepen",
+        "flexibility": "Maandelijks opzegbaar"
+      }
+    },
+    "chooseWebstability": "Kies voor webstability",
+    "startToday": "Start vandaag nog",
+    "startYourProject": "Start je project",
+    "payAfterApproval": "✓ Betaling pas na goedkeuring design",
+    "weDoEverything": "Wij doen alles voor je",
+    "trustIndicators": {
+      "freeDesign": "Gratis design",
+      "cancelMonthly": "Maandelijks opzegbaar",
+      "moneyBack": "14 dagen geld-terug"
+    }
+  },
+  "contactModal": {
+    "title": "Contact opnemen",
+    "aboutDomain": "Over domein",
+    "close": "Sluiten",
+    "description": "Laat je gegevens achter en wij nemen binnen 24 uur contact met je op over dit domein.",
+    "email": "E-mailadres",
+    "emailRequired": "Vul je e-mailadres in",
+    "emailPlaceholder": "je@email.nl",
+    "name": "Naam",
+    "namePlaceholder": "Je naam",
+    "phone": "Telefoonnummer",
+    "phonePlaceholder": "06-12345678",
+    "message": "Bericht",
+    "optional": "optioneel",
+    "messagePlaceholder": "Vertel ons meer over je project...",
+    "submit": "Verstuur aanvraag",
+    "submitting": "Versturen...",
+    "sendFailed": "Verzenden mislukt",
+    "errorGeneric": "Er ging iets mis. Probeer het opnieuw of mail direct naar info@webstability.nl",
+    "privacy": "We delen je gegevens nooit met derden.",
+    "success": {
+      "title": "Bedankt!",
+      "message": "We hebben je aanvraag ontvangen en nemen zo snel mogelijk contact met je op."
+    }
+  },
+  "helpCenter": {
+    "title": "Hulp & Support",
+    "subtitle": "Hoe kunnen we je helpen?",
+    "searchPlaceholder": "Zoek in hulp...",
+    "tabs": {
+      "faq": "FAQ",
+      "tutorials": "Tutorials",
+      "contact": "Contact"
+    },
+    "noResults": "Geen resultaten gevonden",
+    "noTutorials": "Geen tutorials voor deze fase",
+    "tutorialsComingSoon": "🎬 Video tutorials komen binnenkort!",
+    "contactIntro": "Kom je er niet uit? Neem contact met ons op.",
+    "contactMethods": {
+      "email": {
+        "title": "E-mail",
+        "value": "support@webstability.nl"
+      },
+      "whatsapp": {
+        "title": "WhatsApp",
+        "description": "Reactie binnen 4 uur"
+      },
+      "phone": {
+        "title": "Telefoon",
+        "description": "Ma-Vr 9:00 - 17:00"
+      }
+    },
+    "responseTimes": {
+      "title": "Reactietijden",
+      "starter": "Starter pakket",
+      "starterTime": "48 uur",
+      "professional": "Professioneel pakket",
+      "professionalTime": "24 uur",
+      "business": "Business pakket",
+      "businessTime": "4 uur"
+    },
+    "tour": {
+      "title": "Rondleiding opnieuw bekijken?",
+      "description": "We laten je stap voor stap zien hoe alles werkt.",
+      "button": "Start rondleiding"
+    },
+    "faq": {
+      "howLong": {
+        "question": "Hoe lang duurt het voordat mijn website klaar is?",
+        "answer": "De doorlooptijd hangt af van je gekozen pakket. Starter: 5-7 werkdagen, Professioneel: 7-10 werkdagen, Business: 10-14 werkdagen. Dit is exclusief de tijd die nodig is voor jouw feedback en goedkeuring."
+      },
+      "cancel": {
+        "question": "Kan ik mijn abonnement opzeggen?",
+        "answer": "Ja, je kunt na de eerste 3 maanden maandelijks opzeggen met een opzegtermijn van 1 maand. De eerste 3 maanden is er een minimale looptijd."
+      },
+      "whatHappens": {
+        "question": "Wat gebeurt er als ik opzeg?",
+        "answer": "Als je opzegt, wordt je website na de opzegtermijn offline gehaald. Je ontvangt een backup van alle content. Het domein blijft van jou."
+      },
+      "whatInfo": {
+        "question": "Welke informatie moet ik aanleveren?",
+        "answer": "We hebben nodig: je bedrijfsgegevens, logo (indien aanwezig), teksten voor de website, foto's van je werk/team, en je voorkeuren qua stijl en kleuren."
+      },
+      "noLogo": {
+        "question": "Ik heb nog geen logo, wat nu?",
+        "answer": "Geen probleem! Je kunt apart een logo laten ontwerpen (€169) of we gebruiken een stijlvolle tekst-logo met je bedrijfsnaam."
+      },
+      "photoFormat": {
+        "question": "Welk formaat moeten mijn foto's zijn?",
+        "answer": "Lever foto's aan in de hoogst mogelijke kwaliteit, minimaal 1200px breed. JPG of PNG formaat. We optimaliseren ze voor het web."
+      },
+      "howFeedback": {
+        "question": "Hoe geef ik feedback op het ontwerp?",
+        "answer": "Klik op \"Bekijk ontwerp\" om de preview te openen. Je kunt per sectie aangeven wat je goed vindt of wat je wilt aanpassen. Wees zo specifiek mogelijk."
+      },
+      "revisionRounds": {
+        "question": "Hoeveel revisierondes heb ik?",
+        "answer": "Het aantal revisies hangt af van je pakket: Starter: 2 rondes, Professioneel: 4 rondes, Business: 6 rondes. Extra revisies kunnen worden bijgekocht."
+      },
+      "feedbackVsRevision": {
+        "question": "Wat is het verschil tussen feedback en revisie?",
+        "answer": "Feedback is wanneer jij aangeeft wat je wilt veranderen. Revisie is wanneer wij die aanpassingen doorvoeren. Elke feedbackronde telt als één revisie."
+      },
+      "paymentMethods": {
+        "question": "Welke betaalmethodes worden geaccepteerd?",
+        "answer": "We accepteren iDEAL, creditcard (Visa, Mastercard), bankoverschrijving en Klarna (betaal later)."
+      },
+      "subscriptionStart": {
+        "question": "Wanneer start mijn abonnement?",
+        "answer": "Je maandelijkse abonnement start op de dag dat je website live gaat. De eenmalige opstartkosten betaal je vooraf."
+      },
+      "requestChange": {
+        "question": "Hoe vraag ik een wijziging aan?",
+        "answer": "Ga naar je dashboard en klik op \"Wijziging aanvragen\". Beschrijf wat je wilt veranderen en voeg eventueel een screenshot toe. We verwerken wijzigingen binnen 48 uur."
+      },
+      "changesPerMonth": {
+        "question": "Hoeveel wijzigingen mag ik per maand aanvragen?",
+        "answer": "Dit hangt af van je pakket: Starter: 2 wijzigingen, Professioneel & Business: onbeperkt. Grote wijzigingen (nieuwe pagina's, functionaliteiten) worden apart geoffreerd."
+      },
+      "selfEdit": {
+        "question": "Kan ik zelf content aanpassen?",
+        "answer": "Op dit moment verzorgen wij alle aanpassingen voor je. Dit garandeert dat je website er altijd professioneel uitziet. Zelf-beheer is in ontwikkeling."
+      }
+    },
+    "tutorials": {
+      "onboardingGuide": {
+        "title": "Onboarding invullen",
+        "description": "Stap voor stap door het onboarding formulier"
+      },
+      "feedbackGuide": {
+        "title": "Feedback geven op je ontwerp",
+        "description": "Hoe geef je effectieve feedback?"
+      },
+      "previewGuide": {
+        "title": "De preview bekijken",
+        "description": "Navigeren door je website preview"
+      },
+      "paymentGuide": {
+        "title": "Betaling afronden",
+        "description": "Betaalmethodes en facturen uitgelegd"
+      },
+      "dashboardGuide": {
+        "title": "Je dashboard gebruiken",
+        "description": "Overzicht van alle functies na livegang"
+      },
+      "changesGuide": {
+        "title": "Wijzigingen aanvragen",
+        "description": "Hoe vraag je aanpassingen aan?"
+      }
+    }
+  },
+  "signupModal": {
+    "title": "Aanmelden voor een gratis adviesgesprek",
+    "description": "Laat je e‑mail achter en we nemen contact op om jouw wensen te bespreken.",
+    "emailPlaceholder": "naam@bedrijf.nl",
+    "privacy": "We gebruiken je e‑mail alleen om contact op te nemen. Geen spam.",
+    "cancel": "Annuleer",
+    "submit": "Verstuur",
+    "thankYou": "Bedankt! We nemen contact op."
   }
 }

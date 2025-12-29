@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { useTranslation } from 'react-i18next'
 import { motion, AnimatePresence } from 'framer-motion'
 import { X, Send, Loader2, Check, Globe } from 'lucide-react'
 
@@ -9,6 +10,7 @@ type ContactModalProps = {
 }
 
 export default function ContactModal({ isOpen, onClose, domain }: ContactModalProps) {
+  const { t } = useTranslation()
   const [email, setEmail] = useState('')
   const [name, setName] = useState('')
   const [phone, setPhone] = useState('')
@@ -21,7 +23,7 @@ export default function ContactModal({ isOpen, onClose, domain }: ContactModalPr
     e.preventDefault()
     
     if (!email.trim()) {
-      setError('Vul je e-mailadres in')
+      setError(t('contactModal.emailRequired'))
       return
     }
 
@@ -59,11 +61,11 @@ export default function ContactModal({ isOpen, onClose, domain }: ContactModalPr
           onClose()
         }, 3000)
       } else {
-        throw new Error('Verzenden mislukt')
+        throw new Error(t('contactModal.sendFailed'))
       }
     } catch (err) {
       console.error('Error submitting form:', err)
-      setError('Er ging iets mis. Probeer het opnieuw of mail direct naar info@webstability.nl')
+      setError(t('contactModal.errorGeneric'))
     } finally {
       setIsSubmitting(false)
     }
@@ -102,7 +104,7 @@ export default function ContactModal({ isOpen, onClose, domain }: ContactModalPr
               <button
                 onClick={onClose}
                 className="absolute top-3 sm:top-4 right-3 sm:right-4 p-2 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition-colors rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700"
-                aria-label="Sluiten"
+                aria-label={t('contactModal.close')}
               >
                 <X className="w-5 h-5" />
               </button>
@@ -112,8 +114,8 @@ export default function ContactModal({ isOpen, onClose, domain }: ContactModalPr
                   <Globe className="w-5 h-5 text-primary-600 dark:text-primary-400" />
                 </div>
                 <div>
-                  <h3 className="text-gray-900 dark:text-white font-semibold text-lg">Contact opnemen</h3>
-                  <p className="text-gray-500 dark:text-gray-400 text-sm">Over domein: <span className="text-primary-600 dark:text-primary-400 font-medium">{domain}</span></p>
+                  <h3 className="text-gray-900 dark:text-white font-semibold text-lg">{t('contactModal.title')}</h3>
+                  <p className="text-gray-500 dark:text-gray-400 text-sm">{t('contactModal.aboutDomain')}: <span className="text-primary-600 dark:text-primary-400 font-medium">{domain}</span></p>
                 </div>
               </div>
             </div>
@@ -129,29 +131,29 @@ export default function ContactModal({ isOpen, onClose, domain }: ContactModalPr
                 >
                   <Check className="w-7 h-7 sm:w-8 sm:h-8 text-green-600 dark:text-green-400" />
                 </motion.div>
-                <h4 className="text-gray-900 dark:text-white font-semibold text-lg sm:text-xl mb-2">Bedankt!</h4>
+                <h4 className="text-gray-900 dark:text-white font-semibold text-lg sm:text-xl mb-2">{t('contactModal.success.title')}</h4>
                 <p className="text-gray-600 dark:text-gray-400 text-sm sm:text-base">
-                  We hebben je aanvraag ontvangen en nemen zo snel mogelijk contact met je op.
+                  {t('contactModal.success.message')}
                 </p>
               </div>
             ) : (
               /* Form */
               <form onSubmit={handleSubmit} className="p-4 sm:p-6 space-y-4 pb-safe">
                 <p className="text-gray-600 dark:text-gray-300 text-sm mb-4">
-                  Laat je gegevens achter en wij nemen binnen 24 uur contact met je op over dit domein.
+                  {t('contactModal.description')}
                 </p>
 
                 {/* Email (required) */}
                 <div>
                   <label htmlFor="email" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">
-                    E-mailadres <span className="text-red-500">*</span>
+                    {t('contactModal.email')} <span className="text-red-500">*</span>
                   </label>
                   <input
                     type="email"
                     id="email"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
-                    placeholder="je@email.nl"
+                    placeholder={t('contactModal.emailPlaceholder')}
                     required
                     className="w-full px-4 py-3 bg-white dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-xl text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500 focus:outline-none focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 transition-all"
                   />
@@ -160,14 +162,14 @@ export default function ContactModal({ isOpen, onClose, domain }: ContactModalPr
                 {/* Name (optional) */}
                 <div>
                   <label htmlFor="name" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">
-                    Naam
+                    {t('contactModal.name')}
                   </label>
                   <input
                     type="text"
                     id="name"
                     value={name}
                     onChange={(e) => setName(e.target.value)}
-                    placeholder="Je naam"
+                    placeholder={t('contactModal.namePlaceholder')}
                     className="w-full px-4 py-3 bg-white dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-xl text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500 focus:outline-none focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 transition-all"
                   />
                 </div>
@@ -175,14 +177,14 @@ export default function ContactModal({ isOpen, onClose, domain }: ContactModalPr
                 {/* Phone (optional) */}
                 <div>
                   <label htmlFor="phone" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">
-                    Telefoonnummer
+                    {t('contactModal.phone')}
                   </label>
                   <input
                     type="tel"
                     id="phone"
                     value={phone}
                     onChange={(e) => setPhone(e.target.value)}
-                    placeholder="06-12345678"
+                    placeholder={t('contactModal.phonePlaceholder')}
                     className="w-full px-4 py-3 bg-white dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-xl text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500 focus:outline-none focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 transition-all"
                   />
                 </div>
@@ -190,13 +192,13 @@ export default function ContactModal({ isOpen, onClose, domain }: ContactModalPr
                 {/* Message (optional) */}
                 <div>
                   <label htmlFor="message" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">
-                    Bericht <span className="text-gray-400">(optioneel)</span>
+                    {t('contactModal.message')} <span className="text-gray-400">({t('contactModal.optional')})</span>
                   </label>
                   <textarea
                     id="message"
                     value={message}
                     onChange={(e) => setMessage(e.target.value)}
-                    placeholder="Vertel ons meer over je project..."
+                    placeholder={t('contactModal.messagePlaceholder')}
                     rows={3}
                     className="w-full px-4 py-3 bg-white dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-xl text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500 focus:outline-none focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 transition-all resize-none"
                   />
@@ -218,18 +220,18 @@ export default function ContactModal({ isOpen, onClose, domain }: ContactModalPr
                   {isSubmitting ? (
                     <>
                       <Loader2 className="w-5 h-5 animate-spin" />
-                      Versturen...
+                      {t('contactModal.submitting')}
                     </>
                   ) : (
                     <>
                       <Send className="w-5 h-5" />
-                      Verstuur aanvraag
+                      {t('contactModal.submit')}
                     </>
                   )}
                 </button>
 
                 <p className="text-gray-400 text-xs text-center">
-                  We delen je gegevens nooit met derden.
+                  {t('contactModal.privacy')}
                 </p>
               </form>
             )}

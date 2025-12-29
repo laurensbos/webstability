@@ -1,6 +1,7 @@
 import { motion } from 'framer-motion'
 import { Star, ExternalLink } from 'lucide-react'
 import { useState } from 'react'
+import { useTranslation } from 'react-i18next'
 import AutoScrollCarousel from './AutoScrollCarousel'
 
 // Trustpilot reviews - wordt geladen van API of fallback naar statische data
@@ -74,6 +75,7 @@ function getAvatarColor(name: string): string {
 }
 
 export default function Testimonials() {
+	const { t } = useTranslation()
 	const [reviews] = useState<TrustpilotReview[]>(staticReviews)
 
 	return (
@@ -117,7 +119,7 @@ export default function Testimonials() {
 						transition={{ delay: 0.1 }}
 						className="text-2xl sm:text-3xl lg:text-5xl font-bold text-gray-900 dark:text-white mb-3 lg:mb-4"
 					>
-						Wat onze klanten zeggen
+						{t('testimonials.title')}
 					</motion.h2>
 					<motion.p
 						initial={{ opacity: 0, y: 20 }}
@@ -126,7 +128,7 @@ export default function Testimonials() {
 						transition={{ delay: 0.2 }}
 						className="text-gray-600 dark:text-gray-400 text-base lg:text-lg"
 					>
-						Echte reviews van ondernemers op Trustpilot
+						{t('testimonials.subtitle')}
 					</motion.p>
 				</div>
 
@@ -209,7 +211,7 @@ export default function Testimonials() {
 									<svg className="w-3.5 h-3.5" viewBox="0 0 24 24" fill="currentColor">
 										<path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/>
 									</svg>
-									Geverifieerd
+									{t('testimonials.verified')}
 								</div>
 							)}
 

@@ -1,5 +1,6 @@
 import { motion, useInView } from 'framer-motion'
 import { useRef } from 'react'
+import { useTranslation } from 'react-i18next'
 import { 
   Zap, 
   Shield, 
@@ -10,48 +11,25 @@ import {
 } from 'lucide-react'
 import AutoScrollCarousel from './AutoScrollCarousel'
 
-const features = [
-  {
-    icon: Zap,
-    title: 'Razendsnel online',
-    description: 'Je website is binnen 7 werkdagen live. Wij regelen alles: hosting, domein en SSL.',
-    color: 'bg-amber-100 text-amber-600 dark:bg-amber-900/30 dark:text-amber-400',
-  },
-  {
-    icon: Palette,
-    title: 'Op maat gemaakt',
-    description: 'Geen standaard templates. Jouw website wordt volledig afgestemd op jouw merk en doelen.',
-    color: 'bg-pink-100 text-pink-600 dark:bg-pink-900/30 dark:text-pink-400',
-  },
-  {
-    icon: Shield,
-    title: 'Veilig & betrouwbaar',
-    description: 'SSL-certificaat, dagelijkse backups en 99.9% uptime garantie zijn standaard inbegrepen.',
-    color: 'bg-green-100 text-green-600 dark:bg-green-900/30 dark:text-green-400',
-  },
-  {
-    icon: Headphones,
-    title: 'Persoonlijke support',
-    description: 'Direct contact met je eigen websitebeheerder. Geen ticketsystemen of wachtrijen.',
-    color: 'bg-blue-100 text-blue-600 dark:bg-blue-900/30 dark:text-blue-400',
-  },
-  {
-    icon: TrendingUp,
-    title: 'SEO geoptimaliseerd',
-    description: 'Gevonden worden in Google? Elke website wordt gebouwd met SEO best practices.',
-    color: 'bg-primary-100 text-primary-600 dark:bg-primary-900/30 dark:text-primary-400',
-  },
-  {
-    icon: RefreshCw,
-    title: 'Maandelijkse updates',
-    description: 'Tekst wijzigen? Nieuwe foto\'s? Wij voeren elke maand gratis aanpassingen door.',
-    color: 'bg-purple-100 text-purple-600 dark:bg-purple-900/30 dark:text-purple-400',
-  },
+const featureKeys = [
+  { key: 'fast', icon: Zap, color: 'bg-amber-100 text-amber-600 dark:bg-amber-900/30 dark:text-amber-400' },
+  { key: 'custom', icon: Palette, color: 'bg-pink-100 text-pink-600 dark:bg-pink-900/30 dark:text-pink-400' },
+  { key: 'secure', icon: Shield, color: 'bg-green-100 text-green-600 dark:bg-green-900/30 dark:text-green-400' },
+  { key: 'support', icon: Headphones, color: 'bg-blue-100 text-blue-600 dark:bg-blue-900/30 dark:text-blue-400' },
+  { key: 'seo', icon: TrendingUp, color: 'bg-primary-100 text-primary-600 dark:bg-primary-900/30 dark:text-primary-400' },
+  { key: 'updates', icon: RefreshCw, color: 'bg-purple-100 text-purple-600 dark:bg-purple-900/30 dark:text-purple-400' },
 ]
 
 export default function Features() {
+  const { t } = useTranslation()
   const ref = useRef(null)
   const isInView = useInView(ref, { once: true, margin: "-100px" })
+
+  const features = featureKeys.map(f => ({
+    ...f,
+    title: t(`features.items.${f.key}.title`),
+    description: t(`features.items.${f.key}.description`),
+  }))
 
   return (
     <section id="features" className="py-16 lg:py-32 bg-white dark:bg-gray-900 relative overflow-hidden">
@@ -64,7 +42,7 @@ export default function Features() {
             viewport={{ once: true }}
             className="inline-block text-primary-600 font-semibold text-sm tracking-wider uppercase mb-3 lg:mb-4"
           >
-            Waarom Webstability
+            {t('features.badge')}
           </motion.span>
           <motion.h2
             initial={{ opacity: 0, y: 20 }}
@@ -73,9 +51,9 @@ export default function Features() {
             transition={{ delay: 0.1 }}
             className="text-2xl sm:text-3xl lg:text-5xl font-bold text-gray-900 dark:text-white mb-4 lg:mb-6"
           >
-            Alles wat je nodig hebt,{' '}
+            {t('features.title')}{' '}
             <span className="text-primary-600">
-              niets wat je niet nodig hebt
+              {t('features.titleHighlight')}
             </span>
           </motion.h2>
           <motion.p
@@ -85,8 +63,7 @@ export default function Features() {
             transition={{ delay: 0.2 }}
             className="text-gray-600 dark:text-gray-400 text-base lg:text-lg"
           >
-            Geen verborgen kosten, geen technisch gedoe. 
-            Focus op je bedrijf terwijl wij zorgen voor je online aanwezigheid.
+            {t('features.subtitle')}
           </motion.p>
         </div>
 

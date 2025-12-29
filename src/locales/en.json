@@ -248,7 +248,8 @@
   },
   "testimonials": {
     "title": "What customers say",
-    "subtitle": "Read experiences from entrepreneurs who came before you"
+    "subtitle": "Real reviews from entrepreneurs on Trustpilot",
+    "verified": "Verified"
   },
   "faq": {
     "badge": "Frequently asked questions",
@@ -2263,5 +2264,237 @@
     "payWith": "Pay with:",
     "connectionError": "Could not connect to the payment server.",
     "paymentCreationError": "Something went wrong while creating the payment."
+  },
+  "features": {
+    "badge": "Why Webstability",
+    "title": "Everything you need,",
+    "titleHighlight": "nothing you don't",
+    "subtitle": "No hidden costs, no technical hassle. Focus on your business while we take care of your online presence.",
+    "items": {
+      "fast": {
+        "title": "Lightning fast online",
+        "description": "Your website is live within 7 working days. We handle everything: hosting, domain and SSL."
+      },
+      "custom": {
+        "title": "Custom made",
+        "description": "No standard templates. Your website is fully tailored to your brand and goals."
+      },
+      "secure": {
+        "title": "Safe & reliable",
+        "description": "SSL certificate, daily backups and 99.9% uptime guarantee are included as standard."
+      },
+      "support": {
+        "title": "Personal support",
+        "description": "Direct contact with your own website manager. No ticket systems or waiting lines."
+      },
+      "seo": {
+        "title": "SEO optimized",
+        "description": "Want to be found on Google? Every website is built with SEO best practices."
+      },
+      "updates": {
+        "title": "Monthly updates",
+        "description": "Need to change text? New photos? We make free adjustments every month."
+      }
+    }
+  },
+  "comparison": {
+    "badge": "Stop wasting time",
+    "title": "Traditional vs.",
+    "titleBrand": "webstability",
+    "subtitle": "No large upfront payment, no surprises. Everything included.",
+    "traditional": "Traditional",
+    "categories": {
+      "startupCosts": "Startup costs",
+      "timeline": "Timeline",
+      "maintenance": "Maintenance",
+      "changes": "Changes",
+      "flexibility": "Flexibility"
+    },
+    "values": {
+      "traditional": {
+        "startupCosts": "€3,000 - €10,000+",
+        "timeline": "4-12 weeks",
+        "maintenance": "€500+/year extra",
+        "changes": "€75-150/hour",
+        "flexibility": "Fixed contract"
+      },
+      "webstability": {
+        "startupCosts": "From €149 one-time",
+        "timeline": "7 days",
+        "maintenance": "Included",
+        "changes": "Unlimited included",
+        "flexibility": "Cancel monthly"
+      }
+    },
+    "chooseWebstability": "Choose webstability",
+    "startToday": "Start today",
+    "startYourProject": "Start your project",
+    "payAfterApproval": "✓ Payment only after design approval",
+    "weDoEverything": "We do everything for you",
+    "trustIndicators": {
+      "freeDesign": "Free design",
+      "cancelMonthly": "Cancel monthly",
+      "moneyBack": "14-day money back"
+    }
+  },
+  "contactModal": {
+    "title": "Contact us",
+    "aboutDomain": "About domain",
+    "close": "Close",
+    "description": "Leave your details and we'll contact you within 24 hours about this domain.",
+    "email": "Email address",
+    "emailRequired": "Please enter your email address",
+    "emailPlaceholder": "you@email.com",
+    "name": "Name",
+    "namePlaceholder": "Your name",
+    "phone": "Phone number",
+    "phonePlaceholder": "+31 6 12345678",
+    "message": "Message",
+    "optional": "optional",
+    "messagePlaceholder": "Tell us more about your project...",
+    "submit": "Send request",
+    "submitting": "Sending...",
+    "sendFailed": "Send failed",
+    "errorGeneric": "Something went wrong. Please try again or email info@webstability.nl directly",
+    "privacy": "We never share your details with third parties.",
+    "success": {
+      "title": "Thank you!",
+      "message": "We've received your request and will contact you as soon as possible."
+    }
+  },
+  "helpCenter": {
+    "title": "Help & Support",
+    "subtitle": "How can we help you?",
+    "searchPlaceholder": "Search help...",
+    "tabs": {
+      "faq": "FAQ",
+      "tutorials": "Tutorials",
+      "contact": "Contact"
+    },
+    "noResults": "No results found",
+    "noTutorials": "No tutorials for this phase",
+    "tutorialsComingSoon": "🎬 Video tutorials coming soon!",
+    "contactIntro": "Can't figure it out? Contact us.",
+    "contactMethods": {
+      "email": {
+        "title": "Email",
+        "value": "support@webstability.nl"
+      },
+      "whatsapp": {
+        "title": "WhatsApp",
+        "description": "Response within 4 hours"
+      },
+      "phone": {
+        "title": "Phone",
+        "description": "Mon-Fri 9:00 - 17:00"
+      }
+    },
+    "responseTimes": {
+      "title": "Response times",
+      "starter": "Starter package",
+      "starterTime": "48 hours",
+      "professional": "Professional package",
+      "professionalTime": "24 hours",
+      "business": "Business package",
+      "businessTime": "4 hours"
+    },
+    "tour": {
+      "title": "View the tour again?",
+      "description": "We'll show you step by step how everything works.",
+      "button": "Start tour"
+    },
+    "faq": {
+      "howLong": {
+        "question": "How long until my website is ready?",
+        "answer": "The timeline depends on your chosen package. Starter: 5-7 business days, Professional: 7-10 business days, Business: 10-14 business days. This excludes time needed for your feedback and approval."
+      },
+      "cancel": {
+        "question": "Can I cancel my subscription?",
+        "answer": "Yes, after the first 3 months you can cancel monthly with 1 month notice. The first 3 months have a minimum term."
+      },
+      "whatHappens": {
+        "question": "What happens when I cancel?",
+        "answer": "When you cancel, your website will go offline after the notice period. You'll receive a backup of all content. The domain remains yours."
+      },
+      "whatInfo": {
+        "question": "What information do I need to provide?",
+        "answer": "We need: your business details, logo (if available), text for the website, photos of your work/team, and your style and color preferences."
+      },
+      "noLogo": {
+        "question": "I don't have a logo yet, what now?",
+        "answer": "No problem! You can have a logo designed separately (€169) or we'll use a stylish text logo with your company name."
+      },
+      "photoFormat": {
+        "question": "What format should my photos be?",
+        "answer": "Provide photos in the highest possible quality, at least 1200px wide. JPG or PNG format. We'll optimize them for the web."
+      },
+      "howFeedback": {
+        "question": "How do I give feedback on the design?",
+        "answer": "Click \"View design\" to open the preview. You can indicate what you like or want to change per section. Be as specific as possible."
+      },
+      "revisionRounds": {
+        "question": "How many revision rounds do I have?",
+        "answer": "The number of revisions depends on your package: Starter: 2 rounds, Professional: 4 rounds, Business: 6 rounds. Extra revisions can be purchased."
+      },
+      "feedbackVsRevision": {
+        "question": "What's the difference between feedback and revision?",
+        "answer": "Feedback is when you indicate what you want to change. Revision is when we implement those changes. Each feedback round counts as one revision."
+      },
+      "paymentMethods": {
+        "question": "Which payment methods are accepted?",
+        "answer": "We accept iDEAL, credit card (Visa, Mastercard), bank transfer and Klarna (pay later)."
+      },
+      "subscriptionStart": {
+        "question": "When does my subscription start?",
+        "answer": "Your monthly subscription starts on the day your website goes live. The one-time setup costs are paid in advance."
+      },
+      "requestChange": {
+        "question": "How do I request a change?",
+        "answer": "Go to your dashboard and click \"Request change\". Describe what you want to change and optionally add a screenshot. We process changes within 48 hours."
+      },
+      "changesPerMonth": {
+        "question": "How many changes can I request per month?",
+        "answer": "This depends on your package: Starter: 2 changes, Professional & Business: unlimited. Major changes (new pages, features) are quoted separately."
+      },
+      "selfEdit": {
+        "question": "Can I edit content myself?",
+        "answer": "Currently we handle all changes for you. This ensures your website always looks professional. Self-management is in development."
+      }
+    },
+    "tutorials": {
+      "onboardingGuide": {
+        "title": "Completing onboarding",
+        "description": "Step by step through the onboarding form"
+      },
+      "feedbackGuide": {
+        "title": "Giving feedback on your design",
+        "description": "How to give effective feedback?"
+      },
+      "previewGuide": {
+        "title": "Viewing the preview",
+        "description": "Navigating through your website preview"
+      },
+      "paymentGuide": {
+        "title": "Completing payment",
+        "description": "Payment methods and invoices explained"
+      },
+      "dashboardGuide": {
+        "title": "Using your dashboard",
+        "description": "Overview of all features after going live"
+      },
+      "changesGuide": {
+        "title": "Requesting changes",
+        "description": "How do you request changes?"
+      }
+    }
+  },
+  "signupModal": {
+    "title": "Sign up for a free consultation",
+    "description": "Leave your email and we'll contact you to discuss your needs.",
+    "emailPlaceholder": "name@company.com",
+    "privacy": "We only use your email to contact you. No spam.",
+    "cancel": "Cancel",
+    "submit": "Submit",
+    "thankYou": "Thank you! We'll be in touch."
   }
 }

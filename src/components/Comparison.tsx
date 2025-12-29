@@ -1,41 +1,21 @@
 import { motion } from 'framer-motion'
+import { useTranslation } from 'react-i18next'
 import { Check, X, Clock, Zap, ArrowRight } from 'lucide-react'
 
-// Gefocust op 5 key pijnpunten - traditioneel webbureau vs webstability
-const comparisons = [
-	{
-		category: 'Opstartkosten',
-		icon: Clock,
-		traditional: { value: '€3.000 - €10.000+', bad: true },
-		webstability: { value: 'Vanaf €149 eenmalig', good: true },
-	},
-	{
-		category: 'Doorlooptijd',
-		icon: Zap,
-		traditional: { value: '4-12 weken', bad: true },
-		webstability: { value: '7 dagen', good: true },
-	},
-	{
-		category: 'Onderhoud',
-		icon: Zap,
-		traditional: { value: '€500+/jaar extra', bad: true },
-		webstability: { value: 'Inbegrepen', good: true },
-	},
-	{
-		category: 'Wijzigingen',
-		icon: Zap,
-		traditional: { value: '€75-150/uur', bad: true },
-		webstability: { value: 'Onbeperkt inbegrepen', good: true },
-	},
-	{
-		category: 'Flexibiliteit',
-		icon: Zap,
-		traditional: { value: 'Vast contract', bad: true },
-		webstability: { value: 'Maandelijks opzegbaar', good: true },
-	},
-]
+// Category keys for translation
+const COMPARISON_KEYS = ['startupCosts', 'timeline', 'maintenance', 'changes', 'flexibility']
 
 export default function Comparison() {
+	const { t } = useTranslation()
+
+	// Build comparisons from translations
+	const comparisons = COMPARISON_KEYS.map(key => ({
+		category: t(`comparison.categories.${key}`),
+		icon: key === 'startupCosts' ? Clock : Zap,
+		traditional: { value: t(`comparison.values.traditional.${key}`), bad: true },
+		webstability: { value: t(`comparison.values.webstability.${key}`), good: true },
+	}))
+
 	return (
 		<section id="comparison" className="py-12 lg:py-20 bg-gray-50 dark:bg-gray-800/50">
 			<div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -48,7 +28,7 @@ export default function Comparison() {
 						className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-red-100 dark:bg-red-900/30 text-red-600 dark:text-red-400 text-sm font-medium mb-4"
 					>
 						<Clock className="w-4 h-4" />
-						Stop met tijd verspillen
+						{t('comparison.badge')}
 					</motion.div>
 
 					<motion.h2
@@ -58,8 +38,8 @@ export default function Comparison() {
 						transition={{ delay: 0.1 }}
 						className="text-2xl sm:text-3xl lg:text-4xl font-bold mb-3 flex flex-wrap items-center justify-center gap-x-2"
 					>
-						<span className="text-primary-600 dark:text-primary-400">Traditioneel vs.</span>
-						<span className="font-display tracking-tight text-gray-900 dark:text-white">webstability</span>
+						<span className="text-primary-600 dark:text-primary-400">{t('comparison.title')}</span>
+						<span className="font-display tracking-tight text-gray-900 dark:text-white">{t('comparison.titleBrand')}</span>
 					</motion.h2>
 					<motion.p
 						initial={{ opacity: 0, y: 20 }}
@@ -68,7 +48,7 @@ export default function Comparison() {
 						transition={{ delay: 0.2 }}
 						className="text-gray-600 dark:text-gray-400 max-w-xl mx-auto text-sm sm:text-base"
 					>
-						Geen grote voorafbetaling, geen verrassingen. Alles inbegrepen.
+						{t('comparison.subtitle')}
 					</motion.p>
 				</div>
 
@@ -84,7 +64,7 @@ export default function Comparison() {
 						<div className="grid grid-cols-3 bg-gray-50 dark:bg-gray-700/50 border-b border-gray-200 dark:border-gray-600">
 							<div className="p-3 text-xs font-medium text-gray-500 dark:text-gray-400"></div>
 							<div className="p-3 text-center">
-								<span className="text-xs font-semibold text-gray-500 dark:text-gray-400">Traditioneel</span>
+								<span className="text-xs font-semibold text-gray-500 dark:text-gray-400">{t('comparison.traditional')}</span>
 							</div>
 							<div className="p-3 text-center bg-primary-50 dark:bg-primary-900/30">
 								<span className="text-xs font-semibold text-primary-600 dark:text-primary-400">
@@ -202,7 +182,7 @@ export default function Comparison() {
 							</div>
 							<div>
 								<h3 className="font-bold text-xl text-gray-900 dark:text-white">Webstability</h3>
-								<p className="text-sm text-primary-600 dark:text-primary-400">Wij doen alles voor je</p>
+								<p className="text-sm text-primary-600 dark:text-primary-400">{t('comparison.weDoEverything')}</p>
 							</div>
 						</div>
 
@@ -229,11 +209,11 @@ export default function Comparison() {
 								href="/start"
 								className="w-full flex items-center justify-center gap-2 px-6 py-3.5 bg-primary-500 hover:bg-primary-600 text-white font-semibold rounded-xl transition-colors group"
 							>
-								Start je project
+								{t('comparison.startYourProject')}
 								<ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
 							</a>
 							<p className="text-center text-xs text-gray-500 dark:text-gray-400 mt-3">
-								✓ Betaling pas na goedkeuring design
+								{t('comparison.payAfterApproval')}
 							</p>
 						</div>
 					</motion.div>
@@ -251,15 +231,15 @@ export default function Comparison() {
 					<div className="flex flex-wrap items-center justify-center gap-x-6 gap-y-2 text-sm text-gray-500 dark:text-gray-400">
 						<span className="flex items-center gap-1.5">
 							<Check className="w-4 h-4 text-green-500" />
-							Gratis design
+							{t('comparison.trustIndicators.freeDesign')}
 						</span>
 						<span className="flex items-center gap-1.5">
 							<Check className="w-4 h-4 text-green-500" />
-							Maandelijks opzegbaar
+							{t('comparison.trustIndicators.cancelMonthly')}
 						</span>
 						<span className="flex items-center gap-1.5">
 							<Check className="w-4 h-4 text-green-500" />
-							14 dagen geld-terug
+							{t('comparison.trustIndicators.moneyBack')}
 						</span>
 					</div>
 				</motion.div>
