@@ -18,6 +18,7 @@
 
 import { useState, useEffect, useCallback } from 'react'
 import { useNavigate, useLocation, Outlet } from 'react-router-dom'
+import { useTranslation } from 'react-i18next'
 import { motion, AnimatePresence } from 'framer-motion'
 import {
   LayoutDashboard,
@@ -72,18 +73,6 @@ interface ProjectSummary {
   liveUrl?: string
 }
 
-// Navigation items
-const NAV_ITEMS = [
-  { id: 'overview', label: 'Overzicht', icon: LayoutDashboard, path: '/portaal' },
-  { id: 'projects', label: 'Projecten', icon: FolderOpen, path: '/portaal/projecten' },
-  { id: 'invoices', label: 'Facturen', icon: FileText, path: '/portaal/facturen' },
-  { id: 'changes', label: 'Wijzigingen', icon: Edit3, path: '/portaal/wijzigingen' },
-  { id: 'messages', label: 'Berichten', icon: MessageSquare, path: '/portaal/berichten' },
-  { id: 'analytics', label: 'Analytics', icon: TrendingUp, path: '/portaal/analytics' },
-  { id: 'support', label: 'Support', icon: HelpCircle, path: '/portaal/support' },
-  { id: 'settings', label: 'Instellingen', icon: Settings, path: '/portaal/instellingen' },
-]
-
 // Storage keys
 const SESSION_KEY = 'webstability_customer_session'
 const NOTIFICATIONS_KEY = 'webstability_customer_notifications'
@@ -92,6 +81,19 @@ export default function CustomerPortal() {
   const navigate = useNavigate()
   const location = useLocation()
   const { darkMode, toggleDarkMode } = useDarkMode()
+  const { t } = useTranslation()
+  
+  // Navigation items with translations
+  const navItems = [
+    { id: 'overview', label: t('portal.nav.overview'), icon: LayoutDashboard, path: '/portaal' },
+    { id: 'projects', label: t('portal.nav.projects'), icon: FolderOpen, path: '/portaal/projecten' },
+    { id: 'invoices', label: t('portal.nav.invoices'), icon: FileText, path: '/portaal/facturen' },
+    { id: 'changes', label: t('portal.nav.changes'), icon: Edit3, path: '/portaal/wijzigingen' },
+    { id: 'messages', label: t('portal.nav.messages'), icon: MessageSquare, path: '/portaal/berichten' },
+    { id: 'analytics', label: t('portal.nav.analytics'), icon: TrendingUp, path: '/portaal/analytics' },
+    { id: 'support', label: t('portal.nav.support'), icon: HelpCircle, path: '/portaal/support' },
+    { id: 'settings', label: t('portal.nav.settings'), icon: Settings, path: '/portaal/instellingen' },
+  ]
   
   // State
   const [session, setSession] = useState<CustomerSession | null>(null)
@@ -103,15 +105,15 @@ export default function CustomerPortal() {
   const [showUserMenu, setShowUserMenu] = useState(false)
   
   // Current active nav item
-  const activeNavItem = NAV_ITEMS.find(item => 
+  const activeNavItem = navItems.find(item => 
     location.pathname === item.path || 
     (item.path !== '/portaal' && location.pathname.startsWith(item.path))
-  ) || NAV_ITEMS[0]
+  ) || navItems[0]
 
   // Set page title
   useEffect(() => {
-    document.title = `${activeNavItem.label} | Klantenportaal - Webstability`
-  }, [activeNavItem.label])
+    document.title = `${activeNavItem.label} | ${t('login.customerPortal.title')} - Webstability`
+  }, [activeNavItem.label, t])
 
   // Check session on mount
   useEffect(() => {
@@ -271,7 +273,7 @@ export default function CustomerPortal() {
           {/* Navigation */}
           <nav className="flex-1 overflow-y-auto py-6 px-4">
             <ul className="space-y-1">
-              {NAV_ITEMS.map((item) => {
+              {navItems.map((item) => {
                 const isActive = activeNavItem.id === item.id
                 const Icon = item.icon
                 
@@ -402,13 +404,13 @@ export default function CustomerPortal() {
                         className="absolute right-0 mt-2 w-80 bg-white dark:bg-gray-800 rounded-xl shadow-xl border border-gray-200 dark:border-gray-700 overflow-hidden"
                       >
                         <div className="p-4 border-b border-gray-200 dark:border-gray-700">
-                          <h3 className="font-semibold text-gray-900 dark:text-white">Notificaties</h3>
+                          <h3 className="font-semibold text-gray-900 dark:text-white">{t('portal.notifications')}</h3>
                         </div>
                         <div className="max-h-96 overflow-y-auto">
                           {notifications.length === 0 ? (
                             <div className="p-6 text-center text-gray-500 dark:text-gray-400">
                               <Bell className="w-8 h-8 mx-auto mb-2 opacity-50" />
-                              <p className="text-sm">Geen notificaties</p>
+                              <p className="text-sm">{t('portal.noNotifications')}</p>
                             </div>
                           ) : (
                             notifications.slice(0, 10).map((notification) => (
@@ -464,7 +466,7 @@ export default function CustomerPortal() {
                               }}
                               className="w-full text-center text-sm text-primary-600 dark:text-primary-400 hover:underline"
                             >
-                              Alle notificaties bekijken
+                              {t('portal.viewAllNotifications')}
                             </button>
                           </div>
                         )}
@@ -508,14 +510,14 @@ export default function CustomerPortal() {
                             className="w-full flex items-center gap-3 px-4 py-2 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition"
                           >
                             <Settings className="w-4 h-4" />
-                            Instellingen
+                            {t('portal.nav.settings')}
                           </button>
                           <button
                             onClick={handleLogout}
                             className="w-full flex items-center gap-3 px-4 py-2 text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg transition"
                           >
                             <LogOut className="w-4 h-4" />
-                            Uitloggen
+                            {t('portal.logout')}
                           </button>
                         </div>
                       </motion.div>

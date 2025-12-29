@@ -433,15 +433,16 @@ function CheckboxQuestion({ question, value, onChange, disabled, darkMode, packa
 
 // Single Color Picker (legacy)
 function ColorQuestion({ value, onChange, darkMode }: Pick<QuestionProps, 'value' | 'onChange' | 'darkMode'>) {
+  const { t } = useTranslation()
   const presetColors = [
-    { value: '#10B981', label: 'Groen' },
-    { value: '#3B82F6', label: 'Blauw' },
-    { value: '#8B5CF6', label: 'Paars' },
-    { value: '#F59E0B', label: 'Oranje' },
-    { value: '#EF4444', label: 'Rood' },
-    { value: '#EC4899', label: 'Roze' },
-    { value: '#14B8A6', label: 'Teal' },
-    { value: '#1F2937', label: 'Donker' },
+    { value: '#10B981', labelKey: 'green' },
+    { value: '#3B82F6', labelKey: 'blue' },
+    { value: '#8B5CF6', labelKey: 'purple' },
+    { value: '#F59E0B', labelKey: 'orange' },
+    { value: '#EF4444', labelKey: 'red' },
+    { value: '#EC4899', labelKey: 'pink' },
+    { value: '#14B8A6', labelKey: 'teal' },
+    { value: '#1F2937', labelKey: 'dark' },
   ]
 
   return (
@@ -457,7 +458,7 @@ function ColorQuestion({ value, onChange, darkMode }: Pick<QuestionProps, 'value
               : darkMode ? 'border-gray-700' : 'border-gray-200'
           }`}
           style={{ backgroundColor: color.value }}
-          title={color.label}
+          title={t(`inlineOnboardingNew.colors.${color.labelKey}`)}
         />
       ))}
       <label className={`w-12 h-12 rounded-xl border-2 cursor-pointer flex items-center justify-center ${
@@ -477,24 +478,25 @@ function ColorQuestion({ value, onChange, darkMode }: Pick<QuestionProps, 'value
 
 // Multi Color Picker (max 4 colors)
 function MultiColorQuestion({ value, onChange, darkMode }: Pick<QuestionProps, 'value' | 'onChange' | 'darkMode'>) {
+  const { t } = useTranslation()
   const selectedColors: string[] = Array.isArray(value) ? value : []
   const MAX_COLORS = 4
 
   const presetColors = [
-    { value: '#10B981', label: 'Groen' },
-    { value: '#3B82F6', label: 'Blauw' },
-    { value: '#8B5CF6', label: 'Paars' },
-    { value: '#F59E0B', label: 'Oranje' },
-    { value: '#EF4444', label: 'Rood' },
-    { value: '#EC4899', label: 'Roze' },
-    { value: '#14B8A6', label: 'Teal' },
-    { value: '#6366F1', label: 'Indigo' },
-    { value: '#F97316', label: 'Oranje' },
-    { value: '#84CC16', label: 'Lime' },
-    { value: '#06B6D4', label: 'Cyan' },
-    { value: '#1F2937', label: 'Donkergrijs' },
-    { value: '#111827', label: 'Zwart' },
-    { value: '#F3F4F6', label: 'Lichtgrijs' },
+    { value: '#10B981', labelKey: 'green' },
+    { value: '#3B82F6', labelKey: 'blue' },
+    { value: '#8B5CF6', labelKey: 'purple' },
+    { value: '#F59E0B', labelKey: 'orange' },
+    { value: '#EF4444', labelKey: 'red' },
+    { value: '#EC4899', labelKey: 'pink' },
+    { value: '#14B8A6', labelKey: 'teal' },
+    { value: '#6366F1', labelKey: 'indigo' },
+    { value: '#F97316', labelKey: 'orange' },
+    { value: '#84CC16', labelKey: 'lime' },
+    { value: '#06B6D4', labelKey: 'cyan' },
+    { value: '#1F2937', labelKey: 'darkGrey' },
+    { value: '#111827', labelKey: 'black' },
+    { value: '#F3F4F6', labelKey: 'lightGrey' },
   ]
 
   const toggleColor = (color: string) => {
@@ -518,14 +520,14 @@ function MultiColorQuestion({ value, onChange, darkMode }: Pick<QuestionProps, '
         <div className={`p-3 rounded-xl ${darkMode ? 'bg-gray-800' : 'bg-gray-100'}`}>
           <div className="flex items-center justify-between mb-2">
             <span className={`text-xs font-medium ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>
-              Geselecteerd ({selectedColors.length}/{MAX_COLORS})
+              {t('inlineOnboardingNew.selected', { count: selectedColors.length, max: MAX_COLORS })}
             </span>
             <button
               type="button"
               onClick={() => onChange([])}
               className="text-xs text-red-500 hover:text-red-400"
             >
-              Alles wissen
+              {t('inlineOnboardingNew.clearAll')}
             </button>
           </div>
           <div className="flex gap-2">
@@ -575,7 +577,7 @@ function MultiColorQuestion({ value, onChange, darkMode }: Pick<QuestionProps, '
                       : 'border-gray-200 hover:scale-105'
               }`}
               style={{ backgroundColor: color.value }}
-              title={color.label}
+              title={t(`inlineOnboardingNew.colors.${color.labelKey}`)}
             />
           )
         })}
@@ -584,7 +586,7 @@ function MultiColorQuestion({ value, onChange, darkMode }: Pick<QuestionProps, '
         {selectedColors.length < MAX_COLORS && (
           <label className={`w-10 h-10 rounded-lg border-2 cursor-pointer flex items-center justify-center ${
             darkMode ? 'border-gray-700 bg-gray-800' : 'border-gray-200 bg-gray-100'
-          }`} title="Kies eigen kleur">
+          }`} title={t('inlineOnboardingNew.chooseCustomColor')}>
             <input
               type="color"
               onChange={(e) => addCustomColor(e.target.value)}
@@ -605,19 +607,20 @@ function MultiColorQuestion({ value, onChange, darkMode }: Pick<QuestionProps, '
 
 // Font Selector with live preview
 function FontQuestion({ value, onChange, darkMode }: Pick<QuestionProps, 'value' | 'onChange' | 'darkMode'>) {
+  const { t } = useTranslation()
   const fonts = [
-    { value: 'inter', label: 'Inter', style: 'Modern & Clean', family: "'Inter', sans-serif", googleFont: 'Inter:wght@400;600;700' },
-    { value: 'poppins', label: 'Poppins', style: 'Vriendelijk & Modern', family: "'Poppins', sans-serif", googleFont: 'Poppins:wght@400;600;700' },
-    { value: 'playfair', label: 'Playfair Display', style: 'Elegant & Klassiek', family: "'Playfair Display', serif", googleFont: 'Playfair+Display:wght@400;600;700' },
-    { value: 'montserrat', label: 'Montserrat', style: 'Professioneel & Strak', family: "'Montserrat', sans-serif", googleFont: 'Montserrat:wght@400;600;700' },
-    { value: 'roboto', label: 'Roboto', style: 'Neutraal & Leesbaar', family: "'Roboto', sans-serif", googleFont: 'Roboto:wght@400;500;700' },
-    { value: 'opensans', label: 'Open Sans', style: 'Helder & Toegankelijk', family: "'Open Sans', sans-serif", googleFont: 'Open+Sans:wght@400;600;700' },
-    { value: 'lato', label: 'Lato', style: 'Warm & Zakelijk', family: "'Lato', sans-serif", googleFont: 'Lato:wght@400;700' },
-    { value: 'raleway', label: 'Raleway', style: 'Elegant & Licht', family: "'Raleway', sans-serif", googleFont: 'Raleway:wght@400;600;700' },
-    { value: 'merriweather', label: 'Merriweather', style: 'Klassiek & Betrouwbaar', family: "'Merriweather', serif", googleFont: 'Merriweather:wght@400;700' },
-    { value: 'nunito', label: 'Nunito', style: 'Speels & Rond', family: "'Nunito', sans-serif", googleFont: 'Nunito:wght@400;600;700' },
-    { value: 'sourcesans', label: 'Source Sans 3', style: 'Tech & Modern', family: "'Source Sans 3', sans-serif", googleFont: 'Source+Sans+3:wght@400;600;700' },
-    { value: 'dmserif', label: 'DM Serif Display', style: 'Luxe & Statement', family: "'DM Serif Display', serif", googleFont: 'DM+Serif+Display:wght@400' },
+    { value: 'inter', label: 'Inter', styleKey: 'inter', family: "'Inter', sans-serif", googleFont: 'Inter:wght@400;600;700' },
+    { value: 'poppins', label: 'Poppins', styleKey: 'poppins', family: "'Poppins', sans-serif", googleFont: 'Poppins:wght@400;600;700' },
+    { value: 'playfair', label: 'Playfair Display', styleKey: 'playfair', family: "'Playfair Display', serif", googleFont: 'Playfair+Display:wght@400;600;700' },
+    { value: 'montserrat', label: 'Montserrat', styleKey: 'montserrat', family: "'Montserrat', sans-serif", googleFont: 'Montserrat:wght@400;600;700' },
+    { value: 'roboto', label: 'Roboto', styleKey: 'roboto', family: "'Roboto', sans-serif", googleFont: 'Roboto:wght@400;500;700' },
+    { value: 'opensans', label: 'Open Sans', styleKey: 'opensans', family: "'Open Sans', sans-serif", googleFont: 'Open+Sans:wght@400;600;700' },
+    { value: 'lato', label: 'Lato', styleKey: 'lato', family: "'Lato', sans-serif", googleFont: 'Lato:wght@400;700' },
+    { value: 'raleway', label: 'Raleway', styleKey: 'raleway', family: "'Raleway', sans-serif", googleFont: 'Raleway:wght@400;600;700' },
+    { value: 'merriweather', label: 'Merriweather', styleKey: 'merriweather', family: "'Merriweather', serif", googleFont: 'Merriweather:wght@400;700' },
+    { value: 'nunito', label: 'Nunito', styleKey: 'nunito', family: "'Nunito', sans-serif", googleFont: 'Nunito:wght@400;600;700' },
+    { value: 'sourcesans', label: 'Source Sans 3', styleKey: 'sourcesans', family: "'Source Sans 3', sans-serif", googleFont: 'Source+Sans+3:wght@400;600;700' },
+    { value: 'dmserif', label: 'DM Serif Display', styleKey: 'dmserif', family: "'DM Serif Display', serif", googleFont: 'DM+Serif+Display:wght@400' },
   ]
 
   // Load Google Fonts
@@ -667,7 +670,7 @@ function FontQuestion({ value, onChange, darkMode }: Pick<QuestionProps, 'value'
               {font.label}
             </span>
             <span className={`text-xs ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>
-              {font.style}
+              {t(`inlineOnboardingNew.fonts.${font.styleKey}.style`)}
             </span>
           </button>
         ))}
@@ -768,6 +771,7 @@ function TagsQuestion({ question, value, onChange, disabled, darkMode }: Questio
 
 // Upload Button (links to Google Drive)
 function UploadQuestion({ question, googleDriveUrl, darkMode }: QuestionProps) {
+  const { t } = useTranslation()
   if (!googleDriveUrl) return null
   
   return (
@@ -782,7 +786,7 @@ function UploadQuestion({ question, googleDriveUrl, darkMode }: QuestionProps) {
       }`}
     >
       <Upload className="w-4 h-4" />
-      {question.uploadButtonText || 'Bestand uploaden'}
+      {question.uploadButtonText || t('common.uploadFile')}
       <ExternalLink className="w-3.5 h-3.5" />
     </a>
   )
@@ -1047,12 +1051,11 @@ function SectionComponent({
                       <div className="flex items-center gap-2 mb-3">
                         <Image className="w-5 h-5 text-purple-500" />
                         <span className={`font-medium ${darkMode ? 'text-white' : 'text-gray-900'}`}>
-                          💡 Stockfoto suggesties
+                          💡 {t('inlineOnboardingNew.stockPhotoSuggestions')}
                         </span>
                       </div>
                       <p className={`text-sm mb-4 ${darkMode ? 'text-gray-400' : 'text-gray-600'}`}>
-                        We zoeken gratis stockfoto's voor je op basis van je bedrijf. 
-                        Selecteer foto's die je mooi vindt - we gebruiken deze als inspiratie.
+                        {t('inlineOnboardingNew.stockPhotoDescription')}
                       </p>
                       <StockPhotoSuggestions
                         businessName={answers['companyName'] || ''}

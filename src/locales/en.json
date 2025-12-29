@@ -36,7 +36,9 @@
     "free": "Free",
     "popular": "Popular",
     "new": "New",
-    "recommended": "Recommended"
+    "recommended": "Recommended",
+    "uploadFile": "Upload file",
+    "upload": "Upload"
   },
   "nav": {
     "home": "Home",
@@ -73,6 +75,30 @@
       "portfolioDesc": "View our work",
       "contact": "Contact",
       "contactDesc": "Get in touch"
+    },
+    "loginModal": {
+      "multipleProjects": "Multiple projects found. Choose the project you want to view:",
+      "enterCredentials": "Enter your email address and password to view your project status.",
+      "email": "Email address",
+      "emailPlaceholder": "your@email.com",
+      "password": "Password",
+      "passwordPlaceholder": "Your project password",
+      "viewProjectStatus": "View project status",
+      "loggingIn": "Logging in...",
+      "forgotPassword": "Forgot password?",
+      "checkInbox": "Check your inbox!",
+      "recoverySuccessProjectId": "If there are projects linked to this email address, you'll receive an email with login links within a few minutes.",
+      "recoverySuccessPassword": "If this email address is linked to a project, you'll receive an email with a link to reset your password.",
+      "close": "Close",
+      "sendLoginLinkTab": "Send login link",
+      "forgotPasswordTab": "Forgot password",
+      "sendLoginLinkDesc": "Enter your email address and we'll send you a link to log in directly.",
+      "forgotPasswordDesc": "Enter your email address. We'll send a link to reset your password.",
+      "sending": "Sending...",
+      "sendLoginLink": "Send login link",
+      "sendResetLink": "Send reset link",
+      "backToLogin": "← Back to login",
+      "invalidCredentials": "Invalid email or password"
     }
   },
   "hero": {
@@ -626,6 +652,47 @@
     "button": "Get started",
     "secondaryButton": "Schedule a call"
   },
+  "paymentModal": {
+    "title": "Complete Payment",
+    "subtitle": "Secure payment",
+    "package": "Your package",
+    "setupFee": "One-time setup fee",
+    "monthly": "Monthly subscription",
+    "dueNow": "Due now",
+    "monthlyNote": "Monthly subscription starts after website delivery",
+    "payNow": "Pay securely with iDEAL",
+    "processing": "Redirecting to payment...",
+    "secure": "Secure",
+    "encrypted": "Encrypted",
+    "cancelNote": "Cancel monthly after 3 months. No hidden costs.",
+    "discount": {
+      "label": "Discount code",
+      "placeholder": "Enter code",
+      "apply": "Apply",
+      "applied": "Discount",
+      "remove": "Remove",
+      "enterCode": "Enter a discount code",
+      "invalid": "Invalid discount code",
+      "error": "Could not verify discount code"
+    },
+    "included": {
+      "title": "Included in your subscription",
+      "hosting": "Hosting & SSL certificate",
+      "maintenance": "Maintenance & updates",
+      "support": "Personal support",
+      "changes": "Monthly changes"
+    },
+    "error": {
+      "general": "Something went wrong. Please try again.",
+      "network": "Connection error. Check your internet."
+    }
+  },
+  "mobileNav": {
+    "home": "Home",
+    "chat": "Chat",
+    "help": "Help",
+    "account": "Account"
+  },
   "footer": {
     "description": "Professional websites for entrepreneurs. No hassle, just a beautiful website that works.",
     "sections": {
@@ -782,7 +849,8 @@
     "tabs": {
       "profile": "My details",
       "payments": "Payments",
-      "package": "My package"
+      "package": "My package",
+      "messages": "Messages"
     },
     "yourBusiness": "Your business",
     "copied": "Copied!",
@@ -791,10 +859,15 @@
     "saving": "Saving...",
     "cancel": "Cancel",
     "saved": "Saved",
-    "contactName": "Name",
-    "contactEmail": "Email",
+    "contactDetails": "Contact details",
+    "contactName": "Contact person",
+    "contactNamePlaceholder": "Your name",
+    "contactEmail": "Email address",
+    "contactEmailPlaceholder": "email@example.com",
     "contactPhone": "Phone number",
+    "contactPhonePlaceholder": "06 12345678",
     "businessName": "Business name",
+    "businessNamePlaceholder": "Your business name",
     "projectId": "Project ID",
     "projectInfo": "Project information",
     "createdAt": "Created on",
@@ -856,7 +929,6 @@
     "chatSupport": "Support via chat",
     "chatSupportDesc": "Questions? We help you quickly",
     "cancelAnytime": "💡 Cancel anytime - no long contracts, no hassle",
-    "contactDetails": "Contact details",
     "notFilled": "Not filled in",
     "company": "Company",
     "contact": "Contact",
@@ -880,7 +952,88 @@
     "uploadFiles": "Upload files",
     "tips": "Tips",
     "includedInPackage": "Included in your package",
-    "andMore": "+{{count}} more"
+    "andMore": "+{{count}} more",
+    "perMonth": "/month",
+    "phases": {
+      "onboarding": {
+        "title": "Fill in your details",
+        "description": "Answer a few questions about your business and style preferences. This takes about 10 minutes.",
+        "clientTasks": [
+          "Business name and description",
+          "Upload logo (or let us create one)",
+          "Color and style preferences",
+          "Contact information for the website"
+        ],
+        "tips": [
+          "Don't have a logo yet? No problem, we can design one for you",
+          "You can always come back to adjust your answers"
+        ]
+      },
+      "design": {
+        "title": "We're designing your website",
+        "description": "Our design team is working on your website. This typically takes 5-7 business days.",
+        "clientTasks": [],
+        "tips": [
+          "You'll receive an email when the preview is ready",
+          "Check out our portfolio for inspiration"
+        ]
+      },
+      "feedback": {
+        "title": "Review your design",
+        "description": "Your website preview is ready! Take a look and let us know what you think.",
+        "clientTasks": [
+          "Review the preview carefully",
+          "Check texts for errors",
+          "Submit your feedback via the form"
+        ],
+        "tips": [
+          "You have 2 revision rounds included",
+          "Be specific in your feedback for the best results"
+        ]
+      },
+      "revisie": {
+        "title": "Processing your feedback",
+        "description": "We're adjusting your website based on your feedback. This takes 1-2 business days.",
+        "clientTasks": [],
+        "tips": [
+          "You'll receive an email when the adjustments are ready"
+        ]
+      },
+      "payment": {
+        "title": "Complete payment",
+        "description": "Your website is approved! Complete the payment to go live.",
+        "clientTasks": [
+          "Choose your payment method",
+          "Complete the payment"
+        ],
+        "tips": [
+          "Payment is cancellable monthly after 3 months",
+          "Your first month starts after going live"
+        ]
+      },
+      "domain": {
+        "title": "Configure domain",
+        "description": "We're transferring and configuring your domain for launch.",
+        "clientTasks": [
+          "Request authorization code from your current provider",
+          "Share the authorization code with us",
+          "Approve domain transfer via email"
+        ],
+        "tips": [
+          "No domain? We'll register a new one for you",
+          "Domain transfer typically takes 1-5 business days"
+        ]
+      },
+      "live": {
+        "title": "Your website is live! 🎉",
+        "description": "Congratulations! Your website is now accessible to everyone.",
+        "clientTasks": [],
+        "tips": [
+          "Share your website on social media",
+          "Ask customers for reviews"
+        ]
+      }
+    }
   },
   "dashboard": {
     "welcome": "Welcome back",
@@ -2114,6 +2267,12 @@
     "types": "Supported: {{types}}"
   },
   "developer": {
+    "login": {
+      "title": "Developer Login",
+      "password": "Password",
+      "submit": "Login",
+      "error": "Incorrect password"
+    },
     "dashboard": "Developer Dashboard",
     "projects": "Projects",
     "clients": "Clients",
@@ -2248,7 +2407,117 @@
     },
     "network": "No internet connection",
     "unauthorized": "You're not logged in",
-    "forbidden": "You don't have access to this page"
+    "forbidden": "You don't have access to this page",
+    "generic": "Something went wrong. Please try again.",
+    "tryLater": "An error occurred. Please try again later.",
+    "validation": {
+      "passwordMinLength": "Password must be at least 4 characters.",
+      "passwordMismatch": "Passwords do not match.",
+      "termsRequired": "You must agree to the terms and conditions.",
+      "invalidCredentials": "Invalid credentials"
+    },
+    "permissions": {
+      "noDeveloperRights": "This account doesn't have developer rights",
+      "noAdminRights": "This account doesn't have admin rights",
+      "noMarketingRights": "This account doesn't have marketing rights"
+    },
+    "api": {
+      "submitFailed": "Could not submit. Please try again.",
+      "loadPhotosFailed": "Could not load photos. Please try again later.",
+      "sendReminderFailed": "Could not send the reminder",
+      "sendFailed": "Something went wrong while sending"
+    }
+  },
+  "phases": {
+    "revision": {
+      "title": "Processing your feedback",
+      "description": "Our designer is working on the adjustments. You'll receive a new preview soon.",
+      "round": "Revision round",
+      "progress": "Progress",
+      "inProgress": "In progress",
+      "viewCurrent": "View current",
+      "sendMessage": "Send message",
+      "tip": "You'll receive an email when the new preview is ready",
+      "estimated": "Expected completion",
+      "steps": {
+        "received": "Feedback received",
+        "analyzing": "Analyzing changes",
+        "implementing": "Implementing adjustments",
+        "finalizing": "Finalizing new preview"
+      }
+    },
+    "payment": {
+      "title": "Complete your payment",
+      "titlePaid": "Payment received! ✓",
+      "titleOverdue": "Payment overdue",
+      "description": "Your design is approved! Complete the payment to go live.",
+      "descriptionPaid": "We're preparing to take your website live!",
+      "packageLabel": "Your package",
+      "setupFee": "One-time setup",
+      "monthly": "Monthly subscription",
+      "dueNow": "Due now",
+      "monthlyStarts": "Monthly subscription starts after website is live",
+      "payNow": "Pay securely with iDEAL",
+      "secure": "Secure",
+      "encrypted": "Encrypted",
+      "included": "Included in your subscription",
+      "invoices": "Invoices",
+      "thankYou": "Thank you for your payment!",
+      "nextSteps": "We'll now configure your domain and prepare for launch.",
+      "questions": "Questions about payment?",
+      "features": {
+        "hosting": "Hosting & SSL included",
+        "maintenance": "Maintenance & updates",
+        "support": "Personal support"
+      }
+    },
+    "domain": {
+      "title": "Setting up your domain",
+      "description": "We're configuring your domain and preparing your website for launch.",
+      "progress": "Setup progress",
+      "configure": "Configure domain & email",
+      "updateConfig": "Update configuration",
+      "connected": "Connected",
+      "inProgress": "In progress",
+      "pending": "Pending",
+      "active": "Active",
+      "yourDomain": "Your domain",
+      "needHelp": "Need help with domain configuration?",
+      "whatNext": "What happens next?",
+      "next1": "We verify your domain settings",
+      "next2": "SSL certificate is automatically installed",
+      "next3": "Final checks and your website goes live! 🚀",
+      "steps": {
+        "payment": "Payment received",
+        "paymentDesc": "Your payment has been processed",
+        "domain": "Domain configuration",
+        "domainDesc": "Configure your domain",
+        "email": "Email setup",
+        "emailDesc": "Set up business email",
+        "ssl": "SSL certificate",
+        "sslDesc": "Secure connection (HTTPS)",
+        "final": "Final checks & go live",
+        "finalDesc": "Last verifications before launch"
+      }
+    },
+    "live": {
+      "title": "Your website is live!",
+      "titleNew": "Congratulations! 🎉",
+      "description": "Manage your website and request changes here.",
+      "descriptionNew": "Your website is now live and accessible to the world!",
+      "clickToVisit": "Click to visit your website",
+      "daysLive": "Days live",
+      "changesUsed": "Changes this month",
+      "requestChange": "Request change",
+      "pending": "pending",
+      "viewAnalytics": "Analytics",
+      "recentChanges": "Recent changes",
+      "completed": "Done",
+      "inProgress": "In progress",
+      "leaveReview": "Leave a review",
+      "reviewHelp": "Help other entrepreneurs find us",
+      "needHelp": "Need help or support?"
+    }
   },
   "language": {
     "select": "Language",
@@ -2661,6 +2930,22 @@
       "description": "Also check your spam folder"
     }
   },
+  "portal": {
+    "nav": {
+      "overview": "Overview",
+      "projects": "Projects",
+      "invoices": "Invoices",
+      "changes": "Changes",
+      "messages": "Messages",
+      "analytics": "Analytics",
+      "support": "Support",
+      "settings": "Settings"
+    },
+    "notifications": "Notifications",
+    "noNotifications": "No notifications",
+    "viewAllNotifications": "View all notifications",
+    "logout": "Log out"
+  },
   "login": {
     "title": "Login",
     "subtitle": "Welcome back to Webstability",
@@ -2673,7 +2958,39 @@
     "backToWebsite": "Back to website",
     "footer": "All rights reserved.",
     "invalidCredentials": "Invalid credentials",
-    "error": "Something went wrong. Please try again."
+    "error": "Something went wrong. Please try again.",
+    "customerPortal": {
+      "title": "Customer Portal",
+      "subtitle": "Log in to manage your project(s)",
+      "emailTab": "Email",
+      "passwordTab": "Password",
+      "emailLabel": "Email address",
+      "emailPlaceholder": "your@email.com",
+      "passwordLabel": "Password",
+      "passwordPlaceholder": "Your password",
+      "secureLoginInfo": "We'll send you a secure login link. No password needed.",
+      "sendLoginLink": "Send login link",
+      "sending": "Sending...",
+      "loginWithPassword": "Log in",
+      "loggingIn": "Logging in...",
+      "successTitle": "Check your email!",
+      "successMessage": "We've sent you a login link. Check your inbox.",
+      "checkSpam": "Also check your spam folder if you don't see it",
+      "noAccount": "Don't have an account yet?",
+      "startProject": "Start a project",
+      "forgotPassword": "Forgot password?",
+      "resetPassword": "Reset password",
+      "backToLogin": "Back to login",
+      "invalidCredentials": "Invalid credentials",
+      "noAccountFound": "No account found with this email address",
+      "somethingWentWrong": "Something went wrong. Please try again.",
+      "invalidOrExpiredLink": "Invalid or expired link",
+      "lightTheme": "Light theme",
+      "darkTheme": "Dark theme",
+      "projectsFound": "Multiple projects found. Choose the project you want to view:",
+      "enterCredentials": "Enter your email address and password to view your project status.",
+      "projectId": "Project ID"
+    }
   },
   "dronePage": {
     "hero": {
@@ -3296,7 +3613,9 @@
     "pay": "Pay",
     "invoicesPaidCount": "{{paid}} of {{total}} invoices paid",
     "seoDescription": "View the progress of the project for {{businessName}}. Current phase: {{phase}}.",
-    "seoDescriptionDefault": "View the progress of your website project at Webstability."
+    "seoDescriptionDefault": "View the progress of your website project at Webstability.",
+    "havingTrouble": "Having trouble logging in?",
+    "contactUs": "Contact us"
   },
   "designFeedback": {
     "title": "Design Feedback",
@@ -4190,5 +4509,559 @@
       "checkLater": "We're configuring your analytics. Check back later!"
     },
     "developerResponse": "Response from developer:"
+  },
+  "livePortal": {
+    "websiteIsLive": "Your website is",
+    "live": "LIVE",
+    "viewWebsite": "View website",
+    "requestChange": "Request change",
+    "requestChangeDesc": "Request a change",
+    "viewYourWebsite": "View your website",
+    "websiteStatistics": "Website statistics",
+    "websiteLaunchedOn": "Website launched on",
+    "lastBackup": "Last backup",
+    "autoBackupDesc": "Your website is automatically backed up",
+    "tipsForWebsite": "Tips for your website",
+    "shareWebsite": "Share your website",
+    "shareWebsiteDesc": "Post your new website on social media!",
+    "addToGoogle": "Add to Google",
+    "addToGoogleDesc": "Add your website URL to your Google profile",
+    "priority": {
+      "low": "Low",
+      "lowDesc": "No rush",
+      "normal": "Normal",
+      "normalDesc": "Within a week",
+      "urgent": "Urgent",
+      "urgentDesc": "As soon as possible"
+    },
+    "faq": {
+      "howToRequestChange": "How do I request a change?",
+      "howToRequestChangeAnswer": "Click \"Request change\" and describe what you want to change. We'll contact you within 24 hours.",
+      "whatsIncluded": "What's included in my subscription?",
+      "whatsIncludedAnswer": "Hosting, SSL certificate, daily backups, security updates and 2 small changes per month.",
+      "canICancel": "Can I cancel anytime?",
+      "canICancelAnswer": "Yes, you can cancel monthly. After cancellation, your website stays online for 30 more days.",
+      "howToContact": "How can I reach you?",
+      "howToContactAnswer": "Via the contact form, WhatsApp or send a message to info@webstability.nl."
+    },
+    "sendMessage": "Send a message",
+    "yourMessage": "Your message",
+    "messagePlaceholder": "Describe what you want to change...",
+    "send": "Send",
+    "sending": "Sending...",
+    "messageSent": "Message sent!",
+    "contactDetails": "Contact details",
+    "manageContactDetails": "Manage your contact details",
+    "package": "Package",
+    "yourPackage": "Your package",
+    "accountSettings": "Account settings",
+    "nav": {
+      "overview": "Overview",
+      "adjustment": "Adjustment",
+      "contact": "Contact",
+      "account": "Account"
+    },
+    "quickStats": {
+      "package": "Package",
+      "revisions": "Revisions",
+      "projectId": "Project ID"
+    },
+    "quickActions": {
+      "chatWithDeveloper": "Chat with developer",
+      "modifyDetails": "Modify details",
+      "website": "Website"
+    },
+    "statistics": {
+      "visitorsWeek": "Visitors (week)",
+      "pageViews": "Page views",
+      "uptime": "Uptime",
+      "sslScore": "SSL Score",
+      "comingSoon": "Analytics coming soon • Hosting & SSL included"
+    },
+    "recentUpdates": {
+      "title": "Recent updates",
+      "revisionsProcessed": "revision(s) processed",
+      "changesApplied": "Changes applied",
+      "dailyBackupActive": "Daily backup active"
+    },
+    "tips": {
+      "googleMyBusiness": "Google My Business",
+      "keepContentUpdated": "Keep content up to date",
+      "askForUpdates": "Ask us for updates when needed"
+    },
+    "changeRequest": {
+      "title": "Request change",
+      "description": "Describe what you want to change",
+      "placeholder": "E.g. Please update the text on the homepage to...",
+      "priority": "Priority",
+      "submitRequest": "Submit request",
+      "requestSent": "Request sent!",
+      "willContactYou": "We'll contact you as soon as possible.",
+      "sendAnother": "Send another request"
+    },
+    "contact": {
+      "directContact": "Direct contact with your developer",
+      "typeMessage": "Type your message...",
+      "sendMessage": "Send message",
+      "messageSent": "Message sent!",
+      "otherWays": "Other ways to contact us",
+      "email": "Email",
+      "whatsapp": "WhatsApp",
+      "directReply": "Direct reply",
+      "phone": "Phone",
+      "businessHours": "Mon-Fri 9:00 - 17:00"
+    },
+    "account": {
+      "businessName": "Business name",
+      "contactPerson": "Contact person",
+      "emailAddress": "Email address",
+      "phoneNumber": "Phone number",
+      "cancel": "Cancel",
+      "save": "Save"
+    },
+    "password": {
+      "title": "Change password",
+      "secureAccount": "Secure your account",
+      "changePassword": "Change password",
+      "sendLinkDescription": "We'll send a secure link to your email address ({email}) where you can change your password.",
+      "sendLink": "Send link",
+      "emailSent": "Email sent!",
+      "checkInbox": "Check your inbox for the reset link.",
+      "close": "Close"
+    },
+    "projectInfo": {
+      "title": "Project information",
+      "details": "Details about your project",
+      "projectId": "Project ID",
+      "package": "Package",
+      "status": "Status",
+      "live": "Live",
+      "website": "Website"
+    },
+    "footer": {
+      "secured": "Secured",
+      "available247": "Available 24/7",
+      "premiumSupport": "Premium support"
+    },
+    "errors": {
+      "couldNotSave": "Could not save data",
+      "somethingWentWrong": "Something went wrong. Please try again.",
+      "couldNotSendResetEmail": "Could not send reset email"
+    }
+  },
+  "growthTools": {
+    "churnAlert": {
+      "churnRisk": "Churn risk!",
+      "checkInNeeded": "Check-in needed",
+      "daysNoActivity": "days no activity",
+      "sendCheckIn": "Send check-in",
+      "later": "Later"
+    },
+    "upsell": {
+      "morePages": "Need more pages?",
+      "atLimit": "You're at your limit. Upgrade for more space.",
+      "unlockFeature": "Unlock this feature?",
+      "availableHigherPlan": "Available in a higher plan.",
+      "websiteGrowing": "Your website is growing!",
+      "timeForMore": "Time for more possibilities?",
+      "oneYearCustomer": "1 year customer!",
+      "upgradeDiscount": "Upgrade now with 10% discount as a thank you.",
+      "readyForMore": "Ready for more?",
+      "discoverMore": "Discover what else is possible.",
+      "upgradeTo": "Upgrade to",
+      "notNow": "Not now"
+    },
+    "referral": {
+      "title": "Earn €25 per referral",
+      "shareCode": "Share your code, get discount!",
+      "referrals": "Referrals",
+      "earned": "Earned",
+      "yourCode": "Your code",
+      "copied": "Copied!",
+      "copyLink": "Copy link",
+      "share": "Share",
+      "youGet25": "You get €25 discount, your friend too. Win-win!",
+      "needWebsite": "Need a professional website?",
+      "use25Off": "Use my code for €25 off your first month!"
+    },
+    "packageValue": {
+      "yourPackage": "Your package",
+      "perMonth": "/month",
+      "realValue": "Real value",
+      "youSave": "You save",
+      "totalSaved": "Total saved in",
+      "months": "months",
+      "whatsIncluded": "What's in your package?",
+      "hosting": "Hosting",
+      "sslCertificate": "SSL certificate",
+      "dailyBackups": "Daily backups",
+      "updatesAndSecurity": "Updates & security",
+      "changesPerMonth": "changes/month",
+      "blogFunction": "Blog function",
+      "analytics": "Analytics",
+      "bookingSystem": "Booking system",
+      "liveChat": "Live chat",
+      "multilingual": "Multilingual",
+      "premiumHosting": "Premium hosting",
+      "unlimitedChanges": "Unlimited changes"
+    },
+    "satisfaction": {
+      "howSatisfied": "How satisfied are you?",
+      "feedbackHelps": "Your feedback helps us improve",
+      "great": "Great! Would you like to leave a review?",
+      "thanks": "Thanks! We'll contact you to improve."
+    },
+    "milestone": {
+      "oneMonth": "1 Month!",
+      "threeMonths": "3 Months!",
+      "sixMonths": "Half Year!",
+      "oneYear": "1 Year!",
+      "websiteOneMonth": "Your website has been live for a month!",
+      "freeSeoCheck": "Free SEO check",
+      "youGetSeoAnalysis": "You get a free SEO analysis!",
+      "tenPercentUpgrade": "10% discount upgrade",
+      "upgradeNow10": "Upgrade now with 10% discount!",
+      "freeRedesign": "Free redesign",
+      "youGetRedesign": "You get a free mini-redesign!",
+      "yourReward": "Your reward",
+      "claimReward": "Claim reward",
+      "close": "Close"
+    }
+  },
+  "klantOnboarding": {
+    "steps": {
+      "company": "Company",
+      "branding": "Branding",
+      "media": "Media",
+      "extra": "Extra"
+    },
+    "stepProgress": "Step {{current}} of {{total}}: {{step}}",
+    "projectNotFound": "Project not found",
+    "projectNotFoundDesc": "This project ID does not exist. Check your email for the correct link.",
+    "enterProjectId": "Enter your Project ID to get started",
+    "onboardingChecklist": "Onboarding Checklist",
+    "onboardingCompleted": "Onboarding completed! 🎉",
+    "submittedOn": "You submitted this form on",
+    "editButton": "Edit answers",
+    "viewStatus": "View project status",
+    "businessInfo": "Business information",
+    "aboutBusiness": "About your business",
+    "servicesProducts": "Services/Products",
+    "branding": "Branding",
+    "logo": "Logo",
+    "colors": "Colors",
+    "errors": {
+      "submitFailed": "Something went wrong. Please try again or contact us.",
+      "sendFailed": "Sending failed"
+    },
+    "nextSteps": {
+      "driveFolder": {
+        "title": "Google Drive folder",
+        "description": "You can find the Google Drive link in your welcome email. Upload your logo, photos and other files here.",
+        "time": "In your email"
+      },
+      "firstDesign": {
+        "title": "First design",
+        "description": "We'll start working on your website and send you the first design within 5-7 business days.",
+        "time": "5-7 days"
+      },
+      "feedbackLive": {
+        "title": "Feedback & live!",
+        "description": "After your approval, we'll make the final adjustments and your website goes live.",
+        "time": "After approval"
+      }
+    }
+  },
+  "clientAccountModal": {
+    "tabs": {
+      "profile": "My details",
+      "profileMobile": "Details",
+      "profileShort": "Details",
+      "payments": "Payments",
+      "paymentsMobile": "Payment",
+      "paymentsShort": "Payment",
+      "package": "My package",
+      "packageMobile": "Package",
+      "packageShort": "Package",
+      "messages": "Messages",
+      "messagesMobile": "Chat",
+      "messagesShort": "Chat"
+    }
+  },
+  "clientAccount": {
+    "title": "My Account",
+    "customerPortal": "Customer Portal",
+    "tabs": {
+      "profile": "My details",
+      "profileShort": "Details",
+      "payments": "Payments",
+      "paymentsShort": "Payment",
+      "package": "My package",
+      "packageShort": "Package",
+      "messages": "Messages",
+      "messagesShort": "Chat"
+    },
+    "breadcrumb": {
+      "project": "Project"
+    },
+    "serviceTypes": {
+      "website": "Website",
+      "webshop": "Webshop",
+      "logo": "Logo Design",
+      "drone": "Drone Footage"
+    },
+    "profile": {
+      "serviceType": "Service type",
+      "package": "Package",
+      "type": "Type",
+      "packageLabel": "{{name}} package",
+      "projectId": "Project: {{id}}"
+    },
+    "payments": {
+      "status": {
+        "paid": "✓ Payment received",
+        "awaiting": "Awaiting payment",
+        "notRequired": "We deliver first!",
+        "unknown": "Payment status unknown"
+      },
+      "paidOn": "Paid on {{date}}",
+      "awaitingDescription": "Complete the payment to continue with your project",
+      "notRequiredDescription": "You'll see your design first. Only when you're satisfied, we'll send the payment link. No risk!",
+      "guarantee": "100% satisfaction guarantee",
+      "payNow": "Pay Now"
+    }
+  },
+  "bedankt": {
+    "services": {
+      "website": "Website",
+      "webshop": "Webshop",
+      "drone": "Drone footage",
+      "logo": "Logo design"
+    }
+  },
+  "inlineOnboardingNew": {
+    "chooseCustomColor": "Choose custom color",
+    "selected": "Selected ({{count}}/{{max}})",
+    "clearAll": "Clear all",
+    "stockPhotoSuggestions": "Stock photo suggestions",
+    "stockPhotoDescription": "We'll search free stock photos for you based on your business. Select photos you like - we'll use them as inspiration.",
+    "colors": {
+      "green": "Green",
+      "blue": "Blue",
+      "purple": "Purple",
+      "orange": "Orange",
+      "red": "Red",
+      "pink": "Pink",
+      "teal": "Teal",
+      "dark": "Dark",
+      "indigo": "Indigo",
+      "lime": "Lime",
+      "cyan": "Cyan",
+      "darkGrey": "Dark grey",
+      "black": "Black",
+      "lightGrey": "Light grey"
+    },
+    "fonts": {
+      "inter": { "style": "Modern & Clean" },
+      "poppins": { "style": "Friendly & Modern" },
+      "playfair": { "style": "Elegant & Classic" },
+      "montserrat": { "style": "Professional & Sleek" },
+      "roboto": { "style": "Neutral & Readable" },
+      "opensans": { "style": "Clear & Accessible" },
+      "lato": { "style": "Warm & Business" },
+      "raleway": { "style": "Elegant & Light" },
+      "merriweather": { "style": "Classic & Trustworthy" },
+      "nunito": { "style": "Playful & Round" },
+      "sourcesans": { "style": "Tech & Modern" },
+      "dmserif": { "style": "Luxury & Statement" }
+    }
+  },
+  "developerDashboard": {
+    "title": "Developer Dashboard",
+    "sidebar": {
+      "projects": "Projects",
+      "customers": "Customers",
+      "messages": "Messages",
+      "payments": "Payments",
+      "changes": "Changes",
+      "logout": "Log out",
+      "mrr": "MRR",
+      "activeSubscriptions": "active subscriptions"
+    },
+    "header": {
+      "searchPlaceholder": "Search projects...",
+      "needsAttention": "Needs attention",
+      "allUpToDate": "All up to date!"
+    },
+    "hero": {
+      "dashboard": "Dashboard",
+      "welcomeBack": "Welcome back, developer!",
+      "activeProjects": "active projects",
+      "liveWebsites": "live websites",
+      "urgent": "urgent"
+    },
+    "projects": {
+      "title": "Active projects",
+      "kanbanView": "Kanban view",
+      "listView": "List view",
+      "active": "active",
+      "liveProjects": "Live projects",
+      "showLive": "Show live",
+      "hideLive": "Hide live",
+      "noProjects": "No projects",
+      "noProjectsDesc": "There are no projects in this phase yet.",
+      "viewDetails": "View details"
+    },
+    "urgency": {
+      "newMessage": "new message",
+      "newMessages": "new messages",
+      "readyToStart": "Ready to start!",
+      "waitingForReview": "Waiting for review",
+      "noDaysUpdate": "days without update",
+      "waitingForPayment": "Waiting for payment",
+      "newClient": "New client"
+    },
+    "phases": {
+      "onboarding": "Onboarding",
+      "design": "Design",
+      "feedback": "Feedback",
+      "revisie": "Revision",
+      "payment": "Payment",
+      "domain": "Domain",
+      "live": "Live"
+    },
+    "projectCard": {
+      "unreadMessages": "unread messages",
+      "package": "Package",
+      "daysAgo": "days ago",
+      "today": "Today",
+      "yesterday": "Yesterday"
+    },
+    "payments": {
+      "title": "Payments",
+      "subtitle": "Manage invoices and view revenue",
+      "newPayment": "+ New payment",
+      "sendPaymentLink": "Send payment link",
+      "amount": "Amount",
+      "description": "Description",
+      "sending": "Sending...",
+      "send": "Send",
+      "noPaymentLink": "No payment link received",
+      "createFailed": "Could not create payment link",
+      "somethingWrong": "Something went wrong",
+      "paymentFor": "Payment for",
+      "firstPayment": "First payment",
+      "outstanding": "Outstanding",
+      "waitingForPayment": "waiting for payment",
+      "paid": "Paid",
+      "paidHint": "Projects with payment received",
+      "noOutstanding": "No outstanding payments",
+      "allPaid": "All invoices are paid",
+      "recentlyPaid": "Recently paid",
+      "mrr": "Monthly Recurring Revenue (MRR)",
+      "activeSubscriptions": "active subscriptions"
+    },
+    "table": {
+      "project": "Project",
+      "phase": "Phase",
+      "package": "Package",
+      "status": "Status",
+      "action": "Action"
+    },
+    "clients": {
+      "empty": "No clients yet",
+      "emptyHint": "New clients will appear here"
+    },
+    "paymentLink": {
+      "title": "Send payment link",
+      "subtitle": "Via Mollie to",
+      "success": "Payment link sent!",
+      "successHint": "The client will receive the link via email",
+      "error": "Something went wrong",
+      "creating": "Creating payment link...",
+      "send": "Send payment link",
+      "info": "The client will receive an email with a secure Mollie payment link"
+    },
+    "help": {
+      "title": "Dashboard Help",
+      "subtitle": "Quick guide",
+      "button": "Help",
+      "kanban": {
+        "title": "Kanban View",
+        "description": "Drag projects between phases or click for details. On mobile: swipe horizontally."
+      },
+      "phases": {
+        "title": "Project phases",
+        "onboarding": "Collecting client information",
+        "design": "Website in development",
+        "feedback": "Waiting for client feedback",
+        "revisie": "Processing changes",
+        "payment": "Awaiting payment",
+        "domain": "Connecting domain",
+        "live": "Website is online"
+      },
+      "urgency": {
+        "title": "Urgency indicators",
+        "red": "Red: Unread messages / more than 3 days",
+        "orange": "Orange: In revision phase / in payment",
+        "blue": "Blue: New client"
+      },
+      "shortcuts": {
+        "title": "Keyboard shortcuts",
+        "kanban": "Kanban view",
+        "list": "List view",
+        "search": "Search",
+        "help": "Help"
+      }
+    },
+    "nav": {
+      "projects": "Projects",
+      "messages": "Messages",
+      "payments": "Payments",
+      "changes": "Changes",
+      "more": "More"
+    },
+    "tutorial": {
+      "showTutorial": "Show tutorial",
+      "hideTutorial": "Hide tutorial"
+    },
+    "messages": {
+      "title": "Messages",
+      "noMessages": "No messages",
+      "typeMessage": "Type a message...",
+      "send": "Send",
+      "empty": "No messages yet",
+      "emptyHint": "Messages from clients will appear here",
+      "you": "You"
+    },
+    "customers": {
+      "title": "Customers",
+      "totalSpent": "Total spent",
+      "projects": "projects",
+      "since": "Customer since"
+    },
+    "changes": {
+      "title": "Change Requests",
+      "subtitle": "Manage change requests from clients"
+    },
+    "changeRequests": {
+      "title": "Change Requests",
+      "pending": "pending",
+      "inProgress": "in progress",
+      "completed": "completed",
+      "empty": "No change requests",
+      "noFiltered": "No requests match this filter",
+      "allDone": "All requests are handled",
+      "description": "Description",
+      "response": "Response",
+      "markPending": "Pending",
+      "startWorking": "Start",
+      "markDone": "Complete",
+      "viewProject": "View project",
+      "completeRequest": "Complete request",
+      "responseHint": "Optionally add a short response for the client.",
+      "responsePlaceholder": "E.g.: Change has been applied to the website.",
+      "complete": "Complete"
+    }
   }
 }

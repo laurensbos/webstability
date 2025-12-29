@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react'
+import { useTranslation } from 'react-i18next'
 import { motion, AnimatePresence } from 'framer-motion'
 import {
   ExternalLink,
@@ -34,19 +35,20 @@ interface LivePortalProps {
   onUpdateProject?: (updates: Partial<Project>) => void
 }
 
-// Priority config
-const PRIORITY_CONFIG = {
-  low: { label: 'Laag', color: 'gray', description: 'Geen haast' },
-  normal: { label: 'Normaal', color: 'blue', description: 'Binnen een week' },
-  urgent: { label: 'Urgent', color: 'red', description: 'Zo snel mogelijk' }
-}
-
 export default function LivePortal({ 
   project, 
   onSendMessage,
   onUpdateProject
 }: LivePortalProps) {
   const [activeSection, setActiveSection] = useState<'overview' | 'request' | 'account' | 'contact'>('overview')
+  const { t } = useTranslation()
+  
+  // Priority config with translations
+  const PRIORITY_CONFIG = {
+    low: { label: t('livePortal.priority.low'), color: 'gray', description: t('livePortal.priority.lowDesc') },
+    normal: { label: t('livePortal.priority.normal'), color: 'blue', description: t('livePortal.priority.normalDesc') },
+    urgent: { label: t('livePortal.priority.urgent'), color: 'red', description: t('livePortal.priority.urgentDesc') }
+  }
   
   // Change request state
   const [changeRequestText, setChangeRequestText] = useState('')
@@ -224,7 +226,7 @@ export default function LivePortal({
       })
       
       if (!response.ok) {
-        throw new Error('Kon gegevens niet opslaan')
+        throw new Error(t('livePortal.errors.couldNotSave'))
       }
       
       // Update project lokaal
@@ -239,7 +241,7 @@ export default function LivePortal({
       setIsEditingAccount(false)
       setTimeout(() => setAccountSaved(false), 3000)
     } catch (error) {
-      setAccountError('Er ging iets mis bij het opslaan. Probeer het opnieuw.')
+      setAccountError(t('livePortal.errors.somethingWentWrong'))
     } finally {
       setAccountLoading(false)
     }
@@ -260,12 +262,12 @@ export default function LivePortal({
       })
       
       if (!response.ok) {
-        throw new Error('Kon reset email niet versturen')
+        throw new Error(t('livePortal.errors.couldNotSendResetEmail'))
       }
       
       setResetEmailSent(true)
     } catch (error) {
-      setPasswordError('Er ging iets mis. Probeer het opnieuw.')
+      setPasswordError(t('livePortal.errors.somethingWentWrong'))
     } finally {
       setPasswordLoading(false)
     }
@@ -296,10 +298,10 @@ export default function LivePortal({
 
   // Navigation items
   const navItems = [
-    { key: 'overview', label: 'Overzicht', icon: Globe },
-    { key: 'request', label: 'Aanpassing', icon: Edit3 },
-    { key: 'contact', label: 'Contact', icon: MessageSquare },
-    { key: 'account', label: 'Account', icon: Settings },
+    { key: 'overview', label: t('livePortal.nav.overview'), icon: Globe },
+    { key: 'request', label: t('livePortal.nav.adjustment'), icon: Edit3 },
+    { key: 'contact', label: t('livePortal.nav.contact'), icon: MessageSquare },
+    { key: 'account', label: t('livePortal.nav.account'), icon: Settings },
   ]
 
   return (
@@ -321,10 +323,10 @@ export default function LivePortal({
               </div>
               <div>
                 <div className="flex items-center gap-2">
-                  <span className="text-white/80 text-sm">Je website is</span>
+                  <span className="text-white/80 text-sm">{t('livePortal.websiteIsLive')}</span>
                   <span className="px-2 py-0.5 bg-white/20 rounded-full text-white text-xs font-medium flex items-center gap-1">
                     <span className="w-1.5 h-1.5 bg-green-300 rounded-full animate-pulse" />
-                    LIVE
+                    {t('livePortal.live')}
                   </span>
                 </div>
                 <h2 className="text-lg sm:text-xl md:text-2xl font-bold text-white mt-0.5">
@@ -341,7 +343,7 @@ export default function LivePortal({
                 className="flex items-center justify-center gap-2 px-4 sm:px-6 py-3 bg-white text-green-700 rounded-xl font-semibold hover:bg-green-50 transition-all hover:scale-105 active:scale-95 shadow-lg text-sm sm:text-base"
               >
                 <Globe className="w-4 h-4 sm:w-5 sm:h-5" />
-                <span>Bekijk website</span>
+                <span>{t('livePortal.viewWebsite')}</span>
                 <ExternalLink className="w-3 h-3 sm:w-4 sm:h-4" />
               </a>
             )}
@@ -350,17 +352,17 @@ export default function LivePortal({
           {/* Quick Stats */}
           <div className="mt-4 sm:mt-6 grid grid-cols-3 gap-2 sm:gap-4">
             <div className="bg-white/10 backdrop-blur-sm rounded-lg sm:rounded-xl p-2 sm:p-3 text-center">
-              <p className="text-white/70 text-[10px] sm:text-xs">Package</p>
+              <p className="text-white/70 text-[10px] sm:text-xs">{t('livePortal.quickStats.package')}</p>
               <p className="text-white font-semibold text-sm sm:text-base capitalize">{project.package || 'Starter'}</p>
             </div>
             <div className="bg-white/10 backdrop-blur-sm rounded-lg sm:rounded-xl p-2 sm:p-3 text-center">
-              <p className="text-white/70 text-[10px] sm:text-xs">Revisies</p>
+              <p className="text-white/70 text-[10px] sm:text-xs">{t('livePortal.quickStats.revisions')}</p>
               <p className="text-white font-semibold text-sm sm:text-base">
                 {project.revisionsUsed || 0}/{project.revisionsTotal || 3}
               </p>
             </div>
             <div className="bg-white/10 backdrop-blur-sm rounded-lg sm:rounded-xl p-2 sm:p-3 text-center">
-              <p className="text-white/70 text-[10px] sm:text-xs">Project ID</p>
+              <p className="text-white/70 text-[10px] sm:text-xs">{t('livePortal.quickStats.projectId')}</p>
               <p className="text-white font-semibold text-sm sm:text-base font-mono">{project.projectId}</p>
             </div>
           </div>
@@ -414,8 +416,8 @@ export default function LivePortal({
                 <div className="w-10 h-10 sm:w-12 sm:h-12 bg-blue-500/20 rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform">
                   <Edit3 className="w-5 h-5 sm:w-6 sm:h-6 text-blue-400" />
                 </div>
-                <span className="text-white font-medium text-sm sm:text-base">Aanpassing</span>
-                <span className="text-gray-500 text-xs text-center hidden sm:block">Vraag een wijziging aan</span>
+                <span className="text-white font-medium text-sm sm:text-base">{t('livePortal.nav.adjustment')}</span>
+                <span className="text-gray-500 text-xs text-center hidden sm:block">{t('livePortal.requestChangeDesc')}</span>
               </button>
               
               <button
@@ -425,8 +427,8 @@ export default function LivePortal({
                 <div className="w-10 h-10 sm:w-12 sm:h-12 bg-purple-500/20 rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform">
                   <MessageSquare className="w-5 h-5 sm:w-6 sm:h-6 text-purple-400" />
                 </div>
-                <span className="text-white font-medium text-sm sm:text-base">Contact</span>
-                <span className="text-gray-500 text-xs text-center hidden sm:block">Chat met developer</span>
+                <span className="text-white font-medium text-sm sm:text-base">{t('livePortal.nav.contact')}</span>
+                <span className="text-gray-500 text-xs text-center hidden sm:block">{t('livePortal.quickActions.chatWithDeveloper')}</span>
               </button>
               
               <button
@@ -436,8 +438,8 @@ export default function LivePortal({
                 <div className="w-10 h-10 sm:w-12 sm:h-12 bg-amber-500/20 rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform">
                   <Settings className="w-5 h-5 sm:w-6 sm:h-6 text-amber-400" />
                 </div>
-                <span className="text-white font-medium text-sm sm:text-base">Account</span>
-                <span className="text-gray-500 text-xs text-center hidden sm:block">Gegevens wijzigen</span>
+                <span className="text-white font-medium text-sm sm:text-base">{t('livePortal.nav.account')}</span>
+                <span className="text-gray-500 text-xs text-center hidden sm:block">{t('livePortal.quickActions.modifyDetails')}</span>
               </button>
               
               {project.liveUrl && (
@@ -450,8 +452,8 @@ export default function LivePortal({
                   <div className="w-10 h-10 sm:w-12 sm:h-12 bg-green-500/20 rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform">
                     <Globe className="w-5 h-5 sm:w-6 sm:h-6 text-green-400" />
                   </div>
-                  <span className="text-white font-medium text-sm sm:text-base">Website</span>
-                  <span className="text-gray-500 text-xs text-center hidden sm:block">Bekijk je website</span>
+                  <span className="text-white font-medium text-sm sm:text-base">{t('livePortal.quickActions.website')}</span>
+                  <span className="text-gray-500 text-xs text-center hidden sm:block">{t('livePortal.viewYourWebsite')}</span>
                 </a>
               )}
             </div>
@@ -460,28 +462,28 @@ export default function LivePortal({
             <div className="bg-gray-800/60 backdrop-blur-sm rounded-xl sm:rounded-2xl border border-gray-700/50 p-4 sm:p-6">
               <h3 className="text-white font-semibold mb-4 flex items-center gap-2">
                 <Star className="w-5 h-5 text-yellow-400" />
-                Website statistieken
+                {t('livePortal.websiteStatistics')}
               </h3>
               <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
                 <div className="bg-gray-900/50 rounded-xl p-3 text-center">
                   <p className="text-2xl sm:text-3xl font-bold text-white">--</p>
-                  <p className="text-gray-400 text-xs mt-1">Bezoekers (week)</p>
+                  <p className="text-gray-400 text-xs mt-1">{t('livePortal.statistics.visitorsWeek')}</p>
                 </div>
                 <div className="bg-gray-900/50 rounded-xl p-3 text-center">
                   <p className="text-2xl sm:text-3xl font-bold text-white">--</p>
-                  <p className="text-gray-400 text-xs mt-1">Paginaweergaves</p>
+                  <p className="text-gray-400 text-xs mt-1">{t('livePortal.statistics.pageViews')}</p>
                 </div>
                 <div className="bg-gray-900/50 rounded-xl p-3 text-center">
                   <p className="text-2xl sm:text-3xl font-bold text-green-400">99.9%</p>
-                  <p className="text-gray-400 text-xs mt-1">Uptime</p>
+                  <p className="text-gray-400 text-xs mt-1">{t('livePortal.statistics.uptime')}</p>
                 </div>
                 <div className="bg-gray-900/50 rounded-xl p-3 text-center">
                   <p className="text-2xl sm:text-3xl font-bold text-blue-400">A+</p>
-                  <p className="text-gray-400 text-xs mt-1">SSL Score</p>
+                  <p className="text-gray-400 text-xs mt-1">{t('livePortal.statistics.sslScore')}</p>
                 </div>
               </div>
               <p className="text-gray-500 text-xs mt-3 text-center">
-                Analytics worden binnenkort beschikbaar • Hosting & SSL inbegrepen
+                {t('livePortal.statistics.comingSoon')}
               </p>
             </div>
 
@@ -489,13 +491,13 @@ export default function LivePortal({
             <div className="bg-gray-800/60 backdrop-blur-sm rounded-xl sm:rounded-2xl border border-gray-700/50 p-4 sm:p-6">
               <h3 className="text-white font-semibold mb-4 flex items-center gap-2">
                 <Clock className="w-5 h-5 text-blue-400" />
-                Laatste updates
+                {t('livePortal.recentUpdates.title')}
               </h3>
               <div className="space-y-3">
                 <div className="flex items-start gap-3 p-3 bg-gray-900/50 rounded-xl">
                   <div className="w-2 h-2 bg-green-400 rounded-full mt-2 flex-shrink-0" />
                   <div className="flex-1">
-                    <p className="text-white text-sm font-medium">Website live gezet</p>
+                    <p className="text-white text-sm font-medium">{t('livePortal.websiteLaunchedOn')}</p>
                     <p className="text-gray-500 text-xs mt-0.5">
                       {project.createdAt ? new Date(project.createdAt).toLocaleDateString('nl-NL', { day: 'numeric', month: 'long', year: 'numeric' }) : 'Recent'}
                     </p>
@@ -505,16 +507,16 @@ export default function LivePortal({
                   <div className="flex items-start gap-3 p-3 bg-gray-900/50 rounded-xl">
                     <div className="w-2 h-2 bg-blue-400 rounded-full mt-2 flex-shrink-0" />
                     <div className="flex-1">
-                      <p className="text-white text-sm font-medium">{project.revisionsUsed} revisie{project.revisionsUsed > 1 ? 's' : ''} verwerkt</p>
-                      <p className="text-gray-500 text-xs mt-0.5">Aanpassingen doorgevoerd</p>
+                      <p className="text-white text-sm font-medium">{project.revisionsUsed} {t('livePortal.recentUpdates.revisionsProcessed')}</p>
+                      <p className="text-gray-500 text-xs mt-0.5">{t('livePortal.recentUpdates.changesApplied')}</p>
                     </div>
                   </div>
                 )}
                 <div className="flex items-start gap-3 p-3 bg-gray-900/50 rounded-xl">
                   <div className="w-2 h-2 bg-purple-400 rounded-full mt-2 flex-shrink-0" />
                   <div className="flex-1">
-                    <p className="text-white text-sm font-medium">Dagelijkse backup actief</p>
-                    <p className="text-gray-500 text-xs mt-0.5">Je website wordt automatisch veilig bewaard</p>
+                    <p className="text-white text-sm font-medium">{t('livePortal.recentUpdates.dailyBackupActive')}</p>
+                    <p className="text-gray-500 text-xs mt-0.5">{t('livePortal.autoBackupDesc')}</p>
                   </div>
                 </div>
               </div>
@@ -524,28 +526,28 @@ export default function LivePortal({
             <div className="bg-gray-800/60 backdrop-blur-sm rounded-xl sm:rounded-2xl border border-gray-700/50 p-4 sm:p-6">
               <h3 className="text-white font-semibold mb-4 flex items-center gap-2">
                 <Sparkles className="w-5 h-5 text-amber-400" />
-                Tips voor je website
+                {t('livePortal.tipsForWebsite')}
               </h3>
               <div className="space-y-3">
                 <div className="flex items-start gap-3 p-3 bg-gray-900/50 rounded-xl">
                   <CheckCircle2 className="w-5 h-5 text-green-400 flex-shrink-0 mt-0.5" />
                   <div>
-                    <p className="text-white text-sm font-medium">Deel je website</p>
-                    <p className="text-gray-400 text-xs mt-0.5">Zet je nieuwe website op je sociale media!</p>
+                    <p className="text-white text-sm font-medium">{t('livePortal.shareWebsite')}</p>
+                    <p className="text-gray-400 text-xs mt-0.5">{t('livePortal.shareWebsiteDesc')}</p>
                   </div>
                 </div>
                 <div className="flex items-start gap-3 p-3 bg-gray-900/50 rounded-xl">
                   <CheckCircle2 className="w-5 h-5 text-green-400 flex-shrink-0 mt-0.5" />
                   <div>
-                    <p className="text-white text-sm font-medium">Google Mijn Bedrijf</p>
-                    <p className="text-gray-400 text-xs mt-0.5">Voeg je website URL toe aan je Google profiel</p>
+                    <p className="text-white text-sm font-medium">{t('livePortal.tips.googleMyBusiness')}</p>
+                    <p className="text-gray-400 text-xs mt-0.5">{t('livePortal.addToGoogleDesc')}</p>
                   </div>
                 </div>
                 <div className="flex items-start gap-3 p-3 bg-gray-900/50 rounded-xl">
                   <CheckCircle2 className="w-5 h-5 text-green-400 flex-shrink-0 mt-0.5" />
                   <div>
-                    <p className="text-white text-sm font-medium">Houd content actueel</p>
-                    <p className="text-gray-400 text-xs mt-0.5">Vraag ons om updates wanneer nodig</p>
+                    <p className="text-white text-sm font-medium">{t('livePortal.tips.keepContentUpdated')}</p>
+                    <p className="text-gray-400 text-xs mt-0.5">{t('livePortal.tips.askForUpdates')}</p>
                   </div>
                 </div>
               </div>
@@ -555,43 +557,43 @@ export default function LivePortal({
             <div className="bg-gray-800/60 backdrop-blur-sm rounded-xl sm:rounded-2xl border border-gray-700/50 p-4 sm:p-6">
               <h3 className="text-white font-semibold mb-4 flex items-center gap-2">
                 <HelpCircle className="w-5 h-5 text-blue-400" />
-                Veelgestelde vragen
+                {t('faq.title')}
               </h3>
               <div className="space-y-3">
                 <details className="group bg-gray-900/50 rounded-xl">
                   <summary className="flex items-center justify-between p-3 cursor-pointer list-none">
-                    <span className="text-white text-sm font-medium">Hoe vraag ik een wijziging aan?</span>
+                    <span className="text-white text-sm font-medium">{t('livePortal.faq.howToRequestChange')}</span>
                     <ChevronRight className="w-4 h-4 text-gray-400 group-open:rotate-90 transition-transform" />
                   </summary>
                   <div className="px-3 pb-3 text-gray-400 text-sm">
-                    Klik op "Wijziging aanvragen" en beschrijf wat je wilt veranderen. We nemen binnen 24 uur contact op.
+                    {t('livePortal.faq.howToRequestChangeAnswer')}
                   </div>
                 </details>
                 <details className="group bg-gray-900/50 rounded-xl">
                   <summary className="flex items-center justify-between p-3 cursor-pointer list-none">
-                    <span className="text-white text-sm font-medium">Wat zit er in mijn abonnement?</span>
+                    <span className="text-white text-sm font-medium">{t('livePortal.faq.whatsIncluded')}</span>
                     <ChevronRight className="w-4 h-4 text-gray-400 group-open:rotate-90 transition-transform" />
                   </summary>
                   <div className="px-3 pb-3 text-gray-400 text-sm">
-                    Hosting, SSL-certificaat, dagelijkse backups, beveiligingsupdates en 2 kleine wijzigingen per maand.
+                    {t('livePortal.faq.whatsIncludedAnswer')}
                   </div>
                 </details>
                 <details className="group bg-gray-900/50 rounded-xl">
                   <summary className="flex items-center justify-between p-3 cursor-pointer list-none">
-                    <span className="text-white text-sm font-medium">Kan ik mijn abonnement opzeggen?</span>
+                    <span className="text-white text-sm font-medium">{t('livePortal.faq.canICancel')}</span>
                     <ChevronRight className="w-4 h-4 text-gray-400 group-open:rotate-90 transition-transform" />
                   </summary>
                   <div className="px-3 pb-3 text-gray-400 text-sm">
-                    Ja, je kunt maandelijks opzeggen. Na opzegging blijft je website nog 30 dagen online.
+                    {t('livePortal.faq.canICancelAnswer')}
                   </div>
                 </details>
                 <details className="group bg-gray-900/50 rounded-xl">
                   <summary className="flex items-center justify-between p-3 cursor-pointer list-none">
-                    <span className="text-white text-sm font-medium">Hoe neem ik contact op?</span>
+                    <span className="text-white text-sm font-medium">{t('livePortal.faq.howToContact')}</span>
                     <ChevronRight className="w-4 h-4 text-gray-400 group-open:rotate-90 transition-transform" />
                   </summary>
                   <div className="px-3 pb-3 text-gray-400 text-sm">
-                    Via het contactformulier, WhatsApp of stuur een bericht naar info@webstability.nl.
+                    {t('livePortal.faq.howToContactAnswer')}
                   </div>
                 </details>
               </div>
@@ -668,8 +670,8 @@ export default function LivePortal({
                   <Edit3 className="w-5 h-5 text-blue-400" />
                 </div>
                 <div>
-                  <h3 className="text-white font-semibold">Aanpassing aanvragen</h3>
-                  <p className="text-gray-400 text-xs sm:text-sm">Beschrijf wat je wilt laten wijzigen</p>
+                  <h3 className="text-white font-semibold">{t('livePortal.changeRequest.title')}</h3>
+                  <p className="text-gray-400 text-xs sm:text-sm">{t('livePortal.changeRequest.description')}</p>
                 </div>
               </div>
               {project.revisionsTotal && (
@@ -691,13 +693,13 @@ export default function LivePortal({
                 <textarea
                   value={changeRequestText}
                   onChange={(e) => setChangeRequestText(e.target.value)}
-                  placeholder="Bijv. Graag de tekst op de homepage aanpassen naar..."
+                  placeholder={t('livePortal.changeRequest.placeholder')}
                   rows={4}
                   className="w-full px-4 py-3 bg-gray-900/50 border border-gray-700 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-white placeholder-gray-500 transition text-sm resize-none"
                 />
                 
                 <div>
-                  <label className="block text-sm font-medium text-gray-300 mb-2">Prioriteit</label>
+                  <label className="block text-sm font-medium text-gray-300 mb-2">{t('livePortal.changeRequest.priority')}</label>
                   <div className="grid grid-cols-3 gap-2">
                     {(['low', 'normal', 'urgent'] as const).map((priority) => (
                       <button
@@ -732,7 +734,7 @@ export default function LivePortal({
                   ) : (
                     <>
                       <Send className="w-4 h-4" />
-                      Verstuur aanvraag
+                      {t('livePortal.changeRequest.submitRequest')}
                     </>
                   )}
                 </button>
@@ -742,13 +744,13 @@ export default function LivePortal({
                 <div className="w-16 h-16 bg-green-500/20 rounded-full flex items-center justify-center mx-auto mb-4">
                   <Check className="w-8 h-8 text-green-400" />
                 </div>
-                <h4 className="text-white font-semibold text-lg">Aanvraag verstuurd!</h4>
-                <p className="text-gray-400 text-sm mt-2">We nemen zo snel mogelijk contact met je op.</p>
+                <h4 className="text-white font-semibold text-lg">{t('livePortal.changeRequest.requestSent')}</h4>
+                <p className="text-gray-400 text-sm mt-2">{t('livePortal.changeRequest.willContactYou')}</p>
                 <button
                   onClick={() => setChangeRequestSent(false)}
                   className="mt-4 text-blue-400 hover:text-blue-300 text-sm font-medium"
                 >
-                  Nog een aanvraag versturen
+                  {t('livePortal.changeRequest.sendAnother')}
                 </button>
               </div>
             )}
@@ -771,8 +773,8 @@ export default function LivePortal({
                   <MessageSquare className="w-5 h-5 text-purple-400" />
                 </div>
                 <div>
-                  <h3 className="text-white font-semibold">Stuur een bericht</h3>
-                  <p className="text-gray-400 text-xs sm:text-sm">Direct contact met je developer</p>
+                  <h3 className="text-white font-semibold">{t('livePortal.sendMessage')}</h3>
+                  <p className="text-gray-400 text-xs sm:text-sm">{t('livePortal.contact.directContact')}</p>
                 </div>
               </div>
 
@@ -781,7 +783,7 @@ export default function LivePortal({
                   <textarea
                     value={quickMessage}
                     onChange={(e) => setQuickMessage(e.target.value)}
-                    placeholder="Typ je bericht..."
+                    placeholder={t('livePortal.contact.typeMessage')}
                     rows={3}
                     className="w-full px-4 py-3 bg-gray-900/50 border border-gray-700 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-purple-500 text-white placeholder-gray-500 transition text-sm resize-none"
                   />
@@ -795,7 +797,7 @@ export default function LivePortal({
                     ) : (
                       <>
                         <Send className="w-4 h-4" />
-                        Verstuur bericht
+                        {t('livePortal.contact.sendMessage')}
                       </>
                     )}
                   </button>
@@ -803,14 +805,14 @@ export default function LivePortal({
               ) : (
                 <div className="text-center py-4">
                   <Check className="w-8 h-8 text-green-400 mx-auto mb-2" />
-                  <p className="text-white font-medium">Bericht verstuurd!</p>
+                  <p className="text-white font-medium">{t('livePortal.contact.messageSent')}</p>
                 </div>
               )}
             </div>
 
             {/* Contact Options */}
             <div className="bg-gray-800/60 backdrop-blur-sm rounded-xl sm:rounded-2xl border border-gray-700/50 p-4 sm:p-6">
-              <h3 className="text-white font-semibold mb-4">Andere manieren om contact op te nemen</h3>
+              <h3 className="text-white font-semibold mb-4">{t('livePortal.contact.otherWays')}</h3>
               <div className="space-y-3">
                 <a
                   href="mailto:info@webstability.nl"
@@ -818,7 +820,7 @@ export default function LivePortal({
                 >
                   <Mail className="w-5 h-5 text-blue-400" />
                   <div>
-                    <p className="text-white text-sm font-medium">E-mail</p>
+                    <p className="text-white text-sm font-medium">{t('livePortal.contact.email')}</p>
                     <p className="text-gray-400 text-xs">info@webstability.nl</p>
                   </div>
                   <ChevronRight className="w-4 h-4 text-gray-500 ml-auto" />
@@ -832,8 +834,8 @@ export default function LivePortal({
                 >
                   <MessageSquare className="w-5 h-5 text-green-400" />
                   <div>
-                    <p className="text-white text-sm font-medium">WhatsApp</p>
-                    <p className="text-gray-400 text-xs">Direct antwoord</p>
+                    <p className="text-white text-sm font-medium">{t('livePortal.contact.whatsapp')}</p>
+                    <p className="text-gray-400 text-xs">{t('livePortal.contact.directReply')}</p>
                   </div>
                   <ChevronRight className="w-4 h-4 text-gray-500 ml-auto" />
                 </a>
@@ -844,8 +846,8 @@ export default function LivePortal({
                 >
                   <Phone className="w-5 h-5 text-amber-400" />
                   <div>
-                    <p className="text-white text-sm font-medium">Telefoon</p>
-                    <p className="text-gray-400 text-xs">Ma-Vr 9:00 - 17:00</p>
+                    <p className="text-white text-sm font-medium">{t('livePortal.contact.phone')}</p>
+                    <p className="text-gray-400 text-xs">{t('livePortal.contact.businessHours')}</p>
                   </div>
                   <ChevronRight className="w-4 h-4 text-gray-500 ml-auto" />
                 </a>
@@ -871,8 +873,8 @@ export default function LivePortal({
                     <User className="w-5 h-5 text-amber-400" />
                   </div>
                   <div>
-                    <h3 className="text-white font-semibold">Accountgegevens</h3>
-                    <p className="text-gray-400 text-xs sm:text-sm">Beheer je contactgegevens</p>
+                    <h3 className="text-white font-semibold">{t('livePortal.accountSettings')}</h3>
+                    <p className="text-gray-400 text-xs sm:text-sm">{t('livePortal.manageContactDetails')}</p>
                   </div>
                 </div>
                 {!isEditingAccount && (
@@ -880,7 +882,7 @@ export default function LivePortal({
                     onClick={() => setIsEditingAccount(true)}
                     className="px-3 py-1.5 text-sm text-amber-400 hover:text-amber-300 font-medium"
                   >
-                    Wijzigen
+                    {t('account.edit')}
                   </button>
                 )}
               </div>
@@ -888,7 +890,7 @@ export default function LivePortal({
               {accountSaved && (
                 <div className="mb-4 p-3 bg-green-500/20 border border-green-500/30 rounded-xl flex items-center gap-2">
                   <Check className="w-4 h-4 text-green-400" />
-                  <span className="text-green-400 text-sm">Gegevens opgeslagen!</span>
+                  <span className="text-green-400 text-sm">{t('account.saved')}</span>
                 </div>
               )}
 
@@ -901,7 +903,7 @@ export default function LivePortal({
 
               <div className="space-y-4">
                 <div>
-                  <label className="block text-sm font-medium text-gray-300 mb-1.5">Bedrijfsnaam</label>
+                  <label className="block text-sm font-medium text-gray-300 mb-1.5">{t('livePortal.account.businessName')}</label>
                   {isEditingAccount ? (
                     <div className="relative">
                       <Building2 className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-500" />
@@ -918,7 +920,7 @@ export default function LivePortal({
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-300 mb-1.5">Contactpersoon</label>
+                  <label className="block text-sm font-medium text-gray-300 mb-1.5">{t('livePortal.account.contactPerson')}</label>
                   {isEditingAccount ? (
                     <div className="relative">
                       <User className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-500" />
@@ -935,7 +937,7 @@ export default function LivePortal({
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-300 mb-1.5">E-mailadres</label>
+                  <label className="block text-sm font-medium text-gray-300 mb-1.5">{t('livePortal.account.emailAddress')}</label>
                   {isEditingAccount ? (
                     <div className="relative">
                       <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-500" />
@@ -952,7 +954,7 @@ export default function LivePortal({
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-300 mb-1.5">Telefoonnummer</label>
+                  <label className="block text-sm font-medium text-gray-300 mb-1.5">{t('livePortal.account.phoneNumber')}</label>
                   {isEditingAccount ? (
                     <div className="relative">
                       <Phone className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-500" />
@@ -982,7 +984,7 @@ export default function LivePortal({
                       }}
                       className="flex-1 py-2.5 border border-gray-600 text-gray-300 rounded-xl hover:bg-gray-700/50 transition text-sm font-medium"
                     >
-                      Annuleren
+                      {t('livePortal.account.cancel')}
                     </button>
                     <button
                       onClick={handleSaveAccount}
@@ -994,7 +996,7 @@ export default function LivePortal({
                       ) : (
                         <>
                           <Check className="w-4 h-4" />
-                          Opslaan
+                          {t('livePortal.account.save')}
                         </>
                       )}
                     </button>
@@ -1010,8 +1012,8 @@ export default function LivePortal({
                   <Lock className="w-5 h-5 text-red-400" />
                 </div>
                 <div>
-                  <h3 className="text-white font-semibold">Wachtwoord wijzigen</h3>
-                  <p className="text-gray-400 text-xs sm:text-sm">Beveilig je account</p>
+                  <h3 className="text-white font-semibold">{t('livePortal.password.title')}</h3>
+                  <p className="text-gray-400 text-xs sm:text-sm">{t('livePortal.password.secureAccount')}</p>
                 </div>
               </div>
 
@@ -1020,12 +1022,12 @@ export default function LivePortal({
                   onClick={() => setShowPasswordReset(true)}
                   className="w-full py-3 border border-gray-600 text-gray-300 rounded-xl hover:bg-gray-700/50 transition text-sm font-medium"
                 >
-                  Wachtwoord wijzigen
+                  {t('livePortal.password.changePassword')}
                 </button>
               ) : !resetEmailSent ? (
                 <div className="space-y-4">
                   <p className="text-gray-400 text-sm">
-                    We sturen een beveiligde link naar je e-mailadres ({project.contactEmail}) waarmee je je wachtwoord kunt wijzigen.
+                    {t('livePortal.password.sendLinkDescription', { email: project.contactEmail })}
                   </p>
                   
                   {passwordError && (
@@ -1040,7 +1042,7 @@ export default function LivePortal({
                       onClick={() => setShowPasswordReset(false)}
                       className="flex-1 py-2.5 border border-gray-600 text-gray-300 rounded-xl hover:bg-gray-700/50 transition text-sm font-medium"
                     >
-                      Annuleren
+                      {t('livePortal.account.cancel')}
                     </button>
                     <button
                       onClick={handlePasswordResetEmail}
@@ -1052,7 +1054,7 @@ export default function LivePortal({
                       ) : (
                         <>
                           <Mail className="w-4 h-4" />
-                          Verstuur link
+                          {t('livePortal.password.sendLink')}
                         </>
                       )}
                     </button>
@@ -1063,9 +1065,9 @@ export default function LivePortal({
                   <div className="w-12 h-12 bg-green-500/20 rounded-full flex items-center justify-center mx-auto mb-3">
                     <Check className="w-6 h-6 text-green-400" />
                   </div>
-                  <h4 className="text-white font-semibold">E-mail verstuurd!</h4>
+                  <h4 className="text-white font-semibold">{t('livePortal.password.emailSent')}</h4>
                   <p className="text-gray-400 text-sm mt-1">
-                    Check je inbox voor de reset link.
+                    {t('livePortal.password.checkInbox')}
                   </p>
                   <button
                     onClick={() => {
@@ -1074,7 +1076,7 @@ export default function LivePortal({
                     }}
                     className="mt-4 text-gray-400 hover:text-white text-sm"
                   >
-                    Sluiten
+                    {t('livePortal.password.close')}
                   </button>
                 </div>
               )}
@@ -1087,30 +1089,30 @@ export default function LivePortal({
                   <FileText className="w-5 h-5 text-gray-400" />
                 </div>
                 <div>
-                  <h3 className="text-white font-semibold">Project informatie</h3>
-                  <p className="text-gray-400 text-xs sm:text-sm">Details over je project</p>
+                  <h3 className="text-white font-semibold">{t('livePortal.projectInfo.title')}</h3>
+                  <p className="text-gray-400 text-xs sm:text-sm">{t('livePortal.projectInfo.details')}</p>
                 </div>
               </div>
 
               <div className="space-y-3 text-sm">
                 <div className="flex justify-between py-2 border-b border-gray-700/50">
-                  <span className="text-gray-400">Project ID</span>
+                  <span className="text-gray-400">{t('livePortal.projectInfo.projectId')}</span>
                   <span className="text-white font-mono">{project.projectId}</span>
                 </div>
                 <div className="flex justify-between py-2 border-b border-gray-700/50">
-                  <span className="text-gray-400">Pakket</span>
+                  <span className="text-gray-400">{t('livePortal.projectInfo.package')}</span>
                   <span className="text-white capitalize">{project.package || 'Starter'}</span>
                 </div>
                 <div className="flex justify-between py-2 border-b border-gray-700/50">
-                  <span className="text-gray-400">Status</span>
+                  <span className="text-gray-400">{t('livePortal.projectInfo.status')}</span>
                   <span className="text-green-400 flex items-center gap-1">
                     <span className="w-2 h-2 bg-green-400 rounded-full" />
-                    Live
+                    {t('livePortal.projectInfo.live')}
                   </span>
                 </div>
                 {project.liveUrl && (
                   <div className="flex justify-between py-2">
-                    <span className="text-gray-400">Website</span>
+                    <span className="text-gray-400">{t('livePortal.projectInfo.website')}</span>
                     <a 
                       href={project.liveUrl} 
                       target="_blank" 
@@ -1137,15 +1139,15 @@ export default function LivePortal({
       >
         <div className="flex items-center gap-1.5">
           <Shield className="w-4 h-4 text-green-500" />
-          <span>Beveiligd</span>
+          <span>{t('livePortal.footer.secured')}</span>
         </div>
         <div className="flex items-center gap-1.5">
           <Clock className="w-4 h-4 text-blue-500" />
-          <span>24/7 bereikbaar</span>
+          <span>{t('livePortal.footer.available247')}</span>
         </div>
         <div className="flex items-center gap-1.5">
           <Star className="w-4 h-4 text-amber-500" />
-          <span>Premium support</span>
+          <span>{t('livePortal.footer.premiumSupport')}</span>
         </div>
       </motion.div>
     </div>

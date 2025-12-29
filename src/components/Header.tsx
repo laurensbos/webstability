@@ -586,7 +586,7 @@ export default function Header({ urgencyBannerVisible = false }: HeaderProps) {
               animate={{ opacity: 1, scale: 1, y: 0 }}
               exit={{ opacity: 0, scale: 0.95, y: 20 }}
               onClick={(e) => e.stopPropagation()}
-              className="bg-white dark:bg-gray-800 rounded-2xl shadow-2xl max-w-md w-full p-5 sm:p-6 max-h-[90vh] overflow-y-auto"
+              className="bg-white dark:bg-gray-800 rounded-2xl shadow-2xl max-w-md w-full p-5 sm:p-6 max-h-[90vh] overflow-y-auto overscroll-contain touch-pan-y"
             >
               <div className="flex items-center justify-between mb-5 sm:mb-6">
                 <div className="flex items-center gap-2 sm:gap-3">
@@ -611,7 +611,7 @@ export default function Header({ urgencyBannerVisible = false }: HeaderProps) {
                   // Multiple projects selection
                   <>
                     <p className="text-gray-600 dark:text-gray-400 mb-4">
-                      Er zijn meerdere projecten gevonden. Kies het project dat je wilt bekijken:
+                      {t('header.loginModal.multipleProjects')}
                     </p>
                     <div className="space-y-2">
                       {foundProjects.map((project) => (
@@ -622,7 +622,7 @@ export default function Header({ urgencyBannerVisible = false }: HeaderProps) {
                         >
                           <div className="text-left">
                             <div className="font-semibold text-gray-900 dark:text-white group-hover:text-primary-600 dark:group-hover:text-primary-400">
-                              {project.name || 'Mijn project'}
+                              {project.name || t('dashboard.myProject')}
                             </div>
                             <div className="text-sm text-gray-500 dark:text-gray-400 font-mono">
                               {project.id}
@@ -636,19 +636,19 @@ export default function Header({ urgencyBannerVisible = false }: HeaderProps) {
                       onClick={() => { setShowProjectSelect(false); setFoundProjects([]); }}
                       className="w-full mt-4 py-3 bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-300 font-medium rounded-xl transition-all"
                     >
-                      Terug naar login
+                      {t('header.loginModal.backToLogin')}
                     </button>
                   </>
                 ) : (
                   <>
                     <p className="text-gray-600 dark:text-gray-400 mb-4">
-                      Voer je e-mailadres en wachtwoord in om je project status te bekijken.
+                      {t('header.loginModal.enterCredentials')}
                     </p>
 
                     <form onSubmit={handleProjectSearch} autoComplete="off">
                       <div className="mb-4">
                         <label htmlFor="loginEmail" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                          E-mailadres
+                          {t('login.customerPortal.emailLabel')}
                         </label>
                         <input
                           type="email"
@@ -656,7 +656,7 @@ export default function Header({ urgencyBannerVisible = false }: HeaderProps) {
                           name="login-email-field"
                           value={emailInput}
                           onChange={(e) => setEmailInput(e.target.value)}
-                          placeholder="jouw@email.nl"
+                          placeholder={t('login.customerPortal.emailPlaceholder')}
                           className="w-full px-4 py-3 border border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-all"
                           autoFocus
                           autoComplete="email"
@@ -669,7 +669,7 @@ export default function Header({ urgencyBannerVisible = false }: HeaderProps) {
 
                       <div className="mb-4">
                         <label htmlFor="projectPassword" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                          Wachtwoord
+                          {t('header.loginModal.password')}
                         </label>
                         <input
                           type="password"
@@ -677,7 +677,7 @@ export default function Header({ urgencyBannerVisible = false }: HeaderProps) {
                           name="project-password-field"
                           value={projectPasswordInput}
                           onChange={(e) => setProjectPasswordInput(e.target.value)}
-                          placeholder="Je project wachtwoord"
+                          placeholder={t('header.loginModal.passwordPlaceholder')}
                           className="w-full px-4 py-3 border border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-all"
                           autoComplete="current-password"
                           data-form-type="other"
@@ -700,24 +700,24 @@ export default function Header({ urgencyBannerVisible = false }: HeaderProps) {
                         ) : (
                           <Search className="w-5 h-5" />
                         )}
-                        {isLoggingIn ? 'Inloggen...' : 'Bekijk project status'}
+                        {isLoggingIn ? t('header.loginModal.loggingIn') : t('header.loginModal.viewProjectStatus')}
                       </button>
                     </form>
 
                     <div className="mt-6 pt-4 border-t border-gray-100 dark:border-gray-700">
-                      <p className="text-sm text-gray-500 dark:text-gray-400 text-center mb-3">Iets vergeten?</p>
+                      <p className="text-sm text-gray-500 dark:text-gray-400 text-center mb-3">{t('login.forgotPassword')}</p>
                       <div className="flex gap-2">
                         <button 
                           onClick={() => { setShowRecoveryForm(true); setRecoveryType('projectId'); }}
                           className="flex-1 py-2 px-3 text-sm bg-gray-50 dark:bg-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-300 rounded-lg transition-colors"
                         >
-                          Inloglink versturen
+                          {t('header.loginModal.sendLoginLink')}
                         </button>
                         <button 
                           onClick={() => { setShowRecoveryForm(true); setRecoveryType('password'); }}
                           className="flex-1 py-2 px-3 text-sm bg-gray-50 dark:bg-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-300 rounded-lg transition-colors"
                         >
-                          Wachtwoord vergeten
+                          {t('header.loginModal.forgotPassword')}
                         </button>
                       </div>
                     </div>
@@ -729,18 +729,18 @@ export default function Header({ urgencyBannerVisible = false }: HeaderProps) {
                   <div className="w-16 h-16 bg-green-100 dark:bg-green-900/30 rounded-full flex items-center justify-center mx-auto mb-4">
                     <Mail className="w-8 h-8 text-green-600 dark:text-green-400" />
                   </div>
-                  <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-2">Check je inbox!</h3>
+                  <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-2">{t('header.loginModal.checkInbox')}</h3>
                   <p className="text-gray-600 dark:text-gray-400 mb-6">
                     {recoveryType === 'projectId' 
-                      ? 'Als er projecten zijn gekoppeld aan dit e-mailadres, ontvang je binnen enkele minuten een e-mail met inloglinks.'
-                      : 'Als dit e-mailadres gekoppeld is aan een project, ontvang je een e-mail met een link om je wachtwoord opnieuw in te stellen.'
+                      ? t('header.loginModal.recoverySuccessProjectId')
+                      : t('header.loginModal.recoverySuccessPassword')
                     }
                   </p>
                   <button
                     onClick={resetModal}
                     className="w-full py-3 bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 text-gray-900 dark:text-white font-semibold rounded-xl transition-all"
                   >
-                    Sluiten
+                    {t('header.loginModal.close')}
                   </button>
                 </div>
               ) : (
@@ -755,7 +755,7 @@ export default function Header({ urgencyBannerVisible = false }: HeaderProps) {
                           : 'bg-gray-50 dark:bg-gray-700 text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-600'
                       }`}
                     >
-                      Inloglink versturen
+                      {t('header.loginModal.sendLoginLinkTab')}
                     </button>
                     <button
                       onClick={() => setRecoveryType('password')}
@@ -765,27 +765,27 @@ export default function Header({ urgencyBannerVisible = false }: HeaderProps) {
                           : 'bg-gray-50 dark:bg-gray-700 text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-600'
                       }`}
                     >
-                      Wachtwoord vergeten
+                      {t('header.loginModal.forgotPasswordTab')}
                     </button>
                   </div>
 
                   {recoveryType === 'projectId' ? (
                     <>
                       <p className="text-gray-600 dark:text-gray-400 mb-4">
-                        Voer je e-mailadres in en we sturen je een link om direct in te loggen.
+                        {t('header.loginModal.sendLoginLinkDesc')}
                       </p>
 
                       <form onSubmit={handleRecoverySubmit}>
                         <div className="mb-4">
                           <label htmlFor="recoveryEmail" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                            E-mailadres
+                            {t('header.loginModal.email')}
                           </label>
                           <input
                             type="email"
                             id="recoveryEmail"
                             value={recoveryEmail}
                             onChange={(e) => setRecoveryEmail(e.target.value)}
-                            placeholder="jouw@email.nl"
+                            placeholder={t('header.loginModal.emailPlaceholder')}
                             className="w-full px-4 py-3 border border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-all"
                             autoFocus
                             required
@@ -806,12 +806,12 @@ export default function Header({ urgencyBannerVisible = false }: HeaderProps) {
                           {isRecovering ? (
                             <>
                               <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
-                              Verzenden...
+                              {t('header.loginModal.sending')}
                             </>
                           ) : (
                             <>
                               <Mail className="w-5 h-5" />
-                              Verstuur inloglink
+                              {t('header.loginModal.sendLoginLink')}
                             </>
                           )}
                         </button>
@@ -820,20 +820,20 @@ export default function Header({ urgencyBannerVisible = false }: HeaderProps) {
                   ) : (
                     <>
                       <p className="text-gray-600 dark:text-gray-400 mb-4">
-                        Voer je e-mailadres in. We sturen een link om je wachtwoord opnieuw in te stellen.
+                        {t('header.loginModal.forgotPasswordDesc')}
                       </p>
 
                       <form onSubmit={handleRecoverySubmit}>
                         <div className="mb-4">
                           <label htmlFor="recoveryEmailPassword" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                            E-mailadres
+                            {t('header.loginModal.email')}
                           </label>
                           <input
                             type="email"
                             id="recoveryEmailPassword"
                             value={recoveryEmail}
                             onChange={(e) => setRecoveryEmail(e.target.value)}
-                            placeholder="jouw@email.nl"
+                            placeholder={t('header.loginModal.emailPlaceholder')}
                             className="w-full px-4 py-3 border border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-all"
                             autoFocus
                             required
@@ -854,12 +854,12 @@ export default function Header({ urgencyBannerVisible = false }: HeaderProps) {
                           {isRecovering ? (
                             <>
                               <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
-                              Verzenden...
+                              {t('header.loginModal.sending')}
                             </>
                           ) : (
                             <>
                               <Mail className="w-5 h-5" />
-                              Verstuur reset link
+                              {t('header.loginModal.sendResetLink')}
                             </>
                           )}
                         </button>
@@ -871,7 +871,7 @@ export default function Header({ urgencyBannerVisible = false }: HeaderProps) {
                     onClick={() => setShowRecoveryForm(false)}
                     className="w-full mt-3 py-2 text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white text-sm font-medium transition-colors"
                   >
-                    ← Terug naar inloggen
+                    {t('header.loginModal.backToLogin')}
                   </button>
                 </>
               )}

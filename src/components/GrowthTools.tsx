@@ -23,6 +23,7 @@ import {
   Award
 } from 'lucide-react'
 import { useState } from 'react'
+import { useTranslation } from 'react-i18next'
 
 // ===========================================
 // 1. CHURN PREVENTION - Dashboard Component
@@ -43,6 +44,7 @@ export function ChurnAlert({
   onSendCheckIn,
   onDismiss 
 }: ChurnAlertProps) {
+  const { t } = useTranslation()
   const isUrgent = daysSinceActivity > 30
 
   if (daysSinceActivity <= 14) return null
@@ -74,12 +76,12 @@ export function ChurnAlert({
               <p className={`font-medium text-sm sm:text-base ${
                 isUrgent ? 'text-red-800 dark:text-red-300' : 'text-amber-800 dark:text-amber-300'
               }`}>
-                {isUrgent ? 'Churn risico!' : 'Check-in nodig'}
+                {isUrgent ? t('growthTools.churnAlert.churnRisk') : t('growthTools.churnAlert.checkInNeeded')}
               </p>
               <p className={`text-xs sm:text-sm mt-0.5 ${
                 isUrgent ? 'text-red-600 dark:text-red-400' : 'text-amber-600 dark:text-amber-400'
               }`}>
-                <span className="font-medium">{projectName}</span> - {daysSinceActivity} dagen geen activiteit
+                <span className="font-medium">{projectName}</span> - {daysSinceActivity} {t('growthTools.churnAlert.daysNoActivity')}
               </p>
             </div>
             <button onClick={onDismiss} className="text-gray-400 hover:text-gray-600 p-1">
@@ -96,13 +98,13 @@ export function ChurnAlert({
               }`}
             >
               <MessageCircle className="w-3.5 h-3.5" />
-              Stuur check-in
+              {t('growthTools.churnAlert.sendCheckIn')}
             </button>
             <button
               onClick={onDismiss}
               className="px-3 py-1.5 rounded-lg text-xs sm:text-sm font-medium text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
             >
-              Later
+              {t('growthTools.churnAlert.later')}
             </button>
           </div>
         </div>
@@ -123,34 +125,6 @@ interface UpsellBannerProps {
   onDismiss: () => void
 }
 
-const upsellMessages = {
-  page_limit: {
-    title: 'Meer pagina\'s nodig?',
-    message: 'Je zit aan je limiet. Upgrade voor meer ruimte.',
-    icon: Zap,
-  },
-  feature_locked: {
-    title: 'Deze feature unlocken?',
-    message: 'Beschikbaar in een hoger pakket.',
-    icon: Sparkles,
-  },
-  usage_high: {
-    title: 'Je website groeit!',
-    message: 'Tijd voor meer mogelijkheden?',
-    icon: TrendingUp,
-  },
-  anniversary: {
-    title: '🎉 1 jaar klant!',
-    message: 'Upgrade nu met 10% korting als bedankje.',
-    icon: Award,
-  },
-  general: {
-    title: 'Klaar voor meer?',
-    message: 'Ontdek wat er nog meer mogelijk is.',
-    icon: ArrowRight,
-  },
-}
-
 export function UpsellBanner({ 
   currentPackage, 
   trigger, 
@@ -158,6 +132,36 @@ export function UpsellBanner({
   onUpgrade, 
   onDismiss 
 }: UpsellBannerProps) {
+  const { t } = useTranslation()
+  
+  const upsellMessages = {
+    page_limit: {
+      title: t('growthTools.upsell.morePages'),
+      message: t('growthTools.upsell.atLimit'),
+      icon: Zap,
+    },
+    feature_locked: {
+      title: t('growthTools.upsell.unlockFeature'),
+      message: t('growthTools.upsell.availableHigherPlan'),
+      icon: Sparkles,
+    },
+    usage_high: {
+      title: t('growthTools.upsell.websiteGrowing'),
+      message: t('growthTools.upsell.timeForMore'),
+      icon: TrendingUp,
+    },
+    anniversary: {
+      title: '🎉 ' + t('growthTools.upsell.oneYearCustomer'),
+      message: t('growthTools.upsell.upgradeDiscount'),
+      icon: Award,
+    },
+    general: {
+      title: t('growthTools.upsell.readyForMore'),
+      message: t('growthTools.upsell.discoverMore'),
+      icon: ArrowRight,
+    },
+  }
+  
   const config = upsellMessages[trigger]
   const Icon = config.icon
   const nextPackage = currentPackage === 'starter' ? 'Professional' : 'Business'
@@ -203,14 +207,14 @@ export function UpsellBanner({
             onClick={onUpgrade}
             className="flex-1 flex items-center justify-center gap-2 px-4 py-2.5 bg-white text-primary-600 rounded-lg font-semibold text-sm hover:bg-gray-100 transition-colors"
           >
-            Upgrade naar {nextPackage}
+            {t('growthTools.upsell.upgradeTo')} {nextPackage}
             <span className="text-xs opacity-70">+{priceIncrease}/mnd</span>
           </button>
           <button
             onClick={onDismiss}
             className="px-4 py-2.5 text-white/80 hover:text-white hover:bg-white/10 rounded-lg text-sm transition-colors"
           >
-            Niet nu
+            {t('growthTools.upsell.notNow')}
           </button>
         </div>
       </div>
@@ -239,6 +243,7 @@ export function ReferralWidget({
   onCopyCode,
   onShare,
 }: ReferralWidgetProps) {
+  const { t } = useTranslation()
   const [copied, setCopied] = useState(false)
   const [showShareMenu, setShowShareMenu] = useState(false)
 
@@ -253,8 +258,8 @@ export function ReferralWidget({
     if (navigator.share) {
       try {
         await navigator.share({
-          title: 'Professionele website nodig?',
-          text: `Gebruik mijn code ${referralCode} voor €25 korting op je eerste maand!`,
+          title: t('growthTools.referral.needWebsite'),
+          text: t('growthTools.referral.use25Off').replace('mijn code', `mijn code ${referralCode}`),
           url: referralUrl,
         })
         onShare()
@@ -269,7 +274,7 @@ export function ReferralWidget({
   const shareLinks = [
     {
       name: 'WhatsApp',
-      url: `https://wa.me/?text=${encodeURIComponent(`Hey! Gebruik mijn code ${referralCode} voor €25 korting op een professionele website: ${referralUrl}`)}`,
+      url: `https://wa.me/?text=${encodeURIComponent(`Hey! ${t('growthTools.referral.use25Off').replace('mijn code', `mijn code ${referralCode}`)}: ${referralUrl}`)}`,
       color: 'bg-green-500',
     },
     {
@@ -279,7 +284,7 @@ export function ReferralWidget({
     },
     {
       name: 'Email',
-      url: `mailto:?subject=Tip: Professionele website&body=${encodeURIComponent(`Gebruik mijn code ${referralCode} voor €25 korting: ${referralUrl}`)}`,
+      url: `mailto:?subject=${encodeURIComponent(t('growthTools.referral.needWebsite'))}&body=${encodeURIComponent(`${t('growthTools.referral.use25Off').replace('mijn code', `mijn code ${referralCode}`)}: ${referralUrl}`)}`,
       color: 'bg-gray-600',
     },
   ]
@@ -293,10 +298,10 @@ export function ReferralWidget({
         </div>
         <div>
           <h3 className="font-semibold text-gray-900 dark:text-white text-base sm:text-lg">
-            Verdien €25 per doorverwijzing
+            {t('growthTools.referral.title')}
           </h3>
           <p className="text-xs sm:text-sm text-gray-600 dark:text-gray-400">
-            Deel je code, krijg korting!
+            {t('growthTools.referral.shareCode')}
           </p>
         </div>
       </div>
@@ -308,19 +313,19 @@ export function ReferralWidget({
             <Users className="w-4 h-4" />
             <span className="text-xl sm:text-2xl font-bold">{referralsCount}</span>
           </div>
-          <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">Doorverwijzingen</p>
+          <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">{t('growthTools.referral.referrals')}</p>
         </div>
         <div className="bg-white dark:bg-gray-800 rounded-xl p-3 text-center">
           <div className="flex items-center justify-center gap-1 text-green-600 dark:text-green-400">
             <span className="text-xl sm:text-2xl font-bold">€{totalEarned}</span>
           </div>
-          <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">Verdiend</p>
+          <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">{t('growthTools.referral.earned')}</p>
         </div>
       </div>
 
       {/* Referral Code */}
       <div className="bg-white dark:bg-gray-800 rounded-xl p-3 mb-4">
-        <p className="text-xs text-gray-500 dark:text-gray-400 mb-1">Jouw code</p>
+        <p className="text-xs text-gray-500 dark:text-gray-400 mb-1">{t('growthTools.referral.yourCode')}</p>
         <div className="flex items-center gap-2">
           <code className="flex-1 text-lg sm:text-xl font-mono font-bold text-purple-600 dark:text-purple-400">
             {referralCode}
@@ -345,14 +350,14 @@ export function ReferralWidget({
           className="flex-1 flex items-center justify-center gap-2 px-4 py-3 bg-purple-600 hover:bg-purple-700 text-white rounded-xl font-medium text-sm transition-colors"
         >
           <Copy className="w-4 h-4" />
-          {copied ? 'Gekopieerd!' : 'Kopieer link'}
+          {copied ? t('growthTools.referral.copied') : t('growthTools.referral.copyLink')}
         </button>
         <button
           onClick={handleShare}
           className="flex-1 flex items-center justify-center gap-2 px-4 py-3 bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-300 border border-gray-200 dark:border-gray-700 rounded-xl font-medium text-sm transition-colors"
         >
           <Share2 className="w-4 h-4" />
-          Delen
+          {t('growthTools.referral.share')}
         </button>
       </div>
 
@@ -387,7 +392,7 @@ export function ReferralWidget({
       <div className="mt-4 pt-4 border-t border-purple-200 dark:border-purple-800">
         <p className="text-xs text-gray-500 dark:text-gray-400 text-center">
           <Heart className="w-3 h-3 inline mr-1 text-pink-500" />
-          Jij krijgt €25 korting, je vriend ook. Win-win!
+          {t('growthTools.referral.youGet25')}
         </p>
       </div>
     </div>
@@ -405,54 +410,56 @@ interface PackageValueProps {
   onViewDetails?: () => void
 }
 
-const packageDetails = {
-  starter: {
-    name: 'Starter',
-    price: 99,
-    color: 'from-blue-500 to-cyan-500',
-    includes: [
-      { item: 'Hosting', value: 20 },
-      { item: 'SSL certificaat', value: 10 },
-      { item: 'Dagelijkse backups', value: 15 },
-      { item: 'Updates & beveiliging', value: 25 },
-      { item: '2 wijzigingen/mnd', value: 50 },
-    ],
-  },
-  professional: {
-    name: 'Professional',
-    price: 199,
-    color: 'from-purple-500 to-pink-500',
-    includes: [
-      { item: 'Hosting', value: 30 },
-      { item: 'SSL certificaat', value: 10 },
-      { item: 'Dagelijkse backups', value: 20 },
-      { item: 'Updates & beveiliging', value: 30 },
-      { item: '5 wijzigingen/mnd', value: 125 },
-      { item: 'Blog functie', value: 50 },
-      { item: 'Analytics', value: 30 },
-    ],
-  },
-  business: {
-    name: 'Business',
-    price: 349,
-    color: 'from-amber-500 to-orange-500',
-    includes: [
-      { item: 'Premium hosting', value: 50 },
-      { item: 'SSL certificaat', value: 10 },
-      { item: 'Dagelijkse backups', value: 25 },
-      { item: 'Updates & beveiliging', value: 40 },
-      { item: 'Onbeperkt wijzigingen', value: 200 },
-      { item: 'Blog functie', value: 50 },
-      { item: 'Analytics', value: 30 },
-      { item: 'Boekingssysteem', value: 80 },
-      { item: 'Live chat', value: 60 },
-      { item: 'Meertalig', value: 100 },
-    ],
-  },
-}
-
 export function PackageValueCard({ currentPackage, monthsActive }: PackageValueProps) {
+  const { t } = useTranslation()
   const [expanded, setExpanded] = useState(false)
+  
+  const packageDetails = {
+    starter: {
+      name: 'Starter',
+      price: 99,
+      color: 'from-blue-500 to-cyan-500',
+      includes: [
+        { item: t('growthTools.packageValue.hosting'), value: 20 },
+        { item: t('growthTools.packageValue.sslCertificate'), value: 10 },
+        { item: t('growthTools.packageValue.dailyBackups'), value: 15 },
+        { item: t('growthTools.packageValue.updatesAndSecurity'), value: 25 },
+        { item: '2 ' + t('growthTools.packageValue.changesPerMonth'), value: 50 },
+      ],
+    },
+    professional: {
+      name: 'Professional',
+      price: 199,
+      color: 'from-purple-500 to-pink-500',
+      includes: [
+        { item: t('growthTools.packageValue.hosting'), value: 30 },
+        { item: t('growthTools.packageValue.sslCertificate'), value: 10 },
+        { item: t('growthTools.packageValue.dailyBackups'), value: 20 },
+        { item: t('growthTools.packageValue.updatesAndSecurity'), value: 30 },
+        { item: '5 ' + t('growthTools.packageValue.changesPerMonth'), value: 125 },
+        { item: t('growthTools.packageValue.blogFunction'), value: 50 },
+        { item: t('growthTools.packageValue.analytics'), value: 30 },
+      ],
+    },
+    business: {
+      name: 'Business',
+      price: 349,
+      color: 'from-amber-500 to-orange-500',
+      includes: [
+        { item: t('growthTools.packageValue.premiumHosting'), value: 50 },
+        { item: t('growthTools.packageValue.sslCertificate'), value: 10 },
+        { item: t('growthTools.packageValue.dailyBackups'), value: 25 },
+        { item: t('growthTools.packageValue.updatesAndSecurity'), value: 40 },
+        { item: t('growthTools.packageValue.unlimitedChanges'), value: 200 },
+        { item: t('growthTools.packageValue.blogFunction'), value: 50 },
+        { item: t('growthTools.packageValue.analytics'), value: 30 },
+        { item: t('growthTools.packageValue.bookingSystem'), value: 80 },
+        { item: t('growthTools.packageValue.liveChat'), value: 60 },
+        { item: t('growthTools.packageValue.multilingual'), value: 100 },
+      ],
+    },
+  }
+  
   const pkg = packageDetails[currentPackage]
   const monthlyValue = pkg.includes.reduce((sum, item) => sum + item.value, 0)
   const totalSaved = (monthlyValue - pkg.price) * monthsActive
@@ -466,12 +473,12 @@ export function PackageValueCard({ currentPackage, monthsActive }: PackageValueP
         {/* Header */}
         <div className="flex items-center justify-between mb-4">
           <div>
-            <p className="text-white/70 text-xs sm:text-sm">Jouw pakket</p>
+            <p className="text-white/70 text-xs sm:text-sm">{t('growthTools.packageValue.yourPackage')}</p>
             <h3 className="text-xl sm:text-2xl font-bold">{pkg.name}</h3>
           </div>
           <div className="text-right">
             <p className="text-2xl sm:text-3xl font-bold">€{pkg.price}</p>
-            <p className="text-white/70 text-xs">/maand</p>
+            <p className="text-white/70 text-xs">{t('growthTools.packageValue.perMonth')}</p>
           </div>
         </div>
 
@@ -479,19 +486,19 @@ export function PackageValueCard({ currentPackage, monthsActive }: PackageValueP
         <div className="bg-white/20 rounded-xl p-3 sm:p-4 mb-4">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-white/80 text-xs sm:text-sm">Werkelijke waarde</p>
-              <p className="text-lg sm:text-xl font-bold">€{monthlyValue}/mnd</p>
+              <p className="text-white/80 text-xs sm:text-sm">{t('growthTools.packageValue.realValue')}</p>
+              <p className="text-lg sm:text-xl font-bold">€{monthlyValue}{t('growthTools.packageValue.perMonth')}</p>
             </div>
             <div className="text-right">
-              <p className="text-white/80 text-xs sm:text-sm">Jij bespaart</p>
+              <p className="text-white/80 text-xs sm:text-sm">{t('growthTools.packageValue.youSave')}</p>
               <p className="text-lg sm:text-xl font-bold text-green-300">
-                €{monthlyValue - pkg.price}/mnd
+                €{monthlyValue - pkg.price}{t('growthTools.packageValue.perMonth')}
               </p>
             </div>
           </div>
           {monthsActive > 1 && (
             <p className="text-center text-white/80 text-xs sm:text-sm mt-2 pt-2 border-t border-white/20">
-              Totaal bespaard in {monthsActive} maanden: <strong className="text-green-300">€{totalSaved}</strong>
+              {t('growthTools.packageValue.totalSaved')} {monthsActive} {t('growthTools.packageValue.months')}: <strong className="text-green-300">€{totalSaved}</strong>
             </p>
           )}
         </div>
@@ -501,7 +508,7 @@ export function PackageValueCard({ currentPackage, monthsActive }: PackageValueP
           onClick={() => setExpanded(!expanded)}
           className="w-full text-left text-sm text-white/80 hover:text-white flex items-center justify-between"
         >
-          <span>Wat zit er in je pakket?</span>
+          <span>{t('growthTools.packageValue.whatsIncluded')}</span>
           <motion.span
             animate={{ rotate: expanded ? 180 : 0 }}
             className="text-lg"
@@ -547,6 +554,7 @@ interface SatisfactionCheckProps {
 }
 
 export function SatisfactionCheck({ onRate, onDismiss }: SatisfactionCheckProps) {
+  const { t } = useTranslation()
   const [hoveredRating, setHoveredRating] = useState(0)
   const [selectedRating, setSelectedRating] = useState(0)
 
@@ -574,10 +582,10 @@ export function SatisfactionCheck({ onRate, onDismiss }: SatisfactionCheckProps)
         </div>
         
         <h3 className="text-lg sm:text-xl font-semibold text-gray-900 dark:text-white mb-2">
-          Hoe tevreden ben je?
+          {t('growthTools.satisfaction.howSatisfied')}
         </h3>
         <p className="text-sm text-gray-600 dark:text-gray-400 mb-6">
-          Je feedback helpt ons verbeteren
+          {t('growthTools.satisfaction.feedbackHelps')}
         </p>
 
         {/* Star rating */}
@@ -609,11 +617,11 @@ export function SatisfactionCheck({ onRate, onDismiss }: SatisfactionCheckProps)
           >
             {selectedRating >= 4 ? (
               <p className="text-green-600 dark:text-green-400 text-sm">
-                Geweldig! Zou je een review willen achterlaten? ⭐
+                {t('growthTools.satisfaction.great')} ⭐
               </p>
             ) : (
               <p className="text-gray-600 dark:text-gray-400 text-sm">
-                Bedankt! We nemen contact op om te verbeteren.
+                {t('growthTools.satisfaction.thanks')}
               </p>
             )}
           </motion.div>
@@ -634,13 +642,14 @@ interface MilestoneProps {
 }
 
 const milestoneConfig = {
-  '1_month': { title: '1 Maand! 🎉', reward: null, message: 'Je website is een maand live!' },
-  '3_months': { title: '3 Maanden! 🚀', reward: 'Gratis SEO check', message: 'Je krijgt een gratis SEO analyse!' },
-  '6_months': { title: 'Half Jaar! ⭐', reward: '10% korting upgrade', message: 'Upgrade nu met 10% korting!' },
-  '1_year': { title: '1 Jaar! 🏆', reward: 'Gratis redesign', message: 'Je krijgt een gratis mini-redesign!' },
+  '1_month': { titleKey: 'growthTools.milestone.oneMonth', emoji: '🎉', reward: null, messageKey: 'growthTools.milestone.websiteOneMonth' },
+  '3_months': { titleKey: 'growthTools.milestone.threeMonths', emoji: '🚀', reward: 'growthTools.milestone.freeSeoCheck', messageKey: 'growthTools.milestone.youGetSeoAnalysis' },
+  '6_months': { titleKey: 'growthTools.milestone.sixMonths', emoji: '⭐', reward: 'growthTools.milestone.tenPercentUpgrade', messageKey: 'growthTools.milestone.upgradeNow10' },
+  '1_year': { titleKey: 'growthTools.milestone.oneYear', emoji: '🏆', reward: 'growthTools.milestone.freeRedesign', messageKey: 'growthTools.milestone.youGetRedesign' },
 }
 
 export function MilestoneCelebration({ type, onClaim, onDismiss }: MilestoneProps) {
+  const { t } = useTranslation()
   const config = milestoneConfig[type]
 
   return (
@@ -659,17 +668,17 @@ export function MilestoneCelebration({ type, onClaim, onDismiss }: MilestoneProp
       >
         <div className="text-5xl sm:text-6xl mb-4">🎊</div>
         <h2 className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white mb-2">
-          {config.title}
+          {t(config.titleKey)} {config.emoji}
         </h2>
         <p className="text-gray-600 dark:text-gray-400 mb-6">
-          {config.message}
+          {t(config.messageKey)}
         </p>
         
         {config.reward && (
           <div className="bg-gradient-to-r from-primary-50 to-blue-50 dark:from-primary-900/20 dark:to-blue-900/20 rounded-xl p-4 mb-6">
-            <p className="text-sm text-gray-600 dark:text-gray-400">Jouw beloning:</p>
+            <p className="text-sm text-gray-600 dark:text-gray-400">{t('growthTools.milestone.yourReward')}:</p>
             <p className="text-lg font-bold text-primary-600 dark:text-primary-400">
-              {config.reward}
+              {t(config.reward)}
             </p>
           </div>
         )}
@@ -680,14 +689,14 @@ export function MilestoneCelebration({ type, onClaim, onDismiss }: MilestoneProp
               onClick={onClaim}
               className="flex-1 py-3 bg-primary-600 hover:bg-primary-700 text-white rounded-xl font-medium transition-colors"
             >
-              Claim beloning
+              {t('growthTools.milestone.claimReward')}
             </button>
           )}
           <button
             onClick={onDismiss}
             className={`${config.reward ? '' : 'flex-1'} py-3 px-6 bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-300 rounded-xl font-medium transition-colors`}
           >
-            Sluiten
+            {t('growthTools.milestone.close')}
           </button>
         </div>
       </motion.div>

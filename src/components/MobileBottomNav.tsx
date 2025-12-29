@@ -6,6 +6,7 @@
  */
 
 import { motion, AnimatePresence } from 'framer-motion'
+import { useTranslation } from 'react-i18next'
 import {
   Home,
   MessageSquare,
@@ -47,18 +48,20 @@ export default function MobileBottomNav({
   activeTab = 'home',
   darkMode = true
 }: MobileBottomNavProps) {
+  const { t } = useTranslation()
+
   // Default navigation items if none provided
   const defaultItems: NavItem[] = [
     {
       id: 'home',
-      label: 'Home',
+      label: t('mobileNav.home', 'Home'),
       icon: Home,
       onClick: onHome || (() => {}),
       active: activeTab === 'home'
     },
     {
       id: 'chat',
-      label: 'Chat',
+      label: t('mobileNav.chat', 'Chat'),
       icon: MessageSquare,
       onClick: onChat || (() => {}),
       badge: unreadMessages,
@@ -66,21 +69,21 @@ export default function MobileBottomNav({
     },
     {
       id: 'docs',
-      label: 'Bestanden',
+      label: t('mobileNav.files', 'Bestanden'),
       icon: FileText,
       onClick: onDocs || (() => {}),
       active: activeTab === 'docs'
     },
     {
       id: 'help',
-      label: 'Hulp',
+      label: t('mobileNav.help', 'Hulp'),
       icon: HelpCircle,
       onClick: onHelp || (() => {}),
       active: activeTab === 'help'
     },
     {
       id: 'account',
-      label: 'Account',
+      label: t('mobileNav.account', 'Account'),
       icon: User,
       onClick: onAccount || (() => {}),
       active: activeTab === 'account'

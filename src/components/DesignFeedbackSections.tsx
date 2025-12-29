@@ -697,7 +697,7 @@ export default function DesignFeedbackSections({
                     </div>
                     
                     {/* Screen content - takes remaining space with zoom support */}
-                    <div className="relative bg-white overflow-auto flex-1 min-h-0">
+                    <div className="relative bg-white overflow-auto overscroll-contain touch-pan-y flex-1 min-h-0">
                       {!iframeLoaded && (
                         <div className="absolute inset-0 flex items-center justify-center bg-zinc-100">
                           <Loader2 className="w-8 h-8 text-purple-500 animate-spin" />

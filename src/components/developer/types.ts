@@ -3,7 +3,7 @@
  * Shared types for all developer dashboard components
  */
 
-export type DashboardView = 'projects' | 'messages' | 'payments' | 'customers'
+export type DashboardView = 'projects' | 'messages' | 'payments' | 'customers' | 'changes'
 
 export type ProjectPhase = 'onboarding' | 'design' | 'feedback' | 'revisie' | 'payment' | 'domain' | 'live'
 export type PaymentStatus = 'pending' | 'awaiting_payment' | 'paid' | 'failed' | 'refunded'
@@ -49,6 +49,25 @@ export interface Project {
   businessInfo?: BusinessInfo
   liveGoingData?: LiveGoingData
   preLiveChecklist?: PreLiveChecklist
+  // Change requests
+  changeRequests?: ChangeRequest[]
+  revisionsUsed?: number
+  revisionsTotal?: number
+}
+
+// Change request for live projects
+export interface ChangeRequest {
+  id: string
+  date: string
+  description: string
+  request?: string // Legacy field for backwards compatibility
+  priority: 'low' | 'normal' | 'urgent'
+  category: 'text' | 'design' | 'images' | 'functionality' | 'other'
+  status: 'pending' | 'in_progress' | 'completed'
+  response?: string
+  completedAt?: string
+  createdAt?: string
+  attachments?: string[]
 }
 
 export interface ChatMessage {

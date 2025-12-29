@@ -33,10 +33,8 @@ import {
 } from 'lucide-react'
 import Logo from '../components/Logo'
 import AccountSection from '../components/AccountSection'
-import DesignPreviewModal from '../components/DesignPreviewModalNew'
+import DesignPreviewModal from '../components/DesignPreviewModal'
 import PreLiveChecklist from '../components/PreLiveChecklist'
-import PreLiveApproval from '../components/PreLiveApproval'
-import ClientLiveDashboard from '../components/ClientLiveDashboard'
 import DeveloperUpdates from '../components/DeveloperUpdates'
 import PackagePhaseCard from '../components/PackagePhaseCard'
 import InlineOnboarding from '../components/InlineOnboardingNew'
@@ -54,6 +52,7 @@ import Footer from '../components/Footer'
 import { useKeyboardShortcuts, KeyboardShortcutsModal, KeyboardShortcutHint } from '../hooks/useKeyboardShortcuts'
 import PWAInstallPrompt from '../components/PWAInstallPrompt'
 import { PushNotificationPrompt } from '../components/PushNotificationToggle'
+import { RevisionPhaseCard, PaymentPhaseCard, DomainPhaseCard, LivePhaseCard } from '../components/phases'
 import type { Notification } from '../components/NotificationBell'
 import { useDarkMode } from '../contexts/DarkModeContext'
 import { useSEO } from '../hooks/useSEO'
@@ -72,48 +71,27 @@ const ensureAbsoluteUrl = (url: string | undefined): string => {
   return `https://${trimmed}`
 }
 
-// Phase configuration - Visual stepper phases
-// Flow: Onboarding → Design → Feedback → Revisie → Betaling → Goedkeuring → Live
-const PHASES: { key: ProjectPhase; label: string; icon: typeof FileText }[] = [
-  { key: 'onboarding', label: 'Onboarding', icon: FileText },
-  { key: 'design', label: 'Design', icon: Palette },
-  { key: 'feedback', label: 'Feedback', icon: MessageSquare },
-  { key: 'revisie', label: 'Revisie', icon: RefreshCw },
-  { key: 'payment', label: 'Betaling', icon: CreditCard },
-  { key: 'domain', label: 'Domein', icon: Globe },
-  { key: 'live', label: 'Live', icon: Rocket }
+// Phase configuration - Visual stepper phases (labels are translation keys)
+// Flow: Onboarding → Design → Feedback → Revisie → Betaling → Domain → Live
+const PHASES: { key: ProjectPhase; labelKey: string; icon: typeof FileText }[] = [
+  { key: 'onboarding', labelKey: 'projectStatus.phases.onboarding', icon: FileText },
+  { key: 'design', labelKey: 'projectStatus.phases.design', icon: Palette },
+  { key: 'feedback', labelKey: 'projectStatus.phases.feedback', icon: MessageSquare },
+  { key: 'revisie', labelKey: 'projectStatus.phases.revisie', icon: RefreshCw },
+  { key: 'payment', labelKey: 'projectStatus.phases.payment', icon: CreditCard },
+  { key: 'domain', labelKey: 'projectStatus.phases.domain', icon: Globe },
+  { key: 'live', labelKey: 'projectStatus.phases.live', icon: Rocket }
 ]
 
-// Phase expectations text - now dynamically based on package
-const PHASE_INFO: Record<ProjectPhase, { title: string; description: string }> = {
-  onboarding: {
-    title: 'We verzamelen je informatie',
-    description: 'Vul de onboarding in zodat we je bedrijf goed begrijpen. Upload vervolgens media via de projectbestanden knop. Klaar? Klik op de groene knop en we gaan aan de slag met je design.'
-  },
-  design: {
-    title: 'Je design wordt gemaakt',
-    description: 'We werken aan het ontwerp van jouw website. Je ontvangt binnenkort een preview om te bekijken.'
-  },
-  feedback: {
-    title: 'Bekijk je design preview',
-    description: 'Je design is klaar! Bekijk de preview en geef je feedback. Na goedkeuring ontvang je de betaallink.'
-  },
-  revisie: {
-    title: 'Je feedback wordt verwerkt ✨',
-    description: 'Bedankt voor je feedback! We zijn de aanpassingen aan het verwerken. Je ontvangt binnenkort een nieuwe preview.'
-  },
-  payment: {
-    title: 'Wachten op betaling',
-    description: 'Je design is goedgekeurd! Na de betaling zetten we je website live.'
-  },
-  domain: {
-    title: 'Domein configureren',
-    description: 'Je betaling is ontvangen! We gaan nu je domein verhuizen en configureren. Binnenkort is je website live!'
-  },
-  live: {
-    title: 'Gefeliciteerd! 🎉',
-    description: 'Je website is live en bereikbaar voor de wereld. Welkom!'
-  }
+// Fallback phase info (used when translations are not available)
+const PHASE_INFO_FALLBACK: Record<ProjectPhase, { title: string; description: string }> = {
+  onboarding: { title: 'Onboarding', description: 'Complete your onboarding.' },
+  design: { title: 'Design', description: 'We are designing your website.' },
+  feedback: { title: 'Feedback', description: 'Review your design preview.' },
+  revisie: { title: 'Revision', description: 'Processing your feedback.' },
+  payment: { title: 'Payment', description: 'Complete payment to go live.' },
+  domain: { title: 'Domain', description: 'Configuring your domain.' },
+  live: { title: 'Live', description: 'Your website is live!' }
 }
 
 // Get dynamic phase info based on package - with translation support
@@ -167,7 +145,7 @@ const getDynamicPhaseInfo = (phase: ProjectPhase, packageType?: string, t?: (key
   }
   
   // Fallback to static info (only when t is not available)
-  return PHASE_INFO[phase]
+  return PHASE_INFO_FALLBACK[phase]
 }
 
 // Get phase color scheme
@@ -707,7 +685,8 @@ export default function ProjectStatusNew() {
     setReadyForDesignLoading(false)
   }
 
-  // Handle change request submission (for live projects)
+  // Handle change request submission (for live projects) - Used for future inline change request form
+  // @ts-expect-error Reserved for future use
   const handleChangeRequest = async (request: {
     title?: string
     description: string
@@ -1409,50 +1388,15 @@ export default function ProjectStatusNew() {
 
         {/* Special Revisie Status Card - shown when feedback is being processed */}
         {project.status === 'revisie' && (
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.1 }}
-            className={`rounded-2xl p-5 border border-cyan-500/30 ${
-              darkMode ? 'bg-gray-900' : 'bg-white shadow-sm'
-            }`}
-          >
-            <div className="flex items-start gap-4">
-              <div className="w-12 h-12 bg-cyan-500/20 rounded-xl flex items-center justify-center flex-shrink-0">
-                <motion.div
-                  animate={{ rotate: 360 }}
-                  transition={{ duration: 3, repeat: Infinity, ease: "linear" }}
-                >
-                  <RefreshCw className="w-6 h-6 text-cyan-400" />
-                </motion.div>
-              </div>
-              <div className="flex-1">
-                <h3 className={`font-semibold mb-1 ${darkMode ? 'text-white' : 'text-gray-900'}`}>{t('projectStatus.processingFeedback')}</h3>
-                <p className={`text-sm mb-3 ${darkMode ? 'text-gray-400' : 'text-gray-600'}`}>
-                  {t('projectStatus.designerWorking')}
-                </p>
-                
-                {/* Revision counter */}
-                <div className="flex items-center gap-4 text-sm">
-                  <div className="flex items-center gap-2">
-                    <CheckCircle2 className="w-4 h-4 text-cyan-400" />
-                    <span className={darkMode ? 'text-gray-400' : 'text-gray-600'}>
-                      {t('projectStatus.revisionRound')}: <span className={`font-medium ${darkMode ? 'text-white' : 'text-gray-900'}`}>{project.revisionsUsed || 1}</span>
-                      {project.revisionsTotal && <span className="text-gray-500">/{project.revisionsTotal}</span>}
-                    </span>
-                  </div>
-                  {project.feedbackReceivedAt && (
-                    <div className="flex items-center gap-2">
-                      <Clock className="w-4 h-4 text-gray-500" />
-                      <span className="text-gray-500">
-                        {new Date(project.feedbackReceivedAt).toLocaleDateString('nl-NL', { day: 'numeric', month: 'short' })}
-                      </span>
-                    </div>
-                  )}
-                </div>
-              </div>
-            </div>
-          </motion.div>
+          <RevisionPhaseCard
+            revisionsUsed={project.revisionsUsed || 1}
+            revisionsTotal={project.revisionsTotal}
+            feedbackReceivedAt={project.feedbackReceivedAt}
+            designPreviewUrl={project.designPreviewUrl}
+            darkMode={darkMode}
+            onViewPreview={() => setShowDesignPreview(true)}
+            onSendMessage={() => setShowChat(true)}
+          />
         )}
 
         {/* Design Phase - Progress & Preview Section */}
@@ -1635,57 +1579,36 @@ export default function ProjectStatusNew() {
 
         {/* Live Dashboard - Full featured dashboard for live projects */}
         {project.status === 'live' && (
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.2 }}
-          >
-            <ClientLiveDashboard
-              businessName={project.businessName}
-              projectPackage={project.package}
-              liveUrl={project.liveUrl}
-              liveDate={project.liveDate}
-              googleDriveUrl={project.googleDriveUrl}
-              analyticsUrl={project.analyticsUrl}
-              changeRequests={project.changeRequests}
-              changesThisMonth={project.changesThisMonth}
-              onRequestChange={handleChangeRequest}
-              onContactDeveloper={() => setShowChat(true)}
-            />
-          </motion.div>
+          <LivePhaseCard
+            businessName={project.businessName}
+            packageName={project.package || 'starter'}
+            liveUrl={project.liveUrl}
+            liveDate={project.liveDate}
+            googleDriveUrl={project.googleDriveUrl}
+            analyticsUrl={project.analyticsUrl}
+            changeRequests={project.changeRequests}
+            changesThisMonth={project.changesThisMonth}
+            darkMode={darkMode}
+            onRequestChange={() => setShowChat(true)}
+            onContactSupport={() => setShowChat(true)}
+            onViewAnalytics={() => project.analyticsUrl && window.open(project.analyticsUrl, '_blank')}
+          />
         )}
 
         {/* Payment Section */}
-        {project.status === 'payment' && project.paymentStatus !== 'paid' && (
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.25 }}
-            className="p-5 rounded-xl bg-indigo-500/10 border border-indigo-500/30"
-          >
-            <div className="flex items-start gap-4">
-              <div className="w-12 h-12 rounded-xl bg-indigo-500/20 flex items-center justify-center">
-                <CreditCard className="w-6 h-6 text-indigo-400" />
-              </div>
-              <div className="flex-1">
-                <h3 className="font-semibold text-white mb-1">{t('projectStatus.completePayment')}</h3>
-                <p className="text-sm text-gray-400 mb-4">
-                  {t('projectStatus.designApproved')}
-                </p>
-                {project.paymentUrl ? (
-                  <a
-                    href={project.paymentUrl}
-                    className="inline-flex items-center gap-2 px-4 py-2.5 bg-gradient-to-r from-indigo-500 to-purple-500 text-white font-medium rounded-lg hover:from-indigo-400 hover:to-purple-400 transition"
-                  >
-                    <CreditCard className="w-4 h-4" />
-                    {t('projectStatus.toPayment')}
-                  </a>
-                ) : (
-                  <p className="text-sm text-indigo-400">{t('projectStatus.paymentLinkSoon')}</p>
-                )}
-              </div>
-            </div>
-          </motion.div>
+        {project.status === 'payment' && (
+          <PaymentPhaseCard
+            businessName={project.businessName}
+            packageName={project.package || 'starter'}
+            monthlyPrice={PACKAGES[project.package as keyof typeof PACKAGES]?.price || 119}
+            setupFee={PACKAGES[project.package as keyof typeof PACKAGES]?.setupFee || 149}
+            paymentUrl={project.paymentUrl}
+            paymentStatus={project.paymentStatus === 'paid' ? 'paid' : project.paymentStatus === 'overdue' ? 'overdue' : 'pending'}
+            invoices={project.invoices}
+            darkMode={darkMode}
+            onPayNow={() => project.paymentUrl && window.open(project.paymentUrl, '_blank')}
+            onContactSupport={() => setShowChat(true)}
+          />
         )}
 
         {/* Pre-Live Checklist - Show after payment is received */}
@@ -1734,47 +1657,36 @@ export default function ProjectStatusNew() {
 
         {/* Domain Configuration - Domain transfer and setup before going live */}
         {project.status === 'domain' && (
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.25 }}
-          >
-            <PreLiveApproval
-              businessName={project.businessName}
-              projectPackage={project.package || 'starter'}
-              designPreviewUrl={project.designPreviewUrl}
-              liveUrl={project.liveUrl}
-              domainInfo={project.domainInfo}
-              preLiveChecklist={project.preLiveChecklist}
-              monthlyAmount={49}
-              onApprove={async (checklist) => {
-                try {
-                  const response = await fetch(`/api/projects?id=${project.projectId}`, {
-                    method: 'PUT',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                      preLiveChecklist: {
-                        ...project.preLiveChecklist,
-                        ...checklist,
-                        approvedAt: new Date().toISOString()
-                      }
-                    })
+          <DomainPhaseCard
+            businessName={project.businessName}
+            domainInfo={project.domainInfo as any}
+            emailInfo={project.emailInfo as any}
+            darkMode={darkMode}
+            onSaveConfig={async (data) => {
+              try {
+                const response = await fetch(`/api/projects?id=${project.projectId}`, {
+                  method: 'PUT',
+                  headers: { 'Content-Type': 'application/json' },
+                  body: JSON.stringify({
+                    domainInfo: data.domainInfo,
+                    emailInfo: data.emailInfo
                   })
-                  if (response.ok) {
-                    // Refresh project data
-                    const result = await response.json()
-                    setProject(prev => prev ? {
-                      ...prev,
-                      preLiveChecklist: result.preLiveChecklist
-                    } : null)
-                  }
-                } catch (error) {
-                  console.error('Error submitting approval:', error)
-                  throw error
+                })
+                if (response.ok) {
+                  const result = await response.json()
+                  setProject(prev => prev ? {
+                    ...prev,
+                    domainInfo: result.domainInfo,
+                    emailInfo: result.emailInfo
+                  } : null)
                 }
-              }}
-            />
-          </motion.div>
+              } catch (error) {
+                console.error('Error saving domain config:', error)
+                throw error
+              }
+            }}
+            onContactSupport={() => setShowChat(true)}
+          />
         )}
 
         {/* Invoices Section */}

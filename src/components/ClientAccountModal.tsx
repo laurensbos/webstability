@@ -1,6 +1,8 @@
 import { useState, useEffect } from 'react'
+import { useTranslation } from 'react-i18next'
 import { motion, AnimatePresence } from 'framer-motion'
 import { useDarkMode } from '../contexts/DarkModeContext'
+import useBodyScrollLock from '../hooks/useBodyScrollLock'
 import {
   User,
   CreditCard,
@@ -101,12 +103,15 @@ const getPackageInfo = (packageType: string) => {
   }
 }
 
-// Service type labels
-const serviceTypeLabels: Record<string, string> = {
-  website: 'Website',
-  webshop: 'Webshop',
-  logo: 'Logo Design',
-  drone: 'Drone Beelden'
+// Service type labels - now using translation keys
+const getServiceTypeLabel = (t: (key: string) => string, type: string): string => {
+  const labels: Record<string, string> = {
+    website: t('clientAccount.serviceTypes.website'),
+    webshop: t('clientAccount.serviceTypes.webshop'),
+    logo: t('clientAccount.serviceTypes.logo'),
+    drone: t('clientAccount.serviceTypes.drone')
+  }
+  return labels[type] || type
 }
 
 export default function ClientAccountModal({ 
@@ -118,6 +123,11 @@ export default function ClientAccountModal({
   initialTab
 }: ClientAccountModalProps) {
   const { darkMode } = useDarkMode()
+  const { t } = useTranslation()
+  
+  // Lock body scroll when modal is open (fixes iOS scroll issues)
+  useBodyScrollLock(isOpen && !isInline)
+  
   const [activeTab, setActiveTab] = useState<TabType>(initialTab || 'profile')
   const [isEditing, setIsEditing] = useState(false)
   const [isSaving, setIsSaving] = useState(false)
@@ -151,10 +161,10 @@ export default function ClientAccountModal({
   const unreadMessages = project.messages?.filter(m => !m.read && m.from === 'developer').length || 0
 
   const tabs: TabItem[] = [
-    { id: 'profile', label: 'Mijn gegevens', mobileLabel: 'Gegevens', icon: User },
-    { id: 'payments', label: 'Betalingen', mobileLabel: 'Betaling', icon: CreditCard },
-    { id: 'package', label: 'Mijn pakket', mobileLabel: 'Pakket', icon: Package },
-    { id: 'messages', label: 'Berichten', mobileLabel: 'Chat', icon: MessageSquare, badge: unreadMessages },
+    { id: 'profile', label: t('clientAccount.tabs.profile'), mobileLabel: t('clientAccount.tabs.profileShort'), icon: User },
+    { id: 'payments', label: t('clientAccount.tabs.payments'), mobileLabel: t('clientAccount.tabs.paymentsShort'), icon: CreditCard },
+    { id: 'package', label: t('clientAccount.tabs.package'), mobileLabel: t('clientAccount.tabs.packageShort'), icon: Package },
+    { id: 'messages', label: t('clientAccount.tabs.messages'), mobileLabel: t('clientAccount.tabs.messagesShort'), icon: MessageSquare, badge: unreadMessages },
   ]
 
   const handleSave = async () => {
@@ -203,18 +213,18 @@ export default function ClientAccountModal({
             </div>
             <div className="flex-1">
               <h1 className={`text-2xl sm:text-3xl font-bold mb-1 ${darkMode ? 'text-white' : 'text-gray-900'}`}>
-                {project.businessName || 'Mijn Account'}
+                {project.businessName || t('clientAccount.title')}
               </h1>
               <p className={`text-sm sm:text-base ${darkMode ? 'text-gray-400' : 'text-gray-600'}`}>
-                {project.contactName ? `${project.contactName} • ` : ''}{project.contactEmail || 'Klantportaal'}
+                {project.contactName ? `${project.contactName} • ` : ''}{project.contactEmail || t('clientAccount.customerPortal')}
               </p>
               <div className="flex items-center gap-3 mt-3">
                 <span className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-medium bg-gradient-to-r ${currentPackage.gradient} text-white`}>
                   <Package className="w-3.5 h-3.5" />
-                  {currentPackage.name} pakket
+                  {t('clientAccount.profile.packageLabel', { name: currentPackage.name })}
                 </span>
                 <span className={`text-xs ${darkMode ? 'text-gray-500' : 'text-gray-400'}`}>
-                  Project: {project.projectId}
+                  {t('clientAccount.profile.projectId', { id: project.projectId })}
                 </span>
               </div>
             </div>
@@ -304,10 +314,10 @@ export default function ClientAccountModal({
                       }`}
                     >
                       <Home className="w-4 h-4" />
-                      Project
+                      {t('clientAccount.breadcrumb.project')}
                     </button>
                     <ChevronRight className={`w-4 h-4 ${darkMode ? 'text-gray-600' : 'text-gray-400'}`} />
-                    <span className={`font-medium ${darkMode ? 'text-white' : 'text-gray-900'}`}>Mijn Account</span>
+                    <span className={`font-medium ${darkMode ? 'text-white' : 'text-gray-900'}`}>{t('clientAccount.title')}</span>
                   </div>
 
                   {/* Actions */}
@@ -339,8 +349,8 @@ export default function ClientAccountModal({
                       }`}
                     >
                       <ArrowLeft className="w-4 h-4" />
-                      <span className="hidden sm:inline">Terug naar project</span>
-                      <span className="sm:hidden">Terug</span>
+                      <span className="hidden sm:inline">{t('common.back')}</span>
+                      <span className="sm:hidden">{t('common.back')}</span>
                     </button>
                   </div>
                 </div>
@@ -365,18 +375,18 @@ export default function ClientAccountModal({
                   </div>
                   <div className="flex-1">
                     <h1 className={`text-2xl sm:text-3xl font-bold mb-1 ${darkMode ? 'text-white' : 'text-gray-900'}`}>
-                      {project.businessName || 'Mijn Account'}
+                      {project.businessName || t('clientAccount.title')}
                     </h1>
                     <p className={`text-sm sm:text-base ${darkMode ? 'text-gray-400' : 'text-gray-600'}`}>
-                      {project.contactName ? `${project.contactName} • ` : ''}{project.contactEmail || 'Klantportaal'}
+                      {project.contactName ? `${project.contactName} • ` : ''}{project.contactEmail || t('clientAccount.customerPortal')}
                     </p>
                     <div className="flex items-center gap-3 mt-3">
                       <span className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-medium bg-gradient-to-r ${currentPackage.gradient} text-white`}>
                         <Package className="w-3.5 h-3.5" />
-                        {currentPackage.name} pakket
+                        {t('clientAccount.profile.packageLabel', { name: currentPackage.name })}
                       </span>
                       <span className={`text-xs ${darkMode ? 'text-gray-500' : 'text-gray-400'}`}>
-                        Project: {project.projectId}
+                        {t('clientAccount.profile.projectId', { id: project.projectId })}
                       </span>
                     </div>
                   </div>
@@ -415,7 +425,7 @@ export default function ClientAccountModal({
             </div>
 
             {/* Content */}
-            <div className={`flex-1 overflow-y-auto ${darkMode ? 'bg-gray-900' : 'bg-white'}`}>
+            <div className={`flex-1 overflow-y-auto overscroll-contain touch-pan-y ${darkMode ? 'bg-gray-900' : 'bg-white'}`}>
               <div className="max-w-6xl mx-auto">
                 <AnimatePresence mode="wait">
                   {/* Profile Tab */}
@@ -458,7 +468,7 @@ export default function ClientAccountModal({
                             <h3 className={`text-base sm:text-lg font-semibold ${
                               darkMode ? 'text-white' : 'text-gray-900'
                             }`}>
-                              Contactgegevens
+                              {t('account.contactDetails')}
                             </h3>
                           </div>
                           {!isEditing ? (
@@ -471,7 +481,7 @@ export default function ClientAccountModal({
                               }`}
                             >
                               <Edit3 className="w-4 h-4" />
-                              <span className="hidden sm:inline">Bewerken</span>
+                              <span className="hidden sm:inline">{t('account.edit')}</span>
                             </button>
                           ) : (
                             <div className="flex gap-2">
@@ -491,7 +501,7 @@ export default function ClientAccountModal({
                                   : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
                               }`}
                             >
-                              Annuleren
+                              {t('account.cancel')}
                             </button>
                             <button
                               onClick={handleSave}
@@ -503,7 +513,7 @@ export default function ClientAccountModal({
                               ) : (
                                 <Save className="w-4 h-4" />
                               )}
-                              <span className="hidden sm:inline">Opslaan</span>
+                              <span className="hidden sm:inline">{t('account.save')}</span>
                             </button>
                           </div>
                         )}
@@ -516,7 +526,7 @@ export default function ClientAccountModal({
                             <div className="grid sm:grid-cols-2 gap-4">
                               <div>
                                 <label className={`text-xs font-medium mb-1.5 block ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>
-                                  Bedrijfsnaam
+                                  {t('account.businessName')}
                                 </label>
                                 <input
                                   type="text"
@@ -527,12 +537,12 @@ export default function ClientAccountModal({
                                       ? 'bg-gray-900 border-gray-700 text-white' 
                                       : 'bg-gray-50 border-gray-200 text-gray-900'
                                   }`}
-                                  placeholder="Jouw bedrijfsnaam"
+                                  placeholder={t('account.businessNamePlaceholder')}
                                 />
                               </div>
                               <div>
                                 <label className={`text-xs font-medium mb-1.5 block ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>
-                                  Contactpersoon
+                                  {t('account.contactName')}
                                 </label>
                                 <input
                                   type="text"
@@ -543,14 +553,14 @@ export default function ClientAccountModal({
                                       ? 'bg-gray-900 border-gray-700 text-white' 
                                       : 'bg-gray-50 border-gray-200 text-gray-900'
                                   }`}
-                                  placeholder="Je naam"
+                                  placeholder={t('account.contactNamePlaceholder')}
                                 />
                               </div>
                             </div>
                             <div className="grid sm:grid-cols-2 gap-4">
                               <div>
                                 <label className={`text-xs font-medium mb-1.5 block ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>
-                                  E-mailadres
+                                  {t('account.contactEmail')}
                                 </label>
                                 <input
                                   type="email"
@@ -561,12 +571,12 @@ export default function ClientAccountModal({
                                       ? 'bg-gray-900 border-gray-700 text-white' 
                                       : 'bg-gray-50 border-gray-200 text-gray-900'
                                   }`}
-                                  placeholder="email@voorbeeld.nl"
+                                  placeholder={t('account.contactEmailPlaceholder')}
                                 />
                               </div>
                               <div>
                                 <label className={`text-xs font-medium mb-1.5 block ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>
-                                  Telefoonnummer
+                                  {t('account.contactPhone')}
                                 </label>
                                 <input
                                   type="tel"
@@ -577,7 +587,7 @@ export default function ClientAccountModal({
                                       ? 'bg-gray-900 border-gray-700 text-white' 
                                       : 'bg-gray-50 border-gray-200 text-gray-900'
                                   }`}
-                                  placeholder="06 12345678"
+                                  placeholder={t('account.contactPhonePlaceholder')}
                                 />
                               </div>
                             </div>
@@ -688,13 +698,13 @@ export default function ClientAccountModal({
                             </p>
                           </div>
                           <div className={`p-4 rounded-xl ${darkMode ? 'bg-gray-900/50' : 'bg-gray-50'}`}>
-                            <p className={`text-sm mb-1 ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>Type dienst</p>
+                            <p className={`text-sm mb-1 ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>{t('clientAccount.profile.serviceType')}</p>
                             <p className={`font-medium capitalize ${darkMode ? 'text-white' : 'text-gray-900'}`}>
-                              {serviceTypeLabels[project.serviceType || 'website'] || 'Website'}
+                              {getServiceTypeLabel(t, project.serviceType || 'website')}
                             </p>
                           </div>
                           <div className={`p-4 rounded-xl ${darkMode ? 'bg-gray-900/50' : 'bg-gray-50'}`}>
-                            <p className={`text-sm mb-1 ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>Pakket</p>
+                            <p className={`text-sm mb-1 ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>{t('clientAccount.profile.package')}</p>
                             <p className={`font-medium ${darkMode ? 'text-white' : 'text-gray-900'}`}>{currentPackage.name}</p>
                           </div>
                         </div>
@@ -802,24 +812,24 @@ export default function ClientAccountModal({
                                 : darkMode ? 'text-primary-400' : 'text-primary-600'
                             }`}>
                               {project.paymentStatus === 'paid'
-                                ? '✓ Betaling ontvangen'
+                                ? t('clientAccount.payments.status.paid')
                                 : project.paymentStatus === 'awaiting_payment'
-                                ? 'Wacht op betaling'
+                                ? t('clientAccount.payments.status.awaiting')
                                 : project.paymentStatus === 'not_required'
-                                ? 'Wij leveren eerst!'
-                                : 'Betaalstatus onbekend'}
+                                ? t('clientAccount.payments.status.notRequired')
+                                : t('clientAccount.payments.status.unknown')}
                             </h3>
                             <p className={`text-sm ${darkMode ? 'text-gray-400' : 'text-gray-600'}`}>
                               {project.paymentStatus === 'paid' && project.paymentCompletedAt
-                                ? `Betaald op ${new Date(project.paymentCompletedAt).toLocaleDateString('nl-NL', { day: 'numeric', month: 'long', year: 'numeric' })}`
+                                ? t('clientAccount.payments.paidOn', { date: new Date(project.paymentCompletedAt).toLocaleDateString('nl-NL', { day: 'numeric', month: 'long', year: 'numeric' }) })
                                 : project.paymentStatus === 'awaiting_payment'
-                                ? 'Rond de betaling af om door te gaan met je project'
-                                : 'Je krijgt eerst je design te zien. Pas als je tevreden bent, sturen we de betaallink. Geen risico!'}
+                                ? t('clientAccount.payments.awaitingDescription')
+                                : t('clientAccount.payments.notRequiredDescription')}
                             </p>
                             {project.paymentStatus === 'not_required' && (
                               <div className={`mt-3 flex items-center gap-2 text-xs font-medium ${darkMode ? 'text-primary-400' : 'text-primary-600'}`}>
                                 <Shield className="w-3.5 h-3.5" />
-                                <span>100% tevreden garantie</span>
+                                <span>{t('clientAccount.payments.guarantee')}</span>
                               </div>
                             )}
                           </div>
@@ -830,7 +840,7 @@ export default function ClientAccountModal({
                               rel="noopener noreferrer"
                               className="flex items-center justify-center gap-2 px-6 py-3 rounded-xl bg-gradient-to-r from-primary-500 to-primary-600 text-white font-semibold hover:from-primary-600 hover:to-primary-700 transition-all shadow-lg shadow-primary-500/25"
                             >
-                              Nu Betalen
+                              {t('clientAccount.payments.payNow')}
                               <ExternalLink className="w-4 h-4" />
                             </a>
                           )}
@@ -1031,9 +1041,9 @@ export default function ClientAccountModal({
                             <Globe className={`w-5 h-5 ${darkMode ? 'text-primary-400' : 'text-primary-600'}`} />
                           </div>
                           <div>
-                            <p className={`text-xs ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>Type</p>
+                            <p className={`text-xs ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>{t('clientAccount.profile.type')}</p>
                             <p className={`font-semibold text-sm ${darkMode ? 'text-white' : 'text-gray-900'}`}>
-                              {serviceTypeLabels[project.serviceType || 'website'] || 'Website'}
+                              {getServiceTypeLabel(t, project.serviceType || 'website')}
                             </p>
                           </div>
                         </div>

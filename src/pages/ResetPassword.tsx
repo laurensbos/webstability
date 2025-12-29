@@ -2,9 +2,11 @@ import { useState, useEffect } from 'react'
 import { useSearchParams, Link } from 'react-router-dom'
 import { motion } from 'framer-motion'
 import { Lock, Eye, EyeOff, CheckCircle, AlertCircle, Loader2, ArrowLeft } from 'lucide-react'
+import { useTranslation } from 'react-i18next'
 import Logo from '../components/Logo'
 
 export default function ResetPassword() {
+  const { t } = useTranslation()
   const [searchParams] = useSearchParams()
   const token = searchParams.get('token')
   
@@ -24,12 +26,12 @@ export default function ResetPassword() {
     e.preventDefault()
     
     if (newPassword.length < 4) {
-      setError('Wachtwoord moet minimaal 4 tekens zijn.')
+      setError(t('errors.validation.passwordMinLength'))
       return
     }
     
     if (newPassword !== confirmPassword) {
-      setError('Wachtwoorden komen niet overeen.')
+      setError(t('errors.validation.passwordMismatch'))
       return
     }
     
@@ -48,10 +50,10 @@ export default function ResetPassword() {
       if (data.success) {
         setSuccess(true)
       } else {
-        setError(data.message || 'Er is iets misgegaan. Probeer het opnieuw.')
+        setError(data.message || t('errors.generic'))
       }
     } catch {
-      setError('Er is een fout opgetreden. Probeer het later opnieuw.')
+      setError(t('errors.tryLater'))
     } finally {
       setLoading(false)
     }

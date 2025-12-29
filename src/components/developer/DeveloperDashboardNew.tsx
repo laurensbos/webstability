@@ -11,6 +11,7 @@
 
 import { useState, useEffect, useCallback } from 'react'
 import { useNavigate } from 'react-router-dom'
+import { useTranslation } from 'react-i18next'
 import { motion, AnimatePresence } from 'framer-motion'
 import { 
   FolderKanban, 
@@ -45,11 +46,13 @@ import {
   PlayCircle,
   Home,
   MoreHorizontal,
-  ChevronLeft
+  ChevronLeft,
+  Edit3
 } from 'lucide-react'
 import Logo from '../Logo'
 import QuickStats from './QuickStats'
 import ProjectDetailModal from './ProjectDetailModal'
+import ChangeRequestsManager from './ChangeRequestsManager'
 import type { Project, DashboardView, ProjectPhase } from './types'
 import { PHASE_CONFIG, PACKAGE_CONFIG } from './types'
 
@@ -71,39 +74,53 @@ const TOKEN_KEY = 'webstability_dev_token'
 const API_BASE = '/api'
 
 // Helper function to get project urgency
-function getProjectUrgency(project: Project): { level: 'high' | 'medium' | 'low' | 'none', reason: string } {
+function getProjectUrgency(project: Project): { level: 'high' | 'medium' | 'low' | 'none', reasonKey: string, reasonParams?: Record<string, number> } {
   const unreadMessages = project.messages.filter(m => !m.read && m.from === 'client').length
   const daysSinceUpdate = Math.floor((Date.now() - new Date(project.updatedAt).getTime()) / (1000 * 60 * 60 * 24))
   
   // High urgency
   if (unreadMessages > 0) {
-    return { level: 'high', reason: `${unreadMessages} nieuw bericht${unreadMessages > 1 ? 'en' : ''}` }
+    return { level: 'high', reasonKey: unreadMessages > 1 ? 'newMessages' : 'newMessage', reasonParams: { count: unreadMessages } }
   }
   if (project.phase === 'feedback' && project.paymentStatus === 'paid') {
-    return { level: 'high', reason: 'Klaar om te beginnen!' }
+    return { level: 'high', reasonKey: 'readyToStart' }
   }
   if (project.phase === 'payment') {
-    return { level: 'high', reason: 'Wacht op review' }
+    return { level: 'high', reasonKey: 'waitingForReview' }
   }
   
   // Medium urgency
   if (daysSinceUpdate > 3 && project.phase !== 'live') {
-    return { level: 'medium', reason: `${daysSinceUpdate} dagen geen update` }
+    return { level: 'medium', reasonKey: 'noDaysUpdate', reasonParams: { days: daysSinceUpdate } }
   }
   if (project.phase === 'feedback' && project.paymentStatus !== 'paid') {
-    return { level: 'medium', reason: 'Wacht op betaling' }
+    return { level: 'medium', reasonKey: 'waitingForPayment' }
   }
   
   // Low urgency
   if (project.phase === 'onboarding') {
-    return { level: 'low', reason: 'Nieuwe klant' }
+    return { level: 'low', reasonKey: 'newClient' }
   }
   
-  return { level: 'none', reason: '' }
+  return { level: 'none', reasonKey: '' }
 }
 
 export default function DeveloperDashboard() {
   const navigate = useNavigate()
+  const { t } = useTranslation()
+  
+  // Helper to get translated urgency reason
+  const getUrgencyReason = (urgency: { reasonKey: string; reasonParams?: Record<string, number> }) => {
+    if (!urgency.reasonKey) return ''
+    const key = `developerDashboard.urgency.${urgency.reasonKey}`
+    if (urgency.reasonParams?.count) {
+      return `${urgency.reasonParams.count} ${t(key)}`
+    }
+    if (urgency.reasonParams?.days) {
+      return `${urgency.reasonParams.days} ${t(key)}`
+    }
+    return t(key)
+  }
   
   // Dashboard state
   const [activeView, setActiveView] = useState<DashboardView>('projects')
@@ -200,7 +217,7 @@ export default function DeveloperDashboard() {
     try {
       const token = sessionStorage.getItem(TOKEN_KEY)
       const amount = customAmount || getFirstPayment(project.package)
-      const description = customDescription || `Eerste betaling - ${project.businessName}`
+      const description = customDescription || `${t('developerDashboard.payments.firstPayment')} - ${project.businessName}`
       
       const response = await fetch(`${API_BASE}/create-payment`, {
         method: 'POST',
@@ -234,18 +251,18 @@ export default function DeveloperDashboard() {
             closePaymentModal()
           }, 2000)
         } else {
-          throw new Error('Geen betaallink ontvangen')
+          throw new Error(t('developerDashboard.payments.noPaymentLink'))
         }
       } else {
         const errorData = await response.json().catch(() => ({}))
-        throw new Error(errorData.error || 'Kon betaallink niet aanmaken')
+        throw new Error(errorData.error || t('developerDashboard.payments.createFailed'))
       }
     } catch (error) {
       console.error('Failed to create payment:', error)
       setPaymentModal(prev => ({ 
         ...prev, 
         loading: false, 
-        error: error instanceof Error ? error.message : 'Er ging iets mis' 
+        error: error instanceof Error ? error.message : t('developerDashboard.payments.somethingWrong') 
       }))
     }
   }
@@ -261,7 +278,7 @@ export default function DeveloperDashboard() {
     // Get default amount based on package
     const defaultAmount = getFirstPayment(project.package || 'professional')
     setPaymentAmount(defaultAmount.toString())
-    setPaymentDescription(`Betaling voor ${project.businessName} - ${PACKAGE_CONFIG[project.package]?.name || 'Website'}`)
+    setPaymentDescription(`${t('developerDashboard.payments.paymentFor')} ${project.businessName} - ${PACKAGE_CONFIG[project.package]?.name || 'Website'}`)
     setPaymentModal({
       open: true,
       project,
@@ -396,22 +413,23 @@ export default function DeveloperDashboard() {
         <div className="p-4 border-b border-white/10">
           <div className="bg-gradient-to-br from-emerald-500/20 to-emerald-600/5 rounded-xl p-4 border border-emerald-500/20">
             <div className="flex items-center justify-between mb-2">
-              <span className="text-xs text-gray-400">MRR</span>
+              <span className="text-xs text-gray-400">{t('developerDashboard.sidebar.mrr')}</span>
               <TrendingUp className="w-4 h-4 text-emerald-400" />
             </div>
             <p className="text-2xl font-bold text-emerald-400">
               €{projects.filter(p => p.paymentStatus === 'paid' && p.phase === 'live').reduce((sum, p) => sum + (PACKAGE_CONFIG[p.package]?.price || 0), 0)}
             </p>
-            <p className="text-xs text-gray-500 mt-1">{liveProjects.length} actieve abonnementen</p>
+            <p className="text-xs text-gray-500 mt-1">{liveProjects.length} {t('developerDashboard.sidebar.activeSubscriptions')}</p>
           </div>
         </div>
 
         <nav className="p-4 space-y-1">
           {[
-            { id: 'projects' as const, label: 'Projecten', icon: FolderKanban, count: activeProjects.length },
-            { id: 'customers' as const, label: 'Klanten', icon: Users, count: projects.length },
-            { id: 'messages' as const, label: 'Berichten', icon: MessageSquare, badge: unreadCount > 0 ? unreadCount : undefined },
-            { id: 'payments' as const, label: 'Betalingen', icon: CreditCard },
+            { id: 'projects' as const, label: t('developerDashboard.sidebar.projects'), icon: FolderKanban, count: activeProjects.length },
+            { id: 'changes' as const, label: t('developerDashboard.sidebar.changes', 'Wijzigingen'), icon: Edit3 },
+            { id: 'customers' as const, label: t('developerDashboard.sidebar.customers'), icon: Users, count: projects.length },
+            { id: 'messages' as const, label: t('developerDashboard.sidebar.messages'), icon: MessageSquare, badge: unreadCount > 0 ? unreadCount : undefined },
+            { id: 'payments' as const, label: t('developerDashboard.sidebar.payments'), icon: CreditCard },
           ].map(item => (
             <button
               key={item.id}
@@ -445,7 +463,7 @@ export default function DeveloperDashboard() {
             className="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium text-gray-400 hover:text-red-400 hover:bg-red-500/10 transition"
           >
             <LogOut className="w-5 h-5" />
-            Uitloggen
+            {t('developerDashboard.sidebar.logout')}
           </button>
         </div>
       </aside>
@@ -469,7 +487,7 @@ export default function DeveloperDashboard() {
                 type="text"
                 value={searchQuery}
                 onChange={e => setSearchQuery(e.target.value)}
-                placeholder="Zoek projecten..."
+                placeholder={t('developerDashboard.header.searchPlaceholder')}
                 className="w-full bg-white/5 border border-white/10 rounded-xl pl-11 pr-4 py-2.5 text-sm text-white placeholder-gray-500 focus:outline-none focus:border-emerald-500/50 focus:bg-white/10 transition"
               />
             </div>
@@ -488,7 +506,7 @@ export default function DeveloperDashboard() {
                 <div className="p-3 border-b border-white/10">
                   <h4 className="text-sm font-medium text-white flex items-center gap-2">
                     <Zap className="w-4 h-4 text-amber-400" />
-                    Aandacht nodig
+                    {t('developerDashboard.header.needsAttention')}
                   </h4>
                 </div>
                 <div className="max-h-64 overflow-y-auto">
@@ -505,7 +523,7 @@ export default function DeveloperDashboard() {
                         }`} />
                         <div className="flex-1 min-w-0">
                           <p className="text-sm font-medium text-white truncate">{project.businessName}</p>
-                          <p className="text-xs text-gray-500">{urgency.reason}</p>
+                          <p className="text-xs text-gray-500">{getUrgencyReason(urgency)}</p>
                         </div>
                         <ChevronRight className="w-4 h-4 text-gray-600" />
                       </button>
@@ -513,7 +531,7 @@ export default function DeveloperDashboard() {
                   }) : (
                     <div className="p-6 text-center text-gray-500 text-sm">
                       <CheckCircle2 className="w-8 h-8 mx-auto mb-2 opacity-50" />
-                      Alles up-to-date!
+                      {t('developerDashboard.header.allUpToDate')}
                     </div>
                   )}
                 </div>
@@ -543,21 +561,21 @@ export default function DeveloperDashboard() {
                     <div>
                       <div className="flex items-center gap-2 mb-2">
                         <span className="px-2.5 py-1 bg-white/20 backdrop-blur-sm rounded-full text-xs font-medium">
-                          🚀 Dashboard
+                          🚀 {t('developerDashboard.hero.dashboard')}
                         </span>
                       </div>
                       <h1 className="text-2xl font-bold text-white mb-1">
-                        Welkom terug, developer!
+                        {t('developerDashboard.hero.welcomeBack')}
                       </h1>
                       <p className="text-white/80 text-sm">
-                        {activeProjects.length} actieve projecten • {liveProjects.length} live websites
+                        {activeProjects.length} {t('developerDashboard.hero.activeProjects')} • {liveProjects.length} {t('developerDashboard.hero.liveWebsites')}
                       </p>
                     </div>
                     <div className="hidden sm:flex items-center gap-2">
                       {urgentProjects.filter(p => getProjectUrgency(p).level === 'high').length > 0 && (
                         <span className="flex items-center gap-1.5 px-3 py-1.5 bg-red-500/30 backdrop-blur-sm rounded-full text-sm font-medium text-white">
                           <AlertCircle className="w-4 h-4" />
-                          {urgentProjects.filter(p => getProjectUrgency(p).level === 'high').length} urgent
+                          {urgentProjects.filter(p => getProjectUrgency(p).level === 'high').length} {t('developerDashboard.hero.urgent')}
                         </span>
                       )}
                     </div>
@@ -597,7 +615,7 @@ export default function DeveloperDashboard() {
               <div className="flex items-center justify-between mb-4">
                 <h2 className="text-lg font-semibold flex items-center gap-2">
                   <Sparkles className="w-5 h-5 text-emerald-400" />
-                  Actieve projecten
+                  {t('developerDashboard.projects.title')}
                 </h2>
                 <div className="flex items-center gap-3">
                   {/* View Toggle */}
@@ -605,20 +623,20 @@ export default function DeveloperDashboard() {
                     <button
                       onClick={() => setViewMode('kanban')}
                       className={`p-2 rounded-lg transition ${viewMode === 'kanban' ? 'bg-emerald-500 text-white shadow-lg' : 'text-gray-400 hover:text-white'}`}
-                      title="Kanban weergave"
+                      title={t('developerDashboard.projects.kanbanView')}
                     >
                       <LayoutGrid className="w-4 h-4" />
                     </button>
                     <button
                       onClick={() => setViewMode('list')}
                       className={`p-2 rounded-lg transition ${viewMode === 'list' ? 'bg-emerald-500 text-white shadow-lg' : 'text-gray-400 hover:text-white'}`}
-                      title="Lijst weergave"
+                      title={t('developerDashboard.projects.listView')}
                     >
                       <List className="w-4 h-4" />
                     </button>
                   </div>
                   <span className="text-sm text-gray-500 bg-white/5 px-3 py-1.5 rounded-lg border border-white/10">
-                    {activeProjects.length} actief
+                    {activeProjects.length} {t('developerDashboard.projects.active')}
                   </span>
                 </div>
               </div>
@@ -756,7 +774,7 @@ export default function DeveloperDashboard() {
                                         urgency.level === 'medium' ? 'text-amber-400' :
                                         'text-blue-400'
                                       }`}>
-                                        {urgency.reason}
+                                        {getUrgencyReason(urgency)}
                                       </p>
                                     )}
                                   </div>
@@ -765,7 +783,7 @@ export default function DeveloperDashboard() {
                                 {/* Quick action on hover */}
                                 <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition rounded-xl flex items-end justify-center pb-2">
                                   <span className="text-xs text-white flex items-center gap-1">
-                                    <Eye className="w-3 h-3" /> Bekijk details
+                                    <Eye className="w-3 h-3" /> {t('developerDashboard.projects.viewDetails')}
                                   </span>
                                 </div>
                               </motion.div>
@@ -774,7 +792,7 @@ export default function DeveloperDashboard() {
                           
                           {phaseProjects.length === 0 && (
                             <div className="text-center py-8 text-gray-600 text-sm">
-                              Geen projecten
+                              {t('developerDashboard.projects.noProjects')}
                             </div>
                           )}
                         </div>
@@ -790,11 +808,11 @@ export default function DeveloperDashboard() {
                 <div className="bg-white/5 backdrop-blur-sm rounded-xl border border-white/10 overflow-hidden">
                   {/* Table Header */}
                   <div className="grid grid-cols-12 gap-4 px-4 py-3 bg-white/5 text-xs font-medium text-gray-400 uppercase tracking-wider border-b border-white/10">
-                    <div className="col-span-4">Project</div>
-                    <div className="col-span-2">Fase</div>
-                    <div className="col-span-2">Pakket</div>
-                    <div className="col-span-2">Status</div>
-                    <div className="col-span-2">Actie</div>
+                    <div className="col-span-4">{t('developerDashboard.table.project', 'Project')}</div>
+                    <div className="col-span-2">{t('developerDashboard.table.phase', 'Fase')}</div>
+                    <div className="col-span-2">{t('developerDashboard.table.package', 'Pakket')}</div>
+                    <div className="col-span-2">{t('developerDashboard.table.status', 'Status')}</div>
+                    <div className="col-span-2">{t('developerDashboard.table.action', 'Actie')}</div>
                   </div>
                   
                   {/* Table Body */}
@@ -851,7 +869,7 @@ export default function DeveloperDashboard() {
                                 urgency.level === 'medium' ? 'text-amber-400' :
                                 'text-blue-400'
                               }`}>
-                                {urgency.reason}
+                                {getUrgencyReason(urgency)}
                               </span>
                             ) : (
                               <span className="text-xs text-gray-500 flex items-center gap-1">
@@ -863,7 +881,7 @@ export default function DeveloperDashboard() {
                           <div className="col-span-2">
                             <button className="flex items-center gap-2 px-3 py-1.5 bg-emerald-500/20 hover:bg-emerald-500/30 text-emerald-400 text-xs font-medium rounded-lg transition opacity-0 group-hover:opacity-100">
                               <Eye className="w-3 h-3" />
-                              Bekijken
+                              {t('common.viewAll').split(' ')[0]}
                             </button>
                           </div>
                         </motion.div>
@@ -872,7 +890,7 @@ export default function DeveloperDashboard() {
                     
                     {activeProjects.length === 0 && (
                       <div className="text-center py-12 text-gray-500">
-                        Geen actieve projecten
+                        {t('developerDashboard.projects.noProjects')}
                       </div>
                     )}
                   </div>
@@ -1043,7 +1061,7 @@ export default function DeveloperDashboard() {
                               {lastMessage && (
                                 <p className="text-sm text-gray-400 mt-1 line-clamp-1">
                                   {lastMessage.from === 'developer' && (
-                                    <span className="text-emerald-400">Jij: </span>
+                                    <span className="text-emerald-400">{t('developerDashboard.messages.you', 'Jij')}: </span>
                                   )}
                                   {lastMessage.message}
                                 </p>
@@ -1066,8 +1084,8 @@ export default function DeveloperDashboard() {
                     <div className="w-16 h-16 bg-white/5 rounded-2xl flex items-center justify-center mx-auto mb-4">
                       <MessageSquare className="w-8 h-8 opacity-50" />
                     </div>
-                    <p className="font-medium mb-1">Nog geen berichten</p>
-                    <p className="text-sm text-gray-600">Berichten van klanten verschijnen hier</p>
+                    <p className="font-medium mb-1">{t('developerDashboard.messages.empty', 'Nog geen berichten')}</p>
+                    <p className="text-sm text-gray-600">{t('developerDashboard.messages.emptyHint', 'Berichten van klanten verschijnen hier')}</p>
                   </div>
                 )}
               </div>
@@ -1086,10 +1104,10 @@ export default function DeveloperDashboard() {
                   <div>
                     <h1 className="text-xl font-bold text-white mb-1 flex items-center gap-2">
                       <CreditCard className="w-5 h-5" />
-                      Betalingen
+                      {t('developerDashboard.payments.title')}
                     </h1>
                     <p className="text-white/80 text-sm">
-                      Beheer facturen en bekijk inkomsten
+                      {t('developerDashboard.payments.subtitle')}
                     </p>
                   </div>
                   
@@ -1104,7 +1122,7 @@ export default function DeveloperDashboard() {
                         }}
                         className="appearance-none bg-white/20 hover:bg-white/30 text-white font-medium py-2.5 pl-4 pr-10 rounded-xl transition cursor-pointer border border-white/20"
                       >
-                        <option value="" className="bg-gray-800 text-white">+ Nieuwe betaling</option>
+                        <option value="" className="bg-gray-800 text-white">{t('developerDashboard.payments.newPayment')}</option>
                         {projects.map(project => (
                           <option key={project.projectId} value={project.projectId} className="bg-gray-800 text-white">
                             {project.businessName} - {PACKAGE_CONFIG[project.package]?.name || 'Website'}
@@ -1131,11 +1149,11 @@ export default function DeveloperDashboard() {
                         <TrendingUp className="w-6 h-6 text-emerald-400" />
                       </div>
                     </div>
-                    <p className="text-xs text-gray-400 uppercase tracking-wider mb-1">Maandelijkse Inkomsten (MRR)</p>
+                    <p className="text-xs text-gray-400 uppercase tracking-wider mb-1">{t('developerDashboard.payments.mrr', 'Maandelijkse Inkomsten (MRR)')}</p>
                     <p className="text-3xl font-bold text-emerald-400">
                       €{projects.filter(p => p.paymentStatus === 'paid' && p.phase === 'live').reduce((sum, p) => sum + (PACKAGE_CONFIG[p.package]?.price || 0), 0)}
                     </p>
-                    <p className="text-xs text-gray-500 mt-2">{liveProjects.filter(p => p.paymentStatus === 'paid').length} actieve abonnementen</p>
+                    <p className="text-xs text-gray-500 mt-2">{liveProjects.filter(p => p.paymentStatus === 'paid').length} {t('developerDashboard.payments.activeSubscriptions', 'actieve abonnementen')}</p>
                   </div>
                 </motion.div>
                 
@@ -1152,12 +1170,12 @@ export default function DeveloperDashboard() {
                         <Euro className="w-6 h-6 text-amber-400" />
                       </div>
                     </div>
-                    <p className="text-xs text-gray-400 uppercase tracking-wider mb-1">Openstaand</p>
+                    <p className="text-xs text-gray-400 uppercase tracking-wider mb-1">{t('developerDashboard.payments.outstanding', 'Openstaand')}</p>
                     <p className="text-3xl font-bold text-amber-400">
                       €{projects.filter(p => p.phase === 'feedback' && p.paymentStatus !== 'paid').reduce((sum, p) => sum + getFirstPayment(p.package), 0)}
                     </p>
                     <p className="text-xs text-gray-500 mt-2">
-                      {projects.filter(p => p.phase === 'feedback' && p.paymentStatus !== 'paid').length} wachtend op betaling
+                      {projects.filter(p => p.phase === 'feedback' && p.paymentStatus !== 'paid').length} {t('developerDashboard.payments.waitingForPayment', 'wachtend op betaling')}
                     </p>
                   </div>
                 </motion.div>
@@ -1175,11 +1193,11 @@ export default function DeveloperDashboard() {
                         <CheckCircle2 className="w-6 h-6 text-blue-400" />
                       </div>
                     </div>
-                    <p className="text-xs text-gray-400 uppercase tracking-wider mb-1">Betaald</p>
+                    <p className="text-xs text-gray-400 uppercase tracking-wider mb-1">{t('developerDashboard.payments.paid', 'Betaald')}</p>
                     <p className="text-3xl font-bold text-blue-400">
                       {projects.filter(p => p.paymentStatus === 'paid').length}
                     </p>
-                    <p className="text-xs text-gray-500 mt-2">Projecten met betaling ontvangen</p>
+                    <p className="text-xs text-gray-500 mt-2">{t('developerDashboard.payments.paidHint', 'Projecten met betaling ontvangen')}</p>
                   </div>
                 </motion.div>
               </div>
@@ -1215,7 +1233,7 @@ export default function DeveloperDashboard() {
                           <div className="flex items-center gap-4">
                             <div className="text-right">
                               <p className="text-xl font-bold text-amber-400">€{getFirstPayment(project.package)}</p>
-                              <p className="text-xs text-gray-500">Eerste betaling</p>
+                              <p className="text-xs text-gray-500">{t('developerDashboard.payments.firstPayment', 'Eerste betaling')}</p>
                             </div>
                             {project.paymentUrl ? (
                               <a
@@ -1244,8 +1262,8 @@ export default function DeveloperDashboard() {
                   {projects.filter(p => p.phase === 'feedback' && p.paymentStatus !== 'paid').length === 0 && (
                     <div className="text-center py-10 text-gray-500 bg-white/5 rounded-xl border border-dashed border-white/10">
                       <CheckCircle2 className="w-12 h-12 mx-auto mb-3 opacity-50" />
-                      <p className="font-medium">Geen openstaande betalingen</p>
-                      <p className="text-sm text-gray-600 mt-1">Alle facturen zijn betaald</p>
+                      <p className="font-medium">{t('developerDashboard.payments.noOutstanding', 'Geen openstaande betalingen')}</p>
+                      <p className="text-sm text-gray-600 mt-1">{t('developerDashboard.payments.allPaid', 'Alle facturen zijn betaald')}</p>
                     </div>
                   )}
                 </div>
@@ -1255,7 +1273,7 @@ export default function DeveloperDashboard() {
               <div>
                 <h3 className="text-sm font-medium text-green-400 mb-4 flex items-center gap-2">
                   <CheckCircle2 className="w-4 h-4" />
-                  Recent betaald
+                  {t('developerDashboard.payments.recentlyPaid', 'Recent betaald')}
                 </h3>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                   {projects
@@ -1419,11 +1437,45 @@ export default function DeveloperDashboard() {
                 {projects.length === 0 && (
                   <div className="col-span-2 text-center py-16 text-gray-500 bg-white/5 rounded-xl border border-white/10">
                     <Users className="w-12 h-12 mx-auto mb-3 opacity-50" />
-                    <p className="font-medium">Nog geen klanten</p>
-                    <p className="text-sm text-gray-600 mt-1">Nieuwe klanten verschijnen hier</p>
+                    <p className="font-medium">{t('developerDashboard.clients.empty', 'Nog geen klanten')}</p>
+                    <p className="text-sm text-gray-600 mt-1">{t('developerDashboard.clients.emptyHint', 'Nieuwe klanten verschijnen hier')}</p>
                   </div>
                 )}
               </div>
+            </div>
+          )}
+
+          {/* Changes View - Change Requests Management */}
+          {activeView === 'changes' && (
+            <div className="mt-6">
+              {/* Changes Hero */}
+              <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-amber-500 to-orange-600 p-6 mb-6">
+                <div className="absolute inset-0 bg-black/10" />
+                <div className="absolute -top-20 -right-20 w-40 h-40 bg-white/10 rounded-full blur-3xl" />
+                
+                <div className="relative flex items-center justify-between">
+                  <div>
+                    <h1 className="text-xl font-bold text-white mb-1 flex items-center gap-2">
+                      <Edit3 className="w-5 h-5" />
+                      {t('developerDashboard.changes.title', 'Wijzigingsverzoeken')}
+                    </h1>
+                    <p className="text-white/80 text-sm">
+                      {t('developerDashboard.changes.subtitle', 'Beheer aanpassingsverzoeken van klanten')}
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+              {/* Change Requests Manager Component */}
+              <ChangeRequestsManager 
+                darkMode={true}
+                onProjectClick={(projectId) => {
+                  const project = projects.find(p => p.projectId === projectId)
+                  if (project) {
+                    setSelectedProject(project)
+                  }
+                }}
+              />
             </div>
           )}
         </div>
@@ -1481,8 +1533,8 @@ export default function DeveloperDashboard() {
                     <Euro className="w-6 h-6 text-white" />
                   </div>
                   <div>
-                    <h2 className="text-xl font-bold text-white">Betaallink versturen</h2>
-                    <p className="text-sm text-gray-400">Via Mollie naar {paymentModal.project.contactEmail}</p>
+                    <h2 className="text-xl font-bold text-white">{t('developerDashboard.paymentLink.title', 'Betaallink versturen')}</h2>
+                    <p className="text-sm text-gray-400">{t('developerDashboard.paymentLink.subtitle', 'Via Mollie naar')} {paymentModal.project.contactEmail}</p>
                   </div>
                 </div>
               </div>
@@ -1499,8 +1551,8 @@ export default function DeveloperDashboard() {
                     <div className="w-20 h-20 mx-auto mb-4 rounded-full bg-gradient-to-br from-emerald-500 to-teal-600 flex items-center justify-center shadow-lg shadow-emerald-500/30">
                       <CheckCircle2 className="w-10 h-10 text-white" />
                     </div>
-                    <h3 className="text-xl font-bold text-white mb-2">Betaallink verstuurd! ✨</h3>
-                    <p className="text-gray-400">De klant ontvangt de link per e-mail</p>
+                    <h3 className="text-xl font-bold text-white mb-2">{t('developerDashboard.paymentLink.success', 'Betaallink verstuurd!')} ✨</h3>
+                    <p className="text-gray-400">{t('developerDashboard.paymentLink.successHint', 'De klant ontvangt de link per e-mail')}</p>
                   </motion.div>
                 )}
 
@@ -1509,7 +1561,7 @@ export default function DeveloperDashboard() {
                   <div className="flex items-start gap-3 p-4 bg-red-500/10 border border-red-500/20 rounded-xl">
                     <XCircle className="w-5 h-5 text-red-400 flex-shrink-0 mt-0.5" />
                     <div>
-                      <p className="text-sm font-medium text-red-400">Er ging iets mis</p>
+                      <p className="text-sm font-medium text-red-400">{t('developerDashboard.paymentLink.error', 'Er ging iets mis')}</p>
                       <p className="text-sm text-red-300/70">{paymentModal.error}</p>
                     </div>
                   </div>
@@ -1577,19 +1629,19 @@ export default function DeveloperDashboard() {
                       {paymentModal.loading ? (
                         <>
                           <Loader2 className="w-5 h-5 animate-spin" />
-                          <span>Betaallink aanmaken...</span>
+                          <span>{t('developerDashboard.paymentLink.creating', 'Betaallink aanmaken...')}</span>
                         </>
                       ) : (
                         <>
                           <Send className="w-5 h-5" />
-                          <span>Verstuur betaallink</span>
+                          <span>{t('developerDashboard.paymentLink.send', 'Verstuur betaallink')}</span>
                         </>
                       )}
                     </button>
 
                     {/* Info text */}
                     <p className="text-xs text-center text-gray-500">
-                      De klant ontvangt een e-mail met een beveiligde Mollie betaallink
+                      {t('developerDashboard.paymentLink.info', 'De klant ontvangt een e-mail met een beveiligde Mollie betaallink')}
                     </p>
                   </>
                 )}
@@ -1623,8 +1675,8 @@ export default function DeveloperDashboard() {
                     <HelpCircle className="w-5 h-5 text-white" />
                   </div>
                   <div>
-                    <h2 className="text-lg font-bold text-white">Dashboard Help</h2>
-                    <p className="text-sm text-gray-400">Snelle handleiding</p>
+                    <h2 className="text-lg font-bold text-white">{t('developerDashboard.help.title', 'Dashboard Help')}</h2>
+                    <p className="text-sm text-gray-400">{t('developerDashboard.help.subtitle', 'Snelle handleiding')}</p>
                   </div>
                 </div>
                 <button 
@@ -1641,10 +1693,10 @@ export default function DeveloperDashboard() {
                 <div className="p-4 bg-white/5 rounded-xl border border-white/10">
                   <div className="flex items-center gap-2 mb-2">
                     <LayoutGrid className="w-4 h-4 text-emerald-400" />
-                    <h3 className="font-medium text-white">Kanban View</h3>
+                    <h3 className="font-medium text-white">{t('developerDashboard.help.kanban.title', 'Kanban View')}</h3>
                   </div>
                   <p className="text-sm text-gray-400">
-                    Sleep projecten tussen fases of klik voor details. Op mobiel: swipe horizontaal.
+                    {t('developerDashboard.help.kanban.description', 'Sleep projecten tussen fases of klik voor details. Op mobiel: swipe horizontaal.')}
                   </p>
                 </div>
 
@@ -1652,7 +1704,7 @@ export default function DeveloperDashboard() {
                 <div className="p-4 bg-white/5 rounded-xl border border-white/10">
                   <div className="flex items-center gap-2 mb-3">
                     <PlayCircle className="w-4 h-4 text-blue-400" />
-                    <h3 className="font-medium text-white">Projectfases</h3>
+                    <h3 className="font-medium text-white">{t('developerDashboard.help.phases.title', 'Projectfases')}</h3>
                   </div>
                   <div className="space-y-2 text-sm">
                     {Object.entries(PHASE_CONFIG).map(([key, config]) => (
@@ -1660,13 +1712,15 @@ export default function DeveloperDashboard() {
                         <span>{config.emoji}</span>
                         <span className="font-medium">{config.label}:</span>
                         <span className="text-gray-500">
-                          {key === 'onboarding' && 'Klantgegevens verzamelen'}
-                          {key === 'design' && 'Website in ontwikkeling'}
-                          {key === 'feedback' && 'Wacht op klant feedback'}
-                          {key === 'revisie' && 'Aanpassingen doorvoeren'}
-                          {key === 'payment' && 'Betaling afwachten'}
-                          {key === 'domain' && 'Domein koppelen'}
-                          {key === 'live' && 'Website is online'}
+                          {t(`developerDashboard.help.phases.${key}`, 
+                            key === 'onboarding' ? 'Klantgegevens verzamelen' :
+                            key === 'design' ? 'Website in ontwikkeling' :
+                            key === 'feedback' ? 'Wacht op klant feedback' :
+                            key === 'revisie' ? 'Aanpassingen doorvoeren' :
+                            key === 'payment' ? 'Betaling afwachten' :
+                            key === 'domain' ? 'Domein koppelen' :
+                            'Website is online'
+                          )}
                         </span>
                       </div>
                     ))}
@@ -1677,20 +1731,20 @@ export default function DeveloperDashboard() {
                 <div className="p-4 bg-white/5 rounded-xl border border-white/10">
                   <div className="flex items-center gap-2 mb-3">
                     <AlertCircle className="w-4 h-4 text-amber-400" />
-                    <h3 className="font-medium text-white">Urgentie indicators</h3>
+                    <h3 className="font-medium text-white">{t('developerDashboard.help.urgency.title', 'Urgentie indicators')}</h3>
                   </div>
                   <div className="space-y-2 text-sm">
                     <div className="flex items-center gap-2">
                       <span className="w-2 h-2 rounded-full bg-red-500 animate-pulse" />
-                      <span className="text-gray-300">Rood: Ongelezen berichten / langer dan 3 dagen</span>
+                      <span className="text-gray-300">{t('developerDashboard.help.urgency.red', 'Rood: Ongelezen berichten / langer dan 3 dagen')}</span>
                     </div>
                     <div className="flex items-center gap-2">
                       <span className="w-2 h-2 rounded-full bg-amber-500" />
-                      <span className="text-gray-300">Oranje: In revisie fase / in betaling</span>
+                      <span className="text-gray-300">{t('developerDashboard.help.urgency.orange', 'Oranje: In revisie fase / in betaling')}</span>
                     </div>
                     <div className="flex items-center gap-2">
                       <span className="w-2 h-2 rounded-full bg-blue-500" />
-                      <span className="text-gray-300">Blauw: Nieuwe klant</span>
+                      <span className="text-gray-300">{t('developerDashboard.help.urgency.blue', 'Blauw: Nieuwe klant')}</span>
                     </div>
                   </div>
                 </div>
@@ -1699,24 +1753,24 @@ export default function DeveloperDashboard() {
                 <div className="p-4 bg-white/5 rounded-xl border border-white/10">
                   <div className="flex items-center gap-2 mb-3">
                     <Zap className="w-4 h-4 text-yellow-400" />
-                    <h3 className="font-medium text-white">Sneltoetsen</h3>
+                    <h3 className="font-medium text-white">{t('developerDashboard.help.shortcuts.title', 'Sneltoetsen')}</h3>
                   </div>
                   <div className="grid grid-cols-2 gap-2 text-sm">
                     <div className="flex items-center gap-2">
                       <kbd className="px-2 py-1 bg-gray-800 rounded text-xs text-gray-300">K</kbd>
-                      <span className="text-gray-400">Kanban view</span>
+                      <span className="text-gray-400">{t('developerDashboard.help.shortcuts.kanban', 'Kanban view')}</span>
                     </div>
                     <div className="flex items-center gap-2">
                       <kbd className="px-2 py-1 bg-gray-800 rounded text-xs text-gray-300">L</kbd>
-                      <span className="text-gray-400">List view</span>
+                      <span className="text-gray-400">{t('developerDashboard.help.shortcuts.list', 'List view')}</span>
                     </div>
                     <div className="flex items-center gap-2">
                       <kbd className="px-2 py-1 bg-gray-800 rounded text-xs text-gray-300">/</kbd>
-                      <span className="text-gray-400">Zoeken</span>
+                      <span className="text-gray-400">{t('developerDashboard.help.shortcuts.search', 'Zoeken')}</span>
                     </div>
                     <div className="flex items-center gap-2">
                       <kbd className="px-2 py-1 bg-gray-800 rounded text-xs text-gray-300">?</kbd>
-                      <span className="text-gray-400">Help</span>
+                      <span className="text-gray-400">{t('developerDashboard.help.shortcuts.help', 'Help')}</span>
                     </div>
                   </div>
                 </div>
@@ -1731,42 +1785,51 @@ export default function DeveloperDashboard() {
         <div className="flex items-center justify-around py-2">
           <button
             onClick={() => setActiveView('projects')}
-            className={`flex flex-col items-center gap-1 px-4 py-2 rounded-xl transition ${
+            className={`flex flex-col items-center gap-1 px-3 py-2 rounded-xl transition ${
               activeView === 'projects' ? 'text-emerald-400' : 'text-gray-500 hover:text-gray-300'
             }`}
           >
             <Home className="w-5 h-5" />
-            <span className="text-[10px] font-medium">Projecten</span>
+            <span className="text-[10px] font-medium">{t('developerDashboard.nav.projects', 'Projecten')}</span>
+          </button>
+          <button
+            onClick={() => setActiveView('changes')}
+            className={`flex flex-col items-center gap-1 px-3 py-2 rounded-xl transition ${
+              activeView === 'changes' ? 'text-emerald-400' : 'text-gray-500 hover:text-gray-300'
+            }`}
+          >
+            <Edit3 className="w-5 h-5" />
+            <span className="text-[10px] font-medium">{t('developerDashboard.nav.changes', 'Wijzigingen')}</span>
           </button>
           <button
             onClick={() => setActiveView('messages')}
-            className={`relative flex flex-col items-center gap-1 px-4 py-2 rounded-xl transition ${
+            className={`relative flex flex-col items-center gap-1 px-3 py-2 rounded-xl transition ${
               activeView === 'messages' ? 'text-emerald-400' : 'text-gray-500 hover:text-gray-300'
             }`}
           >
             <MessageSquare className="w-5 h-5" />
-            <span className="text-[10px] font-medium">Berichten</span>
+            <span className="text-[10px] font-medium">{t('developerDashboard.nav.messages', 'Berichten')}</span>
             {unreadCount > 0 && (
-              <span className="absolute top-1 right-2 w-4 h-4 bg-red-500 rounded-full text-[9px] font-bold text-white flex items-center justify-center">
+              <span className="absolute top-1 right-1 w-4 h-4 bg-red-500 rounded-full text-[9px] font-bold text-white flex items-center justify-center">
                 {unreadCount > 9 ? '9+' : unreadCount}
               </span>
             )}
           </button>
           <button
             onClick={() => setActiveView('payments')}
-            className={`flex flex-col items-center gap-1 px-4 py-2 rounded-xl transition ${
+            className={`flex flex-col items-center gap-1 px-3 py-2 rounded-xl transition ${
               activeView === 'payments' ? 'text-emerald-400' : 'text-gray-500 hover:text-gray-300'
             }`}
           >
             <CreditCard className="w-5 h-5" />
-            <span className="text-[10px] font-medium">Betalingen</span>
+            <span className="text-[10px] font-medium">{t('developerDashboard.nav.payments', 'Betalingen')}</span>
           </button>
           <button
             onClick={() => setShowTutorial(true)}
-            className="flex flex-col items-center gap-1 px-4 py-2 rounded-xl text-gray-500 hover:text-gray-300 transition"
+            className="flex flex-col items-center gap-1 px-3 py-2 rounded-xl text-gray-500 hover:text-gray-300 transition"
           >
             <MoreHorizontal className="w-5 h-5" />
-            <span className="text-[10px] font-medium">Meer</span>
+            <span className="text-[10px] font-medium">{t('developerDashboard.nav.more', 'Meer')}</span>
           </button>
         </div>
       </nav>
@@ -1778,7 +1841,7 @@ export default function DeveloperDashboard() {
       >
         <HelpCircle className="w-5 h-5" />
         <span className="text-sm font-medium max-w-0 overflow-hidden group-hover:max-w-xs transition-all duration-300">
-          Help
+          {t('developerDashboard.help.button', 'Help')}
         </span>
       </button>
     </div>

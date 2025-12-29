@@ -243,7 +243,7 @@ export default function Websites() {
                 <ArrowRight className="w-3 h-3" />
               </div>
 
-              <div className="flex gap-4 overflow-x-auto overflow-y-visible pb-4 -mx-4 px-4 snap-x snap-mandatory scrollbar-hide" style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
+              <div className="flex gap-4 overflow-x-auto overflow-y-visible pb-4 pt-4 -mx-4 px-4 snap-x snap-mandatory scrollbar-hide" style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
                 {packagesWithIcons.map((pkg, index) => (
                   <motion.div
                     key={pkg.id}
@@ -255,6 +255,13 @@ export default function Websites() {
                       pkg.popular ? 'border-primary-300 dark:border-primary-600 shadow-xl shadow-primary-500/10' : 'border-gray-200 dark:border-gray-700'
                     } hover:shadow-xl hover:-translate-y-1 transition-all`}
                   >
+                    {pkg.popular && (
+                      <div className="absolute -top-3 left-1/2 -translate-x-1/2 z-10">
+                        <span className="bg-gradient-to-r from-primary-500 to-blue-500 text-white text-xs font-semibold px-3 py-1 rounded-full whitespace-nowrap">
+                          {t('websitesPage.packages.mostChosen')}
+                        </span>
+                      </div>
+                    )}
                     <div className="text-center mb-6">
                       <div className="w-12 h-12 bg-gradient-to-br from-primary-500 to-blue-600 rounded-xl flex items-center justify-center mx-auto mb-4 shadow-lg shadow-primary-500/20">
                         <pkg.icon className="w-6 h-6 text-white" />

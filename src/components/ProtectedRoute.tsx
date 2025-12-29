@@ -3,6 +3,7 @@ import { Navigate, useLocation } from 'react-router-dom'
 import { useAuth } from '@/contexts/AuthContext'
 import { Loader2, Lock, User } from 'lucide-react'
 import { motion, AnimatePresence } from 'framer-motion'
+import { useTranslation } from 'react-i18next'
 import Logo from './Logo'
 
 interface ProtectedRouteProps {
@@ -70,6 +71,7 @@ export const ProtectedRoute: React.FC<ProtectedRouteProps> = ({
 
 // Fallback login voor development (zonder Supabase)
 const FallbackLogin: React.FC<{ children: React.ReactNode; requireRole?: 'developer' | 'admin' | 'marketing' }> = ({ children, requireRole }) => {
+  const { t } = useTranslation()
   // Session-based auth - cleared on page refresh/close
   const [isAuthenticated, setIsAuthenticated] = React.useState(false)
   const [userRole, setUserRole] = React.useState('')
@@ -127,15 +129,15 @@ const FallbackLogin: React.FC<{ children: React.ReactNode; requireRole?: 'develo
       const hasMarketingRights = matchedCred.role === 'marketing' || hasDevRights
 
       if (requireRole === 'developer' && !hasDevRights) {
-        setError('Deze account heeft geen developer rechten')
+        setError(t('errors.permissions.noDeveloperRights'))
         return
       }
       if (requireRole === 'admin' && !hasAdminRights) {
-        setError('Deze account heeft geen admin rechten')
+        setError(t('errors.permissions.noAdminRights'))
         return
       }
       if (requireRole === 'marketing' && !hasMarketingRights) {
-        setError('Deze account heeft geen marketing rechten')
+        setError(t('errors.permissions.noMarketingRights'))
         return
       }
 
@@ -150,7 +152,7 @@ const FallbackLogin: React.FC<{ children: React.ReactNode; requireRole?: 'develo
       setUserRole(matchedCred.role)
       setError('')
     } else {
-      setError('Ongeldige inloggegevens')
+      setError(t('errors.validation.invalidCredentials'))
     }
   }
 

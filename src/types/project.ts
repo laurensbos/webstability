@@ -294,7 +294,7 @@ export interface ProjectTask {
   priority?: 'low' | 'normal' | 'high'
 }
 
-export type PaymentStatus = 'not_required' | 'pending' | 'awaiting_payment' | 'paid' | 'failed'
+export type PaymentStatus = 'not_required' | 'pending' | 'awaiting_payment' | 'paid' | 'failed' | 'overdue'
 
 export interface Invoice {
   id: string

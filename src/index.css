@@ -158,46 +158,53 @@ h1, h2, h3, h4, h5, h6,
    UTILITY CLASSES
    =========================================== */
 
-/* Gradient text */
-.gradient-text {
-  @apply bg-gradient-to-r from-primary-600 via-primary-500 to-blue-500 bg-clip-text text-transparent;
+/* Note: Most styling is done inline with Tailwind utilities.
+   Only add reusable utilities here if used in multiple places. */
+
+/* ===========================================
+   MOBILE OPTIMIZATIONS
+   =========================================== */
+
+/* Prevent iOS zoom on input focus - inputs should be at least 16px */
+@media screen and (max-width: 768px) {
+  input[type="text"],
+  input[type="email"],
+  input[type="tel"],
+  input[type="password"],
+  input[type="number"],
+  input[type="search"],
+  input[type="url"],
+  textarea,
+  select {
+    font-size: 16px !important;
+  }
 }
 
-/* Glass effect */
-.glass {
-  @apply backdrop-blur-lg bg-white/80 border border-white/20;
+/* Safe area insets for notched devices */
+.safe-area-inset-bottom {
+  padding-bottom: env(safe-area-inset-bottom, 0);
 }
 
-/* Smooth hover lift */
-.hover-lift {
-  @apply transition-all duration-300 hover:-translate-y-1 hover:shadow-lg;
+.safe-area-inset-top {
+  padding-top: env(safe-area-inset-top, 0);
 }
 
-/* Card hover effect */
-.card-hover {
-  @apply transition-all duration-300 hover:shadow-xl hover:-translate-y-1;
+/* Modal safe height - accounts for mobile browser chrome */
+.modal-safe-height {
+  max-height: calc(100vh - env(safe-area-inset-bottom, 0) - env(safe-area-inset-top, 0));
+  max-height: calc(100dvh - env(safe-area-inset-bottom, 0) - env(safe-area-inset-top, 0));
 }
 
-/* Button shadows */
-.btn-shadow-primary {
-  box-shadow: 0 4px 14px 0 rgba(59, 130, 246, 0.35);
-}
-.btn-shadow-primary:hover {
-  box-shadow: 0 6px 20px 0 rgba(59, 130, 246, 0.45);
-}
-
-/* Section spacing */
-.section-padding {
-  @apply py-16 sm:py-20 lg:py-24;
-}
-
-.section-padding-sm {
-  @apply py-12 sm:py-16;
-}
-
-/* Container */
-.container-custom {
-  @apply max-w-7xl mx-auto px-4 sm:px-6 lg:px-8;
+/* Small screen modal adjustments */
+@media screen and (max-height: 700px) {
+  .modal-compact {
+    max-height: 95vh;
+    max-height: 95dvh;
+  }
+  
+  .modal-compact .modal-content {
+    padding: 1rem;
+  }
 }
 
 /* ===========================================

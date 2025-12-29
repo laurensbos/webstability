@@ -29,25 +29,25 @@ const serviceConfig = {
     gradient: 'from-primary-500 to-blue-500',
     bgGradient: 'from-primary-500/10 via-blue-500/5 to-transparent',
     icon: Globe,
-    label: 'Website',
+    labelKey: 'bedankt.services.website',
   },
   webshop: {
     gradient: 'from-emerald-500 to-green-500',
     bgGradient: 'from-emerald-500/10 via-green-500/5 to-transparent',
     icon: ShoppingBag,
-    label: 'Webshop',
+    labelKey: 'bedankt.services.webshop',
   },
   drone: {
     gradient: 'from-orange-500 to-amber-500',
     bgGradient: 'from-orange-500/10 via-amber-500/5 to-transparent',
     icon: Camera,
-    label: 'Drone opnames',
+    labelKey: 'bedankt.services.drone',
   },
   logo: {
     gradient: 'from-purple-500 to-violet-500',
     bgGradient: 'from-purple-500/10 via-violet-500/5 to-transparent',
     icon: PenTool,
-    label: 'Logo ontwerp',
+    labelKey: 'bedankt.services.logo',
   },
 }
 

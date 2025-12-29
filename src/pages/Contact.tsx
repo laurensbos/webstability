@@ -19,6 +19,7 @@ import { Link } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import Header from '../components/Header'
 import Footer from '../components/Footer'
+import { isValidPhone, isValidEmail } from '../lib/validation'
 
 // Floating particles component with blue accents
 function FloatingParticles() {
@@ -137,6 +138,19 @@ export default function Contact() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
+    
+    // Validate phone if provided
+    if (formData.phone && !isValidPhone(formData.phone)) {
+      alert('Voer een geldig telefoonnummer in (bijv. 06 12345678)')
+      return
+    }
+    
+    // Validate email
+    if (!isValidEmail(formData.email)) {
+      alert('Voer een geldig e-mailadres in')
+      return
+    }
+    
     setFormState('submitting')
 
     try {

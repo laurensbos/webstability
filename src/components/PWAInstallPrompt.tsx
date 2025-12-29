@@ -36,6 +36,20 @@ export default function PWAInstallPrompt({
   const [isStandalone, setIsStandalone] = useState(false)
   const [installing, setInstalling] = useState(false)
   const [installed, setInstalled] = useState(false)
+  const [hasEngaged, setHasEngaged] = useState(false)
+
+  // Track user engagement (scroll depth)
+  useEffect(() => {
+    const handleScroll = () => {
+      // Consider engaged after scrolling 50% of viewport
+      if (window.scrollY > window.innerHeight * 0.5) {
+        setHasEngaged(true)
+        window.removeEventListener('scroll', handleScroll)
+      }
+    }
+    window.addEventListener('scroll', handleScroll, { passive: true })
+    return () => window.removeEventListener('scroll', handleScroll)
+  }, [])
 
   useEffect(() => {
     // Check if already installed
@@ -65,26 +79,44 @@ export default function PWAInstallPrompt({
     const handleBeforeInstallPrompt = (e: Event) => {
       e.preventDefault()
       setDeferredPrompt(e as BeforeInstallPromptEvent)
-      
-      // Show prompt after delay
-      setTimeout(() => {
-        setShowPrompt(true)
-      }, delay)
     }
 
     window.addEventListener('beforeinstallprompt', handleBeforeInstallPrompt)
 
-    // For iOS, show manual instructions after delay
-    if (isIOSDevice) {
-      setTimeout(() => {
-        setShowPrompt(true)
-      }, delay)
-    }
+    // For iOS, store that we can show the manual instructions
+    // Actual showing happens in the engagement-based effect below
 
     return () => {
       window.removeEventListener('beforeinstallprompt', handleBeforeInstallPrompt)
     }
-  }, [delay])
+  }, [])
+
+  // Show prompt based on engagement + time delay
+  useEffect(() => {
+    // Need either deferred prompt (Chrome) or iOS device
+    const canShowPrompt = deferredPrompt || isIOS
+    if (!canShowPrompt || isStandalone) return
+    
+    // Wait for engagement OR minimum time, whichever comes first
+    const minDelay = Math.min(delay, 15000) // At least 15 seconds
+    
+    const timer = setTimeout(() => {
+      // Show if user has engaged, or after full delay regardless
+      if (hasEngaged) {
+        setShowPrompt(true)
+      }
+    }, minDelay)
+    
+    // Fallback: show after full delay even without engagement
+    const fallbackTimer = setTimeout(() => {
+      setShowPrompt(true)
+    }, delay)
+    
+    return () => {
+      clearTimeout(timer)
+      clearTimeout(fallbackTimer)
+    }
+  }, [deferredPrompt, isIOS, isStandalone, hasEngaged, delay])
 
   const handleInstall = async () => {
     if (!deferredPrompt) return

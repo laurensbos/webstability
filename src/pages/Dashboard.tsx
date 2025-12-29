@@ -181,12 +181,11 @@ interface ServiceRequest {
   remarks?: string
 }
 
-const DASHBOARD_PASSWORD = 'N45eqtu2!jz8j0v'
 const STORAGE_KEY = 'webstability_submissions'
 const AUTH_KEY = 'webstability_dashboard_auth'
 
 export default function Dashboard() {
-  const { t: _t } = useTranslation() // TODO: use translations
+  const { t } = useTranslation()
   const [isAuthenticated, setIsAuthenticated] = useState(false)
   const [password, setPassword] = useState('')
   const [error, setError] = useState('')
@@ -498,14 +497,28 @@ export default function Dashboard() {
     }
   }
 
-  const handleLogin = (e: React.FormEvent) => {
+  const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault()
-    if (password === DASHBOARD_PASSWORD) {
-      setIsAuthenticated(true)
-      sessionStorage.setItem(AUTH_KEY, 'true')
-      setError('')
-    } else {
-      setError('Ongeldig wachtwoord')
+    setError('')
+    
+    try {
+      const response = await fetch('/api/developer/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ password })
+      })
+      
+      const data = await response.json()
+      
+      if (data.success) {
+        setIsAuthenticated(true)
+        sessionStorage.setItem(AUTH_KEY, data.sessionToken || 'true')
+        setError('')
+      } else {
+        setError(t('developer.login.invalidPassword', 'Ongeldig wachtwoord'))
+      }
+    } catch {
+      setError(t('developer.login.error', 'Fout bij inloggen. Probeer opnieuw.'))
     }
   }
 
@@ -920,14 +933,14 @@ export default function Dashboard() {
           <form onSubmit={handleLogin} className="space-y-4">
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
-                Wachtwoord
+                {t('developer.login.password', 'Wachtwoord')}
               </label>
               <input
                 type="password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-primary-500 outline-none"
-                placeholder="Voer wachtwoord in"
+                placeholder={t('developer.login.placeholder', 'Voer wachtwoord in')}
                 autoFocus
               />
             </div>
@@ -940,7 +953,7 @@ export default function Dashboard() {
               type="submit"
               className="w-full py-3 bg-primary-500 hover:bg-primary-600 text-white font-semibold rounded-xl transition-colors"
             >
-              Inloggen
+              {t('developer.login.submit', 'Inloggen')}
             </button>
           </form>
         </motion.div>

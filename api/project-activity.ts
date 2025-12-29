@@ -226,7 +226,39 @@ async function trackActivity(req: VercelRequest, res: VercelResponse) {
           claimedAt: now
         }
         
-        // TODO: Trigger actual reward (e.g., send email with discount code)
+        // Generate and send reward discount code
+        const rewards: Record<string, { discount: number; description: string }> = {
+          oneMonth: { discount: 5, description: '1 maand klant' },
+          threeMonths: { discount: 10, description: '3 maanden klant' },
+          sixMonths: { discount: 15, description: '6 maanden klant' },
+          oneYear: { discount: 25, description: '1 jaar klant' }
+        }
+        
+        const reward = rewards[claimMilestone]
+        if (reward && project.customer?.email) {
+          // Create discount code
+          const discountCode = `TROUW${claimMilestone.toUpperCase()}${projectId.slice(-4)}`.toUpperCase()
+          
+          try {
+            // Store discount code
+            await kv!.set(`discount:${discountCode}`, {
+              code: discountCode,
+              type: 'percentage',
+              value: reward.discount,
+              description: `${reward.description} korting`,
+              maxUses: 1,
+              usedCount: 0,
+              createdAt: now,
+              expiresAt: new Date(Date.now() + 90 * 24 * 60 * 60 * 1000).toISOString(), // 90 days
+              projectId
+            })
+            
+            console.log(`✅ Discount code ${discountCode} created for milestone ${claimMilestone}`)
+          } catch (e) {
+            console.error('Failed to create discount code:', e)
+          }
+        }
+        
         console.log(`Milestone ${claimMilestone} claimed for project ${projectId}`)
       }
     }

@@ -8,6 +8,7 @@
 
 import { useState, useEffect } from 'react'
 import { useNavigate, useSearchParams, Link } from 'react-router-dom'
+import { useTranslation } from 'react-i18next'
 import { motion, AnimatePresence } from 'framer-motion'
 import {
   Mail,
@@ -31,6 +32,7 @@ const SESSION_KEY = 'webstability_customer_session'
 type LoginMethod = 'email' | 'password'
 
 export default function CustomerPortalLogin() {
+  const { t } = useTranslation()
   const navigate = useNavigate()
   const [searchParams] = useSearchParams()
   const { darkMode, toggleDarkMode } = useDarkMode()
@@ -102,11 +104,11 @@ export default function CustomerPortalLogin() {
         // Redirect to portal
         navigate('/portaal')
       } else {
-        setError(data.message || 'Ongeldige of verlopen link')
+        setError(data.message || t('login.customerPortal.invalidOrExpiredLink'))
       }
     } catch (err) {
       console.error('Magic token verify error:', err)
-      setError('Er ging iets mis. Probeer opnieuw.')
+      setError(t('login.customerPortal.somethingWentWrong'))
     } finally {
       setLoading(false)
     }
@@ -134,13 +136,13 @@ export default function CustomerPortalLogin() {
       const data = await response.json()
       
       if (data.success) {
-        setSuccess('Check je inbox! We hebben je een login link gestuurd.')
+        setSuccess(t('login.customerPortal.successMessage'))
       } else {
-        setError(data.message || 'Geen account gevonden met dit e-mailadres')
+        setError(data.message || t('login.customerPortal.noAccountFound'))
       }
     } catch (err) {
       console.error('Email login error:', err)
-      setError('Er ging iets mis. Probeer het opnieuw.')
+      setError(t('login.customerPortal.somethingWentWrong'))
     } finally {
       setLoading(false)
     }
@@ -181,11 +183,11 @@ export default function CustomerPortalLogin() {
         // Redirect to portal
         navigate('/portaal')
       } else {
-        setError(data.message || 'Ongeldige inloggegevens')
+        setError(data.message || t('login.customerPortal.invalidCredentials'))
       }
     } catch (err) {
       console.error('Password login error:', err)
-      setError('Er ging iets mis. Probeer het opnieuw.')
+      setError(t('login.error'))
     } finally {
       setLoading(false)
     }
@@ -198,13 +200,13 @@ export default function CustomerPortalLogin() {
         <header className="absolute top-0 left-0 right-0 z-10 p-4 flex items-center justify-between">
           <Link to="/" className="flex items-center gap-2 text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white transition">
             <ArrowLeft className="w-5 h-5" />
-            <span className="text-sm font-medium hidden sm:inline">Terug naar website</span>
+            <span className="text-sm font-medium hidden sm:inline">{t('login.backToWebsite')}</span>
           </Link>
           
           <button
             onClick={toggleDarkMode}
             className="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition"
-            aria-label={darkMode ? 'Licht thema' : 'Donker thema'}
+            aria-label={darkMode ? t('login.customerPortal.lightTheme') : t('login.customerPortal.darkTheme')}
           >
             {darkMode ? (
               <Sun className="w-5 h-5 text-yellow-500" />
@@ -225,10 +227,10 @@ export default function CustomerPortalLogin() {
             <div className="text-center mb-8">
               <Logo size="lg" className="justify-center mb-4" />
               <h1 className="text-2xl font-bold text-gray-900 dark:text-white">
-                Klantenportaal
+                {t('login.customerPortal.title')}
               </h1>
               <p className="text-gray-600 dark:text-gray-400 mt-2">
-                Log in om je project(en) te beheren
+                {t('login.customerPortal.subtitle')}
               </p>
             </div>
 
@@ -250,7 +252,7 @@ export default function CustomerPortalLogin() {
                 >
                   <div className="flex items-center justify-center gap-2">
                     <Mail className="w-4 h-4" />
-                    E-mail
+                    {t('login.customerPortal.emailTab')}
                   </div>
                 </button>
                 <button
@@ -267,7 +269,7 @@ export default function CustomerPortalLogin() {
                 >
                   <div className="flex items-center justify-center gap-2">
                     <Lock className="w-4 h-4" />
-                    Wachtwoord
+                    {t('login.customerPortal.passwordTab')}
                   </div>
                 </button>
               </div>
@@ -287,7 +289,7 @@ export default function CustomerPortalLogin() {
                     >
                       <div>
                         <label htmlFor="email" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                          E-mailadres
+                          {t('login.customerPortal.emailLabel')}
                         </label>
                         <div className="relative">
                           <Mail className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
@@ -296,7 +298,7 @@ export default function CustomerPortalLogin() {
                             id="email"
                             value={email}
                             onChange={(e) => setEmail(e.target.value)}
-                            placeholder="jouw@email.nl"
+                            placeholder={t('login.customerPortal.emailPlaceholder')}
                             className="w-full pl-12 pr-4 py-3 bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-xl text-gray-900 dark:text-white placeholder-gray-400 focus:ring-2 focus:ring-primary-500 focus:border-transparent transition"
                             required
                             disabled={loading}
@@ -306,7 +308,7 @@ export default function CustomerPortalLogin() {
 
                       <p className="text-sm text-gray-500 dark:text-gray-400 flex items-start gap-2">
                         <Shield className="w-4 h-4 mt-0.5 flex-shrink-0 text-primary-500" />
-                        We sturen je een veilige login link. Geen wachtwoord nodig.
+                        {t('login.customerPortal.secureLoginInfo')}
                       </p>
 
                       {/* Success Message */}
@@ -322,7 +324,7 @@ export default function CustomerPortalLogin() {
                             <div>
                               <p className="text-sm text-green-700 dark:text-green-300 font-medium">{success}</p>
                               <p className="text-xs text-green-600 dark:text-green-400 mt-1">
-                                Controleer ook je spam folder als je de mail niet ziet.
+                                {t('login.customerPortal.checkSpam')}
                               </p>
                             </div>
                           </motion.div>
@@ -352,12 +354,12 @@ export default function CustomerPortalLogin() {
                         {loading ? (
                           <>
                             <Loader2 className="w-5 h-5 animate-spin" />
-                            Link versturen...
+                            {t('login.customerPortal.sending')}
                           </>
                         ) : (
                           <>
                             <Sparkles className="w-5 h-5" />
-                            Stuur login link
+                            {t('login.customerPortal.sendLoginLink')}
                             <ArrowRight className="w-5 h-5" />
                           </>
                         )}
@@ -393,7 +395,7 @@ export default function CustomerPortalLogin() {
 
                       <div>
                         <label htmlFor="password" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                          Wachtwoord
+                          {t('login.customerPortal.passwordLabel')}
                         </label>
                         <div className="relative">
                           <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
@@ -415,7 +417,7 @@ export default function CustomerPortalLogin() {
                           to="/wachtwoord-vergeten"
                           className="text-sm text-primary-600 dark:text-primary-400 hover:underline"
                         >
-                          Wachtwoord vergeten?
+                          {t('login.customerPortal.forgotPassword')}
                         </Link>
                       </div>
 
@@ -442,11 +444,11 @@ export default function CustomerPortalLogin() {
                         {loading ? (
                           <>
                             <Loader2 className="w-5 h-5 animate-spin" />
-                            Inloggen...
+                            {t('login.customerPortal.loggingIn')}
                           </>
                         ) : (
                           <>
-                            Inloggen
+                            {t('login.customerPortal.loginWithPassword')}
                             <ArrowRight className="w-5 h-5" />
                           </>
                         )}
@@ -460,9 +462,9 @@ export default function CustomerPortalLogin() {
             {/* Help Text */}
             <div className="mt-6 text-center">
               <p className="text-sm text-gray-500 dark:text-gray-400">
-                Problemen met inloggen?{' '}
+                {t('projectStatus.havingTrouble')}{' '}
                 <Link to="/contact" className="text-primary-600 dark:text-primary-400 hover:underline">
-                  Neem contact op
+                  {t('projectStatus.contactUs')}
                 </Link>
               </p>
             </div>

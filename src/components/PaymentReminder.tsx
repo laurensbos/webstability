@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { motion } from 'framer-motion'
+import { useTranslation } from 'react-i18next'
 import { 
   Mail, 
   Send, 
@@ -35,6 +36,7 @@ export default function PaymentReminder({
   paymentUrl,
   onReminderSent
 }: PaymentReminderProps) {
+  const { t } = useTranslation()
   const [sending, setSending] = useState(false)
   const [sent, setSent] = useState(false)
   const [error, setError] = useState('')
@@ -92,11 +94,11 @@ export default function PaymentReminder({
         // Reset after 3 seconds
         setTimeout(() => setSent(false), 3000)
       } else {
-        setError(data.error || 'Kon de herinnering niet versturen')
+        setError(data.error || t('errors.api.sendReminderFailed'))
       }
     } catch (err) {
       console.error('Reminder error:', err)
-      setError('Er ging iets mis bij het versturen')
+      setError(t('errors.api.sendFailed'))
     }
 
     setSending(false)

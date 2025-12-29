@@ -303,15 +303,33 @@ async function updateProjectSubscription(
   subscriptionId: string,
   nextPaymentDate: string
 ): Promise<void> {
-  // TODO: Implementeer database update
   console.log(`[DB] Update project ${projectId}:`, { subscriptionId, nextPaymentDate })
   
-  // Voorbeeld met fetch naar je eigen API:
-  // await fetch(`${process.env.VERCEL_URL}/api/internal/update-project`, {
-  //   method: 'POST',
-  //   headers: { 'Content-Type': 'application/json' },
-  //   body: JSON.stringify({ projectId, subscriptionId, nextPaymentDate })
-  // })
+  try {
+    const response = await fetch(
+      `${process.env.SITE_URL || 'https://webstability.nl'}/api/internal/update-project-payment`,
+      {
+        method: 'POST',
+        headers: { 
+          'Content-Type': 'application/json',
+          'X-Internal-Secret': process.env.INTERNAL_API_SECRET || ''
+        },
+        body: JSON.stringify({ 
+          projectId, 
+          subscriptionId,
+          nextPaymentDate
+        })
+      }
+    )
+    
+    if (response.ok) {
+      console.log(`[DB] ✅ Project ${projectId} subscription updated`)
+    } else {
+      console.error(`[DB] ❌ Failed to update subscription for ${projectId}:`, await response.text())
+    }
+  } catch (error) {
+    console.error(`[DB] ❌ Error updating subscription for ${projectId}:`, error)
+  }
 }
 
 async function updateProjectPaymentStatus(

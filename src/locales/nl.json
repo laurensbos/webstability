@@ -36,7 +36,9 @@
     "free": "Gratis",
     "popular": "Populair",
     "new": "Nieuw",
-    "recommended": "Aanbevolen"
+    "recommended": "Aanbevolen",
+    "uploadFile": "Bestand uploaden",
+    "upload": "Uploaden"
   },
   "nav": {
     "home": "Home",
@@ -73,6 +75,30 @@
       "portfolioDesc": "Bekijk ons werk",
       "contact": "Contact",
       "contactDesc": "Neem contact op"
+    },
+    "loginModal": {
+      "multipleProjects": "Er zijn meerdere projecten gevonden. Kies het project dat je wilt bekijken:",
+      "enterCredentials": "Voer je e-mailadres en wachtwoord in om je project status te bekijken.",
+      "email": "E-mailadres",
+      "emailPlaceholder": "jouw@email.nl",
+      "password": "Wachtwoord",
+      "passwordPlaceholder": "Je project wachtwoord",
+      "viewProjectStatus": "Bekijk project status",
+      "loggingIn": "Inloggen...",
+      "forgotPassword": "Wachtwoord vergeten?",
+      "checkInbox": "Check je inbox!",
+      "recoverySuccessProjectId": "Als er projecten zijn gekoppeld aan dit e-mailadres, ontvang je binnen enkele minuten een e-mail met inloglinks.",
+      "recoverySuccessPassword": "Als dit e-mailadres gekoppeld is aan een project, ontvang je een e-mail met een link om je wachtwoord opnieuw in te stellen.",
+      "close": "Sluiten",
+      "sendLoginLinkTab": "Inloglink versturen",
+      "forgotPasswordTab": "Wachtwoord vergeten",
+      "sendLoginLinkDesc": "Voer je e-mailadres in en we sturen je een link om direct in te loggen.",
+      "forgotPasswordDesc": "Voer je e-mailadres in. We sturen een link om je wachtwoord opnieuw in te stellen.",
+      "sending": "Verzenden...",
+      "sendLoginLink": "Verstuur inloglink",
+      "sendResetLink": "Verstuur reset link",
+      "backToLogin": "← Terug naar inloggen",
+      "invalidCredentials": "Ongeldige email of wachtwoord"
     }
   },
   "hero": {
@@ -782,7 +808,8 @@
     "tabs": {
       "profile": "Mijn gegevens",
       "payments": "Betalingen",
-      "package": "Mijn pakket"
+      "package": "Mijn pakket",
+      "messages": "Berichten"
     },
     "yourBusiness": "Jouw bedrijf",
     "copied": "Gekopieerd!",
@@ -791,10 +818,15 @@
     "saving": "Opslaan...",
     "cancel": "Annuleren",
     "saved": "Opgeslagen",
-    "contactName": "Naam",
-    "contactEmail": "E-mail",
+    "contactDetails": "Contactgegevens",
+    "contactName": "Contactpersoon",
+    "contactNamePlaceholder": "Je naam",
+    "contactEmail": "E-mailadres",
+    "contactEmailPlaceholder": "email@voorbeeld.nl",
     "contactPhone": "Telefoonnummer",
+    "contactPhonePlaceholder": "06 12345678",
     "businessName": "Bedrijfsnaam",
+    "businessNamePlaceholder": "Jouw bedrijfsnaam",
     "projectId": "Project ID",
     "projectInfo": "Project informatie",
     "createdAt": "Aangemaakt op",
@@ -856,7 +888,6 @@
     "chatSupport": "Support via chat",
     "chatSupportDesc": "Vragen? Wij helpen je snel",
     "cancelAnytime": "💡 Maandelijks opzegbaar - geen lange contracten, geen gedoe",
-    "contactDetails": "Contactgegevens",
     "notFilled": "Niet ingevuld",
     "company": "Bedrijf",
     "contact": "Contact",
@@ -880,7 +911,88 @@
     "uploadFiles": "Upload bestanden",
     "tips": "Tips",
     "includedInPackage": "Inclusief in je pakket",
-    "andMore": "+{{count}} meer"
+    "andMore": "+{{count}} meer",
+    "perMonth": "/maand",
+    "phases": {
+      "onboarding": {
+        "title": "Vul je gegevens in",
+        "description": "Beantwoord een paar vragen over je bedrijf en stijlvoorkeur. Dit duurt ±10 minuten.",
+        "clientTasks": [
+          "Bedrijfsnaam en beschrijving",
+          "Logo uploaden (of wij maken er één)",
+          "Kleurkeuze en stijlvoorkeur",
+          "Contactgegevens voor de website"
+        ],
+        "tips": [
+          "Heb je nog geen logo? Geen probleem, we kunnen er één voor je ontwerpen",
+          "Je kunt altijd later terugkomen om vragen aan te passen"
+        ]
+      },
+      "design": {
+        "title": "We designen je website",
+        "description": "Ons designteam werkt aan het ontwerp van je website. Dit duurt gemiddeld 5-7 werkdagen.",
+        "clientTasks": [],
+        "tips": [
+          "Je ontvangt een e-mail zodra de preview klaar is",
+          "Bekijk ondertussen inspiratie op onze portfolio"
+        ]
+      },
+      "feedback": {
+        "title": "Bekijk je design",
+        "description": "Je website preview is klaar! Bekijk hem en laat ons weten wat je ervan vindt.",
+        "clientTasks": [
+          "Bekijk de preview zorgvuldig",
+          "Check de teksten op fouten",
+          "Geef je feedback via het formulier"
+        ],
+        "tips": [
+          "Je hebt 2 revisierondes inclusief",
+          "Wees specifiek in je feedback voor het beste resultaat"
+        ]
+      },
+      "revisie": {
+        "title": "We verwerken je feedback",
+        "description": "We passen je website aan op basis van je feedback. Dit duurt 1-2 werkdagen.",
+        "clientTasks": [],
+        "tips": [
+          "Je ontvangt een e-mail wanneer de aanpassingen klaar zijn"
+        ]
+      },
+      "payment": {
+        "title": "Betaling afronden",
+        "description": "Je website is goedgekeurd! Rond de betaling af om live te gaan.",
+        "clientTasks": [
+          "Kies je betaalmethode",
+          "Voltooi de betaling"
+        ],
+        "tips": [
+          "Betaling is maandelijks opzegbaar na 3 maanden",
+          "Je eerste maand start na livegang"
+        ]
+      },
+      "domain": {
+        "title": "Domein configureren",
+        "description": "We gaan je domein verhuizen en configureren voor de livegang.",
+        "clientTasks": [
+          "Vraag je autorisatiecode op bij je huidige provider",
+          "Deel de autorisatiecode met ons",
+          "Keur de domeinverhuizing goed via e-mail"
+        ],
+        "tips": [
+          "Geen domein? Wij regelen een nieuw domein voor je",
+          "Domeinverhuizing duurt gemiddeld 1-5 werkdagen"
+        ]
+      },
+      "live": {
+        "title": "Je website is live! 🎉",
+        "description": "Gefeliciteerd! Je website is nu bereikbaar voor iedereen.",
+        "clientTasks": [],
+        "tips": [
+          "Deel je website op social media",
+          "Vraag klanten om een review"
+        ]
+      }
+    }
   },
   "dashboard": {
     "welcome": "Welkom terug",
@@ -1025,6 +1137,13 @@
   },
   "developer": {
     "dashboard": "Developer Dashboard",
+    "login": {
+      "password": "Wachtwoord",
+      "placeholder": "Voer wachtwoord in",
+      "submit": "Inloggen",
+      "invalidPassword": "Ongeldig wachtwoord",
+      "error": "Fout bij inloggen. Probeer opnieuw."
+    },
     "projects": "Projecten",
     "clients": "Klanten",
     "messages": "Berichten",
@@ -1158,7 +1277,117 @@
     },
     "network": "Geen internetverbinding",
     "unauthorized": "Je bent niet ingelogd",
-    "forbidden": "Je hebt geen toegang tot deze pagina"
+    "forbidden": "Je hebt geen toegang tot deze pagina",
+    "generic": "Er is iets misgegaan. Probeer het opnieuw.",
+    "tryLater": "Er is een fout opgetreden. Probeer het later opnieuw.",
+    "validation": {
+      "passwordMinLength": "Wachtwoord moet minimaal 4 tekens zijn.",
+      "passwordMismatch": "Wachtwoorden komen niet overeen.",
+      "termsRequired": "Je moet akkoord geven met de voorwaarden.",
+      "invalidCredentials": "Ongeldige inloggegevens"
+    },
+    "permissions": {
+      "noDeveloperRights": "Deze account heeft geen developer rechten",
+      "noAdminRights": "Deze account heeft geen admin rechten",
+      "noMarketingRights": "Deze account heeft geen marketing rechten"
+    },
+    "api": {
+      "submitFailed": "Kon niet indienen. Probeer het opnieuw.",
+      "loadPhotosFailed": "Kon geen foto's laden. Probeer later opnieuw.",
+      "sendReminderFailed": "Kon de herinnering niet versturen",
+      "sendFailed": "Er ging iets mis bij het versturen"
+    }
+  },
+  "phases": {
+    "revision": {
+      "title": "Je feedback wordt verwerkt",
+      "description": "Onze designer werkt aan de aanpassingen. Je ontvangt binnenkort een nieuwe preview.",
+      "round": "Revisieronde",
+      "progress": "Voortgang",
+      "inProgress": "In behandeling",
+      "viewCurrent": "Bekijk huidig",
+      "sendMessage": "Stuur bericht",
+      "tip": "Je ontvangt een e-mail als de nieuwe preview klaar is",
+      "estimated": "Verwachte oplevering",
+      "steps": {
+        "received": "Feedback ontvangen",
+        "analyzing": "Aanpassingen analyseren",
+        "implementing": "Wijzigingen doorvoeren",
+        "finalizing": "Nieuwe preview voorbereiden"
+      }
+    },
+    "payment": {
+      "title": "Rond je betaling af",
+      "titlePaid": "Betaling ontvangen! ✓",
+      "titleOverdue": "Betaling verlopen",
+      "description": "Je design is goedgekeurd! Rond de betaling af om live te gaan.",
+      "descriptionPaid": "We bereiden je website voor om live te gaan!",
+      "packageLabel": "Jouw pakket",
+      "setupFee": "Eenmalige opstart",
+      "monthly": "Maandelijks abonnement",
+      "dueNow": "Nu te betalen",
+      "monthlyStarts": "Maandabonnement start na oplevering website",
+      "payNow": "Veilig betalen met iDEAL",
+      "secure": "Beveiligd",
+      "encrypted": "Versleuteld",
+      "included": "Inbegrepen in je abonnement",
+      "invoices": "Facturen",
+      "thankYou": "Bedankt voor je betaling!",
+      "nextSteps": "We gaan nu je domein configureren en voorbereiden voor lancering.",
+      "questions": "Vragen over betaling?",
+      "features": {
+        "hosting": "Hosting & SSL inbegrepen",
+        "maintenance": "Onderhoud & updates",
+        "support": "Persoonlijke support"
+      }
+    },
+    "domain": {
+      "title": "Je domein instellen",
+      "description": "We configureren je domein en bereiden je website voor op lancering.",
+      "progress": "Setup voortgang",
+      "configure": "Domein & e-mail configureren",
+      "updateConfig": "Configuratie aanpassen",
+      "connected": "Verbonden",
+      "inProgress": "In behandeling",
+      "pending": "Wachtend",
+      "active": "Actief",
+      "yourDomain": "Jouw domein",
+      "needHelp": "Hulp nodig met domein configuratie?",
+      "whatNext": "Wat gebeurt er nu?",
+      "next1": "We verifiëren je domein instellingen",
+      "next2": "SSL certificaat wordt automatisch geïnstalleerd",
+      "next3": "Laatste controles en je website gaat live! 🚀",
+      "steps": {
+        "payment": "Betaling ontvangen",
+        "paymentDesc": "Je betaling is verwerkt",
+        "domain": "Domein configuratie",
+        "domainDesc": "Configureer je domein",
+        "email": "E-mail instellen",
+        "emailDesc": "Zakelijke e-mail opzetten",
+        "ssl": "SSL certificaat",
+        "sslDesc": "Beveiligde verbinding (HTTPS)",
+        "final": "Laatste checks & live gaan",
+        "finalDesc": "Laatste verificaties voor lancering"
+      }
+    },
+    "live": {
+      "title": "Je website is live!",
+      "titleNew": "Gefeliciteerd! 🎉",
+      "description": "Beheer je website en vraag wijzigingen aan.",
+      "descriptionNew": "Je website is nu live en bereikbaar voor de wereld!",
+      "clickToVisit": "Klik om je website te bezoeken",
+      "daysLive": "Dagen live",
+      "changesUsed": "Wijzigingen deze maand",
+      "requestChange": "Wijziging aanvragen",
+      "pending": "wachtend",
+      "viewAnalytics": "Analytics",
+      "recentChanges": "Recente wijzigingen",
+      "completed": "Afgerond",
+      "inProgress": "In behandeling",
+      "leaveReview": "Laat een review achter",
+      "reviewHelp": "Help andere ondernemers ons te vinden",
+      "needHelp": "Hulp of support nodig?"
+    }
   },
   "language": {
     "select": "Taal",
@@ -1571,6 +1800,22 @@
       "description": "Controleer ook je spam map"
     }
   },
+  "portal": {
+    "nav": {
+      "overview": "Overzicht",
+      "projects": "Projecten",
+      "invoices": "Facturen",
+      "changes": "Wijzigingen",
+      "messages": "Berichten",
+      "analytics": "Analytics",
+      "support": "Support",
+      "settings": "Instellingen"
+    },
+    "notifications": "Notificaties",
+    "noNotifications": "Geen notificaties",
+    "viewAllNotifications": "Alle notificaties bekijken",
+    "logout": "Uitloggen"
+  },
   "login": {
     "title": "Inloggen",
     "subtitle": "Welkom terug bij Webstability",
@@ -1583,7 +1828,39 @@
     "backToWebsite": "Terug naar website",
     "footer": "Alle rechten voorbehouden.",
     "invalidCredentials": "Ongeldige inloggegevens",
-    "error": "Er ging iets mis. Probeer het opnieuw."
+    "error": "Er ging iets mis. Probeer het opnieuw.",
+    "customerPortal": {
+      "title": "Klantenportaal",
+      "subtitle": "Log in om je project(en) te beheren",
+      "emailTab": "E-mail",
+      "passwordTab": "Wachtwoord",
+      "emailLabel": "E-mailadres",
+      "emailPlaceholder": "jouw@email.nl",
+      "passwordLabel": "Wachtwoord",
+      "passwordPlaceholder": "Je wachtwoord",
+      "secureLoginInfo": "We sturen je een veilige login link. Geen wachtwoord nodig.",
+      "sendLoginLink": "Verstuur login link",
+      "sending": "Versturen...",
+      "loginWithPassword": "Inloggen",
+      "loggingIn": "Inloggen...",
+      "successTitle": "Check je e-mail!",
+      "successMessage": "We hebben je een login link gestuurd. Check je inbox.",
+      "checkSpam": "Controleer ook je spam map als je hem niet ziet",
+      "noAccount": "Nog geen account?",
+      "startProject": "Start een project",
+      "forgotPassword": "Wachtwoord vergeten?",
+      "resetPassword": "Reset wachtwoord",
+      "backToLogin": "Terug naar inloggen",
+      "invalidCredentials": "Ongeldige inloggegevens",
+      "noAccountFound": "Geen account gevonden met dit e-mailadres",
+      "somethingWentWrong": "Er ging iets mis. Probeer het opnieuw.",
+      "invalidOrExpiredLink": "Ongeldige of verlopen link",
+      "lightTheme": "Licht thema",
+      "darkTheme": "Donker thema",
+      "projectsFound": "Er zijn meerdere projecten gevonden. Kies het project dat je wilt bekijken:",
+      "enterCredentials": "Voer je e-mailadres en wachtwoord in om je project status te bekijken.",
+      "projectId": "Project ID"
+    }
   },
   "dronePage": {
     "hero": {
@@ -1868,6 +2145,13 @@
       "justNow": "Zojuist",
       "minutesAgo": "{{count}} min geleden"
     }
+  },
+  "mobileNav": {
+    "home": "Home",
+    "chat": "Chat",
+    "files": "Bestanden",
+    "help": "Hulp",
+    "account": "Account"
   },
   "stickyCTA": {
     "priceFrom": "Start nu vanaf",
@@ -3290,7 +3574,9 @@
     "pay": "Betalen",
     "invoicesPaidCount": "{{paid}} van {{total}} facturen betaald",
     "seoDescription": "Bekijk de voortgang van het project voor {{businessName}}. Huidige fase: {{phase}}.",
-    "seoDescriptionDefault": "Bekijk de voortgang van je website project bij Webstability."
+    "seoDescriptionDefault": "Bekijk de voortgang van je website project bij Webstability.",
+    "havingTrouble": "Problemen met inloggen?",
+    "contactUs": "Neem contact op"
   },
   "designFeedback": {
     "title": "Design Feedback",
@@ -3940,6 +4226,41 @@
     "askQuestion": "Stel je vraag en we antwoorden zo snel mogelijk!",
     "placeholder": "Typ je bericht..."
   },
+  "paymentModal": {
+    "title": "Betaling afronden",
+    "subtitle": "Beveiligde betaling",
+    "package": "Jouw pakket",
+    "setupFee": "Eenmalige opstartkosten",
+    "monthly": "Maandelijks abonnement",
+    "dueNow": "Nu te betalen",
+    "monthlyNote": "Maandabonnement start na oplevering website",
+    "processing": "Doorsturen naar betaling...",
+    "payNow": "Veilig betalen met iDEAL",
+    "secure": "Beveiligd",
+    "encrypted": "Versleuteld",
+    "cancelNote": "Maandelijks opzegbaar na 3 maanden. Geen verborgen kosten.",
+    "discount": {
+      "label": "Kortingscode",
+      "placeholder": "Voer code in",
+      "apply": "Toepassen",
+      "remove": "Verwijderen",
+      "applied": "Korting",
+      "enterCode": "Voer een kortingscode in",
+      "invalid": "Ongeldige kortingscode",
+      "error": "Kon kortingscode niet controleren"
+    },
+    "included": {
+      "title": "Dit zit in je abonnement",
+      "hosting": "Hosting & SSL-certificaat",
+      "maintenance": "Onderhoud & updates",
+      "support": "Persoonlijke support",
+      "changes": "Maandelijkse wijzigingen"
+    },
+    "error": {
+      "general": "Er ging iets mis. Probeer het opnieuw.",
+      "network": "Verbindingsfout. Controleer je internet."
+    }
+  },
   "onboardingTour": {
     "previous": "Vorige",
     "next": "Volgende",
@@ -4184,5 +4505,561 @@
       "checkLater": "We zijn je analytics aan het configureren. Check later terug!"
     },
     "developerResponse": "Reactie van developer:"
+  },
+  "livePortal": {
+    "websiteIsLive": "Je website is",
+    "live": "LIVE",
+    "viewWebsite": "Bekijk website",
+    "requestChange": "Wijziging aanvragen",
+    "requestChangeDesc": "Vraag een wijziging aan",
+    "viewYourWebsite": "Bekijk je website",
+    "websiteStatistics": "Website statistieken",
+    "websiteLaunchedOn": "Website live gezet",
+    "lastBackup": "Laatste backup",
+    "autoBackupDesc": "Je website wordt automatisch veilig bewaard",
+    "tipsForWebsite": "Tips voor je website",
+    "shareWebsite": "Deel je website",
+    "shareWebsiteDesc": "Zet je nieuwe website op je sociale media!",
+    "addToGoogle": "Voeg toe aan Google",
+    "addToGoogleDesc": "Voeg je website URL toe aan je Google profiel",
+    "priority": {
+      "low": "Laag",
+      "lowDesc": "Geen haast",
+      "normal": "Normaal",
+      "normalDesc": "Binnen een week",
+      "urgent": "Urgent",
+      "urgentDesc": "Zo snel mogelijk"
+    },
+    "faq": {
+      "howToRequestChange": "Hoe vraag ik een wijziging aan?",
+      "howToRequestChangeAnswer": "Klik op \"Wijziging aanvragen\" en beschrijf wat je wilt veranderen. We nemen binnen 24 uur contact op.",
+      "whatsIncluded": "Wat zit er in mijn abonnement?",
+      "whatsIncludedAnswer": "Hosting, SSL-certificaat, dagelijkse backups, beveiligingsupdates en 2 kleine wijzigingen per maand.",
+      "canICancel": "Kan ik altijd opzeggen?",
+      "canICancelAnswer": "Ja, je kunt maandelijks opzeggen. Na opzegging blijft je website nog 30 dagen online.",
+      "howToContact": "Hoe kan ik jullie bereiken?",
+      "howToContactAnswer": "Via het contactformulier, WhatsApp of stuur een bericht naar info@webstability.nl."
+    },
+    "sendMessage": "Stuur een bericht",
+    "yourMessage": "Je bericht",
+    "messagePlaceholder": "Beschrijf wat je wilt veranderen...",
+    "send": "Versturen",
+    "sending": "Versturen...",
+    "messageSent": "Bericht verstuurd!",
+    "contactDetails": "Contactgegevens",
+    "manageContactDetails": "Beheer je contactgegevens",
+    "package": "Pakket",
+    "yourPackage": "Jouw pakket",
+    "accountSettings": "Account instellingen",
+    "nav": {
+      "overview": "Overzicht",
+      "adjustment": "Aanpassing",
+      "contact": "Contact",
+      "account": "Account"
+    },
+    "quickStats": {
+      "package": "Pakket",
+      "revisions": "Revisies",
+      "projectId": "Project ID"
+    },
+    "quickActions": {
+      "chatWithDeveloper": "Chat met developer",
+      "modifyDetails": "Gegevens wijzigen",
+      "website": "Website"
+    },
+    "statistics": {
+      "visitorsWeek": "Bezoekers (week)",
+      "pageViews": "Paginaweergaves",
+      "uptime": "Uptime",
+      "sslScore": "SSL Score",
+      "comingSoon": "Analytics worden binnenkort beschikbaar • Hosting & SSL inbegrepen"
+    },
+    "recentUpdates": {
+      "title": "Laatste updates",
+      "revisionsProcessed": "revisie(s) verwerkt",
+      "changesApplied": "Aanpassingen doorgevoerd",
+      "dailyBackupActive": "Dagelijkse backup actief"
+    },
+    "tips": {
+      "googleMyBusiness": "Google Mijn Bedrijf",
+      "keepContentUpdated": "Houd content actueel",
+      "askForUpdates": "Vraag ons om updates wanneer nodig"
+    },
+    "changeRequest": {
+      "title": "Aanpassing aanvragen",
+      "description": "Beschrijf wat je wilt laten wijzigen",
+      "placeholder": "Bijv. Graag de tekst op de homepage aanpassen naar...",
+      "priority": "Prioriteit",
+      "submitRequest": "Verstuur aanvraag",
+      "requestSent": "Aanvraag verstuurd!",
+      "willContactYou": "We nemen zo snel mogelijk contact met je op.",
+      "sendAnother": "Nog een aanvraag versturen"
+    },
+    "contact": {
+      "directContact": "Direct contact met je developer",
+      "typeMessage": "Typ je bericht...",
+      "sendMessage": "Verstuur bericht",
+      "messageSent": "Bericht verstuurd!",
+      "otherWays": "Andere manieren om contact op te nemen",
+      "email": "E-mail",
+      "whatsapp": "WhatsApp",
+      "directReply": "Direct antwoord",
+      "phone": "Telefoon",
+      "businessHours": "Ma-Vr 9:00 - 17:00"
+    },
+    "account": {
+      "businessName": "Bedrijfsnaam",
+      "contactPerson": "Contactpersoon",
+      "emailAddress": "E-mailadres",
+      "phoneNumber": "Telefoonnummer",
+      "cancel": "Annuleren",
+      "save": "Opslaan"
+    },
+    "password": {
+      "title": "Wachtwoord wijzigen",
+      "secureAccount": "Beveilig je account",
+      "changePassword": "Wachtwoord wijzigen",
+      "sendLinkDescription": "We sturen een beveiligde link naar je e-mailadres ({email}) waarmee je je wachtwoord kunt wijzigen.",
+      "sendLink": "Verstuur link",
+      "emailSent": "E-mail verstuurd!",
+      "checkInbox": "Check je inbox voor de reset link.",
+      "close": "Sluiten"
+    },
+    "projectInfo": {
+      "title": "Project informatie",
+      "details": "Details over je project",
+      "projectId": "Project ID",
+      "package": "Pakket",
+      "status": "Status",
+      "live": "Live",
+      "website": "Website"
+    },
+    "footer": {
+      "secured": "Beveiligd",
+      "available247": "24/7 bereikbaar",
+      "premiumSupport": "Premium support"
+    },
+    "errors": {
+      "couldNotSave": "Kon gegevens niet opslaan",
+      "somethingWentWrong": "Er ging iets mis bij het opslaan. Probeer het opnieuw.",
+      "couldNotSendResetEmail": "Kon reset email niet versturen"
+    }
+  },
+  "growthTools": {
+    "churnAlert": {
+      "churnRisk": "Churn risico!",
+      "checkInNeeded": "Check-in nodig",
+      "daysNoActivity": "dagen geen activiteit",
+      "sendCheckIn": "Stuur check-in",
+      "later": "Later"
+    },
+    "upsell": {
+      "morePages": "Meer pagina's nodig?",
+      "atLimit": "Je zit aan je limiet. Upgrade voor meer ruimte.",
+      "unlockFeature": "Deze feature unlocken?",
+      "availableHigherPlan": "Beschikbaar in een hoger pakket.",
+      "websiteGrowing": "Je website groeit!",
+      "timeForMore": "Tijd voor meer mogelijkheden?",
+      "oneYearCustomer": "1 jaar klant!",
+      "upgradeDiscount": "Upgrade nu met 10% korting als bedankje.",
+      "readyForMore": "Klaar voor meer?",
+      "discoverMore": "Ontdek wat er nog meer mogelijk is.",
+      "upgradeTo": "Upgrade naar",
+      "notNow": "Niet nu"
+    },
+    "referral": {
+      "title": "Verdien €25 per doorverwijzing",
+      "shareCode": "Deel je code, krijg korting!",
+      "referrals": "Doorverwijzingen",
+      "earned": "Verdiend",
+      "yourCode": "Jouw code",
+      "copied": "Gekopieerd!",
+      "copyLink": "Kopieer link",
+      "share": "Delen",
+      "youGet25": "Jij krijgt €25 korting, je vriend ook. Win-win!",
+      "needWebsite": "Professionele website nodig?",
+      "use25Off": "Gebruik mijn code voor €25 korting op je eerste maand!"
+    },
+    "packageValue": {
+      "yourPackage": "Jouw pakket",
+      "perMonth": "/maand",
+      "realValue": "Werkelijke waarde",
+      "youSave": "Jij bespaart",
+      "totalSaved": "Totaal bespaard in",
+      "months": "maanden",
+      "whatsIncluded": "Wat zit er in je pakket?",
+      "hosting": "Hosting",
+      "sslCertificate": "SSL certificaat",
+      "dailyBackups": "Dagelijkse backups",
+      "updatesAndSecurity": "Updates & beveiliging",
+      "changesPerMonth": "wijzigingen/mnd",
+      "blogFunction": "Blog functie",
+      "analytics": "Analytics",
+      "bookingSystem": "Boekingssysteem",
+      "liveChat": "Live chat",
+      "multilingual": "Meertalig",
+      "premiumHosting": "Premium hosting",
+      "unlimitedChanges": "Onbeperkt wijzigingen"
+    },
+    "satisfaction": {
+      "howSatisfied": "Hoe tevreden ben je?",
+      "feedbackHelps": "Je feedback helpt ons verbeteren",
+      "great": "Geweldig! Zou je een review willen achterlaten?",
+      "thanks": "Bedankt! We nemen contact op om te verbeteren."
+    },
+    "milestone": {
+      "oneMonth": "1 Maand!",
+      "threeMonths": "3 Maanden!",
+      "sixMonths": "Half Jaar!",
+      "oneYear": "1 Jaar!",
+      "websiteOneMonth": "Je website is een maand live!",
+      "freeSeoCheck": "Gratis SEO check",
+      "youGetSeoAnalysis": "Je krijgt een gratis SEO analyse!",
+      "tenPercentUpgrade": "10% korting upgrade",
+      "upgradeNow10": "Upgrade nu met 10% korting!",
+      "freeRedesign": "Gratis redesign",
+      "youGetRedesign": "Je krijgt een gratis mini-redesign!",
+      "yourReward": "Jouw beloning",
+      "claimReward": "Claim beloning",
+      "close": "Sluiten"
+    }
+  },
+  "klantOnboarding": {
+    "steps": {
+      "company": "Bedrijf",
+      "branding": "Branding",
+      "media": "Media",
+      "extra": "Extra"
+    },
+    "stepProgress": "Stap {{current}} van {{total}}: {{step}}",
+    "projectNotFound": "Project niet gevonden",
+    "projectNotFoundDesc": "Dit project ID bestaat niet. Controleer je e-mail voor de juiste link.",
+    "enterProjectId": "Vul je Project ID in om te beginnen",
+    "onboardingChecklist": "Onboarding Checklist",
+    "onboardingCompleted": "Onboarding voltooid! 🎉",
+    "submittedOn": "Je hebt dit formulier ingevuld op",
+    "editButton": "Antwoorden bewerken",
+    "viewStatus": "Bekijk projectstatus",
+    "businessInfo": "Bedrijfsinformatie",
+    "aboutBusiness": "Over je bedrijf",
+    "servicesProducts": "Diensten/Producten",
+    "branding": "Huisstijl",
+    "logo": "Logo",
+    "colors": "Kleuren",
+    "errors": {
+      "submitFailed": "Er ging iets mis. Probeer het opnieuw of neem contact met ons op.",
+      "sendFailed": "Verzenden mislukt"
+    },
+    "nextSteps": {
+      "driveFolder": {
+        "title": "Google Drive map",
+        "description": "Je vindt de Google Drive link in je welkomst-email. Hier kun je je logo, foto's en andere bestanden uploaden.",
+        "time": "In je mail"
+      },
+      "firstDesign": {
+        "title": "Eerste ontwerp",
+        "description": "We gaan aan de slag met je website en sturen je binnen 5-7 werkdagen het eerste ontwerp.",
+        "time": "5-7 dagen"
+      },
+      "feedbackLive": {
+        "title": "Feedback & live!",
+        "description": "Na jouw goedkeuring maken we de laatste aanpassingen en gaat je website live.",
+        "time": "Na goedkeuring"
+      }
+    }
+  },
+  "clientAccountModal": {
+    "tabs": {
+      "profile": "Mijn gegevens",
+      "profileMobile": "Gegevens",
+      "profileShort": "Gegevens",
+      "payments": "Betalingen",
+      "paymentsMobile": "Betaling",
+      "paymentsShort": "Betaling",
+      "package": "Mijn pakket",
+      "packageMobile": "Pakket",
+      "packageShort": "Pakket",
+      "messages": "Berichten",
+      "messagesMobile": "Chat",
+      "messagesShort": "Chat"
+    }
+  },
+  "clientAccount": {
+    "title": "Mijn Account",
+    "customerPortal": "Klantportaal",
+    "tabs": {
+      "profile": "Mijn gegevens",
+      "profileShort": "Gegevens",
+      "payments": "Betalingen",
+      "paymentsShort": "Betaling",
+      "package": "Mijn pakket",
+      "packageShort": "Pakket",
+      "messages": "Berichten",
+      "messagesShort": "Chat"
+    },
+    "breadcrumb": {
+      "project": "Project"
+    },
+    "serviceTypes": {
+      "website": "Website",
+      "webshop": "Webshop",
+      "logo": "Logo Design",
+      "drone": "Drone Beelden"
+    },
+    "profile": {
+      "serviceType": "Type dienst",
+      "package": "Pakket",
+      "type": "Type",
+      "packageLabel": "{{name}} pakket",
+      "projectId": "Project: {{id}}"
+    },
+    "payments": {
+      "status": {
+        "paid": "✓ Betaling ontvangen",
+        "awaiting": "Wacht op betaling",
+        "notRequired": "Wij leveren eerst!",
+        "unknown": "Betaalstatus onbekend"
+      },
+      "paidOn": "Betaald op {{date}}",
+      "awaitingDescription": "Rond de betaling af om door te gaan met je project",
+      "notRequiredDescription": "Je krijgt eerst je design te zien. Pas als je tevreden bent, sturen we de betaallink. Geen risico!",
+      "guarantee": "100% tevreden garantie",
+      "payNow": "Nu Betalen"
+    }
+  },
+  "bedankt": {
+    "services": {
+      "website": "Website",
+      "webshop": "Webshop",
+      "drone": "Drone opnames",
+      "logo": "Logo ontwerp"
+    }
+  },
+  "inlineOnboardingNew": {
+    "chooseCustomColor": "Kies eigen kleur",
+    "selected": "Geselecteerd ({{count}}/{{max}})",
+    "clearAll": "Alles wissen",
+    "stockPhotos": {
+      "title": "💡 Stockfoto suggesties",
+      "description": "We zoeken gratis stockfoto's voor je op basis van je bedrijf. Selecteer foto's die je mooi vindt - we gebruiken deze als inspiratie."
+    },
+    "colors": {
+      "green": "Groen",
+      "blue": "Blauw",
+      "purple": "Paars",
+      "orange": "Oranje",
+      "red": "Rood",
+      "pink": "Roze",
+      "teal": "Teal",
+      "dark": "Donker",
+      "indigo": "Indigo",
+      "lime": "Lime",
+      "cyan": "Cyan",
+      "darkGrey": "Donkergrijs",
+      "black": "Zwart",
+      "lightGrey": "Lichtgrijs"
+    },
+    "fonts": {
+      "inter": { "style": "Modern & Clean" },
+      "poppins": { "style": "Vriendelijk & Modern" },
+      "playfair": { "style": "Elegant & Klassiek" },
+      "montserrat": { "style": "Professioneel & Strak" },
+      "roboto": { "style": "Neutraal & Leesbaar" },
+      "opensans": { "style": "Helder & Toegankelijk" },
+      "lato": { "style": "Warm & Zakelijk" },
+      "raleway": { "style": "Elegant & Licht" },
+      "merriweather": { "style": "Klassiek & Betrouwbaar" },
+      "nunito": { "style": "Speels & Rond" },
+      "sourcesans": { "style": "Tech & Modern" },
+      "dmserif": { "style": "Luxe & Statement" }
+    }
+  },
+  "developerDashboard": {
+    "title": "Developer Dashboard",
+    "sidebar": {
+      "projects": "Projecten",
+      "customers": "Klanten",
+      "messages": "Berichten",
+      "payments": "Betalingen",
+      "changes": "Wijzigingen",
+      "logout": "Uitloggen",
+      "mrr": "MRR",
+      "activeSubscriptions": "actieve abonnementen"
+    },
+    "header": {
+      "searchPlaceholder": "Zoek projecten...",
+      "needsAttention": "Aandacht nodig",
+      "allUpToDate": "Alles up-to-date!"
+    },
+    "hero": {
+      "dashboard": "Dashboard",
+      "welcomeBack": "Welkom terug, developer!",
+      "activeProjects": "actieve projecten",
+      "liveWebsites": "live websites",
+      "urgent": "urgent"
+    },
+    "projects": {
+      "title": "Actieve projecten",
+      "kanbanView": "Kanban weergave",
+      "listView": "Lijst weergave",
+      "active": "actief",
+      "liveProjects": "Live projecten",
+      "showLive": "Toon live",
+      "hideLive": "Verberg live",
+      "noProjects": "Geen projecten",
+      "noProjectsDesc": "Er zijn nog geen projecten in deze fase.",
+      "viewDetails": "Bekijk details"
+    },
+    "urgency": {
+      "newMessage": "nieuw bericht",
+      "newMessages": "nieuwe berichten",
+      "readyToStart": "Klaar om te beginnen!",
+      "waitingForReview": "Wacht op review",
+      "noDaysUpdate": "dagen geen update",
+      "waitingForPayment": "Wacht op betaling",
+      "newClient": "Nieuwe klant"
+    },
+    "phases": {
+      "onboarding": "Onboarding",
+      "design": "Ontwerp",
+      "feedback": "Feedback",
+      "revisie": "Revisie",
+      "payment": "Betaling",
+      "domain": "Domein",
+      "live": "Live"
+    },
+    "projectCard": {
+      "unreadMessages": "ongelezen berichten",
+      "package": "Pakket",
+      "daysAgo": "dagen geleden",
+      "today": "Vandaag",
+      "yesterday": "Gisteren"
+    },
+    "payments": {
+      "title": "Betalingen",
+      "subtitle": "Beheer facturen en bekijk inkomsten",
+      "newPayment": "+ Nieuwe betaling",
+      "sendPaymentLink": "Verstuur betaallink",
+      "amount": "Bedrag",
+      "description": "Omschrijving",
+      "sending": "Verzenden...",
+      "send": "Versturen",
+      "noPaymentLink": "Geen betaallink ontvangen",
+      "createFailed": "Kon betaallink niet aanmaken",
+      "somethingWrong": "Er ging iets mis",
+      "paymentFor": "Betaling voor",
+      "firstPayment": "Eerste betaling",
+      "outstanding": "Openstaand",
+      "waitingForPayment": "wachtend op betaling",
+      "paid": "Betaald",
+      "paidHint": "Projecten met betaling ontvangen",
+      "noOutstanding": "Geen openstaande betalingen",
+      "allPaid": "Alle facturen zijn betaald",
+      "recentlyPaid": "Recent betaald",
+      "mrr": "Maandelijkse Inkomsten (MRR)",
+      "activeSubscriptions": "actieve abonnementen"
+    },
+    "table": {
+      "project": "Project",
+      "phase": "Fase",
+      "package": "Pakket",
+      "status": "Status",
+      "action": "Actie"
+    },
+    "clients": {
+      "empty": "Nog geen klanten",
+      "emptyHint": "Nieuwe klanten verschijnen hier"
+    },
+    "paymentLink": {
+      "title": "Betaallink versturen",
+      "subtitle": "Via Mollie naar",
+      "success": "Betaallink verstuurd!",
+      "successHint": "De klant ontvangt de link per e-mail",
+      "error": "Er ging iets mis",
+      "creating": "Betaallink aanmaken...",
+      "send": "Verstuur betaallink",
+      "info": "De klant ontvangt een e-mail met een beveiligde Mollie betaallink"
+    },
+    "help": {
+      "title": "Dashboard Help",
+      "subtitle": "Snelle handleiding",
+      "button": "Help",
+      "kanban": {
+        "title": "Kanban View",
+        "description": "Sleep projecten tussen fases of klik voor details. Op mobiel: swipe horizontaal."
+      },
+      "phases": {
+        "title": "Projectfases",
+        "onboarding": "Klantgegevens verzamelen",
+        "design": "Website in ontwikkeling",
+        "feedback": "Wacht op klant feedback",
+        "revisie": "Aanpassingen doorvoeren",
+        "payment": "Betaling afwachten",
+        "domain": "Domein koppelen",
+        "live": "Website is online"
+      },
+      "urgency": {
+        "title": "Urgentie indicators",
+        "red": "Rood: Ongelezen berichten / langer dan 3 dagen",
+        "orange": "Oranje: In revisie fase / in betaling",
+        "blue": "Blauw: Nieuwe klant"
+      },
+      "shortcuts": {
+        "title": "Sneltoetsen",
+        "kanban": "Kanban view",
+        "list": "List view",
+        "search": "Zoeken",
+        "help": "Help"
+      }
+    },
+    "nav": {
+      "projects": "Projecten",
+      "messages": "Berichten",
+      "payments": "Betalingen",
+      "changes": "Wijzigingen",
+      "more": "Meer"
+    },
+    "tutorial": {
+      "showTutorial": "Toon tutorial",
+      "hideTutorial": "Verberg tutorial"
+    },
+    "messages": {
+      "title": "Berichten",
+      "noMessages": "Geen berichten",
+      "typeMessage": "Typ een bericht...",
+      "send": "Versturen",
+      "empty": "Nog geen berichten",
+      "emptyHint": "Berichten van klanten verschijnen hier",
+      "you": "Jij"
+    },
+    "customers": {
+      "title": "Klanten",
+      "totalSpent": "Totaal uitgegeven",
+      "projects": "projecten",
+      "since": "Klant sinds"
+    },
+    "changes": {
+      "title": "Wijzigingsverzoeken",
+      "subtitle": "Beheer aanpassingsverzoeken van klanten"
+    },
+    "changeRequests": {
+      "title": "Wijzigingsverzoeken",
+      "pending": "wachtend",
+      "inProgress": "bezig",
+      "completed": "afgerond",
+      "empty": "Geen wijzigingsverzoeken",
+      "noFiltered": "Geen verzoeken met deze filter",
+      "allDone": "Alle verzoeken zijn afgehandeld",
+      "description": "Beschrijving",
+      "response": "Reactie",
+      "markPending": "Wachtend",
+      "startWorking": "Start",
+      "markDone": "Afronden",
+      "viewProject": "Bekijk project",
+      "completeRequest": "Verzoek afronden",
+      "responseHint": "Voeg optioneel een korte reactie toe voor de klant.",
+      "responsePlaceholder": "Bijv: Aanpassing is doorgevoerd op de website.",
+      "complete": "Afronden"
+    }
   }
 }

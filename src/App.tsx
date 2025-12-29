@@ -8,6 +8,7 @@ import HowItWorks from './components/HowItWorks'
 import Comparison from './components/Comparison'
 import Portfolio from './components/Portfolio'
 import StickyCTA from './components/StickyCTA'
+import { useReferralCapture } from './hooks/useReferralCapture'
 import './index.css'
 
 // Optimized homepage structure:
@@ -20,6 +21,9 @@ import './index.css'
 // 7. FAQ - Laatste bezwaren wegnemen
 
 export default function App() {
+  // Capture referral code from URL (?ref=CODE)
+  useReferralCapture()
+  
   return (
     <div className="min-h-screen bg-white dark:bg-gray-900">
       <Header urgencyBannerVisible={false} />

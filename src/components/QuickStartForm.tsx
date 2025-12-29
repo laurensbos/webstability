@@ -15,6 +15,7 @@ import {
   User
 } from 'lucide-react'
 import { useNavigate } from 'react-router-dom'
+import { getReferralCode, clearReferral } from '../hooks/useReferralCapture'
 
 interface QuickStartFormProps {
   serviceType: 'website' | 'webshop' | 'drone' | 'logo'
@@ -87,6 +88,9 @@ export default function QuickStartForm({
     const projectId = generateProjectId()
 
     try {
+      // Get referral code if available
+      const referralCode = getReferralCode()
+      
       const response = await fetch('/api/projects', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -102,6 +106,8 @@ export default function QuickStartForm({
           password: formData.password,
           status: 'onboarding',
           createdAt: new Date().toISOString(),
+          // Include referral code for attribution
+          referredBy: referralCode || undefined,
         }),
       })
 
@@ -114,6 +120,11 @@ export default function QuickStartForm({
           setError(data.error || t('quickStartForm.errors.generic'))
         }
         return
+      }
+
+      // Clear referral code after successful conversion
+      if (referralCode) {
+        clearReferral()
       }
 
       navigate(`/bedankt?project=${projectId}&dienst=${serviceType}&email=${encodeURIComponent(formData.email)}`)

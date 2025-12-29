@@ -7,6 +7,7 @@
 
 import { useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
+import { useTranslation } from 'react-i18next'
 import {
   Image,
   Search,
@@ -57,6 +58,7 @@ export default function StockPhotoSuggestions({
   darkMode = true,
   compact = false
 }: StockPhotoSuggestionsProps) {
+  const { t } = useTranslation()
   const [photos, setPhotos] = useState<StockPhoto[]>([])
   const [loading, setLoading] = useState(false)
   const [searchQuery, setSearchQuery] = useState('')
@@ -111,7 +113,7 @@ export default function StockPhotoSuggestions({
       setPage(0)
     } catch (err) {
       console.error('Failed to fetch stock photos:', err)
-      setError('Kon geen foto\'s laden. Probeer later opnieuw.')
+      setError(t('errors.api.loadPhotosFailed'))
     } finally {
       setLoading(false)
     }

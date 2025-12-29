@@ -98,72 +98,27 @@ function getServiceColors(serviceId: ServiceType) {
   }
 }
 
-// Floating particles component
-function FloatingParticles({ activeService }: { activeService: ServiceType }) {
-  // Service-specific subtle colors matching the card designs
-  const getColors = () => {
-    switch (activeService) {
-      case 'website':
-        return ['from-primary-300 to-blue-400', 'from-blue-300 to-primary-400', 'from-primary-400 to-blue-300']
-      case 'webshop':
-        return ['from-emerald-300 to-green-400', 'from-green-300 to-emerald-400', 'from-emerald-400 to-green-300']
-      case 'drone':
-        return ['from-orange-300 to-amber-400', 'from-amber-300 to-orange-400', 'from-orange-400 to-amber-300']
-      case 'logo':
-        return ['from-purple-300 to-violet-400', 'from-violet-300 to-purple-400', 'from-purple-400 to-violet-300']
-      default:
-        return ['from-primary-300 to-blue-400', 'from-blue-300 to-primary-400', 'from-primary-400 to-blue-300']
-    }
-  }
-
-  const colors = getColors()
-  const particles = [
-    { size: 6, x: '8%', y: '15%', delay: 0, duration: 9 },
-    { size: 8, x: '92%', y: '20%', delay: 1.5, duration: 11 },
-    { size: 5, x: '15%', y: '75%', delay: 0.8, duration: 10 },
-    { size: 7, x: '88%', y: '65%', delay: 2.2, duration: 12 },
-    { size: 5, x: '5%', y: '45%', delay: 1, duration: 8 },
-    { size: 4, x: '78%', y: '85%', delay: 0.5, duration: 9.5 },
-    { size: 6, x: '45%', y: '8%', delay: 1.8, duration: 10.5 },
-    { size: 5, x: '95%', y: '40%', delay: 2.5, duration: 11 },
-  ]
-
-  return (
-    <div className="absolute inset-0 overflow-hidden pointer-events-none">
-      {particles.map((particle, i) => (
-        <motion.div
-          key={`${activeService}-${i}`}
-          className={`absolute rounded-full bg-gradient-to-br ${colors[i % colors.length]} opacity-60`}
-          style={{
-            width: particle.size,
-            height: particle.size,
-            left: particle.x,
-            top: particle.y,
-          }}
-          animate={{
-            y: [0, -40, 0],
-            x: [0, 15, 0],
-            opacity: [0.4, 0.8, 0.4],
-            scale: [1, 1.3, 1],
-          }}
-          transition={{
-            duration: particle.duration,
-            repeat: Infinity,
-            delay: particle.delay,
-            ease: 'easeInOut',
-          }}
-        />
-      ))}
-    </div>
-  )
-}
-
 export default function StartProject() {
   const { t } = useTranslation()
   const { packages: websitePackages, webshopPackages } = usePackages()
-  const [searchParams] = useSearchParams()
+  const [searchParams, setSearchParams] = useSearchParams()
   const [selectedService, setSelectedService] = useState<SelectedServiceType>(null)
   const [selectedPackage, setSelectedPackage] = useState<PackageType | null>(null)
+  
+  // Capture referral code from URL on this page too
+  useEffect(() => {
+    const refCode = searchParams.get('ref')
+    if (refCode) {
+      // Import dynamically to avoid circular deps
+      import('../hooks/useReferralCapture').then(({ captureReferral }) => {
+        captureReferral(refCode)
+        // Remove ref param from URL
+        const newParams = new URLSearchParams(searchParams)
+        newParams.delete('ref')
+        setSearchParams(newParams, { replace: true })
+      })
+    }
+  }, [searchParams, setSearchParams])
 
   // Translated services
   const services: ServiceOption[] = [
@@ -335,7 +290,6 @@ export default function StartProject() {
     
     return (
       <div className={`min-h-screen bg-gradient-to-br ${gradientColors[selectedService]} relative overflow-hidden`}>
-        <FloatingParticles activeService={selectedService} />
         <Header />
         
         <main className="relative z-10 pt-20 sm:pt-28 pb-8 sm:pb-16 lg:pb-20">
@@ -466,8 +420,6 @@ export default function StartProject() {
   // Service selection screen
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-primary-50/30 dark:from-gray-900 dark:via-gray-900 dark:to-gray-900 relative overflow-hidden">
-      <FloatingParticles activeService={selectedService || 'website'} />
-      
       <Header />
       
       <main className="relative z-10 pt-24 sm:pt-28 pb-12 sm:pb-16 lg:pb-20">

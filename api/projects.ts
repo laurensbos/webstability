@@ -152,6 +152,8 @@ async function createProject(req: VercelRequest, res: VercelResponse) {
   // Prefer personal name over company name for more personal emails
   const customerName = body.customer?.name || body.name || body.companyName || ''
   const customerPhone = body.customer?.phone || body.phone
+  // Referral code if referred by another customer
+  const referredBy = body.referredBy || null
   
   if (!body.type || !customerEmail) {
     return res.status(400).json({ 
@@ -217,6 +219,8 @@ async function createProject(req: VercelRequest, res: VercelResponse) {
       discountAmount: body.discountAmount,
       finalSetupFee: body.finalSetupFee,
       finalMonthlyFee: body.finalMonthlyFee,
+      // Referral tracking
+      referredBy: referredBy,
     },
     tasks: body.tasks || [],
     createdAt: body.createdAt || new Date().toISOString(),
@@ -234,6 +238,41 @@ async function createProject(req: VercelRequest, res: VercelResponse) {
   }
   
   console.log(`Project created: ${project.id} - ${project.type}`)
+  
+  // Process referral if present
+  if (referredBy) {
+    try {
+      const referralResponse = await fetch(`${process.env.SITE_URL || 'https://webstability.nl'}/api/referral`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          action: 'claim',
+          code: referredBy,  // The referral code used
+          projectId: project.id  // The new project claiming the referral
+        })
+      })
+      
+      if (referralResponse.ok) {
+        const referralData = await referralResponse.json()
+        console.log(`✅ Referral claimed: ${referredBy} → ${project.id}, discount: €${referralData.discount}`)
+        
+        // Update project with applied referral discount
+        if (referralData.discount) {
+          project.onboardingData = {
+            ...project.onboardingData,
+            referralDiscount: referralData.discount,
+            referredBy: referredBy
+          }
+          await kv!.set(`project:${project.id}`, project)
+        }
+      } else {
+        console.warn(`Referral claim failed for code ${referredBy}:`, await referralResponse.text())
+      }
+    } catch (referralError) {
+      console.error('Referral processing error:', referralError)
+      // Don't fail the request if referral processing fails
+    }
+  }
   
   // Create Google Drive folder for project
   let driveFolderLink: string | undefined

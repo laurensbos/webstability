@@ -6,6 +6,29 @@ const redis = new Redis({
   token: process.env.KV_REST_API_TOKEN || process.env.UPSTASH_REDIS_REST_TOKEN || '',
 })
 
+const BASE_URL = process.env.SITE_URL || 'https://webstability.nl'
+
+// Send notification via internal API
+async function sendNotification(projectId: string, type: 'developer' | 'client', event: string, data?: Record<string, unknown>) {
+  try {
+    await fetch(`${BASE_URL}/api/push/notifications`, {
+      method: 'POST',
+      headers: { 
+        'Content-Type': 'application/json',
+        'X-Internal-Secret': process.env.INTERNAL_API_SECRET || ''
+      },
+      body: JSON.stringify({
+        projectId,
+        recipientType: type,
+        event,
+        data
+      })
+    })
+  } catch (e) {
+    console.error(`Failed to send ${type} notification for ${event}:`, e)
+  }
+}
+
 interface LogoConcept {
   id: string
   name: string
@@ -152,7 +175,11 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
             updatedAt: now,
           })
 
-          // TODO: Send notification to developer about new feedback
+          // Send notification to developer about new feedback
+          await sendNotification(projectId, 'developer', 'logo_feedback_received', {
+            round: currentRound,
+            conceptId: selectedConceptId
+          })
 
           return res.status(200).json({
             success: true,
@@ -171,7 +198,11 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
             updatedAt: now,
           })
 
-          // TODO: Generate/copy final deliverables to project
+          // Final deliverables are already stored in logoDeliverables
+          // Send notification to developer about approval
+          await sendNotification(projectId, 'developer', 'logo_approved', {
+            approvedAt: now
+          })
 
           return res.status(200).json({
             success: true,
@@ -218,7 +249,10 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
             updatedAt: now,
           })
 
-          // TODO: Send notification to client about new concepts
+          // Send notification to client about new concepts
+          await sendNotification(projectId, 'client', 'logo_concepts_ready', {
+            conceptCount: newConcepts.length
+          })
 
           return res.status(200).json({
             success: true,
@@ -252,7 +286,11 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
             updatedAt: now,
           })
 
-          // TODO: Send notification to client
+          // Send notification to client about revision completion
+          await sendNotification(projectId, 'client', 'logo_revision_completed', {
+            revisionId,
+            goingToFinal: shouldGoToFinal
+          })
 
           return res.status(200).json({
             success: true,

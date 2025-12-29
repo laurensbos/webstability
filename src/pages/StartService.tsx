@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { useNavigate, useParams } from 'react-router-dom'
+import { isValidDutchPhone, isValidEmail } from '../lib/validation'
 import { 
   ArrowRight, 
   ArrowLeft, 
@@ -317,7 +318,7 @@ export default function StartService() {
         case 1: return droneData.locationAddress !== '' && droneData.locationCity !== ''
         case 2: return droneData.captureType.length > 0
         case 3: return droneData.preferredDate !== '' && droneData.preferredTime !== ''
-        case 4: return droneData.contactName !== '' && droneData.contactEmail !== '' && droneData.contactPhone !== ''
+        case 4: return droneData.contactName !== '' && isValidEmail(droneData.contactEmail) && isValidDutchPhone(droneData.contactPhone)
         default: return true
       }
     } else {
@@ -325,7 +326,7 @@ export default function StartService() {
         case 1: return logoData.businessName !== '' && logoData.industry !== ''
         case 2: return logoData.style.length > 0
         case 3: return true // Optional step
-        case 4: return logoData.contactName !== '' && logoData.contactEmail !== ''
+        case 4: return logoData.contactName !== '' && isValidEmail(logoData.contactEmail) && (logoData.contactPhone === '' || isValidDutchPhone(logoData.contactPhone))
         default: return true
       }
     }

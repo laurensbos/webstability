@@ -4,12 +4,18 @@ import crypto from 'crypto'
 // Developer sessions (in-memory for Vercel - would need Redis/DB for production)
 const developerSessions: Record<string, { expiresAt: number }> = {}
 
-// Valid passwords - check environment variable first, then fallback to hardcoded
+// Valid passwords - use environment variables for security
+// Set these in Vercel: ADMIN_PASSWORD, DEV_PASSWORD_1, DEV_PASSWORD_2
 const VALID_PASSWORDS = [
   process.env.ADMIN_PASSWORD,
-  'N45eqtu2!jz8j0v',  // Developer password
-  'webstability2024', // Legacy password
+  process.env.DEV_PASSWORD_1,
+  process.env.DEV_PASSWORD_2,
 ].filter(Boolean) as string[]
+
+// Warning if no passwords are configured
+if (VALID_PASSWORDS.length === 0) {
+  console.warn('[Developer Login] WARNING: No passwords configured. Set ADMIN_PASSWORD, DEV_PASSWORD_1, or DEV_PASSWORD_2 environment variables.')
+}
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
   // Enable CORS

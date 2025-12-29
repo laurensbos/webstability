@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react'
 import { useParams, Link } from 'react-router-dom'
+import { useTranslation } from 'react-i18next'
 import { motion } from 'framer-motion'
 import {
   CheckCircle2,
@@ -86,13 +87,14 @@ function FloatingParticles() {
 }
 
 const STEP_CONFIG = [
-  { key: 1, label: 'Bedrijf', icon: Building2, color: 'from-primary-500 to-blue-500' },
-  { key: 2, label: 'Branding', icon: Palette, color: 'from-purple-500 to-violet-500' },
-  { key: 3, label: 'Media', icon: Image, color: 'from-emerald-500 to-green-500' },
-  { key: 4, label: 'Extra', icon: Globe, color: 'from-orange-500 to-amber-500' },
+  { key: 1, labelKey: 'klantOnboarding.steps.company', icon: Building2, color: 'from-primary-500 to-blue-500' },
+  { key: 2, labelKey: 'klantOnboarding.steps.branding', icon: Palette, color: 'from-purple-500 to-violet-500' },
+  { key: 3, labelKey: 'klantOnboarding.steps.media', icon: Image, color: 'from-emerald-500 to-green-500' },
+  { key: 4, labelKey: 'klantOnboarding.steps.extra', icon: Globe, color: 'from-orange-500 to-amber-500' },
 ]
 
 export default function KlantOnboarding() {
+  const { t } = useTranslation()
   const { projectId } = useParams<{ projectId: string }>()
   const [step, setStep] = useState(1)
   const [loading, setLoading] = useState(false)
@@ -887,7 +889,7 @@ export default function KlantOnboarding() {
             ))}
           </div>
           <div className="flex justify-between text-sm">
-            <span className="text-gray-600 font-medium">Stap {step} van {totalSteps}: {currentStepConfig.label}</span>
+            <span className="text-gray-600 font-medium">{t('klantOnboarding.stepProgress', { current: step, total: totalSteps, step: t(currentStepConfig.labelKey) })}</span>
             <span className="text-primary-600 font-medium">{Math.round((step / totalSteps) * 100)}%</span>
           </div>
         </div>

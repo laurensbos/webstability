@@ -1,23 +1,29 @@
 import { useState, useEffect } from 'react'
 import { useTranslation } from 'react-i18next'
+import { useLocation } from 'react-router-dom'
 import { motion, AnimatePresence } from 'framer-motion'
 import { ArrowRight, X, Sparkles } from 'lucide-react'
 
 export default function StickyCTA() {
   const { t } = useTranslation()
+  const location = useLocation()
   const [isVisible, setIsVisible] = useState(false)
   const [isDismissed, setIsDismissed] = useState(false)
+
+  // Pages where StickyCTA should not appear (to avoid conflicts with other bottom navs)
+  const hiddenPaths = ['/project/', '/dashboard', '/klant-onboarding', '/client-onboarding', '/developer']
+  const shouldHideOnPath = hiddenPaths.some(path => location.pathname.includes(path))
 
   useEffect(() => {
     const handleScroll = () => {
       // Show after scrolling past hero section (roughly 600px)
       const shouldShow = window.scrollY > 600
-      setIsVisible(shouldShow && !isDismissed)
+      setIsVisible(shouldShow && !isDismissed && !shouldHideOnPath)
     }
 
     window.addEventListener('scroll', handleScroll)
     return () => window.removeEventListener('scroll', handleScroll)
-  }, [isDismissed])
+  }, [isDismissed, shouldHideOnPath])
 
   const handleDismiss = () => {
     setIsDismissed(true)

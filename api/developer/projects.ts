@@ -9,6 +9,20 @@ const kv = REDIS_URL && REDIS_TOKEN
   ? new Redis({ url: REDIS_URL, token: REDIS_TOKEN })
   : null
 
+interface ChangeRequest {
+  id: string
+  date: string
+  description: string
+  request?: string
+  priority: 'low' | 'normal' | 'urgent'
+  category: 'text' | 'design' | 'images' | 'functionality' | 'other'
+  status: 'pending' | 'in_progress' | 'completed'
+  response?: string
+  completedAt?: string
+  createdAt?: string
+  attachments?: string[]
+}
+
 interface Project {
   id: string
   status: 'onboarding' | 'intake' | 'design' | 'feedback' | 'payment' | 'live'
@@ -37,6 +51,10 @@ interface Project {
   internalNotes?: string
   createdAt: string
   updatedAt: string
+  // Change requests
+  changeRequests?: ChangeRequest[]
+  revisionsUsed?: number
+  revisionsTotal?: number
 }
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
@@ -104,6 +122,10 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         liveUrl: p.liveUrl || '',
         googleDriveUrl: p.googleDriveUrl || '',
         internalNotes: p.internalNotes || '',
+        // Change requests for live projects
+        changeRequests: p.changeRequests || [],
+        revisionsUsed: p.revisionsUsed || 0,
+        revisionsTotal: p.revisionsTotal || 5,
       }))
       
       // Sort by createdAt (newest first)

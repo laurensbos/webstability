@@ -37,9 +37,17 @@ export default function PackagePhaseCard({
 }: PackagePhaseCardProps) {
   const { t } = useTranslation()
   const pkg = getPackage(packageType)
-  const phaseInfo = getPhaseInfo(packageType, currentPhase)
+  const phaseInfoFromPackage = getPhaseInfo(packageType, currentPhase)
   const remainingRevisions = getRemainingRevisions(packageType, usedRevisions)
   const estimatedDays = pkg.estimatedDays[currentPhase]
+
+  // Get translated phase info - fallback to package config if translation doesn't exist
+  const phaseInfo = {
+    title: t(`packagePhaseCard.phases.${currentPhase}.title`, phaseInfoFromPackage.title),
+    description: t(`packagePhaseCard.phases.${currentPhase}.description`, phaseInfoFromPackage.description),
+    clientTasks: t(`packagePhaseCard.phases.${currentPhase}.clientTasks`, { returnObjects: true, defaultValue: phaseInfoFromPackage.clientTasks }) as string[],
+    tips: t(`packagePhaseCard.phases.${currentPhase}.tips`, { returnObjects: true, defaultValue: phaseInfoFromPackage.tips }) as string[]
+  }
 
   // Phase-specific colors
   const phaseColors: Record<ProjectPhase, { bg: string; border: string; icon: string }> = {
@@ -75,7 +83,7 @@ export default function PackagePhaseCard({
                 </h3>
               </div>
               <p className={`text-xs sm:text-sm ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>
-                €{pkg.price}/maand
+                €{pkg.price}{t('packagePhaseCard.perMonth')}
               </p>
             </div>
           </div>

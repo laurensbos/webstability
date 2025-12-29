@@ -1,5 +1,12 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node'
 import { getProject, setProject, getAllProjects } from './lib/database.js'
+import { Redis } from '@upstash/redis'
+
+const REDIS_URL = process.env.UPSTASH_REDIS_REST_URL
+const REDIS_TOKEN = process.env.UPSTASH_REDIS_REST_TOKEN
+const kv = REDIS_URL && REDIS_TOKEN 
+  ? new Redis({ url: REDIS_URL, token: REDIS_TOKEN })
+  : null
 
 /**
  * API Endpoint: /api/client-onboarding
@@ -43,6 +50,19 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         return res.status(404).json({ error: 'Project not found' })
       }
 
+      // Get messages from database
+      let messages: any[] = []
+      if (kv) {
+        try {
+          const storedMessages = await kv.get(`messages:${projectId}`)
+          if (storedMessages && Array.isArray(storedMessages)) {
+            messages = storedMessages
+          }
+        } catch (e) {
+          console.error('Failed to get messages:', e)
+        }
+      }
+
       // Return onboarding-specific data
       const editableStatuses = ['onboarding', 'intake', 'pending', 'awaiting_payment', 'new']
       return res.status(200).json({
@@ -51,7 +71,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         formData: project.onboardingData || {},
         currentPhase: project.status,
         canEdit: editableStatuses.includes(project.status),
-        messages: [], // TODO: Get messages from database
+        messages,
         timeline: getTimeline(project.type, project.status),
         createdAt: project.createdAt,
         updatedAt: project.updatedAt
