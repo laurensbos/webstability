@@ -2532,5 +2532,215 @@
     "invalidDomain": "Voer een geldige domeinnaam in (minimaal 2 karakters)",
     "errorChecking": "Er ging iets mis bij het controleren. Probeer het opnieuw.",
     "popularExtensions": "Populaire extensies:"
+  },
+  "urgencyBanner": {
+    "limited": "Beperkt",
+    "thisMonth": "Deze maand:",
+    "still": "Nog",
+    "spots": "plekken",
+    "availableForProjects": "beschikbaar voor nieuwe projecten",
+    "highDemand": "Hoge vraag"
+  },
+  "newYearsDeal": {
+    "badge": "Nieuwjaarsactie 2026",
+    "headline": "Nieuwjaarskorting!",
+    "free": "GRATIS",
+    "temporary": "Tijdelijk",
+    "noSetupCosts": "geen opstartkosten",
+    "forNewCustomers": "voor nieuwe klanten",
+    "timer": {
+      "days": "dagen",
+      "hours": "uren",
+      "minutes": "min",
+      "seconds": "sec"
+    },
+    "validUntil": "Geldig t/m 31 januari 2026",
+    "cta": "Claim je korting",
+    "subtext": "Bespaar €120,- • Direct starten mogelijk"
+  },
+  "whatYouGet": {
+    "badge": "Waarom wij anders zijn",
+    "title": {
+      "part1": "Geen gedoe.",
+      "part2": "Wij regelen alles."
+    },
+    "description": "Bij ons geen DIY website-bouwers of eindeloos zelf klussen. Wij bouwen jouw professionele website, zodat jij kunt focussen op ondernemen.",
+    "features": {
+      "customDesign": {
+        "title": "Professioneel maatwerk design",
+        "description": "Geen templates. Wij ontwerpen jouw website volledig op maat, passend bij jouw merk."
+      },
+      "builtByUs": {
+        "title": "Volledig gebouwd door ons",
+        "description": "Geen DIY gedoe. Wij bouwen alles, jij hoeft alleen feedback te geven."
+      },
+      "hosting": {
+        "title": "Hosting inclusief",
+        "description": "Snelle, veilige hosting op Nederlandse servers. Altijd online, altijd snel."
+      },
+      "security": {
+        "title": "SSL & beveiliging",
+        "description": "Gratis SSL-certificaat, dagelijkse backups en continue security monitoring."
+      },
+      "updates": {
+        "title": "Updates & onderhoud",
+        "description": "Wij houden alles up-to-date. Geen zorgen over techniek of updates."
+      },
+      "support": {
+        "title": "Persoonlijke support",
+        "description": "Direct contact via WhatsApp of telefoon. Geen ticketsystemen of wachttijden."
+      },
+      "fastDelivery": {
+        "title": "Snelle oplevering",
+        "description": "Je website is binnen 1-2 weken live. Inclusief revisierondes."
+      },
+      "seoReady": {
+        "title": "Razendsnel & SEO-ready",
+        "description": "Geoptimaliseerd voor snelheid en vindbaarheid in Google."
+      }
+    },
+    "comparisonTitle": {
+      "traditional": "Traditioneel vs."
+    },
+    "comparisonSubtitle": "Geen grote voorafbetaling, geen verrassingen. Alles inbegrepen.",
+    "comparison": {
+      "traditional": "Traditioneel",
+      "setupCosts": "Opstartkosten",
+      "fromPrice": "Vanaf €149",
+      "timeline": "Doorlooptijd",
+      "sevenDays": "7 dagen",
+      "fourToTwelveWeeks": "4-12 weken",
+      "maintenance": "Onderhoud",
+      "included": "Inbegrepen",
+      "extraPerYear": "€500+/jaar extra",
+      "changes": "Wijzigingen",
+      "unlimited": "Onbeperkt",
+      "perHour": "€75-150/uur",
+      "flexibility": "Flexibiliteit",
+      "monthlyCancellable": "Maandelijks opzegbaar",
+      "fixedContract": "Vast contract"
+    }
+  },
+  "checkout": {
+    "form": {
+      "title": "Gratis aanvragen: {{plan}}",
+      "subtitle": "Vul je gegevens in. Betaling pas na design-goedkeuring.",
+      "name": "Je naam *",
+      "companyName": "Bedrijfsnaam",
+      "email": "E-mailadres *",
+      "phone": "Telefoonnummer",
+      "domain": "Gewenst domein (optioneel)",
+      "processing": "Verwerken…",
+      "submit": "Gratis aanvragen"
+    },
+    "coupon": {
+      "placeholder": "Kortingscode",
+      "apply": "Toepassen",
+      "remove": "Verwijderen",
+      "enterCode": "Voer een kortingscode in",
+      "invalid": "Ongeldige kortingscode",
+      "checkError": "Kon kortingscode niet controleren"
+    },
+    "summary": {
+      "package": "Pakket",
+      "setupCost": "Eenmalige opstartkosten",
+      "monthly": "Maandelijks",
+      "perMonth": "mnd",
+      "discount": "Korting",
+      "paymentNote": "Betaling pas na goedkeuring van je design"
+    },
+    "errors": {
+      "emailInUse": "Dit e-mailadres is al in gebruik bij een ander project. Log in met je bestaande project of gebruik een ander e-mailadres.",
+      "general": "Er is iets misgegaan bij het aanmaken van je project"
+    },
+    "success": {
+      "title": "Aanvraag ontvangen!",
+      "description": "Je {{type}} aanvraag is succesvol ontvangen.",
+      "projectId": "Je project ID:",
+      "saveId": "Bewaar dit ID om je project te volgen",
+      "startUpload": "Start met uploaden",
+      "uploadHint": "Upload je logo, foto's en andere bestanden zodat we direct kunnen starten",
+      "whatsNext": {
+        "title": "Wat gebeurt er nu?",
+        "now": "Nu",
+        "step1": "Vul de onboarding in & upload bestanden",
+        "step2": "Wij maken een design op maat (5-7 dagen)",
+        "step3": "Jij geeft feedback & keurt goed",
+        "step4": "Na goedkeuring → betaling & live!"
+      },
+      "later": "Later doen"
+    }
+  },
+  "floatingChat": {
+    "title": "Chat met ons",
+    "responseTime": "Meestal binnen 5 min antwoord",
+    "welcome": "Welkom!",
+    "startProject": "Start een project om te kunnen chatten met onze designers.",
+    "startConversation": "Start het gesprek",
+    "askQuestion": "Stel je vraag en we antwoorden zo snel mogelijk!",
+    "placeholder": "Typ je bericht..."
+  },
+  "onboardingTour": {
+    "previous": "Vorige",
+    "next": "Volgende",
+    "getStarted": "Aan de slag!",
+    "skip": "Overslaan, ik ken het al",
+    "goToStep": "Ga naar stap {{step}}",
+    "steps": {
+      "welcome": {
+        "title": "Welkom! 👋",
+        "description": "Super dat je er bent! Dit is jouw persoonlijke dashboard waar je alles kunt regelen voor je nieuwe website.",
+        "tips": [
+          "Je kunt hier altijd terugkomen",
+          "Alle updates verschijnen automatisch",
+          "Je hoeft nergens voor te betalen tot je tevreden bent"
+        ]
+      },
+      "progress": {
+        "title": "Je voortgang",
+        "description": "Bovenaan zie je een balk die laat zien hoe ver je project is. Van \"Onboarding\" tot \"Live\" - zo weet je altijd waar je staat.",
+        "tips": [
+          "Elke fase heeft een andere kleur",
+          "Je krijgt een melding als er iets verandert",
+          "Klik op een fase om meer te lezen"
+        ]
+      },
+      "onboarding": {
+        "title": "Vragen invullen",
+        "description": "We hebben wat informatie nodig om je website te maken. Beantwoord de vragen - dit kost ongeveer 10 minuten.",
+        "tips": [
+          "Vul alles rustig in, je kunt het later nog aanpassen",
+          "Niet alle vragen zijn verplicht",
+          "Twijfel je? Laat het leeg en we nemen contact op"
+        ]
+      },
+      "design": {
+        "title": "Design bekijken",
+        "description": "Zodra je design klaar is, kun je het hier bekijken. Vind je iets niet mooi? Geef feedback met duimpje omhoog of omlaag.",
+        "tips": [
+          "Je krijgt een mail als het design klaar is",
+          "Feedback geven kan per onderdeel",
+          "Tot 2 revisierondes zijn gratis inbegrepen"
+        ]
+      },
+      "contact": {
+        "title": "Hulp nodig?",
+        "description": "Onderaan vind je knoppen voor Chat, Help en je Gegevens. Vragen? Stuur ons een berichtje - we reageren snel!",
+        "tips": [
+          "Chat werkt het snelst",
+          "In \"Help\" staan veelgestelde vragen",
+          "Bij \"Mijn gegevens\" kun je je info aanpassen"
+        ]
+      },
+      "done": {
+        "title": "Klaar om te starten!",
+        "description": "Dat was het! Begin met het invullen van de vragen, en wij gaan voor je aan de slag. Je nieuwe website komt eraan! 🚀",
+        "tips": [
+          "Start met de eerste vraag hieronder",
+          "Je kunt deze rondleiding altijd opnieuw bekijken",
+          "Veel succes!"
+        ]
+      }
+    }
   }
 }

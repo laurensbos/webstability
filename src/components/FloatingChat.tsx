@@ -8,6 +8,7 @@
  */
 
 import { useState, useEffect, useRef, useCallback } from 'react'
+import { useTranslation } from 'react-i18next'
 import { motion, AnimatePresence } from 'framer-motion'
 import {
   MessageSquare,
@@ -45,6 +46,7 @@ export default function FloatingChat({
   onOpenChange,
   variant = 'client'
 }: FloatingChatProps) {
+  const { t } = useTranslation()
   const [isOpen, setIsOpen] = useState(false)
   const [messages, setMessages] = useState<ChatMessage[]>([])
   const [newMessage, setNewMessage] = useState('')
@@ -232,8 +234,8 @@ export default function FloatingChat({
                 <MessageSquare className="w-5 h-5 text-white" />
               </div>
               <div className="flex-1">
-                <h3 className="font-semibold text-white">Chat met ons</h3>
-                <p className="text-xs text-white/70">Meestal binnen 5 min antwoord</p>
+                <h3 className="font-semibold text-white">{t('floatingChat.title')}</h3>
+                <p className="text-xs text-white/70">{t('floatingChat.responseTime')}</p>
               </div>
               <button
                 onClick={() => setChatIsOpen(false)}
@@ -248,14 +250,14 @@ export default function FloatingChat({
               {!projectId ? (
                 <div className="h-full flex flex-col items-center justify-center text-gray-500 dark:text-gray-400 text-center px-4">
                   <Sparkles className="w-10 h-10 mb-3 text-primary-400" />
-                  <p className="font-medium text-gray-900 dark:text-white mb-1">Welkom!</p>
-                  <p className="text-sm">Start een project om te kunnen chatten met onze designers.</p>
+                  <p className="font-medium text-gray-900 dark:text-white mb-1">{t('floatingChat.welcome')}</p>
+                  <p className="text-sm">{t('floatingChat.startProject')}</p>
                 </div>
               ) : messages.length === 0 ? (
                 <div className="h-full flex flex-col items-center justify-center text-gray-500 dark:text-gray-400 text-center">
                   <MessageSquare className="w-10 h-10 mb-3 opacity-50" />
-                  <p className="font-medium text-gray-900 dark:text-white mb-1">Start het gesprek</p>
-                  <p className="text-sm">Stel je vraag en we antwoorden zo snel mogelijk!</p>
+                  <p className="font-medium text-gray-900 dark:text-white mb-1">{t('floatingChat.startConversation')}</p>
+                  <p className="text-sm">{t('floatingChat.askQuestion')}</p>
                 </div>
               ) : (
                 messages.map((msg) => (
@@ -309,7 +311,7 @@ export default function FloatingChat({
                     type="text"
                     value={newMessage}
                     onChange={(e) => setNewMessage(e.target.value)}
-                    placeholder="Typ je bericht..."
+                    placeholder={t('floatingChat.placeholder')}
                     className="flex-1 px-4 py-3 rounded-xl bg-gray-100 dark:bg-gray-800 border border-gray-200 dark:border-white/10 text-gray-900 dark:text-white placeholder-gray-500 focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition"
                   />
                   <button

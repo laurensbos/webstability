@@ -2532,5 +2532,215 @@
     "invalidDomain": "Enter a valid domain name (minimum 2 characters)",
     "errorChecking": "Something went wrong while checking. Please try again.",
     "popularExtensions": "Popular extensions:"
+  },
+  "urgencyBanner": {
+    "limited": "Limited",
+    "thisMonth": "This month:",
+    "still": "Only",
+    "spots": "spots",
+    "availableForProjects": "available for new projects",
+    "highDemand": "High demand"
+  },
+  "newYearsDeal": {
+    "badge": "New Year's Special 2026",
+    "headline": "New Year's Discount!",
+    "free": "FREE",
+    "temporary": "Temporarily",
+    "noSetupCosts": "no setup costs",
+    "forNewCustomers": "for new customers",
+    "timer": {
+      "days": "days",
+      "hours": "hours",
+      "minutes": "min",
+      "seconds": "sec"
+    },
+    "validUntil": "Valid until January 31, 2026",
+    "cta": "Claim your discount",
+    "subtext": "Save €120 • Start immediately"
+  },
+  "whatYouGet": {
+    "badge": "Why we're different",
+    "title": {
+      "part1": "No hassle.",
+      "part2": "We handle everything."
+    },
+    "description": "No DIY website builders or endless tinkering. We build your professional website so you can focus on your business.",
+    "features": {
+      "customDesign": {
+        "title": "Professional custom design",
+        "description": "No templates. We design your website completely custom, matching your brand."
+      },
+      "builtByUs": {
+        "title": "Fully built by us",
+        "description": "No DIY hassle. We build everything, you just need to give feedback."
+      },
+      "hosting": {
+        "title": "Hosting included",
+        "description": "Fast, secure hosting on Dutch servers. Always online, always fast."
+      },
+      "security": {
+        "title": "SSL & security",
+        "description": "Free SSL certificate, daily backups and continuous security monitoring."
+      },
+      "updates": {
+        "title": "Updates & maintenance",
+        "description": "We keep everything up-to-date. No worries about technology or updates."
+      },
+      "support": {
+        "title": "Personal support",
+        "description": "Direct contact via WhatsApp or phone. No ticket systems or waiting times."
+      },
+      "fastDelivery": {
+        "title": "Fast delivery",
+        "description": "Your website is live within 1-2 weeks. Including revision rounds."
+      },
+      "seoReady": {
+        "title": "Lightning fast & SEO-ready",
+        "description": "Optimized for speed and Google findability."
+      }
+    },
+    "comparisonTitle": {
+      "traditional": "Traditional vs."
+    },
+    "comparisonSubtitle": "No large upfront payment, no surprises. Everything included.",
+    "comparison": {
+      "traditional": "Traditional",
+      "setupCosts": "Setup costs",
+      "fromPrice": "From €149",
+      "timeline": "Timeline",
+      "sevenDays": "7 days",
+      "fourToTwelveWeeks": "4-12 weeks",
+      "maintenance": "Maintenance",
+      "included": "Included",
+      "extraPerYear": "€500+/year extra",
+      "changes": "Changes",
+      "unlimited": "Unlimited",
+      "perHour": "€75-150/hour",
+      "flexibility": "Flexibility",
+      "monthlyCancellable": "Monthly cancellable",
+      "fixedContract": "Fixed contract"
+    }
+  },
+  "checkout": {
+    "form": {
+      "title": "Free request: {{plan}}",
+      "subtitle": "Fill in your details. Payment only after design approval.",
+      "name": "Your name *",
+      "companyName": "Company name",
+      "email": "Email address *",
+      "phone": "Phone number",
+      "domain": "Preferred domain (optional)",
+      "processing": "Processing…",
+      "submit": "Request for free"
+    },
+    "coupon": {
+      "placeholder": "Discount code",
+      "apply": "Apply",
+      "remove": "Remove",
+      "enterCode": "Enter a discount code",
+      "invalid": "Invalid discount code",
+      "checkError": "Could not verify discount code"
+    },
+    "summary": {
+      "package": "Package",
+      "setupCost": "One-time setup costs",
+      "monthly": "Monthly",
+      "perMonth": "mo",
+      "discount": "Discount",
+      "paymentNote": "Payment only after design approval"
+    },
+    "errors": {
+      "emailInUse": "This email address is already in use for another project. Log in with your existing project or use a different email address.",
+      "general": "Something went wrong while creating your project"
+    },
+    "success": {
+      "title": "Request received!",
+      "description": "Your {{type}} request has been successfully received.",
+      "projectId": "Your project ID:",
+      "saveId": "Save this ID to track your project",
+      "startUpload": "Start uploading",
+      "uploadHint": "Upload your logo, photos and other files so we can start immediately",
+      "whatsNext": {
+        "title": "What happens next?",
+        "now": "Now",
+        "step1": "Complete onboarding & upload files",
+        "step2": "We create a custom design (5-7 days)",
+        "step3": "You give feedback & approve",
+        "step4": "After approval → payment & go live!"
+      },
+      "later": "Do this later"
+    }
+  },
+  "floatingChat": {
+    "title": "Chat with us",
+    "responseTime": "Usually reply within 5 min",
+    "welcome": "Welcome!",
+    "startProject": "Start a project to chat with our designers.",
+    "startConversation": "Start the conversation",
+    "askQuestion": "Ask your question and we'll reply as soon as possible!",
+    "placeholder": "Type your message..."
+  },
+  "onboardingTour": {
+    "previous": "Previous",
+    "next": "Next",
+    "getStarted": "Get started!",
+    "skip": "Skip, I know this already",
+    "goToStep": "Go to step {{step}}",
+    "steps": {
+      "welcome": {
+        "title": "Welcome! 👋",
+        "description": "Great to have you here! This is your personal dashboard where you can manage everything for your new website.",
+        "tips": [
+          "You can always come back here",
+          "All updates appear automatically",
+          "You don't have to pay until you're satisfied"
+        ]
+      },
+      "progress": {
+        "title": "Your progress",
+        "description": "At the top you'll see a bar showing how far along your project is. From \"Onboarding\" to \"Live\" - so you always know where you stand.",
+        "tips": [
+          "Each phase has a different color",
+          "You'll get a notification when something changes",
+          "Click on a phase to read more"
+        ]
+      },
+      "onboarding": {
+        "title": "Fill in questions",
+        "description": "We need some information to create your website. Answer the questions - this takes about 10 minutes.",
+        "tips": [
+          "Take your time, you can adjust it later",
+          "Not all questions are required",
+          "Not sure? Leave it blank and we'll contact you"
+        ]
+      },
+      "design": {
+        "title": "View design",
+        "description": "Once your design is ready, you can view it here. Don't like something? Give feedback with thumbs up or down.",
+        "tips": [
+          "You'll get an email when the design is ready",
+          "You can give feedback per section",
+          "Up to 2 revision rounds are included for free"
+        ]
+      },
+      "contact": {
+        "title": "Need help?",
+        "description": "At the bottom you'll find buttons for Chat, Help and your Details. Questions? Send us a message - we respond quickly!",
+        "tips": [
+          "Chat works fastest",
+          "In \"Help\" you'll find frequently asked questions",
+          "In \"My details\" you can adjust your info"
+        ]
+      },
+      "done": {
+        "title": "Ready to start!",
+        "description": "That's it! Start filling in the questions, and we'll get to work for you. Your new website is on its way! 🚀",
+        "tips": [
+          "Start with the first question below",
+          "You can always restart this tour",
+          "Good luck!"
+        ]
+      }
+    }
   }
 }

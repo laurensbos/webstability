@@ -1,8 +1,10 @@
 import { useState, useEffect } from 'react'
+import { useTranslation } from 'react-i18next'
 import { motion } from 'framer-motion'
 import { X, Sparkles, ArrowRight, Clock } from 'lucide-react'
 
 export default function NewYearsDeal() {
+  const { t } = useTranslation()
   const [isVisible, setIsVisible] = useState(true)
   const [timeLeft, setTimeLeft] = useState({ days: 0, hours: 0, minutes: 0, seconds: 0 })
 
@@ -97,7 +99,7 @@ export default function NewYearsDeal() {
         <button
           onClick={() => setIsVisible(false)}
           className="absolute top-3 right-3 p-2 bg-white/20 hover:bg-white/30 rounded-lg transition-colors z-20 cursor-pointer"
-          aria-label="Sluiten"
+          aria-label={t('common.close')}
         >
           <X className="w-5 h-5 text-white" />
         </button>
@@ -108,13 +110,13 @@ export default function NewYearsDeal() {
           <div className="inline-flex items-center gap-1.5 bg-yellow-500/20 border border-yellow-500/30 rounded-full px-3 py-1 mb-4">
             <span className="text-lg">🎆</span>
             <span className="text-yellow-300 text-xs font-semibold uppercase tracking-wide">
-              Nieuwjaarsactie 2026
+              {t('newYearsDeal.badge')}
             </span>
           </div>
 
           {/* Headline */}
           <h3 className="text-white text-xl sm:text-2xl font-bold mb-2">
-            Nieuwjaarskorting!
+            {t('newYearsDeal.headline')}
           </h3>
 
           {/* Deal */}
@@ -122,21 +124,21 @@ export default function NewYearsDeal() {
             <div className="flex items-center gap-2 mb-1">
               <span className="text-gray-400 line-through text-lg">€120,-</span>
               <span className="bg-green-500 text-white text-xs font-bold px-2 py-0.5 rounded-full">
-                GRATIS
+                {t('newYearsDeal.free')}
               </span>
             </div>
             <p className="text-primary-200 text-sm">
-              Tijdelijk <span className="text-white font-semibold">geen opstartkosten</span> voor nieuwe klanten
+              {t('newYearsDeal.temporary')} <span className="text-white font-semibold">{t('newYearsDeal.noSetupCosts')}</span> {t('newYearsDeal.forNewCustomers')}
             </p>
           </div>
 
           {/* Countdown timer */}
           <div className="grid grid-cols-4 gap-2 mb-4">
             {[
-              { value: timeLeft.days, label: 'dagen' },
-              { value: timeLeft.hours, label: 'uren' },
-              { value: timeLeft.minutes, label: 'min' },
-              { value: timeLeft.seconds, label: 'sec' },
+              { value: timeLeft.days, label: t('newYearsDeal.timer.days') },
+              { value: timeLeft.hours, label: t('newYearsDeal.timer.hours') },
+              { value: timeLeft.minutes, label: t('newYearsDeal.timer.minutes') },
+              { value: timeLeft.seconds, label: t('newYearsDeal.timer.seconds') },
             ].map((item) => (
               <div key={item.label} className="bg-white/10 rounded-lg p-2 text-center">
                 <div className="text-white font-bold text-lg sm:text-xl font-mono">
@@ -150,7 +152,7 @@ export default function NewYearsDeal() {
           {/* Timer indicator */}
           <div className="flex items-center gap-2 text-yellow-300/80 text-xs mb-4">
             <Clock className="w-3.5 h-3.5" />
-            <span>Geldig t/m 31 januari 2026</span>
+            <span>{t('newYearsDeal.validUntil')}</span>
           </div>
 
           {/* CTA */}
@@ -159,13 +161,13 @@ export default function NewYearsDeal() {
             onClick={() => setIsVisible(false)}
             className="group flex items-center justify-center gap-2 w-full py-3 bg-gradient-to-r from-yellow-500 to-orange-500 hover:from-yellow-400 hover:to-orange-400 text-gray-900 font-bold rounded-xl transition-all shadow-lg shadow-yellow-500/25"
           >
-            Claim je korting
+            {t('newYearsDeal.cta')}
             <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
           </a>
 
           {/* Sub text */}
           <p className="text-center text-gray-400 text-xs mt-3">
-            Bespaar €120,- • Direct starten mogelijk
+            {t('newYearsDeal.subtext')}
           </p>
         </div>
 

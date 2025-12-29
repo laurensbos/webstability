@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next'
 import { motion } from 'framer-motion'
 import { 
   Paintbrush, 
@@ -17,60 +18,61 @@ interface WhatYouGetProps {
   className?: string
 }
 
-const features = [
-  {
-    icon: Paintbrush,
-    title: 'Professioneel maatwerk design',
-    description: 'Geen templates. Wij ontwerpen jouw website volledig op maat, passend bij jouw merk.',
-    highlight: true,
-  },
-  {
-    icon: Wrench,
-    title: 'Volledig gebouwd door ons',
-    description: 'Geen DIY gedoe. Wij bouwen alles, jij hoeft alleen feedback te geven.',
-    highlight: true,
-  },
-  {
-    icon: Server,
-    title: 'Hosting inclusief',
-    description: 'Snelle, veilige hosting op Nederlandse servers. Altijd online, altijd snel.',
-  },
-  {
-    icon: Shield,
-    title: 'SSL & beveiliging',
-    description: 'Gratis SSL-certificaat, dagelijkse backups en continue security monitoring.',
-  },
-  {
-    icon: RefreshCw,
-    title: 'Updates & onderhoud',
-    description: 'Wij houden alles up-to-date. Geen zorgen over techniek of updates.',
-  },
-  {
-    icon: Headphones,
-    title: 'Persoonlijke support',
-    description: 'Direct contact via WhatsApp of telefoon. Geen ticketsystemen of wachttijden.',
-  },
-  {
-    icon: Clock,
-    title: 'Snelle oplevering',
-    description: 'Je website is binnen 1-2 weken live. Inclusief revisierondes.',
-  },
-  {
-    icon: Zap,
-    title: 'Razendsnel & SEO-ready',
-    description: 'Geoptimaliseerd voor snelheid en vindbaarheid in Google.',
-  },
-]
-
-const comparisonData = [
-  { feature: 'Opstartkosten', us: 'Vanaf €149', traditional: '€3.000 - €10.000+' },
-  { feature: 'Doorlooptijd', us: '7 dagen', traditional: '4-12 weken' },
-  { feature: 'Onderhoud', us: 'Inbegrepen', traditional: '€500+/jaar extra' },
-  { feature: 'Wijzigingen', us: 'Onbeperkt', traditional: '€75-150/uur' },
-  { feature: 'Flexibiliteit', us: 'Maandelijks opzegbaar', traditional: 'Vast contract' },
-]
-
 export default function WhatYouGet({ variant = 'general', showComparison = true, className = '' }: WhatYouGetProps) {
+  const { t } = useTranslation()
+
+  const features = [
+    {
+      icon: Paintbrush,
+      title: t('whatYouGet.features.customDesign.title'),
+      description: t('whatYouGet.features.customDesign.description'),
+      highlight: true,
+    },
+    {
+      icon: Wrench,
+      title: t('whatYouGet.features.builtByUs.title'),
+      description: t('whatYouGet.features.builtByUs.description'),
+      highlight: true,
+    },
+    {
+      icon: Server,
+      title: t('whatYouGet.features.hosting.title'),
+      description: t('whatYouGet.features.hosting.description'),
+    },
+    {
+      icon: Shield,
+      title: t('whatYouGet.features.security.title'),
+      description: t('whatYouGet.features.security.description'),
+    },
+    {
+      icon: RefreshCw,
+      title: t('whatYouGet.features.updates.title'),
+      description: t('whatYouGet.features.updates.description'),
+    },
+    {
+      icon: Headphones,
+      title: t('whatYouGet.features.support.title'),
+      description: t('whatYouGet.features.support.description'),
+    },
+    {
+      icon: Clock,
+      title: t('whatYouGet.features.fastDelivery.title'),
+      description: t('whatYouGet.features.fastDelivery.description'),
+    },
+    {
+      icon: Zap,
+      title: t('whatYouGet.features.seoReady.title'),
+      description: t('whatYouGet.features.seoReady.description'),
+    },
+  ]
+
+  const comparisonData = [
+    { feature: t('whatYouGet.comparison.setupCosts'), us: t('whatYouGet.comparison.fromPrice'), traditional: '€3.000 - €10.000+' },
+    { feature: t('whatYouGet.comparison.timeline'), us: t('whatYouGet.comparison.sevenDays'), traditional: t('whatYouGet.comparison.fourToTwelveWeeks') },
+    { feature: t('whatYouGet.comparison.maintenance'), us: t('whatYouGet.comparison.included'), traditional: t('whatYouGet.comparison.extraPerYear') },
+    { feature: t('whatYouGet.comparison.changes'), us: t('whatYouGet.comparison.unlimited'), traditional: t('whatYouGet.comparison.perHour') },
+    { feature: t('whatYouGet.comparison.flexibility'), us: t('whatYouGet.comparison.monthlyCancellable'), traditional: t('whatYouGet.comparison.fixedContract') },
+  ]
   const gradientColors = {
     website: 'from-primary-500 to-blue-500',
     webshop: 'from-emerald-500 to-teal-500',
@@ -107,7 +109,7 @@ export default function WhatYouGet({ variant = 'general', showComparison = true,
             className={`inline-flex items-center gap-2 ${bgColors[variant]} border ${borderColors[variant]} rounded-full px-4 py-2 mb-4`}
           >
             <Sparkles className={`w-4 h-4 ${accentColors[variant]}`} />
-            <span className={`text-sm font-medium ${accentColors[variant]}`}>Waarom wij anders zijn</span>
+            <span className={`text-sm font-medium ${accentColors[variant]}`}>{t('whatYouGet.badge')}</span>
           </motion.div>
           
           <motion.h2
@@ -116,9 +118,9 @@ export default function WhatYouGet({ variant = 'general', showComparison = true,
             viewport={{ once: true }}
             className="text-3xl sm:text-4xl lg:text-5xl font-bold text-gray-900 dark:text-white mb-4"
           >
-            Geen gedoe.{' '}
+            {t('whatYouGet.title.part1')}{' '}
             <span className={`bg-gradient-to-r ${gradientColors[variant]} bg-clip-text text-transparent`}>
-              Wij regelen alles.
+              {t('whatYouGet.title.part2')}
             </span>
           </motion.h2>
           
@@ -129,8 +131,7 @@ export default function WhatYouGet({ variant = 'general', showComparison = true,
             transition={{ delay: 0.1 }}
             className="text-lg sm:text-xl text-gray-600 dark:text-gray-300 max-w-3xl mx-auto"
           >
-            Bij ons geen DIY website-bouwers of eindeloos zelf klussen. 
-            Wij bouwen jouw professionele website, zodat jij kunt focussen op ondernemen.
+            {t('whatYouGet.description')}
           </motion.p>
         </div>
 
@@ -171,12 +172,12 @@ export default function WhatYouGet({ variant = 'general', showComparison = true,
           >
             <div className="text-center mb-6">
               <h3 className="text-xl sm:text-2xl font-bold mb-2">
-                <span className={`bg-gradient-to-r ${gradientColors[variant]} bg-clip-text text-transparent`}>Traditioneel vs.</span>
+                <span className={`bg-gradient-to-r ${gradientColors[variant]} bg-clip-text text-transparent`}>{t('whatYouGet.comparisonTitle.traditional')}</span>
                 {' '}
                 <span className="font-display tracking-tight text-gray-900 dark:text-white">webstability</span>
               </h3>
               <p className="text-sm text-gray-600 dark:text-gray-400">
-                Geen grote voorafbetaling, geen verrassingen. Alles inbegrepen.
+                {t('whatYouGet.comparisonSubtitle')}
               </p>
             </div>
 
@@ -193,7 +194,7 @@ export default function WhatYouGet({ variant = 'general', showComparison = true,
                   </span>
                 </div>
                 <div className="p-3 sm:p-4 text-center">
-                  <span className="text-xs sm:text-sm font-medium text-gray-500 dark:text-gray-400">Traditioneel</span>
+                  <span className="text-xs sm:text-sm font-medium text-gray-500 dark:text-gray-400">{t('whatYouGet.comparison.traditional')}</span>
                 </div>
               </div>
 
@@ -224,7 +225,7 @@ export default function WhatYouGet({ variant = 'general', showComparison = true,
               className="text-center mt-6"
             >
               <p className="text-sm text-gray-500 dark:text-gray-400">
-                Geen grote voorafbetaling, geen verrassingen. Alles inbegrepen.
+                {t('whatYouGet.comparisonSubtitle')}
               </p>
             </motion.div>
           </motion.div>

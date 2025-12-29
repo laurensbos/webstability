@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react'
+import { useTranslation } from 'react-i18next'
 import { motion, AnimatePresence } from 'framer-motion'
 import { X, Clock, Users } from 'lucide-react'
 
@@ -7,6 +8,7 @@ interface UrgencyBannerProps {
 }
 
 export default function UrgencyBanner({ onVisibilityChange }: UrgencyBannerProps) {
+  const { t } = useTranslation()
   const [isVisible, setIsVisible] = useState(false)
   const [spotsLeft, setSpotsLeft] = useState(3)
 
@@ -60,26 +62,26 @@ export default function UrgencyBanner({ onVisibilityChange }: UrgencyBannerProps
             <div className="flex items-center justify-center gap-2 sm:gap-4 text-center relative">
               <div className="hidden sm:flex items-center gap-1.5 text-primary-100">
                 <Clock className="w-4 h-4" />
-                <span className="text-xs font-medium">Limited</span>
+                <span className="text-xs font-medium">{t('urgencyBanner.limited')}</span>
               </div>
               
               <div className="flex items-center gap-2 sm:gap-3">
                 <span className="text-sm sm:text-base font-medium">
-                  🔥 <span className="hidden sm:inline">Deze maand:</span> Nog{' '}
-                  <span className="font-bold text-yellow-300">{spotsLeft} plekken</span>{' '}
-                  beschikbaar voor nieuwe projecten
+                  🔥 <span className="hidden sm:inline">{t('urgencyBanner.thisMonth')}</span> {t('urgencyBanner.still')}{' '}
+                  <span className="font-bold text-yellow-300">{spotsLeft} {t('urgencyBanner.spots')}</span>{' '}
+                  {t('urgencyBanner.availableForProjects')}
                 </span>
               </div>
 
               <div className="hidden md:flex items-center gap-1.5 text-primary-100">
                 <Users className="w-4 h-4" />
-                <span className="text-xs font-medium">High demand</span>
+                <span className="text-xs font-medium">{t('urgencyBanner.highDemand')}</span>
               </div>
 
               <button
                 onClick={handleDismiss}
                 className="absolute right-0 sm:right-0 p-1.5 hover:bg-white/10 rounded-lg transition-colors"
-                aria-label="Sluiten"
+                aria-label={t('common.close')}
               >
                 <X className="w-4 h-4" />
               </button>

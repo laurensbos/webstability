@@ -5,6 +5,7 @@
  */
 
 import { useState, useEffect } from 'react'
+import { useTranslation } from 'react-i18next'
 import { motion, AnimatePresence } from 'framer-motion'
 import {
   X,
@@ -27,81 +28,6 @@ interface TourStep {
   tips?: string[]
 }
 
-const TOUR_STEPS: TourStep[] = [
-  {
-    id: 'welcome',
-    title: 'Welkom! 👋',
-    description: 'Super dat je er bent! Dit is jouw persoonlijke dashboard waar je alles kunt regelen voor je nieuwe website.',
-    icon: <Sparkles className="w-6 h-6" />,
-    emoji: '🎉',
-    tips: [
-      'Je kunt hier altijd terugkomen',
-      'Alle updates verschijnen automatisch',
-      'Je hoeft nergens voor te betalen tot je tevreden bent'
-    ]
-  },
-  {
-    id: 'progress',
-    title: 'Je voortgang',
-    description: 'Bovenaan zie je een balk die laat zien hoe ver je project is. Van "Onboarding" tot "Live" - zo weet je altijd waar je staat.',
-    icon: <Rocket className="w-6 h-6" />,
-    emoji: '📊',
-    tips: [
-      'Elke fase heeft een andere kleur',
-      'Je krijgt een melding als er iets verandert',
-      'Klik op een fase om meer te lezen'
-    ]
-  },
-  {
-    id: 'onboarding',
-    title: 'Vragen invullen',
-    description: 'We hebben wat informatie nodig om je website te maken. Beantwoord de vragen - dit kost ongeveer 10 minuten.',
-    icon: <FileEdit className="w-6 h-6" />,
-    emoji: '✏️',
-    tips: [
-      'Vul alles rustig in, je kunt het later nog aanpassen',
-      'Niet alle vragen zijn verplicht',
-      'Twijfel je? Laat het leeg en we nemen contact op'
-    ]
-  },
-  {
-    id: 'design',
-    title: 'Design bekijken',
-    description: 'Zodra je design klaar is, kun je het hier bekijken. Vind je iets niet mooi? Geef feedback met duimpje omhoog of omlaag.',
-    icon: <Eye className="w-6 h-6" />,
-    emoji: '🎨',
-    tips: [
-      'Je krijgt een mail als het design klaar is',
-      'Feedback geven kan per onderdeel',
-      'Tot 2 revisierondes zijn gratis inbegrepen'
-    ]
-  },
-  {
-    id: 'contact',
-    title: 'Hulp nodig?',
-    description: 'Onderaan vind je knoppen voor Chat, Help en je Gegevens. Vragen? Stuur ons een berichtje - we reageren snel!',
-    icon: <MessageCircle className="w-6 h-6" />,
-    emoji: '💬',
-    tips: [
-      'Chat werkt het snelst',
-      'In "Help" staan veelgestelde vragen',
-      'Bij "Mijn gegevens" kun je je info aanpassen'
-    ]
-  },
-  {
-    id: 'done',
-    title: 'Klaar om te starten!',
-    description: 'Dat was het! Begin met het invullen van de vragen, en wij gaan voor je aan de slag. Je nieuwe website komt eraan! 🚀',
-    icon: <PartyPopper className="w-6 h-6" />,
-    emoji: '🚀',
-    tips: [
-      'Start met de eerste vraag hieronder',
-      'Je kunt deze rondleiding altijd opnieuw bekijken',
-      'Veel succes!'
-    ]
-  }
-]
-
 interface OnboardingTourProps {
   isOpen: boolean
   onClose: () => void
@@ -115,7 +41,83 @@ export default function OnboardingTour({
   onComplete,
   projectName = 'je project'
 }: OnboardingTourProps) {
+  const { t } = useTranslation()
   const [currentStep, setCurrentStep] = useState(0)
+
+  const TOUR_STEPS: TourStep[] = [
+    {
+      id: 'welcome',
+      title: t('onboardingTour.steps.welcome.title'),
+      description: t('onboardingTour.steps.welcome.description'),
+      icon: <Sparkles className="w-6 h-6" />,
+      emoji: '🎉',
+      tips: [
+        t('onboardingTour.steps.welcome.tips.0'),
+        t('onboardingTour.steps.welcome.tips.1'),
+        t('onboardingTour.steps.welcome.tips.2')
+      ]
+    },
+    {
+      id: 'progress',
+      title: t('onboardingTour.steps.progress.title'),
+      description: t('onboardingTour.steps.progress.description'),
+      icon: <Rocket className="w-6 h-6" />,
+      emoji: '📊',
+      tips: [
+        t('onboardingTour.steps.progress.tips.0'),
+        t('onboardingTour.steps.progress.tips.1'),
+        t('onboardingTour.steps.progress.tips.2')
+      ]
+    },
+    {
+      id: 'onboarding',
+      title: t('onboardingTour.steps.onboarding.title'),
+      description: t('onboardingTour.steps.onboarding.description'),
+      icon: <FileEdit className="w-6 h-6" />,
+      emoji: '✏️',
+      tips: [
+        t('onboardingTour.steps.onboarding.tips.0'),
+        t('onboardingTour.steps.onboarding.tips.1'),
+        t('onboardingTour.steps.onboarding.tips.2')
+      ]
+    },
+    {
+      id: 'design',
+      title: t('onboardingTour.steps.design.title'),
+      description: t('onboardingTour.steps.design.description'),
+      icon: <Eye className="w-6 h-6" />,
+      emoji: '🎨',
+      tips: [
+        t('onboardingTour.steps.design.tips.0'),
+        t('onboardingTour.steps.design.tips.1'),
+        t('onboardingTour.steps.design.tips.2')
+      ]
+    },
+    {
+      id: 'contact',
+      title: t('onboardingTour.steps.contact.title'),
+      description: t('onboardingTour.steps.contact.description'),
+      icon: <MessageCircle className="w-6 h-6" />,
+      emoji: '💬',
+      tips: [
+        t('onboardingTour.steps.contact.tips.0'),
+        t('onboardingTour.steps.contact.tips.1'),
+        t('onboardingTour.steps.contact.tips.2')
+      ]
+    },
+    {
+      id: 'done',
+      title: t('onboardingTour.steps.done.title'),
+      description: t('onboardingTour.steps.done.description'),
+      icon: <PartyPopper className="w-6 h-6" />,
+      emoji: '🚀',
+      tips: [
+        t('onboardingTour.steps.done.tips.0'),
+        t('onboardingTour.steps.done.tips.1'),
+        t('onboardingTour.steps.done.tips.2')
+      ]
+    }
+  ]
   
   const step = TOUR_STEPS[currentStep]
   const isFirstStep = currentStep === 0
@@ -201,7 +203,7 @@ export default function OnboardingTour({
           <button
             onClick={handleSkip}
             className="absolute top-4 right-4 p-2 text-gray-500 hover:text-white hover:bg-gray-800 rounded-xl transition-colors z-10"
-            aria-label="Sluiten"
+            aria-label={t('common.close')}
           >
             <X className="w-5 h-5" />
           </button>
@@ -258,7 +260,7 @@ export default function OnboardingTour({
                       ? 'w-2 bg-primary-500/50 hover:bg-primary-500/70'
                       : 'w-2 bg-gray-700 hover:bg-gray-600'
                   }`}
-                  aria-label={`Ga naar stap ${index + 1}`}
+                  aria-label={t('onboardingTour.goToStep', { step: index + 1 })}
                 />
               ))}
             </div>
@@ -271,7 +273,7 @@ export default function OnboardingTour({
                   className="flex items-center gap-1.5 px-4 py-3 text-gray-400 hover:text-white transition-colors rounded-xl hover:bg-gray-800"
                 >
                   <ChevronLeft className="w-4 h-4" />
-                  <span className="hidden sm:inline">Vorige</span>
+                  <span className="hidden sm:inline">{t('onboardingTour.previous')}</span>
                 </button>
               )}
               
@@ -282,7 +284,7 @@ export default function OnboardingTour({
                   onClick={() => setCurrentStep(prev => prev + 1)}
                   className="flex-1 sm:flex-none px-6 py-3 bg-primary-600 text-white rounded-xl font-semibold hover:bg-primary-700 transition-colors flex items-center justify-center gap-2 shadow-lg shadow-primary-500/25"
                 >
-                  Volgende
+                  {t('onboardingTour.next')}
                   <ChevronRight className="w-4 h-4" />
                 </button>
               ) : (
@@ -291,7 +293,7 @@ export default function OnboardingTour({
                   className="flex-1 sm:flex-none px-6 py-3 bg-gradient-to-r from-primary-600 to-primary-500 text-white rounded-xl font-semibold hover:from-primary-700 hover:to-primary-600 transition-all flex items-center justify-center gap-2 shadow-lg shadow-primary-500/25"
                 >
                   <Sparkles className="w-4 h-4" />
-                  Aan de slag!
+                  {t('onboardingTour.getStarted')}
                 </button>
               )}
             </div>
@@ -302,7 +304,7 @@ export default function OnboardingTour({
                 onClick={handleSkip}
                 className="w-full mt-4 text-center text-sm text-gray-600 hover:text-gray-400 transition-colors"
               >
-                Overslaan, ik ken het al
+                {t('onboardingTour.skip')}
               </button>
             )}
           </div>

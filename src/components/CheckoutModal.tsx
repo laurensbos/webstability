@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react'
+import { useTranslation } from 'react-i18next'
 import { motion } from 'framer-motion'
 
 // Pakket prijzen (alleen ter informatie - betaling komt later)
@@ -17,6 +18,7 @@ interface DiscountInfo {
 }
 
 export default function CheckoutModal(){
+  const { t } = useTranslation()
   const [open, setOpen] = useState(false)
   const [plan, setPlan] = useState<string | null>(null)
   const [name, setName] = useState('')
@@ -59,7 +61,7 @@ export default function CheckoutModal(){
   async function validateCoupon(code?: string) {
     const codeToCheck = code || couponCode
     if (!codeToCheck.trim()) {
-      setCouponError('Voer een kortingscode in')
+      setCouponError(t('checkout.coupon.enterCode'))
       return
     }
     
@@ -81,10 +83,10 @@ export default function CheckoutModal(){
         setCouponCode(data.discount.code) // Zet de juiste code (uppercase)
       } else {
         setAppliedDiscount(null)
-        setCouponError(data.error || 'Ongeldige kortingscode')
+        setCouponError(data.error || t('checkout.coupon.invalid'))
       }
     } catch (e) {
-      setCouponError('Kon kortingscode niet controleren')
+      setCouponError(t('checkout.coupon.checkError'))
     }
     
     setCheckingCoupon(false)
@@ -147,13 +149,13 @@ export default function CheckoutModal(){
           }) 
         }catch(e){}
       } else if (data.code === 'EMAIL_IN_USE') {
-        alert('Dit e-mailadres is al in gebruik bij een ander project. Log in met je bestaande project of gebruik een ander e-mailadres.')
+        alert(t('checkout.errors.emailInUse'))
       } else {
-        alert(data.error || 'Er is iets misgegaan bij het aanmaken van je project')
+        alert(data.error || t('checkout.errors.general'))
       }
 
     }catch(e){
-      alert('Er is iets misgegaan bij het aanmaken van je project')
+      alert(t('checkout.errors.general'))
     }
 
     setProcessing(false)
@@ -182,18 +184,18 @@ export default function CheckoutModal(){
           </div>
           
           <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">
-            Aanvraag ontvangen! 🎉
+            {t('checkout.success.title')} 🎉
           </h3>
           
           <p className="text-slate-600 dark:text-gray-300 mb-4">
-            Je {isWebshop ? 'webshop' : 'website'} aanvraag is succesvol ontvangen.
+            {t('checkout.success.description', { type: isWebshop ? 'webshop' : 'website' })}
           </p>
           
           <div className="bg-slate-50 dark:bg-gray-700 rounded-lg p-4 mb-6">
-            <p className="text-sm text-slate-600 dark:text-gray-400 mb-1">Je project ID:</p>
+            <p className="text-sm text-slate-600 dark:text-gray-400 mb-1">{t('checkout.success.projectId')}</p>
             <p className="text-xl font-mono font-bold text-primary-600 dark:text-primary-400">{projectId}</p>
             <p className="text-xs text-slate-500 dark:text-gray-500 mt-2">
-              Bewaar dit ID om je project te volgen
+              {t('checkout.success.saveId')}
             </p>
           </div>
           
@@ -206,20 +208,20 @@ export default function CheckoutModal(){
               <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" />
               </svg>
-              Start met uploaden →
+              {t('checkout.success.startUpload')} →
             </a>
             <p className="text-xs text-slate-500 dark:text-gray-500">
-              Upload je logo, foto's en andere bestanden zodat we direct kunnen starten
+              {t('checkout.success.uploadHint')}
             </p>
           </div>
           
           <div className="bg-blue-50 dark:bg-blue-900/20 rounded-lg p-4 mb-6 text-left">
-            <h4 className="font-semibold text-blue-900 dark:text-blue-300 mb-2">📋 Wat gebeurt er nu?</h4>
+            <h4 className="font-semibold text-blue-900 dark:text-blue-300 mb-2">📋 {t('checkout.success.whatsNext.title')}</h4>
             <ol className="text-sm text-blue-800 dark:text-blue-300 space-y-1 list-decimal list-inside">
-              <li><strong>Nu:</strong> Vul de onboarding in & upload bestanden</li>
-              <li>Wij maken een design op maat (5-7 dagen)</li>
-              <li>Jij geeft feedback & keurt goed</li>
-              <li>Na goedkeuring → betaling & live!</li>
+              <li><strong>{t('checkout.success.whatsNext.now')}:</strong> {t('checkout.success.whatsNext.step1')}</li>
+              <li>{t('checkout.success.whatsNext.step2')}</li>
+              <li>{t('checkout.success.whatsNext.step3')}</li>
+              <li>{t('checkout.success.whatsNext.step4')}</li>
             </ol>
           </div>
           
@@ -227,7 +229,7 @@ export default function CheckoutModal(){
             onClick={()=>{setOpen(false); setSuccess(false); setProjectId(null)}}
             className="w-full py-2 text-slate-600 dark:text-gray-400 hover:text-slate-800 dark:hover:text-gray-200 text-sm"
           >
-            Later doen
+            {t('checkout.success.later')}
           </button>
         </motion.div>
       </div>
@@ -248,15 +250,15 @@ export default function CheckoutModal(){
           <div className="w-10 h-1 rounded-full bg-gray-300 dark:bg-gray-600" />
         </div>
         
-        <h3 className="text-lg font-semibold text-gray-900 dark:text-white">Gratis aanvragen: {isWebshop ? 'Webshop' : plan}</h3>
-        <p className="text-sm text-slate-600 dark:text-gray-300 mt-1">Vul je gegevens in. Betaling pas na design-goedkeuring.</p>
+        <h3 className="text-lg font-semibold text-gray-900 dark:text-white">{t('checkout.form.title', { plan: isWebshop ? 'Webshop' : plan })}</h3>
+        <p className="text-sm text-slate-600 dark:text-gray-300 mt-1">{t('checkout.form.subtitle')}</p>
 
         <form onSubmit={submit} className="mt-4 space-y-3">
-          <input value={name} onChange={(e)=>setName(e.target.value)} placeholder="Je naam *" className="w-full px-3 py-2.5 text-base border dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500 focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-shadow" required />
-          <input value={companyName} onChange={(e)=>setCompanyName(e.target.value)} placeholder="Bedrijfsnaam" className="w-full px-3 py-2.5 text-base border dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500 focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-shadow" />
-          <input value={email} onChange={(e)=>setEmail(e.target.value)} type="email" placeholder="E-mailadres *" className="w-full px-3 py-2.5 text-base border dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500 focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-shadow" required />
-          <input value={phone} onChange={(e)=>setPhone(e.target.value)} type="tel" placeholder="Telefoonnummer" className="w-full px-3 py-2.5 text-base border dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500 focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-shadow" />
-          <input value={domain} onChange={(e)=>setDomain(e.target.value)} placeholder="Gewenst domein (optioneel)" className="w-full px-3 py-2.5 text-base border dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500 focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-shadow" />
+          <input value={name} onChange={(e)=>setName(e.target.value)} placeholder={t('checkout.form.name')} className="w-full px-3 py-2.5 text-base border dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500 focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-shadow" required />
+          <input value={companyName} onChange={(e)=>setCompanyName(e.target.value)} placeholder={t('checkout.form.companyName')} className="w-full px-3 py-2.5 text-base border dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500 focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-shadow" />
+          <input value={email} onChange={(e)=>setEmail(e.target.value)} type="email" placeholder={t('checkout.form.email')} className="w-full px-3 py-2.5 text-base border dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500 focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-shadow" required />
+          <input value={phone} onChange={(e)=>setPhone(e.target.value)} type="tel" placeholder={t('checkout.form.phone')} className="w-full px-3 py-2.5 text-base border dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500 focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-shadow" />
+          <input value={domain} onChange={(e)=>setDomain(e.target.value)} placeholder={t('checkout.form.domain')} className="w-full px-3 py-2.5 text-base border dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500 focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-shadow" />
 
           {/* Kortingscode sectie */}
           <div className="mt-2">
@@ -278,7 +280,7 @@ export default function CheckoutModal(){
                   onClick={removeCoupon}
                   className="text-sm text-green-700 dark:text-green-300 hover:text-green-800 dark:hover:text-green-200 underline"
                 >
-                  Verwijderen
+                  {t('checkout.coupon.remove')}
                 </button>
               </div>
             ) : (
@@ -289,7 +291,7 @@ export default function CheckoutModal(){
                     setCouponCode(e.target.value.toUpperCase())
                     setCouponError('')
                   }}
-                  placeholder="Kortingscode"
+                  placeholder={t('checkout.coupon.placeholder')}
                   className="flex-1 px-3 py-2.5 text-base border dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500 focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-shadow"
                 />
                 <button
@@ -303,7 +305,7 @@ export default function CheckoutModal(){
                       <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none" />
                       <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
                     </svg>
-                  ) : 'Toepassen'}
+                  ) : t('checkout.coupon.apply')}
                 </button>
               </div>
             )}
@@ -314,20 +316,20 @@ export default function CheckoutModal(){
 
           <div className="mt-3 p-4 bg-slate-50 dark:bg-gray-700 rounded-lg">
             <div className="flex items-center justify-between">
-              <div className="text-sm text-slate-700 dark:text-gray-300">Pakket</div>
+              <div className="text-sm text-slate-700 dark:text-gray-300">{t('checkout.summary.package')}</div>
               <div className="font-medium text-gray-900 dark:text-white">{isWebshop ? 'Webshop' : plan}</div>
             </div>
             <div className="flex items-center justify-between mt-2 pt-2 border-t border-slate-200 dark:border-gray-600">
-              <div className="text-sm text-slate-700 dark:text-gray-300">Eenmalige opstartkosten</div>
+              <div className="text-sm text-slate-700 dark:text-gray-300">{t('checkout.summary.setupCost')}</div>
               <div className="font-medium text-gray-900 dark:text-white">€{prices.setup}</div>
             </div>
             <div className="flex items-center justify-between mt-1">
-              <div className="text-sm text-slate-700 dark:text-gray-300">Maandelijks</div>
-              <div className="font-medium text-gray-900 dark:text-white">€{prices.monthly}/mnd</div>
+              <div className="text-sm text-slate-700 dark:text-gray-300">{t('checkout.summary.monthly')}</div>
+              <div className="font-medium text-gray-900 dark:text-white">€{prices.monthly}/{t('checkout.summary.perMonth')}</div>
             </div>
             {appliedDiscount && (
               <div className="flex items-center justify-between mt-1">
-                <div className="text-sm text-green-600 dark:text-green-400">Korting ({appliedDiscount.code})</div>
+                <div className="text-sm text-green-600 dark:text-green-400">{t('checkout.summary.discount')} ({appliedDiscount.code})</div>
                 <div className="font-medium text-green-600 dark:text-green-400">
                   -{appliedDiscount.type === 'percentage' ? `${appliedDiscount.value}%` : `€${appliedDiscount.value}`}
                 </div>
@@ -335,14 +337,14 @@ export default function CheckoutModal(){
             )}
             <div className="mt-3 pt-3 border-t border-slate-300 dark:border-gray-500">
               <p className="text-xs text-slate-500 dark:text-gray-400">
-                💡 Betaling pas na goedkeuring van je design
+                💡 {t('checkout.summary.paymentNote')}
               </p>
             </div>
           </div>
 
           <div className="flex items-center justify-between pt-2">
-            <button type="button" className="px-4 py-2 rounded border dark:border-gray-600 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700" onClick={()=>setOpen(false)}>Annuleer</button>
-            <button type="submit" className="btn-primary" disabled={processing}>{processing ? 'Verwerken…' : 'Gratis aanvragen'}</button>
+            <button type="button" className="px-4 py-2 rounded border dark:border-gray-600 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700" onClick={()=>setOpen(false)}>{t('common.cancel')}</button>
+            <button type="submit" className="btn-primary" disabled={processing}>{processing ? t('checkout.form.processing') : t('checkout.form.submit')}</button>
           </div>
         </form>
       </motion.div>
