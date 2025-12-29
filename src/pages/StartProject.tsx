@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useMemo } from 'react'
 import { motion } from 'framer-motion'
 import { useSearchParams } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
@@ -15,6 +15,7 @@ import {
 import Header from '../components/Header'
 import Footer from '../components/Footer'
 import QuickStartForm from '../components/QuickStartForm'
+import { usePackages } from '../hooks/usePackages'
 
 type ServiceType = 'website' | 'webshop' | 'drone' | 'logo'
 type SelectedServiceType = ServiceType | null
@@ -44,62 +45,6 @@ interface PackageOption {
   deliveryDays?: number
   supportResponseTime?: string
   revisionsPerMonth?: number | 'unlimited'
-}
-
-// Packages per service type - imported from central data
-import { packages as websitePackages, webshopPackages } from '../data/packages'
-
-// Convert to the format used in this component
-const packagesByService: Record<ServiceType, PackageOption[]> = {
-  website: websitePackages.map(pkg => ({
-    id: pkg.id as PackageType,
-    name: pkg.name,
-    price: pkg.price,
-    setupFee: pkg.setupFee,
-    priceNote: 'per maand incl. btw',
-    features: pkg.features.slice(0, 4),
-    deliveryDays: pkg.deliveryDays,
-    supportResponseTime: pkg.supportResponseTime,
-    revisionsPerMonth: pkg.revisionsPerMonth,
-  })),
-  webshop: webshopPackages.map(pkg => ({
-    id: pkg.id.replace('webshop-', '') as PackageType,
-    name: pkg.name,
-    price: pkg.price,
-    setupFee: pkg.setupFee,
-    priceNote: 'per maand incl. btw',
-    features: pkg.features.slice(0, 4),
-    deliveryDays: pkg.deliveryDays,
-    supportResponseTime: pkg.supportResponseTime,
-    revisionsPerMonth: pkg.revisionsPerMonth,
-  })),
-  drone: [
-    {
-      id: 'starter',
-      name: 'Basis',
-      price: 349,
-      priceNote: 'eenmalig incl. btw',
-      features: ['10 bewerkte foto\'s', '1 locatie', 'Digitale levering', 'Binnen 5 dagen'],
-      deliveryDays: 5,
-    },
-    {
-      id: 'professional',
-      name: 'Professioneel',
-      price: 549,
-      priceNote: 'eenmalig incl. btw',
-      features: ['25 bewerkte foto\'s', '1-2 locaties', '1 min video', 'Binnen 3 dagen'],
-      deliveryDays: 3,
-    },
-    {
-      id: 'business',
-      name: 'Premium',
-      price: 849,
-      priceNote: 'eenmalig incl. btw',
-      features: ['50+ foto\'s', 'Meerdere locaties', '3 min video', 'Spoedlevering'],
-      deliveryDays: 2,
-    },
-  ],
-  logo: [],  // No packages for logo - single service
 }
 
 // Helper function to get service-specific styling
@@ -215,6 +160,7 @@ function FloatingParticles({ activeService }: { activeService: ServiceType }) {
 
 export default function StartProject() {
   const { t } = useTranslation()
+  const { packages: websitePackages, webshopPackages } = usePackages()
   const [searchParams] = useSearchParams()
   const [selectedService, setSelectedService] = useState<SelectedServiceType>(null)
   const [selectedPackage, setSelectedPackage] = useState<PackageType | null>(null)
@@ -269,6 +215,59 @@ export default function StartProject() {
       features: t('startProject.services.logo.features', { returnObjects: true }) as string[],
     },
   ]
+
+  // Packages per service type with translations
+  const packagesByService = useMemo((): Record<ServiceType, PackageOption[]> => ({
+    website: websitePackages.map(pkg => ({
+      id: pkg.id as PackageType,
+      name: pkg.name,
+      price: pkg.price,
+      setupFee: pkg.setupFee,
+      priceNote: t('startProject.priceNote.monthly'),
+      features: pkg.features.slice(0, 4),
+      deliveryDays: pkg.deliveryDays,
+      supportResponseTime: pkg.supportResponseTime,
+      revisionsPerMonth: pkg.revisionsPerMonth,
+    })),
+    webshop: webshopPackages.map(pkg => ({
+      id: pkg.id.replace('webshop-', '') as PackageType,
+      name: pkg.name,
+      price: pkg.price,
+      setupFee: pkg.setupFee,
+      priceNote: t('startProject.priceNote.monthly'),
+      features: pkg.features.slice(0, 4),
+      deliveryDays: pkg.deliveryDays,
+      supportResponseTime: pkg.supportResponseTime,
+      revisionsPerMonth: pkg.revisionsPerMonth,
+    })),
+    drone: [
+      {
+        id: 'starter' as PackageType,
+        name: t('startProject.drone.starter.name'),
+        price: 349,
+        priceNote: t('startProject.priceNote.oneTime'),
+        features: t('startProject.drone.starter.features', { returnObjects: true }) as string[],
+        deliveryDays: 5,
+      },
+      {
+        id: 'professional' as PackageType,
+        name: t('startProject.drone.professional.name'),
+        price: 549,
+        priceNote: t('startProject.priceNote.oneTime'),
+        features: t('startProject.drone.professional.features', { returnObjects: true }) as string[],
+        deliveryDays: 3,
+      },
+      {
+        id: 'business' as PackageType,
+        name: t('startProject.drone.business.name'),
+        price: 849,
+        priceNote: t('startProject.priceNote.oneTime'),
+        features: t('startProject.drone.business.features', { returnObjects: true }) as string[],
+        deliveryDays: 2,
+      },
+    ],
+    logo: [],  // No packages for logo - single service
+  }), [websitePackages, webshopPackages, t])
 
   // Check for pre-selected service and package from URL
   useEffect(() => {

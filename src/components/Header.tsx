@@ -293,7 +293,7 @@ export default function Header({ urgencyBannerVisible = false }: HeaderProps) {
                 href="/kennisbank"
                 className="px-4 py-2 text-sm font-medium text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white hover:bg-gray-50 dark:hover:bg-gray-800 rounded-lg transition-all"
               >
-                Kennisbank
+                {t('nav.knowledgeBase')}
               </a>
 
               {/* Over ons Dropdown */}
@@ -376,7 +376,7 @@ export default function Header({ urgencyBannerVisible = false }: HeaderProps) {
                 className="flex items-center gap-2 px-4 py-2.5 text-sm font-medium text-gray-700 dark:text-gray-200 bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 rounded-lg transition-all"
               >
                 <ClipboardList className="w-4 h-4" />
-                Mijn project
+                {t('nav.myProject')}
               </button>
 
               {/* Start nu button */}
@@ -384,7 +384,7 @@ export default function Header({ urgencyBannerVisible = false }: HeaderProps) {
                 href="/start"
                 className="group flex items-center gap-2 px-5 py-2.5 bg-primary-500 hover:bg-primary-600 text-white text-sm font-semibold rounded-lg transition-all shadow-lg shadow-primary-500/25 hover:shadow-primary-500/40"
               >
-                Start nu
+                {t('nav.startNow')}
                 <ArrowRight className="w-4 h-4 group-hover:translate-x-0.5 transition-transform" />
               </a>
             </div>
@@ -551,7 +551,7 @@ export default function Header({ urgencyBannerVisible = false }: HeaderProps) {
                   className="flex items-center justify-center gap-2 w-full py-3 bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 text-gray-900 dark:text-white font-semibold rounded-lg transition-all"
                 >
                   <ClipboardList className="w-5 h-5" />
-                  Mijn project
+                  {t('nav.myProject')}
                 </button>
 
                 <a
@@ -559,7 +559,7 @@ export default function Header({ urgencyBannerVisible = false }: HeaderProps) {
                   onClick={() => setIsMobileMenuOpen(false)}
                   className="flex items-center justify-center gap-2 w-full py-3 bg-primary-500 hover:bg-primary-600 text-white font-semibold rounded-lg transition-all"
                 >
-                  Start nu
+                  {t('nav.startNow')}
                   <ArrowRight className="w-4 h-4" />
                 </a>
               </div>

@@ -1,5 +1,6 @@
 {
   "common": {
+    "locale": "en-US",
     "loading": "Loading...",
     "save": "Save",
     "cancel": "Cancel",
@@ -51,7 +52,8 @@
     "myProject": "My Project",
     "startProject": "Start Project",
     "howItWorks": "How it works",
-    "knowledgeBase": "Knowledge Base"
+    "knowledgeBase": "Knowledge Base",
+    "startNow": "Start Now"
   },
   "header": {
     "services": {
@@ -246,6 +248,340 @@
       }
     }
   },
+  "packages": {
+    "categories": {
+      "website": "Website",
+      "features": "Features",
+      "seo": "SEO & Technical",
+      "seoAnalytics": "SEO & Analytics",
+      "support": "Support & Maintenance",
+      "integrations": "Integrations"
+    },
+    "responseTime": {
+      "48hours": "48 hours",
+      "24hours": "24 hours",
+      "4hours": "4 hours"
+    },
+    "delivery": {
+      "withinDays": "Within {{days}} business days",
+      "withinWeeks": "Within {{weeks}} weeks"
+    },
+    "included": {
+      "hosting": "Hosting & SSL certificate",
+      "domain": "Domain management",
+      "maintenance": "Maintenance & updates",
+      "support": "Personal support",
+      "monthlyChanges": "Monthly adjustments",
+      "seo": "SEO optimized"
+    },
+    "trust": {
+      "noHiddenCosts": "No hidden costs",
+      "monthlyCancellable": "Cancel monthly",
+      "moneyBack": "14-day money-back"
+    },
+    "starter": {
+      "tagline": "Ideal to get started",
+      "description": "Perfect for freelancers and small business owners who want to start online with a professional look.",
+      "features": {
+        "0": "Up to 5 pages",
+        "1": "Responsive design",
+        "2": "Contact form + WhatsApp button",
+        "3": "Google Maps integration",
+        "4": "Basic SEO optimization",
+        "5": "SSL certificate + hosting"
+      },
+      "detailed": {
+        "website": {
+          "0": "Up to 5 pages (Home, About, Services, Contact, etc.)",
+          "1": "Fully responsive design (mobile, tablet, desktop)",
+          "2": "Modern and clean design matching your brand",
+          "3": "Fast loading times (< 3 seconds)"
+        },
+        "features": {
+          "0": "Contact form with email notifications",
+          "1": "Google Maps location integration",
+          "2": "Social media icons with links",
+          "3": "Click-to-call phone button",
+          "4": "WhatsApp chat button"
+        },
+        "seo": {
+          "0": "Basic SEO optimization (meta titles, descriptions)",
+          "1": "SSL certificate (https://)",
+          "2": "Fast hosting in the Netherlands",
+          "3": "Weekly backups"
+        },
+        "support": {
+          "0": "2 text changes per month included",
+          "1": "Email support (48h response time)",
+          "2": "Technical maintenance & updates",
+          "3": "Uptime monitoring",
+          "4": "Weekly backups"
+        }
+      }
+    },
+    "professional": {
+      "name": "Professional",
+      "tagline": "For growing entrepreneurs",
+      "description": "For entrepreneurs who want to grow seriously. More pages, better SEO, and extended features.",
+      "features": {
+        "0": "Up to 10 pages",
+        "1": "Everything from Starter +",
+        "2": "Blog functionality",
+        "3": "Google Analytics dashboard",
+        "4": "Extended SEO + reports",
+        "5": "Unlimited text changes"
+      },
+      "detailed": {
+        "website": {
+          "0": "Up to 10 fully custom pages",
+          "1": "Premium responsive design",
+          "2": "Animations and interactive elements",
+          "3": "Optimized for conversion",
+          "4": "Multiple call-to-actions"
+        },
+        "features": {
+          "0": "Everything from Starter package +",
+          "1": "Blog with categories and tags",
+          "2": "Newsletter signup form",
+          "3": "FAQ section with accordion",
+          "4": "Image gallery/portfolio",
+          "5": "Reviews/testimonials section"
+        },
+        "seoAnalytics": {
+          "0": "Extended SEO optimization",
+          "1": "Google Analytics 4 integration",
+          "2": "Google Search Console setup",
+          "3": "Monthly SEO report",
+          "4": "Sitemap & robots.txt",
+          "5": "Schema markup for Google"
+        },
+        "support": {
+          "0": "Unlimited text changes per month",
+          "1": "Email & WhatsApp support (24h response)",
+          "2": "Monthly maintenance & updates",
+          "3": "Priority for technical issues",
+          "4": "Daily backups"
+        }
+      }
+    },
+    "business": {
+      "tagline": "Complete solution",
+      "description": "For established businesses that want the best. Full freedom, premium support, and advanced features.",
+      "features": {
+        "0": "Up to 20+ pages",
+        "1": "Everything from Professional +",
+        "2": "Online booking system",
+        "3": "Multilingual website (NL/EN/DE)",
+        "4": "CRM/Newsletter integration",
+        "5": "Dedicated account manager"
+      },
+      "detailed": {
+        "website": {
+          "0": "Up to 20+ pages (no limit for ongoing projects)",
+          "1": "Premium custom design by senior designer",
+          "2": "Advanced animations and micro-interactions",
+          "3": "Conversion-optimized landing pages",
+          "4": "A/B testing capabilities"
+        },
+        "features": {
+          "0": "Everything from Professional package +",
+          "1": "Online booking/appointment system",
+          "2": "Multilingual website (NL/EN/DE)",
+          "3": "Customer portal with login",
+          "4": "Forms with conditional logic",
+          "5": "PDF downloads and resource library",
+          "6": "Video integrations (Vimeo/YouTube)"
+        },
+        "integrations": {
+          "0": "Mailchimp/ActiveCampaign integration",
+          "1": "CRM connection (HubSpot, Salesforce)",
+          "2": "Accounting integration (Exact, Moneybird)",
+          "3": "Calendly/Cal.com booking",
+          "4": "Zapier automations",
+          "5": "Custom API connections"
+        },
+        "support": {
+          "0": "Unlimited changes (text, images, small adjustments)",
+          "1": "Dedicated account manager",
+          "2": "Phone, email & WhatsApp support",
+          "3": "Same-day response for urgent issues",
+          "4": "Quarterly strategy call",
+          "5": "Real-time uptime monitoring with alerts"
+        }
+      }
+    }
+  },
+  "webshopPackages": {
+    "categories": {
+      "webshop": "Webshop",
+      "payments": "Payments",
+      "shipping": "Shipping",
+      "shippingLogistics": "Shipping & Logistics",
+      "shippingFulfilment": "Shipping & Fulfilment",
+      "management": "Management & Support",
+      "managementIntegrations": "Management & Integrations",
+      "marketing": "Marketing & Customers",
+      "b2b": "B2B Features",
+      "analytics": "Analytics & Reports",
+      "integrationsApi": "Integrations & API"
+    },
+    "starter": {
+      "tagline": "Start selling",
+      "description": "Perfect to start selling online. All basic features for a successful start.",
+      "features": {
+        "0": "Up to 100 products",
+        "1": "iDEAL, credit card & PayPal",
+        "2": "PostNL integration",
+        "3": "Order management",
+        "4": "Automatic invoices",
+        "5": "Mobile-optimized design"
+      },
+      "detailed": {
+        "webshop": {
+          "0": "Up to 100 products with variants",
+          "1": "Professional responsive design",
+          "2": "Product categories and filters",
+          "3": "Search function",
+          "4": "Product image gallery"
+        },
+        "payments": {
+          "0": "iDEAL (all banks)",
+          "1": "Credit card (Visa, Mastercard)",
+          "2": "PayPal",
+          "3": "Bancontact (Belgium)",
+          "4": "Secure checkout (PCI compliant)",
+          "5": "Automatic invoices"
+        },
+        "shipping": {
+          "0": "PostNL integration",
+          "1": "Fixed shipping rate",
+          "2": "Free shipping from amount",
+          "3": "Track & trace for customers"
+        },
+        "management": {
+          "0": "Easy product management",
+          "1": "Order notifications via email",
+          "2": "Basic stock warnings",
+          "3": "Email support (48h response)",
+          "4": "Weekly backups"
+        }
+      }
+    },
+    "professional": {
+      "tagline": "For growing webshops",
+      "description": "For serious webshops that want to grow. All payment methods, advanced shipping, and marketing tools.",
+      "features": {
+        "0": "Up to 500 products",
+        "1": "All payment methods + Klarna",
+        "2": "PostNL + DHL integration",
+        "3": "Discount codes & promotions",
+        "4": "Customer accounts + reviews",
+        "5": "Accounting connection"
+      },
+      "detailed": {
+        "webshop": {
+          "0": "Up to 500 products with unlimited variants",
+          "1": "Premium custom design",
+          "2": "Advanced product filters",
+          "3": "Product comparison",
+          "4": "Recently viewed products",
+          "5": "Cross-sell and upsell options"
+        },
+        "payments": {
+          "0": "All iDEAL banks",
+          "1": "Credit card (Visa, Mastercard, Amex)",
+          "2": "PayPal",
+          "3": "Klarna (buy now pay later)",
+          "4": "Apple Pay & Google Pay",
+          "5": "Bancontact & SOFORT"
+        },
+        "shippingLogistics": {
+          "0": "PostNL & DHL integration",
+          "1": "Automatic shipping labels",
+          "2": "Multiple shipping methods",
+          "3": "Store pickup",
+          "4": "Shipping costs per weight/zone",
+          "5": "Track & trace notifications"
+        },
+        "marketing": {
+          "0": "Discount codes (%, fixed amount, free shipping)",
+          "1": "Customer accounts with order history",
+          "2": "Abandoned cart emails",
+          "3": "Newsletter integration",
+          "4": "Google Shopping feed",
+          "5": "Facebook Pixel integration"
+        },
+        "managementIntegrations": {
+          "0": "Connection Exact/Moneybird/e-Boekhouden",
+          "1": "Stock synchronization",
+          "2": "Export to Excel/CSV",
+          "3": "WhatsApp & email support (24h)",
+          "4": "Daily backups"
+        }
+      }
+    },
+    "business": {
+      "tagline": "Enterprise solution",
+      "description": "Complete e-commerce solution for ambitious entrepreneurs. Unlimited products, B2B features, and premium support.",
+      "features": {
+        "0": "Unlimited products",
+        "1": "B2B features",
+        "2": "Multi-carrier shipping",
+        "3": "Advanced reports",
+        "4": "API connections",
+        "5": "Dedicated account manager"
+      },
+      "detailed": {
+        "webshop": {
+          "0": "Unlimited products",
+          "1": "Premium enterprise design",
+          "2": "Mega menu navigation",
+          "3": "Advanced search with autocomplete",
+          "4": "Product bundles and sets",
+          "5": "Digital products (downloads)"
+        },
+        "b2b": {
+          "0": "B2B customer groups with tiered pricing",
+          "1": "Quote request system",
+          "2": "Purchase orders and approval",
+          "3": "VAT-free sales for businesses",
+          "4": "Minimum order value per customer group",
+          "5": "Personalized catalogs"
+        },
+        "shippingFulfilment": {
+          "0": "PostNL, DHL, DPD, UPS integration",
+          "1": "Fulfilment center connection",
+          "2": "Dropshipping integration",
+          "3": "International shipping",
+          "4": "Shipping rules per product/category",
+          "5": "Return portal for customers"
+        },
+        "analytics": {
+          "0": "Real-time sales dashboard",
+          "1": "Advanced sales reports",
+          "2": "Customer lifetime value analysis (CLV)",
+          "3": "Stock and revenue forecasts",
+          "4": "Custom reports on request"
+        },
+        "integrationsApi": {
+          "0": "REST API access",
+          "1": "ERP/WMS connections",
+          "2": "PIM system integration",
+          "3": "Channable/Channeble feed",
+          "4": "Bol.com/Amazon marketplace sync",
+          "5": "Custom webhook triggers"
+        },
+        "support": {
+          "0": "Dedicated account manager",
+          "1": "Phone & WhatsApp support",
+          "2": "Same-day response",
+          "3": "Monthly strategy call",
+          "4": "Unlimited changes",
+          "5": "99.9% uptime guarantee"
+        }
+      }
+    }
+  },
   "testimonials": {
     "title": "What customers say",
     "subtitle": "Real reviews from entrepreneurs on Trustpilot",
@@ -314,7 +650,37 @@
       "privacy": "Privacy",
       "terms": "Terms & Conditions"
     },
-    "rights": "All rights reserved"
+    "rights": "All rights reserved",
+    "cta": {
+      "default": {
+        "badge": "Online within 7 days",
+        "title": "Have your website built by",
+        "highlight": "experts",
+        "description": "50+ entrepreneurs preceded you. Professional design, blazing fast hosting and personal support. From €119/month (incl. VAT).",
+        "buttonText": "Start your project"
+      },
+      "webshop": {
+        "badge": "Complete e-commerce solution",
+        "title": "Start selling",
+        "highlight": "online today",
+        "description": "Professional webshop with payments, shipping and inventory management. We build, you sell. From €399/month (incl. VAT).",
+        "buttonText": "Start your webshop"
+      },
+      "logo": {
+        "badge": "Professional logo design",
+        "title": "Give your brand a",
+        "highlight": "strong identity",
+        "description": "Unique logo design with 3 concepts and 2 revision rounds. Including all file formats. Ready within 2 weeks.",
+        "buttonText": "Start your logo project"
+      },
+      "drone": {
+        "badge": "Certified pilots",
+        "title": "Take your content to the",
+        "highlight": "next level",
+        "description": "Spectacular aerial footage of your business. 4K video, edited photos and fast delivery. All of the Netherlands.",
+        "buttonText": "Request aerial footage"
+      }
+    }
   },
   "contact": {
     "title": "Contact",
@@ -456,12 +822,52 @@
     "package": {
       "title": "My package",
       "current": "Current package",
+      "yourCurrentPackage": "Your current package",
       "perMonth": "/month",
       "features": "Included",
       "revisions": "Revision rounds",
       "changesPerMonth": "Changes per month",
       "upgrade": "Upgrade",
-      "contact": "Contact us"
+      "contact": "Contact us",
+      "includedInPackage": "Included in your package",
+      "needMore": "Need more?",
+      "upgradeDescription": "Contact us to upgrade your package and unlock more features."
+    },
+    "paymentStatus": "Payment status",
+    "paymentReceived": "Payment received ✓",
+    "setupFee": "One-time setup fee",
+    "noPaymentYet": "No payment needed yet",
+    "noPaymentDescription": "You only pay after you approve the design. First look, then decide!",
+    "afterApproval": "After design approval:",
+    "oneTimeSetup": "one-time setup fee",
+    "monthlySubscription": "Monthly subscription",
+    "startsAfterDelivery": "Starts after website delivery",
+    "packageName": "{{name}} package",
+    "noContract": "No contract",
+    "whatsIncluded": "What's included",
+    "hosting": "Hosting & domain",
+    "hostingDesc": "Your website is always online",
+    "changesPerMonthCount": "{{count}} changes per month",
+    "changesDesc": "Texts, photos or minor adjustments",
+    "sslSecurity": "SSL certificate & security",
+    "sslDesc": "Safe for you and your visitors",
+    "maintenance": "Maintenance & updates",
+    "maintenanceDesc": "We keep everything up-to-date",
+    "chatSupport": "Support via chat",
+    "chatSupportDesc": "Questions? We help you quickly",
+    "cancelAnytime": "💡 Cancel anytime - no long contracts, no hassle",
+    "contactDetails": "Contact details",
+    "notFilled": "Not filled in",
+    "company": "Company",
+    "contact": "Contact",
+    "email": "Email",
+    "phone": "Phone",
+    "contactPerson": "Contact person",
+    "placeholders": {
+      "businessName": "Your business name",
+      "contactName": "Your name",
+      "email": "your@email.com",
+      "phone": "+31 6 12345678"
     }
   },
   "packagePhaseCard": {
@@ -1060,6 +1466,116 @@
       }
     },
     "formSteps": {
+      "packageConfig": {
+        "starter": {
+          "name": "Starter",
+          "price": "€119/month"
+        },
+        "professional": {
+          "name": "Professional",
+          "price": "€149/month"
+        },
+        "business": {
+          "name": "Business",
+          "price": "€199/month"
+        }
+      },
+      "upgradePrompt": {
+        "packageRequired": "{{feature}} - {{package}} package required",
+        "currentPackageNoFeature": "Your current package ({{package}}) doesn't include this feature.",
+        "upgradeToPackage": "Upgrade to {{package}}"
+      },
+      "colorPalettes": {
+        "modernBlue": "Modern Blue",
+        "freshGreen": "Fresh Green",
+        "warmOrange": "Warm Orange",
+        "royalPurple": "Royal Purple",
+        "elegantPink": "Elegant Pink",
+        "oceanTeal": "Ocean Teal",
+        "sunsetCoral": "Sunset Coral",
+        "businessGrey": "Business Grey"
+      },
+      "fontCombinations": {
+        "modern": {
+          "name": "Modern & Sleek",
+          "description": "Clean and professional"
+        },
+        "elegant": {
+          "name": "Elegant & Classic",
+          "description": "Timeless and luxurious"
+        },
+        "bold": {
+          "name": "Bold & Striking",
+          "description": "Strong and eye-catching"
+        },
+        "friendly": {
+          "name": "Friendly & Warm",
+          "description": "Approachable and welcoming"
+        },
+        "creative": {
+          "name": "Creative & Unique",
+          "description": "Creative and distinctive"
+        },
+        "funky": {
+          "name": "Playful & Bold",
+          "description": "Eye-catching and playful"
+        },
+        "retro": {
+          "name": "Retro Vibe",
+          "description": "Vintage with a twist"
+        },
+        "tech": {
+          "name": "Tech & Startup",
+          "description": "Modern and technical"
+        },
+        "luxury": {
+          "name": "Luxury & Premium",
+          "description": "Exclusive and refined"
+        },
+        "playful": {
+          "name": "Playful & Cheerful",
+          "description": "Cheerful and energetic"
+        },
+        "preview": "Welcome to your business"
+      },
+      "designStyles": {
+        "minimalist": {
+          "name": "Minimalist",
+          "description": "Lots of whitespace, clean & calm"
+        },
+        "modern": {
+          "name": "Modern & Sleek",
+          "description": "Sharp lines, professional"
+        },
+        "creative": {
+          "name": "Creative & Playful",
+          "description": "Colorful, bold, unique"
+        },
+        "warm": {
+          "name": "Warm & Personal",
+          "description": "Inviting, friendly"
+        },
+        "luxury": {
+          "name": "Luxury & Elegant",
+          "description": "Premium, refined, exclusive"
+        }
+      },
+      "colorPicker": {
+        "colors": {
+          "blue": "Blue",
+          "green": "Green",
+          "red": "Red",
+          "orange": "Orange",
+          "purple": "Purple",
+          "pink": "Pink",
+          "teal": "Teal",
+          "yellow": "Yellow",
+          "black": "Black",
+          "white": "White"
+        },
+        "customColor": "Add custom color",
+        "customColors": "Your custom colors"
+      },
       "branding": {
         "title": "Branding & Brand Identity",
         "subtitle": "Make your website unique",
@@ -1901,6 +2417,24 @@
           "features": ["50+ photos", "Multiple locations", "3 min video", "Express delivery"]
         }
       }
+    },
+    "priceNote": {
+      "monthly": "per month incl. VAT",
+      "oneTime": "one-time incl. VAT"
+    },
+    "drone": {
+      "starter": {
+        "name": "Basic",
+        "features": ["10 edited photos", "1 location", "Digital delivery", "Within 5 days"]
+      },
+      "professional": {
+        "name": "Professional",
+        "features": ["25 edited photos", "1-2 locations", "1 min video", "Within 3 days"]
+      },
+      "business": {
+        "name": "Premium",
+        "features": ["50+ photos", "Multiple locations", "3 min video", "Express delivery"]
+      }
     }
   },
   "thankYou": {
@@ -2235,7 +2769,9 @@
   "reviews": {
     "title": "What our customers say",
     "subtitle": "Real reviews from entrepreneurs on Trustpilot",
-    "reviews": "reviews"
+    "reviews": "reviews",
+    "customerViaTrustpilot": "Customer via Trustpilot",
+    "ownerStudioLisa": "Owner, Studio Lisa"
   },
   "socialProof": {
     "signedUp": "Has signed up",
@@ -2451,7 +2987,8 @@
       "forgotPassword": "Forgot password?",
       "project": "Project",
       "sslSecure": "SSL secured",
-      "alwaysAccess": "24/7 access"
+      "alwaysAccess": "24/7 access",
+      "failed": "Login failed."
     },
     "loading": {
       "title": "Loading project...",
@@ -2460,7 +2997,8 @@
     "error": {
       "title": "Something went wrong",
       "projectNotFound": "Project not found",
-      "tryAgain": "Try again"
+      "tryAgain": "Try again",
+      "somethingWentWrong": "Something went wrong."
     },
     "phases": {
       "onboarding": "Onboarding",
@@ -2579,7 +3117,9 @@
     "pending": "Pending",
     "draft": "Draft",
     "pay": "Pay",
-    "invoicesPaidCount": "{{paid}} of {{total}} invoices paid"
+    "invoicesPaidCount": "{{paid}} of {{total}} invoices paid",
+    "seoDescription": "View the progress of the project for {{businessName}}. Current phase: {{phase}}.",
+    "seoDescriptionDefault": "View the progress of your website project at Webstability."
   },
   "designFeedback": {
     "title": "Design Feedback",

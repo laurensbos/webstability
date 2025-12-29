@@ -49,6 +49,7 @@ import { ReferralWidget } from '../components/GrowthTools'
 import MobileBottomNav from '../components/MobileBottomNav'
 import QuickActions from '../components/QuickActions'
 import { DarkModeButton } from '../components/DarkModeToggle'
+import { LanguageSelector } from '../components/LanguageSelector'
 import Footer from '../components/Footer'
 import { useKeyboardShortcuts, KeyboardShortcutsModal, KeyboardShortcutHint } from '../hooks/useKeyboardShortcuts'
 import PWAInstallPrompt from '../components/PWAInstallPrompt'
@@ -292,11 +293,11 @@ export default function ProjectStatusNew() {
   // SEO - Set page title and description
   useSEO({
     title: project 
-      ? `${project.businessName} - Project Status` 
-      : 'Project Status',
+      ? `${project.businessName} - ${t('projectStatus.myProject')}` 
+      : t('projectStatus.myProject'),
     description: project 
-      ? `Bekijk de voortgang van het project voor ${project.businessName}. Huidige fase: ${PHASES.find(p => p.key === project.status)?.label || project.status}.`
-      : 'Bekijk de voortgang van je website project bij Webstability.',
+      ? t('projectStatus.seoDescription', { businessName: project.businessName, phase: t(`projectStatus.phases.${project.status}`) })
+      : t('projectStatus.seoDescriptionDefault'),
     noindex: true // Klantenpagina's moeten niet geïndexeerd worden
   })
   
@@ -506,10 +507,10 @@ export default function ProjectStatusNew() {
         sessionStorage.setItem(`project_auth_${proj.projectId.toUpperCase()}`, 'true')
         navigate(`/status/${proj.projectId}`, { replace: true })
       } else {
-        setVerifyError('Inloggen mislukt.')
+        setVerifyError(t('projectStatus.login.failed'))
       }
     } catch {
-      setVerifyError('Er ging iets mis.')
+      setVerifyError(t('projectStatus.error.somethingWentWrong'))
     } finally {
       setVerifyLoading(false)
     }
@@ -926,6 +927,10 @@ export default function ProjectStatusNew() {
               <Logo variant="white" size="sm" />
             </Link>
             <div className="flex items-center gap-1">
+              {/* Language selector */}
+              <div className="relative group">
+                <LanguageSelector variant="minimal" />
+              </div>
               {/* Dark mode toggle - always visible */}
               <div className="relative group">
                 <DarkModeButton
@@ -1022,7 +1027,7 @@ export default function ProjectStatusNew() {
             <div className="flex items-center gap-1.5">
               <div className={`w-2 h-2 rounded-full ${phaseColors.bg}`} />
               <span className="text-xs text-gray-500">
-                {PHASES.find(p => p.key === project.status)?.label || project.status}
+                {t(`projectStatus.phases.${project.status}`)}
               </span>
             </div>
           </div>

@@ -52,83 +52,86 @@ interface CTAConfig {
   }
 }
 
-const ctaConfigs: Record<Exclude<CTAVariant, 'none'>, CTAConfig> = {
-  default: {
-    badge: 'Binnen 7 dagen online',
-    title: 'Laat je website bouwen door',
-    highlight: 'experts',
-    description: '50+ ondernemers gingen je voor. Professioneel design, razendsnelle hosting en persoonlijke support. Vanaf €119/maand (incl. BTW).',
-    buttonText: 'Start je project',
-    buttonLink: '/start',
-    gradient: {
-      from: 'from-primary-50',
-      to: 'to-blue-50',
-      text: 'from-primary-600 to-blue-600',
-      badge: 'text-primary-700',
-      badgeBg: 'border-primary-200',
-      buttonFrom: 'from-primary-500',
-      buttonTo: 'to-primary-600',
-      shadow: 'shadow-primary-500/30',
-      particles: 'primary',
+// Function to get translated CTA configs
+function getCTAConfigs(t: (key: string) => string): Record<Exclude<CTAVariant, 'none'>, CTAConfig> {
+  return {
+    default: {
+      badge: t('footer.cta.default.badge'),
+      title: t('footer.cta.default.title'),
+      highlight: t('footer.cta.default.highlight'),
+      description: t('footer.cta.default.description'),
+      buttonText: t('footer.cta.default.buttonText'),
+      buttonLink: '/start',
+      gradient: {
+        from: 'from-primary-50',
+        to: 'to-blue-50',
+        text: 'from-primary-600 to-blue-600',
+        badge: 'text-primary-700',
+        badgeBg: 'border-primary-200',
+        buttonFrom: 'from-primary-500',
+        buttonTo: 'to-primary-600',
+        shadow: 'shadow-primary-500/30',
+        particles: 'primary',
+      },
     },
-  },
-  webshop: {
-    badge: 'Complete e-commerce oplossing',
-    title: 'Start vandaag nog met',
-    highlight: 'online verkopen',
-    description: 'Professionele webshop met betalingen, verzending en voorraadbeheer. Wij bouwen, jij verkoopt. Vanaf €399/maand (incl. BTW).',
-    buttonText: 'Start je webshop',
-    buttonLink: '/start?dienst=webshop',
-    gradient: {
-      from: 'from-emerald-50',
-      to: 'to-green-50',
-      text: 'from-emerald-600 to-green-600',
-      badge: 'text-emerald-700',
-      badgeBg: 'border-emerald-200',
-      buttonFrom: 'from-emerald-500',
-      buttonTo: 'to-emerald-600',
-      shadow: 'shadow-emerald-500/30',
-      particles: 'emerald',
+    webshop: {
+      badge: t('footer.cta.webshop.badge'),
+      title: t('footer.cta.webshop.title'),
+      highlight: t('footer.cta.webshop.highlight'),
+      description: t('footer.cta.webshop.description'),
+      buttonText: t('footer.cta.webshop.buttonText'),
+      buttonLink: '/start?dienst=webshop',
+      gradient: {
+        from: 'from-emerald-50',
+        to: 'to-green-50',
+        text: 'from-emerald-600 to-green-600',
+        badge: 'text-emerald-700',
+        badgeBg: 'border-emerald-200',
+        buttonFrom: 'from-emerald-500',
+        buttonTo: 'to-emerald-600',
+        shadow: 'shadow-emerald-500/30',
+        particles: 'emerald',
+      },
     },
-  },
-  logo: {
-    badge: 'Professioneel logo ontwerp',
-    title: 'Geef je merk een',
-    highlight: 'sterke identiteit',
-    description: 'Uniek logo ontwerp met 3 concepten en 2 revisierondes. Inclusief alle bestandsformaten. Binnen 2 weken klaar.',
-    buttonText: 'Start je logo project',
-    buttonLink: '/start?dienst=logo',
-    gradient: {
-      from: 'from-purple-50',
-      to: 'to-pink-50',
-      text: 'from-purple-600 to-pink-600',
-      badge: 'text-purple-700',
-      badgeBg: 'border-purple-200',
-      buttonFrom: 'from-purple-500',
-      buttonTo: 'to-purple-600',
-      shadow: 'shadow-purple-500/30',
-      particles: 'purple',
+    logo: {
+      badge: t('footer.cta.logo.badge'),
+      title: t('footer.cta.logo.title'),
+      highlight: t('footer.cta.logo.highlight'),
+      description: t('footer.cta.logo.description'),
+      buttonText: t('footer.cta.logo.buttonText'),
+      buttonLink: '/start?dienst=logo',
+      gradient: {
+        from: 'from-purple-50',
+        to: 'to-pink-50',
+        text: 'from-purple-600 to-pink-600',
+        badge: 'text-purple-700',
+        badgeBg: 'border-purple-200',
+        buttonFrom: 'from-purple-500',
+        buttonTo: 'to-purple-600',
+        shadow: 'shadow-purple-500/30',
+        particles: 'purple',
+      },
     },
-  },
-  drone: {
-    badge: 'Gecertificeerde piloten',
-    title: 'Til je content naar een',
-    highlight: 'hoger niveau',
-    description: 'Spectaculaire luchtopnames van je bedrijf. 4K video, bewerkte foto\'s en snelle levering. Heel Nederland.',
-    buttonText: 'Vraag luchtopnames aan',
-    buttonLink: '/start?dienst=drone',
-    gradient: {
-      from: 'from-orange-50',
-      to: 'to-amber-50',
-      text: 'from-orange-500 to-amber-500',
-      badge: 'text-orange-700',
-      badgeBg: 'border-orange-200',
-      buttonFrom: 'from-orange-500',
-      buttonTo: 'to-amber-500',
-      shadow: 'shadow-orange-500/30',
-      particles: 'orange',
+    drone: {
+      badge: t('footer.cta.drone.badge'),
+      title: t('footer.cta.drone.title'),
+      highlight: t('footer.cta.drone.highlight'),
+      description: t('footer.cta.drone.description'),
+      buttonText: t('footer.cta.drone.buttonText'),
+      buttonLink: '/start?dienst=drone',
+      gradient: {
+        from: 'from-orange-50',
+        to: 'to-amber-50',
+        text: 'from-orange-500 to-amber-500',
+        badge: 'text-orange-700',
+        badgeBg: 'border-orange-200',
+        buttonFrom: 'from-orange-500',
+        buttonTo: 'to-amber-500',
+        shadow: 'shadow-orange-500/30',
+        particles: 'orange',
+      },
     },
-  },
+  }
 }
 
 // Floating particles for CTA section with color variant
@@ -189,6 +192,7 @@ interface FooterProps {
 
 export default function Footer({ ctaVariant = 'default' }: FooterProps) {
   const { t } = useTranslation()
+  const ctaConfigs = getCTAConfigs(t)
   const config = ctaVariant !== 'none' ? ctaConfigs[ctaVariant] : null
 
   const footerLinksTranslated = {

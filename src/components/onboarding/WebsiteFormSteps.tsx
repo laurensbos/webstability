@@ -39,11 +39,10 @@ export interface PackageConfig {
   }
 }
 
-export const PACKAGE_CONFIGS: Record<PackageId, PackageConfig> = {
+// Base package configs zonder vertaalbare teksten
+const PACKAGE_CONFIGS_BASE: Record<PackageId, Omit<PackageConfig, 'name' | 'price'>> = {
   starter: {
     id: 'starter',
-    name: 'Starter',
-    price: '€119/maand',
     maxPages: 5,
     features: {
       blog: false,
@@ -58,8 +57,6 @@ export const PACKAGE_CONFIGS: Record<PackageId, PackageConfig> = {
   },
   professional: {
     id: 'professional',
-    name: 'Professioneel',
-    price: '€149/maand',
     maxPages: 10,
     features: {
       blog: true,
@@ -74,8 +71,6 @@ export const PACKAGE_CONFIGS: Record<PackageId, PackageConfig> = {
   },
   business: {
     id: 'business',
-    name: 'Business',
-    price: '€199/maand',
     maxPages: 999, // Unlimited
     features: {
       blog: true,
@@ -90,19 +85,44 @@ export const PACKAGE_CONFIGS: Record<PackageId, PackageConfig> = {
   }
 }
 
+// Hook om vertaalde package configs te krijgen
+export function usePackageConfigs(): Record<PackageId, PackageConfig> {
+  const { t } = useTranslation()
+  return {
+    starter: {
+      ...PACKAGE_CONFIGS_BASE.starter,
+      name: t('onboarding.formSteps.packageConfig.starter.name'),
+      price: t('onboarding.formSteps.packageConfig.starter.price'),
+    },
+    professional: {
+      ...PACKAGE_CONFIGS_BASE.professional,
+      name: t('onboarding.formSteps.packageConfig.professional.name'),
+      price: t('onboarding.formSteps.packageConfig.professional.price'),
+    },
+    business: {
+      ...PACKAGE_CONFIGS_BASE.business,
+      name: t('onboarding.formSteps.packageConfig.business.name'),
+      price: t('onboarding.formSteps.packageConfig.business.price'),
+    }
+  }
+}
+
+// @deprecated - Use usePackageConfigs() hook instead for translated values
+// Legacy export for backwards compatibility (uses Dutch as fallback)
+export const PACKAGE_CONFIGS: Record<PackageId, PackageConfig> = {
+  starter: { ...PACKAGE_CONFIGS_BASE.starter, name: 'Starter', price: '€119/month' },
+  professional: { ...PACKAGE_CONFIGS_BASE.professional, name: 'Professional', price: '€149/month' },
+  business: { ...PACKAGE_CONFIGS_BASE.business, name: 'Business', price: '€199/month' },
+}
+
 // Verkrijg het minimale pakket vereist voor een feature
 export function getMinPackageForFeature(feature: keyof PackageConfig['features']): PackageId {
-  if (PACKAGE_CONFIGS.starter.features[feature]) return 'starter'
-  if (PACKAGE_CONFIGS.professional.features[feature]) return 'professional'
+  if (PACKAGE_CONFIGS_BASE.starter.features[feature]) return 'starter'
+  if (PACKAGE_CONFIGS_BASE.professional.features[feature]) return 'professional'
   return 'business'
 }
 
-// Hulpfunctie om max pagina's te formatteren (toon "Onbeperkt" voor hoge waarden)
-function formatMaxPages(maxPages: number): string {
-  return maxPages >= 100 ? 'Onbeperkt pagina\'s' : `Max ${maxPages} pagina's`
-}
-
-// ===========================================
+// =========================================== 
 // UPGRADE PROMPT COMPONENT
 // ===========================================
 
@@ -115,8 +135,10 @@ interface UpgradePromptProps {
 
 // Geëxporteerd voor gebruik in andere componenten
 export function UpgradePrompt({ currentPackage, requiredPackage, featureName, onUpgrade }: UpgradePromptProps) {
-  const requiredConfig = PACKAGE_CONFIGS[requiredPackage]
-  const currentConfig = PACKAGE_CONFIGS[currentPackage]
+  const { t } = useTranslation()
+  const packageConfigs = usePackageConfigs()
+  const requiredConfig = packageConfigs[requiredPackage]
+  const currentConfig = packageConfigs[currentPackage]
   
   return (
     <div className="bg-gradient-to-r from-amber-50 to-orange-50 dark:from-amber-900/20 dark:to-orange-900/20 border border-amber-200 dark:border-amber-700 rounded-xl p-4">
@@ -128,18 +150,18 @@ export function UpgradePrompt({ currentPackage, requiredPackage, featureName, on
           <div className="flex items-center gap-2">
             <Lock className="w-4 h-4 text-amber-600 dark:text-amber-400" />
             <span className="font-medium text-amber-800 dark:text-amber-300">
-              {featureName} - {requiredConfig.name} pakket vereist
+              {t('onboarding.formSteps.upgradePrompt.packageRequired', { feature: featureName, package: requiredConfig.name })}
             </span>
           </div>
           <p className="text-sm text-amber-700 dark:text-amber-400 mt-1">
-            Je huidige pakket ({currentConfig.name}) bevat deze functie niet.
+            {t('onboarding.formSteps.upgradePrompt.currentPackageNoFeature', { package: currentConfig.name })}
           </p>
           {onUpgrade && (
             <button
               onClick={() => onUpgrade(requiredPackage)}
               className="mt-3 inline-flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-amber-500 to-orange-500 text-white rounded-lg font-medium text-sm hover:from-amber-600 hover:to-orange-600 transition-all"
             >
-              Upgrade naar {requiredConfig.name}
+              {t('onboarding.formSteps.upgradePrompt.upgradeToPackage', { package: requiredConfig.name })}
               <ArrowUpRight className="w-4 h-4" />
             </button>
           )}
@@ -371,21 +393,34 @@ interface ColorPickerProps {
   hint?: string
 }
 
-const COLOR_OPTIONS = [
-  { name: 'Blauw', hex: '#3B82F6' },
-  { name: 'Groen', hex: '#22C55E' },
-  { name: 'Rood', hex: '#EF4444' },
-  { name: 'Oranje', hex: '#F97316' },
-  { name: 'Paars', hex: '#A855F7' },
-  { name: 'Roze', hex: '#EC4899' },
-  { name: 'Teal', hex: '#14B8A6' },
-  { name: 'Geel', hex: '#EAB308' },
-  { name: 'Zwart', hex: '#1F2937' },
-  { name: 'Wit', hex: '#F9FAFB' },
+// Kleur ID's voor vertaling
+type ColorId = 'blue' | 'green' | 'red' | 'orange' | 'purple' | 'pink' | 'teal' | 'yellow' | 'black' | 'white'
+
+const COLOR_OPTIONS_BASE: { id: ColorId; hex: string }[] = [
+  { id: 'blue', hex: '#3B82F6' },
+  { id: 'green', hex: '#22C55E' },
+  { id: 'red', hex: '#EF4444' },
+  { id: 'orange', hex: '#F97316' },
+  { id: 'purple', hex: '#A855F7' },
+  { id: 'pink', hex: '#EC4899' },
+  { id: 'teal', hex: '#14B8A6' },
+  { id: 'yellow', hex: '#EAB308' },
+  { id: 'black', hex: '#1F2937' },
+  { id: 'white', hex: '#F9FAFB' },
 ]
+
+// Hook voor vertaalde kleuropties
+function useColorOptions() {
+  const { t } = useTranslation()
+  return COLOR_OPTIONS_BASE.map(color => ({
+    ...color,
+    name: t(`onboarding.formSteps.colorPicker.colors.${color.id}`)
+  }))
+}
 
 // Geëxporteerd voor gebruik in andere formulier stappen
 export function ColorPicker({ label, name, values, onChange, disabled, hint }: ColorPickerProps) {
+  const COLOR_OPTIONS = useColorOptions()
   const [customColor, setCustomColor] = useState('')
 
   const toggleColor = (hex: string) => {
@@ -567,12 +602,13 @@ interface FormStepProps {
   onApprovalChange?: (approved: boolean) => void // Voor samenvatting stap
 }
 
-// Hulpfunctie om pakket config veilig op te halen
-function getPackageConfig(packageId?: string): PackageConfig {
-  if (packageId && packageId in PACKAGE_CONFIGS) {
-    return PACKAGE_CONFIGS[packageId as PackageId]
+// Hook om vertaalde pakket config veilig op te halen
+function usePackageConfig(packageId?: string): PackageConfig {
+  const packageConfigs = usePackageConfigs()
+  if (packageId && packageId in packageConfigs) {
+    return packageConfigs[packageId as PackageId]
   }
-  return PACKAGE_CONFIGS.starter // Standaard naar starter
+  return packageConfigs.starter // Standaard naar starter
 }
 
 // Stap 1: Samenvatting & aanvullende bedrijfsinfo
@@ -671,155 +707,81 @@ export function WebsiteBedrijfStep({ data, onChange, disabled }: FormStepProps) 
 // BRANDING CONSTANTEN
 // ===========================================
 
-// Samengestelde kleurpaletten voor eenvoudige selectie
-const COLOR_PALETTES = [
-  { name: 'Modern Blauw', colors: ['#3B82F6', '#1E40AF', '#60A5FA', '#DBEAFE'] },
-  { name: 'Fris Groen', colors: ['#10B981', '#047857', '#34D399', '#D1FAE5'] },
-  { name: 'Warm Oranje', colors: ['#F97316', '#C2410C', '#FB923C', '#FFEDD5'] },
-  { name: 'Koninklijk Paars', colors: ['#8B5CF6', '#5B21B6', '#A78BFA', '#EDE9FE'] },
-  { name: 'Elegant Roze', colors: ['#EC4899', '#BE185D', '#F472B6', '#FCE7F3'] },
-  { name: 'Oceaan Teal', colors: ['#14B8A6', '#0F766E', '#2DD4BF', '#CCFBF1'] },
-  { name: 'Zonsondergang Koraal', colors: ['#F43F5E', '#BE123C', '#FB7185', '#FFE4E6'] },
-  { name: 'Zakelijk Grijs', colors: ['#475569', '#1E293B', '#64748B', '#F1F5F9'] },
+// Kleurpalet IDs voor vertaling
+type ColorPaletteId = 'modernBlue' | 'freshGreen' | 'warmOrange' | 'royalPurple' | 'elegantPink' | 'oceanTeal' | 'sunsetCoral' | 'businessGrey'
+
+// Base kleurpaletten met IDs
+const COLOR_PALETTES_BASE: { id: ColorPaletteId; colors: string[] }[] = [
+  { id: 'modernBlue', colors: ['#3B82F6', '#1E40AF', '#60A5FA', '#DBEAFE'] },
+  { id: 'freshGreen', colors: ['#10B981', '#047857', '#34D399', '#D1FAE5'] },
+  { id: 'warmOrange', colors: ['#F97316', '#C2410C', '#FB923C', '#FFEDD5'] },
+  { id: 'royalPurple', colors: ['#8B5CF6', '#5B21B6', '#A78BFA', '#EDE9FE'] },
+  { id: 'elegantPink', colors: ['#EC4899', '#BE185D', '#F472B6', '#FCE7F3'] },
+  { id: 'oceanTeal', colors: ['#14B8A6', '#0F766E', '#2DD4BF', '#CCFBF1'] },
+  { id: 'sunsetCoral', colors: ['#F43F5E', '#BE123C', '#FB7185', '#FFE4E6'] },
+  { id: 'businessGrey', colors: ['#475569', '#1E293B', '#64748B', '#F1F5F9'] },
 ]
 
-// Lettertypecombinaties met echte previews
-const FONT_COMBINATIONS = [
-  { 
-    id: 'modern',
-    name: 'Modern & Strak',
-    heading: 'Inter',
-    body: 'Inter',
-    style: 'font-sans',
-    description: 'Strak en professioneel',
-    preview: 'Welkom bij uw bedrijf'
-  },
-  { 
-    id: 'elegant',
-    name: 'Elegant & Klassiek',
-    heading: 'Playfair Display',
-    body: 'Lato',
-    style: 'font-serif',
-    description: 'Tijdloos en luxueus',
-    preview: 'Welkom bij uw bedrijf'
-  },
-  { 
-    id: 'bold',
-    name: 'Krachtig & Opvallend',
-    heading: 'Montserrat',
-    body: 'Open Sans',
-    style: 'font-sans font-bold',
-    description: 'Sterk en opvallend',
-    preview: 'WELKOM BIJ UW BEDRIJF'
-  },
-  { 
-    id: 'friendly',
-    name: 'Vriendelijk & Warm',
-    heading: 'Poppins',
-    body: 'Nunito',
-    style: 'font-sans',
-    description: 'Toegankelijk en warm',
-    preview: 'Welkom bij uw bedrijf'
-  },
-  { 
-    id: 'creative',
-    name: 'Creatief & Uniek',
-    heading: 'Space Grotesk',
-    body: 'DM Sans',
-    style: 'font-sans',
-    description: 'Creatief en uniek',
-    preview: 'Welkom bij uw bedrijf'
-  },
-  { 
-    id: 'funky',
-    name: 'Speels & Gedurfd',
-    heading: 'Bebas Neue',
-    body: 'Quicksand',
-    style: 'font-sans',
-    description: 'Opvallend en speels',
-    preview: 'WELKOM BIJ UW BEDRIJF'
-  },
-  { 
-    id: 'retro',
-    name: 'Retro Sfeer',
-    heading: 'Righteous',
-    body: 'Josefin Sans',
-    style: 'font-sans',
-    description: 'Vintage met een twist',
-    preview: 'Welkom bij uw bedrijf'
-  },
-  { 
-    id: 'tech',
-    name: 'Tech & Startup',
-    heading: 'Outfit',
-    body: 'IBM Plex Sans',
-    style: 'font-sans',
-    description: 'Modern en technisch',
-    preview: 'Welkom bij uw bedrijf'
-  },
-  { 
-    id: 'luxury',
-    name: 'Luxe & Premium',
-    heading: 'Cormorant Garamond',
-    body: 'Raleway',
-    style: 'font-serif',
-    description: 'Exclusief en verfijnd',
-    preview: 'Welkom bij uw bedrijf'
-  },
-  { 
-    id: 'playful',
-    name: 'Speels & Vrolijk',
-    heading: 'Fredoka',
-    body: 'Nunito Sans',
-    style: 'font-sans',
-    description: 'Vrolijk en energiek',
-    preview: 'Welkom bij uw bedrijf'
-  },
+// Hook voor vertaalde kleurpaletten
+function useColorPalettes() {
+  const { t } = useTranslation()
+  return COLOR_PALETTES_BASE.map(palette => ({
+    ...palette,
+    name: t(`onboarding.formSteps.colorPalettes.${palette.id}`)
+  }))
+}
+
+// Font combination IDs
+type FontCombinationId = 'modern' | 'elegant' | 'bold' | 'friendly' | 'creative' | 'funky' | 'retro' | 'tech' | 'luxury' | 'playful'
+
+// Base font combinations
+const FONT_COMBINATIONS_BASE: { id: FontCombinationId; heading: string; body: string; style: string; uppercase?: boolean }[] = [
+  { id: 'modern', heading: 'Inter', body: 'Inter', style: 'font-sans' },
+  { id: 'elegant', heading: 'Playfair Display', body: 'Lato', style: 'font-serif' },
+  { id: 'bold', heading: 'Montserrat', body: 'Open Sans', style: 'font-sans font-bold', uppercase: true },
+  { id: 'friendly', heading: 'Poppins', body: 'Nunito', style: 'font-sans' },
+  { id: 'creative', heading: 'Space Grotesk', body: 'DM Sans', style: 'font-sans' },
+  { id: 'funky', heading: 'Bebas Neue', body: 'Quicksand', style: 'font-sans', uppercase: true },
+  { id: 'retro', heading: 'Righteous', body: 'Josefin Sans', style: 'font-sans' },
+  { id: 'tech', heading: 'Outfit', body: 'IBM Plex Sans', style: 'font-sans' },
+  { id: 'luxury', heading: 'Cormorant Garamond', body: 'Raleway', style: 'font-serif' },
+  { id: 'playful', heading: 'Fredoka', body: 'Nunito Sans', style: 'font-sans' },
 ]
 
-// Design stijlen met visuele voorbeelden
-const DESIGN_STYLES = [
-  { 
-    id: 'minimalist',
-    name: 'Minimalistisch',
-    description: 'Veel witruimte, clean & rustig',
-    visual: '▢ ▢ ▢',
-    gradient: 'from-gray-100 to-white',
-    accent: 'border-gray-300'
-  },
-  { 
-    id: 'modern',
-    name: 'Modern & Strak',
-    description: 'Scherpe lijnen, professioneel',
-    visual: '◢ ◣',
-    gradient: 'from-blue-50 to-indigo-50',
-    accent: 'border-blue-400'
-  },
-  { 
-    id: 'creative',
-    name: 'Creatief & Speels',
-    description: 'Kleurrijk, gedurfd, uniek',
-    visual: '◯ △ ◇',
-    gradient: 'from-purple-50 to-pink-50',
-    accent: 'border-purple-400'
-  },
-  { 
-    id: 'warm',
-    name: 'Warm & Persoonlijk',
-    description: 'Uitnodigend, vriendelijk',
-    visual: '◠ ◡ ◠',
-    gradient: 'from-orange-50 to-amber-50',
-    accent: 'border-orange-400'
-  },
-  { 
-    id: 'luxury',
-    name: 'Luxe & Elegant',
-    description: 'Premium, verfijnd, exclusief',
-    visual: '◇ ◆ ◇',
-    gradient: 'from-amber-50 to-yellow-50',
-    accent: 'border-amber-400'
-  },
+// Hook voor vertaalde font combinations
+function useFontCombinations() {
+  const { t } = useTranslation()
+  return FONT_COMBINATIONS_BASE.map(font => ({
+    ...font,
+    name: t(`onboarding.formSteps.fontCombinations.${font.id}.name`),
+    description: t(`onboarding.formSteps.fontCombinations.${font.id}.description`),
+    preview: font.uppercase 
+      ? t('onboarding.formSteps.fontCombinations.preview').toUpperCase()
+      : t('onboarding.formSteps.fontCombinations.preview')
+  }))
+}
+
+// Design style IDs
+type DesignStyleId = 'minimalist' | 'modern' | 'creative' | 'warm' | 'luxury'
+
+// Base design styles
+const DESIGN_STYLES_BASE: { id: DesignStyleId; visual: string; gradient: string; accent: string }[] = [
+  { id: 'minimalist', visual: '▢ ▢ ▢', gradient: 'from-gray-100 to-white', accent: 'border-gray-300' },
+  { id: 'modern', visual: '◢ ◣', gradient: 'from-blue-50 to-indigo-50', accent: 'border-blue-400' },
+  { id: 'creative', visual: '◯ △ ◇', gradient: 'from-purple-50 to-pink-50', accent: 'border-purple-400' },
+  { id: 'warm', visual: '◠ ◡ ◠', gradient: 'from-orange-50 to-amber-50', accent: 'border-orange-400' },
+  { id: 'luxury', visual: '◇ ◆ ◇', gradient: 'from-amber-50 to-yellow-50', accent: 'border-amber-400' },
 ]
+
+// Hook voor vertaalde design styles
+function useDesignStyles() {
+  const { t } = useTranslation()
+  return DESIGN_STYLES_BASE.map(style => ({
+    ...style,
+    name: t(`onboarding.formSteps.designStyles.${style.id}.name`),
+    description: t(`onboarding.formSteps.designStyles.${style.id}.description`)
+  }))
+}
 
 // Stap 2: Logo & Huisstijl - Verbeterd met visuele pickers
 export function WebsiteBrandingStep({ data, onChange, disabled }: FormStepProps) {
@@ -827,6 +789,11 @@ export function WebsiteBrandingStep({ data, onChange, disabled }: FormStepProps)
   const [activeColorPicker, setActiveColorPicker] = useState<number | null>(null)
   const [customColor, setCustomColor] = useState('')
   const [fontsLoaded, setFontsLoaded] = useState(false)
+  
+  // Gebruik vertaalde constanten
+  const COLOR_PALETTES = useColorPalettes()
+  const FONT_COMBINATIONS = useFontCombinations()
+  const DESIGN_STYLES = useDesignStyles()
   
   // Laad Google Fonts voor preview
   useEffect(() => {
@@ -1319,7 +1286,7 @@ export function WebsiteDoelenStep({ data, onChange, disabled, packageId, onUpgra
   const { t } = useTranslation()
   // Controleer op vooraf ingevuld doel van /start
   const hasPrefilledGoal = data.goal || data.mainGoal
-  const pkg = getPackageConfig(packageId || data.package || data.packageType)
+  const pkg = usePackageConfig(packageId || data.package || data.packageType)
 
   // Filter contactopties op basis van pakket
   const contactOptions = [
@@ -1465,7 +1432,7 @@ export function WebsitePaginasStep({ data, onChange, disabled, packageId, onUpgr
   // Toon vooraf ingevulde pagina's van /start
   const prefilledPages = data.pages || data.selectedPages || []
   const customPages = data.customPages || []
-  const pkg = getPackageConfig(packageId || data.package || data.packageType)
+  const pkg = usePackageConfig(packageId || data.package || data.packageType)
   
   // Bereken totaal inclusief geselecteerde pagina's
   const allSelectedPages = data.selectedPages || data.pages || []
@@ -1668,7 +1635,7 @@ export function WebsitePaginasStep({ data, onChange, disabled, packageId, onUpgr
 // Stap 5: Content - teksten en foto's, pakket-specifiek
 export function WebsiteContentStep({ data, onChange, disabled, packageId, onUpgrade }: FormStepProps) {
   const { t } = useTranslation()
-  const pkg = getPackageConfig(packageId || data.package || data.packageType)
+  const pkg = usePackageConfig(packageId || data.package || data.packageType)
 
   return (
     <motion.div
@@ -1800,7 +1767,7 @@ export function WebsiteContentStep({ data, onChange, disabled, packageId, onUpgr
 // Stap 6: Planning & Extra - deadline en aanvullingen, pakket samenvatting
 export function WebsiteExtraStep({ data, onChange, disabled, packageId, onUpgrade }: FormStepProps) {
   const { t } = useTranslation()
-  const pkg = getPackageConfig(packageId || data.package || data.packageType)
+  const pkg = usePackageConfig(packageId || data.package || data.packageType)
 
   return (
     <motion.div
@@ -1977,10 +1944,14 @@ interface SamenvattingStepProps extends FormStepProps {
 
 export function WebsiteSamenvattingStep({ data, packageId, onUpgrade, onGoToStep, approvedForDesign, onApprovalChange }: SamenvattingStepProps) {
   const { t } = useTranslation()
-  const pkg = getPackageConfig(packageId || data.package || data.packageType)
+  const packageConfigs = usePackageConfigs()
+  const pkg = usePackageConfig(packageId || data.package || data.packageType)
   const prefilledPages = data.pages || data.selectedPages || []
   const customPages = data.customPages || []
   const allPages = [...prefilledPages, ...customPages]
+  
+  // Verkrijg de naam van het volgende pakket voor upgrade hint
+  const nextPackageName = pkg.id === 'starter' ? packageConfigs.professional.name : packageConfigs.business.name
 
   const SummaryItem = ({ label, value }: { label: string; value?: string | null }) => {
     if (!value) return null
@@ -2039,7 +2010,7 @@ export function WebsiteSamenvattingStep({ data, packageId, onUpgrade, onGoToStep
             onClick={() => onUpgrade(pkg.id === 'starter' ? 'professional' : 'business')}
             className="mt-3 w-full py-2 bg-white/20 hover:bg-white/30 rounded-lg text-sm font-medium transition-colors"
           >
-            {t('onboarding.formSteps.summary.packageInfo.upgradeHint', { package: pkg.id === 'starter' ? 'Professioneel' : 'Business' })}
+            {t('onboarding.formSteps.summary.packageInfo.upgradeHint', { package: nextPackageName })}
           </button>
         )}
       </div>

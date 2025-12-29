@@ -19,7 +19,7 @@ import Header from '../components/Header'
 import Footer from '../components/Footer'
 import TrustpilotReviews from '../components/TrustpilotReviews'
 import WhatYouGet from '../components/WhatYouGet'
-import { packages as websitePackages } from '../data/packages'
+import { usePackages } from '../hooks/usePackages'
 
 // Floating particles component - ONLY on desktop for performance
 function FloatingParticles() {
@@ -60,14 +60,15 @@ function FloatingParticles() {
   )
 }
 
-// Use packages from central data with icons
-const packagesWithIcons = websitePackages.map((pkg, index) => ({
-  ...pkg,
-  icon: index === 0 ? Rocket : index === 1 ? Users : HeartHandshake,
-}))
-
 export default function Websites() {
   const { t } = useTranslation()
+  const { packages: websitePackages } = usePackages()
+
+  // Use packages from central data with icons
+  const packagesWithIcons = websitePackages.map((pkg, index) => ({
+    ...pkg,
+    icon: index === 0 ? Rocket : index === 1 ? Users : HeartHandshake,
+  }))
   
   const stats = [
     { value: '250+', label: t('websitesPage.stats.websites') },

@@ -1,11 +1,12 @@
 import { motion } from 'framer-motion'
 import { Check, ArrowRight, Sparkles, Shield, Clock, CreditCard, Zap } from 'lucide-react'
-import { packages, getDeliveryText } from '../data/packages'
+import { usePackages } from '../hooks/usePackages'
 import { useState, useRef, useEffect } from 'react'
 import { useTranslation } from 'react-i18next'
 
 export default function Pricing() {
 	const { t } = useTranslation()
+	const { packages, getDeliveryText } = usePackages()
 	const scrollRef = useRef<HTMLDivElement>(null)
 	const [activeIndex, setActiveIndex] = useState(1) // Start met Professional (meest gekozen)
 

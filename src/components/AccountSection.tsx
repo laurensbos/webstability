@@ -91,14 +91,6 @@ const getPackageInfo = (packageType: string) => {
   }
 }
 
-// Service type labels
-const serviceTypeLabels: Record<string, string> = {
-  website: 'Website',
-  webshop: 'Webshop',
-  logo: 'Logo Design',
-  drone: 'Drone Beelden'
-}
-
 export default function AccountSection({ 
   project,
   onUpdateProject,
@@ -262,7 +254,7 @@ export default function AccountSection({
               >
                 <CheckCircle2 className="w-5 h-5 text-green-500 flex-shrink-0" />
                 <span className={`text-sm font-medium ${darkMode ? 'text-green-400' : 'text-green-700'}`}>
-                  Gegevens succesvol opgeslagen!
+                  {t('account.saved')}
                 </span>
               </motion.div>
             )}
@@ -281,7 +273,7 @@ export default function AccountSection({
                     <User className={`w-4 h-4 ${darkMode ? 'text-primary-400' : 'text-primary-600'}`} />
                   </div>
                   <h3 className={`font-semibold ${darkMode ? 'text-white' : 'text-gray-900'}`}>
-                    Contactgegevens
+                    {t('account.contactDetails')}
                   </h3>
                 </div>
                 {!isEditing ? (
@@ -294,7 +286,7 @@ export default function AccountSection({
                     }`}
                   >
                     <Edit3 className="w-3.5 h-3.5" />
-                    Bewerken
+                    {t('account.edit')}
                   </button>
                 ) : (
                   <div className="flex gap-2">
@@ -314,7 +306,7 @@ export default function AccountSection({
                           : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
                       }`}
                     >
-                      Annuleren
+                      {t('account.cancel')}
                     </button>
                     <button
                       onClick={handleSave}
@@ -326,7 +318,7 @@ export default function AccountSection({
                       ) : (
                         <Save className="w-3.5 h-3.5" />
                       )}
-                      Opslaan
+                      {t('account.save')}
                     </button>
                   </div>
                 )}
@@ -337,7 +329,7 @@ export default function AccountSection({
                   <div className="grid sm:grid-cols-2 gap-4">
                     <div>
                       <label className={`text-xs font-medium mb-1.5 block ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>
-                        Bedrijfsnaam
+                        {t('account.businessName')}
                       </label>
                       <input
                         type="text"
@@ -348,12 +340,12 @@ export default function AccountSection({
                             ? 'bg-gray-900 border-gray-700 text-white' 
                             : 'bg-gray-50 border-gray-200 text-gray-900'
                         }`}
-                        placeholder="Jouw bedrijfsnaam"
+                        placeholder={t('account.placeholders.businessName')}
                       />
                     </div>
                     <div>
                       <label className={`text-xs font-medium mb-1.5 block ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>
-                        Contactpersoon
+                        {t('account.contactPerson')}
                       </label>
                       <input
                         type="text"
@@ -364,12 +356,12 @@ export default function AccountSection({
                             ? 'bg-gray-900 border-gray-700 text-white' 
                             : 'bg-gray-50 border-gray-200 text-gray-900'
                         }`}
-                        placeholder="Je naam"
+                        placeholder={t('account.placeholders.contactName')}
                       />
                     </div>
                     <div>
                       <label className={`text-xs font-medium mb-1.5 block ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>
-                        E-mailadres
+                        {t('account.contactEmail')}
                       </label>
                       <input
                         type="email"
@@ -380,12 +372,12 @@ export default function AccountSection({
                             ? 'bg-gray-900 border-gray-700 text-white' 
                             : 'bg-gray-50 border-gray-200 text-gray-900'
                         }`}
-                        placeholder="email@voorbeeld.nl"
+                        placeholder={t('account.placeholders.email')}
                       />
                     </div>
                     <div>
                       <label className={`text-xs font-medium mb-1.5 block ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>
-                        Telefoonnummer
+                        {t('account.contactPhone')}
                       </label>
                       <input
                         type="tel"
@@ -396,7 +388,7 @@ export default function AccountSection({
                             ? 'bg-gray-900 border-gray-700 text-white' 
                             : 'bg-gray-50 border-gray-200 text-gray-900'
                         }`}
-                        placeholder="06 12345678"
+                        placeholder={t('account.placeholders.phone')}
                       />
                     </div>
                   </div>
@@ -405,37 +397,37 @@ export default function AccountSection({
                     <div className={`p-3.5 rounded-xl ${darkMode ? 'bg-gray-900/50' : 'bg-gray-50'}`}>
                       <div className="flex items-center gap-2 mb-1">
                         <Building2 className={`w-4 h-4 ${darkMode ? 'text-gray-500' : 'text-gray-400'}`} />
-                        <span className={`text-xs ${darkMode ? 'text-gray-500' : 'text-gray-400'}`}>Bedrijf</span>
+                        <span className={`text-xs ${darkMode ? 'text-gray-500' : 'text-gray-400'}`}>{t('account.company')}</span>
                       </div>
                       <p className={`font-medium ${darkMode ? 'text-white' : 'text-gray-900'}`}>
-                        {project.businessName || <span className="text-gray-400 italic">Niet ingevuld</span>}
+                        {project.businessName || <span className="text-gray-400 italic">{t('account.notFilled')}</span>}
                       </p>
                     </div>
                     <div className={`p-3.5 rounded-xl ${darkMode ? 'bg-gray-900/50' : 'bg-gray-50'}`}>
                       <div className="flex items-center gap-2 mb-1">
                         <User className={`w-4 h-4 ${darkMode ? 'text-gray-500' : 'text-gray-400'}`} />
-                        <span className={`text-xs ${darkMode ? 'text-gray-500' : 'text-gray-400'}`}>Contact</span>
+                        <span className={`text-xs ${darkMode ? 'text-gray-500' : 'text-gray-400'}`}>{t('account.contact')}</span>
                       </div>
                       <p className={`font-medium ${darkMode ? 'text-white' : 'text-gray-900'}`}>
-                        {project.contactName || <span className="text-gray-400 italic">Niet ingevuld</span>}
+                        {project.contactName || <span className="text-gray-400 italic">{t('account.notFilled')}</span>}
                       </p>
                     </div>
                     <div className={`p-3.5 rounded-xl ${darkMode ? 'bg-gray-900/50' : 'bg-gray-50'}`}>
                       <div className="flex items-center gap-2 mb-1">
                         <Mail className={`w-4 h-4 ${darkMode ? 'text-gray-500' : 'text-gray-400'}`} />
-                        <span className={`text-xs ${darkMode ? 'text-gray-500' : 'text-gray-400'}`}>E-mail</span>
+                        <span className={`text-xs ${darkMode ? 'text-gray-500' : 'text-gray-400'}`}>{t('account.email')}</span>
                       </div>
                       <p className={`font-medium text-sm truncate ${darkMode ? 'text-white' : 'text-gray-900'}`}>
-                        {project.contactEmail || <span className="text-gray-400 italic">Niet ingevuld</span>}
+                        {project.contactEmail || <span className="text-gray-400 italic">{t('account.notFilled')}</span>}
                       </p>
                     </div>
                     <div className={`p-3.5 rounded-xl ${darkMode ? 'bg-gray-900/50' : 'bg-gray-50'}`}>
                       <div className="flex items-center gap-2 mb-1">
                         <Phone className={`w-4 h-4 ${darkMode ? 'text-gray-500' : 'text-gray-400'}`} />
-                        <span className={`text-xs ${darkMode ? 'text-gray-500' : 'text-gray-400'}`}>Telefoon</span>
+                        <span className={`text-xs ${darkMode ? 'text-gray-500' : 'text-gray-400'}`}>{t('account.phone')}</span>
                       </div>
                       <p className={`font-medium ${darkMode ? 'text-white' : 'text-gray-900'}`}>
-                        {project.contactPhone || <span className="text-gray-400 italic">Niet ingevuld</span>}
+                        {project.contactPhone || <span className="text-gray-400 italic">{t('account.notFilled')}</span>}
                       </p>
                     </div>
                   </div>
@@ -456,20 +448,20 @@ export default function AccountSection({
                   <Globe className={`w-4 h-4 ${darkMode ? 'text-gray-400' : 'text-gray-500'}`} />
                 </div>
                 <h3 className={`font-semibold ${darkMode ? 'text-white' : 'text-gray-900'}`}>
-                  Projectinformatie
+                  {t('account.projectInfo')}
                 </h3>
               </div>
 
               <div className="p-5">
                 <div className="grid sm:grid-cols-2 gap-4">
                   <div className={`p-3.5 rounded-xl ${darkMode ? 'bg-gray-900/50' : 'bg-gray-50'}`}>
-                    <p className={`text-xs mb-1 ${darkMode ? 'text-gray-500' : 'text-gray-400'}`}>Project ID</p>
+                    <p className={`text-xs mb-1 ${darkMode ? 'text-gray-500' : 'text-gray-400'}`}>{t('account.projectId')}</p>
                     <p className={`font-mono text-sm ${darkMode ? 'text-white' : 'text-gray-900'}`}>{project.projectId}</p>
                   </div>
                   <div className={`p-3.5 rounded-xl ${darkMode ? 'bg-gray-900/50' : 'bg-gray-50'}`}>
-                    <p className={`text-xs mb-1 ${darkMode ? 'text-gray-500' : 'text-gray-400'}`}>Aangemaakt op</p>
+                    <p className={`text-xs mb-1 ${darkMode ? 'text-gray-500' : 'text-gray-400'}`}>{t('account.createdAt')}</p>
                     <p className={`font-medium ${darkMode ? 'text-white' : 'text-gray-900'}`}>
-                      {new Date(project.createdAt).toLocaleDateString('nl-NL', {
+                      {new Date(project.createdAt).toLocaleDateString(t('common.locale'), {
                         day: 'numeric',
                         month: 'long',
                         year: 'numeric'
@@ -477,13 +469,13 @@ export default function AccountSection({
                     </p>
                   </div>
                   <div className={`p-3.5 rounded-xl ${darkMode ? 'bg-gray-900/50' : 'bg-gray-50'}`}>
-                    <p className={`text-xs mb-1 ${darkMode ? 'text-gray-500' : 'text-gray-400'}`}>Type dienst</p>
+                    <p className={`text-xs mb-1 ${darkMode ? 'text-gray-500' : 'text-gray-400'}`}>{t('account.serviceType')}</p>
                     <p className={`font-medium capitalize ${darkMode ? 'text-white' : 'text-gray-900'}`}>
-                      {serviceTypeLabels[project.serviceType || 'website'] || 'Website'}
+                      {t(`account.${project.serviceType || 'website'}`)}
                     </p>
                   </div>
                   <div className={`p-3.5 rounded-xl ${darkMode ? 'bg-gray-900/50' : 'bg-gray-50'}`}>
-                    <p className={`text-xs mb-1 ${darkMode ? 'text-gray-500' : 'text-gray-400'}`}>Pakket</p>
+                    <p className={`text-xs mb-1 ${darkMode ? 'text-gray-500' : 'text-gray-400'}`}>{t('account.package.title')}</p>
                     <p className={`font-medium ${darkMode ? 'text-white' : 'text-gray-900'}`}>{currentPackage.name}</p>
                   </div>
                 </div>
@@ -518,7 +510,7 @@ export default function AccountSection({
                   }`} />
                 </div>
                 <h3 className={`font-semibold ${darkMode ? 'text-white' : 'text-gray-900'}`}>
-                  Betalingsstatus
+                  {t('account.paymentStatus')}
                 </h3>
               </div>
 
@@ -530,10 +522,10 @@ export default function AccountSection({
                     <CheckCircle2 className="w-6 h-6 text-green-500" />
                     <div>
                       <p className={`font-medium ${darkMode ? 'text-green-400' : 'text-green-700'}`}>
-                        Betaling ontvangen ✓
+                        {t('account.paymentReceived')}
                       </p>
                       <p className={`text-sm ${darkMode ? 'text-green-400/70' : 'text-green-600'}`}>
-                        Eenmalige opstartkosten: €{currentPackage.setupFee}
+                        {t('account.setupFee')}: €{currentPackage.setupFee}
                       </p>
                     </div>
                   </div>
@@ -549,24 +541,24 @@ export default function AccountSection({
                       </div>
                       <div>
                         <p className={`font-medium mb-1 ${darkMode ? 'text-blue-400' : 'text-blue-700'}`}>
-                          Nog geen betaling nodig
+                          {t('account.noPaymentYet')}
                         </p>
                         <p className={`text-sm ${darkMode ? 'text-blue-400/70' : 'text-blue-600'}`}>
-                          Je betaalt pas nadat je het design hebt goedgekeurd. Eerst kijken, dan beslissen!
+                          {t('account.noPaymentDescription')}
                         </p>
                       </div>
                     </div>
                     
                     <div className={`p-4 rounded-xl ${darkMode ? 'bg-gray-900/50' : 'bg-gray-50'}`}>
                       <p className={`text-sm font-medium mb-2 ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>
-                        Na goedkeuring design:
+                        {t('account.afterApproval')}
                       </p>
                       <div className="flex items-baseline gap-2">
                         <span className={`text-2xl font-bold ${darkMode ? 'text-white' : 'text-gray-900'}`}>
                           €{currentPackage.setupFee}
                         </span>
                         <span className={`text-sm ${darkMode ? 'text-gray-500' : 'text-gray-500'}`}>
-                          eenmalige opstartkosten
+                          {t('account.oneTimeSetup')}
                         </span>
                       </div>
                     </div>
@@ -589,10 +581,10 @@ export default function AccountSection({
                 </div>
                 <div>
                   <h3 className={`font-semibold ${darkMode ? 'text-white' : 'text-gray-900'}`}>
-                    Maandelijks abonnement
+                    {t('account.monthlySubscription')}
                   </h3>
                   <p className={`text-xs ${darkMode ? 'text-gray-500' : 'text-gray-400'}`}>
-                    Start na oplevering website
+                    {t('account.startsAfterDelivery')}
                   </p>
                 </div>
               </div>
@@ -604,26 +596,26 @@ export default function AccountSection({
                 }`}>
                   <div>
                     <p className={`text-xs font-medium mb-1 ${darkMode ? 'text-primary-400' : 'text-primary-600'}`}>
-                      {currentPackage.name} pakket
+                      {t('account.packageName', { name: currentPackage.name })}
                     </p>
                     <div className="flex items-baseline gap-1">
                       <span className={`text-3xl font-bold ${darkMode ? 'text-white' : 'text-gray-900'}`}>
                         €{currentPackage.price}
                       </span>
-                      <span className={`text-sm ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>/maand</span>
+                      <span className={`text-sm ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>{t('account.package.perMonth')}</span>
                     </div>
                   </div>
                   <div className={`px-3 py-1 rounded-full text-xs font-medium ${
                     darkMode ? 'bg-green-500/20 text-green-400' : 'bg-green-100 text-green-700'
                   }`}>
-                    Geen contract
+                    {t('account.noContract')}
                   </div>
                 </div>
                 
                 {/* What's included */}
                 <div className="space-y-3">
                   <p className={`text-xs font-semibold uppercase tracking-wide ${darkMode ? 'text-gray-500' : 'text-gray-400'}`}>
-                    Dit zit erin
+                    {t('account.whatsIncluded')}
                   </p>
                   
                   <div className={`grid gap-2`}>
@@ -633,10 +625,10 @@ export default function AccountSection({
                       </div>
                       <div>
                         <p className={`text-sm font-medium ${darkMode ? 'text-white' : 'text-gray-900'}`}>
-                          Hosting & domein
+                          {t('account.hosting')}
                         </p>
                         <p className={`text-xs ${darkMode ? 'text-gray-500' : 'text-gray-400'}`}>
-                          Je website staat altijd online
+                          {t('account.hostingDesc')}
                         </p>
                       </div>
                     </div>
@@ -647,10 +639,10 @@ export default function AccountSection({
                       </div>
                       <div>
                         <p className={`text-sm font-medium ${darkMode ? 'text-white' : 'text-gray-900'}`}>
-                          {currentPackage.changesPerMonth} wijzigingen per maand
+                          {t('account.changesPerMonthCount', { count: currentPackage.changesPerMonth })}
                         </p>
                         <p className={`text-xs ${darkMode ? 'text-gray-500' : 'text-gray-400'}`}>
-                          Teksten, foto's of kleine aanpassingen
+                          {t('account.changesDesc')}
                         </p>
                       </div>
                     </div>
@@ -661,10 +653,10 @@ export default function AccountSection({
                       </div>
                       <div>
                         <p className={`text-sm font-medium ${darkMode ? 'text-white' : 'text-gray-900'}`}>
-                          SSL-certificaat & beveiliging
+                          {t('account.sslSecurity')}
                         </p>
                         <p className={`text-xs ${darkMode ? 'text-gray-500' : 'text-gray-400'}`}>
-                          Veilig voor jou en je bezoekers
+                          {t('account.sslDesc')}
                         </p>
                       </div>
                     </div>
@@ -675,10 +667,10 @@ export default function AccountSection({
                       </div>
                       <div>
                         <p className={`text-sm font-medium ${darkMode ? 'text-white' : 'text-gray-900'}`}>
-                          Onderhoud & updates
+                          {t('account.maintenance')}
                         </p>
                         <p className={`text-xs ${darkMode ? 'text-gray-500' : 'text-gray-400'}`}>
-                          Wij houden alles up-to-date
+                          {t('account.maintenanceDesc')}
                         </p>
                       </div>
                     </div>
@@ -689,10 +681,10 @@ export default function AccountSection({
                       </div>
                       <div>
                         <p className={`text-sm font-medium ${darkMode ? 'text-white' : 'text-gray-900'}`}>
-                          Support via chat
+                          {t('account.chatSupport')}
                         </p>
                         <p className={`text-xs ${darkMode ? 'text-gray-500' : 'text-gray-400'}`}>
-                          Vragen? Wij helpen je snel
+                          {t('account.chatSupportDesc')}
                         </p>
                       </div>
                     </div>
@@ -704,7 +696,7 @@ export default function AccountSection({
                   darkMode ? 'border-gray-700 bg-gray-900/30' : 'border-gray-200 bg-gray-50/50'
                 }`}>
                   <p className={`text-xs text-center ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>
-                    💡 Maandelijks opzegbaar - geen lange contracten, geen gedoe
+                    {t('account.cancelAnytime')}
                   </p>
                 </div>
               </div>
@@ -734,10 +726,10 @@ export default function AccountSection({
                     </div>
                     <div>
                       <h3 className={`font-bold ${darkMode ? 'text-white' : 'text-gray-900'}`}>
-                        {currentPackage.name} pakket
+                        {t('account.packageName', { name: currentPackage.name })}
                       </h3>
                       <p className={`text-sm ${darkMode ? 'text-gray-400' : 'text-gray-600'}`}>
-                        Je huidige pakket
+                        {t('account.package.yourCurrentPackage')}
                       </p>
                     </div>
                   </div>
@@ -745,14 +737,14 @@ export default function AccountSection({
                     <span className={`text-2xl font-bold ${darkMode ? 'text-white' : 'text-gray-900'}`}>
                       €{currentPackage.price}
                     </span>
-                    <span className={`${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>/maand</span>
+                    <span className={`${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>{t('account.package.perMonth')}</span>
                   </div>
                 </div>
               </div>
 
               <div className="p-5">
                 <h4 className={`text-sm font-medium mb-3 ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>
-                  Inbegrepen in je pakket
+                  {t('account.package.includedInPackage')}
                 </h4>
                 <ul className="space-y-2.5">
                   {currentPackage.features.slice(0, 6).map((feature, i) => (
@@ -784,10 +776,10 @@ export default function AccountSection({
                   </div>
                   <div>
                     <h4 className={`font-medium mb-1 ${darkMode ? 'text-amber-400' : 'text-amber-700'}`}>
-                      Meer nodig?
+                      {t('account.package.needMore')}
                     </h4>
                     <p className={`text-sm ${darkMode ? 'text-amber-400/70' : 'text-amber-600'}`}>
-                      Neem contact op om je pakket te upgraden en meer functies te ontgrendelen.
+                      {t('account.package.upgradeDescription')}
                     </p>
                   </div>
                 </div>

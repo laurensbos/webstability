@@ -1,5 +1,6 @@
 {
   "common": {
+    "locale": "nl-NL",
     "loading": "Laden...",
     "save": "Opslaan",
     "cancel": "Annuleren",
@@ -51,7 +52,8 @@
     "myProject": "Mijn project",
     "startProject": "Start project",
     "howItWorks": "Hoe het werkt",
-    "knowledgeBase": "Kennisbank"
+    "knowledgeBase": "Kennisbank",
+    "startNow": "Start nu"
   },
   "header": {
     "services": {
@@ -246,6 +248,340 @@
       }
     }
   },
+  "packages": {
+    "categories": {
+      "website": "Website",
+      "features": "Functionaliteiten",
+      "seo": "SEO & Technisch",
+      "seoAnalytics": "SEO & Analytics",
+      "support": "Support & Onderhoud",
+      "integrations": "Integraties"
+    },
+    "responseTime": {
+      "48hours": "48 uur",
+      "24hours": "24 uur",
+      "4hours": "4 uur"
+    },
+    "delivery": {
+      "withinDays": "Binnen {{days}} werkdagen",
+      "withinWeeks": "Binnen {{weeks}} weken"
+    },
+    "included": {
+      "hosting": "Hosting & SSL-certificaat",
+      "domain": "Domein beheer",
+      "maintenance": "Onderhoud & updates",
+      "support": "Persoonlijke support",
+      "monthlyChanges": "Maandelijkse aanpassingen",
+      "seo": "SEO geoptimaliseerd"
+    },
+    "trust": {
+      "noHiddenCosts": "Geen verborgen kosten",
+      "monthlyCancellable": "Maandelijks opzegbaar",
+      "moneyBack": "14 dagen geld-terug"
+    },
+    "starter": {
+      "tagline": "Ideaal om te beginnen",
+      "description": "Perfect voor ZZP'ers en kleine ondernemers die online willen starten met een professionele uitstraling.",
+      "features": {
+        "0": "Tot 5 pagina's",
+        "1": "Responsive design",
+        "2": "Contactformulier + WhatsApp button",
+        "3": "Google Maps integratie",
+        "4": "Basis SEO-optimalisatie",
+        "5": "SSL-certificaat + hosting"
+      },
+      "detailed": {
+        "website": {
+          "0": "Tot 5 pagina's (Home, Over ons, Diensten, Contact, etc.)",
+          "1": "Volledig responsive design (mobiel, tablet, desktop)",
+          "2": "Modern en clean ontwerp passend bij je huisstijl",
+          "3": "Snelle laadtijden (< 3 seconden)"
+        },
+        "features": {
+          "0": "Contactformulier met e-mailnotificaties",
+          "1": "Google Maps locatie integratie",
+          "2": "Social media iconen met links",
+          "3": "Click-to-call telefoonknop",
+          "4": "WhatsApp chat button"
+        },
+        "seo": {
+          "0": "Basis SEO-optimalisatie (meta titles, descriptions)",
+          "1": "SSL-certificaat (https://)",
+          "2": "Snelle hosting in Nederland",
+          "3": "Wekelijkse backups"
+        },
+        "support": {
+          "0": "2 tekstwijzigingen per maand inbegrepen",
+          "1": "E-mail support (48u reactietijd)",
+          "2": "Technisch onderhoud & updates",
+          "3": "Uptime monitoring",
+          "4": "Wekelijkse backups"
+        }
+      }
+    },
+    "professional": {
+      "name": "Professioneel",
+      "tagline": "Voor groeiende ondernemers",
+      "description": "Voor ondernemers die serieus willen groeien. Meer pagina's, betere SEO en uitgebreidere functionaliteiten.",
+      "features": {
+        "0": "Tot 10 pagina's",
+        "1": "Alles van Starter +",
+        "2": "Blog functionaliteit",
+        "3": "Google Analytics dashboard",
+        "4": "Uitgebreide SEO + rapportages",
+        "5": "Onbeperkt tekstwijzigingen"
+      },
+      "detailed": {
+        "website": {
+          "0": "Tot 10 pagina's volledig op maat",
+          "1": "Premium responsive design",
+          "2": "Animaties en interactieve elementen",
+          "3": "Geoptimaliseerd voor conversie",
+          "4": "Meerdere call-to-actions"
+        },
+        "features": {
+          "0": "Alles van Starter pakket +",
+          "1": "Blog met categorieën en tags",
+          "2": "Nieuwsbrief aanmeldformulier",
+          "3": "FAQ sectie met accordion",
+          "4": "Afbeeldingen galerij/portfolio",
+          "5": "Reviews/testimonials sectie"
+        },
+        "seoAnalytics": {
+          "0": "Uitgebreide SEO-optimalisatie",
+          "1": "Google Analytics 4 integratie",
+          "2": "Google Search Console setup",
+          "3": "Maandelijkse SEO rapportage",
+          "4": "Sitemap & robots.txt",
+          "5": "Schema markup voor Google"
+        },
+        "support": {
+          "0": "Onbeperkt tekstwijzigingen per maand",
+          "1": "E-mail & WhatsApp support (24u reactietijd)",
+          "2": "Maandelijks onderhoud & updates",
+          "3": "Prioriteit bij technische issues",
+          "4": "Dagelijkse backups"
+        }
+      }
+    },
+    "business": {
+      "tagline": "Complete oplossing",
+      "description": "Voor gevestigde bedrijven die het beste willen. Volledige vrijheid, premium support en geavanceerde functionaliteiten.",
+      "features": {
+        "0": "Tot 20+ pagina's",
+        "1": "Alles van Professioneel +",
+        "2": "Online boekingssysteem",
+        "3": "Meertalige website (NL/EN/DE)",
+        "4": "CRM/Nieuwsbrief integratie",
+        "5": "Dedicated accountmanager"
+      },
+      "detailed": {
+        "website": {
+          "0": "Tot 20+ pagina's (geen limiet bij doorlopend project)",
+          "1": "Premium custom design door senior designer",
+          "2": "Geavanceerde animaties en micro-interacties",
+          "3": "Conversion-geoptimaliseerde landingspagina's",
+          "4": "A/B testing mogelijkheden"
+        },
+        "features": {
+          "0": "Alles van Professioneel pakket +",
+          "1": "Online boekings-/afsprakensysteem",
+          "2": "Meertalige website (NL/EN/DE)",
+          "3": "Klantenportaal met login",
+          "4": "Formulieren met voorwaardelijke logica",
+          "5": "PDF downloads en bronnen bibliotheek",
+          "6": "Video integraties (Vimeo/YouTube)"
+        },
+        "integrations": {
+          "0": "Mailchimp/ActiveCampaign integratie",
+          "1": "CRM koppeling (HubSpot, Salesforce)",
+          "2": "Boekhoud integratie (Exact, Moneybird)",
+          "3": "Calendly/Cal.com booking",
+          "4": "Zapier automatiseringen",
+          "5": "Custom API koppelingen"
+        },
+        "support": {
+          "0": "Onbeperkt wijzigingen (tekst, afbeeldingen, kleine aanpassingen)",
+          "1": "Dedicated accountmanager",
+          "2": "Telefoon, e-mail & WhatsApp support",
+          "3": "Same-day response bij urgente issues",
+          "4": "Kwartaal strategie call",
+          "5": "Realtime uptime monitoring met alerts"
+        }
+      }
+    }
+  },
+  "webshopPackages": {
+    "categories": {
+      "webshop": "Webshop",
+      "payments": "Betalingen",
+      "shipping": "Verzending",
+      "shippingLogistics": "Verzending & Logistiek",
+      "shippingFulfilment": "Verzending & Fulfilment",
+      "management": "Beheer & Support",
+      "managementIntegrations": "Beheer & Integraties",
+      "marketing": "Marketing & Klanten",
+      "b2b": "B2B Functionaliteiten",
+      "analytics": "Analytics & Rapportages",
+      "integrationsApi": "Integraties & API"
+    },
+    "starter": {
+      "tagline": "Start met verkopen",
+      "description": "Perfect om te beginnen met online verkopen. Alle basis functionaliteiten voor een succesvolle start.",
+      "features": {
+        "0": "Tot 100 producten",
+        "1": "iDEAL, creditcard & PayPal",
+        "2": "PostNL integratie",
+        "3": "Order management",
+        "4": "Automatische facturen",
+        "5": "Mobiel-geoptimaliseerd design"
+      },
+      "detailed": {
+        "webshop": {
+          "0": "Tot 100 producten met varianten",
+          "1": "Professioneel responsive design",
+          "2": "Productcategorieën en filters",
+          "3": "Zoekfunctie",
+          "4": "Productafbeeldingen gallery"
+        },
+        "payments": {
+          "0": "iDEAL (alle banken)",
+          "1": "Creditcard (Visa, Mastercard)",
+          "2": "PayPal",
+          "3": "Bancontact (België)",
+          "4": "Veilige checkout (PCI compliant)",
+          "5": "Automatische facturen"
+        },
+        "shipping": {
+          "0": "PostNL integratie",
+          "1": "Vast verzendtarief",
+          "2": "Gratis verzending vanaf bedrag",
+          "3": "Track & trace voor klanten"
+        },
+        "management": {
+          "0": "Eenvoudig productbeheer",
+          "1": "Order notificaties via e-mail",
+          "2": "Basis voorraadwaarschuwingen",
+          "3": "E-mail support (48u reactietijd)",
+          "4": "Wekelijkse backups"
+        }
+      }
+    },
+    "professional": {
+      "tagline": "Voor groeiende webshops",
+      "description": "Voor serieuze webshops die willen groeien. Alle betaalmethodes, geavanceerde verzending en marketing tools.",
+      "features": {
+        "0": "Tot 500 producten",
+        "1": "Alle betaalmethodes + Klarna",
+        "2": "PostNL + DHL integratie",
+        "3": "Kortingscodes & acties",
+        "4": "Klantaccounts + reviews",
+        "5": "Boekhoudkoppeling"
+      },
+      "detailed": {
+        "webshop": {
+          "0": "Tot 500 producten met onbeperkte varianten",
+          "1": "Premium custom design",
+          "2": "Geavanceerde productfilters",
+          "3": "Product vergelijken",
+          "4": "Recent bekeken producten",
+          "5": "Cross-sell en upsell mogelijkheden"
+        },
+        "payments": {
+          "0": "Alle iDEAL banken",
+          "1": "Creditcard (Visa, Mastercard, Amex)",
+          "2": "PayPal",
+          "3": "Klarna (achteraf betalen)",
+          "4": "Apple Pay & Google Pay",
+          "5": "Bancontact & SOFORT"
+        },
+        "shippingLogistics": {
+          "0": "PostNL & DHL integratie",
+          "1": "Automatische verzendlabels",
+          "2": "Meerdere verzendmethodes",
+          "3": "Afhalen in winkel",
+          "4": "Verzendkosten per gewicht/zone",
+          "5": "Track & trace notificaties"
+        },
+        "marketing": {
+          "0": "Kortingscodes (%, vast bedrag, gratis verzending)",
+          "1": "Klantaccounts met orderhistorie",
+          "2": "Verlaten winkelwagen e-mails",
+          "3": "Nieuwsbrief integratie",
+          "4": "Google Shopping feed",
+          "5": "Facebook Pixel integratie"
+        },
+        "managementIntegrations": {
+          "0": "Koppeling Exact/Moneybird/e-Boekhouden",
+          "1": "Voorraad synchronisatie",
+          "2": "Export naar Excel/CSV",
+          "3": "WhatsApp & e-mail support (24u)",
+          "4": "Dagelijkse backups"
+        }
+      }
+    },
+    "business": {
+      "tagline": "Enterprise oplossing",
+      "description": "Complete e-commerce oplossing voor ambitieuze ondernemers. Onbeperkt producten, B2B functionaliteiten en premium support.",
+      "features": {
+        "0": "Onbeperkt producten",
+        "1": "B2B functionaliteiten",
+        "2": "Multi-carrier verzending",
+        "3": "Geavanceerde rapportages",
+        "4": "API koppelingen",
+        "5": "Dedicated accountmanager"
+      },
+      "detailed": {
+        "webshop": {
+          "0": "Onbeperkt producten",
+          "1": "Premium enterprise design",
+          "2": "Mega menu navigatie",
+          "3": "Geavanceerde zoek met autocomplete",
+          "4": "Productbundels en sets",
+          "5": "Digitale producten (downloads)"
+        },
+        "b2b": {
+          "0": "B2B klantgroepen met staffelprijzen",
+          "1": "Offerte aanvraag systeem",
+          "2": "Inkooporders en goedkeuring",
+          "3": "BTW-vrije verkoop aan zakelijk",
+          "4": "Minimum bestelwaarde per klantgroep",
+          "5": "Gepersonaliseerde catalogi"
+        },
+        "shippingFulfilment": {
+          "0": "PostNL, DHL, DPD, UPS integratie",
+          "1": "Fulfilment center koppeling",
+          "2": "Dropshipping integratie",
+          "3": "Internationale verzending",
+          "4": "Verzendregels per product/categorie",
+          "5": "Retourportaal voor klanten"
+        },
+        "analytics": {
+          "0": "Real-time sales dashboard",
+          "1": "Geavanceerde verkooprapporten",
+          "2": "Klantwaarde analyse (CLV)",
+          "3": "Voorraad- en omzetprognoses",
+          "4": "Custom rapportages op aanvraag"
+        },
+        "integrationsApi": {
+          "0": "REST API toegang",
+          "1": "ERP/WMS koppelingen",
+          "2": "PIM systeem integratie",
+          "3": "Channable/Channeble feed",
+          "4": "Bol.com/Amazon marketplace sync",
+          "5": "Custom webhook triggers"
+        },
+        "support": {
+          "0": "Dedicated accountmanager",
+          "1": "Telefoon & WhatsApp support",
+          "2": "Same-day response",
+          "3": "Maandelijkse strategie call",
+          "4": "Onbeperkte wijzigingen",
+          "5": "99.9% uptime garantie"
+        }
+      }
+    }
+  },
   "testimonials": {
     "title": "Wat klanten zeggen",
     "subtitle": "Echte reviews van ondernemers op Trustpilot",
@@ -314,7 +650,37 @@
       "privacy": "Privacy",
       "terms": "Algemene voorwaarden"
     },
-    "rights": "Alle rechten voorbehouden"
+    "rights": "Alle rechten voorbehouden",
+    "cta": {
+      "default": {
+        "badge": "Binnen 7 dagen online",
+        "title": "Laat je website bouwen door",
+        "highlight": "experts",
+        "description": "50+ ondernemers gingen je voor. Professioneel design, razendsnelle hosting en persoonlijke support. Vanaf €119/maand (incl. BTW).",
+        "buttonText": "Start je project"
+      },
+      "webshop": {
+        "badge": "Complete e-commerce oplossing",
+        "title": "Start vandaag nog met",
+        "highlight": "online verkopen",
+        "description": "Professionele webshop met betalingen, verzending en voorraadbeheer. Wij bouwen, jij verkoopt. Vanaf €399/maand (incl. BTW).",
+        "buttonText": "Start je webshop"
+      },
+      "logo": {
+        "badge": "Professioneel logo ontwerp",
+        "title": "Geef je merk een",
+        "highlight": "sterke identiteit",
+        "description": "Uniek logo ontwerp met 3 concepten en 2 revisierondes. Inclusief alle bestandsformaten. Binnen 2 weken klaar.",
+        "buttonText": "Start je logo project"
+      },
+      "drone": {
+        "badge": "Gecertificeerde piloten",
+        "title": "Til je content naar een",
+        "highlight": "hoger niveau",
+        "description": "Spectaculaire luchtopnames van je bedrijf. 4K video, bewerkte foto's en snelle levering. Heel Nederland.",
+        "buttonText": "Vraag luchtopnames aan"
+      }
+    }
   },
   "contact": {
     "title": "Contact",
@@ -456,12 +822,52 @@
     "package": {
       "title": "Mijn pakket",
       "current": "Huidig pakket",
+      "yourCurrentPackage": "Je huidige pakket",
       "perMonth": "/maand",
       "features": "Inclusief",
       "revisions": "Revisierondes",
       "changesPerMonth": "Wijzigingen per maand",
       "upgrade": "Upgraden",
-      "contact": "Neem contact op"
+      "contact": "Neem contact op",
+      "includedInPackage": "Inbegrepen in je pakket",
+      "needMore": "Meer nodig?",
+      "upgradeDescription": "Neem contact op om je pakket te upgraden en meer functies te ontgrendelen."
+    },
+    "paymentStatus": "Betalingsstatus",
+    "paymentReceived": "Betaling ontvangen ✓",
+    "setupFee": "Eenmalige opstartkosten",
+    "noPaymentYet": "Nog geen betaling nodig",
+    "noPaymentDescription": "Je betaalt pas nadat je het design hebt goedgekeurd. Eerst kijken, dan beslissen!",
+    "afterApproval": "Na goedkeuring design:",
+    "oneTimeSetup": "eenmalige opstartkosten",
+    "monthlySubscription": "Maandelijks abonnement",
+    "startsAfterDelivery": "Start na oplevering website",
+    "packageName": "{{name}} pakket",
+    "noContract": "Geen contract",
+    "whatsIncluded": "Dit zit erin",
+    "hosting": "Hosting & domein",
+    "hostingDesc": "Je website staat altijd online",
+    "changesPerMonthCount": "{{count}} wijzigingen per maand",
+    "changesDesc": "Teksten, foto's of kleine aanpassingen",
+    "sslSecurity": "SSL-certificaat & beveiliging",
+    "sslDesc": "Veilig voor jou en je bezoekers",
+    "maintenance": "Onderhoud & updates",
+    "maintenanceDesc": "Wij houden alles up-to-date",
+    "chatSupport": "Support via chat",
+    "chatSupportDesc": "Vragen? Wij helpen je snel",
+    "cancelAnytime": "💡 Maandelijks opzegbaar - geen lange contracten, geen gedoe",
+    "contactDetails": "Contactgegevens",
+    "notFilled": "Niet ingevuld",
+    "company": "Bedrijf",
+    "contact": "Contact",
+    "email": "E-mail",
+    "phone": "Telefoon",
+    "contactPerson": "Contactpersoon",
+    "placeholders": {
+      "businessName": "Je bedrijfsnaam",
+      "contactName": "Je naam",
+      "email": "jouw@email.nl",
+      "phone": "+31 6 12345678"
     }
   },
   "packagePhaseCard": {
@@ -1098,6 +1504,24 @@
           "features": ["50+ foto's", "Meerdere locaties", "3 min video", "Spoedlevering"]
         }
       }
+    },
+    "priceNote": {
+      "monthly": "per maand incl. btw",
+      "oneTime": "eenmalig incl. btw"
+    },
+    "drone": {
+      "starter": {
+        "name": "Basis",
+        "features": ["10 bewerkte foto's", "1 locatie", "Digitale levering", "Binnen 5 dagen"]
+      },
+      "professional": {
+        "name": "Professioneel",
+        "features": ["25 bewerkte foto's", "1-2 locaties", "1 min video", "Binnen 3 dagen"]
+      },
+      "business": {
+        "name": "Premium",
+        "features": ["50+ foto's", "Meerdere locaties", "3 min video", "Spoedlevering"]
+      }
     }
   },
   "thankYou": {
@@ -1432,7 +1856,9 @@
   "reviews": {
     "title": "Wat onze klanten zeggen",
     "subtitle": "Echte reviews van ondernemers op Trustpilot",
-    "reviews": "reviews"
+    "reviews": "reviews",
+    "customerViaTrustpilot": "Klant via Trustpilot",
+    "ownerStudioLisa": "Eigenaar, Studio Lisa"
   },
   "socialProof": {
     "signedUp": "Heeft zich aangemeld",
@@ -2104,6 +2530,116 @@
       }
     },
     "formSteps": {
+      "packageConfig": {
+        "starter": {
+          "name": "Starter",
+          "price": "€119/maand"
+        },
+        "professional": {
+          "name": "Professioneel",
+          "price": "€149/maand"
+        },
+        "business": {
+          "name": "Business",
+          "price": "€199/maand"
+        }
+      },
+      "upgradePrompt": {
+        "packageRequired": "{{feature}} - {{package}} pakket vereist",
+        "currentPackageNoFeature": "Je huidige pakket ({{package}}) bevat deze functie niet.",
+        "upgradeToPackage": "Upgrade naar {{package}}"
+      },
+      "colorPalettes": {
+        "modernBlue": "Modern Blauw",
+        "freshGreen": "Fris Groen",
+        "warmOrange": "Warm Oranje",
+        "royalPurple": "Koninklijk Paars",
+        "elegantPink": "Elegant Roze",
+        "oceanTeal": "Oceaan Teal",
+        "sunsetCoral": "Zonsondergang Koraal",
+        "businessGrey": "Zakelijk Grijs"
+      },
+      "fontCombinations": {
+        "modern": {
+          "name": "Modern & Strak",
+          "description": "Strak en professioneel"
+        },
+        "elegant": {
+          "name": "Elegant & Klassiek",
+          "description": "Tijdloos en luxueus"
+        },
+        "bold": {
+          "name": "Krachtig & Opvallend",
+          "description": "Sterk en opvallend"
+        },
+        "friendly": {
+          "name": "Vriendelijk & Warm",
+          "description": "Toegankelijk en warm"
+        },
+        "creative": {
+          "name": "Creatief & Uniek",
+          "description": "Creatief en uniek"
+        },
+        "funky": {
+          "name": "Speels & Gedurfd",
+          "description": "Opvallend en speels"
+        },
+        "retro": {
+          "name": "Retro Sfeer",
+          "description": "Vintage met een twist"
+        },
+        "tech": {
+          "name": "Tech & Startup",
+          "description": "Modern en technisch"
+        },
+        "luxury": {
+          "name": "Luxe & Premium",
+          "description": "Exclusief en verfijnd"
+        },
+        "playful": {
+          "name": "Speels & Vrolijk",
+          "description": "Vrolijk en energiek"
+        },
+        "preview": "Welkom bij uw bedrijf"
+      },
+      "designStyles": {
+        "minimalist": {
+          "name": "Minimalistisch",
+          "description": "Veel witruimte, clean & rustig"
+        },
+        "modern": {
+          "name": "Modern & Strak",
+          "description": "Scherpe lijnen, professioneel"
+        },
+        "creative": {
+          "name": "Creatief & Speels",
+          "description": "Kleurrijk, gedurfd, uniek"
+        },
+        "warm": {
+          "name": "Warm & Persoonlijk",
+          "description": "Uitnodigend, vriendelijk"
+        },
+        "luxury": {
+          "name": "Luxe & Elegant",
+          "description": "Premium, verfijnd, exclusief"
+        }
+      },
+      "colorPicker": {
+        "colors": {
+          "blue": "Blauw",
+          "green": "Groen",
+          "red": "Rood",
+          "orange": "Oranje",
+          "purple": "Paars",
+          "pink": "Roze",
+          "teal": "Teal",
+          "yellow": "Geel",
+          "black": "Zwart",
+          "white": "Wit"
+        },
+        "customColor": "Eigen kleur toevoegen",
+        "customColors": "Je eigen kleuren"
+      },
       "branding": {
         "title": "Branding & Huisstijl",
         "subtitle": "Maak je website uniek",
@@ -2445,7 +2981,8 @@
       "forgotPassword": "Wachtwoord vergeten?",
       "project": "Project",
       "sslSecure": "SSL beveiligd",
-      "alwaysAccess": "24/7 toegang"
+      "alwaysAccess": "24/7 toegang",
+      "failed": "Inloggen mislukt."
     },
     "loading": {
       "title": "Project laden...",
@@ -2454,7 +2991,8 @@
     "error": {
       "title": "Er ging iets mis",
       "projectNotFound": "Project niet gevonden",
-      "tryAgain": "Probeer opnieuw"
+      "tryAgain": "Probeer opnieuw",
+      "somethingWentWrong": "Er ging iets mis."
     },
     "phases": {
       "onboarding": "Onboarding",
@@ -2573,7 +3111,9 @@
     "pending": "Openstaand",
     "draft": "Concept",
     "pay": "Betalen",
-    "invoicesPaidCount": "{{paid}} van {{total}} facturen betaald"
+    "invoicesPaidCount": "{{paid}} van {{total}} facturen betaald",
+    "seoDescription": "Bekijk de voortgang van het project voor {{businessName}}. Huidige fase: {{phase}}.",
+    "seoDescriptionDefault": "Bekijk de voortgang van je website project bij Webstability."
   },
   "designFeedback": {
     "title": "Design Feedback",

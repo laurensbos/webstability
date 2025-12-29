@@ -10,32 +10,33 @@ const trustpilotData = {
   stars: 5,
 }
 
-const trustpilotReviews = [
+// Review data with translation keys for roles
+const trustpilotReviewsData = [
   {
     quote: 'Perfect understanding of my specific needs in a surprisingly short time, given the rather niched domain of my activity. Fast delivery. Very pleased with the result.',
     author: 'Ene Claudiu',
-    role: 'Klant via Trustpilot',
+    roleKey: 'reviews.customerViaTrustpilot',
     rating: 5,
     verified: true,
   },
   {
     quote: 'Supersnelle service en een prachtig eindresultaat. Laurens denkt echt met je mee en levert kwaliteit. Absolute aanrader!',
     author: 'Wesley',
-    role: 'Klant via Trustpilot',
+    roleKey: 'reviews.customerViaTrustpilot',
     rating: 5,
     verified: true,
   },
   {
     quote: 'Heel blij met mijn nieuwe website! Professioneel, snel en precies wat ik zocht. De communicatie was top en alles werd duidelijk uitgelegd.',
     author: 'Charlotte',
-    role: 'Klant via Trustpilot',
+    roleKey: 'reviews.customerViaTrustpilot',
     rating: 5,
     verified: true,
   },
   {
     quote: 'Eindelijk een partij die gewoon levert wat ze beloven. Mijn website was binnen een week live en ziet er fantastisch uit.',
     author: 'Lisa de Vries',
-    role: 'Eigenaar, Studio Lisa',
+    roleKey: 'reviews.ownerStudioLisa',
     rating: 5,
     verified: true,
   },
@@ -64,6 +65,12 @@ interface TrustpilotReviewsProps {
 
 export default function TrustpilotReviews({ className = '' }: TrustpilotReviewsProps) {
   const { t } = useTranslation()
+
+  // Map reviews with translated roles
+  const trustpilotReviews = trustpilotReviewsData.map(review => ({
+    ...review,
+    role: t(review.roleKey),
+  }))
   
   return (
     <section className={`py-20 lg:py-28 bg-white dark:bg-gray-900 relative overflow-hidden ${className}`}>
