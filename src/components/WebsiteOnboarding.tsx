@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
+import { useTranslation } from 'react-i18next'
 import { 
   Globe, 
   ArrowRight, 
@@ -93,89 +94,34 @@ function validateDiscount(code: string, setupFee: number): { valid: boolean; dis
   }
 }
 
-// Packages - matching /websites page
-const PACKAGES: PackageType[] = [
-  {
-    id: 'starter',
-    name: 'Starter',
-    price: '€119',
-    priceLabel: '/maand incl. BTW',
-    setupFee: 99,
-    monthlyFee: 99,
-    tagline: 'Ideaal om te beginnen',
-    description: 'Perfect voor ZZP\'ers en kleine ondernemers die een professionele online aanwezigheid willen.',
-    features: [
-      'Tot 5 pagina\'s',
-      'Responsive design',
-      'Contactformulier',
-      'Google Maps integratie'
-    ],
-    gradient: 'from-blue-500 to-cyan-500',
-  },
-  {
-    id: 'professional',
-    name: 'Professioneel',
-    price: '€149',
-    priceLabel: '/maand incl. BTW',
-    setupFee: 179,
-    monthlyFee: 149,
-    tagline: 'Voor serieuze ondernemers',
-    description: 'Voor ondernemers die meer willen dan een visitekaartje. Met blog en analytics.',
-    features: [
-      'Tot 10 pagina\'s',
-      'Alles van Starter +',
-      'Blog functionaliteit',
-      'Social media integratie',
-      'Google Analytics'
-    ],
-    gradient: 'from-primary-500 to-blue-500',
-    popular: true,
-  },
-  {
-    id: 'business',
-    name: 'Business',
-    price: '€199',
-    priceLabel: '/maand incl. BTW',
-    setupFee: 239,
-    monthlyFee: 199,
-    tagline: 'Voor groeiende bedrijven',
-    description: 'Alle tools om je bedrijf online te laten groeien met boekingssysteem en meer.',
-    features: [
-      'Tot 20 pagina\'s',
-      'Alles van Professioneel +',
-      'Online boekingssysteem',
-      'Nieuwsbrief integratie',
-      'Meerdere talen'
-    ],
-    gradient: 'from-purple-500 to-pink-500',
-  },
+// Step IDs met icons - titles komen uit translations
+const STEPS_BASE = [
+  { id: 1, key: 'package', icon: Globe },
+  { id: 2, key: 'business', icon: Building2 },
+  { id: 3, key: 'design', icon: Palette },
+  { id: 4, key: 'goal', icon: Target },
+  { id: 5, key: 'pages', icon: FileText },
+  { id: 6, key: 'account', icon: Lock },
 ]
 
-const STEPS = [
-  { id: 1, title: 'Pakket', icon: Globe },
-  { id: 2, title: 'Bedrijf', icon: Building2 },
-  { id: 3, title: 'Design', icon: Palette },
-  { id: 4, title: 'Doel', icon: Target },
-  { id: 5, title: 'Pagina\'s', icon: FileText },
-  { id: 6, title: 'Account', icon: Lock },
+// Color options met IDs - namen komen uit translations
+const COLOR_OPTIONS_BASE = [
+  { id: 'blue', color: 'bg-blue-500', hex: '#3B82F6' },
+  { id: 'green', color: 'bg-green-500', hex: '#22C55E' },
+  { id: 'red', color: 'bg-red-500', hex: '#EF4444' },
+  { id: 'orange', color: 'bg-orange-500', hex: '#F97316' },
+  { id: 'purple', color: 'bg-purple-500', hex: '#A855F7' },
+  { id: 'black', color: 'bg-gray-900', hex: '#111827' },
+  { id: 'gold', color: 'bg-amber-500', hex: '#F59E0B' },
+  { id: 'pink', color: 'bg-pink-500', hex: '#EC4899' },
+  { id: 'teal', color: 'bg-teal-500', hex: '#14B8A6' },
+  { id: 'indigo', color: 'bg-indigo-500', hex: '#6366F1' },
 ]
 
-const COLOR_OPTIONS = [
-  { id: 'blauw', name: 'Blauw', color: 'bg-blue-500', hex: '#3B82F6' },
-  { id: 'groen', name: 'Groen', color: 'bg-green-500', hex: '#22C55E' },
-  { id: 'rood', name: 'Rood', color: 'bg-red-500', hex: '#EF4444' },
-  { id: 'oranje', name: 'Oranje', color: 'bg-orange-500', hex: '#F97316' },
-  { id: 'paars', name: 'Paars', color: 'bg-purple-500', hex: '#A855F7' },
-  { id: 'zwart', name: 'Zwart', color: 'bg-gray-900', hex: '#111827' },
-  { id: 'goud', name: 'Goud', color: 'bg-amber-500', hex: '#F59E0B' },
-  { id: 'roze', name: 'Roze', color: 'bg-pink-500', hex: '#EC4899' },
-  { id: 'teal', name: 'Teal', color: 'bg-teal-500', hex: '#14B8A6' },
-  { id: 'indigo', name: 'Indigo', color: 'bg-indigo-500', hex: '#6366F1' },
-]
-
-const PAGE_OPTIONS = [
-  'Home', 'Over ons', 'Diensten', 'Portfolio', 'Contact', 
-  'Blog', 'FAQ', 'Prijzen', 'Team', 'Vacatures'
+// Page option IDs - labels komen uit translations
+const PAGE_OPTIONS_BASE = [
+  'home', 'about', 'services', 'portfolio', 'contact', 
+  'blog', 'faq', 'pricing', 'team', 'careers'
 ]
 
 // Package limits for pages
@@ -236,7 +182,66 @@ export default function WebsiteOnboarding({
   initialPackage,
   onClose 
 }: WebsiteOnboardingProps) {
+  const { t } = useTranslation()
   const navigate = useNavigate()
+
+  // Translated packages
+  const PACKAGES: PackageType[] = [
+    {
+      id: 'starter',
+      name: t('onboarding.websiteOnboarding.packages.starter.name'),
+      price: t('onboarding.websiteOnboarding.packages.starter.price'),
+      priceLabel: t('onboarding.websiteOnboarding.step1.perMonthVat'),
+      setupFee: 99,
+      monthlyFee: 99,
+      tagline: t('onboarding.websiteOnboarding.packages.starter.tagline'),
+      description: t('onboarding.websiteOnboarding.packages.starter.description'),
+      features: t('onboarding.websiteOnboarding.packages.starter.features', { returnObjects: true }) as string[],
+      gradient: 'from-blue-500 to-cyan-500',
+    },
+    {
+      id: 'professional',
+      name: t('onboarding.websiteOnboarding.packages.professional.name'),
+      price: t('onboarding.websiteOnboarding.packages.professional.price'),
+      priceLabel: t('onboarding.websiteOnboarding.step1.perMonthVat'),
+      setupFee: 179,
+      monthlyFee: 149,
+      tagline: t('onboarding.websiteOnboarding.packages.professional.tagline'),
+      description: t('onboarding.websiteOnboarding.packages.professional.description'),
+      features: t('onboarding.websiteOnboarding.packages.professional.features', { returnObjects: true }) as string[],
+      gradient: 'from-primary-500 to-blue-500',
+      popular: true,
+    },
+    {
+      id: 'business',
+      name: t('onboarding.websiteOnboarding.packages.business.name'),
+      price: t('onboarding.websiteOnboarding.packages.business.price'),
+      priceLabel: t('onboarding.websiteOnboarding.step1.perMonthVat'),
+      setupFee: 239,
+      monthlyFee: 199,
+      tagline: t('onboarding.websiteOnboarding.packages.business.tagline'),
+      description: t('onboarding.websiteOnboarding.packages.business.description'),
+      features: t('onboarding.websiteOnboarding.packages.business.features', { returnObjects: true }) as string[],
+      gradient: 'from-purple-500 to-pink-500',
+    },
+  ]
+
+  // Translated steps
+  const STEPS = STEPS_BASE.map(step => ({
+    ...step,
+    title: t(`onboarding.websiteOnboarding.steps.${step.key}`)
+  }))
+
+  // Translated color options
+  const COLOR_OPTIONS = COLOR_OPTIONS_BASE.map(color => ({
+    ...color,
+    name: t(`onboarding.websiteOnboarding.colors.${color.id}`)
+  }))
+
+  // Translated page options
+  const PAGE_OPTIONS = PAGE_OPTIONS_BASE.map(pageId => 
+    t(`onboarding.websiteOnboarding.pageOptions.${pageId}`)
+  )
   const [currentStep, setCurrentStep] = useState(initialPackage ? 2 : 1)
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [showPassword, setShowPassword] = useState(false)
@@ -286,7 +291,7 @@ export default function WebsiteOnboarding({
   // Check discount code
   const checkDiscountCode = () => {
     if (!formData.discountCode.trim()) {
-      setDiscountError('Voer een kortingscode in')
+      setDiscountError(t('onboarding.websiteOnboarding.discount.enterCode'))
       return
     }
     
@@ -301,7 +306,11 @@ export default function WebsiteOnboarding({
         setAppliedDiscount(result.discount)
         setDiscountError('')
       } else {
-        setDiscountError(result.error || 'Ongeldige code')
+        // Map error types to translation keys
+        const errorKey = result.error?.includes('niet gevonden') ? 'notFound' 
+          : result.error?.includes('verlopen') ? 'expired' 
+          : 'invalid'
+        setDiscountError(t(`onboarding.websiteOnboarding.discount.${errorKey}`))
         setAppliedDiscount(null)
       }
       
@@ -521,17 +530,17 @@ export default function WebsiteOnboarding({
               <div>
                 <div className="text-center mb-8">
                   <h2 className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white mb-2">
-                    Kies je pakket
+                    {t('onboarding.websiteOnboarding.step1.title')}
                   </h2>
                   <p className="text-gray-600 dark:text-gray-400">
-                    Selecteer het pakket dat het beste bij jouw wensen past
+                    {t('onboarding.websiteOnboarding.step1.subtitle')}
                   </p>
                 </div>
 
                 {/* Mobile: swipe to compare */}
                 <div className="sm:hidden">
                   <div className="flex items-center justify-center gap-2 text-xs text-gray-400 dark:text-gray-500 mb-3">
-                    <span>Swipe om te vergelijken</span>
+                    <span>{t('onboarding.websiteOnboarding.step1.scrollHint')}</span>
                     <ArrowRight className="w-3 h-3" />
                   </div>
 
@@ -562,7 +571,7 @@ export default function WebsiteOnboarding({
                         <div className="text-2xl font-bold text-gray-900 dark:text-white mb-0.5">
                           {pkg.price}<span className="text-sm font-normal text-gray-500 dark:text-gray-400">{pkg.priceLabel || '/maand'}</span>
                         </div>
-                        <p className="text-xs text-gray-500 dark:text-gray-400 mb-3">+ €{pkg.setupFee},- eenmalige opstartkosten</p>
+                        <p className="text-xs text-gray-500 dark:text-gray-400 mb-3">{t('onboarding.websiteOnboarding.step1.setupFee', { fee: pkg.setupFee })}</p>
                         <p className="text-sm text-gray-600 dark:text-gray-400 mb-4">{pkg.description}</p>
                         <ul className="space-y-2">
                           {pkg.features.map((feature, i) => (
@@ -620,7 +629,7 @@ export default function WebsiteOnboarding({
                       <div className="text-2xl font-bold text-gray-900 dark:text-white mb-0.5">
                         {pkg.price}<span className="text-sm font-normal text-gray-500 dark:text-gray-400">{pkg.priceLabel || '/maand'}</span>
                       </div>
-                      <p className="text-xs text-gray-500 dark:text-gray-400 mb-3">+ €{pkg.setupFee},- eenmalige opstartkosten</p>
+                      <p className="text-xs text-gray-500 dark:text-gray-400 mb-3">{t('onboarding.websiteOnboarding.step1.setupFee', { fee: pkg.setupFee })}</p>
                       <p className="text-sm text-gray-600 dark:text-gray-400 mb-4">{pkg.description}</p>
                       <ul className="space-y-2">
                         {pkg.features.map((feature, i) => (
@@ -641,50 +650,50 @@ export default function WebsiteOnboarding({
               <div>
                 <div className="text-center mb-8">
                   <h2 className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white mb-2">
-                    Vertel over je bedrijf
+                    {t('onboarding.websiteOnboarding.step2.title')}
                   </h2>
                   <p className="text-gray-600 dark:text-gray-400">
-                    Zo kunnen we de website perfect afstemmen op jouw business
+                    {t('onboarding.websiteOnboarding.step2.subtitle')}
                   </p>
                 </div>
 
                 <div className="space-y-6 max-w-lg mx-auto">
                   <div>
                     <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                      Bedrijfsnaam *
+                      {t('onboarding.websiteOnboarding.step2.companyName')}
                     </label>
                     <input
                       type="text"
                       value={formData.companyName}
                       onChange={(e) => updateFormData('companyName', e.target.value)}
                       className="w-full px-4 py-3 rounded-xl border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-primary-500 focus:border-transparent"
-                      placeholder="Jouw Bedrijf B.V."
+                      placeholder={t('onboarding.websiteOnboarding.step2.companyNamePlaceholder')}
                     />
                   </div>
 
                   <div>
                     <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                      Branche *
+                      {t('onboarding.websiteOnboarding.step2.industry')}
                     </label>
                     <input
                       type="text"
                       value={formData.industry}
                       onChange={(e) => updateFormData('industry', e.target.value)}
                       className="w-full px-4 py-3 rounded-xl border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-primary-500 focus:border-transparent"
-                      placeholder="bijv. Horeca, IT, Retail..."
+                      placeholder={t('onboarding.websiteOnboarding.step2.industryPlaceholder')}
                     />
                   </div>
 
                   <div>
                     <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                      Huidige website (optioneel)
+                      {t('onboarding.websiteOnboarding.step2.currentWebsite')}
                     </label>
                     <input
                       type="url"
                       value={formData.currentWebsite}
                       onChange={(e) => updateFormData('currentWebsite', e.target.value)}
                       className="w-full px-4 py-3 rounded-xl border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-primary-500 focus:border-transparent"
-                      placeholder="https://www.jouwwebsite.nl"
+                      placeholder={t('onboarding.websiteOnboarding.step2.currentWebsitePlaceholder')}
                     />
                   </div>
                 </div>
@@ -696,31 +705,31 @@ export default function WebsiteOnboarding({
               <div>
                 <div className="text-center mb-8">
                   <h2 className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white mb-2">
-                    Design voorkeuren
+                    {t('onboarding.websiteOnboarding.step3.title')}
                   </h2>
                   <p className="text-gray-600 dark:text-gray-400">
-                    Welke stijl past het beste bij jouw merk?
+                    {t('onboarding.websiteOnboarding.step3.subtitle')}
                   </p>
                 </div>
 
                 <div className="space-y-6 max-w-lg mx-auto">
                   <div>
                     <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                      Design stijl *
+                      {t('onboarding.websiteOnboarding.step3.styleLabel')}
                     </label>
                     <div className="grid grid-cols-2 gap-3">
-                      {['Minimalistisch', 'Modern', 'Creatief', 'Zakelijk'].map((style) => (
+                      {['minimalistisch', 'modern', 'speels', 'zakelijk'].map((styleKey) => (
                         <button
-                          key={style}
-                          onClick={() => updateFormData('designStyle', style)}
+                          key={styleKey}
+                          onClick={() => updateFormData('designStyle', styleKey)}
                           className={`p-4 rounded-xl border-2 text-center transition-all ${
-                            formData.designStyle === style
+                            formData.designStyle === styleKey
                               ? `border-primary-500 bg-primary-50 dark:bg-primary-900/20`
                               : 'border-gray-200 dark:border-gray-700 hover:border-gray-300'
                           }`}
                         >
-                          <span className={`font-medium ${formData.designStyle === style ? 'text-primary-600 dark:text-primary-400' : 'text-gray-700 dark:text-gray-300'}`}>
-                            {style}
+                          <span className={`font-medium ${formData.designStyle === styleKey ? 'text-primary-600 dark:text-primary-400' : 'text-gray-700 dark:text-gray-300'}`}>
+                            {t(`onboarding.websiteOnboarding.designStyles.${styleKey}`)}
                           </span>
                         </button>
                       ))}
@@ -729,7 +738,7 @@ export default function WebsiteOnboarding({
 
                   <div>
                     <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                      Kleurvoorkeur (optioneel) <span className="text-gray-400 font-normal">- selecteer 1 of meer</span>
+                      {t('onboarding.websiteOnboarding.step3.colorLabel')} <span className="text-gray-400 font-normal">- {t('onboarding.websiteOnboarding.step3.colorHint')}</span>
                     </label>
                     <div className="grid grid-cols-5 sm:grid-cols-10 gap-2 mb-3">
                       {COLOR_OPTIONS.map((color) => {
@@ -787,7 +796,7 @@ export default function WebsiteOnboarding({
                           value={formData.customColor}
                           onChange={(e) => updateFormData('customColor', e.target.value)}
                           className="w-full pl-12 pr-4 py-3 rounded-xl border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-primary-500 focus:border-transparent"
-                          placeholder="Of typ een kleur / hex code"
+                          placeholder={t('onboarding.websiteOnboarding.step3.orCustomColor')}
                         />
                         <div 
                           className="absolute left-3 top-1/2 -translate-y-1/2 w-6 h-6 rounded-md border border-gray-300 dark:border-gray-600"
@@ -833,31 +842,31 @@ export default function WebsiteOnboarding({
               <div>
                 <div className="text-center mb-8">
                   <h2 className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white mb-2">
-                    Wat wil je bereiken?
+                    {t('onboarding.websiteOnboarding.step4.title')}
                   </h2>
                   <p className="text-gray-600 dark:text-gray-400">
-                    Vertel ons over je doelen en doelgroep
+                    {t('onboarding.websiteOnboarding.step4.subtitle')}
                   </p>
                 </div>
 
                 <div className="space-y-6 max-w-lg mx-auto">
                   <div>
                     <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                      Hoofddoel van de website *
+                      {t('onboarding.websiteOnboarding.step4.title')} *
                     </label>
                     <div className="grid grid-cols-2 gap-3">
-                      {['Meer leads', 'Verkopen', 'Informeren', 'Branding'].map((goal) => (
+                      {['leads', 'brand', 'info', 'sell'].map((goalKey) => (
                         <button
-                          key={goal}
-                          onClick={() => updateFormData('goal', goal)}
+                          key={goalKey}
+                          onClick={() => updateFormData('goal', goalKey)}
                           className={`p-4 rounded-xl border-2 text-center transition-all ${
-                            formData.goal === goal
+                            formData.goal === goalKey
                               ? `border-primary-500 bg-primary-50 dark:bg-primary-900/20`
                               : 'border-gray-200 dark:border-gray-700 hover:border-gray-300'
                           }`}
                         >
-                          <span className={`font-medium ${formData.goal === goal ? 'text-primary-600 dark:text-primary-400' : 'text-gray-700 dark:text-gray-300'}`}>
-                            {goal}
+                          <span className={`font-medium ${formData.goal === goalKey ? 'text-primary-600 dark:text-primary-400' : 'text-gray-700 dark:text-gray-300'}`}>
+                            {t(`onboarding.websiteOnboarding.step4.goals.${goalKey}`)}
                           </span>
                         </button>
                       ))}
@@ -866,27 +875,14 @@ export default function WebsiteOnboarding({
 
                   <div>
                     <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                      Doelgroep (optioneel)
-                    </label>
-                    <input
-                      type="text"
-                      value={formData.targetAudience}
-                      onChange={(e) => updateFormData('targetAudience', e.target.value)}
-                      className="w-full px-4 py-3 rounded-xl border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-primary-500 focus:border-transparent"
-                      placeholder="bijv. MKB-ondernemers, 30-50 jaar"
-                    />
-                  </div>
-
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                      Wat maakt je uniek? (optioneel)
+                      {t('onboarding.websiteOnboarding.step4.uniqueFeatures')}
                     </label>
                     <textarea
                       value={formData.uniqueFeatures}
                       onChange={(e) => updateFormData('uniqueFeatures', e.target.value)}
                       rows={3}
                       className="w-full px-4 py-3 rounded-xl border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-primary-500 focus:border-transparent resize-none"
-                      placeholder="Wat onderscheidt jouw bedrijf van anderen..."
+                      placeholder={t('onboarding.websiteOnboarding.step4.uniqueFeaturesPlaceholder')}
                     />
                   </div>
                 </div>
@@ -898,10 +894,10 @@ export default function WebsiteOnboarding({
               <div>
                 <div className="text-center mb-8">
                   <h2 className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white mb-2">
-                    Welke pagina's wil je?
+                    {t('onboarding.websiteOnboarding.step5.title')}
                   </h2>
                   <p className="text-gray-600 dark:text-gray-400 mb-4">
-                    Je kunt tot {getPageLimit()} pagina's kiezen met het {selectedPackage?.name} pakket
+                    {t('onboarding.websiteOnboarding.step5.subtitle', { limit: getPageLimit(), package: selectedPackage?.name })}
                   </p>
                 </div>
 
@@ -928,10 +924,10 @@ export default function WebsiteOnboarding({
                               <Sparkles className="w-8 h-8 text-white" />
                             </div>
                             <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-2">
-                              Meer pagina's nodig?
+                              {t('onboarding.websiteOnboarding.upgrade.needMorePages')}
                             </h3>
                             <p className="text-gray-600 dark:text-gray-400">
-                              Je hebt de limiet van {getPageLimit()} pagina's bereikt met het {selectedPackage?.name} pakket.
+                              {t('onboarding.websiteOnboarding.step5.subtitle', { limit: getPageLimit(), package: selectedPackage?.name })}
                             </p>
                           </div>
                           
@@ -942,7 +938,7 @@ export default function WebsiteOnboarding({
                                 <span className="text-primary-600 dark:text-primary-400 font-bold">{getNextPackage()?.price}</span>
                               </div>
                               <p className="text-sm text-gray-600 dark:text-gray-400 mb-3">
-                                Tot {PACKAGE_PAGE_LIMITS[getNextPackage()?.id || ''] || 10} pagina's + extra features
+                                {t('onboarding.websiteOnboarding.upgrade.upToPages', { limit: PACKAGE_PAGE_LIMITS[getNextPackage()?.id || ''] || 10 })}
                               </p>
                               <ul className="text-sm text-gray-600 dark:text-gray-400 space-y-1">
                                 {getNextPackage()?.features.slice(0, 3).map((f, i) => (
@@ -967,7 +963,7 @@ export default function WebsiteOnboarding({
                                 onClick={() => handleUpgrade(getNextPackage()!.id)}
                                 className="flex-1 px-4 py-3 rounded-xl bg-gradient-to-r from-primary-500 to-blue-500 text-white font-medium hover:shadow-lg transition-all"
                               >
-                                Upgraden
+                                {t('onboarding.websiteOnboarding.upgrade.upgradeButton')}
                               </button>
                             )}
                           </div>
@@ -1002,27 +998,27 @@ export default function WebsiteOnboarding({
 
                   <div>
                     <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                      Extra wensen (optioneel)
+                      {t('onboarding.websiteOnboarding.step5.extraWishes')}
                     </label>
                     <textarea
                       value={formData.extraFeatures}
                       onChange={(e) => updateFormData('extraFeatures', e.target.value)}
                       rows={3}
                       className="w-full px-4 py-3 rounded-xl border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-primary-500 focus:border-transparent resize-none"
-                      placeholder="Andere pagina's of functionaliteiten..."
+                      placeholder={t('onboarding.websiteOnboarding.step5.extraWishesPlaceholder')}
                     />
                   </div>
 
                   <div className="flex items-center justify-between mt-4">
                     <p className="text-sm text-gray-500 dark:text-gray-400">
-                      Geselecteerd: {formData.pages.length}/{getPageLimit()} pagina's
+                      {t('onboarding.websiteOnboarding.step5.selectedPages', { count: formData.pages.length, limit: getPageLimit() })}
                     </p>
                     {formData.pages.length >= getPageLimit() && getNextPackage() && (
                       <button
                         onClick={() => setShowUpgradePrompt(true)}
                         className="text-sm text-primary-600 dark:text-primary-400 hover:underline font-medium"
                       >
-                        Meer nodig? Upgrade →
+                        {t('onboarding.websiteOnboarding.upgrade.upgradePrompt')}
                       </button>
                     )}
                   </div>
@@ -1035,43 +1031,30 @@ export default function WebsiteOnboarding({
               <div>
                 <div className="text-center mb-8">
                   <h2 className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white mb-2">
-                    Maak je account aan
+                    {t('onboarding.websiteOnboarding.step6.title')}
                   </h2>
                   <p className="text-gray-600 dark:text-gray-400">
-                    Hiermee kun je je project volgen en beheren
+                    {t('onboarding.websiteOnboarding.step6.subtitle')}
                   </p>
                 </div>
 
                 <div className="space-y-6 max-w-lg mx-auto">
                   <div>
                     <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                      E-mailadres *
+                      {t('onboarding.websiteOnboarding.step6.email')}
                     </label>
                     <input
                       type="email"
                       value={formData.email}
                       onChange={(e) => updateFormData('email', e.target.value)}
                       className="w-full px-4 py-3 rounded-xl border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-primary-500 focus:border-transparent"
-                      placeholder="jouw@email.nl"
+                      placeholder={t('onboarding.websiteOnboarding.step6.emailPlaceholder')}
                     />
                   </div>
 
                   <div>
                     <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                      Telefoonnummer (optioneel)
-                    </label>
-                    <input
-                      type="tel"
-                      value={formData.phone}
-                      onChange={(e) => updateFormData('phone', e.target.value)}
-                      className="w-full px-4 py-3 rounded-xl border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-primary-500 focus:border-transparent"
-                      placeholder="06-12345678"
-                    />
-                  </div>
-
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                      Wachtwoord *
+                      {t('onboarding.websiteOnboarding.step6.password')}
                     </label>
                     <div className="relative">
                       <input
@@ -1079,7 +1062,7 @@ export default function WebsiteOnboarding({
                         value={formData.password}
                         onChange={(e) => updateFormData('password', e.target.value)}
                         className="w-full px-4 py-3 pr-12 rounded-xl border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-primary-500 focus:border-transparent"
-                        placeholder="Minimaal 6 karakters"
+                        placeholder={t('onboarding.websiteOnboarding.step6.passwordPlaceholder')}
                       />
                       <button
                         type="button"
@@ -1093,7 +1076,7 @@ export default function WebsiteOnboarding({
 
                   <div>
                     <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                      Bevestig wachtwoord *
+                      {t('onboarding.websiteOnboarding.step6.password')}
                     </label>
                     <div className="relative">
                       <input
@@ -1101,7 +1084,7 @@ export default function WebsiteOnboarding({
                         value={formData.confirmPassword}
                         onChange={(e) => updateFormData('confirmPassword', e.target.value)}
                         className="w-full px-4 py-3 pr-12 rounded-xl border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-primary-500 focus:border-transparent"
-                        placeholder="Herhaal je wachtwoord"
+                        placeholder={t('onboarding.websiteOnboarding.step6.passwordPlaceholder')}
                       />
                       <button
                         type="button"
@@ -1112,7 +1095,7 @@ export default function WebsiteOnboarding({
                       </button>
                     </div>
                     {formData.confirmPassword && formData.password !== formData.confirmPassword && (
-                      <p className="text-red-500 text-sm mt-1">Wachtwoorden komen niet overeen</p>
+                      <p className="text-red-500 text-sm mt-1">{t('onboarding.websiteOnboarding.validation.passwordMismatch')}</p>
                     )}
                   </div>
 
@@ -1126,13 +1109,13 @@ export default function WebsiteOnboarding({
                     {/* Package Info */}
                     <div className="mb-4 pb-4 border-b border-white/20">
                       <div className="flex items-center justify-between mb-1">
-                        <span className="text-white/80">Pakket</span>
+                        <span className="text-white/80">{t('onboarding.websiteOnboarding.summary.package')}</span>
                         <span className="font-semibold text-white">
                           {selectedPackage?.name}
                         </span>
                       </div>
                       <div className="flex items-center justify-between text-sm">
-                        <span className="text-white/70">Bedrijf</span>
+                        <span className="text-white/70">{t('onboarding.websiteOnboarding.summary.company')}</span>
                         <span className="text-white">{formData.companyName}</span>
                       </div>
                     </div>
@@ -1140,7 +1123,7 @@ export default function WebsiteOnboarding({
                     {/* Cost Breakdown */}
                     <div className="space-y-3">
                       <div className="flex items-center justify-between">
-                        <span className="text-white/80">Eenmalige opstartkosten</span>
+                        <span className="text-white/80">{t('onboarding.websiteOnboarding.pricing.oneTimeSetup')}</span>
                         <div className="text-right">
                           {appliedDiscount && appliedDiscount.setupDiscount > 0 ? (
                             <>
@@ -1153,7 +1136,7 @@ export default function WebsiteOnboarding({
                         </div>
                       </div>
                       <div className="flex items-center justify-between">
-                        <span className="text-white/80">Maandelijks abonnement</span>
+                        <span className="text-white/80">{t('onboarding.websiteOnboarding.pricing.monthlySubscription')}</span>
                         <span className="font-medium text-white">€{finalMonthlyFee},-</span>
                       </div>
                     </div>
@@ -1219,7 +1202,7 @@ export default function WebsiteOnboarding({
                       <div className="flex items-center justify-between">
                         <div>
                           <span className="font-semibold text-white">Eerste maand</span>
-                          <p className="text-xs text-white/60">Incl. opstartkosten</p>
+                          <p className="text-xs text-white/60">{t('onboarding.websiteOnboarding.pricing.inclSetup')}</p>
                         </div>
                         <div className="text-right">
                           {appliedDiscount && appliedDiscount.setupDiscount > 0 && (
@@ -1233,20 +1216,20 @@ export default function WebsiteOnboarding({
                         </div>
                       </div>
                       <div className="flex items-center justify-between mt-2 text-sm">
-                        <span className="text-white/60">Daarna per maand</span>
+                        <span className="text-white/60">{t('onboarding.websiteOnboarding.pricing.thenPerMonth')}</span>
                         <span className="font-medium text-white">€{finalMonthlyFee},-</span>
                       </div>
                       {appliedDiscount && (
                         <div className="mt-3 p-2 bg-green-500/20 rounded-lg">
                           <p className="text-sm text-green-200 text-center font-medium">
-                            🎉 Je bespaart €{appliedDiscount.setupDiscount + appliedDiscount.monthlyDiscount},-!
+                            {t('onboarding.websiteOnboarding.pricing.youSave', { amount: appliedDiscount.setupDiscount + appliedDiscount.monthlyDiscount })}
                           </p>
                         </div>
                       )}
                     </div>
 
                     <p className="text-xs text-white/50 mt-4 text-center">
-                      Alle prijzen zijn inclusief BTW • Maandelijks opzegbaar
+                      {t('onboarding.websiteOnboarding.pricing.allPricesIncVat')}
                     </p>
                   </div>
                 </div>
@@ -1262,7 +1245,7 @@ export default function WebsiteOnboarding({
             className="flex-1 px-4 py-3 rounded-lg bg-gray-100 dark:bg-gray-700 text-gray-900 dark:text-white font-semibold transition-all flex items-center justify-center gap-2 hover:bg-gray-200 dark:hover:bg-gray-600"
           >
             <ArrowLeft className="w-5 h-5" />
-            Terug
+            {t('onboarding.websiteOnboarding.navigation.previous')}
           </button>
 
           {currentStep < 6 ? (
@@ -1275,7 +1258,7 @@ export default function WebsiteOnboarding({
                   : 'bg-gray-200 dark:bg-gray-700 text-gray-500 cursor-not-allowed'
               }`}
             >
-              Volgende
+              {t('onboarding.websiteOnboarding.navigation.next')}
               <ArrowRight className="w-5 h-5" />
             </button>
           ) : (
@@ -1291,11 +1274,11 @@ export default function WebsiteOnboarding({
               {isSubmitting ? (
                 <>
                   <Loader2 className="w-5 h-5 animate-spin" />
-                  Versturen...
+                  {t('onboarding.websiteOnboarding.navigation.submitting')}
                 </>
               ) : (
                 <>
-                  Verstuur aanvraag
+                  {t('onboarding.websiteOnboarding.navigation.submit')}
                   <Sparkles className="w-5 h-5" />
                 </>
               )}

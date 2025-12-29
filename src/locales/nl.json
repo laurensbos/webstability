@@ -2967,6 +2967,183 @@
           "languages": "Talen"
         }
       }
+    },
+    "websiteOnboarding": {
+      "steps": {
+        "package": "Pakket",
+        "business": "Bedrijf",
+        "design": "Design",
+        "goal": "Doel",
+        "pages": "Pagina's",
+        "account": "Account"
+      },
+      "step1": {
+        "title": "Kies je pakket",
+        "subtitle": "Alle pakketten zijn na 3 maanden maandelijks opzegbaar",
+        "scrollHint": "Scroll voor meer →",
+        "setupFee": "+ €{{fee}},- eenmalige opstartkosten",
+        "perMonth": "/maand",
+        "perMonthVat": "/maand incl. BTW"
+      },
+      "step2": {
+        "title": "Vertel ons over je bedrijf",
+        "subtitle": "Dit gebruiken we om je website te maken",
+        "companyName": "Bedrijfsnaam *",
+        "companyNamePlaceholder": "Jouw Bedrijf B.V.",
+        "industry": "Branche *",
+        "industryPlaceholder": "bijv. Horeca, IT, Retail...",
+        "currentWebsite": "Huidige website (optioneel)",
+        "currentWebsitePlaceholder": "https://www.jouwwebsite.nl"
+      },
+      "step3": {
+        "title": "Design voorkeuren",
+        "subtitle": "Selecteer je gewenste stijl en kleuren",
+        "styleLabel": "Stijlvoorkeur *",
+        "colorLabel": "Kleurvoorkeur (optioneel)",
+        "colorHint": "selecteer 1 of meer",
+        "orCustomColor": "of eigen kleur toevoegen:"
+      },
+      "step4": {
+        "title": "Wat is je doel?",
+        "subtitle": "Help ons begrijpen wat je wilt bereiken",
+        "goals": {
+          "leads": "Meer leads/klanten genereren",
+          "brand": "Betere online uitstraling",
+          "info": "Klanten informeren",
+          "sell": "Producten online verkopen"
+        },
+        "uniqueFeatures": "Wat maakt je uniek? (optioneel)",
+        "uniqueFeaturesPlaceholder": "Wat onderscheidt jouw bedrijf van anderen..."
+      },
+      "step5": {
+        "title": "Welke pagina's wil je?",
+        "subtitle": "Je kunt tot {{limit}} pagina's kiezen met het {{package}} pakket",
+        "limitReached": "Paginalimiet bereikt",
+        "upgradeTitle": "Meer pagina's nodig?",
+        "upgradeDescription": "Upgrade naar {{package}} voor tot {{limit}} pagina's",
+        "upgradeButton": "Upgrade naar {{package}}",
+        "selectedPages": "Geselecteerd: {{count}}/{{limit}} pagina's",
+        "extraWishes": "Extra wensen (optioneel)",
+        "extraWishesPlaceholder": "Andere pagina's of functionaliteiten..."
+      },
+      "step6": {
+        "title": "Maak je account aan",
+        "subtitle": "Om je project te volgen en feedback te geven",
+        "email": "E-mailadres *",
+        "emailPlaceholder": "email@jouwbedrijf.nl",
+        "password": "Wachtwoord *",
+        "passwordPlaceholder": "Min. 8 karakters",
+        "terms": "Ik ga akkoord met de",
+        "termsLink": "algemene voorwaarden",
+        "and": "en het",
+        "privacyLink": "privacybeleid"
+      },
+      "packages": {
+        "starter": {
+          "name": "Starter",
+          "price": "€119",
+          "tagline": "Ideaal om te beginnen",
+          "description": "Perfect voor ZZP'ers en kleine ondernemers die een professionele online aanwezigheid willen.",
+          "features": [
+            "Tot 5 pagina's",
+            "Responsive design",
+            "Contactformulier",
+            "Google Maps integratie"
+          ]
+        },
+        "professional": {
+          "name": "Professioneel",
+          "price": "€149",
+          "tagline": "Voor serieuze ondernemers",
+          "description": "Voor ondernemers die meer willen dan een visitekaartje. Met blog en analytics.",
+          "features": [
+            "Tot 10 pagina's",
+            "Alles van Starter +",
+            "Blog functionaliteit",
+            "Social media integratie",
+            "Google Analytics"
+          ]
+        },
+        "business": {
+          "name": "Business",
+          "price": "€199",
+          "tagline": "Voor groeiende bedrijven",
+          "description": "Alle tools om je bedrijf online te laten groeien met boekingssysteem en meer.",
+          "features": [
+            "Tot 20 pagina's",
+            "Alles van Professioneel +",
+            "Online boekingssysteem",
+            "Nieuwsbrief integratie",
+            "Meerdere talen"
+          ]
+        }
+      },
+      "colors": {
+        "blue": "Blauw",
+        "green": "Groen",
+        "red": "Rood",
+        "orange": "Oranje",
+        "purple": "Paars",
+        "black": "Zwart",
+        "gold": "Goud",
+        "pink": "Roze",
+        "teal": "Teal",
+        "indigo": "Indigo"
+      },
+      "designStyles": {
+        "minimalistisch": "Minimalistisch",
+        "modern": "Modern",
+        "speels": "Speels",
+        "zakelijk": "Zakelijk"
+      },
+      "pageOptions": {
+        "home": "Home",
+        "about": "Over ons",
+        "services": "Diensten",
+        "portfolio": "Portfolio",
+        "contact": "Contact",
+        "blog": "Blog",
+        "faq": "FAQ",
+        "pricing": "Prijzen",
+        "team": "Team",
+        "careers": "Vacatures"
+      },
+      "navigation": {
+        "next": "Volgende",
+        "previous": "Vorige",
+        "submit": "Start project",
+        "submitting": "Bezig..."
+      },
+      "discount": {
+        "noSetupFee": "Geen opstartkosten - Nieuwjaarsactie",
+        "enterCode": "Voer een kortingscode in",
+        "notFound": "Kortingscode niet gevonden",
+        "expired": "Deze kortingscode is verlopen",
+        "invalid": "Ongeldige code"
+      },
+      "validation": {
+        "passwordMismatch": "Wachtwoorden komen niet overeen"
+      },
+      "pricing": {
+        "oneTimeSetup": "Eenmalige opstartkosten",
+        "monthlySubscription": "Maandelijks abonnement",
+        "allPricesIncVat": "Alle prijzen zijn inclusief BTW • Maandelijks opzegbaar",
+        "inclSetup": "Incl. opstartkosten",
+        "youSave": "🎉 Je bespaart €{{amount}},-!",
+        "thenPerMonth": "Daarna per maand"
+      },
+      "upgrade": {
+        "needMorePages": "Meer pagina's nodig?",
+        "upgradeFor": "Upgrade voor tot {{limit}} pagina's",
+        "upgradeButton": "Upgraden",
+        "upgradePrompt": "Meer nodig? Upgrade →",
+        "cancel": "Annuleren",
+        "upToPages": "Tot {{limit}} pagina's + extra features"
+      },
+      "summary": {
+        "package": "Pakket",
+        "company": "Bedrijf"
+      }
     }
   },
   "projectStatus": {

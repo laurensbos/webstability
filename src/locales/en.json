@@ -1903,6 +1903,183 @@
           "languages": "Languages"
         }
       }
+    },
+    "websiteOnboarding": {
+      "steps": {
+        "package": "Package",
+        "business": "Business",
+        "design": "Design",
+        "goal": "Goal",
+        "pages": "Pages",
+        "account": "Account"
+      },
+      "step1": {
+        "title": "Choose your package",
+        "subtitle": "All packages are monthly cancellable after 3 months",
+        "scrollHint": "Scroll for more →",
+        "setupFee": "+ €{{fee}} one-time setup costs",
+        "perMonth": "/month",
+        "perMonthVat": "/month incl. VAT"
+      },
+      "step2": {
+        "title": "Tell us about your business",
+        "subtitle": "We'll use this to create your website",
+        "companyName": "Company name *",
+        "companyNamePlaceholder": "Your Business Ltd.",
+        "industry": "Industry *",
+        "industryPlaceholder": "e.g. Hospitality, IT, Retail...",
+        "currentWebsite": "Current website (optional)",
+        "currentWebsitePlaceholder": "https://www.yourwebsite.com"
+      },
+      "step3": {
+        "title": "Design preferences",
+        "subtitle": "Select your preferred style and colors",
+        "styleLabel": "Style preference *",
+        "colorLabel": "Color preference (optional)",
+        "colorHint": "select 1 or more",
+        "orCustomColor": "or add custom color:"
+      },
+      "step4": {
+        "title": "What is your goal?",
+        "subtitle": "Help us understand what you want to achieve",
+        "goals": {
+          "leads": "Generate more leads/customers",
+          "brand": "Better online presence",
+          "info": "Inform customers",
+          "sell": "Sell products online"
+        },
+        "uniqueFeatures": "What makes you unique? (optional)",
+        "uniqueFeaturesPlaceholder": "What distinguishes your business from others..."
+      },
+      "step5": {
+        "title": "Which pages do you want?",
+        "subtitle": "You can choose up to {{limit}} pages with the {{package}} package",
+        "limitReached": "Page limit reached",
+        "upgradeTitle": "Need more pages?",
+        "upgradeDescription": "Upgrade to {{package}} for up to {{limit}} pages",
+        "upgradeButton": "Upgrade to {{package}}",
+        "selectedPages": "Selected: {{count}}/{{limit}} pages",
+        "extraWishes": "Extra wishes (optional)",
+        "extraWishesPlaceholder": "Other pages or features..."
+      },
+      "step6": {
+        "title": "Create your account",
+        "subtitle": "To track your project and provide feedback",
+        "email": "Email address *",
+        "emailPlaceholder": "email@yourbusiness.com",
+        "password": "Password *",
+        "passwordPlaceholder": "Min. 8 characters",
+        "terms": "I agree to the",
+        "termsLink": "terms and conditions",
+        "and": "and",
+        "privacyLink": "privacy policy"
+      },
+      "packages": {
+        "starter": {
+          "name": "Starter",
+          "price": "€119",
+          "tagline": "Ideal to get started",
+          "description": "Perfect for freelancers and small business owners who want a professional online presence.",
+          "features": [
+            "Up to 5 pages",
+            "Responsive design",
+            "Contact form",
+            "Google Maps integration"
+          ]
+        },
+        "professional": {
+          "name": "Professional",
+          "price": "€149",
+          "tagline": "For serious entrepreneurs",
+          "description": "For entrepreneurs who want more than a business card. With blog and analytics.",
+          "features": [
+            "Up to 10 pages",
+            "Everything from Starter +",
+            "Blog functionality",
+            "Social media integration",
+            "Google Analytics"
+          ]
+        },
+        "business": {
+          "name": "Business",
+          "price": "€199",
+          "tagline": "For growing businesses",
+          "description": "All the tools to grow your business online with booking system and more.",
+          "features": [
+            "Up to 20 pages",
+            "Everything from Professional +",
+            "Online booking system",
+            "Newsletter integration",
+            "Multiple languages"
+          ]
+        }
+      },
+      "colors": {
+        "blue": "Blue",
+        "green": "Green",
+        "red": "Red",
+        "orange": "Orange",
+        "purple": "Purple",
+        "black": "Black",
+        "gold": "Gold",
+        "pink": "Pink",
+        "teal": "Teal",
+        "indigo": "Indigo"
+      },
+      "designStyles": {
+        "minimalistisch": "Minimalist",
+        "modern": "Modern",
+        "speels": "Playful",
+        "zakelijk": "Business"
+      },
+      "pageOptions": {
+        "home": "Home",
+        "about": "About us",
+        "services": "Services",
+        "portfolio": "Portfolio",
+        "contact": "Contact",
+        "blog": "Blog",
+        "faq": "FAQ",
+        "pricing": "Pricing",
+        "team": "Team",
+        "careers": "Careers"
+      },
+      "navigation": {
+        "next": "Next",
+        "previous": "Previous",
+        "submit": "Start project",
+        "submitting": "Processing..."
+      },
+      "discount": {
+        "noSetupFee": "No setup costs - New Year's promotion",
+        "enterCode": "Enter a discount code",
+        "notFound": "Discount code not found",
+        "expired": "This discount code has expired",
+        "invalid": "Invalid code"
+      },
+      "validation": {
+        "passwordMismatch": "Passwords don't match"
+      },
+      "pricing": {
+        "oneTimeSetup": "One-time setup costs",
+        "monthlySubscription": "Monthly subscription",
+        "allPricesIncVat": "All prices include VAT • Cancel monthly",
+        "inclSetup": "Incl. setup costs",
+        "youSave": "🎉 You save €{{amount}}!",
+        "thenPerMonth": "Then per month"
+      },
+      "upgrade": {
+        "needMorePages": "Need more pages?",
+        "upgradeFor": "Upgrade for up to {{limit}} pages",
+        "upgradeButton": "Upgrade",
+        "upgradePrompt": "Need more? Upgrade →",
+        "cancel": "Cancel",
+        "upToPages": "Up to {{limit}} pages + extra features"
+      },
+      "summary": {
+        "package": "Package",
+        "company": "Company"
+      }
     }
   },
   "chat": {
