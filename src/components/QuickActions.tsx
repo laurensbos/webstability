@@ -3,6 +3,10 @@
  * 
  * Context-aware quick actions based on current project phase
  * Gives users fast access to the most relevant actions
+ * 
+ * Features:
+ * - Haptic feedback on button press
+ * - Phase-specific action buttons
  */
 
 import { useTranslation } from 'react-i18next'
@@ -22,6 +26,7 @@ import {
   Sparkles,
   type LucideIcon
 } from 'lucide-react'
+import { useHapticFeedback } from '../hooks/useHapticFeedback'
 
 interface QuickAction {
   id: string
@@ -69,6 +74,7 @@ export default function QuickActions({
   darkMode = true
 }: QuickActionsProps) {
   const { t } = useTranslation()
+  const haptic = useHapticFeedback()
   
   // Define actions based on phase
   const getPhaseActions = (): QuickAction[] => {
@@ -284,7 +290,10 @@ export default function QuickActions({
             return (
               <button
                 key={action.id}
-                onClick={action.onClick}
+                onClick={() => {
+                  haptic.selection()
+                  action.onClick()
+                }}
                 disabled={action.disabled}
                 className={`relative flex-shrink-0 flex items-center gap-2 px-4 py-2.5 rounded-xl transition-all ${
                   variantStyles[action.variant || 'secondary']
@@ -324,7 +333,10 @@ export default function QuickActions({
                 transition={{ delay: index * 0.05 }}
                 whileHover={{ scale: 1.01 }}
                 whileTap={{ scale: 0.99 }}
-                onClick={action.onClick}
+                onClick={() => {
+                  haptic.selection()
+                  action.onClick()
+                }}
                 disabled={action.disabled}
                 className={`relative flex items-center gap-3 p-3 rounded-xl transition-all ${
                   variantStyles[action.variant || 'secondary']

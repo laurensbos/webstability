@@ -6,6 +6,11 @@
  * 2. Give feedback per section (👍/👎)
  * 3. Optionally add comments
  * 4. Submit or approve
+ * 
+ * Features:
+ * - Swipe navigation between sections
+ * - Haptic feedback on interactions
+ * - Auto-save progress to localStorage
  */
 
 import { useState, useEffect, useMemo } from 'react'
@@ -30,10 +35,14 @@ import {
   HelpCircle,
   ZoomIn,
   ZoomOut,
-  RotateCcw
+  RotateCcw,
+  Save
 } from 'lucide-react'
 import { AVAILABLE_FEEDBACK_QUESTIONS } from '../types/project'
 import type { FeedbackQuestionAnswer } from '../types/project'
+import { useHapticFeedback } from '../hooks/useHapticFeedback'
+import { useSwipeNavigation } from '../hooks/useSwipeNavigation'
+import { useProgressPersistence } from '../hooks/useProgressPersistence'
 
 // Section IDs and icons (translations loaded dynamically)
 const SECTION_IDS = ['hero', 'about', 'services', 'features', 'testimonials', 'contact', 'footer'] as const
@@ -125,6 +134,37 @@ export default function DesignFeedbackSections({
   // Use prop sections or defaults
   const sections = sectionsProp || DEFAULT_SECTIONS
 
+  // Haptic feedback for mobile interactions
+  const haptic = useHapticFeedback()
+  
+  // Progress persistence - auto-save feedback to localStorage
+  const {
+    data: savedProgress,
+    setData: saveProgress,
+    wasRestored,
+    clearProgress,
+    lastSaved,
+    hasUnsavedChanges
+  } = useProgressPersistence<{
+    sectionFeedback: SectionFeedback[]
+    generalComment: string
+    questionAnswers: FeedbackQuestionAnswer[]
+    currentSectionIndex: number
+    step: 'intro' | 'sections' | 'questions' | 'summary'
+  }>({
+    key: 'feedback_progress',
+    projectId: designPreviewUrl, // Use URL as unique project identifier
+    initialData: {
+      sectionFeedback: sections.map((s: Section) => ({ sectionId: s.id, rating: null, comment: '', presets: [] })),
+      generalComment: '',
+      questionAnswers: [],
+      currentSectionIndex: 0,
+      step: 'intro'
+    },
+    version: 1,
+    debounceMs: 500
+  })
+
   // Debug: log incoming questions
   console.log('[DesignFeedbackSections] RECEIVED PROPS:')
   console.log('  - feedbackQuestionIds:', JSON.stringify(feedbackQuestionIds))
@@ -202,25 +242,36 @@ export default function DesignFeedbackSections({
     return () => window.removeEventListener('resize', checkMobile)
   }, [])
 
-  // Reset on open
+  // Reset on open - restore saved progress if available
   useEffect(() => {
     if (isOpen) {
       setDevice(isMobile ? 'mobile' : 'desktop')
-      setSectionFeedback(sections.map((s: Section) => ({ sectionId: s.id, rating: null, comment: '', presets: [] })))
-      setCurrentSectionIndex(0)
-      setGeneralComment('')
-      setStep('intro')
       setIframeLoaded(false)
       setShowSuccess(null)
-      // Initialize question answers
-      setQuestionAnswers(allQuestions.map(q => ({
-        questionId: q.id,
-        question: q.question,
-        answer: null,
-        comment: ''
-      })))
+      
+      // If we have saved progress, restore it
+      if (wasRestored && savedProgress.sectionFeedback.length > 0) {
+        setSectionFeedback(savedProgress.sectionFeedback)
+        setGeneralComment(savedProgress.generalComment)
+        setQuestionAnswers(savedProgress.questionAnswers)
+        setCurrentSectionIndex(savedProgress.currentSectionIndex)
+        setStep(savedProgress.step)
+      } else {
+        // Initialize fresh
+        setSectionFeedback(sections.map((s: Section) => ({ sectionId: s.id, rating: null, comment: '', presets: [] })))
+        setCurrentSectionIndex(0)
+        setGeneralComment('')
+        setStep('intro')
+        // Initialize question answers
+        setQuestionAnswers(allQuestions.map(q => ({
+          questionId: q.id,
+          question: q.question,
+          answer: null,
+          comment: ''
+        })))
+      }
     }
-  }, [isOpen, isMobile, sections, allQuestions.length])
+  }, [isOpen, isMobile, sections, allQuestions.length, wasRestored, savedProgress])
 
   // Ensure URL is absolute
   const ensureAbsoluteUrl = (url: string): string => {
@@ -235,46 +286,76 @@ export default function DesignFeedbackSections({
   const currentSection = sections[currentSectionIndex]
   const currentFeedback = sectionFeedback.find(f => f.sectionId === currentSection?.id)
 
-  // Update section feedback
+  // Update section feedback with haptic and persistence
   const updateFeedback = (sectionId: string, update: Partial<SectionFeedback>) => {
-    setSectionFeedback(prev => prev.map(f => 
-      f.sectionId === sectionId ? { ...f, ...update } : f
-    ))
+    // Haptic feedback on rating change
+    if (update.rating) {
+      haptic.selection()
+    }
+    setSectionFeedback(prev => {
+      const updated = prev.map(f => 
+        f.sectionId === sectionId ? { ...f, ...update } : f
+      )
+      // Save progress
+      saveProgress(current => ({ ...current, sectionFeedback: updated }))
+      return updated
+    })
   }
 
-  // Toggle preset selection
+  // Toggle preset selection with haptic
   const togglePreset = (sectionId: string, presetId: string) => {
-    setSectionFeedback(prev => prev.map(f => {
-      if (f.sectionId !== sectionId) return f
-      const hasPreset = f.presets.includes(presetId)
-      return {
-        ...f,
-        presets: hasPreset 
-          ? f.presets.filter(p => p !== presetId)
-          : [...f.presets, presetId]
-      }
-    }))
+    haptic.light()
+    setSectionFeedback(prev => {
+      const updated = prev.map(f => {
+        if (f.sectionId !== sectionId) return f
+        const hasPreset = f.presets.includes(presetId)
+        return {
+          ...f,
+          presets: hasPreset 
+            ? f.presets.filter(p => p !== presetId)
+            : [...f.presets, presetId]
+        }
+      })
+      // Save progress
+      saveProgress(current => ({ ...current, sectionFeedback: updated }))
+      return updated
+    })
   }
 
-  // Navigation
+  // Navigation with haptic
   const goNext = () => {
+    haptic.light()
     if (currentSectionIndex < sections.length - 1) {
-      setCurrentSectionIndex(prev => prev + 1)
+      const newIndex = currentSectionIndex + 1
+      setCurrentSectionIndex(newIndex)
+      saveProgress(current => ({ ...current, currentSectionIndex: newIndex }))
     } else {
       // Go to questions step if there are questions, otherwise summary
       if (hasQuestions) {
         setStep('questions')
+        saveProgress(current => ({ ...current, step: 'questions' }))
       } else {
         setStep('summary')
+        saveProgress(current => ({ ...current, step: 'summary' }))
       }
     }
   }
 
   const goPrev = () => {
+    haptic.light()
     if (currentSectionIndex > 0) {
-      setCurrentSectionIndex(prev => prev - 1)
+      const newIndex = currentSectionIndex - 1
+      setCurrentSectionIndex(newIndex)
+      saveProgress(current => ({ ...current, currentSectionIndex: newIndex }))
     }
   }
+  
+  // Swipe navigation for mobile
+  const swipe = useSwipeNavigation({
+    enabled: step === 'sections',
+    onSwipeLeft: goNext,
+    onSwipeRight: goPrev
+  })
   
   // Update question answer
   const updateQuestionAnswer = (questionId: string, answer: 'yes' | 'no' | null, comment?: string) => {
@@ -338,10 +419,13 @@ export default function DesignFeedbackSections({
       
       if (onApprove) await onApprove()
       triggerConfetti()
+      haptic.success() // Haptic feedback on success
+      clearProgress() // Clear saved progress
       setShowSuccess('approved')
       setTimeout(() => onClose(), 3000)
     } catch (error) {
       console.error('Error approving:', error)
+      haptic.error()
     } finally {
       setIsSubmitting(false)
     }
@@ -366,10 +450,13 @@ export default function DesignFeedbackSections({
       })
       
       if (onFeedbackSubmit) await onFeedbackSubmit()
+      haptic.success() // Haptic feedback on success
+      clearProgress() // Clear saved progress
       setShowSuccess('feedback')
       setTimeout(() => onClose(), 2500)
     } catch (error) {
       console.error('Error submitting feedback:', error)
+      haptic.error()
     } finally {
       setIsSubmitting(false)
     }
@@ -423,7 +510,22 @@ export default function DesignFeedbackSections({
         animate={{ opacity: 1 }}
         exit={{ opacity: 0 }}
         className="fixed inset-0 z-50 bg-black/95 flex flex-col"
+        {...swipe.handlers}
       >
+        {/* Auto-save indicator */}
+        {hasUnsavedChanges && (
+          <div className="fixed top-2 right-16 z-50 flex items-center gap-1.5 px-2 py-1 bg-zinc-800/80 rounded-full text-xs text-zinc-400 backdrop-blur-sm">
+            <Save className="w-3 h-3 animate-pulse" />
+            <span className="hidden sm:inline">{t('common.saving') || 'Saving...'}</span>
+          </div>
+        )}
+        {lastSaved && !hasUnsavedChanges && step !== 'intro' && (
+          <div className="fixed top-2 right-16 z-50 flex items-center gap-1.5 px-2 py-1 bg-zinc-800/80 rounded-full text-xs text-zinc-500 backdrop-blur-sm">
+            <Check className="w-3 h-3" />
+            <span className="hidden sm:inline">{t('common.saved') || 'Saved'}</span>
+          </div>
+        )}
+
         {/* Mobile hint - only visible on mobile */}
         {isMobile && step === 'intro' && (
           <div className="flex-shrink-0 bg-purple-600/20 border-b border-purple-500/30 px-3 sm:px-4 py-2 text-center safe-area-inset-top">

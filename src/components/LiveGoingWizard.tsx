@@ -2,9 +2,14 @@
  * Live Going Wizard
  * Multi-step wizard for domain & email configuration before going live
  * Shown to clients after payment in development/review phase
+ * 
+ * Features:
+ * - Swipe navigation between steps
+ * - Haptic feedback on interactions
+ * - Auto-save progress to localStorage
  */
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useTranslation } from 'react-i18next'
 import { motion, AnimatePresence } from 'framer-motion'
 import {
@@ -19,10 +24,14 @@ import {
   Server,
   Sparkles,
   X,
-  Info
+  Info,
+  Save
 } from 'lucide-react'
 import type { DomainInfo, EmailInfo, LegalInfo, BusinessInfo, LiveGoingData } from './developer/types'
 import { DOMAIN_REGISTRARS, EMAIL_PROVIDERS } from './developer/types'
+import { useHapticFeedback } from '../hooks/useHapticFeedback'
+import { useSwipeNavigation } from '../hooks/useSwipeNavigation'
+import { useProgressPersistence } from '../hooks/useProgressPersistence'
 
 interface LiveGoingWizardProps {
   businessName: string
@@ -81,12 +90,41 @@ export default function LiveGoingWizard({
   const [saving, setSaving] = useState(false)
   const [copied, setCopied] = useState<string | null>(null)
   
-  // Form state
+  // Haptic feedback
+  const haptic = useHapticFeedback()
+  
+  // Progress persistence
+  const {
+    data: savedProgress,
+    setData: saveProgress,
+    wasRestored,
+    clearProgress,
+    lastSaved,
+    hasUnsavedChanges
+  } = useProgressPersistence<{
+    step: number
+    domainInfo: DomainInfo
+    emailInfo: EmailInfo
+    notes: string
+  }>({
+    key: 'livewizard_progress',
+    projectId: businessName,
+    initialData: {
+      step: 1,
+      domainInfo: initialData?.domainInfo || DEFAULT_DOMAIN_INFO,
+      emailInfo: initialData?.emailInfo || DEFAULT_EMAIL_INFO,
+      notes: initialData?.notes || ''
+    },
+    version: 1,
+    debounceMs: 500
+  })
+  
+  // Form state - restore from saved if available
   const [domainInfo, setDomainInfo] = useState<DomainInfo>(
-    initialData?.domainInfo || DEFAULT_DOMAIN_INFO
+    wasRestored ? savedProgress.domainInfo : (initialData?.domainInfo || DEFAULT_DOMAIN_INFO)
   )
   const [emailInfo, setEmailInfo] = useState<EmailInfo>(
-    initialData?.emailInfo || DEFAULT_EMAIL_INFO
+    wasRestored ? savedProgress.emailInfo : (initialData?.emailInfo || DEFAULT_EMAIL_INFO)
   )
   const [legalInfo] = useState<LegalInfo>(
     initialData?.legalInfo || {
@@ -100,13 +138,39 @@ export default function LiveGoingWizard({
   const [businessInfo] = useState<BusinessInfo>(
     initialData?.businessInfo || {}
   )
-  const [notes, setNotes] = useState(initialData?.notes || '')
+  const [notes, setNotes] = useState(wasRestored ? savedProgress.notes : (initialData?.notes || ''))
+  
+  // Restore step if there was saved progress
+  useEffect(() => {
+    if (wasRestored && savedProgress.step > 1) {
+      setStep(savedProgress.step)
+    }
+  }, [wasRestored, savedProgress.step])
+  
+  // Auto-save on changes
+  useEffect(() => {
+    saveProgress({ step, domainInfo, emailInfo, notes })
+  }, [step, domainInfo, emailInfo, notes, saveProgress])
 
   const totalSteps = 4 // Domain, Email, Summary, Done
+  
+  // Navigation with haptic
+  const goToStep = (newStep: number) => {
+    haptic.light()
+    setStep(newStep)
+  }
+  
+  // Swipe navigation
+  const swipe = useSwipeNavigation({
+    enabled: step < 4, // Disable on done step
+    onSwipeLeft: () => step < 3 && goToStep(step + 1),
+    onSwipeRight: () => step > 1 && goToStep(step - 1)
+  })
 
   const handleCopy = (text: string, id: string) => {
     navigator.clipboard.writeText(text)
     setCopied(id)
+    haptic.selection()
     setTimeout(() => setCopied(null), 2000)
   }
 
@@ -121,12 +185,18 @@ export default function LiveGoingWizard({
         checklist: DEFAULT_CHECKLIST,
         notes
       })
+      haptic.success()
+      clearProgress() // Clear saved progress on successful save
+    } catch (error) {
+      haptic.error()
+      throw error
     } finally {
       setSaving(false)
     }
   }
 
   const handleNext = async () => {
+    haptic.light()
     if (step < totalSteps) {
       // Auto-save on each step
       await handleSave()
@@ -135,6 +205,7 @@ export default function LiveGoingWizard({
   }
 
   const handlePrev = () => {
+    haptic.light()
     if (step > 1) setStep(step - 1)
   }
 
@@ -145,7 +216,21 @@ export default function LiveGoingWizard({
   ]
 
   return (
-    <div className="bg-gray-900 rounded-2xl border border-gray-800 overflow-hidden">
+    <div className="bg-gray-900 rounded-2xl border border-gray-800 overflow-hidden" {...swipe.handlers}>
+      {/* Auto-save indicator */}
+      {hasUnsavedChanges && (
+        <div className="absolute top-4 right-4 z-10 flex items-center gap-1.5 px-2 py-1 bg-gray-800/80 rounded-full text-xs text-gray-400 backdrop-blur-sm">
+          <Save className="w-3 h-3 animate-pulse" />
+          <span className="hidden sm:inline">{t('common.saving') || 'Saving...'}</span>
+        </div>
+      )}
+      {lastSaved && !hasUnsavedChanges && step > 1 && step < 4 && (
+        <div className="absolute top-4 right-4 z-10 flex items-center gap-1.5 px-2 py-1 bg-gray-800/80 rounded-full text-xs text-gray-500 backdrop-blur-sm">
+          <Check className="w-3 h-3" />
+          <span className="hidden sm:inline">{t('common.saved') || 'Saved'}</span>
+        </div>
+      )}
+
       {/* Header */}
       <div className="bg-gradient-to-r from-emerald-600 to-teal-600 p-5 relative">
         <div className="absolute top-0 right-0 w-32 h-32 bg-white/10 rounded-full blur-2xl -translate-y-1/2 translate-x-1/2" />

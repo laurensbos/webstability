@@ -31,6 +31,7 @@ import {
 import type { PackageType } from '../config/packages'
 import { PACKAGES } from '../config/packages'
 import StockPhotoSuggestions from './StockPhotoSuggestions'
+import { useHapticFeedback } from '../hooks/useHapticFeedback'
 
 // Icon mapping for sections
 const SECTION_ICONS: Record<string, LucideIcon> = {
@@ -1113,6 +1114,9 @@ export default function InlineOnboarding({
   const [isSaving, setIsSaving] = useState(false)
   const [lastSaved, setLastSaved] = useState<Date | null>(null)
   const [selectedStockPhotos, setSelectedStockPhotos] = useState<string[]>([])
+  
+  // Haptic feedback for interactions
+  const haptic = useHapticFeedback()
 
   // Get sections for this package
   const sections = getSectionsForPackage(packageType)
@@ -1176,10 +1180,12 @@ export default function InlineOnboarding({
   }, [answers, saveData, selectedStockPhotos])
 
   const handleChange = (questionId: string, value: any) => {
+    haptic.light() // Haptic on input change
     setAnswers(prev => ({ ...prev, [questionId]: value }))
   }
 
   const toggleSection = (sectionId: string) => {
+    haptic.selection() // Haptic on section toggle
     setExpandedSection(prev => prev === sectionId ? null : sectionId)
   }
 
