@@ -2742,5 +2742,34 @@
         ]
       }
     }
+  },
+  "dashboardPreview": {
+    "badge": "Your dashboard",
+    "title": "Always have insight in your project",
+    "description": "Through your personal dashboard you have 24/7 access to your project. View statistics, give feedback and follow updates — all in realtime.",
+    "features": {
+      "stats": "Realtime statistics & visitor data",
+      "feedback": "Give direct feedback on designs",
+      "notifications": "Push notifications for updates",
+      "progress": "Track progress & status"
+    },
+    "cta": "Start your project",
+    "mockup": {
+      "welcome": "Welcome back, Lisa",
+      "company": "Studio Lisa • starter package",
+      "live": "Website live",
+      "stats": {
+        "visitors": "Visitors",
+        "pages": "Pages",
+        "uptime": "Uptime"
+      },
+      "recentUpdates": "Recent updates",
+      "today": "Today",
+      "yesterday": "Yesterday",
+      "updates": {
+        "contactPage": "New contact page added",
+        "seoComplete": "SEO optimization completed"
+      }
+    }
   }
 }

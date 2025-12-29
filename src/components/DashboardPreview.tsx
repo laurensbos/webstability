@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next'
 import { motion } from 'framer-motion'
 import { 
   LayoutDashboard, 
@@ -13,6 +14,8 @@ import {
 } from 'lucide-react'
 
 export default function DashboardPreview() {
+  const { t } = useTranslation()
+
   return (
     <section className="py-16 lg:py-24 bg-gradient-to-b from-white to-gray-50 dark:from-gray-900 dark:to-gray-800 overflow-hidden">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -26,22 +29,21 @@ export default function DashboardPreview() {
           >
             <span className="inline-flex items-center gap-2 px-3 py-1.5 lg:px-4 lg:py-2 bg-primary-100 dark:bg-primary-900/30 text-primary-700 dark:text-primary-300 rounded-full text-xs lg:text-sm font-medium mb-4 lg:mb-6">
               <LayoutDashboard className="w-3.5 h-3.5 lg:w-4 lg:h-4" />
-              Jouw dashboard
+              {t('dashboardPreview.badge')}
             </span>
             <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-gray-900 dark:text-white mb-4 lg:mb-6">
-              Altijd inzicht in je project
+              {t('dashboardPreview.title')}
             </h2>
             <p className="text-gray-600 dark:text-gray-300 text-sm lg:text-lg mb-6 lg:mb-8">
-              Via je persoonlijke dashboard heb je 24/7 toegang tot je project. 
-              Bekijk statistieken, geef feedback en volg updates — alles realtime.
+              {t('dashboardPreview.description')}
             </p>
             
             <div className="space-y-3 lg:space-y-4 mb-6 lg:mb-8">
               {[
-                { icon: TrendingUp, text: 'Realtime statistieken & bezoekersdata', color: 'primary' },
-                { icon: MessageSquare, text: 'Direct feedback geven op ontwerpen', color: 'emerald' },
-                { icon: Bell, text: 'Push notificaties bij updates', color: 'amber' },
-                { icon: FileCheck, text: 'Voortgang & status volgen', color: 'purple' },
+                { icon: TrendingUp, text: t('dashboardPreview.features.stats'), color: 'primary' },
+                { icon: MessageSquare, text: t('dashboardPreview.features.feedback'), color: 'emerald' },
+                { icon: Bell, text: t('dashboardPreview.features.notifications'), color: 'amber' },
+                { icon: FileCheck, text: t('dashboardPreview.features.progress'), color: 'purple' },
               ].map((item, i) => (
                 <motion.div 
                   key={i} 
@@ -78,7 +80,7 @@ export default function DashboardPreview() {
               transition={{ delay: 0.5 }}
               className="inline-flex items-center gap-2 px-5 py-2.5 lg:px-6 lg:py-3 bg-primary-500 hover:bg-primary-600 text-white font-semibold rounded-xl transition-all group shadow-lg shadow-primary-500/25"
             >
-              Start je project
+              {t('dashboardPreview.cta')}
               <ArrowRight className="w-4 h-4 group-hover:translate-x-0.5 transition-transform" />
             </motion.a>
           </motion.div>
@@ -138,12 +140,12 @@ export default function DashboardPreview() {
                 {/* Header */}
                 <div className="flex items-center justify-between mb-4 lg:mb-6 bg-white dark:bg-gray-800 rounded-xl p-3 lg:p-4 shadow-sm border border-gray-100 dark:border-gray-700">
                   <div>
-                    <h4 className="font-bold text-gray-900 dark:text-white text-sm lg:text-base">Welkom terug, Lisa 👋</h4>
-                    <p className="text-xs lg:text-sm text-gray-500 dark:text-gray-400">Studio Lisa • starter pakket</p>
+                    <h4 className="font-bold text-gray-900 dark:text-white text-sm lg:text-base">{t('dashboardPreview.mockup.welcome')} 👋</h4>
+                    <p className="text-xs lg:text-sm text-gray-500 dark:text-gray-400">{t('dashboardPreview.mockup.company')}</p>
                   </div>
                   <div className="px-2 py-1 lg:px-3 lg:py-1.5 bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400 rounded-full text-[10px] lg:text-xs font-medium flex items-center gap-1">
                     <span className="w-1.5 h-1.5 bg-green-500 rounded-full animate-pulse" />
-                    <span className="hidden sm:inline">Website live</span>
+                    <span className="hidden sm:inline">{t('dashboardPreview.mockup.live')}</span>
                     <span className="sm:hidden">Live</span>
                   </div>
                 </div>
@@ -151,9 +153,9 @@ export default function DashboardPreview() {
                 {/* Stats cards */}
                 <div className="grid grid-cols-3 gap-2 lg:gap-3 mb-4 lg:mb-5">
                   {[
-                    { label: 'Bezoekers', value: '1.2k', trend: '+12%', icon: TrendingUp, color: 'primary' },
-                    { label: 'Pagina\'s', value: '5', trend: '', icon: FileText, color: 'gray' },
-                    { label: 'Uptime', value: '99.9%', trend: '', icon: Clock, color: 'green' },
+                    { label: t('dashboardPreview.mockup.stats.visitors'), value: '1.2k', trend: '+12%', icon: TrendingUp, color: 'primary' },
+                    { label: t('dashboardPreview.mockup.stats.pages'), value: '5', trend: '', icon: FileText, color: 'gray' },
+                    { label: t('dashboardPreview.mockup.stats.uptime'), value: '99.9%', trend: '', icon: Clock, color: 'green' },
                   ].map((stat, i) => (
                     <div key={i} className="bg-white dark:bg-gray-800 rounded-lg lg:rounded-xl p-2 lg:p-3 shadow-sm border border-gray-100 dark:border-gray-700">
                       <div className="flex items-center gap-1 mb-1">
@@ -174,11 +176,11 @@ export default function DashboardPreview() {
 
                 {/* Activity */}
                 <div className="bg-white dark:bg-gray-800 rounded-xl p-3 lg:p-4 shadow-sm border border-gray-100 dark:border-gray-700">
-                  <div className="text-[9px] lg:text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wide mb-2 lg:mb-3">Recente updates</div>
+                  <div className="text-[9px] lg:text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wide mb-2 lg:mb-3">{t('dashboardPreview.mockup.recentUpdates')}</div>
                   <div className="space-y-2 lg:space-y-3">
                     {[
-                      { text: 'Nieuwe contactpagina toegevoegd', time: 'Vandaag', isNew: true },
-                      { text: 'SEO optimalisatie voltooid', time: 'Gisteren', isNew: false },
+                      { text: t('dashboardPreview.mockup.updates.contactPage'), time: t('dashboardPreview.mockup.today'), isNew: true },
+                      { text: t('dashboardPreview.mockup.updates.seoComplete'), time: t('dashboardPreview.mockup.yesterday'), isNew: false },
                     ].map((item, i) => (
                       <div key={i} className="flex items-center justify-between py-1.5 lg:py-2 border-b border-gray-50 dark:border-gray-700 last:border-0">
                         <div className="flex items-center gap-1.5 lg:gap-2">

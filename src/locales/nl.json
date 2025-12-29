@@ -2742,5 +2742,34 @@
         ]
       }
     }
+  },
+  "dashboardPreview": {
+    "badge": "Jouw dashboard",
+    "title": "Altijd inzicht in je project",
+    "description": "Via je persoonlijke dashboard heb je 24/7 toegang tot je project. Bekijk statistieken, geef feedback en volg updates — alles realtime.",
+    "features": {
+      "stats": "Realtime statistieken & bezoekersdata",
+      "feedback": "Direct feedback geven op ontwerpen",
+      "notifications": "Push notificaties bij updates",
+      "progress": "Voortgang & status volgen"
+    },
+    "cta": "Start je project",
+    "mockup": {
+      "welcome": "Welkom terug, Lisa",
+      "company": "Studio Lisa • starter pakket",
+      "live": "Website live",
+      "stats": {
+        "visitors": "Bezoekers",
+        "pages": "Pagina's",
+        "uptime": "Uptime"
+      },
+      "recentUpdates": "Recente updates",
+      "today": "Vandaag",
+      "yesterday": "Gisteren",
+      "updates": {
+        "contactPage": "Nieuwe contactpagina toegevoegd",
+        "seoComplete": "SEO optimalisatie voltooid"
+      }
+    }
   }
 }
