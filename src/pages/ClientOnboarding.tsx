@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback, useRef } from 'react'
 import { useParams, useSearchParams, Link, useNavigate } from 'react-router-dom'
 import { motion, AnimatePresence } from 'framer-motion'
+import { useTranslation } from 'react-i18next'
 import { ClientOnboardingSkeleton } from '../components/LoadingSkeletons'
 import {
   Globe,
@@ -38,35 +39,43 @@ import { LogoSteps } from '../components/onboarding/LogoFormSteps'
 // CONSTANTS
 // ===========================================
 
-const SERVICE_CONFIG: Record<ServiceType, {
-  name: string
+interface ServiceConfigData {
   icon: React.ElementType
   gradient: string
   color: string
-}> = {
+}
+
+const SERVICE_CONFIG_BASE: Record<ServiceType, ServiceConfigData> = {
   website: {
-    name: 'Website',
     icon: Globe,
     gradient: 'from-primary-500 to-blue-600',
     color: 'primary'
   },
   webshop: {
-    name: 'Webshop',
     icon: ShoppingBag,
     gradient: 'from-emerald-500 to-green-600',
     color: 'emerald'
   },
   drone: {
-    name: 'Dronebeelden',
     icon: Plane,
     gradient: 'from-orange-500 to-amber-600',
     color: 'orange'
   },
   logo: {
-    name: 'Logo Design',
     icon: PenTool,
     gradient: 'from-purple-500 to-violet-600',
     color: 'purple'
+  }
+}
+
+// Hook to get translated service config
+function useServiceConfig(): Record<ServiceType, ServiceConfigData & { name: string }> {
+  const { t } = useTranslation()
+  return {
+    website: { ...SERVICE_CONFIG_BASE.website, name: t('clientOnboarding.services.website') },
+    webshop: { ...SERVICE_CONFIG_BASE.webshop, name: t('clientOnboarding.services.webshop') },
+    drone: { ...SERVICE_CONFIG_BASE.drone, name: t('clientOnboarding.services.drone') },
+    logo: { ...SERVICE_CONFIG_BASE.logo, name: t('clientOnboarding.services.logo') }
   }
 }
 
@@ -76,54 +85,64 @@ const SERVICE_CONFIG: Record<ServiceType, {
 
 interface StepConfig {
   id: string
-  title: string
+  titleKey: string
   icon: React.ElementType
 }
 
-const getStepsForService = (service: ServiceType): StepConfig[] => {
+const getStepsForServiceBase = (service: ServiceType): StepConfig[] => {
   const baseSteps: StepConfig[] = [
-    { id: 'bedrijf', title: 'Bedrijf', icon: Building2 },
-    { id: 'branding', title: 'Branding', icon: Palette },
+    { id: 'bedrijf', titleKey: 'clientOnboarding.steps.bedrijf', icon: Building2 },
+    { id: 'branding', titleKey: 'clientOnboarding.steps.branding', icon: Palette },
   ]
 
   switch (service) {
     case 'website':
       return [
         ...baseSteps,
-        { id: 'doelen', title: 'Doelen', icon: Target },
-        { id: 'paginas', title: "Pagina's", icon: FileText },
-        { id: 'content', title: 'Content', icon: Image },
-        { id: 'extra', title: 'Planning', icon: Settings },
-        { id: 'samenvatting', title: 'Controle', icon: CheckCircle2 },
+        { id: 'doelen', titleKey: 'clientOnboarding.steps.doelen', icon: Target },
+        { id: 'paginas', titleKey: 'clientOnboarding.steps.paginas', icon: FileText },
+        { id: 'content', titleKey: 'clientOnboarding.steps.content', icon: Image },
+        { id: 'extra', titleKey: 'clientOnboarding.steps.planning', icon: Settings },
+        { id: 'samenvatting', titleKey: 'clientOnboarding.steps.controle', icon: CheckCircle2 },
       ]
     case 'webshop':
       return [
         ...baseSteps,
-        { id: 'producten', title: 'Producten', icon: ShoppingBag },
-        { id: 'betaling', title: 'Betaling', icon: Target },
-        { id: 'features', title: 'Features', icon: Settings },
-        { id: 'content', title: 'Content', icon: Image },
-        { id: 'samenvatting', title: 'Controle', icon: CheckCircle2 },
+        { id: 'producten', titleKey: 'clientOnboarding.steps.producten', icon: ShoppingBag },
+        { id: 'betaling', titleKey: 'clientOnboarding.steps.betaling', icon: Target },
+        { id: 'features', titleKey: 'clientOnboarding.steps.features', icon: Settings },
+        { id: 'content', titleKey: 'clientOnboarding.steps.content', icon: Image },
+        { id: 'samenvatting', titleKey: 'clientOnboarding.steps.controle', icon: CheckCircle2 },
       ]
     case 'drone':
       return [
-        { id: 'project', title: 'Project', icon: Target },
-        { id: 'locatie', title: 'Locatie', icon: Building2 },
-        { id: 'planning', title: 'Planning', icon: Clock },
-        { id: 'levering', title: 'Levering', icon: FileText },
-        { id: 'samenvatting', title: 'Controle', icon: CheckCircle2 },
+        { id: 'project', titleKey: 'clientOnboarding.steps.project', icon: Target },
+        { id: 'locatie', titleKey: 'clientOnboarding.steps.locatie', icon: Building2 },
+        { id: 'planning', titleKey: 'clientOnboarding.steps.planning', icon: Clock },
+        { id: 'levering', titleKey: 'clientOnboarding.steps.levering', icon: FileText },
+        { id: 'samenvatting', titleKey: 'clientOnboarding.steps.controle', icon: CheckCircle2 },
       ]
     case 'logo':
       return [
         ...baseSteps,
-        { id: 'stijl', title: 'Stijl', icon: Palette },
-        { id: 'inspiratie', title: 'Inspiratie', icon: Image },
-        { id: 'gebruik', title: 'Gebruik', icon: Settings },
-        { id: 'samenvatting', title: 'Controle', icon: CheckCircle2 },
+        { id: 'stijl', titleKey: 'clientOnboarding.steps.stijl', icon: Palette },
+        { id: 'inspiratie', titleKey: 'clientOnboarding.steps.inspiratie', icon: Image },
+        { id: 'gebruik', titleKey: 'clientOnboarding.steps.gebruik', icon: Settings },
+        { id: 'samenvatting', titleKey: 'clientOnboarding.steps.controle', icon: CheckCircle2 },
       ]
     default:
       return baseSteps
   }
+}
+
+// Hook to get translated steps
+function useStepsForService(service: ServiceType): Array<StepConfig & { title: string }> {
+  const { t } = useTranslation()
+  const baseSteps = getStepsForServiceBase(service)
+  return baseSteps.map(step => ({
+    ...step,
+    title: t(step.titleKey)
+  }))
 }
 
 // ===========================================
@@ -186,43 +205,33 @@ const VALIDATION_RULES: Record<ServiceType, Record<string, ValidationRule>> = {
   }
 }
 
-// Helper to validate step
+// Helper to validate step - now returns translation keys
 const validateStep = (service: ServiceType, stepId: string, data: Record<string, any>): string[] => {
   const rules = VALIDATION_RULES[service]?.[stepId]
   if (!rules) return []
   
   const errors: string[] = []
   
-  // Check required fields
+  // Check required fields - return field IDs for translation
   if (rules.required) {
     for (const field of rules.required) {
       const value = data[field]
       if (!value || (typeof value === 'string' && value.trim() === '')) {
-        const fieldLabels: Record<string, string> = {
-          businessName: 'Bedrijfsnaam',
-          contactEmail: 'E-mailadres',
-          contactName: 'Contactpersoon',
-          aboutBusiness: 'Bedrijfsbeschrijving',
-          projectType: 'Type project',
-          locationAddress: 'Adres',
-          locationCity: 'Plaats',
-          preferredDate: 'Gewenste datum'
-        }
-        errors.push(`${fieldLabels[field] || field} is verplicht`)
+        errors.push(`field:${field}`)
       }
     }
   }
   
   // Check email format
   if (data.contactEmail && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(data.contactEmail)) {
-    errors.push('Vul een geldig e-mailadres in')
+    errors.push('error:invalidEmail')
   }
   
   // Check min length
   if (rules.minLength) {
-    for (const { field, min, label } of rules.minLength) {
+    for (const { field, min } of rules.minLength) {
       if (data[field] && data[field].length < min) {
-        errors.push(`${label} moet minimaal ${min} karakters zijn`)
+        errors.push(`minLength:${field}:${min}`)
       }
     }
   }
@@ -369,6 +378,7 @@ export default function ClientOnboarding() {
   const { projectId } = useParams<{ projectId: string }>()
   const [searchParams] = useSearchParams()
   const navigate = useNavigate()
+  const { t, i18n } = useTranslation()
   
   // State
   const [serviceType, setServiceType] = useState<ServiceType>('website')
@@ -398,11 +408,12 @@ export default function ClientOnboarding() {
     canEdit
   )
 
-  // Get steps for current service
-  const steps = getStepsForService(serviceType)
+  // Translated hooks
+  const allServiceConfigs = useServiceConfig()
+  const steps = useStepsForService(serviceType)
   const totalSteps = steps.length
   const currentStepConfig = steps[currentStep - 1]
-  const serviceConfig = SERVICE_CONFIG[serviceType]
+  const serviceConfig = allServiceConfigs[serviceType]
 
   // Validate current step
   const validateCurrentStep = (): boolean => {
@@ -414,7 +425,7 @@ export default function ClientOnboarding() {
   // Initialize
   useEffect(() => {
     const service = searchParams.get('service') as ServiceType
-    if (service && SERVICE_CONFIG[service]) {
+    if (service && SERVICE_CONFIG_BASE[service]) {
       setServiceType(service)
     }
 
@@ -422,8 +433,9 @@ export default function ClientOnboarding() {
     const localDraft = loadFromLocal()
     if (localDraft && !projectId) {
       // Show restore prompt for new projects
-      const savedAt = new Date(localDraft.savedAt).toLocaleString('nl-NL')
-      if (confirm(`Er is een concept gevonden van ${savedAt}. Wil je verder gaan waar je gebleven was?`)) {
+      const locale = i18n.language === 'nl' ? 'nl-NL' : 'en-US'
+      const savedAt = new Date(localDraft.savedAt).toLocaleString(locale)
+      if (confirm(t('clientOnboarding.draftFound', { savedAt }))) {
         setFormData(localDraft.formData || {})
         setCurrentStep(localDraft.currentStep || 1)
         if (localDraft.serviceType) {
@@ -545,14 +557,14 @@ export default function ClientOnboarding() {
         if (data.projectId && !projectId) {
           window.history.replaceState({}, '', `/intake/${serviceType}/${data.projectId}`)
         }
-        setSuccess('Voortgang opgeslagen!')
+        setSuccess(t('clientOnboarding.progressSaved'))
         setTimeout(() => setSuccess(''), 3000)
       } else {
         const errorData = await response.json().catch(() => ({}))
         throw new Error(errorData.error || 'Failed to save')
       }
     } catch (err) {
-      const message = err instanceof Error ? err.message : 'Kon niet opslaan. Probeer opnieuw.'
+      const message = err instanceof Error ? err.message : t('clientOnboarding.saveError')
       setError(message)
     } finally {
       setSaving(false)
@@ -589,18 +601,18 @@ export default function ClientOnboarding() {
   const handleUpgradeRequest = (newPackageId: string) => {
     const packageNames: Record<string, string> = {
       'starter': 'Starter',
-      'professional': 'Professioneel',
+      'professional': t('clientOnboarding.packages.professional'),
       'business': 'Business',
       'webshopStarter': 'Webshop Starter',
       'webshopPro': 'Webshop Pro'
     }
 
     const packagePrices: Record<string, string> = {
-      'starter': '€119/maand',
-      'professional': '€149/maand',
-      'business': '€199/maand',
-      'webshopStarter': '€399/maand',
-      'webshopPro': '€499/maand'
+      'starter': t('clientOnboarding.prices.starter'),
+      'professional': t('clientOnboarding.prices.professional'),
+      'business': t('clientOnboarding.prices.business'),
+      'webshopStarter': t('clientOnboarding.prices.webshopStarter'),
+      'webshopPro': t('clientOnboarding.prices.webshopPro')
     }
     
     // Directly upgrade the package
@@ -612,7 +624,7 @@ export default function ClientOnboarding() {
       upgradedAt: new Date().toISOString()
     }))
     
-    setSuccess(`✨ Geüpgraded naar ${packageNames[newPackageId] || newPackageId} (${packagePrices[newPackageId] || ''})`)
+    setSuccess(t('clientOnboarding.upgradedTo', { package: packageNames[newPackageId] || newPackageId, price: packagePrices[newPackageId] || '' }))
     setTimeout(() => setSuccess(''), 4000)
     
     // Auto-save after upgrade
@@ -659,14 +671,14 @@ export default function ClientOnboarding() {
         return StepComponent ? <StepComponent {...formProps} /> : null
       }
       default:
-        return <div className="text-center py-12 text-gray-400">Onbekend servicetype</div>
+        return <div className="text-center py-12 text-gray-400">{t('clientOnboarding.unknownService')}</div>
     }
   }
 
   // Submit final
   const submitOnboarding = async () => {
     if (!approvedForDesign) {
-      setError('Je moet akkoord geven voordat je kunt insturen')
+      setError(t('clientOnboarding.approvalRequired'))
       return
     }
     
@@ -693,7 +705,7 @@ export default function ClientOnboarding() {
         throw new Error('Failed to submit')
       }
     } catch (err) {
-      setError('Kon niet indienen. Probeer opnieuw.')
+      setError(t('clientOnboarding.submitError'))
     } finally {
       setSaving(false)
     }
@@ -712,10 +724,10 @@ export default function ClientOnboarding() {
         <div className="text-center max-w-md p-8">
           <AlertCircle className="w-16 h-16 text-red-500 mx-auto mb-4" />
           <h1 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">
-            Project niet gevonden
+            {t('clientOnboarding.projectNotFound')}
           </h1>
           <p className="text-gray-500 dark:text-gray-400">
-            Controleer de link of neem contact met ons op.
+            {t('clientOnboarding.checkLinkOrContact')}
           </p>
         </div>
       </div>
@@ -723,6 +735,22 @@ export default function ClientOnboarding() {
   }
 
   const ServiceIcon = serviceConfig.icon
+
+  // Helper to translate validation errors
+  const translateValidationError = (error: string): string => {
+    if (error.startsWith('field:')) {
+      const field = error.replace('field:', '')
+      return t('clientOnboarding.validation.fieldRequired', { field: t(`clientOnboarding.fields.${field}`) })
+    }
+    if (error === 'error:invalidEmail') {
+      return t('clientOnboarding.validation.invalidEmail')
+    }
+    if (error.startsWith('minLength:')) {
+      const [, field, min] = error.split(':')
+      return t('clientOnboarding.validation.minLength', { field: t(`clientOnboarding.fields.${field}`), min })
+    }
+    return error
+  }
 
   return (
     <div className="min-h-screen bg-gray-950">
@@ -734,7 +762,7 @@ export default function ClientOnboarding() {
             className="relative flex items-center gap-2 text-gray-400 hover:text-white transition-colors group"
           >
             <ArrowLeft className="w-4 h-4 group-hover:-translate-x-1 transition-transform" />
-            <span className="text-sm font-medium">Dashboard</span>
+            <span className="text-sm font-medium">{t('clientOnboarding.dashboard')}</span>
             {unreadCount > 0 && (
               <span className="absolute -top-1 -right-2 w-4 h-4 bg-red-500 text-white text-[10px] rounded-full flex items-center justify-center font-bold">
                 {unreadCount > 9 ? '9+' : unreadCount}
@@ -747,13 +775,13 @@ export default function ClientOnboarding() {
             {autoSaveStatus === 'saving' && (
               <div className="flex items-center gap-1.5 text-gray-500 text-xs">
                 <Loader2 className="w-3 h-3 animate-spin" />
-                <span className="hidden sm:inline">Opslaan...</span>
+                <span className="hidden sm:inline">{t('clientOnboarding.saving')}</span>
               </div>
             )}
             {autoSaveStatus === 'saved' && (
               <div className="flex items-center gap-1.5 text-emerald-500 text-xs">
                 <Check className="w-3 h-3" />
-                <span className="hidden sm:inline">Opgeslagen</span>
+                <span className="hidden sm:inline">{t('clientOnboarding.saved')}</span>
               </div>
             )}
             
@@ -761,7 +789,7 @@ export default function ClientOnboarding() {
             {!canEdit && (
               <div className="flex items-center gap-1.5 text-amber-500 text-xs bg-amber-500/10 px-2 py-1 rounded">
                 <Lock className="w-3 h-3" />
-                <span className="hidden sm:inline">Alleen lezen</span>
+                <span className="hidden sm:inline">{t('clientOnboarding.readOnly')}</span>
               </div>
             )}
             
@@ -787,13 +815,13 @@ export default function ClientOnboarding() {
                 <ServiceIcon className="w-5 h-5 text-white" />
               </div>
               <div>
-                <h1 className="text-lg font-bold text-white">{serviceConfig.name} Onboarding</h1>
-                <p className="text-white/70 text-xs">Stap {currentStep} van {totalSteps}</p>
+                <h1 className="text-lg font-bold text-white">{serviceConfig.name} {t('clientOnboarding.onboarding')}</h1>
+                <p className="text-white/70 text-xs">{t('clientOnboarding.stepOf', { current: currentStep, total: totalSteps })}</p>
               </div>
             </div>
             <div className="text-right">
               <div className="text-2xl font-bold text-white">{Math.round((currentStep / totalSteps) * 100)}%</div>
-              <div className="text-white/60 text-xs">Voltooid</div>
+              <div className="text-white/60 text-xs">{t('clientOnboarding.completed')}</div>
             </div>
           </div>
           
@@ -862,7 +890,7 @@ export default function ClientOnboarding() {
           </div>
           <div>
             <h2 className="text-xl font-bold text-white">{currentStepConfig?.title}</h2>
-            <p className="text-gray-500 text-sm">Vul de onderstaande velden in</p>
+            <p className="text-gray-500 text-sm">{t('clientOnboarding.fillInFields')}</p>
           </div>
         </div>
 
@@ -889,11 +917,11 @@ export default function ClientOnboarding() {
             >
               <div className="flex items-center gap-2 text-red-400 font-medium text-sm mb-2">
                 <AlertCircle className="w-4 h-4" />
-                Vul de verplichte velden in:
+                {t('clientOnboarding.fillRequiredFields')}
               </div>
               <ul className="text-red-400/80 text-sm space-y-1 ml-6">
                 {validationErrors.map((error, i) => (
-                  <li key={i}>• {error}</li>
+                  <li key={i}>• {translateValidationError(error)}</li>
                 ))}
               </ul>
             </motion.div>
@@ -908,16 +936,16 @@ export default function ClientOnboarding() {
             >
               <div className="flex items-center gap-2 text-amber-400 font-medium text-sm mb-2">
                 <AlertCircle className="w-4 h-4" />
-                Dit e-mailadres is al in gebruik
+                {t('clientOnboarding.emailInUse')}
               </div>
               <p className="text-amber-400/80 text-sm mb-3">
-                Er bestaat al een project met dit e-mailadres.
+                {t('clientOnboarding.projectExistsWithEmail')}
               </p>
               <a
                 href={emailInUseError.statusUrl}
                 className="inline-flex items-center gap-2 text-sm font-medium text-amber-400 hover:text-amber-300"
               >
-                Bekijk je bestaande project
+                {t('clientOnboarding.viewExistingProject')}
                 <ArrowRight className="w-4 h-4" />
               </a>
             </motion.div>
@@ -962,7 +990,7 @@ export default function ClientOnboarding() {
             className="flex items-center gap-2 px-4 py-3 text-gray-400 hover:text-white disabled:opacity-30 disabled:cursor-not-allowed transition-colors rounded-xl hover:bg-gray-800"
           >
             <ChevronLeft className="w-5 h-5" />
-            <span className="hidden sm:inline">Vorige</span>
+            <span className="hidden sm:inline">{t('clientOnboarding.previous')}</span>
           </button>
 
           {currentStep === totalSteps ? (
@@ -976,7 +1004,7 @@ export default function ClientOnboarding() {
               } text-white rounded-xl font-semibold shadow-lg hover:shadow-xl transition-all disabled:opacity-50 disabled:cursor-not-allowed`}
             >
               {saving ? <Loader2 className="w-5 h-5 animate-spin" /> : <CheckCircle2 className="w-5 h-5" />}
-              {approvedForDesign ? 'Akkoord & Insturen' : 'Geef eerst akkoord ↑'}
+              {approvedForDesign ? t('clientOnboarding.approveAndSubmit') : t('clientOnboarding.approveFirst')}
             </button>
           ) : (
             <button
@@ -984,7 +1012,7 @@ export default function ClientOnboarding() {
               disabled={!!emailInUseError}
               className={`flex-1 sm:flex-none flex items-center justify-center gap-2 px-8 py-3.5 bg-gradient-to-r ${serviceConfig.gradient} text-white rounded-xl font-semibold shadow-lg hover:shadow-xl transition-all disabled:opacity-50`}
             >
-              Volgende
+              {t('clientOnboarding.next')}
               <ChevronRight className="w-5 h-5" />
             </button>
           )}

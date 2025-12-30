@@ -41,7 +41,84 @@
     "upload": "Uploaden",
     "allRightsReserved": "Alle rechten voorbehouden.",
     "total": "Totaal",
-    "sending": "Versturen..."
+    "sending": "Versturen...",
+    "select": "Selecteer..."
+  },
+  "clientOnboarding": {
+    "services": {
+      "website": "Website",
+      "webshop": "Webshop",
+      "drone": "Dronebeelden",
+      "logo": "Logo Design"
+    },
+    "steps": {
+      "bedrijf": "Bedrijf",
+      "branding": "Branding",
+      "doelen": "Doelen",
+      "paginas": "Pagina's",
+      "content": "Content",
+      "planning": "Planning",
+      "controle": "Controle",
+      "producten": "Producten",
+      "betaling": "Betaling",
+      "features": "Features",
+      "project": "Project",
+      "locatie": "Locatie",
+      "levering": "Levering",
+      "stijl": "Stijl",
+      "inspiratie": "Inspiratie",
+      "gebruik": "Gebruik"
+    },
+    "fields": {
+      "businessName": "Bedrijfsnaam",
+      "contactEmail": "E-mailadres",
+      "contactName": "Contactpersoon",
+      "aboutBusiness": "Bedrijfsbeschrijving",
+      "projectType": "Type project",
+      "locationAddress": "Adres",
+      "locationCity": "Plaats",
+      "preferredDate": "Gewenste datum"
+    },
+    "validation": {
+      "fieldRequired": "{{field}} is verplicht",
+      "invalidEmail": "Vul een geldig e-mailadres in",
+      "minLength": "{{field}} moet minimaal {{min}} karakters zijn"
+    },
+    "packages": {
+      "professional": "Professioneel"
+    },
+    "prices": {
+      "starter": "€119/maand",
+      "professional": "€149/maand",
+      "business": "€199/maand",
+      "webshopStarter": "€399/maand",
+      "webshopPro": "€499/maand"
+    },
+    "onboarding": "Onboarding",
+    "stepOf": "Stap {{current}} van {{total}}",
+    "completed": "Voltooid",
+    "dashboard": "Dashboard",
+    "saving": "Opslaan...",
+    "saved": "Opgeslagen",
+    "readOnly": "Alleen lezen",
+    "fillInFields": "Vul de onderstaande velden in",
+    "fillRequiredFields": "Vul de verplichte velden in:",
+    "emailInUse": "Dit e-mailadres is al in gebruik",
+    "projectExistsWithEmail": "Er bestaat al een project met dit e-mailadres.",
+    "viewExistingProject": "Bekijk je bestaande project",
+    "previous": "Vorige",
+    "next": "Volgende",
+    "approveAndSubmit": "Akkoord & Insturen",
+    "approveFirst": "Geef eerst akkoord ↑",
+    "progressSaved": "Voortgang opgeslagen!",
+    "saveError": "Kon niet opslaan. Probeer opnieuw.",
+    "upgradedTo": "✨ Geüpgraded naar {{package}} ({{price}})",
+    "unknownService": "Onbekend servicetype",
+    "approvalRequired": "Je moet akkoord geven voordat je kunt insturen",
+    "submitError": "Kon niet indienen. Probeer opnieuw.",
+    "projectNotFound": "Project niet gevonden",
+    "checkLinkOrContact": "Controleer de link of neem contact met ons op.",
+    "draftFound": "Er is een concept gevonden van {{savedAt}}. Wil je verder gaan waar je gebleven was?"
   },
   "logoOnboarding": {
     "priceNote": "Prijs is inclusief BTW • Geen verborgen kosten",

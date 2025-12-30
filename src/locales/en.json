@@ -41,7 +41,84 @@
     "upload": "Upload",
     "allRightsReserved": "All rights reserved.",
     "total": "Total",
-    "sending": "Sending..."
+    "sending": "Sending...",
+    "select": "Select..."
+  },
+  "clientOnboarding": {
+    "services": {
+      "website": "Website",
+      "webshop": "Webshop",
+      "drone": "Drone Footage",
+      "logo": "Logo Design"
+    },
+    "steps": {
+      "bedrijf": "Business",
+      "branding": "Branding",
+      "doelen": "Goals",
+      "paginas": "Pages",
+      "content": "Content",
+      "planning": "Planning",
+      "controle": "Review",
+      "producten": "Products",
+      "betaling": "Payment",
+      "features": "Features",
+      "project": "Project",
+      "locatie": "Location",
+      "levering": "Delivery",
+      "stijl": "Style",
+      "inspiratie": "Inspiration",
+      "gebruik": "Usage"
+    },
+    "fields": {
+      "businessName": "Business name",
+      "contactEmail": "Email address",
+      "contactName": "Contact person",
+      "aboutBusiness": "Business description",
+      "projectType": "Project type",
+      "locationAddress": "Address",
+      "locationCity": "City",
+      "preferredDate": "Preferred date"
+    },
+    "validation": {
+      "fieldRequired": "{{field}} is required",
+      "invalidEmail": "Please enter a valid email address",
+      "minLength": "{{field}} must be at least {{min}} characters"
+    },
+    "packages": {
+      "professional": "Professional"
+    },
+    "prices": {
+      "starter": "€119/month",
+      "professional": "€149/month",
+      "business": "€199/month",
+      "webshopStarter": "€399/month",
+      "webshopPro": "€499/month"
+    },
+    "onboarding": "Onboarding",
+    "stepOf": "Step {{current}} of {{total}}",
+    "completed": "Completed",
+    "dashboard": "Dashboard",
+    "saving": "Saving...",
+    "saved": "Saved",
+    "readOnly": "Read only",
+    "fillInFields": "Fill in the fields below",
+    "fillRequiredFields": "Please fill in the required fields:",
+    "emailInUse": "This email address is already in use",
+    "projectExistsWithEmail": "A project already exists with this email address.",
+    "viewExistingProject": "View your existing project",
+    "previous": "Previous",
+    "next": "Next",
+    "approveAndSubmit": "Approve & Submit",
+    "approveFirst": "Approve first ↑",
+    "progressSaved": "Progress saved!",
+    "saveError": "Could not save. Please try again.",
+    "upgradedTo": "✨ Upgraded to {{package}} ({{price}})",
+    "unknownService": "Unknown service type",
+    "approvalRequired": "You must approve before submitting",
+    "submitError": "Could not submit. Please try again.",
+    "projectNotFound": "Project not found",
+    "checkLinkOrContact": "Check the link or contact us.",
+    "draftFound": "A draft was found from {{savedAt}}. Would you like to continue where you left off?"
   },
   "logoOnboarding": {
     "priceNote": "Price includes VAT • No hidden costs",

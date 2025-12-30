@@ -244,6 +244,7 @@ interface SelectProps {
 }
 
 export function Select({ label, name, value, onChange, options, required, disabled, hint }: SelectProps) {
+  const { t } = useTranslation()
   return (
     <label className="block">
       <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
@@ -257,7 +258,7 @@ export function Select({ label, name, value, onChange, options, required, disabl
         disabled={disabled}
         className="mt-2 w-full px-4 py-3 rounded-xl border border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-primary-500 focus:border-transparent disabled:opacity-50 disabled:cursor-not-allowed transition-all"
       >
-        <option value="">Selecteer...</option>
+        <option value="">{t('common.select')}</option>
         {options.map(opt => (
           <option key={opt.value} value={opt.value}>{opt.label}</option>
         ))}
