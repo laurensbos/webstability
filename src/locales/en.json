@@ -979,6 +979,10 @@
       "password": "Password",
       "passwordDescription": "Change the password for access to your project dashboard.",
       "changePassword": "Change password",
+      "resetEmailSent": "Reset email sent! Check your inbox.",
+      "email": "Email address",
+      "noEmail": "No email set",
+      "emailInUse": "Used for login and notifications",
       "emailVerification": "Email verification",
       "emailVerified": "Email verified",
       "emailPending": "Pending verification",
@@ -989,6 +993,8 @@
       "subtitle": "For every friend who starts",
       "description": "Share your unique link and receive €25 discount on your subscription for every new customer who starts through your link.",
       "yourLink": "Your link",
+      "loading": "Generating link...",
+      "unavailable": "Not available",
       "friends": "Friends referred",
       "earned": "Discount earned"
     },
@@ -3590,6 +3596,10 @@
       "payAfterApproval": "Payment only after approval"
     },
     "back": "← Choose another service",
+    "referral": {
+      "title": "🎉 €25 discount!",
+      "subtitle": "You've been invited by a friend and receive €25 discount."
+    },
     "whatHappensNext": {
       "title": "What happens after your request?",
       "step1": "You'll immediately receive a confirmation email with your login details",

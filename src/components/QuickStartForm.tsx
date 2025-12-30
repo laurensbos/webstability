@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useTranslation } from 'react-i18next'
 import { motion } from 'framer-motion'
 import { 
@@ -12,10 +12,11 @@ import {
   Building2,
   Phone,
   Sparkles,
-  User
+  User,
+  Gift
 } from 'lucide-react'
 import { useNavigate } from 'react-router-dom'
-import { getReferralCode, clearReferral } from '../hooks/useReferralCapture'
+import { getReferralCode, clearReferral, getReferral } from '../hooks/useReferralCapture'
 
 interface QuickStartFormProps {
   serviceType: 'website' | 'webshop' | 'drone' | 'logo'
@@ -65,6 +66,13 @@ export default function QuickStartForm({
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [showPassword, setShowPassword] = useState(false)
   const [error, setError] = useState('')
+  const [hasReferral, setHasReferral] = useState(false)
+  
+  // Check for referral code on mount
+  useEffect(() => {
+    const referral = getReferral()
+    setHasReferral(!!referral)
+  }, [])
   
   const [formData, setFormData] = useState({
     name: '',
@@ -156,6 +164,32 @@ export default function QuickStartForm({
             {t('quickStartForm.header.subtitle', { service: t(`quickStartForm.services.${serviceType}`) })}
           </p>
         </motion.div>
+
+        {/* Referral Discount Banner */}
+        {hasReferral && (
+          <motion.div
+            initial={{ opacity: 0, y: 10, scale: 0.95 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            className="mb-6 p-4 rounded-2xl bg-gradient-to-r from-purple-500/10 via-pink-500/5 to-purple-500/10 dark:from-purple-500/20 dark:via-pink-500/10 dark:to-purple-500/20 border border-purple-200 dark:border-purple-500/30 relative overflow-hidden"
+          >
+            {/* Animated shimmer effect */}
+            <div className="absolute inset-0 -translate-x-full animate-[shimmer_3s_infinite] bg-gradient-to-r from-transparent via-white/20 to-transparent" />
+            
+            <div className="flex items-center gap-3 sm:gap-4 relative">
+              <div className="flex-shrink-0 w-11 h-11 sm:w-12 sm:h-12 rounded-xl bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center shadow-lg shadow-purple-500/25">
+                <Gift className="w-5 h-5 sm:w-6 sm:h-6 text-white" />
+              </div>
+              <div className="min-w-0">
+                <p className="font-bold text-purple-700 dark:text-purple-300 text-base sm:text-lg">
+                  {t('quickStartForm.referral.title', '🎉 €25 korting!')}
+                </p>
+                <p className="text-sm text-purple-600/80 dark:text-purple-400/80 line-clamp-2">
+                  {t('quickStartForm.referral.subtitle', 'Je bent uitgenodigd door een vriend en ontvangt €25 korting.')}
+                </p>
+              </div>
+            </div>
+          </motion.div>
+        )}
 
         {/* Form Card */}
         <motion.div

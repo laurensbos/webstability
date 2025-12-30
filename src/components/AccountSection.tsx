@@ -32,7 +32,6 @@ import { PACKAGES } from '../config/packages'
 interface AccountSectionProps {
   project: Project
   onUpdateProject?: (updates: Partial<Project>) => Promise<void>
-  onResetPassword?: () => void
   /** Initial tab to show */
   initialTab?: TabType
 }
@@ -101,7 +100,6 @@ const getPackageInfo = (packageType: string) => {
 export default function AccountSection({ 
   project,
   onUpdateProject,
-  onResetPassword,
   initialTab = 'profile'
 }: AccountSectionProps) {
   const { t } = useTranslation()
@@ -112,10 +110,70 @@ export default function AccountSection({
   const [saveSuccess, setSaveSuccess] = useState(false)
   const [copied, setCopied] = useState(false)
   const [copiedReferral, setCopiedReferral] = useState(false)
+  const [passwordResetLoading, setPasswordResetLoading] = useState(false)
+  const [passwordResetSent, setPasswordResetSent] = useState(false)
+  const [referralCode, setReferralCode] = useState<string | null>(project.referralCode || null)
+  const [loadingReferral, setLoadingReferral] = useState(false)
   
-  // Generate referral code from project ID
-  const referralCode = `REF-${project.projectId.slice(-6)}`
-  const referralLink = `https://webstability.nl/start?ref=${referralCode}`
+  // Get or create referral code on mount
+  useEffect(() => {
+    const fetchOrCreateReferralCode = async () => {
+      // If project already has referral code, use it
+      if (project.referralCode) {
+        setReferralCode(project.referralCode)
+        return
+      }
+      
+      setLoadingReferral(true)
+      try {
+        const response = await fetch('/api/referral', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ projectId: project.projectId })
+        })
+        const data = await response.json()
+        if (data.success && data.referralCode) {
+          setReferralCode(data.referralCode)
+        }
+      } catch (error) {
+        console.error('Error fetching referral code:', error)
+      } finally {
+        setLoadingReferral(false)
+      }
+    }
+    
+    fetchOrCreateReferralCode()
+  }, [project.projectId, project.referralCode])
+  
+  const referralLink = referralCode 
+    ? `https://webstability.nl/start?ref=${referralCode}`
+    : ''
+  
+  // Handle password reset request
+  const handlePasswordReset = async () => {
+    if (!project.contactEmail) return
+    
+    setPasswordResetLoading(true)
+    try {
+      const response = await fetch('/api/reset-password/request', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ 
+          email: project.contactEmail,
+          projectId: project.projectId 
+        })
+      })
+      
+      if (response.ok) {
+        setPasswordResetSent(true)
+        setTimeout(() => setPasswordResetSent(false), 5000)
+      }
+    } catch (error) {
+      console.error('Error requesting password reset:', error)
+    } finally {
+      setPasswordResetLoading(false)
+    }
+  }
   
   // Calculate changes used this month (mock - would come from API)
   const changesUsedThisMonth = project.changesThisMonth || 0
@@ -944,82 +1002,79 @@ export default function AccountSection({
                 <p className={`text-sm mb-4 ${darkMode ? 'text-gray-400' : 'text-gray-600'}`}>
                   {t('account.security.passwordDescription', 'Wijzig het wachtwoord voor toegang tot je project dashboard.')}
                 </p>
-                <button
-                  onClick={onResetPassword}
-                  className={`flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-medium transition-colors ${
-                    darkMode 
-                      ? 'bg-gray-700 text-white hover:bg-gray-600' 
-                      : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-                  }`}
-                >
-                  <Key className="w-4 h-4" />
-                  {t('account.security.changePassword', 'Wachtwoord wijzigen')}
-                </button>
+                {passwordResetSent ? (
+                  <div className={`flex items-center gap-2 p-3 rounded-xl ${
+                    darkMode ? 'bg-green-500/10 text-green-400' : 'bg-green-50 text-green-600'
+                  }`}>
+                    <CheckCircle2 className="w-4 h-4" />
+                    <span className="text-sm font-medium">
+                      {t('account.security.resetEmailSent', 'Reset e-mail verzonden! Check je inbox.')}
+                    </span>
+                  </div>
+                ) : (
+                  <button
+                    onClick={handlePasswordReset}
+                    disabled={passwordResetLoading || !project.contactEmail}
+                    className={`flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-medium transition-colors disabled:opacity-50 ${
+                      darkMode 
+                        ? 'bg-gray-700 text-white hover:bg-gray-600' 
+                        : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                    }`}
+                  >
+                    {passwordResetLoading ? (
+                      <Loader2 className="w-4 h-4 animate-spin" />
+                    ) : (
+                      <Key className="w-4 h-4" />
+                    )}
+                    {t('account.security.changePassword', 'Wachtwoord wijzigen')}
+                  </button>
+                )}
               </div>
             </div>
 
-            {/* Email Verification Status */}
+            {/* Email Address - Contact Info */}
             <div className={`rounded-2xl border overflow-hidden ${
               darkMode ? 'bg-gray-800/50 border-gray-700/50' : 'bg-white border-gray-200'
             }`}>
               <div className={`flex items-center gap-3 px-5 py-4 border-b ${
                 darkMode ? 'border-gray-700/50' : 'border-gray-100'
               }`}>
-                <div className={`w-9 h-9 rounded-xl flex items-center justify-center ${
-                  (project as any).emailVerified 
-                    ? 'bg-green-500/20' 
-                    : darkMode ? 'bg-amber-500/20' : 'bg-amber-50'
-                }`}>
-                  <Mail className={`w-4 h-4 ${(project as any).emailVerified ? 'text-green-500' : 'text-amber-500'}`} />
+                <div className={`w-9 h-9 rounded-xl flex items-center justify-center bg-green-500/20`}>
+                  <Mail className={`w-4 h-4 text-green-500`} />
                 </div>
                 <h3 className={`font-semibold ${darkMode ? 'text-white' : 'text-gray-900'}`}>
-                  {t('account.security.emailVerification', 'E-mail verificatie')}
+                  {t('account.security.email', 'E-mailadres')}
                 </h3>
               </div>
               <div className="p-5">
-                {(project as any).emailVerified ? (
-                  <div className={`flex items-center gap-3 p-4 rounded-xl ${
-                    darkMode ? 'bg-green-500/10' : 'bg-green-50'
-                  }`}>
-                    <CheckCircle2 className="w-5 h-5 text-green-500" />
-                    <div>
-                      <p className={`font-medium ${darkMode ? 'text-green-400' : 'text-green-700'}`}>
-                        {t('account.security.emailVerified', 'E-mail geverifieerd')}
-                      </p>
-                      <p className={`text-sm ${darkMode ? 'text-green-400/70' : 'text-green-600'}`}>
-                        {project.contactEmail}
-                      </p>
-                    </div>
+                <div className={`flex items-center gap-3 p-4 rounded-xl ${
+                  darkMode ? 'bg-green-500/10' : 'bg-green-50'
+                }`}>
+                  <CheckCircle2 className="w-5 h-5 text-green-500" />
+                  <div>
+                    <p className={`font-medium ${darkMode ? 'text-green-400' : 'text-green-700'}`}>
+                      {project.contactEmail || t('account.security.noEmail', 'Geen e-mail ingesteld')}
+                    </p>
+                    <p className={`text-sm ${darkMode ? 'text-green-400/70' : 'text-green-600'}`}>
+                      {t('account.security.emailInUse', 'Gebruikt voor inloggen en notificaties')}
+                    </p>
                   </div>
-                ) : (
-                  <div className={`flex items-center gap-3 p-4 rounded-xl ${
-                    darkMode ? 'bg-amber-500/10' : 'bg-amber-50'
-                  }`}>
-                    <Clock className="w-5 h-5 text-amber-500" />
-                    <div>
-                      <p className={`font-medium ${darkMode ? 'text-amber-400' : 'text-amber-700'}`}>
-                        {t('account.security.emailPending', 'Wacht op verificatie')}
-                      </p>
-                      <p className={`text-sm ${darkMode ? 'text-amber-400/70' : 'text-amber-600'}`}>
-                        {t('account.security.checkInbox', 'Controleer je inbox voor de verificatie-e-mail')}
-                      </p>
-                    </div>
-                  </div>
-                )}
+                </div>
               </div>
             </div>
 
             {/* Referral Program */}
-            <div className={`rounded-2xl border overflow-hidden ${
-              darkMode ? 'bg-gradient-to-br from-purple-500/10 to-pink-500/10 border-purple-500/20' : 'bg-gradient-to-br from-purple-50 to-pink-50 border-purple-200'
+            <div className={`rounded-2xl border overflow-hidden relative ${
+              darkMode ? 'bg-gradient-to-br from-purple-500/10 via-pink-500/5 to-purple-500/10 border-purple-500/20' : 'bg-gradient-to-br from-purple-50 via-pink-50/50 to-purple-50 border-purple-200'
             }`}>
-              <div className={`flex items-center gap-3 px-5 py-4 border-b ${
+              {/* Shimmer effect */}
+              <div className="absolute inset-0 -translate-x-full animate-[shimmer_4s_infinite] bg-gradient-to-r from-transparent via-white/10 to-transparent pointer-events-none" />
+              
+              <div className={`flex items-center gap-3 px-5 py-4 border-b relative ${
                 darkMode ? 'border-purple-500/20' : 'border-purple-200'
               }`}>
-                <div className={`w-9 h-9 rounded-xl flex items-center justify-center ${
-                  darkMode ? 'bg-purple-500/20' : 'bg-purple-100'
-                }`}>
-                  <Gift className={`w-4 h-4 ${darkMode ? 'text-purple-400' : 'text-purple-600'}`} />
+                <div className={`w-10 h-10 rounded-xl flex items-center justify-center bg-gradient-to-br from-purple-500 to-pink-500 shadow-lg shadow-purple-500/25`}>
+                  <Gift className="w-5 h-5 text-white" />
                 </div>
                 <div>
                   <h3 className={`font-semibold ${darkMode ? 'text-white' : 'text-gray-900'}`}>
@@ -1043,13 +1098,27 @@ export default function AccountSection({
                     <p className={`text-xs mb-0.5 ${darkMode ? 'text-gray-500' : 'text-gray-400'}`}>
                       {t('account.referral.yourLink', 'Jouw link')}
                     </p>
-                    <p className={`text-sm font-mono truncate ${darkMode ? 'text-white' : 'text-gray-900'}`}>
-                      {referralLink}
-                    </p>
+                    {loadingReferral ? (
+                      <div className="flex items-center gap-2">
+                        <Loader2 className="w-4 h-4 animate-spin text-gray-400" />
+                        <span className={`text-sm ${darkMode ? 'text-gray-500' : 'text-gray-400'}`}>
+                          {t('account.referral.loading', 'Link genereren...')}
+                        </span>
+                      </div>
+                    ) : referralLink ? (
+                      <p className={`text-sm font-mono truncate ${darkMode ? 'text-white' : 'text-gray-900'}`}>
+                        {referralLink}
+                      </p>
+                    ) : (
+                      <p className={`text-sm ${darkMode ? 'text-gray-500' : 'text-gray-400'}`}>
+                        {t('account.referral.unavailable', 'Niet beschikbaar')}
+                      </p>
+                    )}
                   </div>
                   <button
                     onClick={copyReferralCode}
-                    className={`flex-shrink-0 flex items-center gap-1.5 px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
+                    disabled={!referralLink || loadingReferral}
+                    className={`flex-shrink-0 flex items-center gap-1.5 px-3 py-2 rounded-lg text-sm font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed ${
                       copiedReferral
                         ? 'bg-green-500 text-white'
                         : darkMode 

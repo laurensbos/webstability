@@ -87,10 +87,18 @@ function FloatingParticles() {
 }
 
 const STEP_CONFIG = [
-  { key: 1, labelKey: 'klantOnboarding.steps.company', icon: Building2, color: 'from-primary-500 to-blue-500' },
-  { key: 2, labelKey: 'klantOnboarding.steps.branding', icon: Palette, color: 'from-purple-500 to-violet-500' },
-  { key: 3, labelKey: 'klantOnboarding.steps.media', icon: Image, color: 'from-emerald-500 to-green-500' },
-  { key: 4, labelKey: 'klantOnboarding.steps.extra', icon: Globe, color: 'from-orange-500 to-amber-500' },
+  { key: 1, labelKey: 'klantOnboarding.steps.company', label: 'Bedrijf', icon: Building2, color: 'from-primary-500 to-blue-500' },
+  { key: 2, labelKey: 'klantOnboarding.steps.branding', label: 'Huisstijl', icon: Palette, color: 'from-purple-500 to-violet-500' },
+  { key: 3, labelKey: 'klantOnboarding.steps.media', label: 'Media', icon: Image, color: 'from-emerald-500 to-green-500' },
+  { key: 4, labelKey: 'klantOnboarding.steps.extra', label: 'Afronden', icon: Globe, color: 'from-orange-500 to-amber-500' },
+]
+
+// Logo option cards
+const LOGO_OPTIONS = [
+  { value: 'ja_vector', label: 'Ja, vectorbestand', description: 'AI, EPS of SVG formaat', icon: '✓' },
+  { value: 'ja_afbeelding', label: 'Ja, afbeelding', description: 'PNG of JPG formaat', icon: '🖼️' },
+  { value: 'nee_nodig', label: 'Nee, logo nodig', description: 'Wij maken er één', icon: '✨' },
+  { value: 'nee_niet_nodig', label: 'Alleen tekst', description: 'Geen logo nodig', icon: '📝' },
 ]
 
 export default function KlantOnboarding() {
@@ -837,13 +845,13 @@ export default function KlantOnboarding() {
         </div>
       </header>
 
-      <main className="relative z-10 max-w-2xl mx-auto px-4 py-8 md:py-12">
+      <main className="relative z-10 max-w-6xl mx-auto px-4 py-8 md:py-12">
         {/* Prefilled notice */}
         {formData.aboutText && step === 1 && !existingOnboarding && (
           <motion.div
             initial={{ opacity: 0, y: -10 }}
             animate={{ opacity: 1, y: 0 }}
-            className="mb-4 p-4 bg-emerald-50 border border-emerald-200 rounded-xl"
+            className="mb-4 p-4 bg-emerald-50 border border-emerald-200 rounded-xl max-w-2xl lg:max-w-none"
           >
             <p className="text-sm text-emerald-800">
               <strong>✨ Goed nieuws!</strong> We hebben een aantal velden al voor je ingevuld. 
@@ -852,56 +860,130 @@ export default function KlantOnboarding() {
           </motion.div>
         )}
 
-        {/* Progress Steps - Compact on mobile */}
-        <div className="mb-6 sm:mb-8">
-          <div className="flex items-center justify-between mb-3 sm:mb-4">
-            {STEP_CONFIG.map((s, index) => (
-              <div key={s.key} className="flex items-center">
-                <motion.div
-                  initial={false}
-                  animate={{
-                    scale: step === s.key ? 1.1 : 1,
-                    opacity: step >= s.key ? 1 : 0.5
-                  }}
-                  className={`relative w-9 h-9 sm:w-10 sm:h-10 rounded-xl flex items-center justify-center transition-all ${
-                    step >= s.key 
-                      ? `bg-gradient-to-br ${s.color} shadow-lg` 
-                      : 'bg-gray-200'
-                  }`}
-                >
-                  <s.icon className={`w-4 h-4 sm:w-5 sm:h-5 ${step >= s.key ? 'text-white' : 'text-gray-400'}`} />
-                  {step > s.key && (
-                    <motion.div
-                      initial={{ scale: 0 }}
-                      animate={{ scale: 1 }}
-                      className="absolute -top-1 -right-1 w-3.5 h-3.5 sm:w-4 sm:h-4 bg-emerald-500 rounded-full flex items-center justify-center"
+        {/* Desktop: Sidebar layout / Mobile: Stacked */}
+        <div className="lg:grid lg:grid-cols-[280px_1fr] lg:gap-8">
+          
+          {/* Sidebar Progress - Desktop only */}
+          <aside className="hidden lg:block">
+            <div className="sticky top-24 space-y-3">
+              <div className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-lg border border-white/50 p-5">
+                <h3 className="text-sm font-semibold text-gray-500 uppercase tracking-wide mb-4">Voortgang</h3>
+                <div className="space-y-2">
+                  {STEP_CONFIG.map((s, index) => (
+                    <button
+                      key={s.key}
+                      onClick={() => setStep(s.key)}
+                      disabled={step < s.key && !existingOnboarding}
+                      className={`w-full flex items-center gap-3 p-3 rounded-xl transition-all text-left ${
+                        step === s.key 
+                          ? 'bg-gradient-to-r ' + s.color + ' text-white shadow-lg' 
+                          : step > s.key 
+                            ? 'bg-emerald-50 text-emerald-700 hover:bg-emerald-100' 
+                            : 'bg-gray-50 text-gray-400 cursor-not-allowed'
+                      }`}
                     >
-                      <CheckCircle2 className="w-2.5 h-2.5 sm:w-3 sm:h-3 text-white" />
-                    </motion.div>
-                  )}
-                </motion.div>
-                {index < STEP_CONFIG.length - 1 && (
-                  <div className={`w-6 sm:w-12 md:w-16 h-1 mx-0.5 sm:mx-1 rounded-full transition-colors ${
-                    step > s.key ? 'bg-gradient-to-r from-emerald-400 to-emerald-500' : 'bg-gray-200'
-                  }`} />
-                )}
+                      <div className={`w-8 h-8 rounded-lg flex items-center justify-center ${
+                        step === s.key 
+                          ? 'bg-white/20' 
+                          : step > s.key 
+                            ? 'bg-emerald-500 text-white' 
+                            : 'bg-gray-200'
+                      }`}>
+                        {step > s.key ? (
+                          <CheckCircle2 className="w-4 h-4" />
+                        ) : (
+                          <s.icon className="w-4 h-4" />
+                        )}
+                      </div>
+                      <div>
+                        <p className={`font-medium text-sm ${step === s.key ? 'text-white' : ''}`}>
+                          {s.label}
+                        </p>
+                        <p className={`text-xs ${step === s.key ? 'text-white/70' : 'text-gray-400'}`}>
+                          Stap {index + 1}
+                        </p>
+                      </div>
+                    </button>
+                  ))}
+                </div>
+                
+                {/* Progress bar */}
+                <div className="mt-5 pt-4 border-t border-gray-100">
+                  <div className="flex justify-between text-xs text-gray-500 mb-2">
+                    <span>Voortgang</span>
+                    <span className="font-semibold text-primary-600">{Math.round((step / totalSteps) * 100)}%</span>
+                  </div>
+                  <div className="h-2 bg-gray-100 rounded-full overflow-hidden">
+                    <motion.div 
+                      className="h-full bg-gradient-to-r from-primary-500 to-blue-500 rounded-full"
+                      initial={{ width: 0 }}
+                      animate={{ width: `${(step / totalSteps) * 100}%` }}
+                      transition={{ duration: 0.3 }}
+                    />
+                  </div>
+                </div>
               </div>
-            ))}
-          </div>
-          <div className="flex justify-between text-sm">
-            <span className="text-gray-600 font-medium">{t('klantOnboarding.stepProgress', { current: step, total: totalSteps, step: t(currentStepConfig.labelKey) })}</span>
-            <span className="text-primary-600 font-medium">{Math.round((step / totalSteps) * 100)}%</span>
-          </div>
-        </div>
+              
+              {/* Trust badge */}
+              <div className="bg-white/60 backdrop-blur-sm rounded-xl p-4 border border-white/50 text-center">
+                <div className="flex items-center justify-center gap-2 text-sm text-gray-600">
+                  <Shield className="w-4 h-4 text-emerald-500" />
+                  <span>Veilig opgeslagen</span>
+                </div>
+              </div>
+            </div>
+          </aside>
 
-        {/* Form Card */}
-        <motion.div
-          key={step}
-          initial={{ opacity: 0, x: 20 }}
-          animate={{ opacity: 1, x: 0 }}
-          exit={{ opacity: 0, x: -20 }}
-          className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-xl border border-white/50 overflow-hidden"
-        >
+          {/* Mobile Progress - Only on mobile */}
+          <div className="lg:hidden mb-6">
+            <div className="flex items-center justify-between mb-3">
+              {STEP_CONFIG.map((s, index) => (
+                <div key={s.key} className="flex items-center">
+                  <motion.div
+                    initial={false}
+                    animate={{
+                      scale: step === s.key ? 1.1 : 1,
+                      opacity: step >= s.key ? 1 : 0.5
+                    }}
+                    className={`relative w-9 h-9 rounded-xl flex items-center justify-center transition-all ${
+                      step >= s.key 
+                        ? `bg-gradient-to-br ${s.color} shadow-lg` 
+                        : 'bg-gray-200'
+                    }`}
+                  >
+                    <s.icon className={`w-4 h-4 ${step >= s.key ? 'text-white' : 'text-gray-400'}`} />
+                    {step > s.key && (
+                      <motion.div
+                        initial={{ scale: 0 }}
+                        animate={{ scale: 1 }}
+                        className="absolute -top-1 -right-1 w-3.5 h-3.5 bg-emerald-500 rounded-full flex items-center justify-center"
+                      >
+                        <CheckCircle2 className="w-2.5 h-2.5 text-white" />
+                      </motion.div>
+                    )}
+                  </motion.div>
+                  {index < STEP_CONFIG.length - 1 && (
+                    <div className={`w-6 sm:w-10 h-1 mx-0.5 rounded-full transition-colors ${
+                      step > s.key ? 'bg-gradient-to-r from-emerald-400 to-emerald-500' : 'bg-gray-200'
+                    }`} />
+                  )}
+                </div>
+              ))}
+            </div>
+            <div className="flex justify-between text-sm">
+              <span className="text-gray-600 font-medium">{t('klantOnboarding.stepProgress', { current: step, total: totalSteps, step: currentStepConfig.label })}</span>
+              <span className="text-primary-600 font-medium">{Math.round((step / totalSteps) * 100)}%</span>
+            </div>
+          </div>
+
+          {/* Form Card */}
+          <motion.div
+            key={step}
+            initial={{ opacity: 0, x: 20 }}
+            animate={{ opacity: 1, x: 0 }}
+            exit={{ opacity: 0, x: -20 }}
+            className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-xl border border-white/50 overflow-hidden"
+          >
           {/* Colored top border */}
           <div className={`h-1 bg-gradient-to-r ${currentStepConfig.color}`} />
           
@@ -920,41 +1002,45 @@ export default function KlantOnboarding() {
                     </div>
                   </div>
 
-                  <div className="space-y-4">
+                  <div className="space-y-5">
                     <div>
                       <label className="block text-sm font-medium text-gray-700 mb-1">Over je bedrijf *</label>
                       <textarea
                         name="aboutText"
                         value={formData.aboutText}
                         onChange={handleChange}
-                        rows={4}
+                        rows={3}
                         placeholder="Beschrijf je bedrijf in een paar zinnen..."
                         className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-primary-500 bg-white/50"
                         required
                       />
                     </div>
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1">Diensten/Producten *</label>
-                      <textarea
-                        name="services"
-                        value={formData.services}
-                        onChange={handleChange}
-                        rows={3}
-                        placeholder="Som je belangrijkste diensten of producten op"
-                        className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-primary-500 bg-white/50"
-                        required
-                      />
-                    </div>
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1">Unique Selling Points</label>
-                      <textarea
-                        name="uniqueSellingPoints"
-                        value={formData.uniqueSellingPoints}
-                        onChange={handleChange}
-                        rows={2}
-                        placeholder="Wat onderscheidt je van de concurrentie?"
-                        className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-primary-500 bg-white/50"
-                      />
+                    
+                    {/* Two column on desktop */}
+                    <div className="grid lg:grid-cols-2 gap-4">
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">Diensten/Producten *</label>
+                        <textarea
+                          name="services"
+                          value={formData.services}
+                          onChange={handleChange}
+                          rows={3}
+                          placeholder="Belangrijkste diensten of producten"
+                          className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-primary-500 bg-white/50"
+                          required
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">Unique Selling Points</label>
+                        <textarea
+                          name="uniqueSellingPoints"
+                          value={formData.uniqueSellingPoints}
+                          onChange={handleChange}
+                          rows={3}
+                          placeholder="Wat onderscheidt je van de concurrentie?"
+                          className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-primary-500 bg-white/50"
+                        />
+                      </div>
                     </div>
                   </div>
                 </>
@@ -980,55 +1066,80 @@ export default function KlantOnboarding() {
                     </p>
                   </div>
 
-                  <div className="space-y-4">
+                  <div className="space-y-6">
+                    {/* Logo card selection */}
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1">Heb je al een logo? *</label>
-                      <select
-                        name="hasLogo"
-                        value={formData.hasLogo}
-                        onChange={handleChange}
-                        className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-primary-500 bg-white dark:bg-gray-900 dark:bg-gray-900"
-                        required
-                      >
-                        <option value="">Selecteer...</option>
-                        <option value="ja_vector">Ja, in vectorformaat (AI/EPS/SVG)</option>
-                        <option value="ja_afbeelding">Ja, als afbeelding (PNG/JPG)</option>
-                        <option value="nee_nodig">Nee, ik heb een logo nodig</option>
-                        <option value="nee_niet_nodig">Nee, alleen tekst gebruiken</option>
-                      </select>
+                      <label className="block text-sm font-medium text-gray-700 mb-3">Heb je al een logo? *</label>
+                      <div className="grid grid-cols-2 gap-3">
+                        {LOGO_OPTIONS.map((option) => (
+                          <button
+                            key={option.value}
+                            type="button"
+                            onClick={() => setFormData(prev => ({ ...prev, hasLogo: option.value }))}
+                            className={`relative p-4 rounded-xl border-2 text-left transition-all ${
+                              formData.hasLogo === option.value
+                                ? 'border-purple-500 bg-purple-50 ring-2 ring-purple-500/20'
+                                : 'border-gray-200 hover:border-purple-300 hover:bg-purple-50/50'
+                            }`}
+                          >
+                            <div className="flex items-start gap-3">
+                              <span className="text-2xl">{option.icon}</span>
+                              <div>
+                                <p className={`font-medium text-sm ${formData.hasLogo === option.value ? 'text-purple-700' : 'text-gray-900'}`}>
+                                  {option.label}
+                                </p>
+                                <p className="text-xs text-gray-500 mt-0.5">{option.description}</p>
+                              </div>
+                            </div>
+                            {formData.hasLogo === option.value && (
+                              <motion.div
+                                initial={{ scale: 0 }}
+                                animate={{ scale: 1 }}
+                                className="absolute top-2 right-2 w-5 h-5 bg-purple-500 rounded-full flex items-center justify-center"
+                              >
+                                <CheckCircle2 className="w-3 h-3 text-white" />
+                              </motion.div>
+                            )}
+                          </button>
+                        ))}
+                      </div>
                     </div>
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1">Logo omschrijving/link</label>
-                      <textarea
-                        name="logoDescription"
-                        value={formData.logoDescription}
-                        onChange={handleChange}
-                        rows={2}
-                        placeholder="Beschrijf je logo of plak een link naar het bestand"
-                        className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-primary-500 bg-white/50"
-                      />
-                    </div>
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1">Merkleuren</label>
-                      <input
-                        type="text"
-                        name="brandColors"
-                        value={formData.brandColors}
-                        onChange={handleChange}
-                        placeholder="Bijv. Blauw (#2563EB), Wit, Donkergrijs"
-                        className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-primary-500 bg-white/50"
-                      />
-                    </div>
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1">Lettertype voorkeur</label>
-                      <input
-                        type="text"
-                        name="brandFonts"
-                        value={formData.brandFonts}
-                        onChange={handleChange}
-                        placeholder="Bijv. Modern en strak, of klassiek en elegant"
-                        className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-primary-500 bg-white/50"
-                      />
+
+                    {/* Two column layout for desktop */}
+                    <div className="grid lg:grid-cols-2 gap-4">
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">Logo omschrijving/link</label>
+                        <textarea
+                          name="logoDescription"
+                          value={formData.logoDescription}
+                          onChange={handleChange}
+                          rows={2}
+                          placeholder="Beschrijf je logo of plak een link"
+                          className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-primary-500 bg-white/50"
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">Merkleuren</label>
+                        <input
+                          type="text"
+                          name="brandColors"
+                          value={formData.brandColors}
+                          onChange={handleChange}
+                          placeholder="Bijv. Blauw (#2563EB), Wit"
+                          className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-primary-500 bg-white/50"
+                        />
+                        <div className="mt-2">
+                          <label className="block text-sm font-medium text-gray-700 mb-1">Lettertype voorkeur</label>
+                          <input
+                            type="text"
+                            name="brandFonts"
+                            value={formData.brandFonts}
+                            onChange={handleChange}
+                            placeholder="Modern, klassiek, speels..."
+                            className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-primary-500 bg-white/50"
+                          />
+                        </div>
+                      </div>
                     </div>
                   </div>
                 </>
@@ -1047,31 +1158,39 @@ export default function KlantOnboarding() {
                     </div>
                   </div>
 
-                  <div className="space-y-4">
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1">Foto's & Afbeeldingen</label>
-                      <textarea
-                        name="photos"
-                        value={formData.photos}
-                        onChange={handleChange}
-                        rows={3}
-                        placeholder="Deel een link naar een map met foto's (Google Drive, Dropbox, WeTransfer)"
-                        className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-primary-500 bg-white/50"
-                      />
-                      <p className="text-sm text-gray-500 mt-1">
-                        Tip: Gebruik hoge kwaliteit foto's (minimaal 1920px breed)
-                      </p>
+                  {/* Two column on desktop */}
+                  <div className="grid lg:grid-cols-2 gap-5">
+                    <div className="space-y-4">
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">Foto's & Afbeeldingen</label>
+                        <textarea
+                          name="photos"
+                          value={formData.photos}
+                          onChange={handleChange}
+                          rows={3}
+                          placeholder="Link naar je foto's (Google Drive, Dropbox, WeTransfer)"
+                          className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-primary-500 bg-white/50"
+                        />
+                        <p className="text-xs text-gray-500 mt-1.5">
+                          💡 Tip: Gebruik hoge kwaliteit foto's (minimaal 1920px breed)
+                        </p>
+                      </div>
                     </div>
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1">Social Media & Online profielen</label>
-                      <textarea
-                        name="socialMedia"
-                        value={formData.socialMedia}
-                        onChange={handleChange}
-                        rows={2}
-                        placeholder="Links naar je Instagram, Facebook, LinkedIn, etc."
-                        className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-primary-500 bg-white/50"
-                      />
+                    <div className="space-y-4">
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">Social Media & Online profielen</label>
+                        <textarea
+                          name="socialMedia"
+                          value={formData.socialMedia}
+                          onChange={handleChange}
+                          rows={3}
+                          placeholder="Links naar je Instagram, Facebook, LinkedIn, etc."
+                          className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-primary-500 bg-white/50"
+                        />
+                        <p className="text-xs text-gray-500 mt-1.5">
+                          We kunnen je social media feeds tonen op de website
+                        </p>
+                      </div>
                     </div>
                   </div>
                 </>
@@ -1086,45 +1205,60 @@ export default function KlantOnboarding() {
                     </div>
                     <div>
                       <h2 className="text-xl font-bold text-gray-900 dark:text-white">Laatste details</h2>
-                      <p className="text-gray-600 text-sm">Nog een paar vragen</p>
+                      <p className="text-gray-600 text-sm">Bijna klaar!</p>
                     </div>
                   </div>
 
-                  <div className="space-y-4">
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1">Inspiratie websites</label>
-                      <textarea
-                        name="competitors"
-                        value={formData.competitors}
-                        onChange={handleChange}
-                        rows={2}
-                        placeholder="Welke websites vind je mooi of inspirerend? (met links)"
-                        className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-primary-500 bg-white/50"
-                      />
-                    </div>
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1">Extra wensen</label>
-                      <textarea
-                        name="extraWishes"
-                        value={formData.extraWishes}
-                        onChange={handleChange}
-                        rows={3}
-                        placeholder="Is er nog iets dat we moeten weten?"
-                        className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-primary-500 bg-white/50"
-                      />
+                  {/* Two column on desktop */}
+                  <div className="grid lg:grid-cols-2 gap-5">
+                    <div className="space-y-4">
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">Inspiratie websites</label>
+                        <textarea
+                          name="competitors"
+                          value={formData.competitors}
+                          onChange={handleChange}
+                          rows={3}
+                          placeholder="Welke websites vind je mooi? (met links)"
+                          className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-primary-500 bg-white/50"
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">Extra wensen</label>
+                        <textarea
+                          name="extraWishes"
+                          value={formData.extraWishes}
+                          onChange={handleChange}
+                          rows={3}
+                          placeholder="Is er nog iets dat we moeten weten?"
+                          className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-primary-500 bg-white/50"
+                        />
+                      </div>
                     </div>
 
                     {/* Contact summary */}
-                    <div className="bg-gray-50 rounded-xl p-4 mt-6 border border-gray-100 dark:border-gray-700">
-                      <h3 className="font-semibold text-gray-900 mb-3 flex items-center gap-2">
+                    <div className="bg-gradient-to-br from-gray-50 to-primary-50/30 rounded-xl p-5 border border-gray-100">
+                      <h3 className="font-semibold text-gray-900 mb-4 flex items-center gap-2">
                         <Shield className="w-4 h-4 text-primary-500" />
-                        Contactgegevens
+                        Jouw contactgegevens
                       </h3>
-                      <div className="space-y-1 text-sm text-gray-600 dark:text-gray-400">
-                        <p><strong>Bedrijf:</strong> {formData.businessName}</p>
-                        <p><strong>Naam:</strong> {formData.contactName}</p>
-                        <p><strong>Email:</strong> {formData.contactEmail}</p>
-                        <p><strong>Telefoon:</strong> {formData.contactPhone}</p>
+                      <div className="space-y-3 text-sm">
+                        <div className="flex items-center gap-3 p-2.5 bg-white rounded-lg">
+                          <Building2 className="w-4 h-4 text-gray-400" />
+                          <span className="text-gray-700">{formData.businessName || '-'}</span>
+                        </div>
+                        <div className="flex items-center gap-3 p-2.5 bg-white rounded-lg">
+                          <span className="w-4 h-4 text-gray-400 text-center">👤</span>
+                          <span className="text-gray-700">{formData.contactName || '-'}</span>
+                        </div>
+                        <div className="flex items-center gap-3 p-2.5 bg-white rounded-lg">
+                          <span className="w-4 h-4 text-gray-400 text-center">✉️</span>
+                          <span className="text-gray-700">{formData.contactEmail || '-'}</span>
+                        </div>
+                        <div className="flex items-center gap-3 p-2.5 bg-white rounded-lg">
+                          <span className="w-4 h-4 text-gray-400 text-center">📱</span>
+                          <span className="text-gray-700">{formData.contactPhone || '-'}</span>
+                        </div>
                       </div>
                     </div>
                   </div>
@@ -1206,13 +1340,14 @@ export default function KlantOnboarding() {
             </form>
           </div>
         </motion.div>
+        </div>{/* End of lg:grid */}
 
-        {/* Trust indicators */}
+        {/* Trust indicators - Mobile only */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.3 }}
-          className="mt-8 flex flex-wrap justify-center gap-6 text-sm text-gray-500 dark:text-gray-400"
+          className="lg:hidden mt-8 flex flex-wrap justify-center gap-6 text-sm text-gray-500 dark:text-gray-400"
         >
           <div className="flex items-center gap-2">
             <Shield className="w-4 h-4 text-emerald-500" />

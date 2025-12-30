@@ -938,6 +938,10 @@
       "password": "Wachtwoord",
       "passwordDescription": "Wijzig het wachtwoord voor toegang tot je project dashboard.",
       "changePassword": "Wachtwoord wijzigen",
+      "resetEmailSent": "Reset e-mail verzonden! Check je inbox.",
+      "email": "E-mailadres",
+      "noEmail": "Geen e-mail ingesteld",
+      "emailInUse": "Gebruikt voor inloggen en notificaties",
       "emailVerification": "E-mail verificatie",
       "emailVerified": "E-mail geverifieerd",
       "emailPending": "Wacht op verificatie",
@@ -948,6 +952,8 @@
       "subtitle": "Voor elke vriend die start",
       "description": "Deel je unieke link en ontvang €25 korting op je abonnement voor elke nieuwe klant die via jouw link start.",
       "yourLink": "Jouw link",
+      "loading": "Link genereren...",
+      "unavailable": "Niet beschikbaar",
       "friends": "Vrienden verwezen",
       "earned": "Korting verdiend"
     },
@@ -2386,6 +2392,10 @@
       "payAfterApproval": "Betaling pas na goedkeuring"
     },
     "back": "← Andere dienst kiezen",
+    "referral": {
+      "title": "🎉 €25 korting!",
+      "subtitle": "Je bent uitgenodigd door een vriend en ontvangt €25 korting."
+    },
     "whatHappensNext": {
       "title": "Wat gebeurt er na je aanvraag?",
       "step1": "Je ontvangt direct een bevestigingsmail met je login gegevens",
