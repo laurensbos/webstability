@@ -2183,7 +2183,8 @@
       "subtitle": "Geen abonnement, alles inbegrepen",
       "oneTime": "eenmalig",
       "delivery": "3-5 werkdagen",
-      "cta": "Start je logo project"
+      "cta": "Start je logo project",
+      "combineDiscount": "Combineer met een website voor korting"
     },
     "process": {
       "badge": "Hoe het werkt",
@@ -3618,6 +3619,21 @@
         "notFound": "Kortingscode niet gevonden",
         "expired": "Deze kortingscode is verlopen",
         "invalid": "Ongeldige code"
+      },
+      "addons": {
+        "title": "Bundel Deals",
+        "subtitle": "Voeg extra diensten toe met korting bij je website",
+        "bundleDiscount": "Bespaar tot €80",
+        "bundleSummary": "Je bundel totaal",
+        "youSave": "Je bespaart",
+        "logo": {
+          "title": "Logo Ontwerp",
+          "description": "Professioneel logo voor je merkidentiteit"
+        },
+        "drone": {
+          "title": "Drone Beelden",
+          "description": "Spectaculaire luchtopnames voor je website"
+        }
       },
       "validation": {
         "passwordMismatch": "Wachtwoorden komen niet overeen"

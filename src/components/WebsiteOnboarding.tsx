@@ -14,7 +14,10 @@ import {
   Lock,
   Eye,
   EyeOff,
-  Loader2
+  Loader2,
+  Camera,
+  Brush,
+  Gift
 } from 'lucide-react'
 import { useNavigate } from 'react-router-dom'
 
@@ -59,6 +62,29 @@ interface FormData {
   password: string
   confirmPassword: string
   discountCode: string
+  addons: string[] // drone, logo
+}
+
+// Add-on services with bundle discounts
+const ADDON_SERVICES = {
+  logo: {
+    id: 'logo',
+    name: 'Logo Ontwerp',
+    nameEn: 'Logo Design',
+    price: 169,
+    bundlePrice: 139, // €30 korting bij website
+    description: 'Professioneel logo voor je merk',
+    descriptionEn: 'Professional logo for your brand',
+  },
+  drone: {
+    id: 'drone',
+    name: 'Drone Beelden',
+    nameEn: 'Drone Footage',
+    price: 249,
+    bundlePrice: 199, // €50 korting bij website
+    description: 'Spectaculaire luchtopnames',
+    descriptionEn: 'Spectacular aerial shots',
+  },
 }
 
 // Discount code validation
@@ -278,6 +304,7 @@ export default function WebsiteOnboarding({
     password: '',
     confirmPassword: '',
     discountCode: '',
+    addons: [],
   })
 
   // Discount state
@@ -443,6 +470,11 @@ export default function WebsiteOnboarding({
           discountAmount: appliedDiscount ? appliedDiscount.setupDiscount + appliedDiscount.monthlyDiscount : 0,
           finalSetupFee: finalSetupFee,
           finalMonthlyFee: finalMonthlyFee,
+          // Add-ons with bundle pricing
+          addons: formData.addons,
+          addonsTotal: formData.addons.reduce((sum, addon) => 
+            sum + (addon === 'logo' ? ADDON_SERVICES.logo.bundlePrice : ADDON_SERVICES.drone.bundlePrice), 0
+          ),
         }),
       })
 
@@ -642,6 +674,165 @@ export default function WebsiteOnboarding({
                     </motion.button>
                   ))}
                 </div>
+
+                {/* Add-ons Section */}
+                {formData.package && (
+                  <motion.div
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.2 }}
+                    className="mt-8 pt-8 border-t border-gray-200 dark:border-gray-700"
+                  >
+                    <div className="flex items-center gap-2 mb-4">
+                      <Gift className="w-5 h-5 text-primary-500" />
+                      <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
+                        {t('onboarding.websiteOnboarding.addons.title')}
+                      </h3>
+                      <span className="ml-auto text-xs bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400 px-2 py-1 rounded-full font-medium">
+                        {t('onboarding.websiteOnboarding.addons.bundleDiscount')}
+                      </span>
+                    </div>
+                    <p className="text-sm text-gray-500 dark:text-gray-400 mb-4">
+                      {t('onboarding.websiteOnboarding.addons.subtitle')}
+                    </p>
+                    
+                    <div className="grid sm:grid-cols-2 gap-4">
+                      {/* Logo Add-on */}
+                      <motion.button
+                        type="button"
+                        onClick={() => {
+                          const current = formData.addons
+                          if (current.includes('logo')) {
+                            updateFormData('addons', current.filter(a => a !== 'logo'))
+                          } else {
+                            updateFormData('addons', [...current, 'logo'])
+                          }
+                        }}
+                        className={`relative p-4 rounded-xl border-2 text-left transition-all ${
+                          formData.addons.includes('logo')
+                            ? 'border-purple-500 bg-purple-50 dark:bg-purple-900/20'
+                            : 'border-gray-200 dark:border-gray-700 hover:border-gray-300 dark:hover:border-gray-600'
+                        }`}
+                        whileHover={{ scale: 1.02 }}
+                        whileTap={{ scale: 0.98 }}
+                      >
+                        <div className="flex items-start gap-3">
+                          <div className={`w-10 h-10 rounded-lg flex items-center justify-center ${
+                            formData.addons.includes('logo')
+                              ? 'bg-purple-500 text-white'
+                              : 'bg-purple-100 dark:bg-purple-900/30 text-purple-600 dark:text-purple-400'
+                          }`}>
+                            <Brush className="w-5 h-5" />
+                          </div>
+                          <div className="flex-1">
+                            <div className="flex items-center gap-2">
+                              <span className="font-semibold text-gray-900 dark:text-white">
+                                {t('onboarding.websiteOnboarding.addons.logo.title')}
+                              </span>
+                              {formData.addons.includes('logo') && (
+                                <Check className="w-4 h-4 text-purple-500" />
+                              )}
+                            </div>
+                            <p className="text-xs text-gray-500 dark:text-gray-400 mt-0.5">
+                              {t('onboarding.websiteOnboarding.addons.logo.description')}
+                            </p>
+                            <div className="flex items-center gap-2 mt-2">
+                              <span className="text-lg font-bold text-gray-900 dark:text-white">€{ADDON_SERVICES.logo.bundlePrice}</span>
+                              <span className="text-sm text-gray-400 line-through">€{ADDON_SERVICES.logo.price}</span>
+                              <span className="text-xs bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400 px-1.5 py-0.5 rounded">
+                                -€{ADDON_SERVICES.logo.price - ADDON_SERVICES.logo.bundlePrice}
+                              </span>
+                            </div>
+                          </div>
+                        </div>
+                      </motion.button>
+
+                      {/* Drone Add-on */}
+                      <motion.button
+                        type="button"
+                        onClick={() => {
+                          const current = formData.addons
+                          if (current.includes('drone')) {
+                            updateFormData('addons', current.filter(a => a !== 'drone'))
+                          } else {
+                            updateFormData('addons', [...current, 'drone'])
+                          }
+                        }}
+                        className={`relative p-4 rounded-xl border-2 text-left transition-all ${
+                          formData.addons.includes('drone')
+                            ? 'border-blue-500 bg-blue-50 dark:bg-blue-900/20'
+                            : 'border-gray-200 dark:border-gray-700 hover:border-gray-300 dark:hover:border-gray-600'
+                        }`}
+                        whileHover={{ scale: 1.02 }}
+                        whileTap={{ scale: 0.98 }}
+                      >
+                        <div className="flex items-start gap-3">
+                          <div className={`w-10 h-10 rounded-lg flex items-center justify-center ${
+                            formData.addons.includes('drone')
+                              ? 'bg-blue-500 text-white'
+                              : 'bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400'
+                          }`}>
+                            <Camera className="w-5 h-5" />
+                          </div>
+                          <div className="flex-1">
+                            <div className="flex items-center gap-2">
+                              <span className="font-semibold text-gray-900 dark:text-white">
+                                {t('onboarding.websiteOnboarding.addons.drone.title')}
+                              </span>
+                              {formData.addons.includes('drone') && (
+                                <Check className="w-4 h-4 text-blue-500" />
+                              )}
+                            </div>
+                            <p className="text-xs text-gray-500 dark:text-gray-400 mt-0.5">
+                              {t('onboarding.websiteOnboarding.addons.drone.description')}
+                            </p>
+                            <div className="flex items-center gap-2 mt-2">
+                              <span className="text-lg font-bold text-gray-900 dark:text-white">€{ADDON_SERVICES.drone.bundlePrice}</span>
+                              <span className="text-sm text-gray-400 line-through">€{ADDON_SERVICES.drone.price}</span>
+                              <span className="text-xs bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400 px-1.5 py-0.5 rounded">
+                                -€{ADDON_SERVICES.drone.price - ADDON_SERVICES.drone.bundlePrice}
+                              </span>
+                            </div>
+                          </div>
+                        </div>
+                      </motion.button>
+                    </div>
+
+                    {/* Bundle Summary */}
+                    {formData.addons.length > 0 && (
+                      <motion.div
+                        initial={{ opacity: 0, height: 0 }}
+                        animate={{ opacity: 1, height: 'auto' }}
+                        className="mt-4 p-4 bg-gradient-to-r from-primary-50 to-blue-50 dark:from-primary-900/20 dark:to-blue-900/20 rounded-xl"
+                      >
+                        <div className="flex items-center justify-between">
+                          <div>
+                            <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                              {t('onboarding.websiteOnboarding.addons.bundleSummary')}
+                            </span>
+                            <p className="text-xs text-gray-500 dark:text-gray-400">
+                              {formData.addons.map(a => 
+                                a === 'logo' ? t('onboarding.websiteOnboarding.addons.logo.title') : t('onboarding.websiteOnboarding.addons.drone.title')
+                              ).join(' + ')}
+                            </p>
+                          </div>
+                          <div className="text-right">
+                            <span className="text-lg font-bold text-primary-600 dark:text-primary-400">
+                              +€{formData.addons.reduce((sum, addon) => 
+                                sum + (addon === 'logo' ? ADDON_SERVICES.logo.bundlePrice : ADDON_SERVICES.drone.bundlePrice), 0
+                              )}
+                            </span>
+                            <p className="text-xs text-green-600 dark:text-green-400">
+                              {t('onboarding.websiteOnboarding.addons.youSave')} €{formData.addons.reduce((sum, addon) => 
+                                sum + (addon === 'logo' ? (ADDON_SERVICES.logo.price - ADDON_SERVICES.logo.bundlePrice) : (ADDON_SERVICES.drone.price - ADDON_SERVICES.drone.bundlePrice)), 0
+                              )}
+                            </p>
+                          </div>
+                        </div>
+                      </motion.div>
+                    )}
+                  </motion.div>
+                )}
               </div>
             )}
 

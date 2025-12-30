@@ -2284,6 +2284,21 @@
         "expired": "This discount code has expired",
         "invalid": "Invalid code"
       },
+      "addons": {
+        "title": "Bundle Deals",
+        "subtitle": "Add extra services at a discounted price when combined with your website",
+        "bundleDiscount": "Save up to €80",
+        "bundleSummary": "Your bundle total",
+        "youSave": "You save",
+        "logo": {
+          "title": "Logo Design",
+          "description": "Professional logo for your brand identity"
+        },
+        "drone": {
+          "title": "Drone Footage",
+          "description": "Spectacular aerial shots for your website"
+        }
+      },
       "validation": {
         "passwordMismatch": "Passwords don't match"
       },
@@ -3312,7 +3327,8 @@
       "subtitle": "No subscription, everything included",
       "oneTime": "one-time",
       "delivery": "3-5 business days",
-      "cta": "Start your logo project"
+      "cta": "Start your logo project",
+      "combineDiscount": "Combine with a website for discount"
     },
     "process": {
       "badge": "How it works",

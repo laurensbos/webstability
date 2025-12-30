@@ -410,7 +410,7 @@ export default function LogoMaken() {
                 <ArrowRight className="w-4 h-4 md:w-5 md:h-5 group-hover:translate-x-1 transition-transform" />
               </Link>
               <p className="text-gray-500 dark:text-gray-400 text-xs md:text-sm mt-3 md:mt-4">
-                Combineer met een website voor korting
+                {t('logoPage.price.combineDiscount')}
               </p>
             </motion.div>
           </div>
