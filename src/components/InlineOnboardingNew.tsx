@@ -1051,11 +1051,11 @@ function SectionComponent({
                       <div className="flex items-center gap-2 mb-3">
                         <Image className="w-5 h-5 text-purple-500" />
                         <span className={`font-medium ${darkMode ? 'text-white' : 'text-gray-900'}`}>
-                          💡 {t('inlineOnboardingNew.stockPhotoSuggestions')}
+                          {t('inlineOnboardingNew.stockPhotos.title')}
                         </span>
                       </div>
                       <p className={`text-sm mb-4 ${darkMode ? 'text-gray-400' : 'text-gray-600'}`}>
-                        {t('inlineOnboardingNew.stockPhotoDescription')}
+                        {t('inlineOnboardingNew.stockPhotos.description')}
                       </p>
                       <StockPhotoSuggestions
                         businessName={answers['companyName'] || ''}

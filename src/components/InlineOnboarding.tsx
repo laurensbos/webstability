@@ -126,6 +126,10 @@ function RadioQuestion({ question, value, onChange, disabled, darkMode }: Questi
   const { t } = useTranslation()
   const { getOptionText } = createTranslationHelpers(t)
   
+  // Check if this is the logo question and user wants a new logo
+  const isLogoQuestion = question.id === 'hasLogo'
+  const wantsNewLogo = isLogoQuestion && (value === 'no' || value === 'refresh')
+  
   return (
     <div className="space-y-2">
       {question.options?.map((option) => (
@@ -163,6 +167,40 @@ function RadioQuestion({ question, value, onChange, disabled, darkMode }: Questi
           </div>
         </button>
       ))}
+      
+      {/* Logo design upsell */}
+      {wantsNewLogo && (
+        <motion.div
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          className={`mt-4 p-4 rounded-xl border ${
+            darkMode 
+              ? 'bg-gradient-to-r from-purple-500/10 to-pink-500/10 border-purple-500/30' 
+              : 'bg-gradient-to-r from-purple-50 to-pink-50 border-purple-200'
+          }`}
+        >
+          <div className="flex items-start gap-3">
+            <div className={`w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0 ${
+              darkMode ? 'bg-purple-500/20' : 'bg-purple-100'
+            }`}>
+              <Sparkles className={`w-5 h-5 ${darkMode ? 'text-purple-400' : 'text-purple-600'}`} />
+            </div>
+            <div className="flex-1">
+              <h4 className={`font-semibold ${darkMode ? 'text-white' : 'text-gray-900'}`}>
+                {t('onboarding.logoDesignTitle', { defaultValue: 'Professioneel logo nodig?' })}
+              </h4>
+              <p className={`text-sm mt-1 ${darkMode ? 'text-gray-400' : 'text-gray-600'}`}>
+                {t('onboarding.logoDesignDescription', { defaultValue: 'Onze designers maken een uniek logo dat perfect past bij jouw merk en uitstraling.' })}
+              </p>
+              <div className={`mt-2 inline-flex items-center gap-2 px-3 py-1.5 rounded-lg text-sm font-medium ${
+                darkMode ? 'bg-purple-500/20 text-purple-400' : 'bg-purple-100 text-purple-700'
+              }`}>
+                {t('onboarding.logoDesignIncluded', { defaultValue: '✓ Inbegrepen bij je pakket' })}
+              </div>
+            </div>
+          </div>
+        </motion.div>
+      )}
     </div>
   )
 }
@@ -176,7 +214,16 @@ interface PagesSelectorProps extends QuestionProps {
 function PagesSelector({ question, value, onChange, disabled, darkMode, packageType = 'starter', onUpgradeClick }: PagesSelectorProps) {
   const { t } = useTranslation()
   const { getOptionText } = createTranslationHelpers(t)
-  const selectedValues = Array.isArray(value) ? value : []
+  const [customPageInput, setCustomPageInput] = useState('')
+  const [showLegalUpsell, setShowLegalUpsell] = useState(false)
+  
+  // Separate standard pages from custom pages
+  const allSelected = Array.isArray(value) ? value : []
+  const standardOptions = question.options?.map(o => o.value) || []
+  const selectedStandard = allSelected.filter(v => standardOptions.includes(v) && !v.startsWith('custom:'))
+  const customPages = allSelected.filter(v => v.startsWith('custom:'))
+  const selectedValues = [...selectedStandard, ...customPages]
+  
   const packageLimit = question.packageLimits?.[packageType] || 5
   const isAtLimit = selectedValues.length >= packageLimit
   
@@ -199,6 +246,29 @@ function PagesSelector({ question, value, onChange, disabled, darkMode, packageT
       onChange([...selectedValues, optionValue])
     }
   }
+  
+  // Add custom page
+  const addCustomPage = () => {
+    if (customPageInput.trim() && !isAtLimit) {
+      const customValue = `custom:${customPageInput.trim()}`
+      if (!selectedValues.includes(customValue)) {
+        onChange([...selectedValues, customValue])
+        setCustomPageInput('')
+      }
+    }
+  }
+  
+  // Check if legal documents are selected
+  const hasPrivacy = selectedValues.includes('privacy')
+  const hasTerms = selectedValues.includes('terms')
+  const needsLegalDocs = !hasPrivacy || !hasTerms
+  
+  // Show upsell when legal pages are selected
+  useEffect(() => {
+    if (hasPrivacy || hasTerms) {
+      setShowLegalUpsell(true)
+    }
+  }, [hasPrivacy, hasTerms])
 
   // Get next package for upgrade suggestion
   const getNextPackage = (): PackageType | null => {
@@ -212,6 +282,9 @@ function PagesSelector({ question, value, onChange, disabled, darkMode, packageT
 
   const nextPkg = getNextPackage()
   const nextPkgInfo = nextPkg ? PACKAGES[nextPkg] : null
+  
+  // Filter out the old "custom" option (described in opmerkingen)
+  const filteredOptions = question.options?.filter(o => o.value !== 'custom') || []
 
   return (
     <div className="space-y-4">
@@ -234,9 +307,9 @@ function PagesSelector({ question, value, onChange, disabled, darkMode, packageT
         </span>
       </div>
       
-      {/* Page options */}
+      {/* Page options - use filteredOptions to exclude old custom option */}
       <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
-        {question.options?.map((option) => {
+        {filteredOptions.map((option) => {
           const isLocked = isOptionLocked(option)
           const isSelected = selectedValues.includes(option.value) && !isLocked
           const isDisabled = disabled || isLocked || (!isSelected && isAtLimit)
@@ -294,7 +367,103 @@ function PagesSelector({ question, value, onChange, disabled, darkMode, packageT
             </button>
           )
         })}
+        
+        {/* Custom pages */}
+        {customPages.map((customValue) => {
+          const pageName = customValue.replace('custom:', '')
+          return (
+            <div
+              key={customValue}
+              className={`relative flex items-center gap-2 p-3 rounded-xl border transition-all ${
+                darkMode
+                  ? 'border-primary-500 bg-primary-500/10'
+                  : 'border-primary-500 bg-primary-50'
+              }`}
+            >
+              <div className="w-5 h-5 rounded-md border-2 border-primary-500 bg-primary-500 flex items-center justify-center flex-shrink-0">
+                <Check className="w-3 h-3 text-white" />
+              </div>
+              <span className={`flex-1 text-sm ${darkMode ? 'text-white' : 'text-gray-900'}`}>
+                {pageName}
+              </span>
+              <button
+                type="button"
+                onClick={() => toggleValue(customValue)}
+                className="text-red-500 hover:text-red-400 text-lg leading-none"
+              >
+                ×
+              </button>
+            </div>
+          )
+        })}
       </div>
+      
+      {/* Add custom page input */}
+      {!isAtLimit && (
+        <div className="flex gap-2">
+          <input
+            type="text"
+            value={customPageInput}
+            onChange={(e) => setCustomPageInput(e.target.value)}
+            onKeyDown={(e) => e.key === 'Enter' && (e.preventDefault(), addCustomPage())}
+            placeholder={t('onboarding.customPagePlaceholder', { defaultValue: 'Eigen pagina toevoegen...' })}
+            className={`flex-1 px-4 py-2.5 rounded-xl border transition-colors ${
+              darkMode 
+                ? 'bg-gray-800 border-gray-700 text-white placeholder-gray-500' 
+                : 'bg-white border-gray-300 text-gray-900 placeholder-gray-400'
+            } focus:outline-none focus:ring-2 focus:ring-primary-500/20`}
+          />
+          <button
+            type="button"
+            onClick={addCustomPage}
+            disabled={!customPageInput.trim()}
+            className={`px-4 py-2.5 rounded-xl font-medium transition flex items-center gap-1 ${
+              customPageInput.trim()
+                ? 'bg-primary-500 text-white hover:bg-primary-600'
+                : darkMode
+                ? 'bg-gray-800 text-gray-500 cursor-not-allowed'
+                : 'bg-gray-100 text-gray-400 cursor-not-allowed'
+            }`}
+          >
+            + {t('onboarding.addPage', { defaultValue: 'Toevoegen' })}
+          </button>
+        </div>
+      )}
+      
+      {/* Legal documents upsell */}
+      {showLegalUpsell && needsLegalDocs && (
+        <motion.div
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          className={`p-4 rounded-xl border ${
+            darkMode 
+              ? 'bg-gradient-to-r from-amber-500/10 to-orange-500/10 border-amber-500/30' 
+              : 'bg-gradient-to-r from-amber-50 to-orange-50 border-amber-200'
+          }`}
+        >
+          <div className="flex items-start gap-3">
+            <div className={`w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0 ${
+              darkMode ? 'bg-amber-500/20' : 'bg-amber-100'
+            }`}>
+              <FileText className={`w-5 h-5 ${darkMode ? 'text-amber-400' : 'text-amber-600'}`} />
+            </div>
+            <div className="flex-1">
+              <h4 className={`font-semibold ${darkMode ? 'text-white' : 'text-gray-900'}`}>
+                {t('onboarding.legalDocsTitle', { defaultValue: 'Juridische documenten nodig?' })}
+              </h4>
+              <p className={`text-sm mt-1 ${darkMode ? 'text-gray-400' : 'text-gray-600'}`}>
+                {t('onboarding.legalDocsDescription', { defaultValue: 'Algemene voorwaarden & privacybeleid moet je zelf aanleveren. Wij kunnen deze voor je bedrijf genereren voor €49,- (beide documenten).' })}
+              </p>
+              <div className={`mt-2 inline-flex items-center gap-2 px-3 py-1.5 rounded-lg text-sm font-medium ${
+                darkMode ? 'bg-amber-500/20 text-amber-400' : 'bg-amber-100 text-amber-700'
+              }`}>
+                <Sparkles className="w-4 h-4" />
+                €49,- {t('onboarding.forBothDocs', { defaultValue: 'voor beide documenten' })}
+              </div>
+            </div>
+          </div>
+        </motion.div>
+      )}
 
       {/* Upgrade prompt when at limit */}
       {isAtLimit && nextPkgInfo && (
@@ -1051,11 +1220,11 @@ function SectionComponent({
                       <div className="flex items-center gap-2 mb-3">
                         <Image className="w-5 h-5 text-purple-500" />
                         <span className={`font-medium ${darkMode ? 'text-white' : 'text-gray-900'}`}>
-                          💡 {t('inlineOnboardingNew.stockPhotoSuggestions')}
+                          {t('inlineOnboardingNew.stockPhotos.title')}
                         </span>
                       </div>
                       <p className={`text-sm mb-4 ${darkMode ? 'text-gray-400' : 'text-gray-600'}`}>
-                        {t('inlineOnboardingNew.stockPhotoDescription')}
+                        {t('inlineOnboardingNew.stockPhotos.description')}
                       </p>
                       <StockPhotoSuggestions
                         businessName={answers['companyName'] || ''}
@@ -1079,7 +1248,7 @@ function SectionComponent({
                     onClick={onToggle}
                     className="px-4 py-2 bg-primary-500 hover:bg-primary-600 text-white text-sm font-medium rounded-lg transition-colors"
                   >
-                    Volgende stap →
+                    {t('onboarding.next')} →
                   </button>
                 </div>
               )}
@@ -1112,6 +1281,7 @@ export default function InlineOnboarding({
   onDataChange,
   initialData = {}
 }: InlineOnboardingProps) {
+  const { t } = useTranslation()
   const [expandedSection, setExpandedSection] = useState<string | null>(null)
   const [answers, setAnswers] = useState<Record<string, any>>(initialData)
   const [isSaving, setIsSaving] = useState(false)
@@ -1189,7 +1359,13 @@ export default function InlineOnboarding({
 
   const toggleSection = (sectionId: string) => {
     haptic.selection() // Haptic on section toggle
+    // Store current scroll position before toggle
+    const scrollY = window.scrollY
     setExpandedSection(prev => prev === sectionId ? null : sectionId)
+    // Restore scroll position after render
+    requestAnimationFrame(() => {
+      window.scrollTo({ top: scrollY, behavior: 'instant' })
+    })
   }
 
   const isSectionComplete = (section: OnboardingSection) => {
@@ -1202,11 +1378,17 @@ export default function InlineOnboarding({
     
     const requiredQuestions = visibleQuestions.filter(q => q.required)
     
+    // Must have at least one required question answered to show as complete
+    if (requiredQuestions.length === 0) {
+      return false // No required questions = not complete (avoid false positives)
+    }
+    
     // Check if all required questions are answered
     const allRequiredAnswered = requiredQuestions.every(q => {
       const answer = answers[q.id]
       if (Array.isArray(answer)) return answer.length > 0
-      return answer !== undefined && answer !== '' && answer !== null
+      if (typeof answer === 'string') return answer.trim() !== ''
+      return answer !== undefined && answer !== null
     })
     
     if (!allRequiredAnswered) return false
@@ -1214,12 +1396,13 @@ export default function InlineOnboarding({
     // Special handling for contact section - require more than just email
     // A contact section should have email + at least phone OR address
     if (section.id === 'contact') {
+      const hasEmail = answers['contactEmail'] && answers['contactEmail'].trim() !== ''
       const hasPhone = answers['contactPhone'] && answers['contactPhone'].trim() !== ''
       const hasAddress = answers['businessAddress'] && answers['businessAddress'].trim() !== ''
-      // Require at least one additional contact method besides email
-      if (!hasPhone && !hasAddress) {
-        return false
-      }
+      
+      // Must have email and at least one other contact method
+      if (!hasEmail) return false
+      if (!hasPhone && !hasAddress) return false
       
       // If social media channels are selected, URLs should be provided
       const socialMediaAnswer = answers['socialMedia']
@@ -1231,14 +1414,21 @@ export default function InlineOnboarding({
       }
     }
     
-    // If section has no required questions, require at least one answer
-    if (requiredQuestions.length === 0) {
-      const hasAnyAnswer = visibleQuestions.some(q => {
-        const answer = answers[q.id]
-        if (Array.isArray(answer)) return answer.length > 0
-        return answer !== undefined && answer !== '' && answer !== null
-      })
-      return hasAnyAnswer
+    // Special handling for branding section
+    if (section.id === 'branding') {
+      const hasLogo = answers['hasLogo']
+      const designStyle = answers['designStyle']
+      // Must have answered logo question and design style
+      if (!hasLogo || !designStyle) return false
+    }
+    
+    // Special handling for pages section
+    if (section.id === 'pages') {
+      const pages = answers['pages']
+      const contactMethods = answers['contactMethods']
+      // Must have selected at least 1 page and 1 contact method
+      if (!Array.isArray(pages) || pages.length === 0) return false
+      if (!Array.isArray(contactMethods) || contactMethods.length === 0) return false
     }
     
     return true
@@ -1332,10 +1522,10 @@ export default function InlineOnboarding({
             </div>
             <div>
               <h4 className={`font-semibold ${darkMode ? 'text-white' : 'text-gray-900'}`}>
-                Alles ingevuld! 🎉
+                {t('onboarding.allComplete')} 🎉
               </h4>
               <p className={`text-sm ${darkMode ? 'text-gray-400' : 'text-gray-600'}`}>
-                We gaan aan de slag met je website. Je hoort snel van ons!
+                {t('onboarding.allCompleteDescription')}
               </p>
             </div>
           </div>

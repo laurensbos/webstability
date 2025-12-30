@@ -2781,6 +2781,16 @@
     "needMorePages": "Meer pagina's nodig?",
     "upgradeToPackage": "Upgrade naar {{package}} voor tot {{limit}} pagina's",
     "viewUpgradeOptions": "Bekijk upgrade opties",
+    "allComplete": "Alles ingevuld!",
+    "allCompleteDescription": "We gaan voor je aan de slag. Je hoort snel van ons!",
+    "customPagePlaceholder": "Eigen pagina toevoegen...",
+    "addPage": "Toevoegen",
+    "legalDocsTitle": "Juridische documenten nodig?",
+    "legalDocsDescription": "Algemene voorwaarden & privacybeleid moet je zelf aanleveren. Wij kunnen deze voor je bedrijf genereren voor €49,- (beide documenten).",
+    "forBothDocs": "voor beide documenten",
+    "logoDesignTitle": "Professioneel logo nodig?",
+    "logoDesignDescription": "Onze designers maken een uniek logo dat perfect past bij jouw merk en uitstraling.",
+    "logoDesignIncluded": "✓ Inbegrepen bij je pakket",
     "sections": {
       "bedrijf": {
         "title": "Over je bedrijf",
