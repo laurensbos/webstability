@@ -104,7 +104,7 @@ const LOGO_OPTIONS = [
 export default function KlantOnboarding() {
   const { t } = useTranslation()
   const { projectId } = useParams<{ projectId: string }>()
-  const [step, setStep] = useState(1)
+  const [step, setStep] = useState(0) // Start at 0 for welcome screen
   const [loading, setLoading] = useState(false)
   const [submitted, setSubmitted] = useState(false)
   const [error, setError] = useState('')
@@ -132,6 +132,20 @@ export default function KlantOnboarding() {
     competitors: '',
     extraWishes: ''
   })
+
+  // Keyboard navigation - Enter to continue (Typeform style)
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      // Only on welcome screen (step 0)
+      if (step === 0 && e.key === 'Enter' && projectFound) {
+        e.preventDefault()
+        setStep(1)
+      }
+    }
+    
+    window.addEventListener('keydown', handleKeyDown)
+    return () => window.removeEventListener('keydown', handleKeyDown)
+  }, [step, projectFound])
 
   useEffect(() => {
     if (projectId) {
@@ -819,7 +833,133 @@ export default function KlantOnboarding() {
   }
 
   // Main form
-  const currentStepConfig = STEP_CONFIG[step - 1]
+  const currentStepConfig = step > 0 ? STEP_CONFIG[step - 1] : STEP_CONFIG[0]
+
+  // Welcome screen (step 0) - Typeform style
+  if (step === 0 && projectFound) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-slate-50 via-primary-50/30 to-white">
+        {/* Background */}
+        <div className="absolute inset-0 overflow-hidden pointer-events-none">
+          <motion.div 
+            className="absolute top-0 right-0 w-[800px] h-[800px] bg-gradient-to-br from-primary-200/60 via-blue-100/40 to-cyan-100/30 rounded-full blur-3xl -translate-y-1/3 translate-x-1/4"
+            animate={{ scale: [1, 1.05, 1] }}
+            transition={{ duration: 8, repeat: Infinity, ease: "easeInOut" }}
+          />
+          <FloatingParticles />
+        </div>
+
+        <header className="relative z-10 border-b bg-white/80 backdrop-blur-sm">
+          <div className="max-w-7xl mx-auto px-4 py-4 flex justify-between items-center">
+            <Link to="/"><Logo /></Link>
+            <span className="text-sm text-gray-500 bg-gray-100 px-3 py-1 rounded-full">Project: {projectId}</span>
+          </div>
+        </header>
+
+        <main className="relative z-10 flex items-center justify-center min-h-[calc(100vh-80px)] px-4">
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5 }}
+            className="max-w-2xl w-full text-center"
+          >
+            {/* Animated icon */}
+            <motion.div
+              initial={{ scale: 0 }}
+              animate={{ scale: 1 }}
+              transition={{ type: 'spring', stiffness: 200, delay: 0.2 }}
+              className="w-20 h-20 md:w-24 md:h-24 bg-gradient-to-br from-primary-500 to-blue-600 rounded-3xl flex items-center justify-center mx-auto mb-8 shadow-2xl shadow-primary-500/30"
+            >
+              <Sparkles className="w-10 h-10 md:w-12 md:h-12 text-white" />
+            </motion.div>
+
+            <motion.h1
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.3 }}
+              className="text-3xl md:text-4xl lg:text-5xl font-bold text-gray-900 mb-4"
+            >
+              Welkom bij je onboarding
+            </motion.h1>
+            
+            <motion.p
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.4 }}
+              className="text-lg md:text-xl text-gray-600 mb-10 max-w-lg mx-auto"
+            >
+              We stellen je een paar vragen om je website precies goed te maken. Dit duurt ongeveer <strong>5 minuten</strong>.
+            </motion.p>
+
+            {/* What we'll ask - preview cards */}
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.5 }}
+              className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-10"
+            >
+              {STEP_CONFIG.map((s, i) => (
+                <motion.div
+                  key={s.key}
+                  initial={{ opacity: 0, scale: 0.9 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  transition={{ delay: 0.6 + i * 0.1 }}
+                  className="bg-white/80 backdrop-blur-sm rounded-xl p-4 border border-white/50 shadow-lg"
+                >
+                  <div className={`w-10 h-10 bg-gradient-to-br ${s.color} rounded-xl flex items-center justify-center mx-auto mb-2 shadow-lg`}>
+                    <s.icon className="w-5 h-5 text-white" />
+                  </div>
+                  <p className="text-sm font-medium text-gray-700">{s.label}</p>
+                </motion.div>
+              ))}
+            </motion.div>
+
+            {/* Start button */}
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.9 }}
+            >
+              <motion.button
+                onClick={() => setStep(1)}
+                whileHover={{ scale: 1.02 }}
+                whileTap={{ scale: 0.98 }}
+                className="bg-gradient-to-r from-primary-500 to-primary-600 hover:from-primary-600 hover:to-primary-700 text-white px-10 py-4 rounded-2xl font-semibold text-lg transition-all shadow-xl shadow-primary-500/25 hover:shadow-primary-500/40 flex items-center gap-3 mx-auto"
+              >
+                Laten we beginnen
+                <ChevronRight className="w-5 h-5" />
+              </motion.button>
+              
+              <p className="text-sm text-gray-500 mt-4">
+                Druk <kbd className="px-2 py-1 bg-gray-100 rounded text-gray-600 font-mono text-xs">Enter ↵</kbd> om te starten
+              </p>
+            </motion.div>
+
+            {/* Trust badges */}
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ delay: 1.1 }}
+              className="flex flex-wrap justify-center gap-6 mt-12 text-sm text-gray-500"
+            >
+              <div className="flex items-center gap-2">
+                <Shield className="w-4 h-4 text-emerald-500" />
+                <span>Veilig & privé</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <Clock className="w-4 h-4 text-primary-500" />
+                <span>~5 minuten</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <CheckCircle2 className="w-4 h-4 text-purple-500" />
+                <span>Altijd te wijzigen</span>
+              </div>
+            </motion.div>
+          </motion.div>
+        </main>
+      </div>
+    )
+  }
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-primary-50/20 to-white">
@@ -1299,13 +1439,13 @@ export default function KlantOnboarding() {
 
               {/* Navigation */}
               <div className="flex justify-between mt-8 pt-6 border-t border-gray-100 dark:border-gray-700">
-                {step > 1 ? (
+                {step >= 1 ? (
                   <button
                     type="button"
                     onClick={() => setStep(step - 1)}
-                    className="px-6 py-3 text-gray-600 hover:text-gray-900 font-medium transition"
+                    className="px-6 py-3 text-gray-600 hover:text-gray-900 font-medium transition flex items-center gap-2"
                   >
-                    ← Vorige
+                    ← {step === 1 ? 'Terug' : 'Vorige'}
                   </button>
                 ) : (
                   <div />
