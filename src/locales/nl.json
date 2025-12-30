@@ -2838,6 +2838,15 @@
     "dronePreferredDateLabel": "Voorkeursdatum (optioneel)",
     "droneNotesLabel": "Opmerkingen of wensen",
     "droneNotesPlaceholder": "Bijv. bepaalde hoeken, tijdstip, etc.",
+    "socialSetupTitle": "Professionele social media setup",
+    "socialSetupDescription": "Laat ons je social media profielen optimaliseren met consistente branding.",
+    "socialFeature1": "Profielfoto & banner in huisstijl",
+    "socialFeature2": "Bio & beschrijvingen geoptimaliseerd",
+    "socialFeature3": "5 startposts templates",
+    "socialWebsiteDiscount": "Website klant korting",
+    "socialAddToOrder": "Ja, voeg toe aan mijn bestelling",
+    "socialAdded": "Toegevoegd aan je bestelling (+€99)",
+    "socialRemove": "Verwijderen uit bestelling",
     "sections": {
       "bedrijf": {
         "title": "Over je bedrijf",

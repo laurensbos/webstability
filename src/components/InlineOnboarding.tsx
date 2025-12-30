@@ -21,6 +21,7 @@ import {
   ArrowUpRight,
   Image,
   Camera,
+  Share2,
   type LucideIcon
 } from 'lucide-react'
 import { 
@@ -780,12 +781,19 @@ function PagesSelector({ question, value, onChange, disabled, darkMode, packageT
 interface CheckboxQuestionProps extends QuestionProps {
   packageType?: PackageType
   onUpgradeClick?: () => void
+  onAddExtra?: (key: string, value: any) => void
+  allAnswers?: Record<string, any>
 }
 
-function CheckboxQuestion({ question, value, onChange, disabled, darkMode, packageType = 'starter', onUpgradeClick }: CheckboxQuestionProps) {
+function CheckboxQuestion({ question, value, onChange, disabled, darkMode, packageType = 'starter', onUpgradeClick, onAddExtra, allAnswers }: CheckboxQuestionProps) {
   const { t } = useTranslation()
   const { getOptionText } = createTranslationHelpers(t)
   const selectedValues = Array.isArray(value) ? value : []
+  
+  // Check for social media upsell
+  const isSocialMediaQuestion = question.id === 'socialMedia'
+  const hasSocialMediaSelected = isSocialMediaQuestion && selectedValues.length > 0
+  const socialMediaSetupAdded = allAnswers?.wantsSocialMediaSetup === true
   
   // Package hierarchy for checking requirements
   const packageOrder: PackageType[] = ['starter', 'professional', 'business', 'webshop']
@@ -866,6 +874,114 @@ function CheckboxQuestion({ question, value, onChange, disabled, darkMode, packa
           </button>
         )
       })}
+      
+      {/* Social Media Setup Upsell */}
+      {hasSocialMediaSelected && (
+        <div className="col-span-1 sm:col-span-2">
+          <motion.div
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            className={`mt-4 p-4 rounded-xl border ${
+              darkMode 
+                ? 'bg-gradient-to-r from-pink-500/10 to-rose-500/10 border-pink-500/30' 
+                : 'bg-gradient-to-r from-pink-50 to-rose-50 border-pink-200'
+            }`}
+          >
+            <div className="flex items-start gap-3">
+              <div className={`w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0 ${
+                darkMode ? 'bg-pink-500/20' : 'bg-pink-100'
+              }`}>
+                <Share2 className={`w-5 h-5 ${darkMode ? 'text-pink-400' : 'text-pink-600'}`} />
+              </div>
+              <div className="flex-1">
+                <h4 className={`font-semibold ${darkMode ? 'text-white' : 'text-gray-900'}`}>
+                  {t('onboarding.socialSetupTitle', { defaultValue: 'Professionele social media setup' })}
+                </h4>
+                <p className={`text-sm mt-1 ${darkMode ? 'text-gray-400' : 'text-gray-600'}`}>
+                  {t('onboarding.socialSetupDescription', { defaultValue: 'Laat ons je social media profielen optimaliseren met consistente branding.' })}
+                </p>
+                <div className="mt-3 space-y-1.5">
+                  <div className="flex items-center gap-2 text-sm">
+                    <Check className={`w-4 h-4 ${darkMode ? 'text-pink-400' : 'text-pink-600'}`} />
+                    <span className={darkMode ? 'text-gray-300' : 'text-gray-700'}>
+                      {t('onboarding.socialFeature1', { defaultValue: 'Profielfoto & banner in huisstijl' })}
+                    </span>
+                  </div>
+                  <div className="flex items-center gap-2 text-sm">
+                    <Check className={`w-4 h-4 ${darkMode ? 'text-pink-400' : 'text-pink-600'}`} />
+                    <span className={darkMode ? 'text-gray-300' : 'text-gray-700'}>
+                      {t('onboarding.socialFeature2', { defaultValue: 'Bio & beschrijvingen geoptimaliseerd' })}
+                    </span>
+                  </div>
+                  <div className="flex items-center gap-2 text-sm">
+                    <Check className={`w-4 h-4 ${darkMode ? 'text-pink-400' : 'text-pink-600'}`} />
+                    <span className={darkMode ? 'text-gray-300' : 'text-gray-700'}>
+                      {t('onboarding.socialFeature3', { defaultValue: '5 startposts templates' })}
+                    </span>
+                  </div>
+                </div>
+                
+                {!socialMediaSetupAdded ? (
+                  <>
+                    <div className={`mt-3 p-3 rounded-lg ${darkMode ? 'bg-pink-500/10' : 'bg-pink-50'}`}>
+                      <div className="flex items-center justify-between">
+                        <div>
+                          <span className={`text-sm line-through ${darkMode ? 'text-gray-500' : 'text-gray-400'}`}>
+                            €149
+                          </span>
+                          <span className={`text-sm ml-2 ${darkMode ? 'text-gray-400' : 'text-gray-600'}`}>
+                            {t('onboarding.socialWebsiteDiscount', { defaultValue: 'Website klant korting' })}
+                          </span>
+                        </div>
+                        <span className={`text-lg font-bold ${darkMode ? 'text-pink-400' : 'text-pink-600'}`}>
+                          €99
+                        </span>
+                      </div>
+                    </div>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        if (onAddExtra) {
+                          onAddExtra('wantsSocialMediaSetup', true)
+                          onAddExtra('socialMediaSetupPrice', 99)
+                        }
+                      }}
+                      className={`mt-3 w-full py-2.5 px-4 rounded-lg font-medium transition-all ${
+                        darkMode
+                          ? 'bg-pink-500 hover:bg-pink-400 text-white'
+                          : 'bg-pink-600 hover:bg-pink-500 text-white'
+                      }`}
+                    >
+                      {t('onboarding.socialAddToOrder', { defaultValue: 'Ja, voeg toe aan mijn bestelling' })}
+                    </button>
+                  </>
+                ) : (
+                  <>
+                    <div className={`mt-3 p-3 rounded-lg flex items-center gap-2 ${darkMode ? 'bg-green-500/20' : 'bg-green-50'}`}>
+                      <Check className={`w-5 h-5 ${darkMode ? 'text-green-400' : 'text-green-600'}`} />
+                      <span className={`font-medium ${darkMode ? 'text-green-400' : 'text-green-700'}`}>
+                        {t('onboarding.socialAdded', { defaultValue: 'Toegevoegd aan je bestelling (+€99)' })}
+                      </span>
+                    </div>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        if (onAddExtra) {
+                          onAddExtra('wantsSocialMediaSetup', false)
+                          onAddExtra('socialMediaSetupPrice', null)
+                        }
+                      }}
+                      className={`mt-2 text-sm ${darkMode ? 'text-red-400 hover:text-red-300' : 'text-red-600 hover:text-red-500'}`}
+                    >
+                      {t('onboarding.socialRemove', { defaultValue: 'Verwijderen uit bestelling' })}
+                    </button>
+                  </>
+                )}
+              </div>
+            </div>
+          </motion.div>
+        </div>
+      )}
     </div>
   )
 }
@@ -1254,7 +1370,7 @@ function QuestionRenderer({ question, value, onChange, disabled, darkMode, googl
     case 'select':
       return <RadioQuestion {...props} onAddExtra={onAddExtraAnswer} answers={allAnswers} />
     case 'checkbox':
-      return <CheckboxQuestion {...props} packageType={packageType} onUpgradeClick={onUpgradeClick} />
+      return <CheckboxQuestion {...props} packageType={packageType} onUpgradeClick={onUpgradeClick} onAddExtra={onAddExtraAnswer} allAnswers={allAnswers} />
     case 'color':
       return <ColorQuestion value={value} onChange={onChange} darkMode={darkMode} />
     case 'multicolor':
@@ -1402,11 +1518,24 @@ function SectionComponent({
               {getSectionText(section.id, 'description', section.description)}
             </p>
             {!isExpanded && (
-              <span className={`text-xs px-2 py-0.5 rounded-full ${
-                darkMode ? 'bg-gray-700 text-gray-300' : 'bg-gray-100 text-gray-600'
-              }`}>
-                {answeredCount}/{visibleQuestions.length}
-              </span>
+              <div className="flex items-center gap-2">
+                {/* Progress bar */}
+                <div className={`w-16 h-1.5 rounded-full overflow-hidden ${darkMode ? 'bg-gray-700' : 'bg-gray-200'}`}>
+                  <div 
+                    className={`h-full rounded-full transition-all duration-300 ${
+                      isComplete ? 'bg-green-500' : 'bg-primary-500'
+                    }`}
+                    style={{ width: `${(answeredCount / visibleQuestions.length) * 100}%` }}
+                  />
+                </div>
+                <span className={`text-xs font-medium ${
+                  isComplete 
+                    ? 'text-green-500' 
+                    : darkMode ? 'text-gray-400' : 'text-gray-500'
+                }`}>
+                  {answeredCount}/{visibleQuestions.length}
+                </span>
+              </div>
             )}
           </div>
         </div>
