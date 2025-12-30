@@ -44,6 +44,27 @@
     "sending": "Sending...",
     "select": "Select..."
   },
+  "upgrade": {
+    "title": "Upgrade your package",
+    "subtitle": "Get access to more features",
+    "confirmTitle": "Confirm your upgrade",
+    "confirmSubtitle": "Review the details below",
+    "currentPackage": "Current package",
+    "availableUpgrades": "Available upgrades",
+    "popular": "Popular",
+    "selectPackage": "Select package",
+    "maxPackage": "You already have the highest package!",
+    "maxPackageDesc": "You have access to all features.",
+    "whatYouGet": "This is what you get:",
+    "pricingSummary": "Pricing summary",
+    "monthlyDiff": "Monthly difference",
+    "oneTimeUpgrade": "One-time upgrade fee",
+    "newMonthly": "New monthly amount",
+    "note": "Note:",
+    "noteText": "The new monthly amount starts from your next billing period. You have immediate access to all new features.",
+    "processing": "Processing...",
+    "confirm": "Yes, upgrade my package"
+  },
   "clientOnboarding": {
     "services": {
       "website": "Website",

@@ -44,6 +44,27 @@
     "sending": "Versturen...",
     "select": "Selecteer..."
   },
+  "upgrade": {
+    "title": "Upgrade je pakket",
+    "subtitle": "Krijg toegang tot meer functies",
+    "confirmTitle": "Bevestig je upgrade",
+    "confirmSubtitle": "Controleer de details hieronder",
+    "currentPackage": "Huidig pakket",
+    "availableUpgrades": "Beschikbare upgrades",
+    "popular": "Populair",
+    "selectPackage": "Selecteer pakket",
+    "maxPackage": "Je hebt al het hoogste pakket!",
+    "maxPackageDesc": "Je hebt toegang tot alle functies.",
+    "whatYouGet": "Dit krijg je erbij:",
+    "pricingSummary": "Prijsoverzicht",
+    "monthlyDiff": "Maandelijks verschil",
+    "oneTimeUpgrade": "Eenmalige upgrade kosten",
+    "newMonthly": "Nieuw maandbedrag",
+    "note": "Let op:",
+    "noteText": "Het nieuwe maandbedrag gaat in vanaf je volgende factureringsperiode. Je hebt direct toegang tot alle nieuwe functies.",
+    "processing": "Bezig...",
+    "confirm": "Ja, upgrade mijn pakket"
+  },
   "clientOnboarding": {
     "services": {
       "website": "Website",

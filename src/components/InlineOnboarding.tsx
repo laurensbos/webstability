@@ -31,6 +31,7 @@ import {
 import type { PackageType } from '../config/packages'
 import { PACKAGES } from '../config/packages'
 import StockPhotoSuggestions from './StockPhotoSuggestions'
+import UpgradeModal from './UpgradeModal'
 import { useHapticFeedback } from '../hooks/useHapticFeedback'
 
 // Icon mapping for sections
@@ -1287,6 +1288,7 @@ export default function InlineOnboarding({
   const [isSaving, setIsSaving] = useState(false)
   const [lastSaved, setLastSaved] = useState<Date | null>(null)
   const [selectedStockPhotos, setSelectedStockPhotos] = useState<string[]>([])
+  const [showUpgradeModal, setShowUpgradeModal] = useState(false)
   
   // Haptic feedback for interactions
   const haptic = useHapticFeedback()
@@ -1502,8 +1504,17 @@ export default function InlineOnboarding({
           selectedStockPhotos={selectedStockPhotos}
           onSelectStockPhoto={(url) => setSelectedStockPhotos(prev => [...prev, url])}
           onDeselectStockPhoto={(url) => setSelectedStockPhotos(prev => prev.filter(p => p !== url))}
+          onUpgradeClick={() => setShowUpgradeModal(true)}
         />
       ))}
+      
+      {/* Upgrade Modal */}
+      <UpgradeModal
+        isOpen={showUpgradeModal}
+        onClose={() => setShowUpgradeModal(false)}
+        currentPackage={packageType}
+        projectId={projectId}
+      />
 
       {/* Completion Message */}
       {completionPercentage === 100 && (
