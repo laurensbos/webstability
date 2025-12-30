@@ -1558,6 +1558,29 @@ function SectionComponent({
             className="overflow-hidden"
           >
             <div className={`p-4 pt-0 space-y-6`}>
+              {/* Section Tip */}
+              {sectionNumber === 1 && !isComplete && (
+                <div className={`p-3 rounded-lg text-sm ${
+                  darkMode ? 'bg-blue-500/10 text-blue-300' : 'bg-blue-50 text-blue-700'
+                }`}>
+                  💡 {t('onboarding.sectionTip.bedrijf', { defaultValue: 'Tip: Hoe specifieker je bent, hoe beter we je website kunnen afstemmen op jouw doelgroep.' })}
+                </div>
+              )}
+              {section.id === 'branding' && !isComplete && (
+                <div className={`p-3 rounded-lg text-sm ${
+                  darkMode ? 'bg-purple-500/10 text-purple-300' : 'bg-purple-50 text-purple-700'
+                }`}>
+                  🎨 {t('onboarding.sectionTip.branding', { defaultValue: 'Tip: Geen huisstijl? Geen probleem! Onze designers maken op basis van je voorkeuren een passende stijl.' })}
+                </div>
+              )}
+              {section.id === 'content' && !isComplete && (
+                <div className={`p-3 rounded-lg text-sm ${
+                  darkMode ? 'bg-amber-500/10 text-amber-300' : 'bg-amber-50 text-amber-700'
+                }`}>
+                  📝 {t('onboarding.sectionTip.content', { defaultValue: 'Tip: Geen teksten of foto\'s? We regelen het! Selecteer de opties en we zorgen voor professionele content.' })}
+                </div>
+              )}
+              
               {visibleQuestions.map((question) => (
                 <div key={question.id} className="space-y-2">
                   {/* Question Label */}
@@ -1846,24 +1869,61 @@ export default function InlineOnboarding({
     }
   }, [sections])
 
+  // Count completed sections
+  const completedSections = sections.filter(s => isSectionComplete(s)).length
+
   return (
     <div className="space-y-4">
+      {/* Welcome message for new users */}
+      {completionPercentage < 20 && (
+        <motion.div
+          initial={{ opacity: 0, y: -10 }}
+          animate={{ opacity: 1, y: 0 }}
+          className={`p-4 rounded-xl border ${
+            darkMode 
+              ? 'bg-gradient-to-r from-primary-500/10 to-indigo-500/10 border-primary-500/30' 
+              : 'bg-gradient-to-r from-primary-50 to-indigo-50 border-primary-200'
+          }`}
+        >
+          <div className="flex items-start gap-3">
+            <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-primary-500 to-indigo-500 flex items-center justify-center flex-shrink-0">
+              <Sparkles className="w-5 h-5 text-white" />
+            </div>
+            <div>
+              <h4 className={`font-semibold ${darkMode ? 'text-white' : 'text-gray-900'}`}>
+                {t('onboarding.welcomeTitle', { defaultValue: 'Welkom! Laten we beginnen' })}
+              </h4>
+              <p className={`text-sm mt-1 ${darkMode ? 'text-gray-400' : 'text-gray-600'}`}>
+                {t('onboarding.welcomeDescription', { defaultValue: 'Beantwoord de vragen hieronder zodat we jouw perfecte website kunnen maken. Je voortgang wordt automatisch opgeslagen.' })}
+              </p>
+            </div>
+          </div>
+        </motion.div>
+      )}
+
       {/* Progress Bar */}
-      <div className={`p-3 rounded-xl ${darkMode ? 'bg-gray-800' : 'bg-gray-100'}`}>
+      <div className={`p-4 rounded-xl ${darkMode ? 'bg-gray-800' : 'bg-gray-100'}`}>
         <div className="flex items-center justify-between mb-2">
-          <span className={`text-sm font-medium ${darkMode ? 'text-white' : 'text-gray-900'}`}>
-            Voortgang
-          </span>
+          <div className="flex items-center gap-3">
+            <span className={`text-sm font-medium ${darkMode ? 'text-white' : 'text-gray-900'}`}>
+              {t('onboarding.progressLabel', { defaultValue: 'Voortgang' })}
+            </span>
+            <span className={`text-xs px-2 py-0.5 rounded-full ${
+              darkMode ? 'bg-gray-700 text-gray-300' : 'bg-gray-200 text-gray-600'
+            }`}>
+              {completedSections}/{sections.length} {t('onboarding.sectionsComplete', { defaultValue: 'secties' })}
+            </span>
+          </div>
           <div className="flex items-center gap-2">
             {isSaving ? (
               <span className="flex items-center gap-1 text-xs text-gray-500">
                 <Loader2 className="w-3 h-3 animate-spin" />
-                Opslaan...
+                {t('onboarding.saving', { defaultValue: 'Opslaan...' })}
               </span>
             ) : lastSaved && (
               <span className="flex items-center gap-1 text-xs text-green-500">
                 <Check className="w-3 h-3" />
-                Opgeslagen
+                {t('onboarding.saved', { defaultValue: 'Opgeslagen' })}
               </span>
             )}
             <span className={`text-sm font-bold ${
@@ -1873,17 +1933,28 @@ export default function InlineOnboarding({
             </span>
           </div>
         </div>
-        <div className={`h-2 rounded-full overflow-hidden ${darkMode ? 'bg-gray-700' : 'bg-gray-200'}`}>
+        <div className={`h-2.5 rounded-full overflow-hidden ${darkMode ? 'bg-gray-700' : 'bg-gray-200'}`}>
           <motion.div
             initial={{ width: 0 }}
             animate={{ width: `${completionPercentage}%` }}
+            transition={{ duration: 0.5, ease: 'easeOut' }}
             className={`h-full rounded-full ${
               completionPercentage === 100 
-                ? 'bg-green-500' 
+                ? 'bg-gradient-to-r from-green-500 to-emerald-400' 
                 : 'bg-gradient-to-r from-primary-500 to-primary-400'
             }`}
           />
         </div>
+        
+        {/* Motivational message based on progress */}
+        {completionPercentage > 0 && completionPercentage < 100 && (
+          <p className={`text-xs mt-2 ${darkMode ? 'text-gray-500' : 'text-gray-400'}`}>
+            {completionPercentage < 30 && t('onboarding.motivationStart', { defaultValue: 'Goed bezig! Je bent op weg.' })}
+            {completionPercentage >= 30 && completionPercentage < 60 && t('onboarding.motivationMid', { defaultValue: 'Halverwege! Nog even doorzetten.' })}
+            {completionPercentage >= 60 && completionPercentage < 90 && t('onboarding.motivationAlmost', { defaultValue: 'Bijna klaar! Nog een paar vragen.' })}
+            {completionPercentage >= 90 && t('onboarding.motivationFinal', { defaultValue: 'Laatste stukje! Je bent er bijna.' })}
+          </p>
+        )}
       </div>
 
       {/* Sections */}

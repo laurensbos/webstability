@@ -2847,6 +2847,21 @@
     "socialAddToOrder": "Ja, voeg toe aan mijn bestelling",
     "socialAdded": "Toegevoegd aan je bestelling (+€99)",
     "socialRemove": "Verwijderen uit bestelling",
+    "welcomeTitle": "Welkom! Laten we beginnen",
+    "welcomeDescription": "Beantwoord de vragen hieronder zodat we jouw perfecte website kunnen maken. Je voortgang wordt automatisch opgeslagen.",
+    "progressLabel": "Voortgang",
+    "sectionsComplete": "secties",
+    "saving": "Opslaan...",
+    "saved": "Opgeslagen",
+    "motivationStart": "Goed bezig! Je bent op weg.",
+    "motivationMid": "Halverwege! Nog even doorzetten.",
+    "motivationAlmost": "Bijna klaar! Nog een paar vragen.",
+    "motivationFinal": "Laatste stukje! Je bent er bijna.",
+    "sectionTip": {
+      "bedrijf": "Tip: Hoe specifieker je bent, hoe beter we je website kunnen afstemmen op jouw doelgroep.",
+      "branding": "Tip: Geen huisstijl? Geen probleem! Onze designers maken op basis van je voorkeuren een passende stijl.",
+      "content": "Tip: Geen teksten of foto's? We regelen het! Selecteer de opties en we zorgen voor professionele content."
+    },
     "sections": {
       "bedrijf": {
         "title": "Over je bedrijf",

@@ -1499,6 +1499,21 @@
     "socialAddToOrder": "Yes, add to my order",
     "socialAdded": "Added to your order (+€99)",
     "socialRemove": "Remove from order",
+    "welcomeTitle": "Welcome! Let's get started",
+    "welcomeDescription": "Answer the questions below so we can create your perfect website. Your progress is saved automatically.",
+    "progressLabel": "Progress",
+    "sectionsComplete": "sections",
+    "saving": "Saving...",
+    "saved": "Saved",
+    "motivationStart": "Great start! You're on your way.",
+    "motivationMid": "Halfway there! Keep going.",
+    "motivationAlmost": "Almost done! Just a few more questions.",
+    "motivationFinal": "Final stretch! You're almost there.",
+    "sectionTip": {
+      "bedrijf": "Tip: The more specific you are, the better we can tailor your website to your target audience.",
+      "branding": "Tip: No brand style yet? No problem! Our designers will create a matching style based on your preferences.",
+      "content": "Tip: No texts or photos? We'll handle it! Select the options and we'll provide professional content."
+    },
     "prefilled": {
       "title": "Details transferred from your registration",
       "company": "Company",
