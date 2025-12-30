@@ -53,6 +53,7 @@ import { useKeyboardShortcuts, KeyboardShortcutsModal, KeyboardShortcutHint } fr
 import PWAInstallPrompt from '../components/PWAInstallPrompt'
 import { PushNotificationPrompt } from '../components/PushNotificationToggle'
 import { RevisionPhaseCard, PaymentPhaseCard, DomainPhaseCard, LivePhaseCard } from '../components/phases'
+import CustomerDashboardExtras from '../components/CustomerDashboardExtras'
 import type { Notification } from '../components/NotificationBell'
 import { useDarkMode } from '../contexts/DarkModeContext'
 import { useSEO } from '../hooks/useSEO'
@@ -1593,6 +1594,21 @@ export default function ProjectStatus() {
             onRequestChange={() => setShowChat(true)}
             onContactSupport={() => setShowChat(true)}
             onViewAnalytics={() => project.analyticsUrl && window.open(project.analyticsUrl, '_blank')}
+          />
+        )}
+
+        {/* Customer Dashboard Extras - Only for live projects */}
+        {project.status === 'live' && (
+          <CustomerDashboardExtras
+            projectId={project.projectId}
+            darkMode={darkMode}
+            invoices={project.invoices}
+            packageType={project.package}
+            monthlyPrice={PACKAGES[project.package as keyof typeof PACKAGES]?.price || 119}
+            liveDate={project.liveDate}
+            liveUrl={project.liveUrl}
+            googleDriveUrl={project.googleDriveUrl}
+            analyticsUrl={project.analyticsUrl}
           />
         )}
 

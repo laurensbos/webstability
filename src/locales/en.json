@@ -2304,6 +2304,66 @@
       "viewOnboarding": "View onboarding",
       "openDrive": "Open Drive",
       "sendReminder": "Send reminder"
+    },
+    "invoices": {
+      "title": "Payments & Invoices",
+      "subtitle": "Overview of all your payments",
+      "totalPaid": "Total paid",
+      "invoicesPaid": "Invoices paid",
+      "pending": "Outstanding",
+      "downloadPdf": "Download PDF",
+      "payNow": "Pay now",
+      "dueIn": "Due in",
+      "overdue": "Overdue"
+    },
+    "uptime": {
+      "title": "Website Status",
+      "online": "Online",
+      "offline": "Offline",
+      "uptime": "Uptime (30 days)",
+      "loadTime": "Avg. load time",
+      "incidents": "Incidents (30d)",
+      "lastChecked": "Last checked",
+      "noIssues": "No issues detected"
+    },
+    "customerAnalytics": {
+      "title": "Visitor Statistics",
+      "subtitle": "Insights into your website visitors",
+      "today": "Today",
+      "week": "This week",
+      "month": "This month",
+      "topPages": "Top pages",
+      "sources": "Traffic sources",
+      "views": "views",
+      "viewFull": "Full report",
+      "loading": "Loading statistics...",
+      "noData": "No statistics available yet",
+      "viewExternal": "View external dashboard"
+    },
+    "subscription": {
+      "package": "package",
+      "subtitle": "Your current subscription",
+      "monthlyPrice": "Monthly",
+      "nextPayment": "Next payment",
+      "customerFor": "Customer for {{months}} months!",
+      "includedFeatures": "Included in your package",
+      "upgrade": "Upgrade your package"
+    },
+    "documents": {
+      "title": "Documents & Files",
+      "subtitle": "Your uploaded files and designs",
+      "driveDesc": "All your project files in one place",
+      "noFiles": "No files uploaded yet"
+    },
+    "notificationPrefs": {
+      "title": "Notification preferences",
+      "subtitle": "Choose how you want to be notified",
+      "email": "Email notifications",
+      "push": "Push notifications",
+      "changeRequests": "Change requests",
+      "payments": "Payment reminders",
+      "updates": "Project updates",
+      "marketing": "Tips & news"
     }
   },
   "marketing": {

@@ -1174,6 +1174,66 @@
       "viewOnboarding": "Onboarding bekijken",
       "openDrive": "Drive openen",
       "sendReminder": "Herinnering sturen"
+    },
+    "invoices": {
+      "title": "Betalingen & Facturen",
+      "subtitle": "Overzicht van al je betalingen",
+      "totalPaid": "Totaal betaald",
+      "invoicesPaid": "Facturen betaald",
+      "pending": "Openstaand",
+      "downloadPdf": "Download PDF",
+      "payNow": "Betalen",
+      "dueIn": "Vervalt over",
+      "overdue": "Te laat"
+    },
+    "uptime": {
+      "title": "Website Status",
+      "online": "Online",
+      "offline": "Offline",
+      "uptime": "Uptime (30 dagen)",
+      "loadTime": "Gem. laadtijd",
+      "incidents": "Storingen (30d)",
+      "lastChecked": "Laatst gecontroleerd",
+      "noIssues": "Geen problemen gedetecteerd"
+    },
+    "customerAnalytics": {
+      "title": "Bezoekersstatistieken",
+      "subtitle": "Inzicht in je websitebezoekers",
+      "today": "Vandaag",
+      "week": "Deze week",
+      "month": "Deze maand",
+      "topPages": "Populairste pagina's",
+      "sources": "Verkeersbronnen",
+      "views": "views",
+      "viewFull": "Volledig rapport",
+      "loading": "Statistieken laden...",
+      "noData": "Nog geen statistieken beschikbaar",
+      "viewExternal": "Bekijk extern dashboard"
+    },
+    "subscription": {
+      "package": "pakket",
+      "subtitle": "Je huidige abonnement",
+      "monthlyPrice": "Maandelijks",
+      "nextPayment": "Volgende betaling",
+      "customerFor": "Al {{months}} maanden klant!",
+      "includedFeatures": "Inbegrepen in je pakket",
+      "upgrade": "Upgrade je pakket"
+    },
+    "documents": {
+      "title": "Documenten & Bestanden",
+      "subtitle": "Je geüploade bestanden en designs",
+      "driveDesc": "Al je projectbestanden op één plek",
+      "noFiles": "Nog geen bestanden geüpload"
+    },
+    "notificationPrefs": {
+      "title": "Notificatie voorkeuren",
+      "subtitle": "Bepaal hoe je op de hoogte gehouden wilt worden",
+      "email": "E-mail notificaties",
+      "push": "Push notificaties",
+      "changeRequests": "Wijzigingsverzoeken",
+      "payments": "Betalingsherinneringen",
+      "updates": "Project updates",
+      "marketing": "Tips & nieuws"
     }
   },
   "marketing": {
