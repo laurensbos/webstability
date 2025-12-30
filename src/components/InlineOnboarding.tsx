@@ -1461,16 +1461,14 @@ export default function InlineOnboarding({
     
     if (!allRequiredAnswered) return false
     
-    // Special handling for contact section - require more than just email
-    // A contact section should have email + at least phone OR address
+    // Special handling for contact section - require all contact fields
     if (section.id === 'contact') {
       const hasEmail = answers['contactEmail'] && answers['contactEmail'].trim() !== ''
       const hasPhone = answers['contactPhone'] && answers['contactPhone'].trim() !== ''
       const hasAddress = answers['businessAddress'] && answers['businessAddress'].trim() !== ''
       
-      // Must have email and at least one other contact method
-      if (!hasEmail) return false
-      if (!hasPhone && !hasAddress) return false
+      // Must have email, phone AND address for complete contact info
+      if (!hasEmail || !hasPhone || !hasAddress) return false
       
       // If social media channels are selected, URLs should be provided
       const socialMediaAnswer = answers['socialMedia']
