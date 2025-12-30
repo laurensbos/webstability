@@ -78,6 +78,8 @@ interface QuestionProps {
   question: OnboardingQuestion
   value: any
   onChange: (value: any) => void
+  onAddExtra?: (key: string, value: any) => void
+  answers?: Record<string, any>
   disabled?: boolean
   darkMode?: boolean
   googleDriveUrl?: string
@@ -124,7 +126,7 @@ function TextareaQuestion({ question, value, onChange, disabled, darkMode }: Que
 }
 
 // Radio Group
-function RadioQuestion({ question, value, onChange, disabled, darkMode }: QuestionProps) {
+function RadioQuestion({ question, value, onChange, onAddExtra, answers, disabled, darkMode }: QuestionProps) {
   const { t } = useTranslation()
   const { getOptionText } = createTranslationHelpers(t)
   
@@ -136,9 +138,10 @@ function RadioQuestion({ question, value, onChange, disabled, darkMode }: Questi
   const isMainCTAQuestion = question.id === 'mainCTA'
   const wantsEcommerce = isMainCTAQuestion && value === 'buy'
   
-  // Check if this is the photos question - always show drone upsell
+  // Check if this is the photos question - show drone upsell
   const isPhotosQuestion = question.id === 'hasPhotos'
-  const showDroneUpsell = isPhotosQuestion && value // Show when any option is selected
+  const showDroneUpsell = isPhotosQuestion && value
+  const droneAlreadyAdded = answers?.wantsDronePhotography === true
   
   return (
     <div className="space-y-2">
@@ -318,24 +321,152 @@ function RadioQuestion({ question, value, onChange, disabled, darkMode }: Questi
                   </span>
                 </div>
               </div>
-              <div className={`mt-3 p-3 rounded-lg ${darkMode ? 'bg-sky-500/10' : 'bg-sky-50'}`}>
-                <div className="flex items-center justify-between">
-                  <div>
-                    <span className={`text-sm line-through ${darkMode ? 'text-gray-500' : 'text-gray-400'}`}>
-                      €349
-                    </span>
-                    <span className={`text-sm ml-2 ${darkMode ? 'text-gray-400' : 'text-gray-600'}`}>
-                      {t('onboarding.droneWebsiteDiscount', { defaultValue: 'Website klant korting' })}
+              
+              {!droneAlreadyAdded ? (
+                <>
+                  <div className={`mt-3 p-3 rounded-lg ${darkMode ? 'bg-sky-500/10' : 'bg-sky-50'}`}>
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <span className={`text-sm line-through ${darkMode ? 'text-gray-500' : 'text-gray-400'}`}>
+                          €349
+                        </span>
+                        <span className={`text-sm ml-2 ${darkMode ? 'text-gray-400' : 'text-gray-600'}`}>
+                          {t('onboarding.droneWebsiteDiscount', { defaultValue: 'Website klant korting' })}
+                        </span>
+                      </div>
+                      <span className={`text-lg font-bold ${darkMode ? 'text-sky-400' : 'text-sky-600'}`}>
+                        €249
+                      </span>
+                    </div>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      if (onAddExtra) {
+                        onAddExtra('wantsDronePhotography', true)
+                        onAddExtra('dronePrice', 249)
+                      }
+                    }}
+                    className={`mt-3 w-full py-2.5 px-4 rounded-lg font-medium transition-all ${
+                      darkMode
+                        ? 'bg-sky-500 hover:bg-sky-400 text-white'
+                        : 'bg-sky-600 hover:bg-sky-500 text-white'
+                    }`}
+                  >
+                    {t('onboarding.droneAddToOrder', { defaultValue: 'Ja, voeg toe aan mijn bestelling' })}
+                  </button>
+                </>
+              ) : (
+                <>
+                  <div className={`mt-3 p-3 rounded-lg flex items-center gap-2 ${darkMode ? 'bg-green-500/20' : 'bg-green-50'}`}>
+                    <Check className={`w-5 h-5 ${darkMode ? 'text-green-400' : 'text-green-600'}`} />
+                    <span className={`font-medium ${darkMode ? 'text-green-400' : 'text-green-700'}`}>
+                      {t('onboarding.droneAdded', { defaultValue: 'Toegevoegd aan je bestelling (+€249)' })}
                     </span>
                   </div>
-                  <span className={`text-lg font-bold ${darkMode ? 'text-sky-400' : 'text-sky-600'}`}>
-                    €249
-                  </span>
-                </div>
-              </div>
-              <p className={`mt-2 text-xs ${darkMode ? 'text-gray-500' : 'text-gray-400'}`}>
-                {t('onboarding.droneContactUs', { defaultValue: 'Interesse? Laat het weten in de chat en we nemen contact op.' })}
-              </p>
+                  
+                  {/* Drone questions when added */}
+                  <div className={`mt-4 pt-4 border-t space-y-4 ${darkMode ? 'border-sky-500/30' : 'border-sky-200'}`}>
+                    <div>
+                      <label className={`block text-sm font-medium mb-2 ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>
+                        {t('onboarding.droneLocationLabel', { defaultValue: 'Waar moet de drone opname plaatsvinden?' })}
+                      </label>
+                      <input
+                        type="text"
+                        value={answers?.droneLocation || ''}
+                        onChange={(e) => onAddExtra?.('droneLocation', e.target.value)}
+                        placeholder={t('onboarding.droneLocationPlaceholder', { defaultValue: 'Adres of locatiebeschrijving' })}
+                        className={`w-full px-3 py-2 rounded-lg border text-sm ${
+                          darkMode 
+                            ? 'bg-gray-800 border-gray-700 text-white placeholder-gray-500' 
+                            : 'bg-white border-gray-300 text-gray-900 placeholder-gray-400'
+                        }`}
+                      />
+                    </div>
+                    
+                    <div>
+                      <label className={`block text-sm font-medium mb-2 ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>
+                        {t('onboarding.droneTypeLabel', { defaultValue: 'Wat wil je laten filmen?' })}
+                      </label>
+                      <div className="grid grid-cols-2 gap-2">
+                        {[
+                          { value: 'building', label: t('onboarding.droneTypeBuilding', { defaultValue: 'Bedrijfspand' }) },
+                          { value: 'property', label: t('onboarding.droneTypeProperty', { defaultValue: 'Terrein/grond' }) },
+                          { value: 'event', label: t('onboarding.droneTypeEvent', { defaultValue: 'Evenement' }) },
+                          { value: 'other', label: t('onboarding.droneTypeOther', { defaultValue: 'Anders' }) }
+                        ].map((option) => (
+                          <button
+                            key={option.value}
+                            type="button"
+                            onClick={() => onAddExtra?.('droneType', option.value)}
+                            className={`px-3 py-2 rounded-lg text-sm font-medium transition-all ${
+                              answers?.droneType === option.value
+                                ? darkMode
+                                  ? 'bg-sky-500 text-white'
+                                  : 'bg-sky-600 text-white'
+                                : darkMode
+                                  ? 'bg-gray-800 border border-gray-700 text-gray-300 hover:bg-gray-700'
+                                  : 'bg-white border border-gray-300 text-gray-700 hover:bg-gray-50'
+                            }`}
+                          >
+                            {option.label}
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+                    
+                    <div>
+                      <label className={`block text-sm font-medium mb-2 ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>
+                        {t('onboarding.dronePreferredDateLabel', { defaultValue: 'Voorkeursdatum (optioneel)' })}
+                      </label>
+                      <input
+                        type="date"
+                        value={answers?.dronePreferredDate || ''}
+                        onChange={(e) => onAddExtra?.('dronePreferredDate', e.target.value)}
+                        className={`w-full px-3 py-2 rounded-lg border text-sm ${
+                          darkMode 
+                            ? 'bg-gray-800 border-gray-700 text-white' 
+                            : 'bg-white border-gray-300 text-gray-900'
+                        }`}
+                      />
+                    </div>
+                    
+                    <div>
+                      <label className={`block text-sm font-medium mb-2 ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>
+                        {t('onboarding.droneNotesLabel', { defaultValue: 'Opmerkingen of wensen' })}
+                      </label>
+                      <textarea
+                        value={answers?.droneNotes || ''}
+                        onChange={(e) => onAddExtra?.('droneNotes', e.target.value)}
+                        rows={2}
+                        placeholder={t('onboarding.droneNotesPlaceholder', { defaultValue: 'Bijv. bepaalde hoeken, tijdstip, etc.' })}
+                        className={`w-full px-3 py-2 rounded-lg border text-sm resize-none ${
+                          darkMode 
+                            ? 'bg-gray-800 border-gray-700 text-white placeholder-gray-500' 
+                            : 'bg-white border-gray-300 text-gray-900 placeholder-gray-400'
+                        }`}
+                      />
+                    </div>
+                    
+                    <button
+                      type="button"
+                      onClick={() => {
+                        if (onAddExtra) {
+                          onAddExtra('wantsDronePhotography', false)
+                          onAddExtra('dronePrice', null)
+                          onAddExtra('droneLocation', null)
+                          onAddExtra('droneType', null)
+                          onAddExtra('dronePreferredDate', null)
+                          onAddExtra('droneNotes', null)
+                        }
+                      }}
+                      className={`text-sm ${darkMode ? 'text-red-400 hover:text-red-300' : 'text-red-600 hover:text-red-500'}`}
+                    >
+                      {t('onboarding.droneRemove', { defaultValue: 'Verwijderen uit bestelling' })}
+                    </button>
+                  </div>
+                </>
+              )}
             </div>
           </div>
         </motion.div>
@@ -1107,9 +1238,11 @@ function UploadQuestion({ question, googleDriveUrl, darkMode }: QuestionProps) {
 interface QuestionRendererProps extends QuestionProps {
   packageType?: PackageType
   onUpgradeClick?: () => void
+  allAnswers?: Record<string, any>
+  onAddExtraAnswer?: (key: string, value: any) => void
 }
 
-function QuestionRenderer({ question, value, onChange, disabled, darkMode, googleDriveUrl, packageType, onUpgradeClick }: QuestionRendererProps) {
+function QuestionRenderer({ question, value, onChange, disabled, darkMode, googleDriveUrl, packageType, onUpgradeClick, allAnswers, onAddExtraAnswer }: QuestionRendererProps) {
   const props = { question, value, onChange, disabled, darkMode, googleDriveUrl }
   
   switch (question.type) {
@@ -1119,7 +1252,7 @@ function QuestionRenderer({ question, value, onChange, disabled, darkMode, googl
       return <TextareaQuestion {...props} />
     case 'radio':
     case 'select':
-      return <RadioQuestion {...props} />
+      return <RadioQuestion {...props} onAddExtra={onAddExtraAnswer} answers={allAnswers} />
     case 'checkbox':
       return <CheckboxQuestion {...props} packageType={packageType} onUpgradeClick={onUpgradeClick} />
     case 'color':
@@ -1331,6 +1464,8 @@ function SectionComponent({
                     googleDriveUrl={googleDriveUrl}
                     packageType={packageType}
                     onUpgradeClick={onUpgradeClick}
+                    allAnswers={answers}
+                    onAddExtraAnswer={(key, value) => onChange(key, value)}
                   />
 
                   {/* Inline Upload Button */}
