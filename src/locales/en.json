@@ -3344,6 +3344,12 @@
       "title": "Ready for your new logo?",
       "subtitle": "Start your logo design today. No obligations.",
       "button": "Request logo"
+    },
+    "goodLogo": {
+      "badge": "Our process",
+      "title": "What makes a",
+      "titleHighlight": "good logo",
+      "subtitle": "A strong logo is recognizable, timeless, and tells your brand's story at a glance."
     }
   },
   "quickStartForm": {

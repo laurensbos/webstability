@@ -18,7 +18,6 @@ import Header from '../components/Header'
 import Footer from '../components/Footer'
 import TrustpilotReviews from '../components/TrustpilotReviews'
 import WhatYouGet from '../components/WhatYouGet'
-import { webshopPackages } from '../data/packages'
 
 // Floating particles - ONLY on desktop for performance
 function FloatingParticles() {
@@ -59,14 +58,43 @@ function FloatingParticles() {
   )
 }
 
-// Use packages from central data with icons
-const packagesWithIcons = webshopPackages.map((pkg, index) => ({
-  ...pkg,
-  icon: index === 0 ? Package : index === 1 ? Users : HeartHandshake,
-}))
-
+// Build translated packages inside component
 export default function Webshop() {
   const { t } = useTranslation()
+
+  // Build translated packages
+  const packagesWithIcons = [
+    {
+      id: 'starter',
+      name: 'Starter',
+      price: 399,
+      setupFee: 299,
+      tagline: t('webshopPackages.starter.tagline'),
+      features: Object.values(t('webshopPackages.starter.features', { returnObjects: true }) as Record<string, string>),
+      popular: false,
+      icon: Package,
+    },
+    {
+      id: 'professional',
+      name: t('pricing.packages.professional.name', 'Professioneel'),
+      price: 499,
+      setupFee: 399,
+      tagline: t('webshopPackages.professional.tagline'),
+      features: Object.values(t('webshopPackages.professional.features', { returnObjects: true }) as Record<string, string>),
+      popular: true,
+      icon: Users,
+    },
+    {
+      id: 'business',
+      name: 'Business',
+      price: 699,
+      setupFee: 549,
+      tagline: t('webshopPackages.business.tagline'),
+      features: Object.values(t('webshopPackages.business.features', { returnObjects: true }) as Record<string, string>),
+      popular: false,
+      icon: HeartHandshake,
+    },
+  ]
 
   const stats = [
     { value: '50+', label: t('webshopPage.stats.webshops') },

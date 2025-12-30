@@ -2200,6 +2200,12 @@
       "title": "Klaar voor jouw nieuwe logo?",
       "subtitle": "Start vandaag nog met je logo ontwerp. Geen verplichtingen.",
       "button": "Logo aanvragen"
+    },
+    "goodLogo": {
+      "badge": "Ons proces",
+      "title": "Wat maakt een",
+      "titleHighlight": "goed logo",
+      "subtitle": "Een sterk logo is herkenbaar, tijdloos en vertelt het verhaal van jouw merk in één oogopslag."
     }
   },
   "quickStartForm": {

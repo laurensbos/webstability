@@ -435,7 +435,7 @@ export default function LogoMaken() {
                 viewport={{ once: true }}
                 className="inline-block text-purple-600 dark:text-purple-400 font-semibold text-sm tracking-wider uppercase mb-3"
               >
-                Ons proces
+                {t('logoPage.goodLogo.badge')}
               </motion.span>
               <motion.h2
                 initial={{ opacity: 0, y: 20 }}
@@ -443,9 +443,9 @@ export default function LogoMaken() {
                 viewport={{ once: true }}
                 className="text-3xl sm:text-4xl font-bold text-gray-900 dark:text-white mb-4"
               >
-                Wat maakt een{' '}
+                {t('logoPage.goodLogo.title')}{' '}
                 <span className="bg-gradient-to-r from-purple-600 to-violet-600 bg-clip-text text-transparent">
-                  goed logo
+                  {t('logoPage.goodLogo.titleHighlight')}
                 </span>
                 ?
               </motion.h2>
@@ -456,8 +456,7 @@ export default function LogoMaken() {
                 transition={{ delay: 0.1 }}
                 className="text-gray-600 dark:text-gray-300 text-lg max-w-2xl mx-auto"
               >
-                Een sterk logo is herkenbaar, tijdloos en vertelt het verhaal van jouw merk
-                in één oogopslag.
+                {t('logoPage.goodLogo.subtitle')}
               </motion.p>
             </div>
 
