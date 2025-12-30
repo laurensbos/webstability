@@ -242,7 +242,7 @@ export default function OverOns() {
                   <span className="bg-gradient-to-r from-primary-600 to-blue-600 dark:from-primary-400 dark:to-blue-400 bg-clip-text text-transparent">
                     Webstability
                   </span>
-                  {' '}{t('aboutPage.story.titleEnd', 'started')}
+                  {t('aboutPage.story.titleEnd') && ` ${t('aboutPage.story.titleEnd')}`}
                 </h2>
                 <div className="space-y-4 text-gray-600 dark:text-gray-300 leading-relaxed">
                   <p>
