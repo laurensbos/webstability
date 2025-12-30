@@ -5,6 +5,7 @@ import { ArrowLeft, Clock, Calendar, Tag, Share2, Bookmark, ChevronRight, Sparkl
 import Header from '../components/Header'
 import Footer from '../components/Footer'
 import { getArticleById, getRelatedArticles } from '../data/articles'
+import { getArticleByIdEn, getRelatedArticlesEn } from '../data/articles-en'
 
 // Floating particles for hero and CTA
 function FloatingParticles({ variant = 'blue' }: { variant?: 'blue' | 'white' }) {
@@ -53,8 +54,15 @@ function FloatingParticles({ variant = 'blue' }: { variant?: 'blue' | 'white' })
 export default function Article() {
   const { t, i18n } = useTranslation()
   const { slug } = useParams<{ slug: string }>()
-  const article = slug ? getArticleById(slug) : undefined
-  const relatedArticles = slug ? getRelatedArticles(slug, 3) : []
+  
+  // Get the correct article based on current language
+  const isEnglish = i18n.language === 'en'
+  const article = slug 
+    ? (isEnglish ? getArticleByIdEn(slug) : getArticleById(slug)) 
+    : undefined
+  const relatedArticles = slug 
+    ? (isEnglish ? getRelatedArticlesEn(slug, 3) : getRelatedArticles(slug, 3)) 
+    : []
 
   if (!article) {
     return <Navigate to="/kennisbank" replace />

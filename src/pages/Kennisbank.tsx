@@ -20,7 +20,8 @@ import { useState } from 'react'
 import { Link } from 'react-router-dom'
 import Header from '../components/Header'
 import Footer from '../components/Footer'
-import { articles } from '../data/articles'
+import { articles as articlesNl } from '../data/articles'
+import { articlesEn } from '../data/articles-en'
 
 // Floating particles component with primary/blue accents
 function FloatingParticles() {
@@ -65,27 +66,41 @@ function FloatingParticles() {
   )
 }
 
-// Category config with icons and colors
+// Category config with icons and colors - supports both NL and EN categories
 const categoryConfig: Record<string, { icon: typeof BookOpen; color: string; darkColor: string; bg: string; darkBg: string; gradient: string }> = {
   'Kosten': { icon: DollarSign, color: 'text-emerald-600', darkColor: 'dark:text-emerald-400', bg: 'bg-emerald-50', darkBg: 'dark:bg-emerald-900/30', gradient: 'from-emerald-500 to-green-600' },
+  'Pricing': { icon: DollarSign, color: 'text-emerald-600', darkColor: 'dark:text-emerald-400', bg: 'bg-emerald-50', darkBg: 'dark:bg-emerald-900/30', gradient: 'from-emerald-500 to-green-600' },
   'Tips': { icon: Lightbulb, color: 'text-amber-600', darkColor: 'dark:text-amber-400', bg: 'bg-amber-50', darkBg: 'dark:bg-amber-900/30', gradient: 'from-amber-500 to-orange-600' },
   'ZZP': { icon: Briefcase, color: 'text-purple-600', darkColor: 'dark:text-purple-400', bg: 'bg-purple-50', darkBg: 'dark:bg-purple-900/30', gradient: 'from-purple-500 to-violet-600' },
+  'Freelance': { icon: Briefcase, color: 'text-purple-600', darkColor: 'dark:text-purple-400', bg: 'bg-purple-50', darkBg: 'dark:bg-purple-900/30', gradient: 'from-purple-500 to-violet-600' },
   'SEO': { icon: BarChart3, color: 'text-blue-600', darkColor: 'dark:text-blue-400', bg: 'bg-blue-50', darkBg: 'dark:bg-blue-900/30', gradient: 'from-blue-500 to-indigo-600' },
   'Techniek': { icon: Settings, color: 'text-rose-600', darkColor: 'dark:text-rose-400', bg: 'bg-rose-50', darkBg: 'dark:bg-rose-900/30', gradient: 'from-rose-500 to-pink-600' },
+  'Technical': { icon: Settings, color: 'text-rose-600', darkColor: 'dark:text-rose-400', bg: 'bg-rose-50', darkBg: 'dark:bg-rose-900/30', gradient: 'from-rose-500 to-pink-600' },
+}
+
+// Category keys for filtering - maps translated category to filter key
+const categoryFilterKeys = {
+  nl: { costs: 'Kosten', zzp: 'ZZP', tech: 'Techniek' },
+  en: { costs: 'Pricing', zzp: 'Freelance', tech: 'Technical' }
 }
 
 export default function Kennisbank() {
-  const { t } = useTranslation()
+  const { t, i18n } = useTranslation()
   const [searchQuery, setSearchQuery] = useState('')
-  const [activeCategory, setActiveCategory] = useState('Alle artikelen')
+  const [activeCategory, setActiveCategory] = useState('all')
+  
+  // Get the correct articles based on current language
+  const isEnglish = i18n.language === 'en'
+  const articles = isEnglish ? articlesEn : articlesNl
+  const catKeys = isEnglish ? categoryFilterKeys.en : categoryFilterKeys.nl
 
   const categories = [
-    { name: t('knowledgeBase.categories.all'), key: 'Alle artikelen', count: articles.length, icon: Sparkles },
-    { name: t('knowledgeBase.categories.costs'), key: 'Kosten', count: articles.filter(a => a.category === 'Kosten').length, icon: DollarSign },
+    { name: t('knowledgeBase.categories.all'), key: 'all', count: articles.length, icon: Sparkles },
+    { name: t('knowledgeBase.categories.costs'), key: catKeys.costs, count: articles.filter(a => a.category === catKeys.costs).length, icon: DollarSign },
     { name: t('knowledgeBase.categories.tips'), key: 'Tips', count: articles.filter(a => a.category === 'Tips').length, icon: Lightbulb },
-    { name: t('knowledgeBase.categories.zzp'), key: 'ZZP', count: articles.filter(a => a.category === 'ZZP').length, icon: Briefcase },
+    { name: t('knowledgeBase.categories.zzp'), key: catKeys.zzp, count: articles.filter(a => a.category === catKeys.zzp).length, icon: Briefcase },
     { name: t('knowledgeBase.categories.seo'), key: 'SEO', count: articles.filter(a => a.category === 'SEO').length, icon: BarChart3 },
-    { name: t('knowledgeBase.categories.tech'), key: 'Techniek', count: articles.filter(a => a.category === 'Techniek').length, icon: Settings },
+    { name: t('knowledgeBase.categories.tech'), key: catKeys.tech, count: articles.filter(a => a.category === catKeys.tech).length, icon: Settings },
   ]
 
   const stats = [
@@ -98,7 +113,7 @@ export default function Kennisbank() {
     const matchesSearch = article.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
                           article.excerpt.toLowerCase().includes(searchQuery.toLowerCase()) ||
                           article.tags.some(tag => tag.toLowerCase().includes(searchQuery.toLowerCase()))
-    const matchesCategory = activeCategory === 'Alle artikelen' || article.category === activeCategory
+    const matchesCategory = activeCategory === 'all' || article.category === activeCategory
     return matchesSearch && matchesCategory
   })
 
