@@ -1398,6 +1398,7 @@ interface SectionComponentProps {
   onChange: (questionId: string, value: any) => void
   isExpanded: boolean
   onToggle: () => void
+  onNext?: () => void
   isComplete: boolean
   darkMode?: boolean
   googleDriveUrl?: string
@@ -1417,6 +1418,7 @@ function SectionComponent({
   onChange,
   isExpanded,
   onToggle,
+  onNext,
   isComplete,
   darkMode = true,
   googleDriveUrl,
@@ -1457,6 +1459,7 @@ function SectionComponent({
 
   return (
     <motion.div
+      id={`section-${section.id}`}
       initial={{ opacity: 0, y: 10 }}
       animate={{ opacity: 1, y: 0 }}
       className={`rounded-xl border overflow-hidden transition-colors ${
@@ -1473,6 +1476,7 @@ function SectionComponent({
     >
       {/* Section Header */}
       <button
+        type="button"
         onClick={onToggle}
         className="w-full flex items-center gap-3 p-4 text-left"
       >
@@ -1668,10 +1672,11 @@ function SectionComponent({
               ))}
 
               {/* Next Section Button */}
-              {sectionNumber < totalSections && (
+              {sectionNumber < totalSections && onNext && (
                 <div className="pt-4 flex justify-end">
                   <button
-                    onClick={onToggle}
+                    type="button"
+                    onClick={onNext}
                     className="px-4 py-2 bg-primary-500 hover:bg-primary-600 text-white text-sm font-medium rounded-lg transition-colors"
                   >
                     {t('onboarding.next')} →
@@ -1789,10 +1794,35 @@ export default function InlineOnboarding({
     // Store current scroll position before toggle
     const scrollY = window.scrollY
     setExpandedSection(prev => prev === sectionId ? null : sectionId)
-    // Restore scroll position after render
+    // Restore scroll position multiple times to combat animation-induced scroll
+    // First immediately after state change
     requestAnimationFrame(() => {
       window.scrollTo({ top: scrollY, behavior: 'instant' })
     })
+    // Then after animation starts (50ms)
+    setTimeout(() => {
+      window.scrollTo({ top: scrollY, behavior: 'instant' })
+    }, 50)
+    // And after animation completes (250ms, animation is 200ms)
+    setTimeout(() => {
+      window.scrollTo({ top: scrollY, behavior: 'instant' })
+    }, 250)
+  }
+
+  const goToNextSection = (currentSectionId: string) => {
+    haptic.selection()
+    const currentIndex = sections.findIndex(s => s.id === currentSectionId)
+    if (currentIndex < sections.length - 1) {
+      const nextSection = sections[currentIndex + 1]
+      setExpandedSection(nextSection.id)
+      // Scroll to the next section smoothly after a brief delay for animation
+      setTimeout(() => {
+        const sectionElement = document.getElementById(`section-${nextSection.id}`)
+        if (sectionElement) {
+          sectionElement.scrollIntoView({ behavior: 'smooth', block: 'start' })
+        }
+      }, 100)
+    }
   }
 
   const isSectionComplete = (section: OnboardingSection) => {
@@ -1966,6 +1996,7 @@ export default function InlineOnboarding({
           onChange={handleChange}
           isExpanded={expandedSection === section.id}
           onToggle={() => toggleSection(section.id)}
+          onNext={index < sections.length - 1 ? () => goToNextSection(section.id) : undefined}
           isComplete={isSectionComplete(section)}
           darkMode={darkMode}
           googleDriveUrl={googleDriveUrl}
