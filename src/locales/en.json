@@ -39,7 +39,14 @@
     "recommended": "Recommended",
     "uploadFile": "Upload file",
     "upload": "Upload",
-    "allRightsReserved": "All rights reserved."
+    "allRightsReserved": "All rights reserved.",
+    "total": "Total",
+    "sending": "Sending..."
+  },
+  "logoOnboarding": {
+    "priceNote": "Price includes VAT • No hidden costs",
+    "oneTimeCost": "One-time cost",
+    "submitRequest": "Submit request"
   },
   "nav": {
     "home": "Home",
@@ -2883,6 +2890,46 @@
       "heading": "Let's build your",
       "headingHighlight": "online presence together",
       "subtitle": "Schedule a free consultation and discover what we can do for your business."
+    },
+    "story": {
+      "badge": "Our Story",
+      "title": "Why we started",
+      "titleHighlight": "Webstability",
+      "paragraph1": "As an entrepreneur, you know how frustrating it can be to get a website. Traditional agencies charge thousands of euros, freelancers are often unreachable, and building it yourself takes weeks of precious time.",
+      "paragraph2Bold": "We saw it could be different.",
+      "paragraph2": "With modern technology, smart workflows and a no-nonsense approach, we build professional websites in days instead of months.",
+      "paragraph3": "Our subscription model means you get a complete website for a fixed, predictable monthly amount. Hosting, maintenance, updates, support – everything is included.",
+      "paragraph3Bold": "No surprises.",
+      "conclusion": "So you can focus on what you do best: running your business."
+    },
+    "remoteWork": {
+      "remoteFirst": "Remote First",
+      "remoteFirstDesc": "Working from all over the Netherlands",
+      "flexible": "Flexible",
+      "flexibleDesc": "Quick responses, even in the evenings",
+      "digital": "Digital",
+      "digitalDesc": "Everything online, no paperwork",
+      "modern": "Modern",
+      "modernDesc": "Latest tools & techniques",
+      "noOfficeCosts": "No office costs = lower prices for you"
+    },
+    "workStyleSubtitle": "No expensive offices, no overhead. We invest in talent and technology, not in square meters.",
+    "valuesSubtitle": "These are the principles we don't deviate from. They're in everything we do.",
+    "techStack": "Built with the latest technology",
+    "promise": {
+      "badge": "Our Promise",
+      "title": "This we",
+      "titleHighlight": "guarantee",
+      "items": {
+        "liveIn7Days": "Live within 7 days",
+        "noHiddenCosts": "No hidden costs",
+        "alwaysReachable": "Always reachable via WhatsApp",
+        "unlimitedChanges": "Unlimited small changes",
+        "uptime": "99.9% uptime guarantee",
+        "noLongContracts": "No long contracts",
+        "freeDomain": "Free domain included",
+        "moneyBack": "14 days money back guarantee"
+      }
     }
   },
   "portfolioPage": {
@@ -4049,6 +4096,9 @@
     "titleBrand": "webstability",
     "subtitle": "No large upfront payment, no surprises. Everything included.",
     "traditional": "Traditional",
+    "traditionalAgency": "Traditional web agency",
+    "oneTimeProjects": "One-time projects",
+    "upfrontCosts": "💸 €3,000+ upfront + annual costs",
     "categories": {
       "startupCosts": "Startup costs",
       "timeline": "Timeline",

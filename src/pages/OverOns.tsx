@@ -235,33 +235,28 @@ export default function OverOns() {
                 viewport={{ once: true }}
               >
                 <span className="inline-block text-primary-600 dark:text-primary-400 font-semibold text-sm tracking-wider uppercase mb-3">
-                  Ons verhaal
+                  {t('aboutPage.story.badge')}
                 </span>
                 <h2 className="text-3xl sm:text-4xl font-bold text-gray-900 dark:text-white mb-6">
-                  Waarom we{' '}
+                  {t('aboutPage.story.title')}{' '}
                   <span className="bg-gradient-to-r from-primary-600 to-blue-600 dark:from-primary-400 dark:to-blue-400 bg-clip-text text-transparent">
                     Webstability
                   </span>
-                  {' '}startten
+                  {' '}{t('aboutPage.story.titleEnd', 'started')}
                 </h2>
                 <div className="space-y-4 text-gray-600 dark:text-gray-300 leading-relaxed">
                   <p>
-                    Als ondernemer weet je hoe frustrerend het kan zijn om een website te regelen. 
-                    Traditionele bureaus vragen duizenden euro's, freelancers zijn vaak onbereikbaar, 
-                    en zelf bouwen kost je weken aan kostbare tijd.
+                    {t('aboutPage.story.paragraph1')}
                   </p>
                   <p>
-                    <strong className="text-gray-900 dark:text-white">Wij zagen dat het anders kon.</strong> Met moderne 
-                    technologie, slimme workflows en een no-nonsense aanpak bouwen we professionele 
-                    websites in dagen in plaats van maanden.
+                    <strong className="text-gray-900 dark:text-white">{t('aboutPage.story.paragraph2Bold')}</strong> {t('aboutPage.story.paragraph2')}
                   </p>
                   <p>
-                    Ons abonnementsmodel betekent dat je voor een vast, voorspelbaar bedrag per maand 
-                    een complete website krijgt. Hosting, onderhoud, updates, support – alles zit erin. 
-                    <strong className="text-gray-900 dark:text-white"> Geen verrassingen.</strong>
+                    {t('aboutPage.story.paragraph3')}
+                    <strong className="text-gray-900 dark:text-white"> {t('aboutPage.story.paragraph3Bold')}</strong>
                   </p>
                   <p className="text-lg font-medium text-gray-900 dark:text-white">
-                    Zo kun jij focussen op wat je het beste doet: ondernemen.
+                    {t('aboutPage.story.conclusion')}
                   </p>
                 </div>
               </motion.div>
@@ -281,9 +276,9 @@ export default function OverOns() {
                         <div className="w-8 h-8 bg-primary-100 dark:bg-primary-900/50 rounded-lg flex items-center justify-center">
                           <MapPin className="w-4 h-4 text-primary-600 dark:text-primary-400" />
                         </div>
-                        <span className="text-sm font-medium text-gray-700 dark:text-gray-300">Remote First</span>
+                        <span className="text-sm font-medium text-gray-700 dark:text-gray-300">{t('aboutPage.remoteWork.remoteFirst')}</span>
                       </div>
-                      <p className="text-xs text-gray-500 dark:text-gray-400">Werken vanuit heel Nederland</p>
+                      <p className="text-xs text-gray-500 dark:text-gray-400">{t('aboutPage.remoteWork.remoteFirstDesc')}</p>
                     </div>
                     
                     <div className="bg-white dark:bg-gray-800 rounded-2xl p-4 shadow-sm border border-gray-100 dark:border-gray-700">
@@ -291,9 +286,9 @@ export default function OverOns() {
                         <div className="w-8 h-8 bg-blue-100 dark:bg-blue-900/50 rounded-lg flex items-center justify-center">
                           <Clock className="w-4 h-4 text-blue-600 dark:text-blue-400" />
                         </div>
-                        <span className="text-sm font-medium text-gray-700 dark:text-gray-300">Flexibel</span>
+                        <span className="text-sm font-medium text-gray-700 dark:text-gray-300">{t('aboutPage.remoteWork.flexible')}</span>
                       </div>
-                      <p className="text-xs text-gray-500 dark:text-gray-400">Snel schakelen, ook 's avonds</p>
+                      <p className="text-xs text-gray-500 dark:text-gray-400">{t('aboutPage.remoteWork.flexibleDesc')}</p>
                     </div>
                     
                     <div className="bg-white dark:bg-gray-800 rounded-2xl p-4 shadow-sm border border-gray-100 dark:border-gray-700">
@@ -301,9 +296,9 @@ export default function OverOns() {
                         <div className="w-8 h-8 bg-green-100 dark:bg-green-900/50 rounded-lg flex items-center justify-center">
                           <Globe className="w-4 h-4 text-green-600 dark:text-green-400" />
                         </div>
-                        <span className="text-sm font-medium text-gray-700 dark:text-gray-300">Digitaal</span>
+                        <span className="text-sm font-medium text-gray-700 dark:text-gray-300">{t('aboutPage.remoteWork.digital')}</span>
                       </div>
-                      <p className="text-xs text-gray-500 dark:text-gray-400">Alles online, geen papierwerk</p>
+                      <p className="text-xs text-gray-500 dark:text-gray-400">{t('aboutPage.remoteWork.digitalDesc')}</p>
                     </div>
                     
                     <div className="bg-white dark:bg-gray-800 rounded-2xl p-4 shadow-sm border border-gray-100 dark:border-gray-700">
@@ -311,16 +306,16 @@ export default function OverOns() {
                         <div className="w-8 h-8 bg-purple-100 dark:bg-purple-900/50 rounded-lg flex items-center justify-center">
                           <Laptop className="w-4 h-4 text-purple-600 dark:text-purple-400" />
                         </div>
-                        <span className="text-sm font-medium text-gray-700 dark:text-gray-300">Modern</span>
+                        <span className="text-sm font-medium text-gray-700 dark:text-gray-300">{t('aboutPage.remoteWork.modern')}</span>
                       </div>
-                      <p className="text-xs text-gray-500 dark:text-gray-400">Nieuwste tools & technieken</p>
+                      <p className="text-xs text-gray-500 dark:text-gray-400">{t('aboutPage.remoteWork.modernDesc')}</p>
                     </div>
                   </div>
                   
                   <div className="mt-4 p-4 bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-xl border border-primary-100 dark:border-primary-800">
                     <p className="text-sm text-gray-600 dark:text-gray-300 text-center">
                       <Sparkles className="w-4 h-4 inline mr-1 text-primary-500 dark:text-primary-400" />
-                      Geen kantoorkosten = lagere prijzen voor jou
+                      {t('aboutPage.remoteWork.noOfficeCosts')}
                     </p>
                   </div>
                 </div>
@@ -368,8 +363,7 @@ export default function OverOns() {
                 transition={{ delay: 0.1 }}
                 className="text-gray-600 dark:text-gray-300 text-lg max-w-2xl mx-auto"
               >
-                Geen dure kantoorpanden, geen overhead. Wij investeren in talent en technologie, 
-                niet in vierkante meters.
+                {t('aboutPage.workStyleSubtitle')}
               </motion.p>
             </div>
 
@@ -399,7 +393,7 @@ export default function OverOns() {
               viewport={{ once: true }}
               className="mt-16 text-center"
             >
-              <p className="text-gray-500 dark:text-gray-400 text-sm mb-4">Gebouwd met de nieuwste technologie</p>
+              <p className="text-gray-500 dark:text-gray-400 text-sm mb-4">{t('aboutPage.techStack')}</p>
               <div className="flex flex-wrap justify-center gap-3">
                 {techStack.map((tech) => (
                   <span 
@@ -433,7 +427,7 @@ export default function OverOns() {
                 </span>
               </h2>
               <p className="text-gray-600 dark:text-gray-400 max-w-2xl mx-auto">
-                Dit zijn de principes waar we niet van afwijken. Ze zitten in alles wat we doen.
+                {t('aboutPage.valuesSubtitle')}
               </p>
             </motion.div>
 
@@ -518,14 +512,14 @@ export default function OverOns() {
               className="text-center mb-12"
             >
               <span className="inline-block text-primary-600 dark:text-primary-400 font-semibold text-sm tracking-wider uppercase mb-3">
-                Onze belofte
+                {t('aboutPage.promise.badge')}
               </span>
               <h2 className="text-3xl sm:text-4xl font-bold text-gray-900 dark:text-white mb-4">
-                Dit{' '}
+                {t('aboutPage.promise.title')}{' '}
                 <span className="bg-gradient-to-r from-primary-600 to-blue-600 dark:from-primary-400 dark:to-blue-400 bg-clip-text text-transparent">
-                  garanderen
+                  {t('aboutPage.promise.titleHighlight')}
                 </span>
-                {' '}we
+                {' '}{t('aboutPage.promise.titleEnd', 'we')}
               </h2>
             </motion.div>
 
@@ -537,14 +531,14 @@ export default function OverOns() {
             >
               <div className="grid sm:grid-cols-2 gap-4">
                 {[
-                  { text: 'Binnen 7 dagen live', icon: Rocket },
-                  { text: 'Geen verborgen kosten', icon: Shield },
-                  { text: 'Altijd bereikbaar via WhatsApp', icon: Users },
-                  { text: 'Onbeperkte kleine aanpassingen', icon: Zap },
-                  { text: '99.9% uptime garantie', icon: Globe },
-                  { text: 'Geen lange contracten', icon: Heart },
-                  { text: 'Gratis domein inbegrepen', icon: CheckCircle },
-                  { text: '14 dagen niet goed, geld terug', icon: Star },
+                  { text: t('aboutPage.promise.items.liveIn7Days'), icon: Rocket },
+                  { text: t('aboutPage.promise.items.noHiddenCosts'), icon: Shield },
+                  { text: t('aboutPage.promise.items.alwaysReachable'), icon: Users },
+                  { text: t('aboutPage.promise.items.unlimitedChanges'), icon: Zap },
+                  { text: t('aboutPage.promise.items.uptime'), icon: Globe },
+                  { text: t('aboutPage.promise.items.noLongContracts'), icon: Heart },
+                  { text: t('aboutPage.promise.items.freeDomain'), icon: CheckCircle },
+                  { text: t('aboutPage.promise.items.moneyBack'), icon: Star },
                 ].map((promise, index) => (
                   <motion.div 
                     key={index} 

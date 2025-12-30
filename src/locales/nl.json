@@ -39,7 +39,14 @@
     "recommended": "Aanbevolen",
     "uploadFile": "Bestand uploaden",
     "upload": "Uploaden",
-    "allRightsReserved": "Alle rechten voorbehouden."
+    "allRightsReserved": "Alle rechten voorbehouden.",
+    "total": "Totaal",
+    "sending": "Versturen..."
+  },
+  "logoOnboarding": {
+    "priceNote": "Prijs is inclusief BTW • Geen verborgen kosten",
+    "oneTimeCost": "Eenmalige kosten",
+    "submitRequest": "Verstuur aanvraag"
   },
   "nav": {
     "home": "Home",
@@ -1753,6 +1760,48 @@
       "heading": "Laten we samen jouw",
       "headingHighlight": "online aanwezigheid bouwen",
       "subtitle": "Plan een gratis gesprek en ontdek wat we voor jouw onderneming kunnen betekenen."
+    },
+    "story": {
+      "badge": "Ons verhaal",
+      "title": "Waarom we",
+      "titleHighlight": "Webstability",
+      "titleEnd": "startten",
+      "paragraph1": "Als ondernemer weet je hoe frustrerend het kan zijn om een website te regelen. Traditionele bureaus vragen duizenden euro's, freelancers zijn vaak onbereikbaar, en zelf bouwen kost je weken aan kostbare tijd.",
+      "paragraph2Bold": "Wij zagen dat het anders kon.",
+      "paragraph2": "Met moderne technologie, slimme workflows en een no-nonsense aanpak bouwen we professionele websites in dagen in plaats van maanden.",
+      "paragraph3": "Ons abonnementsmodel betekent dat je voor een vast, voorspelbaar bedrag per maand een complete website krijgt. Hosting, onderhoud, updates, support – alles zit erin.",
+      "paragraph3Bold": "Geen verrassingen.",
+      "conclusion": "Zo kun jij focussen op wat je het beste doet: ondernemen."
+    },
+    "remoteWork": {
+      "remoteFirst": "Remote First",
+      "remoteFirstDesc": "Werken vanuit heel Nederland",
+      "flexible": "Flexibel",
+      "flexibleDesc": "Snel schakelen, ook 's avonds",
+      "digital": "Digitaal",
+      "digitalDesc": "Alles online, geen papierwerk",
+      "modern": "Modern",
+      "modernDesc": "Nieuwste tools & technieken",
+      "noOfficeCosts": "Geen kantoorkosten = lagere prijzen voor jou"
+    },
+    "workStyleSubtitle": "Geen dure kantoorpanden, geen overhead. Wij investeren in talent en technologie, niet in vierkante meters.",
+    "valuesSubtitle": "Dit zijn de principes waar we niet van afwijken. Ze zitten in alles wat we doen.",
+    "techStack": "Gebouwd met de nieuwste technologie",
+    "promise": {
+      "badge": "Onze belofte",
+      "title": "Dit",
+      "titleHighlight": "garanderen",
+      "titleEnd": "we",
+      "items": {
+        "liveIn7Days": "Binnen 7 dagen live",
+        "noHiddenCosts": "Geen verborgen kosten",
+        "alwaysReachable": "Altijd bereikbaar via WhatsApp",
+        "unlimitedChanges": "Onbeperkte kleine aanpassingen",
+        "uptime": "99.9% uptime garantie",
+        "noLongContracts": "Geen lange contracten",
+        "freeDomain": "Gratis domein inbegrepen",
+        "moneyBack": "14 dagen niet goed, geld terug"
+      }
     }
   },
   "portfolioPage": {
@@ -4010,6 +4059,9 @@
     "titleBrand": "webstability",
     "subtitle": "Geen grote voorafbetaling, geen verrassingen. Alles inbegrepen.",
     "traditional": "Traditioneel",
+    "traditionalAgency": "Traditioneel webbureau",
+    "oneTimeProjects": "Eenmalige projecten",
+    "upfrontCosts": "💸 €3.000+ vooraf + jaarlijkse kosten",
     "categories": {
       "startupCosts": "Opstartkosten",
       "timeline": "Doorlooptijd",

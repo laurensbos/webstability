@@ -116,11 +116,11 @@ export default function Comparison() {
 							href="/start"
 							className="inline-flex items-center justify-center gap-2 w-full px-6 py-3.5 bg-primary-500 hover:bg-primary-600 text-white font-semibold rounded-xl transition-colors group"
 						>
-							Start vandaag nog
+							{t('comparison.startToday')}
 							<ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
 						</a>
 						<p className="mt-3 text-xs text-gray-500 dark:text-gray-400">
-							Betaling pas na goedkeuring design
+							{t('comparison.payAfterApproval')}
 						</p>
 					</motion.div>
 				</div>
@@ -139,8 +139,8 @@ export default function Comparison() {
 								<Clock className="w-6 h-6 text-gray-500" />
 							</div>
 							<div>
-								<h3 className="font-bold text-xl text-gray-900 dark:text-white">Traditioneel webbureau</h3>
-								<p className="text-sm text-gray-500 dark:text-gray-400">Eenmalige projecten</p>
+								<h3 className="font-bold text-xl text-gray-900 dark:text-white">{t('comparison.traditionalAgency')}</h3>
+								<p className="text-sm text-gray-500 dark:text-gray-400">{t('comparison.oneTimeProjects')}</p>
 							</div>
 						</div>
 
@@ -164,7 +164,7 @@ export default function Comparison() {
 
 						<div className="mt-6 p-4 bg-red-50 dark:bg-red-900/20 rounded-xl text-center">
 							<p className="text-sm text-red-600 dark:text-red-400 font-medium">
-								💸 €3.000+ vooraf + jaarlijkse kosten
+								{t('comparison.upfrontCosts')}
 							</p>
 						</div>
 					</motion.div>

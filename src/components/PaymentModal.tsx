@@ -488,7 +488,7 @@ export default function PaymentModal({
 
             {/* Cancel policy note */}
             <p className="text-center text-xs text-gray-500 dark:text-gray-400">
-              {t('paymentModal.cancelNote', 'Maandelijks opzegbaar na 3 maanden. Geen verborgen kosten.')}
+              {t('paymentModal.cancelNote', 'Cancel monthly after 3 months. No hidden costs.')}
             </p>
           </div>
         </motion.div>

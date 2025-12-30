@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
+import { useTranslation } from 'react-i18next'
 import { 
   ArrowRight, 
   ArrowLeft, 
@@ -140,6 +141,7 @@ export default function LogoOnboarding({
   onClose 
 }: LogoOnboardingProps) {
   const navigate = useNavigate()
+  const { t } = useTranslation()
   const [currentStep, setCurrentStep] = useState(1)
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [showPassword, setShowPassword] = useState(false)
@@ -739,8 +741,8 @@ export default function LogoOnboarding({
                     <div className="pt-4 border-t border-gray-200 dark:border-gray-700">
                       <div className="flex items-center justify-between">
                         <div>
-                          <span className="font-semibold text-gray-900 dark:text-white">Totaal</span>
-                          <p className="text-xs text-gray-500 dark:text-gray-500">Eenmalige kosten</p>
+                          <span className="font-semibold text-gray-900 dark:text-white">{t('common.total', 'Total')}</span>
+                          <p className="text-xs text-gray-500 dark:text-gray-500">{t('logoOnboarding.oneTimeCost', 'One-time cost')}</p>
                         </div>
                         <span className={`text-xl sm:text-2xl font-bold bg-gradient-to-r ${currentGradient} bg-clip-text text-transparent`}>
                           {selectedPackage?.price}
@@ -749,7 +751,7 @@ export default function LogoOnboarding({
                     </div>
 
                     <p className="text-xs text-gray-500 dark:text-gray-500 mt-4 text-center">
-                      Prijs is inclusief BTW • Geen verborgen kosten
+                      {t('logoOnboarding.priceNote', 'Price includes VAT • No hidden costs')}
                     </p>
                   </div>
                 </div>
@@ -765,7 +767,7 @@ export default function LogoOnboarding({
             className="flex-1 px-4 py-3 rounded-lg bg-gray-100 dark:bg-gray-700 text-gray-900 dark:text-white font-semibold transition-all flex items-center justify-center gap-2 hover:bg-gray-200 dark:hover:bg-gray-600"
           >
             <ArrowLeft className="w-5 h-5" />
-            Terug
+            {t('common.back', 'Back')}
           </button>
           
           {currentStep < 5 ? (
@@ -778,7 +780,7 @@ export default function LogoOnboarding({
                   : 'bg-gray-200 dark:bg-gray-700 text-gray-500 cursor-not-allowed'
               }`}
             >
-              Volgende
+              {t('common.next', 'Next')}
               <ArrowRight className="w-5 h-5" />
             </button>
           ) : (
@@ -794,11 +796,11 @@ export default function LogoOnboarding({
               {isSubmitting ? (
                 <>
                   <Loader2 className="w-5 h-5 animate-spin" />
-                  Versturen...
+                  {t('common.sending', 'Sending...')}
                 </>
               ) : (
                 <>
-                  Verstuur aanvraag
+                  {t('logoOnboarding.submitRequest', 'Submit request')}
                   <Sparkles className="w-5 h-5" />
                 </>
               )}
