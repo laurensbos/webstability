@@ -13,6 +13,18 @@ import { useState, useEffect, useCallback } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { motion, AnimatePresence } from 'framer-motion'
+import {
+  DndContext,
+  DragOverlay,
+  closestCorners,
+  PointerSensor,
+  useSensor,
+  useSensors,
+  useDroppable,
+} from '@dnd-kit/core'
+import type { DragStartEvent, DragEndEvent } from '@dnd-kit/core'
+import { useSortable, SortableContext, verticalListSortingStrategy } from '@dnd-kit/sortable'
+import { CSS } from '@dnd-kit/utilities'
 import { 
   FolderKanban, 
   MessageSquare, 
@@ -47,12 +59,16 @@ import {
   Home,
   MoreHorizontal,
   ChevronLeft,
-  Edit3
+  Edit3,
+  Download,
+  RefreshCw,
+  GripVertical
 } from 'lucide-react'
 import Logo from '../Logo'
 import QuickStats from './QuickStats'
 import ProjectDetailModal from './ProjectDetailModal'
 import ChangeRequestsManager from './ChangeRequestsManager'
+import { DashboardSkeleton } from './Skeleton'
 import type { Project, DashboardView, ProjectPhase } from './types'
 import { PHASE_CONFIG, PACKAGE_CONFIG } from './types'
 
@@ -72,6 +88,139 @@ const TOKEN_KEY = 'webstability_dev_token'
 
 // API URL
 const API_BASE = '/api'
+
+// Draggable Project Card Component
+function DraggableProjectCard({ 
+  project, 
+  onClick,
+  getUrgencyReason 
+}: { 
+  project: Project
+  onClick: () => void
+  getUrgencyReason: (urgency: { reasonKey: string; reasonParams?: Record<string, number> }) => string
+}) {
+  const {
+    attributes,
+    listeners,
+    setNodeRef,
+    transform,
+    transition,
+    isDragging,
+  } = useSortable({ id: project.id })
+
+  const style = {
+    transform: CSS.Transform.toString(transform),
+    transition,
+    opacity: isDragging ? 0.5 : 1,
+    zIndex: isDragging ? 50 : undefined,
+  }
+
+  const urgency = getProjectUrgency(project)
+
+  return (
+    <div
+      ref={setNodeRef}
+      style={style}
+      className={`relative p-3 bg-gray-900/50 border rounded-xl cursor-pointer transition group ${
+        isDragging ? 'shadow-2xl ring-2 ring-emerald-500/50' : ''
+      } ${
+        urgency.level === 'high' ? 'border-red-500/50 bg-red-500/5' :
+        urgency.level === 'medium' ? 'border-amber-500/30' :
+        'border-white/10 hover:border-white/20'
+      }`}
+    >
+      {/* Drag handle */}
+      <div
+        {...attributes}
+        {...listeners}
+        className="absolute left-1 top-1/2 -translate-y-1/2 p-1 cursor-grab active:cursor-grabbing opacity-0 group-hover:opacity-100 transition touch-none"
+      >
+        <GripVertical className="w-3 h-3 text-gray-500" />
+      </div>
+      
+      {/* Click area */}
+      <div onClick={onClick} className="ml-3">
+        {/* Urgency indicator */}
+        {urgency.level !== 'none' && (
+          <div className={`absolute top-2 right-2 w-2 h-2 rounded-full ${
+            urgency.level === 'high' ? 'bg-red-500 animate-pulse' :
+            urgency.level === 'medium' ? 'bg-amber-500' :
+            'bg-blue-500'
+          }`} />
+        )}
+        
+        <div className="flex items-start gap-2">
+          <div className="w-8 h-8 bg-white/10 rounded-lg flex items-center justify-center text-sm shrink-0">
+            {PACKAGE_CONFIG[project.package]?.emoji}
+          </div>
+          <div className="min-w-0 flex-1">
+            <h4 className="font-medium text-sm text-white truncate group-hover:text-emerald-400 transition">
+              {project.businessName}
+            </h4>
+            <p className="text-xs text-gray-500 truncate">{project.contactName}</p>
+            {urgency.level !== 'none' && (
+              <p className={`text-xs mt-1 ${
+                urgency.level === 'high' ? 'text-red-400' :
+                urgency.level === 'medium' ? 'text-amber-400' :
+                'text-blue-400'
+              }`}>
+                {getUrgencyReason(urgency)}
+              </p>
+            )}
+          </div>
+        </div>
+      </div>
+    </div>
+  )
+}
+
+// Droppable Phase Column
+function DroppablePhaseColumn({ 
+  phase, 
+  children,
+  projectCount
+}: { 
+  phase: ProjectPhase
+  children: React.ReactNode
+  projectCount: number
+}) {
+  const { setNodeRef, isOver } = useDroppable({
+    id: phase,
+  })
+  
+  const phaseInfo = PHASE_CONFIG[phase]
+  const gradient = PHASE_GRADIENTS[phase]
+  
+  return (
+    <div 
+      ref={setNodeRef}
+      className={`min-w-[280px] md:min-w-0 snap-center bg-white/5 backdrop-blur-sm rounded-xl border overflow-hidden flex-shrink-0 md:flex-shrink transition-all ${
+        isOver ? 'border-emerald-500/50 bg-emerald-500/5 scale-[1.02] ring-2 ring-emerald-500/30' : 'border-white/10'
+      }`}
+    >
+      {/* Phase Header with Gradient */}
+      <div className={`bg-gradient-to-r ${gradient} p-3`}>
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            <span className="text-lg">{phaseInfo.emoji}</span>
+            <span className="text-sm font-medium text-white">
+              {phaseInfo.label}
+            </span>
+          </div>
+          <span className="text-xs bg-white/20 backdrop-blur-sm px-2 py-0.5 rounded-full font-medium">
+            {projectCount}
+          </span>
+        </div>
+      </div>
+
+      <div className={`p-3 space-y-2 min-h-[100px] max-h-[400px] overflow-y-auto transition-colors ${
+        isOver ? 'bg-emerald-500/5' : ''
+      }`}>
+        {children}
+      </div>
+    </div>
+  )
+}
 
 // Helper function to get project urgency
 function getProjectUrgency(project: Project): { level: 'high' | 'medium' | 'low' | 'none', reasonKey: string, reasonParams?: Record<string, number> } {
@@ -126,6 +275,7 @@ export default function DeveloperDashboard() {
   const [activeView, setActiveView] = useState<DashboardView>('projects')
   const [projects, setProjects] = useState<Project[]>([])
   const [loading, setLoading] = useState(true)
+  const [refreshing, setRefreshing] = useState(false)
   const [selectedProject, setSelectedProject] = useState<Project | null>(null)
   const [selectedProjectTab, setSelectedProjectTab] = useState<'info' | 'onboarding' | 'messages' | 'feedback' | 'customer'>('info')
   const [sidebarOpen, setSidebarOpen] = useState(false)
@@ -134,6 +284,18 @@ export default function DeveloperDashboard() {
   const [viewMode, setViewMode] = useState<'kanban' | 'list'>('kanban')
   const [showTutorial, setShowTutorial] = useState(false)
   const [currentKanbanPhase, setCurrentKanbanPhase] = useState(0)
+  
+  // Drag and drop state
+  const [draggedProject, setDraggedProject] = useState<Project | null>(null)
+  
+  // DnD sensors - require a minimum drag distance to start
+  const sensors = useSensors(
+    useSensor(PointerSensor, {
+      activationConstraint: {
+        distance: 8, // 8px movement before drag starts
+      },
+    })
+  )
   
   // Payment modal state
   const [paymentModal, setPaymentModal] = useState<{
@@ -155,7 +317,8 @@ export default function DeveloperDashboard() {
   }
 
   // Fetch projects
-  const fetchProjects = useCallback(async () => {
+  const fetchProjects = useCallback(async (isRefresh = false) => {
+    if (isRefresh) setRefreshing(true)
     try {
       const token = sessionStorage.getItem(TOKEN_KEY)
       const response = await fetch(`${API_BASE}/developer/projects`, {
@@ -174,15 +337,85 @@ export default function DeveloperDashboard() {
       console.error('Failed to fetch projects:', error)
     } finally {
       setLoading(false)
+      setRefreshing(false)
     }
   }, [])
+
+  // Manual refresh handler
+  const handleRefresh = () => fetchProjects(true)
 
   // Fetch on mount and poll
   useEffect(() => {
     fetchProjects()
-    const interval = setInterval(fetchProjects, 30000) // Poll every 30s
+    const interval = setInterval(() => fetchProjects(false), 30000) // Poll every 30s
     return () => clearInterval(interval)
   }, [fetchProjects])
+
+  // Keyboard shortcuts
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      // Don't trigger if typing in an input
+      if (e.target instanceof HTMLInputElement || e.target instanceof HTMLTextAreaElement) return
+      
+      switch (e.key.toLowerCase()) {
+        case 'k':
+          setViewMode('kanban')
+          break
+        case 'l':
+          setViewMode('list')
+          break
+        case '/':
+          e.preventDefault()
+          document.querySelector<HTMLInputElement>('input[type="text"]')?.focus()
+          break
+        case '?':
+          setShowTutorial(prev => !prev)
+          break
+        case 'r':
+          if (!e.metaKey && !e.ctrlKey) handleRefresh()
+          break
+        case 'escape':
+          setSelectedProject(null)
+          setSidebarOpen(false)
+          setShowTutorial(false)
+          break
+      }
+    }
+    
+    window.addEventListener('keydown', handleKeyDown)
+    return () => window.removeEventListener('keydown', handleKeyDown)
+  }, [])
+
+  // Drag and drop handlers
+  const handleDragStart = (event: DragStartEvent) => {
+    const { active } = event
+    const project = projects.find(p => p.id === active.id)
+    if (project) {
+      setDraggedProject(project)
+    }
+  }
+
+  const handleDragEnd = (event: DragEndEvent) => {
+    const { active, over } = event
+    
+    setDraggedProject(null)
+
+    if (!over) return
+
+    const projectId = active.id as string
+    const targetPhase = over.id as ProjectPhase
+
+    // Find the project that was dragged
+    const project = projects.find(p => p.id === projectId)
+    if (!project) return
+
+    // Don't do anything if dropped in the same phase
+    if (project.phase === targetPhase) return
+
+    // Update project phase
+    const updatedProject = { ...project, phase: targetPhase, updatedAt: new Date().toISOString() }
+    handleUpdateProject(updatedProject)
+  }
 
   // Update project
   const handleUpdateProject = async (updatedProject: Project) => {
@@ -349,11 +582,66 @@ export default function DeveloperDashboard() {
     sum + p.messages.filter(m => !m.read && m.from === 'client').length, 0
   )
 
-  // Loading state
+  // Export clients to CSV
+  const exportClientsToCSV = () => {
+    const headers = [
+      t('developerDashboard.export.businessName'),
+      t('developerDashboard.export.contactPerson'),
+      t('developerDashboard.export.email'),
+      t('developerDashboard.export.phone'),
+      t('developerDashboard.export.package'),
+      t('developerDashboard.export.phase'),
+      t('developerDashboard.export.paymentStatus'),
+      t('developerDashboard.export.createdAt')
+    ]
+    const rows = projects.map(p => [
+      p.businessName,
+      p.contactName,
+      p.contactEmail,
+      p.contactPhone || '',
+      PACKAGE_CONFIG[p.package]?.name || p.package,
+      PHASE_CONFIG[p.phase]?.label || p.phase,
+      p.paymentStatus === 'paid' ? t('developerDashboard.export.paid') : p.paymentStatus === 'awaiting_payment' ? t('developerDashboard.export.awaitingPayment') : t('developerDashboard.export.pending'),
+      new Date(p.createdAt).toLocaleDateString()
+    ])
+    
+    const csvContent = [
+      headers.join(','),
+      ...rows.map(row => row.map(cell => `"${String(cell).replace(/"/g, '""')}"`).join(','))
+    ].join('\n')
+    
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' })
+    const url = URL.createObjectURL(blob)
+    const link = document.createElement('a')
+    link.href = url
+    link.download = `${t('developerDashboard.export.filename')}-${new Date().toISOString().split('T')[0]}.csv`
+    document.body.appendChild(link)
+    link.click()
+    document.body.removeChild(link)
+    URL.revokeObjectURL(url)
+  }
+
+  // Loading state - Show skeleton instead of spinner
   if (loading) {
     return (
-      <div className="min-h-screen bg-gray-950 flex items-center justify-center">
-        <Loader2 className="w-8 h-8 text-emerald-500 animate-spin" />
+      <div className="min-h-screen bg-gray-950 text-white">
+        {/* Background gradient effect */}
+        <div className="fixed inset-0 overflow-hidden pointer-events-none">
+          <div className="absolute -top-40 -right-40 w-80 h-80 bg-emerald-500/10 rounded-full blur-3xl" />
+          <div className="absolute top-1/2 -left-40 w-80 h-80 bg-blue-500/10 rounded-full blur-3xl" />
+        </div>
+        
+        {/* Sidebar placeholder */}
+        <aside className="fixed left-0 top-0 bottom-0 w-72 bg-gray-900/95 backdrop-blur-xl border-r border-white/10 z-50 hidden lg:block">
+          <div className="p-6 border-b border-white/10">
+            <Logo variant="white" />
+          </div>
+        </aside>
+        
+        {/* Main content with skeleton */}
+        <main className="lg:ml-72 min-h-screen p-4 lg:p-6">
+          <DashboardSkeleton view={activeView as 'projects' | 'messages' | 'customers' | 'payments'} />
+        </main>
       </div>
     )
   }
@@ -491,6 +779,16 @@ export default function DeveloperDashboard() {
                 className="w-full bg-white/5 border border-white/10 rounded-xl pl-11 pr-4 py-2.5 text-sm text-white placeholder-gray-500 focus:outline-none focus:border-emerald-500/50 focus:bg-white/10 transition"
               />
             </div>
+
+            {/* Refresh Button */}
+            <button
+              onClick={handleRefresh}
+              disabled={refreshing}
+              className="p-2.5 hover:bg-white/10 rounded-xl transition disabled:opacity-50"
+              title="Vernieuwen"
+            >
+              <RefreshCw className={`w-5 h-5 text-gray-400 ${refreshing ? 'animate-spin' : ''}`} />
+            </button>
 
             {/* Notifications with dropdown preview */}
             <div className="relative group">
@@ -641,166 +939,137 @@ export default function DeveloperDashboard() {
                 </div>
               </div>
 
-              {/* Kanban View - Enhanced with Mobile Horizontal Scroll */}
+              {/* Kanban View - Enhanced with Drag & Drop */}
               {viewMode === 'kanban' && (
-                <div className="relative">
-                  {/* Mobile Phase Indicator */}
-                  <div className="md:hidden flex items-center justify-center gap-2 mb-3">
-                    {phases.map((phase, idx) => (
-                      <button
-                        key={phase}
+                <DndContext
+                  sensors={sensors}
+                  collisionDetection={closestCorners}
+                  onDragStart={handleDragStart}
+                  onDragEnd={handleDragEnd}
+                >
+                  <div className="relative">
+                    {/* Mobile Phase Indicator */}
+                    <div className="md:hidden flex items-center justify-center gap-2 mb-3">
+                      {phases.map((phase, idx) => (
+                        <button
+                          key={phase}
+                          onClick={() => {
+                            setCurrentKanbanPhase(idx)
+                            const container = document.getElementById('kanban-scroll')
+                            if (container) {
+                              const columnWidth = container.scrollWidth / phases.length
+                              container.scrollTo({ left: columnWidth * idx, behavior: 'smooth' })
+                            }
+                          }}
+                          className={`w-2 h-2 rounded-full transition-all ${
+                            currentKanbanPhase === idx ? 'bg-emerald-500 w-4' : 'bg-white/20'
+                          }`}
+                        />
+                      ))}
+                    </div>
+                    
+                    {/* Mobile Swipe Hint */}
+                    <div className="md:hidden flex items-center justify-between px-2 mb-2 text-xs text-gray-500">
+                      <button 
                         onClick={() => {
-                          setCurrentKanbanPhase(idx)
                           const container = document.getElementById('kanban-scroll')
-                          if (container) {
+                          if (container && currentKanbanPhase > 0) {
                             const columnWidth = container.scrollWidth / phases.length
-                            container.scrollTo({ left: columnWidth * idx, behavior: 'smooth' })
+                            container.scrollTo({ left: columnWidth * (currentKanbanPhase - 1), behavior: 'smooth' })
+                            setCurrentKanbanPhase(currentKanbanPhase - 1)
                           }
                         }}
-                        className={`w-2 h-2 rounded-full transition-all ${
-                          currentKanbanPhase === idx ? 'bg-emerald-500 w-4' : 'bg-white/20'
-                        }`}
-                      />
-                    ))}
-                  </div>
-                  
-                  {/* Mobile Swipe Hint */}
-                  <div className="md:hidden flex items-center justify-between px-2 mb-2 text-xs text-gray-500">
-                    <button 
-                      onClick={() => {
-                        const container = document.getElementById('kanban-scroll')
-                        if (container && currentKanbanPhase > 0) {
-                          const columnWidth = container.scrollWidth / phases.length
-                          container.scrollTo({ left: columnWidth * (currentKanbanPhase - 1), behavior: 'smooth' })
-                          setCurrentKanbanPhase(currentKanbanPhase - 1)
-                        }
-                      }}
-                      className={`flex items-center gap-1 ${currentKanbanPhase === 0 ? 'opacity-30' : 'opacity-60'}`}
-                      disabled={currentKanbanPhase === 0}
-                    >
-                      <ChevronLeft className="w-4 h-4" />
-                      {currentKanbanPhase > 0 && PHASE_CONFIG[phases[currentKanbanPhase - 1]]?.label}
-                    </button>
-                    <span className="font-medium text-white">
-                      {PHASE_CONFIG[phases[currentKanbanPhase]]?.emoji} {PHASE_CONFIG[phases[currentKanbanPhase]]?.label}
-                    </span>
-                    <button
-                      onClick={() => {
-                        const container = document.getElementById('kanban-scroll')
-                        if (container && currentKanbanPhase < phases.length - 1) {
-                          const columnWidth = container.scrollWidth / phases.length
-                          container.scrollTo({ left: columnWidth * (currentKanbanPhase + 1), behavior: 'smooth' })
-                          setCurrentKanbanPhase(currentKanbanPhase + 1)
-                        }
-                      }}
-                      className={`flex items-center gap-1 ${currentKanbanPhase === phases.length - 1 ? 'opacity-30' : 'opacity-60'}`}
-                      disabled={currentKanbanPhase === phases.length - 1}
-                    >
-                      {currentKanbanPhase < phases.length - 1 && PHASE_CONFIG[phases[currentKanbanPhase + 1]]?.label}
-                      <ChevronRight className="w-4 h-4" />
-                    </button>
-                  </div>
-                  
-                  {/* Scrollable Container */}
-                  <div 
-                    id="kanban-scroll"
-                    className="flex md:grid md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-4 overflow-x-auto pb-4 snap-x snap-mandatory md:snap-none scrollbar-hide"
-                    onScroll={(e) => {
-                      const container = e.currentTarget
-                      const columnWidth = container.scrollWidth / phases.length
-                      const newPhase = Math.round(container.scrollLeft / columnWidth)
-                      if (newPhase !== currentKanbanPhase) {
-                        setCurrentKanbanPhase(newPhase)
-                      }
-                    }}
-                  >
-                  {phases.map(phase => {
-                    const phaseInfo = PHASE_CONFIG[phase]
-                    const phaseProjects = grouped[phase] || []
-                    const gradient = PHASE_GRADIENTS[phase]
+                        className={`flex items-center gap-1 ${currentKanbanPhase === 0 ? 'opacity-30' : 'opacity-60'}`}
+                        disabled={currentKanbanPhase === 0}
+                      >
+                        <ChevronLeft className="w-4 h-4" />
+                        {currentKanbanPhase > 0 && PHASE_CONFIG[phases[currentKanbanPhase - 1]]?.label}
+                      </button>
+                      <span className="font-medium text-white">
+                        {PHASE_CONFIG[phases[currentKanbanPhase]]?.emoji} {PHASE_CONFIG[phases[currentKanbanPhase]]?.label}
+                      </span>
+                      <button
+                        onClick={() => {
+                          const container = document.getElementById('kanban-scroll')
+                          if (container && currentKanbanPhase < phases.length - 1) {
+                            const columnWidth = container.scrollWidth / phases.length
+                            container.scrollTo({ left: columnWidth * (currentKanbanPhase + 1), behavior: 'smooth' })
+                            setCurrentKanbanPhase(currentKanbanPhase + 1)
+                          }
+                        }}
+                        className={`flex items-center gap-1 ${currentKanbanPhase === phases.length - 1 ? 'opacity-30' : 'opacity-60'}`}
+                        disabled={currentKanbanPhase === phases.length - 1}
+                      >
+                        {currentKanbanPhase < phases.length - 1 && PHASE_CONFIG[phases[currentKanbanPhase + 1]]?.label}
+                        <ChevronRight className="w-4 h-4" />
+                      </button>
+                    </div>
                     
-                    return (
-                      <div key={phase} className="min-w-[280px] md:min-w-0 snap-center bg-white/5 backdrop-blur-sm rounded-xl border border-white/10 overflow-hidden flex-shrink-0 md:flex-shrink">
-                        {/* Phase Header with Gradient */}
-                        <div className={`bg-gradient-to-r ${gradient} p-3`}>
-                          <div className="flex items-center justify-between">
-                            <div className="flex items-center gap-2">
-                              <span className="text-lg">{phaseInfo.emoji}</span>
-                              <span className="text-sm font-medium text-white">
-                                {phaseInfo.label}
-                              </span>
-                            </div>
-                            <span className="text-xs bg-white/20 backdrop-blur-sm px-2 py-0.5 rounded-full font-medium">
-                              {phaseProjects.length}
-                            </span>
+                    {/* Scrollable Container with Drop Zones */}
+                    <div 
+                      id="kanban-scroll"
+                      className="flex md:grid md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-4 overflow-x-auto pb-4 snap-x snap-mandatory md:snap-none scrollbar-hide"
+                      onScroll={(e) => {
+                        const container = e.currentTarget
+                        const columnWidth = container.scrollWidth / phases.length
+                        const newPhase = Math.round(container.scrollLeft / columnWidth)
+                        if (newPhase !== currentKanbanPhase) {
+                          setCurrentKanbanPhase(newPhase)
+                        }
+                      }}
+                    >
+                      {phases.map(phase => {
+                        const phaseProjects = grouped[phase] || []
+                        
+                        return (
+                          <SortableContext
+                            key={phase}
+                            id={phase}
+                            items={phaseProjects.map(p => p.id)}
+                            strategy={verticalListSortingStrategy}
+                          >
+                            <DroppablePhaseColumn phase={phase} projectCount={phaseProjects.length}>
+                              {phaseProjects.map(project => (
+                                <DraggableProjectCard
+                                  key={project.id}
+                                  project={project}
+                                  onClick={() => setSelectedProject(project)}
+                                  getUrgencyReason={getUrgencyReason}
+                                />
+                              ))}
+                              
+                              {phaseProjects.length === 0 && (
+                                <div className="text-center py-8 text-gray-600 text-sm border-2 border-dashed border-white/10 rounded-xl">
+                                  {t('developerDashboard.projects.noProjects')}
+                                  <p className="text-xs mt-1 text-gray-700">{t('developerDashboard.projects.dragHere')}</p>
+                                </div>
+                              )}
+                            </DroppablePhaseColumn>
+                          </SortableContext>
+                        )
+                      })}
+                    </div>
+                  </div>
+                  
+                  {/* Drag Overlay - Shows the card being dragged */}
+                  <DragOverlay>
+                    {draggedProject && (
+                      <div className="p-3 bg-gray-800 border border-emerald-500/50 rounded-xl shadow-2xl opacity-90">
+                        <div className="flex items-start gap-2">
+                          <div className="w-8 h-8 bg-white/10 rounded-lg flex items-center justify-center text-sm shrink-0">
+                            {PACKAGE_CONFIG[draggedProject.package]?.emoji}
+                          </div>
+                          <div className="min-w-0 flex-1">
+                            <h4 className="font-medium text-sm text-white">
+                              {draggedProject.businessName}
+                            </h4>
+                            <p className="text-xs text-gray-400">{draggedProject.contactName}</p>
                           </div>
                         </div>
-
-                        <div className="p-3 space-y-2 min-h-[100px] max-h-[400px] overflow-y-auto">
-                          {phaseProjects.map(project => {
-                            const urgency = getProjectUrgency(project)
-                            return (
-                              <motion.div
-                                key={project.id}
-                                whileHover={{ scale: 1.02 }}
-                                onClick={() => setSelectedProject(project)}
-                                className={`relative p-3 bg-gray-900/50 border rounded-xl cursor-pointer transition group ${
-                                  urgency.level === 'high' ? 'border-red-500/50 bg-red-500/5' :
-                                  urgency.level === 'medium' ? 'border-amber-500/30' :
-                                  'border-white/10 hover:border-white/20'
-                                }`}
-                              >
-                                {/* Urgency indicator */}
-                                {urgency.level !== 'none' && (
-                                  <div className={`absolute top-2 right-2 w-2 h-2 rounded-full ${
-                                    urgency.level === 'high' ? 'bg-red-500 animate-pulse' :
-                                    urgency.level === 'medium' ? 'bg-amber-500' :
-                                    'bg-blue-500'
-                                  }`} />
-                                )}
-                                
-                                <div className="flex items-start gap-2">
-                                  <div className="w-8 h-8 bg-white/10 rounded-lg flex items-center justify-center text-sm shrink-0">
-                                    {PACKAGE_CONFIG[project.package]?.emoji}
-                                  </div>
-                                  <div className="min-w-0 flex-1">
-                                    <h4 className="font-medium text-sm text-white truncate group-hover:text-emerald-400 transition">
-                                      {project.businessName}
-                                    </h4>
-                                    <p className="text-xs text-gray-500 truncate">{project.contactName}</p>
-                                    {urgency.level !== 'none' && (
-                                      <p className={`text-xs mt-1 ${
-                                        urgency.level === 'high' ? 'text-red-400' :
-                                        urgency.level === 'medium' ? 'text-amber-400' :
-                                        'text-blue-400'
-                                      }`}>
-                                        {getUrgencyReason(urgency)}
-                                      </p>
-                                    )}
-                                  </div>
-                                </div>
-                                
-                                {/* Quick action on hover */}
-                                <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition rounded-xl flex items-end justify-center pb-2">
-                                  <span className="text-xs text-white flex items-center gap-1">
-                                    <Eye className="w-3 h-3" /> {t('developerDashboard.projects.viewDetails')}
-                                  </span>
-                                </div>
-                              </motion.div>
-                            )
-                          })}
-                          
-                          {phaseProjects.length === 0 && (
-                            <div className="text-center py-8 text-gray-600 text-sm">
-                              {t('developerDashboard.projects.noProjects')}
-                            </div>
-                          )}
-                        </div>
                       </div>
-                    )
-                  })}
-                  </div>
-                </div>
+                    )}
+                  </DragOverlay>
+                </DndContext>
               )}
 
               {/* List View - Enhanced */}
@@ -1206,7 +1475,7 @@ export default function DeveloperDashboard() {
               <div className="mb-8">
                 <h3 className="text-sm font-medium text-amber-400 mb-4 flex items-center gap-2">
                   <span className="w-2 h-2 bg-amber-400 rounded-full animate-pulse" />
-                  Wacht op betaling
+                  {t('developerDashboard.payments.awaitingPayment')}
                 </h3>
                 <div className="space-y-3">
                   {projects
@@ -1227,7 +1496,7 @@ export default function DeveloperDashboard() {
                             </div>
                             <div>
                               <h4 className="font-medium text-white group-hover:text-amber-400 transition">{project.businessName}</h4>
-                              <p className="text-sm text-gray-500">{packageInfo?.name} pakket • {project.contactEmail}</p>
+                              <p className="text-sm text-gray-500">{packageInfo?.name} {t('developerDashboard.payments.package')} • {project.contactEmail}</p>
                             </div>
                           </div>
                           <div className="flex items-center gap-4">
@@ -1251,7 +1520,7 @@ export default function DeveloperDashboard() {
                                 className="flex items-center gap-2 px-4 py-2.5 bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-400 hover:to-orange-400 text-white text-sm font-medium rounded-xl transition shadow-lg shadow-amber-500/20"
                               >
                                 <Mail className="w-4 h-4" />
-                                Stuur betaallink
+                                {t('developerDashboard.payments.sendPaymentLink')}
                               </button>
                             )}
                           </div>
@@ -1331,6 +1600,14 @@ export default function DeveloperDashboard() {
                     </p>
                   </div>
                   <div className="flex items-center gap-2">
+                    <button
+                      onClick={exportClientsToCSV}
+                      className="px-3 py-1.5 bg-white/20 hover:bg-white/30 backdrop-blur-sm rounded-lg text-sm font-medium flex items-center gap-1.5 transition"
+                      title="Exporteer naar CSV"
+                    >
+                      <Download className="w-4 h-4" />
+                      Export
+                    </button>
                     <span className="px-3 py-1.5 bg-white/20 backdrop-blur-sm rounded-lg text-sm font-medium flex items-center gap-1.5">
                       <Globe className="w-4 h-4" />
                       {liveProjects.length} live

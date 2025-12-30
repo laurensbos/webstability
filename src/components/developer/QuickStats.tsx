@@ -6,6 +6,7 @@
 import { motion } from 'framer-motion'
 import { TrendingUp, Users, CreditCard, FolderKanban } from 'lucide-react'
 import type { Project } from './types'
+import { PACKAGE_CONFIG } from './types'
 
 interface QuickStatsProps {
   projects: Project[]
@@ -18,12 +19,11 @@ export default function QuickStats({ projects }: QuickStatsProps) {
   const awaitingPayment = projects.filter(p => p.paymentStatus === 'awaiting_payment' || (p.phase === 'feedback' && p.paymentStatus !== 'paid')).length
   const totalClients = new Set(projects.map(p => p.contactEmail)).size
   
-  // Monthly revenue (simple calculation)
+  // Monthly revenue - using PACKAGE_CONFIG for consistent pricing
   const monthlyRevenue = projects
-    .filter(p => p.paymentStatus === 'paid')
+    .filter(p => p.paymentStatus === 'paid' && p.phase === 'live')
     .reduce((sum, p) => {
-      const prices = { starter: 29, professional: 49, business: 79, webshop: 99 }
-      return sum + (prices[p.package] || 0)
+      return sum + (PACKAGE_CONFIG[p.package]?.price || 0)
     }, 0)
 
   const stats = [

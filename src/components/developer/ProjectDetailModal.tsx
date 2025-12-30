@@ -4,6 +4,7 @@
  */
 
 import { useState, useEffect, useRef } from 'react'
+import { useTranslation } from 'react-i18next'
 import { motion, AnimatePresence } from 'framer-motion'
 import { 
   X, 
@@ -54,6 +55,7 @@ export default function ProjectDetailModal({
   onDelete,
   initialTab = 'info'
 }: ProjectDetailModalProps) {
+  const { t } = useTranslation()
   const [activeTab, setActiveTab] = useState<'info' | 'onboarding' | 'messages' | 'feedback' | 'customer'>(initialTab)
   const [newMessage, setNewMessage] = useState('')
   const [copied, setCopied] = useState(false)
@@ -491,9 +493,9 @@ export default function ProjectDetailModal({
                       project.paymentStatus === 'awaiting_payment' ? 'text-amber-400' :
                       'text-gray-400'
                     }`}>
-                      {project.paymentStatus === 'paid' ? '✓ Betaald' :
-                       project.paymentStatus === 'awaiting_payment' ? '⏳ Wacht op betaling' :
-                       '○ In afwachting'}
+                      {project.paymentStatus === 'paid' ? `✓ ${t('developerDashboard.export.paid')}` :
+                       project.paymentStatus === 'awaiting_payment' ? `⏳ ${t('developerDashboard.urgency.waitingForPayment')}` :
+                       `○ ${t('developerDashboard.export.pending')}`}
                     </p>
                   </div>
                 </div>
@@ -525,7 +527,7 @@ export default function ProjectDetailModal({
                       className="flex items-center gap-2 px-3 py-2 bg-gray-700 hover:bg-gray-600 rounded-lg text-sm text-gray-300 transition"
                     >
                       {copied ? <Check className="w-4 h-4 text-green-400" /> : <Copy className="w-4 h-4" />}
-                      Klant dashboard link
+                      {t('developerDashboard.projectDetail.clientDashboardLink', 'Client dashboard link')}
                     </button>
                     
                     {/* Send Payment Link */}
@@ -535,7 +537,7 @@ export default function ProjectDetailModal({
                         className="flex items-center gap-2 px-3 py-2 bg-amber-500/20 hover:bg-amber-500/30 rounded-lg text-sm text-amber-400 transition"
                       >
                         <CreditCard className="w-4 h-4" />
-                        Stuur betaallink
+                        {t('developerDashboard.payments.sendPaymentLink')}
                       </button>
                     )}
 

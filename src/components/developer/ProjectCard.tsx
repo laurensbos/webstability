@@ -4,6 +4,7 @@
  */
 
 import { motion } from 'framer-motion'
+import { useTranslation } from 'react-i18next'
 import { 
   MessageSquare, 
   Clock, 
@@ -19,6 +20,7 @@ interface ProjectCardProps {
 }
 
 export default function ProjectCard({ project, onClick }: ProjectCardProps) {
+  const { t } = useTranslation()
   const unreadMessages = project.messages.filter(m => !m.read && m.from === 'client').length
   const hasPendingPayment = project.phase === 'feedback' && project.paymentStatus !== 'paid'
   const hasPendingFeedback = project.feedbackHistory?.some(f => f.status === 'pending')
@@ -66,7 +68,7 @@ export default function ProjectCard({ project, onClick }: ProjectCardProps) {
         
         {hasPendingPayment && (
           <span className="inline-flex items-center gap-1 px-2 py-0.5 bg-amber-500/20 text-amber-400 rounded text-xs font-medium animate-pulse">
-            💳 Wacht op betaling
+            💳 {t('developerDashboard.urgency.waitingForPayment')}
           </span>
         )}
         
@@ -82,7 +84,7 @@ export default function ProjectCard({ project, onClick }: ProjectCardProps) {
       <div className="flex items-center justify-between text-xs text-gray-500">
         <div className="flex items-center gap-1">
           <Clock className="w-3 h-3" />
-          {daysInPhase === 0 ? 'Vandaag' : `${daysInPhase}d`}
+          {daysInPhase === 0 ? t('developerDashboard.projectCard.today') : `${daysInPhase}d`}
         </div>
         
         <div className="flex items-center gap-2">

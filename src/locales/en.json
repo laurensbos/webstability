@@ -38,7 +38,8 @@
     "new": "New",
     "recommended": "Recommended",
     "uploadFile": "Upload file",
-    "upload": "Upload"
+    "upload": "Upload",
+    "allRightsReserved": "All rights reserved."
   },
   "nav": {
     "home": "Home",
@@ -1143,6 +1144,68 @@
       "new": "New",
       "viewPreview": "View preview",
       "scheduleMeeting": "Schedule meeting"
+    }
+  },
+  "liveApproval": {
+    "packages": {
+      "starter": "Starter",
+      "professional": "Professional",
+      "business": "Business",
+      "webshop": "Webshop"
+    },
+    "preview": {
+      "title": "Preview website",
+      "description": "Check your website and test all pages. Is everything working correctly?",
+      "viewPreview": "View preview"
+    },
+    "review": {
+      "title": "Review",
+      "description": "Is everything as expected? Approve to go live, or provide feedback for adjustments.",
+      "placeholder": "Describe what you would like changed...\\n\\nFor example:\\n- The title on the homepage needs to be different\\n- The color of the buttons is not right\\n- A page is missing",
+      "cancel": "Cancel",
+      "sendFeedback": "Send feedback",
+      "needChanges": "Changes needed",
+      "approveAndLive": "Approve & Go Live!",
+      "feedbackSent": "Your feedback has been sent!"
+    },
+    "celebration": {
+      "title": "Congratulations!",
+      "subtitle": "Your website is going live! 🎉",
+      "description": "We're putting your website online now. You'll receive an email when everything is ready."
+    },
+    "liveStatus": {
+      "title": "Your website is live!",
+      "online": "Online"
+    },
+    "changeRequests": {
+      "title": "Request changes",
+      "description": "Want something changed? Submit a request.",
+      "unlimited": "Unlimited",
+      "ofPerMonth": "of {{count}}/month",
+      "limitReached": "Limit reached",
+      "whatToChange": "What would you like changed?",
+      "placeholder": "Describe the change as clearly as possible...\\n\\nE.g.: 'Change the text on the homepage from ... to ...'",
+      "category": "Category",
+      "categoryText": "Text change",
+      "categoryDesign": "Design change",
+      "categoryFunctionality": "Functionality",
+      "categoryOther": "Other",
+      "priority": "Priority",
+      "priorityLow": "Low - can wait",
+      "priorityNormal": "Normal",
+      "priorityUrgent": "Urgent - as soon as possible",
+      "attachFiles": "Attach files?",
+      "attachFilesDesc": "Upload images or documents to your Google Drive folder.",
+      "openDriveFolder": "Open Drive folder",
+      "cancel": "Cancel",
+      "sendRequest": "Send request",
+      "newRequest": "Request new change",
+      "limitReachedDesc": "You've reached your monthly limit. Upgrade to a higher package for more changes.",
+      "pendingRequests": "Pending requests",
+      "statusCompleted": "Completed",
+      "statusInProgress": "In progress",
+      "statusPending": "In queue",
+      "requestSent": "Request sent successfully!"
     }
   },
   "inlineOnboarding": {
@@ -2832,6 +2895,28 @@
       "hospitality": "Hospitality",
       "creative": "Creative"
     },
+    "videos": {
+      "locationOverview": "Location overview",
+      "aerialFootage": "Aerial footage",
+      "photoVideo": "Aerial photo & video"
+    },
+    "projects": {
+      "lissers": {
+        "description": "Driving school website with online registration",
+        "result": "+180% visitors"
+      },
+      "hoogduin": {
+        "description": "Maintenance company with quote request",
+        "result": "+45 leads/month"
+      },
+      "rietveld": {
+        "description": "Landscaping company with project portfolio",
+        "result": "#1 Google local"
+      }
+    },
+    "noProjects": "No projects in this category.",
+    "viewAllProjects": "View all projects",
+    "aerialCta": "More about aerial videography",
     "droneSection": {
       "badge": "Aerial videography",
       "title": "Drone footage",
@@ -3057,7 +3142,13 @@
       "darkTheme": "Dark theme",
       "projectsFound": "Multiple projects found. Choose the project you want to view:",
       "enterCredentials": "Enter your email address and password to view your project status.",
-      "projectId": "Project ID"
+      "projectId": "Project ID",
+      "noProjects": "You have no projects yet.",
+      "oneProject": "You have 1 project.",
+      "multipleProjects": "You have {{count}} projects.",
+      "actionsNeeded": "action(s) needed",
+      "noProjectsYet": "No projects yet",
+      "startProjectToday": "Start your first website project today."
     }
   },
   "dronePage": {
@@ -3429,6 +3520,8 @@
     "logout": "Log out",
     "refresh": "Refresh",
     "newProject": "New project",
+    "noProjects": "No projects found",
+    "startFirstProject": "Start your first project to get going",
     "status": {
       "onboarding": "Onboarding",
       "design": "Design",
@@ -4978,6 +5071,7 @@
       "hideLive": "Hide live",
       "noProjects": "No projects",
       "noProjectsDesc": "There are no projects in this phase yet.",
+      "dragHere": "Drag here",
       "viewDetails": "View details"
     },
     "urgency": {
@@ -5021,13 +5115,21 @@
       "firstPayment": "First payment",
       "outstanding": "Outstanding",
       "waitingForPayment": "waiting for payment",
+      "awaitingPayment": "Awaiting payment",
       "paid": "Paid",
       "paidHint": "Projects with payment received",
       "noOutstanding": "No outstanding payments",
       "allPaid": "All invoices are paid",
       "recentlyPaid": "Recently paid",
       "mrr": "Monthly Recurring Revenue (MRR)",
-      "activeSubscriptions": "active subscriptions"
+      "activeSubscriptions": "active subscriptions",
+      "package": "package"
+    },
+    "projectDetail": {
+      "clientDashboardLink": "Client dashboard link",
+      "payment": "Payment",
+      "contact": "Contact",
+      "actions": "Actions"
     },
     "table": {
       "project": "Project",
@@ -5035,6 +5137,20 @@
       "package": "Package",
       "status": "Status",
       "action": "Action"
+    },
+    "export": {
+      "businessName": "Business Name",
+      "contactPerson": "Contact Person",
+      "email": "Email",
+      "phone": "Phone",
+      "package": "Package",
+      "phase": "Phase",
+      "paymentStatus": "Payment Status",
+      "createdAt": "Created",
+      "paid": "Paid",
+      "awaitingPayment": "Awaiting payment",
+      "pending": "Pending",
+      "filename": "webstability-clients"
     },
     "clients": {
       "empty": "No clients yet",

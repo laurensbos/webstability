@@ -320,7 +320,7 @@ export default function EmailVerified() {
 
           {/* Footer text */}
           <p className="text-center text-gray-500 text-sm mt-6">
-            © {new Date().getFullYear()} Webstability. Alle rechten voorbehouden.
+            © {new Date().getFullYear()} Webstability. {t('common.allRightsReserved', 'All rights reserved.')}
           </p>
         </div>
       </main>

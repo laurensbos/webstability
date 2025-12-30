@@ -38,7 +38,8 @@
     "new": "Nieuw",
     "recommended": "Aanbevolen",
     "uploadFile": "Bestand uploaden",
-    "upload": "Uploaden"
+    "upload": "Uploaden",
+    "allRightsReserved": "Alle rechten voorbehouden."
   },
   "nav": {
     "home": "Home",
@@ -1104,6 +1105,68 @@
       "scheduleMeeting": "Gesprek plannen"
     }
   },
+  "liveApproval": {
+    "packages": {
+      "starter": "Starter",
+      "professional": "Professioneel",
+      "business": "Business",
+      "webshop": "Webshop"
+    },
+    "preview": {
+      "title": "Preview website",
+      "description": "Bekijk je website en test alle pagina's. Werkt alles naar wens?",
+      "viewPreview": "Bekijk preview"
+    },
+    "review": {
+      "title": "Beoordeling",
+      "description": "Is alles naar wens? Keur goed om live te gaan, of geef feedback voor aanpassingen.",
+      "placeholder": "Beschrijf wat je aangepast wilt hebben...\\n\\nBijv:\\n- De titel op de homepage moet anders\\n- De kleur van de knoppen is niet goed\\n- Er mist nog een pagina",
+      "cancel": "Annuleren",
+      "sendFeedback": "Verstuur feedback",
+      "needChanges": "Aanpassingen nodig",
+      "approveAndLive": "Goedkeuren & Live!",
+      "feedbackSent": "Je feedback is verstuurd!"
+    },
+    "celebration": {
+      "title": "Gefeliciteerd!",
+      "subtitle": "Je website gaat live! 🎉",
+      "description": "We zetten je website nu online. Je ontvangt een e-mail zodra alles klaar is."
+    },
+    "liveStatus": {
+      "title": "Je website is live!",
+      "online": "Online"
+    },
+    "changeRequests": {
+      "title": "Aanpassingen aanvragen",
+      "description": "Wil je iets gewijzigd hebben? Dien een aanvraag in.",
+      "unlimited": "Onbeperkt",
+      "ofPerMonth": "van {{count}}/maand",
+      "limitReached": "Limiet bereikt",
+      "whatToChange": "Wat wil je aangepast hebben?",
+      "placeholder": "Beschrijf de aanpassing zo duidelijk mogelijk...\\n\\nBijv: 'Verander de tekst op de homepage van ... naar ...'",
+      "category": "Categorie",
+      "categoryText": "Tekst aanpassing",
+      "categoryDesign": "Design wijziging",
+      "categoryFunctionality": "Functionaliteit",
+      "categoryOther": "Overig",
+      "priority": "Prioriteit",
+      "priorityLow": "Laag - kan wachten",
+      "priorityNormal": "Normaal",
+      "priorityUrgent": "Urgent - zo snel mogelijk",
+      "attachFiles": "Bestanden bijvoegen?",
+      "attachFilesDesc": "Upload afbeeldingen of documenten naar je Google Drive map.",
+      "openDriveFolder": "Open Drive map",
+      "cancel": "Annuleren",
+      "sendRequest": "Verstuur aanvraag",
+      "newRequest": "Nieuwe aanpassing aanvragen",
+      "limitReachedDesc": "Je hebt je maandelijkse limiet bereikt. Upgrade naar een hoger pakket voor meer aanpassingen.",
+      "pendingRequests": "Openstaande aanvragen",
+      "statusCompleted": "Voltooid",
+      "statusInProgress": "In behandeling",
+      "statusPending": "In wachtrij",
+      "requestSent": "Aanvraag succesvol verstuurd!"
+    }
+  },
   "chat": {
     "title": "Berichten",
     "placeholder": "Typ je bericht...",
@@ -1702,6 +1765,28 @@
       "hospitality": "Horeca",
       "creative": "Creatief"
     },
+    "videos": {
+      "locationOverview": "Locatie overview",
+      "aerialFootage": "Luchtopname",
+      "photoVideo": "Luchtfoto & video"
+    },
+    "projects": {
+      "lissers": {
+        "description": "Autorijschool website met online inschrijving",
+        "result": "+180% bezoekers"
+      },
+      "hoogduin": {
+        "description": "Onderhoudsbedrijf met offerte-aanvraag",
+        "result": "+45 leads/maand"
+      },
+      "rietveld": {
+        "description": "Hoveniersbedrijf met project portfolio",
+        "result": "#1 Google lokaal"
+      }
+    },
+    "noProjects": "Geen projecten in deze categorie.",
+    "viewAllProjects": "Bekijk alle projecten",
+    "aerialCta": "Meer over luchtvideografie",
     "droneSection": {
       "badge": "Luchtvideografie",
       "title": "Dronebeelden",
@@ -1927,7 +2012,13 @@
       "darkTheme": "Donker thema",
       "projectsFound": "Er zijn meerdere projecten gevonden. Kies het project dat je wilt bekijken:",
       "enterCredentials": "Voer je e-mailadres en wachtwoord in om je project status te bekijken.",
-      "projectId": "Project ID"
+      "projectId": "Project ID",
+      "noProjects": "Je hebt nog geen projecten.",
+      "oneProject": "Je hebt 1 project.",
+      "multipleProjects": "Je hebt {{count}} projecten.",
+      "actionsNeeded": "actie(s) nodig",
+      "noProjectsYet": "Nog geen projecten",
+      "startProjectToday": "Start vandaag nog met je eerste website project."
     }
   },
   "dronePage": {
@@ -2306,6 +2397,8 @@
     "logout": "Uitloggen",
     "refresh": "Ververs",
     "newProject": "Nieuw project",
+    "noProjects": "Geen projecten gevonden",
+    "startFirstProject": "Start je eerste project om aan de slag te gaan",
     "status": {
       "onboarding": "Onboarding",
       "design": "Design",
@@ -4976,6 +5069,7 @@
       "hideLive": "Verberg live",
       "noProjects": "Geen projecten",
       "noProjectsDesc": "Er zijn nog geen projecten in deze fase.",
+      "dragHere": "Sleep hier naartoe",
       "viewDetails": "Bekijk details"
     },
     "urgency": {
@@ -5019,13 +5113,21 @@
       "firstPayment": "Eerste betaling",
       "outstanding": "Openstaand",
       "waitingForPayment": "wachtend op betaling",
+      "awaitingPayment": "Wacht op betaling",
       "paid": "Betaald",
       "paidHint": "Projecten met betaling ontvangen",
       "noOutstanding": "Geen openstaande betalingen",
       "allPaid": "Alle facturen zijn betaald",
       "recentlyPaid": "Recent betaald",
       "mrr": "Maandelijkse Inkomsten (MRR)",
-      "activeSubscriptions": "actieve abonnementen"
+      "activeSubscriptions": "actieve abonnementen",
+      "package": "pakket"
+    },
+    "projectDetail": {
+      "clientDashboardLink": "Klant dashboard link",
+      "payment": "Betaling",
+      "contact": "Contact",
+      "actions": "Acties"
     },
     "table": {
       "project": "Project",
@@ -5033,6 +5135,20 @@
       "package": "Pakket",
       "status": "Status",
       "action": "Actie"
+    },
+    "export": {
+      "businessName": "Bedrijfsnaam",
+      "contactPerson": "Contactpersoon",
+      "email": "Email",
+      "phone": "Telefoon",
+      "package": "Pakket",
+      "phase": "Fase",
+      "paymentStatus": "Betaalstatus",
+      "createdAt": "Aangemaakt",
+      "paid": "Betaald",
+      "awaitingPayment": "Wacht op betaling",
+      "pending": "In afwachting",
+      "filename": "webstability-klanten"
     },
     "clients": {
       "empty": "Nog geen klanten",

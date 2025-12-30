@@ -9,6 +9,7 @@
  */
 
 import { Link, useOutletContext } from 'react-router-dom'
+import { useTranslation } from 'react-i18next'
 import { motion } from 'framer-motion'
 import {
   FolderOpen,
@@ -150,6 +151,7 @@ const QUICK_ACTIONS = [
 ]
 
 export default function CustomerPortalOverview() {
+  const { t } = useTranslation()
   const context = useOutletContext<CustomerPortalContext>()
   const { session, projects } = context || { session: null, projects: [] }
   
@@ -201,14 +203,14 @@ export default function CustomerPortalOverview() {
             </h1>
             <p className="text-primary-100">
               {projects.length === 0 
-                ? 'Je hebt nog geen projecten.'
+                ? t('customerPortal.noProjects', 'You have no projects yet.')
                 : projects.length === 1
-                  ? 'Je hebt 1 project.'
-                  : `Je hebt ${projects.length} projecten.`
+                  ? t('customerPortal.oneProject', 'You have 1 project.')
+                  : t('customerPortal.multipleProjects', 'You have {{count}} projects.', { count: projects.length })
               }
               {totalPendingActions > 0 && (
                 <span className="ml-2 px-2 py-0.5 bg-white/20 rounded-full text-sm">
-                  {totalPendingActions} actie{totalPendingActions > 1 ? 's' : ''} nodig
+                  {totalPendingActions} {t('customerPortal.actionsNeeded', 'action(s) needed')}
                 </span>
               )}
             </p>
@@ -447,17 +449,17 @@ export default function CustomerPortalOverview() {
         >
           <FolderOpen className="w-16 h-16 text-gray-300 dark:text-gray-600 mx-auto mb-4" />
           <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">
-            Nog geen projecten
+            {t('customerPortal.noProjectsYet', 'No projects yet')}
           </h3>
           <p className="text-gray-500 dark:text-gray-400 mb-6">
-            Start vandaag nog met je eerste website project.
+            {t('customerPortal.startProjectToday', 'Start your first website project today.')}
           </p>
           <Link
             to="/start"
             className="inline-flex items-center gap-2 px-6 py-3 bg-primary-500 hover:bg-primary-600 text-white font-medium rounded-xl transition shadow-lg shadow-primary-500/25"
           >
             <Sparkles className="w-5 h-5" />
-            Start een project
+            {t('customerPortal.startProject', 'Start a project')}
             <ArrowRight className="w-5 h-5" />
           </Link>
         </motion.div>

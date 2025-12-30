@@ -473,7 +473,7 @@ export default function CustomerPortalLogin() {
 
         {/* Footer */}
         <footer className="py-6 text-center text-sm text-gray-500 dark:text-gray-400">
-          © {new Date().getFullYear()} Webstability. Alle rechten voorbehouden.
+          © {new Date().getFullYear()} Webstability. {t('common.allRightsReserved', 'All rights reserved.')}
         </footer>
       </div>
     </div>

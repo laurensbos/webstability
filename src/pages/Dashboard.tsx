@@ -1324,7 +1324,7 @@ export default function Dashboard() {
               {projects.length === 0 ? (
                 <div className="text-center py-8">
                   <Activity className="w-10 h-10 text-gray-300 mx-auto mb-2" />
-                  <p className="text-gray-500 text-sm">Nog geen projecten</p>
+                  <p className="text-gray-500 text-sm">{t('dashboard.noProjects', 'No projects yet')}</p>
                 </div>
               ) : (
                 <div className="grid md:grid-cols-5 gap-4">
@@ -1772,9 +1772,9 @@ export default function Dashboard() {
                 <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
                   <Activity className="w-8 h-8 text-gray-400" />
                 </div>
-                <h2 className="text-xl font-semibold text-gray-900 mb-2">Nog geen projecten</h2>
+                <h2 className="text-xl font-semibold text-gray-900 mb-2">{t('dashboard.noProjects', 'No projects yet')}</h2>
                 <p className="text-gray-600 dark:text-gray-400">
-                  Projecten verschijnen hier wanneer klanten een aanvraag indienen via /start
+                  {t('dashboard.noProjectsDesc', 'Projects will appear here when clients submit a request via /start')}
                 </p>
               </div>
             ) : (
@@ -1801,7 +1801,7 @@ export default function Dashboard() {
                         <div className="space-y-2 max-h-[400px] overflow-y-auto">
                           {phaseProjects.length === 0 ? (
                             <div className="text-center py-4 text-gray-400 text-sm">
-                              Geen projecten
+                              {t('developerDashboard.projects.noProjects')}
                             </div>
                           ) : (
                             phaseProjects.map(project => (

@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react'
+import { useTranslation } from 'react-i18next'
 import { motion, AnimatePresence } from 'framer-motion'
 import {
   CheckCircle2,
@@ -105,6 +106,7 @@ export default function LiveApprovalSection({
   onFeedback,
   onRequestChange
 }: LiveApprovalSectionProps) {
+  const { t } = useTranslation()
   const [showFeedbackForm, setShowFeedbackForm] = useState(false)
   const [feedback, setFeedback] = useState('')
   const [loading, setLoading] = useState(false)
@@ -198,9 +200,9 @@ export default function LiveApprovalSection({
                 <Globe className="w-6 h-6 text-amber-400" />
               </div>
               <div className="flex-1">
-                <h3 className="font-semibold text-white text-lg">Preview website</h3>
+                <h3 className="font-semibold text-white text-lg">{t('liveApproval.preview.title')}</h3>
                 <p className="text-gray-400 text-sm mt-1 mb-4">
-                  Bekijk je website en test alle pagina's. Werkt alles naar wens?
+                  {t('liveApproval.preview.description')}
                 </p>
                 <a
                   href={stagingUrl}
@@ -209,7 +211,7 @@ export default function LiveApprovalSection({
                   className="inline-flex items-center gap-2 px-5 py-2.5 bg-amber-500 hover:bg-amber-600 text-white font-medium rounded-xl transition shadow-lg shadow-amber-500/25"
                 >
                   <ExternalLink className="w-4 h-4" />
-                  Bekijk preview
+                  {t('liveApproval.preview.viewPreview')}
                 </a>
               </div>
             </div>
@@ -220,10 +222,10 @@ export default function LiveApprovalSection({
         <div className="bg-gray-800/50 border border-gray-700 rounded-xl p-5">
           <h3 className="font-semibold text-white text-lg mb-2 flex items-center gap-2">
             <MessageSquare className="w-5 h-5 text-primary-400" />
-            Beoordeling
+            {t('liveApproval.review.title')}
           </h3>
           <p className="text-gray-400 text-sm mb-5">
-            Is alles naar wens? Keur goed om live te gaan, of geef feedback voor aanpassingen.
+            {t('liveApproval.review.description')}
           </p>
 
           <AnimatePresence mode="wait">
@@ -238,7 +240,7 @@ export default function LiveApprovalSection({
                 <textarea
                   value={feedback}
                   onChange={(e) => setFeedback(e.target.value)}
-                  placeholder="Beschrijf wat je aangepast wilt hebben...&#10;&#10;Bijv:&#10;- De titel op de homepage moet anders&#10;- De kleur van de knoppen is niet goed&#10;- Er mist nog een pagina"
+                  placeholder={t('liveApproval.review.placeholder')}
                   className="w-full h-40 bg-gray-900 border border-gray-700 rounded-xl p-4 text-white placeholder-gray-500 focus:outline-none focus:border-amber-500 resize-none"
                 />
                 
@@ -247,7 +249,7 @@ export default function LiveApprovalSection({
                     onClick={() => setShowFeedbackForm(false)}
                     className="flex-1 px-4 py-3 bg-gray-700 hover:bg-gray-600 text-white font-medium rounded-xl transition"
                   >
-                    Annuleren
+                    {t('liveApproval.review.cancel')}
                   </button>
                   <button
                     onClick={handleFeedbackSubmit}
@@ -259,7 +261,7 @@ export default function LiveApprovalSection({
                     ) : (
                       <>
                         <Send className="w-5 h-5" />
-                        Verstuur feedback
+                        {t('liveApproval.review.sendFeedback')}
                       </>
                     )}
                   </button>
@@ -278,7 +280,7 @@ export default function LiveApprovalSection({
                   className="flex-1 flex items-center justify-center gap-2 px-5 py-3.5 bg-gray-700 hover:bg-gray-600 text-white font-medium rounded-xl transition border border-gray-600"
                 >
                   <ThumbsDown className="w-5 h-5 text-amber-400" />
-                  Aanpassingen nodig
+                  {t('liveApproval.review.needChanges')}
                 </button>
                 <button
                   onClick={handleApprove}
@@ -290,7 +292,7 @@ export default function LiveApprovalSection({
                   ) : (
                     <>
                       <ThumbsUp className="w-5 h-5" />
-                      Goedkeuren & Live!
+                      {t('liveApproval.review.approveAndLive')}
                     </>
                   )}
                 </button>
@@ -309,7 +311,7 @@ export default function LiveApprovalSection({
               className="bg-emerald-500/20 border border-emerald-500/30 rounded-xl p-4 flex items-center gap-3"
             >
               <CheckCircle2 className="w-5 h-5 text-emerald-400" />
-              <p className="text-emerald-400 font-medium">Je feedback is verstuurd!</p>
+              <p className="text-emerald-400 font-medium">{t('liveApproval.review.feedbackSent')}</p>
             </motion.div>
           )}
         </AnimatePresence>
@@ -360,12 +362,12 @@ export default function LiveApprovalSection({
           >
             <div className="flex items-center justify-center gap-2 mb-4">
               <Sparkles className="w-6 h-6 text-yellow-400" />
-              <h2 className="text-3xl font-bold text-white">Gefeliciteerd!</h2>
+              <h2 className="text-3xl font-bold text-white">{t('liveApproval.celebration.title')}</h2>
               <Sparkles className="w-6 h-6 text-yellow-400" />
             </div>
-            <p className="text-xl text-emerald-300 mb-2">Je website gaat live! 🎉</p>
+            <p className="text-xl text-emerald-300 mb-2">{t('liveApproval.celebration.subtitle')}</p>
             <p className="text-gray-400">
-              We zetten je website nu online. Je ontvangt een e-mail zodra alles klaar is.
+              {t('liveApproval.celebration.description')}
             </p>
           </motion.div>
         </div>
@@ -395,9 +397,9 @@ export default function LiveApprovalSection({
               </div>
               <div className="flex-1">
                 <div className="flex items-center gap-2">
-                  <h3 className="font-semibold text-white text-lg">Je website is live!</h3>
+                  <h3 className="font-semibold text-white text-lg">{t('liveApproval.liveStatus.title')}</h3>
                   <span className="px-2 py-0.5 bg-emerald-500/20 text-emerald-400 text-xs font-medium rounded-full">
-                    Online
+                    {t('liveApproval.liveStatus.online')}
                   </span>
                 </div>
                 <p className="text-emerald-400 text-sm mt-1">{liveUrl}</p>
@@ -414,10 +416,10 @@ export default function LiveApprovalSection({
               <div>
                 <h3 className="font-semibold text-white text-lg flex items-center gap-2">
                   <Edit3 className="w-5 h-5 text-primary-400" />
-                  Aanpassingen aanvragen
+                  {t('liveApproval.changeRequests.title')}
                 </h3>
                 <p className="text-gray-400 text-sm mt-1">
-                  Wil je iets gewijzigd hebben? Dien een aanvraag in.
+                  {t('liveApproval.changeRequests.description')}
                 </p>
               </div>
               <div className="text-right">
@@ -425,7 +427,7 @@ export default function LiveApprovalSection({
                   {isUnlimited ? '∞' : changesLeft}
                 </div>
                 <div className="text-xs text-gray-500">
-                  {isUnlimited ? 'Onbeperkt' : `van ${packageConfig.changes}/maand`}
+                  {isUnlimited ? t('liveApproval.changeRequests.unlimited') : t('liveApproval.changeRequests.ofPerMonth', { count: packageConfig.changes })}
                 </div>
               </div>
             </div>
@@ -437,7 +439,7 @@ export default function LiveApprovalSection({
               </span>
               {!isUnlimited && changesLeft === 0 && (
                 <span className="px-2.5 py-1 bg-amber-500/20 text-amber-400 rounded-full text-xs">
-                  Limiet bereikt
+                  {t('liveApproval.changeRequests.limitReached')}
                 </span>
               )}
             </div>
@@ -455,12 +457,12 @@ export default function LiveApprovalSection({
                 <div className="space-y-4">
                   <div>
                     <label className="block text-sm font-medium text-gray-300 mb-2">
-                      Wat wil je aangepast hebben?
+                      {t('liveApproval.changeRequests.whatToChange')}
                     </label>
                     <textarea
                       value={newChange.description}
                       onChange={(e) => setNewChange(prev => ({ ...prev, description: e.target.value }))}
-                      placeholder="Beschrijf de aanpassing zo duidelijk mogelijk...&#10;&#10;Bijv: 'Verander de tekst op de homepage van ... naar ...'"
+                      placeholder={t('liveApproval.changeRequests.placeholder')}
                       className="w-full h-32 bg-gray-900 border border-gray-700 rounded-xl p-4 text-white placeholder-gray-500 focus:outline-none focus:border-primary-500 resize-none"
                     />
                   </div>
@@ -468,31 +470,31 @@ export default function LiveApprovalSection({
                   <div className="grid grid-cols-2 gap-4">
                     <div>
                       <label className="block text-sm font-medium text-gray-300 mb-2">
-                        Categorie
+                        {t('liveApproval.changeRequests.category')}
                       </label>
                       <select
                         value={newChange.category}
                         onChange={(e) => setNewChange(prev => ({ ...prev, category: e.target.value as ChangeRequest['category'] }))}
                         className="w-full bg-gray-900 border border-gray-700 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-primary-500"
                       >
-                        <option value="text">Tekst aanpassing</option>
-                        <option value="design">Design wijziging</option>
-                        <option value="functionality">Functionaliteit</option>
-                        <option value="other">Overig</option>
+                        <option value="text">{t('liveApproval.changeRequests.categoryText')}</option>
+                        <option value="design">{t('liveApproval.changeRequests.categoryDesign')}</option>
+                        <option value="functionality">{t('liveApproval.changeRequests.categoryFunctionality')}</option>
+                        <option value="other">{t('liveApproval.changeRequests.categoryOther')}</option>
                       </select>
                     </div>
                     <div>
                       <label className="block text-sm font-medium text-gray-300 mb-2">
-                        Prioriteit
+                        {t('liveApproval.changeRequests.priority')}
                       </label>
                       <select
                         value={newChange.priority}
                         onChange={(e) => setNewChange(prev => ({ ...prev, priority: e.target.value as ChangeRequest['priority'] }))}
                         className="w-full bg-gray-900 border border-gray-700 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-primary-500"
                       >
-                        <option value="low">Laag - kan wachten</option>
-                        <option value="normal">Normaal</option>
-                        <option value="urgent">Urgent - zo snel mogelijk</option>
+                        <option value="low">{t('liveApproval.changeRequests.priorityLow')}</option>
+                        <option value="normal">{t('liveApproval.changeRequests.priorityNormal')}</option>
+                        <option value="urgent">{t('liveApproval.changeRequests.priorityUrgent')}</option>
                       </select>
                     </div>
                   </div>
@@ -504,10 +506,10 @@ export default function LiveApprovalSection({
                         <FolderOpen className="w-5 h-5 text-blue-400 mt-0.5" />
                         <div className="flex-1">
                           <p className="text-blue-400 font-medium text-sm">
-                            Bestanden bijvoegen?
+                            {t('liveApproval.changeRequests.attachFiles')}
                           </p>
                           <p className="text-blue-300/70 text-xs mt-1">
-                            Upload afbeeldingen of documenten naar je Google Drive map.
+                            {t('liveApproval.changeRequests.attachFilesDesc')}
                           </p>
                           <a
                             href={googleDriveUrl}
@@ -516,7 +518,7 @@ export default function LiveApprovalSection({
                             className="inline-flex items-center gap-1.5 mt-2 text-sm text-blue-400 hover:text-blue-300"
                           >
                             <Upload className="w-4 h-4" />
-                            Open Drive map
+                            {t('liveApproval.changeRequests.openDriveFolder')}
                             <ExternalLink className="w-3 h-3" />
                           </a>
                         </div>
@@ -529,7 +531,7 @@ export default function LiveApprovalSection({
                       onClick={() => setShowChangeForm(false)}
                       className="flex-1 px-4 py-3 bg-gray-700 hover:bg-gray-600 text-white font-medium rounded-xl transition"
                     >
-                      Annuleren
+                      {t('liveApproval.changeRequests.cancel')}
                     </button>
                     <button
                       onClick={handleChangeSubmit}
@@ -541,7 +543,7 @@ export default function LiveApprovalSection({
                       ) : (
                         <>
                           <Send className="w-5 h-5" />
-                          Verstuur aanvraag
+                          {t('liveApproval.changeRequests.sendRequest')}
                         </>
                       )}
                     </button>
@@ -556,11 +558,11 @@ export default function LiveApprovalSection({
                   className="w-full flex items-center justify-center gap-2 px-5 py-3.5 bg-primary-500/20 hover:bg-primary-500/30 disabled:bg-gray-700/50 disabled:text-gray-600 border border-primary-500/30 disabled:border-gray-700 text-primary-400 disabled:cursor-not-allowed font-medium rounded-xl transition"
                 >
                   <Plus className="w-5 h-5" />
-                  Nieuwe aanpassing aanvragen
+                  {t('liveApproval.changeRequests.newRequest')}
                 </button>
                 {!isUnlimited && changesLeft === 0 && (
                   <p className="text-center text-gray-500 text-xs mt-3">
-                    Je hebt je maandelijkse limiet bereikt. Upgrade naar een hoger pakket voor meer aanpassingen.
+                    {t('liveApproval.changeRequests.limitReachedDesc')}
                   </p>
                 )}
               </div>
@@ -577,7 +579,7 @@ export default function LiveApprovalSection({
                 <div className="flex items-center gap-2">
                   <Clock className="w-4 h-4 text-amber-400" />
                   <span className="text-sm font-medium text-white">
-                    Openstaande aanvragen ({pendingChanges.length})
+                    {t('liveApproval.changeRequests.pendingRequests')} ({pendingChanges.length})
                   </span>
                 </div>
                 {showPendingChanges ? (
@@ -610,8 +612,8 @@ export default function LiveApprovalSection({
                                   change.status === 'in_progress' ? 'bg-blue-500/20 text-blue-400' :
                                   'bg-amber-500/20 text-amber-400'
                                 }`}>
-                                  {change.status === 'completed' ? 'Voltooid' :
-                                   change.status === 'in_progress' ? 'In behandeling' : 'In wachtrij'}
+                                  {change.status === 'completed' ? t('liveApproval.changeRequests.statusCompleted') :
+                                   change.status === 'in_progress' ? t('liveApproval.changeRequests.statusInProgress') : t('liveApproval.changeRequests.statusPending')}
                                 </span>
                                 <span className="text-xs text-gray-500">
                                   {change.createdAt && new Date(change.createdAt).toLocaleDateString('nl-NL')}
@@ -642,7 +644,7 @@ export default function LiveApprovalSection({
               className="bg-emerald-500/20 border border-emerald-500/30 rounded-xl p-4 flex items-center gap-3"
             >
               <CheckCircle2 className="w-5 h-5 text-emerald-400" />
-              <p className="text-emerald-400 font-medium">Aanvraag succesvol verstuurd!</p>
+              <p className="text-emerald-400 font-medium">{t('liveApproval.changeRequests.requestSent')}</p>
             </motion.div>
           )}
         </AnimatePresence>

@@ -534,17 +534,17 @@ export default function MijnProjecten() {
               <FolderOpen className="w-8 h-8 text-gray-500" />
             </div>
             <h3 className={`text-lg font-semibold mb-2 ${darkMode ? 'text-white' : 'text-gray-900'}`}>
-              Geen projecten gevonden
+              {t('myProjects.noProjects', 'No projects found')}
             </h3>
             <p className={darkMode ? 'text-gray-400' : 'text-gray-600'}>
-              Start je eerste project om aan de slag te gaan
+              {t('myProjects.startFirstProject', 'Start your first project to get going')}
             </p>
             <Link
               to="/start"
               className="inline-flex items-center gap-2 px-6 py-3 mt-6 bg-emerald-600 hover:bg-emerald-500 text-white font-semibold rounded-xl transition"
             >
               <Plus className="w-5 h-5" />
-              Start nieuw project
+              {t('myProjects.startNewProject', 'Start new project')}
             </Link>
           </motion.div>
         )}

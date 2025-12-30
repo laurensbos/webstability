@@ -17,43 +17,45 @@ interface Project {
 }
 
 const portfolioVideos = [
-  { id: '1124571038', title: 'Locatie overview' },
-  { id: '1124569000', title: 'Luchtopname' },
-  { id: '1124567381', title: 'Luchtfoto & video' },
+  { id: '1124571038', titleKey: 'portfolioPage.videos.locationOverview' },
+  { id: '1124569000', titleKey: 'portfolioPage.videos.aerialFootage' },
+  { id: '1124567381', titleKey: 'portfolioPage.videos.photoVideo' },
 ]
 
-const projects: Project[] = [
+// Projects data with translation keys
+const getProjects = (t: (key: string) => string): Project[] => [
   {
     id: '1',
     title: 'Lissers',
-    category: 'Zakelijk',
+    category: t('portfolioPage.categories.business'),
     image: 'https://api.microlink.io/?url=https://lissers.nl&screenshot=true&meta=false&embed=screenshot.url&waitForTimeout=3000',
-    description: 'Autorijschool website met online inschrijving',
+    description: t('portfolioPage.projects.lissers.description'),
     url: 'https://lissers.nl',
-    result: '+180% bezoekers'
+    result: t('portfolioPage.projects.lissers.result')
   },
   {
     id: '2',
     title: 'Hoogduin Onderhoud',
-    category: 'Dienstverlening',
+    category: t('portfolioPage.categories.services'),
     image: 'https://api.microlink.io/?url=https://hoogduinonderhoud.nl&screenshot=true&meta=false&embed=screenshot.url&waitForTimeout=3000',
-    description: 'Onderhoudsbedrijf met offerte-aanvraag',
+    description: t('portfolioPage.projects.hoogduin.description'),
     url: 'https://hoogduinonderhoud.nl',
-    result: '+45 leads/maand'
+    result: t('portfolioPage.projects.hoogduin.result')
   },
   {
     id: '3',
     title: 'Rietveld Hoveniers',
-    category: 'Dienstverlening',
+    category: t('portfolioPage.categories.services'),
     image: 'https://api.microlink.io/?url=https://rietveld-hoveniers.nl&screenshot=true&meta=false&embed=screenshot.url&waitForTimeout=3000',
-    description: 'Hoveniersbedrijf met project portfolio',
+    description: t('portfolioPage.projects.rietveld.description'),
     url: 'https://rietveld-hoveniers.nl',
-    result: '#1 Google lokaal'
+    result: t('portfolioPage.projects.rietveld.result')
   },
 ]
 
 export default function Portfolio() {
   const { t } = useTranslation()
+  const projects = getProjects(t)
   const [activeCategory, setActiveCategory] = useState(t('portfolioPage.categories.all'))
   const scrollContainerRef = useRef<HTMLDivElement>(null)
 
@@ -183,12 +185,12 @@ export default function Portfolio() {
             {/* Empty state */}
             {filteredProjects.length === 0 && (
               <div className="text-center py-16 px-4">
-                <p className="text-gray-500 dark:text-gray-400">Geen projecten in deze categorie.</p>
+                <p className="text-gray-500 dark:text-gray-400">{t('portfolioPage.noProjects')}</p>
                 <button
-                  onClick={() => setActiveCategory('Alle')}
+                  onClick={() => setActiveCategory(t('portfolioPage.categories.all'))}
                   className="mt-3 text-primary-600 font-medium hover:underline"
                 >
-                  Bekijk alle projecten
+                  {t('portfolioPage.viewAllProjects')}
                 </button>
               </div>
             )}
@@ -222,7 +224,7 @@ export default function Portfolio() {
                       className="w-full h-full"
                       frameBorder="0"
                       allow="autoplay; fullscreen"
-                      title={video.title}
+                      title={t(video.titleKey)}
                     />
                   </div>
                 ))}
@@ -245,12 +247,12 @@ export default function Portfolio() {
                     className="w-full h-full"
                     frameBorder="0"
                     allow="autoplay; fullscreen"
-                    title={video.title}
+                    title={t(video.titleKey)}
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity">
                     <div className="absolute bottom-4 left-4 flex items-center gap-2 text-white">
                       <Play className="w-4 h-4" />
-                      <span className="font-medium">{video.title}</span>
+                      <span className="font-medium">{t(video.titleKey)}</span>
                     </div>
                   </div>
                 </motion.div>
@@ -263,7 +265,7 @@ export default function Portfolio() {
                 to="/luchtvideografie"
                 className="inline-flex items-center gap-2 px-6 py-3 bg-orange-500 hover:bg-orange-600 text-white font-medium rounded-xl transition-colors"
               >
-                Meer over luchtvideografie
+                {t('portfolioPage.aerialCta')}
                 <ArrowRight className="w-4 h-4" />
               </Link>
             </div>
