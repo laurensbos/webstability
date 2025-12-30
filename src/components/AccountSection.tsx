@@ -18,7 +18,13 @@ import {
   Copy,
   Check,
   Sparkles,
-  Clock
+  Clock,
+  Shield,
+  Key,
+  Gift,
+  ExternalLink,
+  Zap,
+  TrendingUp
 } from 'lucide-react'
 import type { Project } from '../types/project'
 import { PACKAGES } from '../config/packages'
@@ -26,11 +32,12 @@ import { PACKAGES } from '../config/packages'
 interface AccountSectionProps {
   project: Project
   onUpdateProject?: (updates: Partial<Project>) => Promise<void>
+  onResetPassword?: () => void
   /** Initial tab to show */
   initialTab?: TabType
 }
 
-type TabType = 'profile' | 'payments' | 'package'
+type TabType = 'profile' | 'payments' | 'package' | 'security'
 
 interface TabItem {
   id: TabType
@@ -94,6 +101,7 @@ const getPackageInfo = (packageType: string) => {
 export default function AccountSection({ 
   project,
   onUpdateProject,
+  onResetPassword,
   initialTab = 'profile'
 }: AccountSectionProps) {
   const { t } = useTranslation()
@@ -103,6 +111,15 @@ export default function AccountSection({
   const [isSaving, setIsSaving] = useState(false)
   const [saveSuccess, setSaveSuccess] = useState(false)
   const [copied, setCopied] = useState(false)
+  const [copiedReferral, setCopiedReferral] = useState(false)
+  
+  // Generate referral code from project ID
+  const referralCode = `REF-${project.projectId.slice(-6)}`
+  const referralLink = `https://webstability.nl/start?ref=${referralCode}`
+  
+  // Calculate changes used this month (mock - would come from API)
+  const changesUsedThisMonth = project.changesThisMonth || 0
+  const changesPerMonth = getPackageInfo(project.package).changesPerMonth
   
   // Editable form state
   const [formData, setFormData] = useState({
@@ -128,6 +145,7 @@ export default function AccountSection({
     { id: 'profile', label: t('account.tabs.profile'), icon: User },
     { id: 'payments', label: t('account.tabs.payments'), icon: CreditCard },
     { id: 'package', label: t('account.tabs.package'), icon: Package },
+    { id: 'security', label: t('account.tabs.security', 'Beveiliging'), icon: Shield },
   ]
 
   const handleSave = async () => {
@@ -160,8 +178,90 @@ export default function AccountSection({
 
   const currentPackage = getPackageInfo(project.package)
 
+  // Phase display helper
+  const getPhaseInfo = (status: string) => {
+    const phases: Record<string, { label: string; color: string; bg: string }> = {
+      onboarding: { label: t('account.phase.onboarding', 'Onboarding'), color: 'text-blue-500', bg: 'bg-blue-500' },
+      design: { label: t('account.phase.design', 'Design'), color: 'text-purple-500', bg: 'bg-purple-500' },
+      feedback: { label: t('account.phase.feedback', 'Feedback'), color: 'text-amber-500', bg: 'bg-amber-500' },
+      revisie: { label: t('account.phase.revision', 'Revisie'), color: 'text-orange-500', bg: 'bg-orange-500' },
+      payment: { label: t('account.phase.payment', 'Betaling'), color: 'text-pink-500', bg: 'bg-pink-500' },
+      domain: { label: t('account.phase.domain', 'Domein'), color: 'text-cyan-500', bg: 'bg-cyan-500' },
+      live: { label: t('account.phase.live', 'Live'), color: 'text-green-500', bg: 'bg-green-500' },
+    }
+    return phases[status] || phases.onboarding
+  }
+  
+  const phaseInfo = getPhaseInfo(project.status)
+
+  const copyReferralCode = () => {
+    navigator.clipboard.writeText(referralLink)
+    setCopiedReferral(true)
+    setTimeout(() => setCopiedReferral(false), 2000)
+  }
+
   return (
     <div className="space-y-6">
+      {/* Quick Status Bar */}
+      <div className={`grid grid-cols-2 sm:grid-cols-3 gap-3`}>
+        {/* Current Phase */}
+        <div className={`rounded-xl p-4 border ${darkMode ? 'bg-gray-800/50 border-gray-700/50' : 'bg-white border-gray-200'}`}>
+          <div className="flex items-center gap-2 mb-1">
+            <div className={`w-2 h-2 rounded-full ${phaseInfo.bg}`} />
+            <span className={`text-xs font-medium ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>
+              {t('account.currentPhase', 'Huidige fase')}
+            </span>
+          </div>
+          <p className={`font-semibold ${phaseInfo.color}`}>{phaseInfo.label}</p>
+        </div>
+        
+        {/* Changes This Month */}
+        <div className={`rounded-xl p-4 border ${darkMode ? 'bg-gray-800/50 border-gray-700/50' : 'bg-white border-gray-200'}`}>
+          <div className="flex items-center gap-2 mb-1">
+            <Zap className={`w-3 h-3 ${darkMode ? 'text-gray-400' : 'text-gray-500'}`} />
+            <span className={`text-xs font-medium ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>
+              {t('account.changesLeft', 'Wijzigingen over')}
+            </span>
+          </div>
+          <p className={`font-semibold ${darkMode ? 'text-white' : 'text-gray-900'}`}>
+            {changesPerMonth - changesUsedThisMonth}/{changesPerMonth}
+          </p>
+        </div>
+        
+        {/* Domain - only show if live */}
+        {project.status === 'live' && project.domainInfo?.domainName ? (
+          <div className={`rounded-xl p-4 border col-span-2 sm:col-span-1 ${darkMode ? 'bg-gray-800/50 border-gray-700/50' : 'bg-white border-gray-200'}`}>
+            <div className="flex items-center gap-2 mb-1">
+              <Globe className={`w-3 h-3 ${darkMode ? 'text-gray-400' : 'text-gray-500'}`} />
+              <span className={`text-xs font-medium ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>
+                {t('account.yourWebsite', 'Je website')}
+              </span>
+            </div>
+            <a 
+              href={`https://${project.domainInfo.domainName}`}
+              target="_blank"
+              rel="noopener noreferrer"
+              className={`font-semibold text-primary-500 hover:text-primary-400 flex items-center gap-1`}
+            >
+              {project.domainInfo.domainName}
+              <ExternalLink className="w-3 h-3" />
+            </a>
+          </div>
+        ) : (
+          <div className={`rounded-xl p-4 border col-span-2 sm:col-span-1 ${darkMode ? 'bg-gray-800/50 border-gray-700/50' : 'bg-white border-gray-200'}`}>
+            <div className="flex items-center gap-2 mb-1">
+              <TrendingUp className={`w-3 h-3 ${darkMode ? 'text-gray-400' : 'text-gray-500'}`} />
+              <span className={`text-xs font-medium ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>
+                {t('account.progress', 'Voortgang')}
+              </span>
+            </div>
+            <p className={`font-semibold ${darkMode ? 'text-white' : 'text-gray-900'}`}>
+              {(project as any).onboardingProgress || 0}% {t('account.complete', 'compleet')}
+            </p>
+          </div>
+        )}
+      </div>
+
       {/* Header with avatar and quick info */}
       <div className={`rounded-2xl border overflow-hidden ${
         darkMode ? 'bg-gray-800/50 border-gray-700/50' : 'bg-white border-gray-200'
@@ -812,6 +912,177 @@ export default function AccountSection({
                 </div>
               </div>
             )}
+          </motion.div>
+        )}
+
+        {/* Security Tab */}
+        {activeTab === 'security' && (
+          <motion.div
+            key="security"
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -10 }}
+            className="space-y-4"
+          >
+            {/* Password Reset */}
+            <div className={`rounded-2xl border overflow-hidden ${
+              darkMode ? 'bg-gray-800/50 border-gray-700/50' : 'bg-white border-gray-200'
+            }`}>
+              <div className={`flex items-center gap-3 px-5 py-4 border-b ${
+                darkMode ? 'border-gray-700/50' : 'border-gray-100'
+              }`}>
+                <div className={`w-9 h-9 rounded-xl flex items-center justify-center ${
+                  darkMode ? 'bg-primary-500/20' : 'bg-primary-50'
+                }`}>
+                  <Key className={`w-4 h-4 ${darkMode ? 'text-primary-400' : 'text-primary-600'}`} />
+                </div>
+                <h3 className={`font-semibold ${darkMode ? 'text-white' : 'text-gray-900'}`}>
+                  {t('account.security.password', 'Wachtwoord')}
+                </h3>
+              </div>
+              <div className="p-5">
+                <p className={`text-sm mb-4 ${darkMode ? 'text-gray-400' : 'text-gray-600'}`}>
+                  {t('account.security.passwordDescription', 'Wijzig het wachtwoord voor toegang tot je project dashboard.')}
+                </p>
+                <button
+                  onClick={onResetPassword}
+                  className={`flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-medium transition-colors ${
+                    darkMode 
+                      ? 'bg-gray-700 text-white hover:bg-gray-600' 
+                      : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                  }`}
+                >
+                  <Key className="w-4 h-4" />
+                  {t('account.security.changePassword', 'Wachtwoord wijzigen')}
+                </button>
+              </div>
+            </div>
+
+            {/* Email Verification Status */}
+            <div className={`rounded-2xl border overflow-hidden ${
+              darkMode ? 'bg-gray-800/50 border-gray-700/50' : 'bg-white border-gray-200'
+            }`}>
+              <div className={`flex items-center gap-3 px-5 py-4 border-b ${
+                darkMode ? 'border-gray-700/50' : 'border-gray-100'
+              }`}>
+                <div className={`w-9 h-9 rounded-xl flex items-center justify-center ${
+                  (project as any).emailVerified 
+                    ? 'bg-green-500/20' 
+                    : darkMode ? 'bg-amber-500/20' : 'bg-amber-50'
+                }`}>
+                  <Mail className={`w-4 h-4 ${(project as any).emailVerified ? 'text-green-500' : 'text-amber-500'}`} />
+                </div>
+                <h3 className={`font-semibold ${darkMode ? 'text-white' : 'text-gray-900'}`}>
+                  {t('account.security.emailVerification', 'E-mail verificatie')}
+                </h3>
+              </div>
+              <div className="p-5">
+                {(project as any).emailVerified ? (
+                  <div className={`flex items-center gap-3 p-4 rounded-xl ${
+                    darkMode ? 'bg-green-500/10' : 'bg-green-50'
+                  }`}>
+                    <CheckCircle2 className="w-5 h-5 text-green-500" />
+                    <div>
+                      <p className={`font-medium ${darkMode ? 'text-green-400' : 'text-green-700'}`}>
+                        {t('account.security.emailVerified', 'E-mail geverifieerd')}
+                      </p>
+                      <p className={`text-sm ${darkMode ? 'text-green-400/70' : 'text-green-600'}`}>
+                        {project.contactEmail}
+                      </p>
+                    </div>
+                  </div>
+                ) : (
+                  <div className={`flex items-center gap-3 p-4 rounded-xl ${
+                    darkMode ? 'bg-amber-500/10' : 'bg-amber-50'
+                  }`}>
+                    <Clock className="w-5 h-5 text-amber-500" />
+                    <div>
+                      <p className={`font-medium ${darkMode ? 'text-amber-400' : 'text-amber-700'}`}>
+                        {t('account.security.emailPending', 'Wacht op verificatie')}
+                      </p>
+                      <p className={`text-sm ${darkMode ? 'text-amber-400/70' : 'text-amber-600'}`}>
+                        {t('account.security.checkInbox', 'Controleer je inbox voor de verificatie-e-mail')}
+                      </p>
+                    </div>
+                  </div>
+                )}
+              </div>
+            </div>
+
+            {/* Referral Program */}
+            <div className={`rounded-2xl border overflow-hidden ${
+              darkMode ? 'bg-gradient-to-br from-purple-500/10 to-pink-500/10 border-purple-500/20' : 'bg-gradient-to-br from-purple-50 to-pink-50 border-purple-200'
+            }`}>
+              <div className={`flex items-center gap-3 px-5 py-4 border-b ${
+                darkMode ? 'border-purple-500/20' : 'border-purple-200'
+              }`}>
+                <div className={`w-9 h-9 rounded-xl flex items-center justify-center ${
+                  darkMode ? 'bg-purple-500/20' : 'bg-purple-100'
+                }`}>
+                  <Gift className={`w-4 h-4 ${darkMode ? 'text-purple-400' : 'text-purple-600'}`} />
+                </div>
+                <div>
+                  <h3 className={`font-semibold ${darkMode ? 'text-white' : 'text-gray-900'}`}>
+                    {t('account.referral.title', 'Verdien €25 korting')}
+                  </h3>
+                  <p className={`text-xs ${darkMode ? 'text-purple-400' : 'text-purple-600'}`}>
+                    {t('account.referral.subtitle', 'Voor elke vriend die start')}
+                  </p>
+                </div>
+              </div>
+              <div className="p-5 space-y-4">
+                <p className={`text-sm ${darkMode ? 'text-gray-300' : 'text-gray-600'}`}>
+                  {t('account.referral.description', 'Deel je unieke link en ontvang €25 korting op je abonnement voor elke nieuwe klant die via jouw link start.')}
+                </p>
+                
+                {/* Referral Link */}
+                <div className={`flex items-center gap-2 p-3 rounded-xl ${
+                  darkMode ? 'bg-gray-900/50' : 'bg-white'
+                }`}>
+                  <div className="flex-1 min-w-0">
+                    <p className={`text-xs mb-0.5 ${darkMode ? 'text-gray-500' : 'text-gray-400'}`}>
+                      {t('account.referral.yourLink', 'Jouw link')}
+                    </p>
+                    <p className={`text-sm font-mono truncate ${darkMode ? 'text-white' : 'text-gray-900'}`}>
+                      {referralLink}
+                    </p>
+                  </div>
+                  <button
+                    onClick={copyReferralCode}
+                    className={`flex-shrink-0 flex items-center gap-1.5 px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
+                      copiedReferral
+                        ? 'bg-green-500 text-white'
+                        : darkMode 
+                          ? 'bg-purple-500/20 text-purple-400 hover:bg-purple-500/30' 
+                          : 'bg-purple-100 text-purple-600 hover:bg-purple-200'
+                    }`}
+                  >
+                    {copiedReferral ? <Check className="w-4 h-4" /> : <Copy className="w-4 h-4" />}
+                    {copiedReferral ? t('account.copied', 'Gekopieerd!') : t('account.copy', 'Kopieer')}
+                  </button>
+                </div>
+                
+                {/* Stats placeholder */}
+                <div className={`grid grid-cols-2 gap-3 pt-2`}>
+                  <div className={`p-3 rounded-xl text-center ${darkMode ? 'bg-gray-900/50' : 'bg-white'}`}>
+                    <p className={`text-2xl font-bold ${darkMode ? 'text-white' : 'text-gray-900'}`}>
+                      {project.referralsCount || 0}
+                    </p>
+                    <p className={`text-xs ${darkMode ? 'text-gray-500' : 'text-gray-400'}`}>
+                      {t('account.referral.friends', 'Vrienden verwezen')}
+                    </p>
+                  </div>
+                  <div className={`p-3 rounded-xl text-center ${darkMode ? 'bg-gray-900/50' : 'bg-white'}`}>
+                    <p className={`text-2xl font-bold text-green-500`}>
+                      €{project.referralRewards || 0}
+                    </p>
+                    <p className={`text-xs ${darkMode ? 'text-gray-500' : 'text-gray-400'}`}>
+                      {t('account.referral.earned', 'Korting verdiend')}
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </div>
           </motion.div>
         )}
       </AnimatePresence>

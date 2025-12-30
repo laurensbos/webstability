@@ -958,8 +958,41 @@
       "profile": "My details",
       "payments": "Payments",
       "package": "My package",
-      "messages": "Messages"
+      "messages": "Messages",
+      "security": "Security"
     },
+    "currentPhase": "Current phase",
+    "changesLeft": "Changes left",
+    "yourWebsite": "Your website",
+    "progress": "Progress",
+    "complete": "complete",
+    "phase": {
+      "onboarding": "Onboarding",
+      "design": "Design",
+      "feedback": "Feedback",
+      "revision": "Revision",
+      "payment": "Payment",
+      "domain": "Domain",
+      "live": "Live"
+    },
+    "security": {
+      "password": "Password",
+      "passwordDescription": "Change the password for access to your project dashboard.",
+      "changePassword": "Change password",
+      "emailVerification": "Email verification",
+      "emailVerified": "Email verified",
+      "emailPending": "Pending verification",
+      "checkInbox": "Check your inbox for the verification email"
+    },
+    "referral": {
+      "title": "Earn €25 discount",
+      "subtitle": "For every friend who starts",
+      "description": "Share your unique link and receive €25 discount on your subscription for every new customer who starts through your link.",
+      "yourLink": "Your link",
+      "friends": "Friends referred",
+      "earned": "Discount earned"
+    },
+    "copy": "Copy",
     "yourBusiness": "Your business",
     "copied": "Copied!",
     "edit": "Edit",

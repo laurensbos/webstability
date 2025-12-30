@@ -917,8 +917,41 @@
       "profile": "Mijn gegevens",
       "payments": "Betalingen",
       "package": "Mijn pakket",
-      "messages": "Berichten"
+      "messages": "Berichten",
+      "security": "Beveiliging"
     },
+    "currentPhase": "Huidige fase",
+    "changesLeft": "Wijzigingen over",
+    "yourWebsite": "Je website",
+    "progress": "Voortgang",
+    "complete": "compleet",
+    "phase": {
+      "onboarding": "Onboarding",
+      "design": "Design",
+      "feedback": "Feedback",
+      "revision": "Revisie",
+      "payment": "Betaling",
+      "domain": "Domein",
+      "live": "Live"
+    },
+    "security": {
+      "password": "Wachtwoord",
+      "passwordDescription": "Wijzig het wachtwoord voor toegang tot je project dashboard.",
+      "changePassword": "Wachtwoord wijzigen",
+      "emailVerification": "E-mail verificatie",
+      "emailVerified": "E-mail geverifieerd",
+      "emailPending": "Wacht op verificatie",
+      "checkInbox": "Controleer je inbox voor de verificatie-e-mail"
+    },
+    "referral": {
+      "title": "Verdien €25 korting",
+      "subtitle": "Voor elke vriend die start",
+      "description": "Deel je unieke link en ontvang €25 korting op je abonnement voor elke nieuwe klant die via jouw link start.",
+      "yourLink": "Jouw link",
+      "friends": "Vrienden verwezen",
+      "earned": "Korting verdiend"
+    },
+    "copy": "Kopieer",
     "yourBusiness": "Jouw bedrijf",
     "copied": "Gekopieerd!",
     "edit": "Bewerken",
