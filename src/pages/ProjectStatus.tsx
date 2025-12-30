@@ -1313,7 +1313,6 @@ export default function ProjectStatus() {
                     </div>
                     <div className="text-left">
                       <div className="flex items-center gap-2">
-                        <span className="text-lg">📋</span>
                         <h3 className={`font-semibold ${darkMode ? 'text-white' : 'text-gray-900'}`}>
                           {t('projectStatus.onboardingSection.fillYourDetails')}
                         </h3>
@@ -1864,11 +1863,13 @@ export default function ProjectStatus() {
           </motion.div>
         )}
 
-        {/* Developer Updates - What developers have done on the project */}
-        <DeveloperUpdates 
-          projectId={project.projectId}
-          darkMode={darkMode}
-        />
+        {/* Developer Updates - What developers have done on the project (only shown when live) */}
+        {project.status === 'live' && (
+          <DeveloperUpdates 
+            projectId={project.projectId}
+            darkMode={darkMode}
+          />
+        )}
 
         {/* Referral Widget - Earn rewards by sharing */}
         {project.referralCode && (
