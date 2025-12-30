@@ -16,7 +16,6 @@ import {
   HelpCircle,
   Search,
   ChevronDown,
-  ChevronRight,
   PlayCircle,
   MessageCircle,
   Mail,
@@ -194,19 +193,22 @@ export default function HelpCenter({
             animate={{ x: 0 }}
             exit={{ x: '100%' }}
             transition={{ type: 'spring', damping: 30, stiffness: 300 }}
-            className={`fixed right-0 top-0 h-full w-full max-w-md z-50 overflow-hidden ${
-              darkMode ? 'bg-gray-900' : 'bg-white'
+            className={`fixed right-0 top-0 h-full w-full max-w-md z-50 overflow-hidden border-l-2 ${
+              darkMode ? 'bg-gradient-to-br from-gray-900 to-gray-950 border-gray-800' : 'bg-gradient-to-br from-white to-gray-50 border-gray-200'
             }`}
           >
+            {/* Gradient accent line */}
+            <div className="absolute top-0 left-0 right-0 h-1.5 bg-gradient-to-r from-blue-500 via-primary-500 to-purple-500" />
+            
             {/* Header */}
-            <div className={`p-4 border-b ${darkMode ? 'border-gray-800' : 'border-gray-200'}`}>
+            <div className={`p-4 pt-6 border-b ${darkMode ? 'border-gray-800' : 'border-gray-200'}`}>
               <div className="flex items-center justify-between mb-4">
                 <div className="flex items-center gap-3">
-                  <div className={`p-2 rounded-xl ${darkMode ? 'bg-blue-500/20' : 'bg-blue-100'}`}>
-                    <HelpCircle className="w-5 h-5 text-blue-500" />
+                  <div className="w-11 h-11 bg-gradient-to-br from-blue-500 to-primary-500 rounded-xl flex items-center justify-center shadow-lg shadow-blue-500/25">
+                    <HelpCircle className="w-5 h-5 text-white" />
                   </div>
                   <div>
-                    <h2 className={`font-semibold ${darkMode ? 'text-white' : 'text-gray-900'}`}>
+                    <h2 className={`font-bold text-lg ${darkMode ? 'text-white' : 'text-gray-900'}`}>
                       {t('helpCenter.title')}
                     </h2>
                     <p className={`text-sm ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>
@@ -214,14 +216,16 @@ export default function HelpCenter({
                     </p>
                   </div>
                 </div>
-                <button
+                <motion.button
                   onClick={onClose}
-                  className={`p-2 rounded-lg transition-colors ${
-                    darkMode ? 'hover:bg-gray-800 text-gray-400' : 'hover:bg-gray-100 text-gray-500'
+                  className={`p-2.5 rounded-xl border-2 transition-colors ${
+                    darkMode ? 'hover:bg-gray-800 text-gray-400 border-gray-700' : 'hover:bg-gray-100 text-gray-500 border-gray-200'
                   }`}
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
                 >
                   <X className="w-5 h-5" />
-                </button>
+                </motion.button>
               </div>
 
               {/* Search */}
@@ -234,11 +238,11 @@ export default function HelpCenter({
                   placeholder={t('helpCenter.searchPlaceholder')}
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  className={`w-full pl-10 pr-4 py-2.5 rounded-xl text-sm ${
+                  className={`w-full pl-10 pr-4 py-3 rounded-xl text-sm ${
                     darkMode 
                       ? 'bg-gray-800 text-white placeholder-gray-500 border-gray-700' 
-                      : 'bg-gray-50 text-gray-900 placeholder-gray-400 border-gray-200'
-                  } border focus:outline-none focus:ring-2 focus:ring-blue-500`}
+                      : 'bg-white text-gray-900 placeholder-gray-400 border-gray-200'
+                  } border-2 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500`}
                 />
               </div>
 
@@ -249,22 +253,32 @@ export default function HelpCenter({
                   { id: 'tutorials', labelKey: 'helpCenter.tabs.tutorials', icon: PlayCircle },
                   { id: 'contact', labelKey: 'helpCenter.tabs.contact', icon: MessageCircle },
                 ].map(tab => (
-                  <button
+                  <motion.button
                     key={tab.id}
                     onClick={() => setActiveTab(tab.id as typeof activeTab)}
-                    className={`flex-1 flex items-center justify-center gap-2 py-2 rounded-lg text-sm font-medium transition-colors ${
+                    whileHover={{ scale: 1.02 }}
+                    whileTap={{ scale: 0.98 }}
+                    className={`relative flex-1 flex items-center justify-center gap-2 py-2.5 rounded-xl text-sm font-semibold transition-all duration-200 ${
                       activeTab === tab.id
                         ? darkMode
-                          ? 'bg-blue-500/20 text-blue-400'
-                          : 'bg-blue-50 text-blue-600'
+                          ? 'bg-gradient-to-r from-primary-500/20 to-blue-500/20 text-primary-400 shadow-lg shadow-primary-500/20 border-2 border-primary-500/30'
+                          : 'bg-gradient-to-r from-primary-50 to-blue-50 text-primary-600 shadow-lg shadow-primary-500/20 border-2 border-primary-200'
                         : darkMode
-                          ? 'text-gray-400 hover:bg-gray-800'
-                          : 'text-gray-500 hover:bg-gray-100'
+                          ? 'text-gray-400 hover:bg-gray-800 hover:text-gray-300 border-2 border-transparent'
+                          : 'text-gray-500 hover:bg-gray-100 hover:text-gray-700 border-2 border-transparent'
                     }`}
                   >
                     <tab.icon className="w-4 h-4" />
                     <span className="hidden sm:inline">{t(tab.labelKey)}</span>
-                  </button>
+                    {activeTab === tab.id && (
+                      <motion.div
+                        layoutId="activeTabIndicator"
+                        className="absolute bottom-0 left-1/4 right-1/4 h-0.5 bg-gradient-to-r from-primary-500 to-blue-500 rounded-full"
+                        initial={false}
+                        transition={{ type: 'spring', stiffness: 300, damping: 25 }}
+                      />
+                    )}
+                  </motion.button>
                 ))}
               </div>
             </div>
@@ -285,30 +299,41 @@ export default function HelpCenter({
                         key={index}
                         initial={{ opacity: 0, y: 10 }}
                         animate={{ opacity: 1, y: 0 }}
-                        transition={{ delay: index * 0.05 }}
-                        className={`rounded-xl overflow-hidden ${
-                          darkMode ? 'bg-gray-800' : 'bg-gray-50'
+                        transition={{ delay: index * 0.05, type: 'spring', stiffness: 300, damping: 25 }}
+                        className={`rounded-2xl overflow-hidden border-2 transition-all duration-200 ${
+                          expandedFAQ === item.question
+                            ? darkMode 
+                              ? 'bg-gradient-to-br from-gray-800 to-gray-850 border-amber-500/30 shadow-lg shadow-amber-500/10' 
+                              : 'bg-gradient-to-br from-amber-50/50 to-white border-amber-200 shadow-lg shadow-amber-500/10'
+                            : darkMode 
+                              ? 'bg-gray-800/50 border-gray-700/50 hover:border-gray-600' 
+                              : 'bg-gray-50 border-gray-200 hover:border-gray-300'
                         }`}
                       >
                         <button
                           onClick={() => setExpandedFAQ(expandedFAQ === item.question ? null : item.question)}
-                          className={`w-full p-4 flex items-start gap-3 text-left ${
-                            darkMode ? 'hover:bg-gray-750' : 'hover:bg-gray-100'
-                          } transition-colors`}
+                          className={`w-full p-4 flex items-start gap-3 text-left transition-colors`}
                         >
-                          <Lightbulb className={`w-5 h-5 flex-shrink-0 mt-0.5 ${
-                            darkMode ? 'text-amber-400' : 'text-amber-500'
-                          }`} />
-                          <span className={`flex-1 font-medium ${
+                          <div className={`p-2 rounded-xl transition-all ${
+                            expandedFAQ === item.question
+                              ? 'bg-gradient-to-br from-amber-500 to-orange-500 shadow-lg shadow-amber-500/30'
+                              : darkMode ? 'bg-amber-500/20' : 'bg-amber-100'
+                          }`}>
+                            <Lightbulb className={`w-4 h-4 flex-shrink-0 ${
+                              expandedFAQ === item.question ? 'text-white' : darkMode ? 'text-amber-400' : 'text-amber-600'
+                            }`} />
+                          </div>
+                          <span className={`flex-1 font-semibold ${
                             darkMode ? 'text-white' : 'text-gray-900'
                           }`}>
                             {item.question}
                           </span>
-                          {expandedFAQ === item.question ? (
+                          <motion.div
+                            animate={{ rotate: expandedFAQ === item.question ? 180 : 0 }}
+                            transition={{ type: 'spring', stiffness: 300, damping: 25 }}
+                          >
                             <ChevronDown className={`w-5 h-5 ${darkMode ? 'text-gray-400' : 'text-gray-500'}`} />
-                          ) : (
-                            <ChevronRight className={`w-5 h-5 ${darkMode ? 'text-gray-400' : 'text-gray-500'}`} />
-                          )}
+                          </motion.div>
                         </button>
                         <AnimatePresence>
                           {expandedFAQ === item.question && (
@@ -346,27 +371,29 @@ export default function HelpCenter({
                         key={tutorial.id}
                         initial={{ opacity: 0, y: 10 }}
                         animate={{ opacity: 1, y: 0 }}
-                        transition={{ delay: index * 0.05 }}
-                        className={`w-full p-4 rounded-xl flex items-center gap-4 text-left transition-colors ${
+                        transition={{ delay: index * 0.05, type: 'spring', stiffness: 300, damping: 25 }}
+                        whileHover={{ scale: 1.02, y: -2 }}
+                        whileTap={{ scale: 0.98 }}
+                        className={`w-full p-4 rounded-2xl flex items-center gap-4 text-left transition-all duration-200 border-2 ${
                           darkMode 
-                            ? 'bg-gray-800 hover:bg-gray-750' 
-                            : 'bg-gray-50 hover:bg-gray-100'
+                            ? 'bg-gray-800/50 border-gray-700/50 hover:border-purple-500/30 hover:shadow-lg hover:shadow-purple-500/10' 
+                            : 'bg-white border-gray-200 hover:border-purple-300 hover:shadow-lg hover:shadow-purple-500/10'
                         }`}
                       >
-                        <div className={`p-3 rounded-xl ${
-                          darkMode ? 'bg-purple-500/20' : 'bg-purple-100'
-                        }`}>
-                          <PlayCircle className="w-6 h-6 text-purple-500" />
+                        <div className="p-3 rounded-xl bg-gradient-to-br from-purple-500 to-pink-500 shadow-lg shadow-purple-500/30">
+                          <PlayCircle className="w-6 h-6 text-white" />
                         </div>
                         <div className="flex-1 min-w-0">
-                          <h4 className={`font-medium ${darkMode ? 'text-white' : 'text-gray-900'}`}>
+                          <h4 className={`font-semibold ${darkMode ? 'text-white' : 'text-gray-900'}`}>
                             {tutorial.title}
                           </h4>
                           <p className={`text-sm ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>
                             {tutorial.description}
                           </p>
                         </div>
-                        <div className={`text-xs ${darkMode ? 'text-gray-500' : 'text-gray-400'}`}>
+                        <div className={`text-xs font-medium px-2 py-1 rounded-lg ${
+                          darkMode ? 'bg-gray-700 text-gray-300' : 'bg-gray-100 text-gray-600'
+                        }`}>
                           {tutorial.duration}
                         </div>
                       </motion.button>
@@ -374,13 +401,20 @@ export default function HelpCenter({
                   )}
 
                   {/* Coming soon notice */}
-                  <div className={`mt-6 p-4 rounded-xl text-center ${
-                    darkMode ? 'bg-blue-500/10 border border-blue-500/20' : 'bg-blue-50 border border-blue-200'
-                  }`}>
-                    <p className={`text-sm ${darkMode ? 'text-blue-400' : 'text-blue-600'}`}>
+                  <motion.div 
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.3 }}
+                    className={`mt-6 p-4 rounded-2xl text-center border-2 ${
+                      darkMode 
+                        ? 'bg-gradient-to-r from-blue-500/10 to-cyan-500/10 border-blue-500/30' 
+                        : 'bg-gradient-to-r from-blue-50 to-cyan-50 border-blue-200'
+                    }`}
+                  >
+                    <p className={`text-sm font-medium ${darkMode ? 'text-blue-400' : 'text-blue-600'}`}>
                       {t('helpCenter.tutorialsComingSoon')}
                     </p>
-                  </div>
+                  </motion.div>
                 </div>
               )}
 
@@ -393,19 +427,23 @@ export default function HelpCenter({
 
                   {/* Contact options */}
                   <div className="space-y-3">
-                    <a
+                    <motion.a
                       href="mailto:support@webstability.nl"
-                      className={`flex items-center gap-4 p-4 rounded-xl transition-colors ${
+                      initial={{ opacity: 0, y: 10 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ delay: 0.05, type: 'spring', stiffness: 300, damping: 25 }}
+                      whileHover={{ scale: 1.02, y: -2 }}
+                      className={`flex items-center gap-4 p-4 rounded-2xl transition-all duration-200 border-2 ${
                         darkMode 
-                          ? 'bg-gray-800 hover:bg-gray-750' 
-                          : 'bg-gray-50 hover:bg-gray-100'
+                          ? 'bg-gray-800/50 border-gray-700/50 hover:border-blue-500/30 hover:shadow-lg hover:shadow-blue-500/10' 
+                          : 'bg-white border-gray-200 hover:border-blue-300 hover:shadow-lg hover:shadow-blue-500/10'
                       }`}
                     >
-                      <div className={`p-3 rounded-xl ${darkMode ? 'bg-blue-500/20' : 'bg-blue-100'}`}>
-                        <Mail className="w-5 h-5 text-blue-500" />
+                      <div className="p-3 rounded-xl bg-gradient-to-br from-blue-500 to-cyan-500 shadow-lg shadow-blue-500/30">
+                        <Mail className="w-5 h-5 text-white" />
                       </div>
                       <div>
-                        <h4 className={`font-medium ${darkMode ? 'text-white' : 'text-gray-900'}`}>
+                        <h4 className={`font-semibold ${darkMode ? 'text-white' : 'text-gray-900'}`}>
                           {t('helpCenter.contactMethods.email.title')}
                         </h4>
                         <p className={`text-sm ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>
@@ -413,23 +451,27 @@ export default function HelpCenter({
                         </p>
                       </div>
                       <ExternalLink className={`w-4 h-4 ml-auto ${darkMode ? 'text-gray-500' : 'text-gray-400'}`} />
-                    </a>
+                    </motion.a>
 
-                    <a
+                    <motion.a
                       href="https://wa.me/31612345678"
                       target="_blank"
                       rel="noopener noreferrer"
-                      className={`flex items-center gap-4 p-4 rounded-xl transition-colors ${
+                      initial={{ opacity: 0, y: 10 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ delay: 0.1, type: 'spring', stiffness: 300, damping: 25 }}
+                      whileHover={{ scale: 1.02, y: -2 }}
+                      className={`flex items-center gap-4 p-4 rounded-2xl transition-all duration-200 border-2 ${
                         darkMode 
-                          ? 'bg-gray-800 hover:bg-gray-750' 
-                          : 'bg-gray-50 hover:bg-gray-100'
+                          ? 'bg-gray-800/50 border-gray-700/50 hover:border-green-500/30 hover:shadow-lg hover:shadow-green-500/10' 
+                          : 'bg-white border-gray-200 hover:border-green-300 hover:shadow-lg hover:shadow-green-500/10'
                       }`}
                     >
-                      <div className={`p-3 rounded-xl ${darkMode ? 'bg-green-500/20' : 'bg-green-100'}`}>
-                        <MessageCircle className="w-5 h-5 text-green-500" />
+                      <div className="p-3 rounded-xl bg-gradient-to-br from-green-500 to-emerald-500 shadow-lg shadow-green-500/30">
+                        <MessageCircle className="w-5 h-5 text-white" />
                       </div>
                       <div>
-                        <h4 className={`font-medium ${darkMode ? 'text-white' : 'text-gray-900'}`}>
+                        <h4 className={`font-semibold ${darkMode ? 'text-white' : 'text-gray-900'}`}>
                           {t('helpCenter.contactMethods.whatsapp.title')}
                         </h4>
                         <p className={`text-sm ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>
@@ -437,21 +479,25 @@ export default function HelpCenter({
                         </p>
                       </div>
                       <ExternalLink className={`w-4 h-4 ml-auto ${darkMode ? 'text-gray-500' : 'text-gray-400'}`} />
-                    </a>
+                    </motion.a>
 
-                    <a
+                    <motion.a
                       href="tel:+31612345678"
-                      className={`flex items-center gap-4 p-4 rounded-xl transition-colors ${
+                      initial={{ opacity: 0, y: 10 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ delay: 0.15, type: 'spring', stiffness: 300, damping: 25 }}
+                      whileHover={{ scale: 1.02, y: -2 }}
+                      className={`flex items-center gap-4 p-4 rounded-2xl transition-all duration-200 border-2 ${
                         darkMode 
-                          ? 'bg-gray-800 hover:bg-gray-750' 
-                          : 'bg-gray-50 hover:bg-gray-100'
+                          ? 'bg-gray-800/50 border-gray-700/50 hover:border-purple-500/30 hover:shadow-lg hover:shadow-purple-500/10' 
+                          : 'bg-white border-gray-200 hover:border-purple-300 hover:shadow-lg hover:shadow-purple-500/10'
                       }`}
                     >
-                      <div className={`p-3 rounded-xl ${darkMode ? 'bg-purple-500/20' : 'bg-purple-100'}`}>
-                        <Phone className="w-5 h-5 text-purple-500" />
+                      <div className="p-3 rounded-xl bg-gradient-to-br from-purple-500 to-pink-500 shadow-lg shadow-purple-500/30">
+                        <Phone className="w-5 h-5 text-white" />
                       </div>
                       <div>
-                        <h4 className={`font-medium ${darkMode ? 'text-white' : 'text-gray-900'}`}>
+                        <h4 className={`font-semibold ${darkMode ? 'text-white' : 'text-gray-900'}`}>
                           {t('helpCenter.contactMethods.phone.title')}
                         </h4>
                         <p className={`text-sm ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>
@@ -459,13 +505,18 @@ export default function HelpCenter({
                         </p>
                       </div>
                       <ExternalLink className={`w-4 h-4 ml-auto ${darkMode ? 'text-gray-500' : 'text-gray-400'}`} />
-                    </a>
+                    </motion.a>
                   </div>
 
                   {/* Response times */}
-                  <div className={`mt-6 p-4 rounded-xl ${
-                    darkMode ? 'bg-gray-800' : 'bg-gray-50'
-                  }`}>
+                  <motion.div 
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.2 }}
+                    className={`mt-6 p-4 rounded-2xl border-2 ${
+                      darkMode ? 'bg-gray-800/50 border-gray-700/50' : 'bg-gray-50 border-gray-200'
+                    }`}
+                  >
                     <h4 className={`font-medium mb-2 ${darkMode ? 'text-white' : 'text-gray-900'}`}>
                       {t('helpCenter.responseTimes.title')}
                     </h4>
@@ -483,34 +534,37 @@ export default function HelpCenter({
                         <span className={darkMode ? 'text-white' : 'text-gray-900'}>{t('helpCenter.responseTimes.businessTime')}</span>
                       </div>
                     </div>
-                  </div>
+                  </motion.div>
 
                   {/* Restart Tour Button */}
                   {onRestartTour && (
-                    <div className={`mt-6 p-4 rounded-xl border-2 border-dashed ${
-                      darkMode ? 'border-gray-700' : 'border-gray-200'
-                    }`}>
-                      <h4 className={`font-medium mb-1 ${darkMode ? 'text-white' : 'text-gray-900'}`}>
+                    <motion.div 
+                      initial={{ opacity: 0, y: 10 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ delay: 0.25 }}
+                      className={`mt-6 p-5 rounded-2xl border-2 border-dashed ${
+                        darkMode ? 'border-purple-500/30 bg-purple-500/5' : 'border-purple-200 bg-purple-50/50'
+                      }`}
+                    >
+                      <h4 className={`font-semibold mb-1 ${darkMode ? 'text-white' : 'text-gray-900'}`}>
                         {t('helpCenter.tour.title')}
                       </h4>
-                      <p className={`text-sm mb-3 ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>
+                      <p className={`text-sm mb-4 ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>
                         {t('helpCenter.tour.description')}
                       </p>
-                      <button
+                      <motion.button
                         onClick={() => {
                           onRestartTour()
                           onClose()
                         }}
-                        className={`w-full py-2.5 rounded-xl font-medium transition-colors flex items-center justify-center gap-2 ${
-                          darkMode
-                            ? 'bg-purple-600 hover:bg-purple-700 text-white'
-                            : 'bg-purple-100 hover:bg-purple-200 text-purple-700'
-                        }`}
+                        whileHover={{ scale: 1.02 }}
+                        whileTap={{ scale: 0.98 }}
+                        className="w-full py-3 rounded-xl font-semibold transition-all duration-200 flex items-center justify-center gap-2 bg-gradient-to-r from-purple-500 to-pink-500 text-white shadow-lg shadow-purple-500/30 hover:shadow-xl hover:shadow-purple-500/40"
                       >
                         <BookOpen className="w-4 h-4" />
                         {t('helpCenter.tour.button')}
-                      </button>
-                    </div>
+                      </motion.button>
+                    </motion.div>
                   )}
                 </div>
               )}

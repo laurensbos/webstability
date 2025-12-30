@@ -174,15 +174,19 @@ export default function LivePhaseCard({
     <motion.div
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
-      className={`rounded-2xl border overflow-hidden ${
+      transition={{ type: 'spring', stiffness: 300, damping: 25 }}
+      className={`rounded-2xl border-2 overflow-hidden ${
         darkMode 
-          ? 'bg-gray-900/80 border-green-500/30' 
-          : 'bg-white border-green-200 shadow-lg'
+          ? 'bg-gradient-to-br from-gray-900 to-gray-950 border-green-500/40 shadow-lg shadow-green-500/10' 
+          : 'bg-gradient-to-br from-white to-gray-50 border-green-200 shadow-xl shadow-green-500/10'
       }`}
     >
+      {/* Gradient accent line */}
+      <div className="h-1.5 bg-gradient-to-r from-green-500 via-emerald-500 to-green-500" />
+      
       {/* Celebration Header */}
-      <div className="bg-gradient-to-r from-green-500/20 via-emerald-500/20 to-green-500/20 p-5 relative overflow-hidden">
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_right,rgba(34,197,94,0.25),transparent_70%)]" />
+      <div className="bg-gradient-to-r from-green-500/10 via-emerald-500/10 to-green-500/10 p-5 relative overflow-hidden">
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_right,rgba(34,197,94,0.15),transparent_70%)]" />
         
         {/* Floating sparkles animation */}
         {isRecentlyLive && (
@@ -218,7 +222,7 @@ export default function LivePhaseCard({
         
         <div className="relative flex items-start gap-4">
           <motion.div 
-            className="w-14 h-14 bg-gradient-to-br from-green-500 to-emerald-500 rounded-2xl flex items-center justify-center shadow-lg shadow-green-500/25"
+            className="w-14 h-14 bg-gradient-to-br from-green-500 to-emerald-500 rounded-2xl flex items-center justify-center shadow-lg shadow-green-500/30"
             initial={{ scale: 0 }}
             animate={{ scale: 1 }}
             transition={{ type: "spring", stiffness: 300, damping: 15, delay: 0.1 }}
@@ -239,7 +243,7 @@ export default function LivePhaseCard({
               initial={{ opacity: 0, x: -20 }}
               animate={{ opacity: 1, x: 0 }}
               transition={{ delay: 0.2 }}
-              className={`text-lg font-bold mb-1 ${darkMode ? 'text-white' : 'text-gray-900'}`}
+              className={`text-xl font-bold mb-1 ${darkMode ? 'text-white' : 'text-gray-900'}`}
             >
               {isRecentlyLive 
                 ? t('phases.live.titleNew', 'Congratulations! 🎉')

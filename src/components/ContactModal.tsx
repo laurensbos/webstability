@@ -88,12 +88,15 @@ export default function ContactModal({ isOpen, onClose, domain }: ContactModalPr
           className="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-0 sm:p-4 bg-black/60 backdrop-blur-sm"
         >
           <motion.div
-            initial={{ opacity: 0, y: 50 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: 50 }}
-            transition={{ type: 'spring', duration: 0.4, damping: 25 }}
-            className="relative w-full sm:max-w-md bg-white dark:bg-gray-800 border-t sm:border border-gray-100 dark:border-gray-700 rounded-t-2xl sm:rounded-2xl shadow-2xl overflow-hidden max-h-[90vh] overflow-y-auto"
+            initial={{ opacity: 0, y: 50, scale: 0.95 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            exit={{ opacity: 0, y: 50, scale: 0.95 }}
+            transition={{ type: 'spring', stiffness: 300, damping: 25 }}
+            className="relative w-full sm:max-w-md bg-gradient-to-br from-white to-gray-50 dark:from-gray-800 dark:to-gray-900 border-t sm:border-2 border-gray-100 dark:border-gray-700 rounded-t-2xl sm:rounded-2xl shadow-2xl overflow-hidden max-h-[90vh] overflow-y-auto"
           >
+            {/* Gradient accent line */}
+            <div className="h-1.5 bg-gradient-to-r from-primary-500 via-blue-500 to-primary-500" />
+            
             {/* Mobile drag handle */}
             <div className="sm:hidden flex justify-center pt-2">
               <div className="w-10 h-1 rounded-full bg-gray-300 dark:bg-gray-600" />
@@ -101,20 +104,22 @@ export default function ContactModal({ isOpen, onClose, domain }: ContactModalPr
             
             {/* Header */}
             <div className="relative p-4 sm:p-6 sm:pb-4 border-b border-gray-100 dark:border-gray-700">
-              <button
+              <motion.button
                 onClick={onClose}
-                className="absolute top-3 sm:top-4 right-3 sm:right-4 p-2 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition-colors rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700"
+                className="absolute top-3 sm:top-4 right-3 sm:right-4 p-2 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition-colors rounded-xl hover:bg-gray-100 dark:hover:bg-gray-700 border-2 border-transparent hover:border-gray-200 dark:hover:border-gray-600"
                 aria-label={t('contactModal.close')}
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
               >
                 <X className="w-5 h-5" />
-              </button>
+              </motion.button>
               
               <div className="flex items-center gap-3 mb-2">
-                <div className="w-10 h-10 bg-primary-100 dark:bg-primary-900/30 rounded-lg flex items-center justify-center">
-                  <Globe className="w-5 h-5 text-primary-600 dark:text-primary-400" />
+                <div className="w-12 h-12 bg-gradient-to-br from-primary-500 to-blue-500 rounded-xl flex items-center justify-center shadow-lg shadow-primary-500/25">
+                  <Globe className="w-6 h-6 text-white" />
                 </div>
                 <div>
-                  <h3 className="text-gray-900 dark:text-white font-semibold text-lg">{t('contactModal.title')}</h3>
+                  <h3 className="text-gray-900 dark:text-white font-bold text-lg">{t('contactModal.title')}</h3>
                   <p className="text-gray-500 dark:text-gray-400 text-sm">{t('contactModal.aboutDomain')}: <span className="text-primary-600 dark:text-primary-400 font-medium">{domain}</span></p>
                 </div>
               </div>
@@ -127,11 +132,11 @@ export default function ContactModal({ isOpen, onClose, domain }: ContactModalPr
                   initial={{ scale: 0 }}
                   animate={{ scale: 1 }}
                   transition={{ type: 'spring', duration: 0.5 }}
-                  className="w-14 h-14 sm:w-16 sm:h-16 bg-green-100 dark:bg-green-900/30 rounded-full flex items-center justify-center mx-auto mb-4"
+                  className="w-16 h-16 sm:w-20 sm:h-20 bg-gradient-to-br from-green-500 to-emerald-500 rounded-2xl flex items-center justify-center mx-auto mb-5 shadow-lg shadow-green-500/30"
                 >
-                  <Check className="w-7 h-7 sm:w-8 sm:h-8 text-green-600 dark:text-green-400" />
+                  <Check className="w-8 h-8 sm:w-10 sm:h-10 text-white" />
                 </motion.div>
-                <h4 className="text-gray-900 dark:text-white font-semibold text-lg sm:text-xl mb-2">{t('contactModal.success.title')}</h4>
+                <h4 className="text-gray-900 dark:text-white font-bold text-xl sm:text-2xl mb-3">{t('contactModal.success.title')}</h4>
                 <p className="text-gray-600 dark:text-gray-400 text-sm sm:text-base">
                   {t('contactModal.success.message')}
                 </p>
@@ -155,7 +160,7 @@ export default function ContactModal({ isOpen, onClose, domain }: ContactModalPr
                     onChange={(e) => setEmail(e.target.value)}
                     placeholder={t('contactModal.emailPlaceholder')}
                     required
-                    className="w-full px-4 py-3 bg-white dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-xl text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500 focus:outline-none focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 transition-all"
+                    className="w-full px-4 py-3 bg-white dark:bg-gray-700 border-2 border-gray-200 dark:border-gray-600 rounded-xl text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500 focus:outline-none focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 transition-all"
                   />
                 </div>
 
@@ -170,7 +175,7 @@ export default function ContactModal({ isOpen, onClose, domain }: ContactModalPr
                     value={name}
                     onChange={(e) => setName(e.target.value)}
                     placeholder={t('contactModal.namePlaceholder')}
-                    className="w-full px-4 py-3 bg-white dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-xl text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500 focus:outline-none focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 transition-all"
+                    className="w-full px-4 py-3 bg-white dark:bg-gray-700 border-2 border-gray-200 dark:border-gray-600 rounded-xl text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500 focus:outline-none focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 transition-all"
                   />
                 </div>
 
@@ -185,7 +190,7 @@ export default function ContactModal({ isOpen, onClose, domain }: ContactModalPr
                     value={phone}
                     onChange={(e) => setPhone(e.target.value)}
                     placeholder={t('contactModal.phonePlaceholder')}
-                    className="w-full px-4 py-3 bg-white dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-xl text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500 focus:outline-none focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 transition-all"
+                    className="w-full px-4 py-3 bg-white dark:bg-gray-700 border-2 border-gray-200 dark:border-gray-600 rounded-xl text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500 focus:outline-none focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 transition-all"
                   />
                 </div>
 
@@ -200,22 +205,24 @@ export default function ContactModal({ isOpen, onClose, domain }: ContactModalPr
                     onChange={(e) => setMessage(e.target.value)}
                     placeholder={t('contactModal.messagePlaceholder')}
                     rows={3}
-                    className="w-full px-4 py-3 bg-white dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-xl text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500 focus:outline-none focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 transition-all resize-none"
+                    className="w-full px-4 py-3 bg-white dark:bg-gray-700 border-2 border-gray-200 dark:border-gray-600 rounded-xl text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500 focus:outline-none focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 transition-all resize-none"
                   />
                 </div>
 
                 {/* Error */}
                 {error && (
-                  <div className="p-3 bg-red-50 dark:bg-red-900/30 border border-red-200 dark:border-red-800 rounded-lg text-red-600 dark:text-red-400 text-sm">
+                  <div className="p-4 bg-gradient-to-br from-red-50 to-rose-50 dark:from-red-900/30 dark:to-rose-900/30 border-2 border-red-200 dark:border-red-800 rounded-xl text-red-600 dark:text-red-400 text-sm font-medium">
                     {error}
                   </div>
                 )}
 
                 {/* Submit */}
-                <button
+                <motion.button
                   type="submit"
                   disabled={isSubmitting}
-                  className="w-full py-3 px-6 bg-primary-500 hover:bg-primary-600 disabled:bg-primary-300 disabled:cursor-not-allowed text-white font-semibold rounded-xl transition-all duration-200 flex items-center justify-center gap-2 shadow-lg shadow-primary-500/25"
+                  className="w-full py-3.5 px-6 bg-gradient-to-r from-primary-500 to-blue-500 hover:from-primary-600 hover:to-blue-600 disabled:from-primary-300 disabled:to-blue-300 disabled:cursor-not-allowed text-white font-bold rounded-xl transition-all duration-200 flex items-center justify-center gap-2 shadow-lg shadow-primary-500/30 hover:shadow-xl hover:shadow-primary-500/40"
+                  whileHover={{ scale: isSubmitting ? 1 : 1.02 }}
+                  whileTap={{ scale: isSubmitting ? 1 : 0.98 }}
                 >
                   {isSubmitting ? (
                     <>
@@ -228,7 +235,7 @@ export default function ContactModal({ isOpen, onClose, domain }: ContactModalPr
                       {t('contactModal.submit')}
                     </>
                   )}
-                </button>
+                </motion.button>
 
                 <p className="text-gray-400 text-xs text-center">
                   {t('contactModal.privacy')}

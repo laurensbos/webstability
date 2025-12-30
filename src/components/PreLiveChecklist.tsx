@@ -16,7 +16,6 @@ import {
   BarChart3,
   Loader2,
   ChevronDown,
-  ChevronUp,
   Sparkles,
   Building2,
   Info
@@ -149,101 +148,143 @@ export default function PreLiveChecklist({ projectId, projectData, onUpdate }: P
     subtitle: string
     isComplete: boolean
   }) => (
-    <button
+    <motion.button
       onClick={() => toggleSection(id)}
-      className="w-full flex items-center gap-4 p-4 sm:p-5 text-left transition-colors hover:bg-gray-800/50 rounded-xl"
+      whileHover={{ backgroundColor: 'rgba(55, 65, 81, 0.5)' }}
+      whileTap={{ scale: 0.99 }}
+      className="w-full flex items-center gap-4 p-5 sm:p-6 text-left transition-colors rounded-xl"
     >
-      <div className={`w-12 h-12 rounded-xl flex items-center justify-center flex-shrink-0 ${
-        isComplete ? 'bg-green-500/20' : 'bg-gray-800'
+      <div className={`w-14 h-14 rounded-xl flex items-center justify-center flex-shrink-0 shadow-lg ${
+        isComplete 
+          ? 'bg-gradient-to-br from-green-500 to-emerald-500 shadow-green-500/25' 
+          : 'bg-gray-800'
       }`}>
         {isComplete ? (
-          <CheckCircle2 className="w-6 h-6 text-green-400" />
+          <CheckCircle2 className="w-7 h-7 text-white" />
         ) : (
-          <Icon className="w-6 h-6 text-gray-400" />
+          <Icon className="w-7 h-7 text-gray-400" />
         )}
       </div>
       <div className="flex-1 min-w-0">
-        <h3 className="font-semibold text-white">{title}</h3>
+        <h3 className="font-bold text-lg text-white">{title}</h3>
         <p className="text-sm text-gray-400 truncate">{subtitle}</p>
       </div>
-      <div className="flex-shrink-0">
-        {expandedSection === id ? (
-          <ChevronUp className="w-5 h-5 text-gray-400" />
-        ) : (
-          <ChevronDown className="w-5 h-5 text-gray-400" />
-        )}
-      </div>
-    </button>
+      <motion.div 
+        className="flex-shrink-0 w-10 h-10 rounded-lg bg-gray-800 flex items-center justify-center"
+        animate={{ rotate: expandedSection === id ? 180 : 0 }}
+        transition={{ duration: 0.2 }}
+      >
+        <ChevronDown className="w-5 h-5 text-gray-400" />
+      </motion.div>
+    </motion.button>
   )
 
   return (
     <div className="space-y-6">
-      {/* Progress header */}
-      <div className="bg-gradient-to-r from-purple-500/20 to-blue-500/20 rounded-2xl p-6 border border-purple-500/30">
-        <div className="flex items-center gap-4 mb-4">
-          <div className="w-14 h-14 bg-purple-500/30 rounded-xl flex items-center justify-center">
-            <Sparkles className="w-7 h-7 text-purple-400" />
+      {/* Progress header - Enhanced */}
+      <motion.div 
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        className="relative bg-gradient-to-br from-purple-500/20 via-blue-500/15 to-purple-500/20 rounded-2xl p-6 sm:p-8 border-2 border-purple-500/30 overflow-hidden shadow-xl shadow-purple-500/10"
+      >
+        {/* Decorative blur orbs */}
+        <div className="absolute -top-10 -right-10 w-40 h-40 bg-gradient-to-br from-purple-500 to-blue-500 opacity-20 rounded-full blur-3xl pointer-events-none" />
+        <div className="absolute -bottom-8 -left-8 w-32 h-32 bg-gradient-to-br from-blue-500 to-purple-500 opacity-15 rounded-full blur-2xl pointer-events-none" />
+        
+        <div className="relative flex items-center gap-5 mb-6">
+          <div className="w-16 h-16 bg-gradient-to-br from-purple-500 to-blue-500 rounded-2xl flex items-center justify-center shadow-xl shadow-purple-500/30">
+            <Sparkles className="w-8 h-8 text-white" />
           </div>
           <div>
-            <h2 className="text-xl font-bold text-white">Bijna live!</h2>
+            <h2 className="text-2xl font-bold text-white">Bijna live!</h2>
             <p className="text-gray-300">Vul onderstaande gegevens in</p>
           </div>
         </div>
         
-        {/* Progress bar */}
-        <div className="space-y-2">
+        {/* Progress bar - Enhanced */}
+        <div className="relative space-y-3">
           <div className="flex justify-between text-sm">
-            <span className="text-gray-400">{completedItems} van {totalItems} items</span>
-            <span className="font-medium text-purple-400">{progress}%</span>
+            <span className="text-gray-400 font-medium">{completedItems} van {totalItems} items</span>
+            <span className="font-bold text-purple-400">{progress}%</span>
           </div>
-          <div className="h-3 bg-gray-800 rounded-full overflow-hidden">
+          <div className="h-4 bg-gray-800/80 rounded-full overflow-hidden">
             <motion.div
               initial={{ width: 0 }}
               animate={{ width: `${progress}%` }}
-              transition={{ duration: 0.5 }}
-              className="h-full bg-gradient-to-r from-purple-500 to-blue-500 rounded-full"
+              transition={{ duration: 0.5, type: 'spring' }}
+              className="h-full bg-gradient-to-r from-purple-500 to-blue-500 rounded-full shadow-lg shadow-purple-500/30"
             />
           </div>
         </div>
 
         {progress === 100 && (
           <motion.div
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            className="mt-4 p-4 bg-green-500/20 rounded-xl border border-green-500/30"
+            initial={{ opacity: 0, y: 10, scale: 0.95 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            className="mt-6 p-5 bg-green-500/20 rounded-xl border-2 border-green-500/30 shadow-lg shadow-green-500/10"
           >
-            <p className="text-green-400 font-medium text-center">
+            <p className="text-green-400 font-bold text-center text-lg">
               ✅ Alles ingevuld! Je website gaat binnen 72 uur live.
             </p>
           </motion.div>
         )}
-      </div>
+      </motion.div>
 
-      {/* Payment status - always first */}
-      <div className="bg-gray-800/50 rounded-2xl overflow-hidden border border-gray-700/50">
-        <div className="flex items-center gap-4 p-4 sm:p-5">
-          <div className={`w-12 h-12 rounded-xl flex items-center justify-center ${
-            checklist.paymentReceived ? 'bg-green-500/20' : 'bg-amber-500/20'
+      {/* Payment status - always first - Enhanced */}
+      <motion.div 
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.1 }}
+        whileHover={{ y: -2 }}
+        className="relative bg-gray-800/60 rounded-2xl overflow-hidden border-2 border-gray-700/50 shadow-lg"
+      >
+        {/* Gradient accent line */}
+        <div className={`absolute top-0 left-0 right-0 h-1.5 ${
+          checklist.paymentReceived 
+            ? 'bg-gradient-to-r from-green-500 to-emerald-500' 
+            : 'bg-gradient-to-r from-amber-500 to-orange-500'
+        }`} />
+        
+        <div className="flex items-center gap-5 p-5 sm:p-6">
+          <div className={`w-14 h-14 rounded-xl flex items-center justify-center shadow-lg ${
+            checklist.paymentReceived 
+              ? 'bg-gradient-to-br from-green-500 to-emerald-500 shadow-green-500/25' 
+              : 'bg-gradient-to-br from-amber-500 to-orange-500 shadow-amber-500/25'
           }`}>
             {checklist.paymentReceived ? (
-              <CheckCircle2 className="w-6 h-6 text-green-400" />
+              <CheckCircle2 className="w-7 h-7 text-white" />
             ) : (
-              <Loader2 className="w-6 h-6 text-amber-400 animate-spin" />
+              <Loader2 className="w-7 h-7 text-white animate-spin" />
             )}
           </div>
           <div>
-            <h3 className="font-semibold text-white">Betaling</h3>
-            <p className="text-sm text-gray-400">
+            <h3 className="font-bold text-lg text-white">Betaling</h3>
+            <p className={`text-sm font-medium ${
+              checklist.paymentReceived ? 'text-green-400' : 'text-amber-400'
+            }`}>
               {checklist.paymentReceived 
                 ? '✅ Betaling ontvangen' 
                 : '⏳ Wachten op betaling...'}
             </p>
           </div>
         </div>
-      </div>
+      </motion.div>
 
-      {/* Domain section */}
-      <div className="bg-gray-800/50 rounded-2xl overflow-hidden border border-gray-700/50">
+      {/* Domain section - Enhanced */}
+      <motion.div 
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.15 }}
+        whileHover={{ y: -2 }}
+        className="relative bg-gray-800/60 rounded-2xl overflow-hidden border-2 border-gray-700/50 shadow-lg"
+      >
+        {/* Gradient accent line */}
+        <div className={`absolute top-0 left-0 right-0 h-1.5 ${
+          (checklist.authCodeProvided || !formData.hasDomain)
+            ? 'bg-gradient-to-r from-green-500 to-emerald-500' 
+            : 'bg-gradient-to-r from-blue-500 to-indigo-500'
+        }`} />
+        
         <SectionHeader
           id="domain"
           icon={Globe}
@@ -354,22 +395,37 @@ export default function PreLiveChecklist({ projectId, projectData, onUpdate }: P
                   </div>
                 )}
 
-                <button
+                <motion.button
                   onClick={() => handleSave('domain')}
                   disabled={isSubmitting}
-                  className="w-full py-3 bg-purple-500 hover:bg-purple-400 disabled:opacity-50 text-white font-medium rounded-xl transition flex items-center justify-center gap-2"
+                  whileHover={{ scale: 1.01 }}
+                  whileTap={{ scale: 0.99 }}
+                  className="w-full py-4 bg-gradient-to-r from-purple-500 to-indigo-500 hover:from-purple-400 hover:to-indigo-400 disabled:opacity-50 text-white font-bold rounded-xl transition flex items-center justify-center gap-2 shadow-lg shadow-purple-500/25"
                 >
                   {isSubmitting ? <Loader2 className="w-5 h-5 animate-spin" /> : <CheckCircle2 className="w-5 h-5" />}
                   Opslaan
-                </button>
+                </motion.button>
               </div>
             </motion.div>
           )}
         </AnimatePresence>
-      </div>
+      </motion.div>
 
-      {/* Email section */}
-      <div className="bg-gray-800/50 rounded-2xl overflow-hidden border border-gray-700/50">
+      {/* Email section - Enhanced */}
+      <motion.div 
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.2 }}
+        whileHover={{ y: -2 }}
+        className="relative bg-gray-800/60 rounded-2xl overflow-hidden border-2 border-gray-700/50 shadow-lg"
+      >
+        {/* Gradient accent line */}
+        <div className={`absolute top-0 left-0 right-0 h-1.5 ${
+          checklist.emailPreferenceConfirmed
+            ? 'bg-gradient-to-r from-green-500 to-emerald-500' 
+            : 'bg-gradient-to-r from-purple-500 to-pink-500'
+        }`} />
+        
         <SectionHeader
           id="email"
           icon={Mail}
@@ -453,22 +509,38 @@ export default function PreLiveChecklist({ projectId, projectData, onUpdate }: P
                   </div>
                 )}
 
-                <button
+                <motion.button
                   onClick={() => handleSave('email')}
                   disabled={isSubmitting}
-                  className="w-full py-3 bg-purple-500 hover:bg-purple-400 disabled:opacity-50 text-white font-medium rounded-xl transition flex items-center justify-center gap-2"
+                  whileHover={{ scale: 1.01 }}
+                  whileTap={{ scale: 0.99 }}
+                  className="w-full py-4 bg-gradient-to-r from-purple-500 to-indigo-500 hover:from-purple-400 hover:to-indigo-400 disabled:opacity-50 text-white font-bold rounded-xl transition flex items-center justify-center gap-2 shadow-lg shadow-purple-500/25"
                 >
                   {isSubmitting ? <Loader2 className="w-5 h-5 animate-spin" /> : <CheckCircle2 className="w-5 h-5" />}
                   Opslaan
-                </button>
+                </motion.button>
               </div>
             </motion.div>
           )}
         </AnimatePresence>
-      </div>
+      </motion.div>
 
-      {/* Legal section */}
-      <div className="bg-gray-800/50 rounded-2xl overflow-hidden border border-gray-700/50">
+      {/* Legal section - Enhanced */}
+      <motion.div 
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.25 }}
+        whileHover={{ y: -2 }}
+        className="relative bg-gray-800/60 rounded-2xl overflow-hidden border-2 border-gray-700/50 shadow-lg"
+      >
+        {/* Gradient accent line */}
+        <div className={`absolute top-0 left-0 right-0 h-1.5 ${
+          (checklist.privacyPolicyProvided || formData.hasPrivacyPolicy || formData.wantsPrivacyPolicyCreated) &&
+          (checklist.termsConditionsProvided || formData.hasTermsConditions || formData.wantsTermsCreated)
+            ? 'bg-gradient-to-r from-green-500 to-emerald-500' 
+            : 'bg-gradient-to-r from-cyan-500 to-blue-500'
+        }`} />
+        
         <SectionHeader
           id="legal"
           icon={Shield}
@@ -604,22 +676,37 @@ export default function PreLiveChecklist({ projectId, projectData, onUpdate }: P
                   )}
                 </div>
 
-                <button
+                <motion.button
                   onClick={() => handleSave('legal')}
                   disabled={isSubmitting}
-                  className="w-full py-3 bg-purple-500 hover:bg-purple-400 disabled:opacity-50 text-white font-medium rounded-xl transition flex items-center justify-center gap-2"
+                  whileHover={{ scale: 1.01 }}
+                  whileTap={{ scale: 0.99 }}
+                  className="w-full py-4 bg-gradient-to-r from-purple-500 to-indigo-500 hover:from-purple-400 hover:to-indigo-400 disabled:opacity-50 text-white font-bold rounded-xl transition flex items-center justify-center gap-2 shadow-lg shadow-purple-500/25"
                 >
                   {isSubmitting ? <Loader2 className="w-5 h-5 animate-spin" /> : <CheckCircle2 className="w-5 h-5" />}
                   Opslaan
-                </button>
+                </motion.button>
               </div>
             </motion.div>
           )}
         </AnimatePresence>
-      </div>
+      </motion.div>
 
-      {/* Business info section */}
-      <div className="bg-gray-800/50 rounded-2xl overflow-hidden border border-gray-700/50">
+      {/* Business info section - Enhanced */}
+      <motion.div 
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.3 }}
+        whileHover={{ y: -2 }}
+        className="relative bg-gray-800/60 rounded-2xl overflow-hidden border-2 border-gray-700/50 shadow-lg"
+      >
+        {/* Gradient accent line */}
+        <div className={`absolute top-0 left-0 right-0 h-1.5 ${
+          formData.kvkNumber
+            ? 'bg-gradient-to-r from-green-500 to-emerald-500' 
+            : 'bg-gradient-to-r from-amber-500 to-orange-500'
+        }`} />
+        
         <SectionHeader
           id="business"
           icon={Building2}
@@ -636,9 +723,9 @@ export default function PreLiveChecklist({ projectId, projectData, onUpdate }: P
               exit={{ height: 0, opacity: 0 }}
               className="border-t border-gray-700/50"
             >
-              <div className="p-4 sm:p-6 space-y-5">
+              <div className="p-5 sm:p-6 space-y-5">
                 <div>
-                  <label className="block text-sm font-medium text-gray-300 mb-2">
+                  <label className="block text-sm font-bold text-gray-300 mb-2">
                     KvK-nummer
                   </label>
                   <input
@@ -663,22 +750,37 @@ export default function PreLiveChecklist({ projectId, projectData, onUpdate }: P
                   />
                 </div>
 
-                <button
+                <motion.button
                   onClick={() => handleSave('business')}
                   disabled={isSubmitting}
-                  className="w-full py-3 bg-purple-500 hover:bg-purple-400 disabled:opacity-50 text-white font-medium rounded-xl transition flex items-center justify-center gap-2"
+                  whileHover={{ scale: 1.01 }}
+                  whileTap={{ scale: 0.99 }}
+                  className="w-full py-4 bg-gradient-to-r from-purple-500 to-indigo-500 hover:from-purple-400 hover:to-indigo-400 disabled:opacity-50 text-white font-bold rounded-xl transition flex items-center justify-center gap-2 shadow-lg shadow-purple-500/25"
                 >
                   {isSubmitting ? <Loader2 className="w-5 h-5 animate-spin" /> : <CheckCircle2 className="w-5 h-5" />}
                   Opslaan
-                </button>
+                </motion.button>
               </div>
             </motion.div>
           )}
         </AnimatePresence>
-      </div>
+      </motion.div>
 
-      {/* Analytics section */}
-      <div className="bg-gray-800/50 rounded-2xl overflow-hidden border border-gray-700/50">
+      {/* Analytics section - Enhanced */}
+      <motion.div 
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.35 }}
+        whileHover={{ y: -2 }}
+        className="relative bg-gray-800/60 rounded-2xl overflow-hidden border-2 border-gray-700/50 shadow-lg"
+      >
+        {/* Gradient accent line */}
+        <div className={`absolute top-0 left-0 right-0 h-1.5 ${
+          checklist.analyticsAgreed
+            ? 'bg-gradient-to-r from-green-500 to-emerald-500' 
+            : 'bg-gradient-to-r from-pink-500 to-rose-500'
+        }`} />
+        
         <SectionHeader
           id="analytics"
           icon={BarChart3}
@@ -695,58 +797,74 @@ export default function PreLiveChecklist({ projectId, projectData, onUpdate }: P
               exit={{ height: 0, opacity: 0 }}
               className="border-t border-gray-700/50"
             >
-              <div className="p-4 sm:p-6 space-y-5">
+              <div className="p-5 sm:p-6 space-y-5">
                 <p className="text-gray-400 text-sm">
                   Wil je inzicht in hoeveel bezoekers je website krijgt?
                 </p>
 
                 <div className="space-y-3">
-                  <button
+                  <motion.button
+                    whileHover={{ scale: 1.01 }}
+                    whileTap={{ scale: 0.99 }}
                     onClick={() => setFormData({ ...formData, wantsAnalytics: true })}
-                    className={`w-full p-4 rounded-xl border-2 transition-all text-left ${
+                    className={`w-full p-5 rounded-xl border-2 transition-all text-left ${
                       formData.wantsAnalytics 
-                        ? 'border-purple-500 bg-purple-500/10' 
+                        ? 'border-purple-500 bg-purple-500/15 shadow-lg shadow-purple-500/10' 
                         : 'border-gray-700 hover:border-gray-600'
                     }`}
                   >
-                    <span className="font-medium block">Ja, graag analytics toevoegen</span>
+                    <span className="font-bold block">Ja, graag analytics toevoegen</span>
                     <span className="text-sm text-gray-400">Gratis bezoekersstatistieken via Google Analytics</span>
-                  </button>
+                  </motion.button>
 
-                  <button
+                  <motion.button
+                    whileHover={{ scale: 1.01 }}
+                    whileTap={{ scale: 0.99 }}
                     onClick={() => setFormData({ ...formData, wantsAnalytics: false })}
-                    className={`w-full p-4 rounded-xl border-2 transition-all text-left ${
+                    className={`w-full p-5 rounded-xl border-2 transition-all text-left ${
                       !formData.wantsAnalytics 
-                        ? 'border-purple-500 bg-purple-500/10' 
+                        ? 'border-purple-500 bg-purple-500/15 shadow-lg shadow-purple-500/10' 
                         : 'border-gray-700 hover:border-gray-600'
                     }`}
                   >
-                    <span className="font-medium block">Nee, niet nodig</span>
+                    <span className="font-bold block">Nee, niet nodig</span>
                     <span className="text-sm text-gray-400">Je kunt dit later nog toevoegen</span>
-                  </button>
+                  </motion.button>
                 </div>
 
-                <button
+                <motion.button
                   onClick={() => handleSave('analytics')}
                   disabled={isSubmitting}
-                  className="w-full py-3 bg-purple-500 hover:bg-purple-400 disabled:opacity-50 text-white font-medium rounded-xl transition flex items-center justify-center gap-2"
+                  whileHover={{ scale: 1.01 }}
+                  whileTap={{ scale: 0.99 }}
+                  className="w-full py-4 bg-gradient-to-r from-purple-500 to-indigo-500 hover:from-purple-400 hover:to-indigo-400 disabled:opacity-50 text-white font-bold rounded-xl transition flex items-center justify-center gap-2 shadow-lg shadow-purple-500/25"
                 >
                   {isSubmitting ? <Loader2 className="w-5 h-5 animate-spin" /> : <CheckCircle2 className="w-5 h-5" />}
                   Opslaan
-                </button>
+                </motion.button>
               </div>
             </motion.div>
           )}
         </AnimatePresence>
-      </div>
+      </motion.div>
 
-      {/* Info box */}
-      <div className="bg-blue-500/10 border border-blue-500/30 rounded-2xl p-5">
-        <div className="flex gap-4">
-          <Info className="w-6 h-6 text-blue-400 flex-shrink-0" />
+      {/* Info box - Enhanced */}
+      <motion.div 
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.4 }}
+        className="relative bg-blue-500/10 border-2 border-blue-500/30 rounded-2xl p-6 overflow-hidden shadow-lg shadow-blue-500/5"
+      >
+        {/* Decorative blur orb */}
+        <div className="absolute -top-10 -right-10 w-32 h-32 bg-gradient-to-br from-blue-500 to-cyan-500 opacity-15 rounded-full blur-3xl pointer-events-none" />
+        
+        <div className="relative flex gap-4">
+          <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-blue-500 to-cyan-500 flex items-center justify-center flex-shrink-0 shadow-lg shadow-blue-500/25">
+            <Info className="w-6 h-6 text-white" />
+          </div>
           <div>
-            <h4 className="font-medium text-blue-300 mb-1">Wat gebeurt er na het invullen?</h4>
-            <ul className="text-sm text-gray-400 space-y-1">
+            <h4 className="font-bold text-lg text-blue-300 mb-2">Wat gebeurt er na het invullen?</h4>
+            <ul className="text-sm text-gray-400 space-y-1.5">
               <li>✅ Onze developer configureert je domein</li>
               <li>✅ Website wordt overgezet naar live server</li>
               <li>✅ SSL-certificaat wordt geïnstalleerd</li>
@@ -755,7 +873,7 @@ export default function PreLiveChecklist({ projectId, projectData, onUpdate }: P
             </ul>
           </div>
         </div>
-      </div>
+      </motion.div>
     </div>
   )
 }

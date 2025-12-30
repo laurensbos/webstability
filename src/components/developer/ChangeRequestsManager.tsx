@@ -252,7 +252,7 @@ export default function ChangeRequestsManager({
   }
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-5">
       {/* Header with stats */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
@@ -266,60 +266,62 @@ export default function ChangeRequestsManager({
           </p>
         </div>
         
-        <button
+        <motion.button
           onClick={() => fetchChangeRequests(true)}
           disabled={refreshing}
-          className={`p-2 rounded-lg transition ${
+          whileHover={{ scale: 1.05 }}
+          whileTap={{ scale: 0.95 }}
+          className={`p-2.5 rounded-xl transition border-2 ${
             darkMode 
-              ? 'hover:bg-gray-700 text-gray-400' 
-              : 'hover:bg-gray-100 text-gray-500'
+              ? 'hover:bg-gray-700 text-gray-400 border-gray-700 hover:border-gray-600' 
+              : 'hover:bg-gray-100 text-gray-500 border-gray-200 hover:border-gray-300'
           }`}
         >
           <RefreshCw className={`w-5 h-5 ${refreshing ? 'animate-spin' : ''}`} />
-        </button>
+        </motion.button>
       </div>
 
       {/* Filters */}
       <div className="flex flex-wrap gap-2">
         {/* Status filters */}
-        <div className="flex gap-1">
+        <div className="flex gap-1.5">
           {(['all', 'pending', 'in_progress', 'completed'] as const).map(status => {
             const config = status === 'all' ? null : STATUS_CONFIG[status]
             return (
-              <button
+              <motion.button
                 key={status}
                 onClick={() => setStatusFilter(status)}
-                className={`px-3 py-1.5 text-sm font-medium rounded-lg transition ${
+                whileHover={{ scale: 1.02 }}
+                whileTap={{ scale: 0.98 }}
+                className={`px-4 py-2 text-sm font-semibold rounded-xl transition-all duration-200 border-2 ${
                   statusFilter === status
-                    ? darkMode 
-                      ? 'bg-indigo-500 text-white' 
-                      : 'bg-indigo-600 text-white'
+                    ? 'bg-gradient-to-r from-indigo-500 to-purple-500 text-white border-transparent shadow-lg shadow-indigo-500/30'
                     : darkMode
-                      ? 'bg-gray-800 text-gray-300 hover:bg-gray-700'
-                      : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                      ? 'bg-gray-800/50 text-gray-300 hover:bg-gray-700 border-gray-700/50 hover:border-gray-600'
+                      : 'bg-white text-gray-600 hover:bg-gray-50 border-gray-200 hover:border-gray-300'
                 }`}
               >
                 {status === 'all' ? (isNL ? 'Alles' : 'All') : (isNL ? config?.label : config?.labelEn)}
                 {status === 'pending' && stats.pending > 0 && (
-                  <span className="ml-1.5 px-1.5 py-0.5 bg-amber-500 text-white text-xs rounded-full">
+                  <span className="ml-2 px-1.5 py-0.5 bg-gradient-to-r from-amber-500 to-orange-500 text-white text-xs font-bold rounded-full shadow-lg shadow-amber-500/30">
                     {stats.pending}
                   </span>
                 )}
-              </button>
+              </motion.button>
             )
           })}
         </div>
 
         {/* Priority filter */}
-        <div className="flex items-center gap-1">
+        <div className="flex items-center gap-2">
           <Filter className={`w-4 h-4 ${darkMode ? 'text-gray-500' : 'text-gray-400'}`} />
           <select
             value={priorityFilter}
             onChange={e => setPriorityFilter(e.target.value as typeof priorityFilter)}
-            className={`text-sm rounded-lg px-2 py-1.5 border-0 focus:ring-2 focus:ring-indigo-500 ${
+            className={`text-sm rounded-xl px-3 py-2 border-2 focus:ring-2 focus:ring-indigo-500 ${
               darkMode 
-                ? 'bg-gray-800 text-gray-300' 
-                : 'bg-gray-100 text-gray-700'
+                ? 'bg-gray-800/50 text-gray-300 border-gray-700/50' 
+                : 'bg-white text-gray-700 border-gray-200'
             }`}
           >
             <option value="all">{isNL ? 'Alle prioriteiten' : 'All priorities'}</option>
@@ -332,7 +334,7 @@ export default function ChangeRequestsManager({
 
       {/* Error message */}
       {error && (
-        <div className={`p-4 rounded-xl ${darkMode ? 'bg-red-500/10 text-red-400' : 'bg-red-50 text-red-600'}`}>
+        <div className={`p-4 rounded-2xl border-2 ${darkMode ? 'bg-red-500/10 text-red-400 border-red-500/30' : 'bg-red-50 text-red-600 border-red-200'}`}>
           {error}
         </div>
       )}
@@ -367,17 +369,17 @@ export default function ChangeRequestsManager({
                   initial={{ opacity: 0, y: 10 }}
                   animate={{ opacity: 1, y: 0 }}
                   exit={{ opacity: 0, x: -20 }}
-                  transition={{ delay: index * 0.03 }}
-                  className={`rounded-xl border overflow-hidden ${
+                  transition={{ delay: index * 0.03, type: 'spring', stiffness: 300, damping: 25 }}
+                  className={`rounded-2xl border-2 overflow-hidden transition-all duration-200 ${
                     darkMode 
-                      ? `bg-gray-800/50 ${statusConfig.border}` 
-                      : `bg-white border-gray-200 shadow-sm`
+                      ? `bg-gradient-to-br from-gray-800/50 to-gray-850/50 ${statusConfig.border} hover:shadow-lg hover:shadow-${statusConfig.color.split('-')[1]}-500/10` 
+                      : `bg-white border-gray-200 shadow-sm hover:shadow-lg`
                   }`}
                 >
                   {/* Main row */}
                   <div 
                     className={`p-4 cursor-pointer transition ${
-                      darkMode ? 'hover:bg-gray-800' : 'hover:bg-gray-50'
+                      darkMode ? 'hover:bg-gray-800/50' : 'hover:bg-gray-50'
                     }`}
                     onClick={() => setExpandedId(isExpanded ? null : item.changeRequest.id)}
                   >

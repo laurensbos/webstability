@@ -197,17 +197,29 @@ export function DesignFeedback({
   }
 
   return (
-    <div className="bg-gray-900 rounded-2xl border border-gray-800 overflow-hidden">
-      {/* Header */}
-      <div className="p-5 border-b border-gray-800">
-        <div className="flex items-center justify-between mb-4">
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-xl bg-purple-500/20 flex items-center justify-center">
-              <MessageSquare className="w-5 h-5 text-purple-400" />
+    <motion.div 
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ type: 'spring', stiffness: 300, damping: 25 }}
+      className="relative bg-gray-900 rounded-2xl border-2 border-gray-800 overflow-hidden shadow-xl shadow-black/30"
+    >
+      {/* Gradient accent line at top */}
+      <div className="absolute top-0 left-0 right-0 h-1.5 bg-gradient-to-r from-purple-500 to-pink-500" />
+      
+      {/* Decorative blur orbs */}
+      <div className="absolute -top-10 -right-10 w-40 h-40 bg-gradient-to-br from-purple-500 to-pink-500 opacity-15 rounded-full blur-3xl pointer-events-none" />
+      <div className="absolute -bottom-8 -left-8 w-32 h-32 bg-gradient-to-br from-indigo-500 to-purple-500 opacity-10 rounded-full blur-2xl pointer-events-none" />
+      
+      {/* Header - Enhanced */}
+      <div className="relative p-6 border-b border-gray-800">
+        <div className="flex items-center justify-between mb-5">
+          <div className="flex items-center gap-4">
+            <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center shadow-lg shadow-purple-500/30">
+              <MessageSquare className="w-6 h-6 text-white" />
             </div>
             <div>
-              <h3 className="text-lg font-semibold text-white">{t('designFeedback.title')}</h3>
-              <p className="text-sm text-gray-500">
+              <h3 className="text-xl font-bold text-white">{t('designFeedback.title')}</h3>
+              <p className="text-sm text-gray-400">
                 {serviceType === 'logo' ? t('designFeedback.descriptionLogo') :
                  serviceType === 'drone' ? t('designFeedback.descriptionDrone') :
                  serviceType === 'webshop' ? t('designFeedback.descriptionWebshop') :
@@ -217,79 +229,103 @@ export function DesignFeedback({
           </div>
           
           {designPreviewUrl && (
-            <a
+            <motion.a
               href={designPreviewUrl}
               target="_blank"
               rel="noopener noreferrer"
-              className="px-4 py-2 bg-purple-500/20 text-purple-400 rounded-lg text-sm font-medium hover:bg-purple-500/30 transition"
+              whileHover={{ scale: 1.02 }}
+              whileTap={{ scale: 0.98 }}
+              className="px-5 py-2.5 bg-gradient-to-r from-purple-500/20 to-pink-500/20 text-purple-400 rounded-xl text-sm font-semibold hover:from-purple-500/30 hover:to-pink-500/30 transition border border-purple-500/30"
             >
               {t('designFeedback.viewDesign')}
-            </a>
+            </motion.a>
           )}
         </div>
 
-        {/* Feedback summary */}
+        {/* Feedback summary - Enhanced */}
         {feedbackEntries.length > 0 && (
-          <div className="flex items-center gap-4 p-3 bg-gray-800/50 rounded-xl">
-            <div className="flex items-center gap-2">
-              <ThumbsUp className="w-4 h-4 text-green-400" />
-              <span className="text-sm text-green-400">{positiveCount}</span>
+          <motion.div 
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="flex items-center gap-5 p-4 bg-gray-800/60 rounded-xl border border-gray-700/50"
+          >
+            <div className="flex items-center gap-2.5">
+              <div className="w-8 h-8 rounded-lg bg-green-500/20 flex items-center justify-center">
+                <ThumbsUp className="w-4 h-4 text-green-400" />
+              </div>
+              <span className="text-sm font-semibold text-green-400">{positiveCount}</span>
             </div>
-            <div className="flex items-center gap-2">
-              <MessageSquare className="w-4 h-4 text-blue-400" />
-              <span className="text-sm text-blue-400">{neutralCount}</span>
+            <div className="flex items-center gap-2.5">
+              <div className="w-8 h-8 rounded-lg bg-blue-500/20 flex items-center justify-center">
+                <MessageSquare className="w-4 h-4 text-blue-400" />
+              </div>
+              <span className="text-sm font-semibold text-blue-400">{neutralCount}</span>
             </div>
-            <div className="flex items-center gap-2">
-              <AlertCircle className="w-4 h-4 text-amber-400" />
-              <span className="text-sm text-amber-400">{negativeCount}</span>
+            <div className="flex items-center gap-2.5">
+              <div className="w-8 h-8 rounded-lg bg-amber-500/20 flex items-center justify-center">
+                <AlertCircle className="w-4 h-4 text-amber-400" />
+              </div>
+              <span className="text-sm font-semibold text-amber-400">{negativeCount}</span>
             </div>
-            <span className="text-xs text-gray-500 ml-auto">
+            <span className="text-sm text-gray-400 ml-auto font-medium">
               {t('designFeedback.feedbackPoints', { count: feedbackEntries.length })}
             </span>
-          </div>
+          </motion.div>
         )}
       </div>
 
-      {/* Categories */}
-      <div className="divide-y divide-gray-800">
-        {categories.map((category) => {
+      {/* Categories - Enhanced */}
+      <div className="relative divide-y divide-gray-800/50">
+        {categories.map((category, categoryIndex) => {
           const categoryFeedback = getFeedbackForCategory(category.id)
           const isExpanded = expandedCategory === category.id
           const CategoryIcon = category.icon
 
           return (
-            <div key={category.id} className="bg-gray-900">
-              {/* Category header */}
-              <button
+            <motion.div 
+              key={category.id} 
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: categoryIndex * 0.05 }}
+              className="bg-gray-900"
+            >
+              {/* Category header - Enhanced */}
+              <motion.button
                 onClick={() => setExpandedCategory(isExpanded ? null : category.id)}
-                className="w-full p-4 flex items-center gap-4 hover:bg-gray-800/50 transition text-left"
+                whileHover={{ backgroundColor: 'rgba(55, 65, 81, 0.3)' }}
+                className="w-full p-5 flex items-center gap-4 transition text-left"
               >
-                <div className={`w-10 h-10 rounded-lg flex items-center justify-center ${
+                <div className={`w-12 h-12 rounded-xl flex items-center justify-center shadow-lg ${
                   categoryFeedback.length > 0 
                     ? categoryFeedback.some(f => f.rating === 'negative') 
-                      ? 'bg-amber-500/20' 
-                      : 'bg-green-500/20'
+                      ? 'bg-gradient-to-br from-amber-500 to-orange-500 shadow-amber-500/25' 
+                      : 'bg-gradient-to-br from-green-500 to-emerald-500 shadow-green-500/25'
                     : 'bg-gray-800'
                 }`}>
                   {categoryFeedback.length > 0 ? (
                     categoryFeedback.some(f => f.rating === 'negative') 
-                      ? <AlertCircle className="w-5 h-5 text-amber-400" />
-                      : <CheckCircle2 className="w-5 h-5 text-green-400" />
+                      ? <AlertCircle className="w-5 h-5 text-white" />
+                      : <CheckCircle2 className="w-5 h-5 text-white" />
                   ) : (
-                    <CategoryIcon className="w-5 h-5 text-gray-500" />
+                    <CategoryIcon className="w-5 h-5 text-gray-400" />
                   )}
                 </div>
                 <div className="flex-1">
-                  <p className="font-medium text-white">{category.label}</p>
-                  <p className="text-sm text-gray-500">{category.description}</p>
+                  <p className="font-bold text-white">{category.label}</p>
+                  <p className="text-sm text-gray-400">{category.description}</p>
                 </div>
                 {categoryFeedback.length > 0 && (
-                  <span className="px-2 py-1 bg-gray-700 rounded text-xs text-gray-300">
+                  <span className="px-3 py-1.5 bg-gray-700 rounded-lg text-sm font-semibold text-gray-200">
                     {categoryFeedback.length}
                   </span>
                 )}
-                <ChevronDown className={`w-5 h-5 text-gray-500 transition ${isExpanded ? 'rotate-180' : ''}`} />
-              </button>
+                <motion.div
+                  animate={{ rotate: isExpanded ? 180 : 0 }}
+                  transition={{ duration: 0.2 }}
+                >
+                  <ChevronDown className="w-5 h-5 text-gray-500" />
+                </motion.div>
+              </motion.button>
 
               {/* Category content */}
               <AnimatePresence>
@@ -446,7 +482,7 @@ export function DesignFeedback({
                       ) : (
                         <button
                           onClick={() => setActiveCategory(category.id)}
-                          className="w-full p-3 border-2 border-dashed border-gray-700 rounded-xl text-gray-500 hover:border-purple-500 hover:text-purple-400 transition flex items-center justify-center gap-2"
+                          className="w-full p-4 border-2 border-dashed border-gray-700 rounded-xl text-gray-400 hover:border-purple-500 hover:text-purple-400 transition flex items-center justify-center gap-2 font-medium"
                         >
                           <Plus className="w-4 h-4" />
                           {t('designFeedback.addFeedback')}
@@ -456,21 +492,23 @@ export function DesignFeedback({
                   </motion.div>
                 )}
               </AnimatePresence>
-            </div>
+            </motion.div>
           )
         })}
       </div>
 
-      {/* Submit section */}
-      <div className="p-5 border-t border-gray-800 bg-gray-800/50">
+      {/* Submit section - Enhanced */}
+      <div className="relative p-6 border-t border-gray-800 bg-gradient-to-t from-gray-800/80 to-gray-900">
         {showSuccess ? (
           <motion.div
             initial={{ opacity: 0, scale: 0.95 }}
             animate={{ opacity: 1, scale: 1 }}
-            className="text-center py-4"
+            className="text-center py-6"
           >
-            <CheckCircle2 className="w-12 h-12 text-green-400 mx-auto mb-3" />
-            <p className="text-lg font-medium text-white">{t('designFeedback.feedbackSent')}</p>
+            <div className="w-16 h-16 mx-auto mb-4 rounded-2xl bg-gradient-to-br from-green-500 to-emerald-500 flex items-center justify-center shadow-xl shadow-green-500/30">
+              <CheckCircle2 className="w-8 h-8 text-white" />
+            </div>
+            <p className="text-xl font-bold text-white mb-1">{t('designFeedback.feedbackSent')}</p>
             <p className="text-sm text-gray-400">{t('designFeedback.feedbackSentDesc')}</p>
           </motion.div>
         ) : (
@@ -532,7 +570,7 @@ export function DesignFeedback({
           </>
         )}
       </div>
-    </div>
+    </motion.div>
   )
 }
 

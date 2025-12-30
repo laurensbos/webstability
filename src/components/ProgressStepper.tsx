@@ -72,15 +72,19 @@ export default function ProgressStepper({
     <motion.div
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
-      className={`rounded-2xl border p-4 sm:p-6 ${
+      transition={{ type: 'spring', stiffness: 300, damping: 25 }}
+      className={`relative rounded-2xl border-2 p-4 sm:p-6 overflow-hidden ${
         darkMode 
-          ? 'bg-gray-900/50 border-gray-800' 
-          : 'bg-white border-gray-200 shadow-sm'
+          ? 'bg-gradient-to-br from-gray-900/80 to-gray-950/80 border-gray-800' 
+          : 'bg-gradient-to-br from-white to-gray-50 border-gray-200 shadow-lg'
       }`}
     >
+      {/* Gradient accent line */}
+      <div className={`absolute top-0 left-0 right-0 h-1 bg-gradient-to-r ${phaseColors.gradient}`} />
+      
       {/* Progress header */}
       <div className="flex items-center justify-between mb-4">
-        <h3 className={`text-sm font-semibold ${darkMode ? 'text-white' : 'text-gray-900'}`}>
+        <h3 className={`text-sm font-bold ${darkMode ? 'text-white' : 'text-gray-900'}`}>
           {t('projectStatus.projectProgress')}
         </h3>
         <span className={`text-2xl font-bold bg-gradient-to-r ${phaseColors.gradient} bg-clip-text text-transparent`}>
@@ -89,14 +93,14 @@ export default function ProgressStepper({
       </div>
 
       {/* Large progress bar */}
-      <div className={`h-3 rounded-full overflow-hidden mb-6 ${darkMode ? 'bg-gray-800' : 'bg-gray-200'}`}>
+      <div className={`h-3.5 rounded-full overflow-hidden mb-6 ${darkMode ? 'bg-gray-800' : 'bg-gray-200'}`}>
         <motion.div
           initial={{ width: 0 }}
           animate={{ width: `${progress}%` }}
           transition={{ duration: 1, ease: "easeOut" }}
-          className={`h-full rounded-full bg-gradient-to-r ${phaseColors.gradient} relative`}
+          className={`h-full rounded-full bg-gradient-to-r ${phaseColors.gradient} relative shadow-lg`}
         >
-          <div className="absolute inset-0 bg-gradient-to-r from-white/0 via-white/20 to-white/0 animate-shimmer" />
+          <div className="absolute inset-0 bg-gradient-to-r from-white/0 via-white/30 to-white/0 animate-shimmer" />
         </motion.div>
       </div>
 

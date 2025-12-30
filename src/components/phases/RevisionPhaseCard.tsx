@@ -86,18 +86,22 @@ export default function RevisionPhaseCard({
     <motion.div
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
-      className={`rounded-2xl border overflow-hidden ${
+      transition={{ type: 'spring', stiffness: 300, damping: 25 }}
+      className={`rounded-2xl border-2 overflow-hidden ${
         darkMode 
-          ? 'bg-gray-900/80 border-cyan-500/30' 
-          : 'bg-white border-cyan-200 shadow-lg'
+          ? 'bg-gradient-to-br from-gray-900 to-gray-950 border-cyan-500/40 shadow-lg shadow-cyan-500/10' 
+          : 'bg-gradient-to-br from-white to-gray-50 border-cyan-200 shadow-xl shadow-cyan-500/10'
       }`}
     >
+      {/* Gradient accent line */}
+      <div className="h-1.5 bg-gradient-to-r from-cyan-500 via-blue-500 to-cyan-500" />
+      
       {/* Header with animated gradient */}
-      <div className="bg-gradient-to-r from-cyan-500/20 via-blue-500/20 to-cyan-500/20 p-5 relative overflow-hidden">
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_right,rgba(6,182,212,0.2),transparent_70%)]" />
+      <div className="bg-gradient-to-r from-cyan-500/10 via-blue-500/10 to-cyan-500/10 p-5 relative overflow-hidden">
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_right,rgba(6,182,212,0.15),transparent_70%)]" />
         
         <div className="relative flex items-start gap-4">
-          <div className="w-14 h-14 bg-gradient-to-br from-cyan-500 to-blue-500 rounded-2xl flex items-center justify-center shadow-lg shadow-cyan-500/25">
+          <div className="w-14 h-14 bg-gradient-to-br from-cyan-500 to-blue-500 rounded-2xl flex items-center justify-center shadow-lg shadow-cyan-500/30">
             <motion.div
               animate={{ rotate: 360 }}
               transition={{ duration: 4, repeat: Infinity, ease: "linear" }}
@@ -107,7 +111,7 @@ export default function RevisionPhaseCard({
           </div>
           
           <div className="flex-1">
-            <h3 className={`text-lg font-bold mb-1 ${darkMode ? 'text-white' : 'text-gray-900'}`}>
+            <h3 className={`text-xl font-bold mb-1 ${darkMode ? 'text-white' : 'text-gray-900'}`}>
               {t('phases.revision.title', 'Processing your feedback')} ✨
             </h3>
             <p className={`text-sm ${darkMode ? 'text-gray-400' : 'text-gray-600'}`}>
@@ -119,12 +123,12 @@ export default function RevisionPhaseCard({
 
       <div className="p-5 space-y-5">
         {/* Revision Counter */}
-        <div className={`flex items-center justify-between p-4 rounded-xl ${
-          darkMode ? 'bg-gray-800/50' : 'bg-gray-50'
+        <div className={`flex items-center justify-between p-4 rounded-xl border-2 ${
+          darkMode ? 'bg-gray-800/50 border-gray-700' : 'bg-gray-50 border-gray-100'
         }`}>
           <div className="flex items-center gap-3">
-            <div className={`w-10 h-10 rounded-xl flex items-center justify-center ${
-              darkMode ? 'bg-cyan-500/20' : 'bg-cyan-100'
+            <div className={`w-10 h-10 rounded-xl flex items-center justify-center shadow-md ${
+              darkMode ? 'bg-gradient-to-br from-cyan-500/20 to-blue-500/20' : 'bg-gradient-to-br from-cyan-100 to-blue-100'
             }`}>
               <MessageSquare className={`w-5 h-5 ${darkMode ? 'text-cyan-400' : 'text-cyan-600'}`} />
             </div>

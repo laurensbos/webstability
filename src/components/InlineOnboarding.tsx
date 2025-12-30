@@ -3,7 +3,7 @@ import { useTranslation } from 'react-i18next'
 import { motion, AnimatePresence } from 'framer-motion'
 import { 
   ChevronDown, 
-  ChevronUp, 
+  ChevronRight,
   CheckCircle2, 
   Upload,
   ExternalLink,
@@ -22,6 +22,8 @@ import {
   Image,
   Camera,
   Share2,
+  Rocket,
+  Trophy,
   type LucideIcon
 } from 'lucide-react'
 import { 
@@ -1389,7 +1391,7 @@ function QuestionRenderer({ question, value, onChange, disabled, darkMode, googl
 }
 
 // ===========================================
-// SECTION COMPONENT
+// SECTION COMPONENT - Next-Level Typeform/Wix Style
 // ===========================================
 
 interface SectionComponentProps {
@@ -1446,109 +1448,229 @@ function SectionComponent({
     return answer !== undefined && answer !== '' && answer !== null
   }).length
 
-  const colorClasses: Record<string, { bg: string; border: string; icon: string }> = {
-    blue: { bg: 'bg-blue-500/10', border: 'border-blue-500/30', icon: 'text-blue-400' },
-    purple: { bg: 'bg-purple-500/10', border: 'border-purple-500/30', icon: 'text-purple-400' },
-    amber: { bg: 'bg-amber-500/10', border: 'border-amber-500/30', icon: 'text-amber-400' },
-    emerald: { bg: 'bg-emerald-500/10', border: 'border-emerald-500/30', icon: 'text-emerald-400' },
-    green: { bg: 'bg-green-500/10', border: 'border-green-500/30', icon: 'text-green-400' },
-    pink: { bg: 'bg-pink-500/10', border: 'border-pink-500/30', icon: 'text-pink-400' },
+  const progressPercentage = visibleQuestions.length > 0 
+    ? Math.round((answeredCount / visibleQuestions.length) * 100) 
+    : 0
+
+  // Enhanced color system with gradients
+  const colorClasses: Record<string, { 
+    bg: string; 
+    bgHover: string;
+    bgExpanded: string;
+    border: string; 
+    borderExpanded: string;
+    icon: string;
+    iconBg: string;
+    gradient: string;
+    progressBar: string;
+  }> = {
+    blue: { 
+      bg: 'bg-slate-800/40', 
+      bgHover: 'hover:bg-slate-800/60',
+      bgExpanded: 'bg-gradient-to-br from-blue-500/5 via-slate-800/60 to-indigo-500/5',
+      border: 'border-slate-700/50', 
+      borderExpanded: 'border-blue-500/40',
+      icon: 'text-blue-400',
+      iconBg: 'bg-blue-500/15',
+      gradient: 'from-blue-500 to-indigo-500',
+      progressBar: 'bg-gradient-to-r from-blue-500 to-indigo-500'
+    },
+    purple: { 
+      bg: 'bg-slate-800/40', 
+      bgHover: 'hover:bg-slate-800/60',
+      bgExpanded: 'bg-gradient-to-br from-purple-500/5 via-slate-800/60 to-pink-500/5',
+      border: 'border-slate-700/50', 
+      borderExpanded: 'border-purple-500/40',
+      icon: 'text-purple-400',
+      iconBg: 'bg-purple-500/15',
+      gradient: 'from-purple-500 to-pink-500',
+      progressBar: 'bg-gradient-to-r from-purple-500 to-pink-500'
+    },
+    amber: { 
+      bg: 'bg-slate-800/40', 
+      bgHover: 'hover:bg-slate-800/60',
+      bgExpanded: 'bg-gradient-to-br from-amber-500/5 via-slate-800/60 to-orange-500/5',
+      border: 'border-slate-700/50', 
+      borderExpanded: 'border-amber-500/40',
+      icon: 'text-amber-400',
+      iconBg: 'bg-amber-500/15',
+      gradient: 'from-amber-500 to-orange-500',
+      progressBar: 'bg-gradient-to-r from-amber-500 to-orange-500'
+    },
+    emerald: { 
+      bg: 'bg-slate-800/40', 
+      bgHover: 'hover:bg-slate-800/60',
+      bgExpanded: 'bg-gradient-to-br from-emerald-500/5 via-slate-800/60 to-teal-500/5',
+      border: 'border-slate-700/50', 
+      borderExpanded: 'border-emerald-500/40',
+      icon: 'text-emerald-400',
+      iconBg: 'bg-emerald-500/15',
+      gradient: 'from-emerald-500 to-teal-500',
+      progressBar: 'bg-gradient-to-r from-emerald-500 to-teal-500'
+    },
+    green: { 
+      bg: 'bg-slate-800/40', 
+      bgHover: 'hover:bg-slate-800/60',
+      bgExpanded: 'bg-gradient-to-br from-green-500/5 via-slate-800/60 to-emerald-500/5',
+      border: 'border-slate-700/50', 
+      borderExpanded: 'border-green-500/40',
+      icon: 'text-green-400',
+      iconBg: 'bg-green-500/15',
+      gradient: 'from-green-500 to-emerald-500',
+      progressBar: 'bg-gradient-to-r from-green-500 to-emerald-500'
+    },
+    pink: { 
+      bg: 'bg-slate-800/40', 
+      bgHover: 'hover:bg-slate-800/60',
+      bgExpanded: 'bg-gradient-to-br from-pink-500/5 via-slate-800/60 to-rose-500/5',
+      border: 'border-slate-700/50', 
+      borderExpanded: 'border-pink-500/40',
+      icon: 'text-pink-400',
+      iconBg: 'bg-pink-500/15',
+      gradient: 'from-pink-500 to-rose-500',
+      progressBar: 'bg-gradient-to-r from-pink-500 to-rose-500'
+    },
   }
 
   const colors = colorClasses[section.color] || colorClasses.blue
 
+  // Section tips with enhanced styling
+  const sectionTips: Record<string, { emoji: string; text: string; color: string }> = {
+    bedrijf: { 
+      emoji: '💡', 
+      text: t('onboarding.sectionTip.bedrijf', { defaultValue: 'Hoe specifieker je bent, hoe beter we je website kunnen afstemmen op jouw doelgroep.' }),
+      color: 'blue'
+    },
+    branding: { 
+      emoji: '🎨', 
+      text: t('onboarding.sectionTip.branding', { defaultValue: 'Geen huisstijl? Geen probleem! Onze designers maken op basis van je voorkeuren een passende stijl.' }),
+      color: 'purple'
+    },
+    content: { 
+      emoji: '📝', 
+      text: t('onboarding.sectionTip.content', { defaultValue: 'Geen teksten of foto\'s? We regelen het! Selecteer de opties en we zorgen voor professionele content.' }),
+      color: 'amber'
+    },
+    pages: { 
+      emoji: '📄', 
+      text: t('onboarding.sectionTip.pages', { defaultValue: 'Selecteer de pagina\'s die je nodig hebt. Je kunt later altijd nog pagina\'s toevoegen.' }),
+      color: 'emerald'
+    },
+    contact: { 
+      emoji: '📞', 
+      text: t('onboarding.sectionTip.contact', { defaultValue: 'Zorg dat klanten je makkelijk kunnen bereiken. Vul alle contactgegevens in.' }),
+      color: 'green'
+    }
+  }
+
+  const currentTip = sectionTips[section.id]
+
   return (
     <motion.div
       id={`section-${section.id}`}
-      initial={{ opacity: 0, y: 10 }}
+      layout
+      initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
-      className={`rounded-xl border overflow-hidden transition-colors ${
+      transition={{ duration: 0.3, ease: 'easeOut' }}
+      className={`rounded-2xl border-2 overflow-hidden transition-all duration-300 ${
         isExpanded
-          ? `${colors.border} ${colors.bg}`
+          ? `${colors.bgExpanded} ${colors.borderExpanded} shadow-lg shadow-black/20`
           : isComplete
             ? darkMode
-              ? 'border-green-500/30 bg-green-500/5'
-              : 'border-green-500/30 bg-green-50'
+              ? 'border-green-500/40 bg-gradient-to-br from-green-500/5 to-emerald-500/5 hover:from-green-500/10 hover:to-emerald-500/10'
+              : 'border-green-500/40 bg-gradient-to-br from-green-50 to-emerald-50'
             : darkMode 
-              ? 'border-gray-700 bg-gray-800/30 hover:bg-gray-800/50' 
-              : 'border-gray-200 bg-white hover:bg-gray-50'
+              ? `${colors.border} ${colors.bg} ${colors.bgHover} cursor-pointer` 
+              : 'border-gray-200 bg-white hover:bg-gray-50 cursor-pointer'
       }`}
     >
-      {/* Section Header */}
+      {/* Section Header - Card Style */}
       <button
         type="button"
         onClick={onToggle}
-        className="w-full flex items-center gap-3 p-4 text-left"
+        className="w-full flex items-center gap-4 p-5 text-left group"
       >
-        {/* Completion indicator */}
-        {isComplete ? (
-          <CheckCircle2 className="w-6 h-6 text-green-500 flex-shrink-0" />
-        ) : (
-          <div className={`w-6 h-6 rounded-full border-2 flex items-center justify-center flex-shrink-0 text-xs font-bold ${
-            isExpanded 
-              ? `${colors.border} ${colors.icon}` 
-              : darkMode ? 'border-gray-600 text-gray-400' : 'border-gray-300 text-gray-500'
-          }`}>
-            {sectionNumber}
-          </div>
-        )}
+        {/* Icon with gradient background */}
+        <div className={`relative flex-shrink-0`}>
+          {isComplete ? (
+            <motion.div
+              initial={{ scale: 0 }}
+              animate={{ scale: 1 }}
+              className="w-12 h-12 rounded-xl bg-gradient-to-br from-green-500 to-emerald-500 flex items-center justify-center shadow-lg shadow-green-500/25"
+            >
+              <CheckCircle2 className="w-6 h-6 text-white" />
+            </motion.div>
+          ) : (
+            <div className={`w-12 h-12 rounded-xl ${colors.iconBg} flex items-center justify-center transition-transform group-hover:scale-105`}>
+              {(() => {
+                const IconComponent = SECTION_ICONS[section.icon]
+                return IconComponent ? (
+                  <IconComponent className={`w-6 h-6 ${colors.icon}`} />
+                ) : (
+                  <span className="text-2xl">{section.icon}</span>
+                )
+              })()}
+            </div>
+          )}
+          {/* Step number badge */}
+          {!isComplete && (
+            <div className={`absolute -top-1 -right-1 w-5 h-5 rounded-full bg-gradient-to-br ${colors.gradient} flex items-center justify-center text-[10px] font-bold text-white shadow-lg`}>
+              {sectionNumber}
+            </div>
+          )}
+        </div>
         
-        <div className="flex-1">
-          <div className="flex items-center gap-2">
-            {(() => {
-              const IconComponent = SECTION_ICONS[section.icon]
-              return IconComponent ? (
-                <IconComponent className={`w-5 h-5 ${
-                  isComplete 
-                    ? 'text-green-500' 
-                    : isExpanded 
-                      ? colors.icon 
-                      : darkMode ? 'text-gray-400' : 'text-gray-500'
-                }`} />
-              ) : (
-                <span className="text-lg">{section.icon}</span>
-              )
-            })()}
-            <span className={`font-semibold ${
+        {/* Title and description */}
+        <div className="flex-1 min-w-0">
+          <div className="flex items-center gap-2 mb-1">
+            <h3 className={`font-bold text-lg truncate ${
               isComplete 
-                ? 'text-green-500' 
+                ? 'text-green-400' 
                 : darkMode ? 'text-white' : 'text-gray-900'
             }`}>
               {getSectionText(section.id, 'title', section.title)}
-            </span>
-          </div>
-          <div className="flex items-center gap-2 mt-0.5">
-            <p className={`text-sm ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>
-              {getSectionText(section.id, 'description', section.description)}
-            </p>
-            {!isExpanded && (
-              <div className="flex items-center gap-2">
-                {/* Progress bar */}
-                <div className={`w-16 h-1.5 rounded-full overflow-hidden ${darkMode ? 'bg-gray-700' : 'bg-gray-200'}`}>
-                  <div 
-                    className={`h-full rounded-full transition-all duration-300 ${
-                      isComplete ? 'bg-green-500' : 'bg-primary-500'
-                    }`}
-                    style={{ width: `${(answeredCount / visibleQuestions.length) * 100}%` }}
-                  />
-                </div>
-                <span className={`text-xs font-medium ${
-                  isComplete 
-                    ? 'text-green-500' 
-                    : darkMode ? 'text-gray-400' : 'text-gray-500'
-                }`}>
-                  {answeredCount}/{visibleQuestions.length}
-                </span>
-              </div>
+            </h3>
+            {isComplete && (
+              <span className="flex-shrink-0 text-xs font-medium text-green-400 bg-green-500/10 px-2 py-0.5 rounded-full">
+                ✓ {t('onboarding.complete', { defaultValue: 'Klaar' })}
+              </span>
             )}
           </div>
+          <p className={`text-sm line-clamp-1 ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>
+            {getSectionText(section.id, 'description', section.description)}
+          </p>
+          
+          {/* Progress indicator - only when not expanded */}
+          {!isExpanded && !isComplete && (
+            <div className="mt-3 flex items-center gap-3">
+              <div className={`flex-1 h-1.5 rounded-full overflow-hidden ${darkMode ? 'bg-slate-700' : 'bg-gray-200'}`}>
+                <motion.div 
+                  initial={{ width: 0 }}
+                  animate={{ width: `${progressPercentage}%` }}
+                  transition={{ duration: 0.5, ease: 'easeOut' }}
+                  className={`h-full rounded-full ${colors.progressBar}`}
+                />
+              </div>
+              <span className={`text-xs font-medium tabular-nums ${colors.icon}`}>
+                {answeredCount}/{visibleQuestions.length}
+              </span>
+            </div>
+          )}
         </div>
 
-        {isExpanded ? (
-          <ChevronUp className={`w-5 h-5 ${darkMode ? 'text-gray-400' : 'text-gray-500'}`} />
-        ) : (
-          <ChevronDown className={`w-5 h-5 ${darkMode ? 'text-gray-400' : 'text-gray-500'}`} />
-        )}
+        {/* Expand/Collapse indicator */}
+        <div className={`flex-shrink-0 w-8 h-8 rounded-lg flex items-center justify-center transition-all ${
+          isExpanded 
+            ? `${colors.iconBg}` 
+            : darkMode ? 'bg-slate-700/50 group-hover:bg-slate-700' : 'bg-gray-100 group-hover:bg-gray-200'
+        }`}>
+          <motion.div
+            animate={{ rotate: isExpanded ? 180 : 0 }}
+            transition={{ duration: 0.2 }}
+          >
+            <ChevronDown className={`w-5 h-5 ${isExpanded ? colors.icon : darkMode ? 'text-gray-400' : 'text-gray-500'}`} />
+          </motion.div>
+        </div>
       </button>
 
       {/* Section Content */}
@@ -1558,131 +1680,210 @@ function SectionComponent({
             initial={{ height: 0, opacity: 0 }}
             animate={{ height: 'auto', opacity: 1 }}
             exit={{ height: 0, opacity: 0 }}
-            transition={{ duration: 0.2 }}
+            transition={{ duration: 0.3, ease: 'easeOut' }}
             className="overflow-hidden"
           >
-            <div className={`p-4 pt-0 space-y-6`}>
-              {/* Section Tip */}
-              {sectionNumber === 1 && !isComplete && (
-                <div className={`p-3 rounded-lg text-sm ${
-                  darkMode ? 'bg-blue-500/10 text-blue-300' : 'bg-blue-50 text-blue-700'
-                }`}>
-                  💡 {t('onboarding.sectionTip.bedrijf', { defaultValue: 'Tip: Hoe specifieker je bent, hoe beter we je website kunnen afstemmen op jouw doelgroep.' })}
-                </div>
-              )}
-              {section.id === 'branding' && !isComplete && (
-                <div className={`p-3 rounded-lg text-sm ${
-                  darkMode ? 'bg-purple-500/10 text-purple-300' : 'bg-purple-50 text-purple-700'
-                }`}>
-                  🎨 {t('onboarding.sectionTip.branding', { defaultValue: 'Tip: Geen huisstijl? Geen probleem! Onze designers maken op basis van je voorkeuren een passende stijl.' })}
-                </div>
-              )}
-              {section.id === 'content' && !isComplete && (
-                <div className={`p-3 rounded-lg text-sm ${
-                  darkMode ? 'bg-amber-500/10 text-amber-300' : 'bg-amber-50 text-amber-700'
-                }`}>
-                  📝 {t('onboarding.sectionTip.content', { defaultValue: 'Tip: Geen teksten of foto\'s? We regelen het! Selecteer de opties en we zorgen voor professionele content.' })}
-                </div>
+            <div className="px-5 pb-5">
+              {/* Divider with gradient */}
+              <div className={`h-px mb-5 bg-gradient-to-r from-transparent via-${section.color}-500/30 to-transparent`} />
+              
+              {/* Section Tip - Enhanced card style */}
+              {currentTip && !isComplete && (
+                <motion.div
+                  initial={{ opacity: 0, x: -10 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ delay: 0.1 }}
+                  className={`mb-6 p-4 rounded-xl border ${
+                    darkMode 
+                      ? `bg-gradient-to-r from-${section.color}-500/10 to-transparent border-${section.color}-500/20` 
+                      : `bg-${section.color}-50 border-${section.color}-200`
+                  }`}
+                >
+                  <div className="flex items-start gap-3">
+                    <span className="text-2xl flex-shrink-0">{currentTip.emoji}</span>
+                    <div>
+                      <span className={`text-xs font-semibold uppercase tracking-wider ${colors.icon}`}>
+                        {t('onboarding.tip', { defaultValue: 'Tip' })}
+                      </span>
+                      <p className={`text-sm mt-1 ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>
+                        {currentTip.text}
+                      </p>
+                    </div>
+                  </div>
+                </motion.div>
               )}
               
-              {visibleQuestions.map((question) => (
-                <div key={question.id} className="space-y-2">
-                  {/* Question Label */}
-                  <div className="flex items-start justify-between gap-2">
-                    <div>
-                      <label className={`font-medium ${darkMode ? 'text-white' : 'text-gray-900'}`}>
-                        {getQuestionText(question.id, 'label', question.label)}
-                        {question.required && <span className="text-red-500 ml-1">*</span>}
-                      </label>
-                      {question.description && (
-                        <p className={`text-sm mt-0.5 ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>
-                          {getQuestionText(question.id, 'description', question.description)}
-                        </p>
-                      )}
-                    </div>
-                    {question.helpText && (
-                      <div className="group relative">
-                        <HelpCircle className={`w-4 h-4 ${darkMode ? 'text-gray-500' : 'text-gray-400'}`} />
-                        <div className="absolute right-0 top-6 w-48 p-2 rounded-lg bg-gray-900 text-white text-xs hidden group-hover:block z-10">
-                          {getQuestionText(question.id, 'helpText', question.helpText)}
-                        </div>
-                      </div>
-                    )}
-                  </div>
-
-                  {/* Question Input */}
-                  <QuestionRenderer
-                    question={question}
-                    value={answers[question.id]}
-                    onChange={(value) => onChange(question.id, value)}
-                    disabled={false}
-                    darkMode={darkMode}
-                    googleDriveUrl={googleDriveUrl}
-                    packageType={packageType}
-                    onUpgradeClick={onUpgradeClick}
-                    allAnswers={answers}
-                    onAddExtraAnswer={(key, value) => onChange(key, value)}
-                  />
-
-                  {/* Inline Upload Button */}
-                  {question.showUploadButton && googleDriveUrl && question.type !== 'upload' && (
-                    <a
-                      href={googleDriveUrl}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className={`inline-flex items-center gap-2 px-3 py-2 rounded-lg text-sm transition ${
-                        darkMode 
-                          ? 'bg-gray-700 hover:bg-gray-600 text-white' 
-                          : 'bg-gray-100 hover:bg-gray-200 text-gray-700'
+              {/* Questions Container */}
+              <div className="space-y-6">
+                {visibleQuestions.map((question, qIndex) => {
+                  const hasAnswer = (() => {
+                    const answer = answers[question.id]
+                    if (Array.isArray(answer)) return answer.length > 0
+                    return answer !== undefined && answer !== '' && answer !== null
+                  })()
+                  
+                  return (
+                    <motion.div 
+                      key={question.id}
+                      initial={{ opacity: 0, y: 10 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ delay: 0.05 * qIndex }}
+                      className={`relative p-4 rounded-xl border transition-all ${
+                        hasAnswer
+                          ? darkMode
+                            ? 'bg-slate-800/50 border-green-500/30'
+                            : 'bg-green-50/50 border-green-200'
+                          : darkMode
+                            ? 'bg-slate-800/30 border-slate-700/50 hover:border-slate-600'
+                            : 'bg-gray-50 border-gray-200 hover:border-gray-300'
                       }`}
                     >
-                      <Upload className="w-4 h-4" />
-                      {question.uploadButtonText || 'Upload'}
-                      <ExternalLink className="w-3 h-3" />
-                    </a>
-                  )}
-
-                  {/* Stock Photo Suggestions - show after hasPhotos question when user needs stock photos */}
-                  {question.id === 'hasPhotos' && (answers['hasPhotos'] === 'no' || answers['hasPhotos'] === 'some') && (
-                    <div className={`mt-4 p-4 rounded-xl border ${
-                      darkMode ? 'bg-gray-800/50 border-gray-700' : 'bg-gray-50 border-gray-200'
-                    }`}>
-                      <div className="flex items-center gap-2 mb-3">
-                        <Image className="w-5 h-5 text-purple-500" />
-                        <span className={`font-medium ${darkMode ? 'text-white' : 'text-gray-900'}`}>
-                          {t('inlineOnboardingNew.stockPhotos.title')}
-                        </span>
+                      {/* Question answered indicator */}
+                      {hasAnswer && (
+                        <div className="absolute top-3 right-3">
+                          <div className="w-5 h-5 rounded-full bg-green-500 flex items-center justify-center">
+                            <Check className="w-3 h-3 text-white" />
+                          </div>
+                        </div>
+                      )}
+                      
+                      {/* Question Label */}
+                      <div className="mb-3">
+                        <div className="flex items-start gap-2 pr-8">
+                          <label className={`font-semibold ${darkMode ? 'text-white' : 'text-gray-900'}`}>
+                            {getQuestionText(question.id, 'label', question.label)}
+                            {question.required && (
+                              <span className="text-red-400 ml-1">*</span>
+                            )}
+                          </label>
+                          {question.helpText && (
+                            <div className="group relative flex-shrink-0">
+                              <HelpCircle className={`w-4 h-4 cursor-help ${darkMode ? 'text-gray-500 hover:text-gray-400' : 'text-gray-400 hover:text-gray-500'}`} />
+                              <div className="absolute left-0 top-6 w-56 p-3 rounded-xl bg-slate-900 text-white text-xs hidden group-hover:block z-20 shadow-xl border border-slate-700">
+                                <div className="font-medium text-primary-400 mb-1">{t('onboarding.helpTitle', { defaultValue: 'Hulp' })}</div>
+                                {getQuestionText(question.id, 'helpText', question.helpText)}
+                              </div>
+                            </div>
+                          )}
+                        </div>
+                        {question.description && (
+                          <p className={`text-sm mt-1 ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>
+                            {getQuestionText(question.id, 'description', question.description)}
+                          </p>
+                        )}
                       </div>
-                      <p className={`text-sm mb-4 ${darkMode ? 'text-gray-400' : 'text-gray-600'}`}>
-                        {t('inlineOnboardingNew.stockPhotos.description')}
-                      </p>
-                      <StockPhotoSuggestions
-                        businessName={answers['companyName'] || ''}
-                        businessDescription={answers['businessDescription'] || ''}
-                        selectedPhotos={selectedStockPhotos}
-                        onSelectPhoto={(url) => onSelectStockPhoto?.(url)}
-                        onDeselectPhoto={(url) => onDeselectStockPhoto?.(url)}
-                        maxSelections={10}
+
+                      {/* Question Input */}
+                      <QuestionRenderer
+                        question={question}
+                        value={answers[question.id]}
+                        onChange={(value) => onChange(question.id, value)}
+                        disabled={false}
                         darkMode={darkMode}
-                        compact={true}
+                        googleDriveUrl={googleDriveUrl}
+                        packageType={packageType}
+                        onUpgradeClick={onUpgradeClick}
+                        allAnswers={answers}
+                        onAddExtraAnswer={(key, value) => onChange(key, value)}
                       />
+
+                      {/* Inline Upload Button */}
+                      {question.showUploadButton && googleDriveUrl && question.type !== 'upload' && (
+                        <a
+                          href={googleDriveUrl}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className={`mt-3 inline-flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-medium transition-all ${
+                            darkMode 
+                              ? 'bg-slate-700 hover:bg-slate-600 text-white border border-slate-600' 
+                              : 'bg-gray-100 hover:bg-gray-200 text-gray-700 border border-gray-200'
+                          }`}
+                        >
+                          <Upload className="w-4 h-4" />
+                          {question.uploadButtonText || 'Upload'}
+                          <ExternalLink className="w-3.5 h-3.5 opacity-60" />
+                        </a>
+                      )}
+
+                      {/* Stock Photo Suggestions */}
+                      {question.id === 'hasPhotos' && (answers['hasPhotos'] === 'no' || answers['hasPhotos'] === 'some') && (
+                        <motion.div
+                          initial={{ opacity: 0, y: 10 }}
+                          animate={{ opacity: 1, y: 0 }}
+                          className={`mt-4 p-4 rounded-xl border ${
+                            darkMode ? 'bg-slate-800/80 border-purple-500/30' : 'bg-purple-50 border-purple-200'
+                          }`}
+                        >
+                          <div className="flex items-center gap-2 mb-3">
+                            <div className="w-8 h-8 rounded-lg bg-purple-500/20 flex items-center justify-center">
+                              <Image className="w-4 h-4 text-purple-400" />
+                            </div>
+                            <span className={`font-semibold ${darkMode ? 'text-white' : 'text-gray-900'}`}>
+                              {t('inlineOnboardingNew.stockPhotos.title')}
+                            </span>
+                          </div>
+                          <p className={`text-sm mb-4 ${darkMode ? 'text-gray-400' : 'text-gray-600'}`}>
+                            {t('inlineOnboardingNew.stockPhotos.description')}
+                          </p>
+                          <StockPhotoSuggestions
+                            businessName={answers['companyName'] || ''}
+                            businessDescription={answers['businessDescription'] || ''}
+                            selectedPhotos={selectedStockPhotos}
+                            onSelectPhoto={(url) => onSelectStockPhoto?.(url)}
+                            onDeselectPhoto={(url) => onDeselectStockPhoto?.(url)}
+                            maxSelections={10}
+                            darkMode={darkMode}
+                            compact={true}
+                          />
+                        </motion.div>
+                      )}
+                    </motion.div>
+                  )
+                })}
+              </div>
+
+              {/* Section Footer with Progress & Next Button */}
+              <div className={`mt-6 pt-5 border-t ${darkMode ? 'border-slate-700/50' : 'border-gray-200'}`}>
+                <div className="flex items-center justify-between">
+                  {/* Progress summary */}
+                  <div className="flex items-center gap-3">
+                    <div className={`flex items-center gap-1.5 text-sm ${
+                      progressPercentage === 100 ? 'text-green-400' : darkMode ? 'text-gray-400' : 'text-gray-500'
+                    }`}>
+                      {progressPercentage === 100 ? (
+                        <>
+                          <CheckCircle2 className="w-4 h-4" />
+                          <span className="font-medium">{t('onboarding.sectionComplete', { defaultValue: 'Sectie voltooid!' })}</span>
+                        </>
+                      ) : (
+                        <>
+                          <span>{answeredCount} van {visibleQuestions.length} {t('onboarding.questionsAnswered', { defaultValue: 'vragen beantwoord' })}</span>
+                        </>
+                      )}
                     </div>
+                  </div>
+                  
+                  {/* Next section button */}
+                  {sectionNumber < totalSections && onNext && (
+                    <motion.button
+                      whileHover={{ scale: 1.02 }}
+                      whileTap={{ scale: 0.98 }}
+                      type="button"
+                      onClick={onNext}
+                      className={`px-5 py-2.5 rounded-xl font-medium text-sm transition-all flex items-center gap-2 ${
+                        progressPercentage === 100
+                          ? `bg-gradient-to-r ${colors.gradient} text-white shadow-lg shadow-${section.color}-500/25 hover:shadow-${section.color}-500/40`
+                          : darkMode
+                            ? 'bg-slate-700 text-white hover:bg-slate-600'
+                            : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                      }`}
+                    >
+                      {t('onboarding.nextSection', { defaultValue: 'Volgende sectie' })}
+                      <ChevronRight className="w-4 h-4" />
+                    </motion.button>
                   )}
                 </div>
-              ))}
-
-              {/* Next Section Button */}
-              {sectionNumber < totalSections && onNext && (
-                <div className="pt-4 flex justify-end">
-                  <button
-                    type="button"
-                    onClick={onNext}
-                    className="px-4 py-2 bg-primary-500 hover:bg-primary-600 text-white text-sm font-medium rounded-lg transition-colors"
-                  >
-                    {t('onboarding.next')} →
-                  </button>
-                </div>
-              )}
+              </div>
             </div>
           </motion.div>
         )}
@@ -1902,113 +2103,275 @@ export default function InlineOnboarding({
   // Count completed sections
   const completedSections = sections.filter(s => isSectionComplete(s)).length
 
+  // Calculate estimated time remaining (2 min per incomplete section)
+  const estimatedMinutes = (sections.length - completedSections) * 2
+
   return (
-    <div className="space-y-4">
-      {/* Welcome message for new users */}
-      {completionPercentage < 20 && (
+    <div className="space-y-5">
+      {/* Hero Welcome Card - Typeform/Notion style */}
+      {completionPercentage < 25 && (
         <motion.div
-          initial={{ opacity: 0, y: -10 }}
+          initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
-          className={`p-4 rounded-xl border ${
+          transition={{ duration: 0.5, ease: 'easeOut' }}
+          className={`relative overflow-hidden rounded-2xl border-2 ${
             darkMode 
-              ? 'bg-gradient-to-r from-primary-500/10 to-indigo-500/10 border-primary-500/30' 
-              : 'bg-gradient-to-r from-primary-50 to-indigo-50 border-primary-200'
+              ? 'bg-gradient-to-br from-slate-800 via-slate-800 to-indigo-900/30 border-indigo-500/30' 
+              : 'bg-gradient-to-br from-white via-indigo-50 to-purple-50 border-indigo-200'
           }`}
         >
-          <div className="flex items-start gap-3">
-            <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-primary-500 to-indigo-500 flex items-center justify-center flex-shrink-0">
-              <Sparkles className="w-5 h-5 text-white" />
-            </div>
-            <div>
-              <h4 className={`font-semibold ${darkMode ? 'text-white' : 'text-gray-900'}`}>
-                {t('onboarding.welcomeTitle', { defaultValue: 'Welkom! Laten we beginnen' })}
-              </h4>
-              <p className={`text-sm mt-1 ${darkMode ? 'text-gray-400' : 'text-gray-600'}`}>
-                {t('onboarding.welcomeDescription', { defaultValue: 'Beantwoord de vragen hieronder zodat we jouw perfecte website kunnen maken. Je voortgang wordt automatisch opgeslagen.' })}
-              </p>
+          {/* Decorative gradient orbs */}
+          <div className="absolute top-0 right-0 w-64 h-64 bg-gradient-to-br from-primary-500/20 to-indigo-500/20 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2" />
+          <div className="absolute bottom-0 left-0 w-48 h-48 bg-gradient-to-br from-purple-500/15 to-pink-500/15 rounded-full blur-3xl translate-y-1/2 -translate-x-1/2" />
+          
+          <div className="relative p-6 sm:p-8">
+            <div className="flex flex-col sm:flex-row items-start gap-5">
+              {/* Animated icon */}
+              <motion.div
+                initial={{ scale: 0, rotate: -180 }}
+                animate={{ scale: 1, rotate: 0 }}
+                transition={{ delay: 0.2, type: 'spring', stiffness: 200 }}
+                className="flex-shrink-0"
+              >
+                <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-primary-500 via-indigo-500 to-purple-500 flex items-center justify-center shadow-xl shadow-indigo-500/30">
+                  <Sparkles className="w-8 h-8 text-white" />
+                </div>
+              </motion.div>
+              
+              <div className="flex-1">
+                <motion.h3
+                  initial={{ opacity: 0, x: -20 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ delay: 0.3 }}
+                  className={`text-2xl sm:text-3xl font-bold ${darkMode ? 'text-white' : 'text-gray-900'}`}
+                >
+                  {t('onboarding.welcomeTitle', { defaultValue: 'Laten we je website bouwen! �' })}
+                </motion.h3>
+                <motion.p
+                  initial={{ opacity: 0, x: -20 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ delay: 0.4 }}
+                  className={`text-base mt-2 ${darkMode ? 'text-gray-300' : 'text-gray-600'}`}
+                >
+                  {t('onboarding.welcomeDescription', { defaultValue: 'Beantwoord een paar vragen zodat we jouw perfecte website kunnen maken. Duurt ongeveer 5-10 minuten en je voortgang wordt automatisch opgeslagen.' })}
+                </motion.p>
+                
+                {/* Section pills with stagger animation */}
+                <motion.div 
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  transition={{ delay: 0.5 }}
+                  className="flex flex-wrap gap-2 mt-4"
+                >
+                  {sections.map((section, idx) => {
+                    const IconComponent = SECTION_ICONS[section.icon]
+                    const isComplete = isSectionComplete(section)
+                    return (
+                      <motion.button
+                        key={section.id}
+                        initial={{ opacity: 0, scale: 0.8 }}
+                        animate={{ opacity: 1, scale: 1 }}
+                        transition={{ delay: 0.5 + idx * 0.05 }}
+                        onClick={() => {
+                          setExpandedSection(section.id)
+                          setTimeout(() => {
+                            document.getElementById(`section-${section.id}`)?.scrollIntoView({ behavior: 'smooth', block: 'start' })
+                          }, 100)
+                        }}
+                        className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium transition-all cursor-pointer ${
+                          isComplete
+                            ? darkMode ? 'bg-green-500/20 text-green-400 border border-green-500/30' : 'bg-green-100 text-green-700 border border-green-200'
+                            : expandedSection === section.id
+                              ? darkMode ? 'bg-primary-500/20 text-primary-400 border border-primary-500/30' : 'bg-primary-100 text-primary-700 border border-primary-200'
+                              : darkMode ? 'bg-slate-700/50 text-gray-300 border border-slate-600 hover:bg-slate-700' : 'bg-white text-gray-600 border border-gray-200 hover:bg-gray-50'
+                        }`}
+                      >
+                        {isComplete ? (
+                          <CheckCircle2 className="w-3.5 h-3.5" />
+                        ) : IconComponent ? (
+                          <IconComponent className="w-3.5 h-3.5" />
+                        ) : null}
+                        <span>{section.title}</span>
+                      </motion.button>
+                    )
+                  })}
+                </motion.div>
+              </div>
             </div>
           </div>
         </motion.div>
       )}
 
-      {/* Progress Bar */}
-      <div className={`p-4 rounded-xl ${darkMode ? 'bg-gray-800' : 'bg-gray-100'}`}>
-        <div className="flex items-center justify-between mb-2">
+      {/* Enhanced Progress Bar */}
+      <motion.div
+        initial={{ opacity: 0, y: 10 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.1 }}
+        className={`p-5 rounded-2xl border-2 ${
+          darkMode 
+            ? 'bg-slate-800/60 border-slate-700/50' 
+            : 'bg-white border-gray-200'
+        }`}
+      >
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-4">
+          <div className="flex items-center gap-4">
+            {/* Circular progress indicator */}
+            <div className="relative w-14 h-14 flex-shrink-0">
+              <svg className="w-14 h-14 transform -rotate-90">
+                <circle
+                  cx="28"
+                  cy="28"
+                  r="24"
+                  stroke="currentColor"
+                  strokeWidth="4"
+                  fill="none"
+                  className={darkMode ? 'text-slate-700' : 'text-gray-200'}
+                />
+                <motion.circle
+                  cx="28"
+                  cy="28"
+                  r="24"
+                  stroke="url(#progressGradient)"
+                  strokeWidth="4"
+                  fill="none"
+                  strokeLinecap="round"
+                  initial={{ strokeDasharray: '0 150.8' }}
+                  animate={{ strokeDasharray: `${completionPercentage * 1.508} 150.8` }}
+                  transition={{ duration: 0.8, ease: 'easeOut' }}
+                />
+                <defs>
+                  <linearGradient id="progressGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+                    <stop offset="0%" stopColor={completionPercentage === 100 ? '#10B981' : '#6366F1'} />
+                    <stop offset="100%" stopColor={completionPercentage === 100 ? '#34D399' : '#8B5CF6'} />
+                  </linearGradient>
+                </defs>
+              </svg>
+              <div className="absolute inset-0 flex items-center justify-center">
+                <span className={`text-sm font-bold ${
+                  completionPercentage === 100 ? 'text-green-400' : darkMode ? 'text-white' : 'text-gray-900'
+                }`}>
+                  {completionPercentage}%
+                </span>
+              </div>
+            </div>
+            
+            <div>
+              <h4 className={`font-semibold ${darkMode ? 'text-white' : 'text-gray-900'}`}>
+                {completionPercentage === 100 
+                  ? t('onboarding.allDone', { defaultValue: 'Alles ingevuld! 🎉' })
+                  : t('onboarding.progressTitle', { defaultValue: 'Je voortgang' })
+                }
+              </h4>
+              <p className={`text-sm ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>
+                {completedSections} van {sections.length} {t('onboarding.sectionsComplete', { defaultValue: 'secties voltooid' })}
+                {estimatedMinutes > 0 && completionPercentage < 100 && (
+                  <span className="ml-2 opacity-75">• ~{estimatedMinutes} min</span>
+                )}
+              </p>
+            </div>
+          </div>
+          
+          {/* Save status */}
           <div className="flex items-center gap-3">
-            <span className={`text-sm font-medium ${darkMode ? 'text-white' : 'text-gray-900'}`}>
-              {t('onboarding.progressLabel', { defaultValue: 'Voortgang' })}
-            </span>
-            <span className={`text-xs px-2 py-0.5 rounded-full ${
-              darkMode ? 'bg-gray-700 text-gray-300' : 'bg-gray-200 text-gray-600'
-            }`}>
-              {completedSections}/{sections.length} {t('onboarding.sectionsComplete', { defaultValue: 'secties' })}
-            </span>
-          </div>
-          <div className="flex items-center gap-2">
             {isSaving ? (
-              <span className="flex items-center gap-1 text-xs text-gray-500">
-                <Loader2 className="w-3 h-3 animate-spin" />
+              <motion.span
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                className={`flex items-center gap-2 text-sm ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}
+              >
+                <Loader2 className="w-4 h-4 animate-spin" />
                 {t('onboarding.saving', { defaultValue: 'Opslaan...' })}
-              </span>
+              </motion.span>
             ) : lastSaved && (
-              <span className="flex items-center gap-1 text-xs text-green-500">
-                <Check className="w-3 h-3" />
+              <motion.span
+                initial={{ opacity: 0, scale: 0.9 }}
+                animate={{ opacity: 1, scale: 1 }}
+                className="flex items-center gap-2 text-sm text-green-500"
+              >
+                <div className="w-5 h-5 rounded-full bg-green-500/20 flex items-center justify-center">
+                  <Check className="w-3 h-3" />
+                </div>
                 {t('onboarding.saved', { defaultValue: 'Opgeslagen' })}
-              </span>
+              </motion.span>
             )}
-            <span className={`text-sm font-bold ${
-              completionPercentage === 100 ? 'text-green-500' : darkMode ? 'text-white' : 'text-gray-900'
-            }`}>
-              {completionPercentage}%
-            </span>
           </div>
-        </div>
-        <div className={`h-2.5 rounded-full overflow-hidden ${darkMode ? 'bg-gray-700' : 'bg-gray-200'}`}>
-          <motion.div
-            initial={{ width: 0 }}
-            animate={{ width: `${completionPercentage}%` }}
-            transition={{ duration: 0.5, ease: 'easeOut' }}
-            className={`h-full rounded-full ${
-              completionPercentage === 100 
-                ? 'bg-gradient-to-r from-green-500 to-emerald-400' 
-                : 'bg-gradient-to-r from-primary-500 to-primary-400'
-            }`}
-          />
         </div>
         
-        {/* Motivational message based on progress */}
+        {/* Section progress dots */}
+        <div className="flex items-center gap-1.5">
+          {sections.map((section) => {
+            const isComplete = isSectionComplete(section)
+            const isCurrent = expandedSection === section.id
+            return (
+              <motion.button
+                key={section.id}
+                onClick={() => {
+                  setExpandedSection(section.id)
+                  setTimeout(() => {
+                    document.getElementById(`section-${section.id}`)?.scrollIntoView({ behavior: 'smooth', block: 'start' })
+                  }, 100)
+                }}
+                className={`flex-1 h-2 rounded-full transition-all cursor-pointer ${
+                  isComplete
+                    ? 'bg-green-500'
+                    : isCurrent
+                      ? 'bg-gradient-to-r from-primary-500 to-indigo-500'
+                      : darkMode ? 'bg-slate-700 hover:bg-slate-600' : 'bg-gray-200 hover:bg-gray-300'
+                }`}
+                title={section.title}
+                whileHover={{ scaleY: 1.5 }}
+              />
+            )
+          })}
+        </div>
+        
+        {/* Motivational message */}
         {completionPercentage > 0 && completionPercentage < 100 && (
-          <p className={`text-xs mt-2 ${darkMode ? 'text-gray-500' : 'text-gray-400'}`}>
-            {completionPercentage < 30 && t('onboarding.motivationStart', { defaultValue: 'Goed bezig! Je bent op weg.' })}
-            {completionPercentage >= 30 && completionPercentage < 60 && t('onboarding.motivationMid', { defaultValue: 'Halverwege! Nog even doorzetten.' })}
-            {completionPercentage >= 60 && completionPercentage < 90 && t('onboarding.motivationAlmost', { defaultValue: 'Bijna klaar! Nog een paar vragen.' })}
-            {completionPercentage >= 90 && t('onboarding.motivationFinal', { defaultValue: 'Laatste stukje! Je bent er bijna.' })}
-          </p>
+          <motion.p
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            className={`text-sm mt-4 flex items-center gap-2 ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}
+          >
+            {completionPercentage < 30 && (
+              <><Rocket className="w-4 h-4 text-primary-400" /> {t('onboarding.motivationStart', { defaultValue: 'Goed begin! Je bent op weg naar een mooie website.' })}</>
+            )}
+            {completionPercentage >= 30 && completionPercentage < 60 && (
+              <><span className="text-lg">💪</span> {t('onboarding.motivationMid', { defaultValue: 'Lekker bezig! Je bent al halverwege.' })}</>
+            )}
+            {completionPercentage >= 60 && completionPercentage < 90 && (
+              <><span className="text-lg">🎯</span> {t('onboarding.motivationAlmost', { defaultValue: 'Bijna klaar! Nog een paar vragen te gaan.' })}</>
+            )}
+            {completionPercentage >= 90 && (
+              <><Trophy className="w-4 h-4 text-amber-400" /> {t('onboarding.motivationFinal', { defaultValue: 'Laatste stukje! Je bent er bijna.' })}</>
+            )}
+          </motion.p>
         )}
-      </div>
+      </motion.div>
 
       {/* Sections */}
-      {sections.map((section, index) => (
-        <SectionComponent
-          key={section.id}
-          section={section}
-          answers={answers}
-          onChange={handleChange}
-          isExpanded={expandedSection === section.id}
-          onToggle={() => toggleSection(section.id)}
-          onNext={index < sections.length - 1 ? () => goToNextSection(section.id) : undefined}
-          isComplete={isSectionComplete(section)}
-          darkMode={darkMode}
-          googleDriveUrl={googleDriveUrl}
-          sectionNumber={index + 1}
-          totalSections={sections.length}
-          packageType={packageType}
-          selectedStockPhotos={selectedStockPhotos}
-          onSelectStockPhoto={(url) => setSelectedStockPhotos(prev => [...prev, url])}
-          onDeselectStockPhoto={(url) => setSelectedStockPhotos(prev => prev.filter(p => p !== url))}
-          onUpgradeClick={() => setShowUpgradeModal(true)}
-        />
-      ))}
+      <div className="space-y-4">
+        {sections.map((section, index) => (
+          <SectionComponent
+            key={section.id}
+            section={section}
+            answers={answers}
+            onChange={handleChange}
+            isExpanded={expandedSection === section.id}
+            onToggle={() => toggleSection(section.id)}
+            onNext={index < sections.length - 1 ? () => goToNextSection(section.id) : undefined}
+            isComplete={isSectionComplete(section)}
+            darkMode={darkMode}
+            googleDriveUrl={googleDriveUrl}
+            sectionNumber={index + 1}
+            totalSections={sections.length}
+            packageType={packageType}
+            selectedStockPhotos={selectedStockPhotos}
+            onSelectStockPhoto={(url) => setSelectedStockPhotos(prev => [...prev, url])}
+            onDeselectStockPhoto={(url) => setSelectedStockPhotos(prev => prev.filter(p => p !== url))}
+            onUpgradeClick={() => setShowUpgradeModal(true)}
+          />
+        ))}
+      </div>
       
       {/* Upgrade Modal */}
       <UpgradeModal
@@ -2018,28 +2381,45 @@ export default function InlineOnboarding({
         projectId={projectId}
       />
 
-      {/* Completion Message */}
+      {/* Success Completion Card */}
       {completionPercentage === 100 && (
         <motion.div
-          initial={{ opacity: 0, y: 10 }}
-          animate={{ opacity: 1, y: 0 }}
-          className={`p-4 rounded-xl border ${
+          initial={{ opacity: 0, scale: 0.95 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ type: 'spring', stiffness: 200 }}
+          className={`relative overflow-hidden p-6 rounded-2xl border-2 ${
             darkMode 
-              ? 'bg-green-500/10 border-green-500/30' 
-              : 'bg-green-50 border-green-200'
+              ? 'bg-gradient-to-br from-green-500/10 via-emerald-500/10 to-teal-500/10 border-green-500/40' 
+              : 'bg-gradient-to-br from-green-50 via-emerald-50 to-teal-50 border-green-300'
           }`}
         >
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-xl bg-green-500 flex items-center justify-center">
-              <Sparkles className="w-5 h-5 text-white" />
-            </div>
+          {/* Decorative elements */}
+          <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-green-500/20 to-emerald-500/20 rounded-full blur-2xl" />
+          
+          <div className="relative flex items-start gap-4">
+            <motion.div
+              initial={{ scale: 0, rotate: -180 }}
+              animate={{ scale: 1, rotate: 0 }}
+              transition={{ type: 'spring', stiffness: 200, delay: 0.2 }}
+              className="w-14 h-14 rounded-2xl bg-gradient-to-br from-green-500 to-emerald-500 flex items-center justify-center shadow-xl shadow-green-500/30 flex-shrink-0"
+            >
+              <Trophy className="w-7 h-7 text-white" />
+            </motion.div>
             <div>
-              <h4 className={`font-semibold ${darkMode ? 'text-white' : 'text-gray-900'}`}>
-                {t('onboarding.allComplete')} 🎉
+              <h4 className={`text-xl font-bold ${darkMode ? 'text-white' : 'text-gray-900'}`}>
+                {t('onboarding.allComplete', { defaultValue: 'Geweldig! Alles is ingevuld 🎉' })}
               </h4>
-              <p className={`text-sm ${darkMode ? 'text-gray-400' : 'text-gray-600'}`}>
-                {t('onboarding.allCompleteDescription')}
+              <p className={`text-sm mt-1 ${darkMode ? 'text-gray-300' : 'text-gray-600'}`}>
+                {t('onboarding.allCompleteDescription', { defaultValue: 'Onze designers gaan nu aan de slag met jouw website. Je ontvangt binnenkort het eerste ontwerp!' })}
               </p>
+              <div className="flex items-center gap-2 mt-3">
+                <div className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium ${
+                  darkMode ? 'bg-green-500/20 text-green-400' : 'bg-green-100 text-green-700'
+                }`}>
+                  <CheckCircle2 className="w-3.5 h-3.5" />
+                  {sections.length} {t('onboarding.sectionsCompleted', { defaultValue: 'secties voltooid' })}
+                </div>
+              </div>
             </div>
           </div>
         </motion.div>

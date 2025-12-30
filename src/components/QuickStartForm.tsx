@@ -145,19 +145,31 @@ export default function QuickStartForm({
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-gray-50 to-white dark:from-gray-900 dark:to-gray-900 py-8 px-4">
-      <div className="max-w-md mx-auto">
-        {/* Header */}
+    <div className="min-h-screen bg-gradient-to-b from-gray-50 via-white to-gray-50 dark:from-gray-900 dark:via-gray-900 dark:to-gray-900 py-8 px-4 relative overflow-hidden">
+      {/* Background decoration */}
+      <div className="absolute inset-0 overflow-hidden pointer-events-none">
+        <div className="absolute top-1/4 left-1/2 -translate-x-1/2 w-[800px] h-[800px] bg-gradient-to-r from-primary-50/40 via-blue-50/30 to-purple-50/40 dark:from-primary-900/15 dark:via-blue-900/10 dark:to-purple-900/15 rounded-full blur-3xl" />
+        <div className="absolute bottom-0 -left-20 w-[300px] h-[300px] bg-gradient-to-br from-emerald-400/10 to-green-400/10 rounded-full blur-3xl" />
+        <div className="absolute top-20 -right-20 w-[300px] h-[300px] bg-gradient-to-br from-purple-400/10 to-pink-400/10 rounded-full blur-3xl" />
+      </div>
+
+      <div className="relative max-w-md mx-auto">
+        {/* Header - Enhanced */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           className="text-center mb-8"
         >
-          <div className={`inline-flex items-center gap-2 px-4 py-2 rounded-full bg-gradient-to-r ${config.gradient} text-white text-sm font-medium mb-4`}>
+          <motion.div 
+            initial={{ opacity: 0, scale: 0.9 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ delay: 0.1 }}
+            className={`inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-gradient-to-r ${config.gradient} text-white text-sm font-bold mb-5 shadow-lg`}
+          >
             <Sparkles className="w-4 h-4" />
             {t(`quickStartForm.services.${serviceType}`)}
-          </div>
-          <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white mb-2">
+          </motion.div>
+          <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white mb-3">
             {t('quickStartForm.header.title')}
           </h1>
           <p className="text-gray-600 dark:text-gray-400 text-sm sm:text-base">
@@ -165,19 +177,19 @@ export default function QuickStartForm({
           </p>
         </motion.div>
 
-        {/* Referral Discount Banner */}
+        {/* Referral Discount Banner - Enhanced */}
         {hasReferral && (
           <motion.div
             initial={{ opacity: 0, y: 10, scale: 0.95 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
-            className="mb-6 p-4 rounded-2xl bg-gradient-to-r from-purple-500/10 via-pink-500/5 to-purple-500/10 dark:from-purple-500/20 dark:via-pink-500/10 dark:to-purple-500/20 border border-purple-200 dark:border-purple-500/30 relative overflow-hidden"
+            className="mb-6 p-4 rounded-2xl bg-gradient-to-r from-purple-500/10 via-pink-500/5 to-purple-500/10 dark:from-purple-500/20 dark:via-pink-500/10 dark:to-purple-500/20 border-2 border-purple-200 dark:border-purple-500/30 relative overflow-hidden shadow-lg shadow-purple-500/10"
           >
             {/* Animated shimmer effect */}
             <div className="absolute inset-0 -translate-x-full animate-[shimmer_3s_infinite] bg-gradient-to-r from-transparent via-white/20 to-transparent" />
             
             <div className="flex items-center gap-3 sm:gap-4 relative">
-              <div className="flex-shrink-0 w-11 h-11 sm:w-12 sm:h-12 rounded-xl bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center shadow-lg shadow-purple-500/25">
-                <Gift className="w-5 h-5 sm:w-6 sm:h-6 text-white" />
+              <div className="flex-shrink-0 w-12 h-12 sm:w-14 sm:h-14 rounded-xl bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center shadow-lg shadow-purple-500/30">
+                <Gift className="w-6 h-6 sm:w-7 sm:h-7 text-white" />
               </div>
               <div className="min-w-0">
                 <p className="font-bold text-purple-700 dark:text-purple-300 text-base sm:text-lg">
@@ -191,13 +203,15 @@ export default function QuickStartForm({
           </motion.div>
         )}
 
-        {/* Form Card */}
+        {/* Form Card - Enhanced */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.1 }}
-          className="bg-white dark:bg-gray-800 rounded-2xl shadow-xl border border-gray-200 dark:border-gray-700 p-6 sm:p-8"
+          className="bg-gradient-to-br from-white to-gray-50 dark:from-gray-800 dark:to-gray-900 rounded-2xl shadow-xl border-2 border-gray-100 dark:border-gray-700 p-6 sm:p-8 relative overflow-hidden"
         >
+          {/* Subtle gradient accent at top */}
+          <div className={`absolute top-0 left-0 right-0 h-1 bg-gradient-to-r ${config.gradient}`} />
           <form onSubmit={handleSubmit} className="space-y-5">
             {/* Name */}
             <div>
@@ -298,13 +312,15 @@ export default function QuickStartForm({
               </div>
             )}
 
-            {/* Submit Button */}
-            <button
+            {/* Submit Button - Enhanced */}
+            <motion.button
               type="submit"
               disabled={!isValid || isSubmitting}
-              className={`w-full flex items-center justify-center gap-2 py-4 rounded-xl font-semibold text-white transition-all ${
+              whileHover={isValid && !isSubmitting ? { scale: 1.02 } : {}}
+              whileTap={isValid && !isSubmitting ? { scale: 0.98 } : {}}
+              className={`w-full flex items-center justify-center gap-2.5 py-4 rounded-xl font-bold text-white transition-all ${
                 isValid && !isSubmitting
-                  ? `bg-gradient-to-r ${config.gradient} hover:shadow-lg hover:scale-[1.02]`
+                  ? `bg-gradient-to-r ${config.gradient} hover:shadow-xl shadow-lg shadow-primary-500/25`
                   : 'bg-gray-300 dark:bg-gray-600 cursor-not-allowed'
               }`}
             >
@@ -319,19 +335,23 @@ export default function QuickStartForm({
                   <ArrowRight className="w-5 h-5" />
                 </>
               )}
-            </button>
+            </motion.button>
           </form>
 
-          {/* Trust badges */}
+          {/* Trust badges - Enhanced */}
           <div className="mt-6 pt-6 border-t border-gray-200 dark:border-gray-700">
             <div className="flex flex-col sm:flex-row items-center justify-center gap-3 sm:gap-6 text-xs text-gray-500 dark:text-gray-400">
-              <div className="flex items-center gap-1.5">
-                <Check className="w-4 h-4 text-green-500" />
-                <span>{t('quickStartForm.trust.freeDesign')}</span>
+              <div className="flex items-center gap-2">
+                <div className="w-5 h-5 rounded-md bg-gradient-to-br from-green-500 to-emerald-500 flex items-center justify-center">
+                  <Check className="w-3 h-3 text-white" />
+                </div>
+                <span className="font-medium">{t('quickStartForm.trust.freeDesign')}</span>
               </div>
-              <div className="flex items-center gap-1.5">
-                <Check className="w-4 h-4 text-green-500" />
-                <span>{t('quickStartForm.trust.payAfterApproval')}</span>
+              <div className="flex items-center gap-2">
+                <div className="w-5 h-5 rounded-md bg-gradient-to-br from-green-500 to-emerald-500 flex items-center justify-center">
+                  <Check className="w-3 h-3 text-white" />
+                </div>
+                <span className="font-medium">{t('quickStartForm.trust.payAfterApproval')}</span>
               </div>
             </div>
           </div>
@@ -350,38 +370,38 @@ export default function QuickStartForm({
           </motion.button>
         )}
 
-        {/* What happens next */}
+        {/* What happens next - Enhanced */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.2 }}
-          className="mt-8 bg-gray-50 dark:bg-gray-800/50 rounded-2xl p-5"
+          className="mt-8 bg-gradient-to-br from-gray-50 to-white dark:from-gray-800/50 dark:to-gray-900/50 rounded-2xl p-6 border-2 border-gray-100 dark:border-gray-700 shadow-lg"
         >
-          <h3 className="font-semibold text-gray-900 dark:text-white text-sm mb-3">
+          <h3 className="font-bold text-gray-900 dark:text-white text-base mb-4">
             {t('quickStartForm.whatHappensNext.title')}
           </h3>
-          <div className="space-y-3">
-            <div className="flex items-start gap-3">
-              <div className="w-6 h-6 rounded-full bg-primary-100 dark:bg-primary-900/30 flex items-center justify-center flex-shrink-0 mt-0.5">
-                <span className="text-primary-600 dark:text-primary-400 text-xs font-bold">1</span>
+          <div className="space-y-4">
+            <div className="flex items-start gap-4">
+              <div className="w-8 h-8 rounded-xl bg-gradient-to-br from-primary-500 to-blue-500 flex items-center justify-center flex-shrink-0 shadow-md shadow-primary-500/25">
+                <span className="text-white text-xs font-bold">1</span>
               </div>
-              <p className="text-sm text-gray-600 dark:text-gray-400">
+              <p className="text-sm text-gray-600 dark:text-gray-400 pt-1">
                 {t('quickStartForm.whatHappensNext.step1')}
               </p>
             </div>
-            <div className="flex items-start gap-3">
-              <div className="w-6 h-6 rounded-full bg-primary-100 dark:bg-primary-900/30 flex items-center justify-center flex-shrink-0 mt-0.5">
-                <span className="text-primary-600 dark:text-primary-400 text-xs font-bold">2</span>
+            <div className="flex items-start gap-4">
+              <div className="w-8 h-8 rounded-xl bg-gradient-to-br from-primary-500 to-blue-500 flex items-center justify-center flex-shrink-0 shadow-md shadow-primary-500/25">
+                <span className="text-white text-xs font-bold">2</span>
               </div>
-              <p className="text-sm text-gray-600 dark:text-gray-400">
+              <p className="text-sm text-gray-600 dark:text-gray-400 pt-1">
                 {t('quickStartForm.whatHappensNext.step2')}
               </p>
             </div>
-            <div className="flex items-start gap-3">
-              <div className="w-6 h-6 rounded-full bg-primary-100 dark:bg-primary-900/30 flex items-center justify-center flex-shrink-0 mt-0.5">
-                <span className="text-primary-600 dark:text-primary-400 text-xs font-bold">3</span>
+            <div className="flex items-start gap-4">
+              <div className="w-8 h-8 rounded-xl bg-gradient-to-br from-primary-500 to-blue-500 flex items-center justify-center flex-shrink-0 shadow-md shadow-primary-500/25">
+                <span className="text-white text-xs font-bold">3</span>
               </div>
-              <p className="text-sm text-gray-600 dark:text-gray-400">
+              <p className="text-sm text-gray-600 dark:text-gray-400 pt-1">
                 {t('quickStartForm.whatHappensNext.step3')}
               </p>
             </div>

@@ -123,13 +123,17 @@ export default function UpgradeModal({
           initial={{ opacity: 0, scale: 0.95, y: 20 }}
           animate={{ opacity: 1, scale: 1, y: 0 }}
           exit={{ opacity: 0, scale: 0.95, y: 20 }}
-          className="relative w-full max-w-2xl max-h-[90vh] overflow-y-auto bg-gray-900 border border-gray-800 rounded-2xl shadow-2xl"
+          transition={{ type: 'spring', stiffness: 300, damping: 25 }}
+          className="relative w-full max-w-2xl max-h-[90vh] overflow-y-auto bg-gradient-to-br from-gray-900 to-gray-950 border-2 border-gray-800 rounded-2xl shadow-2xl"
         >
+          {/* Gradient accent line */}
+          <div className="absolute top-0 left-0 right-0 h-1.5 bg-gradient-to-r from-purple-500 via-pink-500 to-rose-500 rounded-t-xl" />
+          
           {/* Header */}
-          <div className="sticky top-0 z-10 flex items-center justify-between p-6 bg-gray-900 border-b border-gray-800">
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center">
-                <Sparkles className="w-5 h-5 text-white" />
+          <div className="sticky top-0 z-10 flex items-center justify-between p-6 bg-gray-900/95 backdrop-blur-lg border-b border-gray-800">
+            <div className="flex items-center gap-4">
+              <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center shadow-lg shadow-purple-500/30">
+                <Sparkles className="w-6 h-6 text-white" />
               </div>
               <div>
                 <h2 className="text-xl font-bold text-white">
@@ -146,24 +150,26 @@ export default function UpgradeModal({
                 </p>
               </div>
             </div>
-            <button
+            <motion.button
               onClick={onClose}
-              className="p-2 text-gray-400 hover:text-white hover:bg-gray-800 rounded-lg transition-colors"
+              className="p-2.5 text-gray-400 hover:text-white hover:bg-gray-800 rounded-xl border-2 border-gray-700 transition-all"
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
             >
               <X className="w-5 h-5" />
-            </button>
+            </motion.button>
           </div>
 
           <div className="p-6">
             {!isConfirming ? (
               /* Package Selection */
-              <div className="space-y-4">
+              <div className="space-y-5">
                 {/* Current Package */}
-                <div className="p-4 rounded-xl bg-gray-800/50 border border-gray-700">
+                <div className="p-5 rounded-2xl bg-gradient-to-br from-gray-800/80 to-gray-900/80 border-2 border-gray-700">
                   <div className="flex items-center justify-between">
                     <div>
-                      <span className="text-sm text-gray-400">{t('upgrade.currentPackage', { defaultValue: 'Huidig pakket' })}</span>
-                      <h3 className="text-lg font-semibold text-white flex items-center gap-2">
+                      <span className="text-sm text-gray-400 font-medium">{t('upgrade.currentPackage', { defaultValue: 'Huidig pakket' })}</span>
+                      <h3 className="text-lg font-bold text-white flex items-center gap-2 mt-1">
                         <span>{currentPkg.icon}</span>
                         {currentPkg.name}
                       </h3>
@@ -176,20 +182,22 @@ export default function UpgradeModal({
                 </div>
 
                 {/* Available Upgrades */}
-                <div className="space-y-3">
-                  <h3 className="text-sm font-medium text-gray-400 uppercase tracking-wider">
+                <div className="space-y-4">
+                  <h3 className="text-sm font-semibold text-gray-400 uppercase tracking-wider">
                     {t('upgrade.availableUpgrades', { defaultValue: 'Beschikbare upgrades' })}
                   </h3>
                   
                   {availableUpgrades.map((pkg) => (
-                    <button
+                    <motion.button
                       key={pkg.id}
                       onClick={() => handleSelectPackage(pkg.id)}
-                      className={`w-full p-5 rounded-xl border-2 transition-all text-left ${
+                      className={`w-full p-6 rounded-2xl border-2 transition-all text-left ${
                         pkg.id === 'professional'
-                          ? 'bg-gradient-to-br from-purple-500/10 to-violet-500/10 border-purple-500/50 hover:border-purple-500'
-                          : 'bg-gradient-to-br from-amber-500/10 to-orange-500/10 border-amber-500/50 hover:border-amber-500'
+                          ? 'bg-gradient-to-br from-purple-500/10 to-violet-500/10 border-purple-500/50 hover:border-purple-500 hover:shadow-lg hover:shadow-purple-500/20'
+                          : 'bg-gradient-to-br from-amber-500/10 to-orange-500/10 border-amber-500/50 hover:border-amber-500 hover:shadow-lg hover:shadow-amber-500/20'
                       }`}
+                      whileHover={{ scale: 1.01 }}
+                      whileTap={{ scale: 0.99 }}
                     >
                       <div className="flex items-start justify-between mb-4">
                         <div>
@@ -197,7 +205,7 @@ export default function UpgradeModal({
                             <span className="text-2xl">{pkg.icon}</span>
                             <h4 className="text-xl font-bold text-white">{pkg.name}</h4>
                             {pkg.id === 'professional' && (
-                              <span className="px-2 py-0.5 text-xs font-medium bg-purple-500/20 text-purple-400 rounded-full">
+                              <span className="px-3 py-1 text-xs font-bold bg-gradient-to-r from-purple-500 to-pink-500 text-white rounded-full shadow-lg shadow-purple-500/30">
                                 {t('upgrade.popular', { defaultValue: 'Populair' })}
                               </span>
                             )}
@@ -224,21 +232,23 @@ export default function UpgradeModal({
                         ))}
                       </div>
 
-                      <div className="mt-4 flex items-center justify-end gap-2 text-sm font-medium text-white">
+                      <div className="mt-5 flex items-center justify-end gap-2 text-sm font-semibold text-white">
                         {t('upgrade.selectPackage', { defaultValue: 'Selecteer pakket' })}
                         <ArrowRight className="w-4 h-4" />
                       </div>
-                    </button>
+                    </motion.button>
                   ))}
                 </div>
 
                 {availableUpgrades.length === 0 && (
-                  <div className="p-6 text-center text-gray-400">
-                    <Sparkles className="w-12 h-12 mx-auto mb-3 text-green-500" />
-                    <h3 className="text-lg font-semibold text-white mb-1">
+                  <div className="p-8 text-center">
+                    <div className="w-16 h-16 mx-auto mb-4 bg-gradient-to-br from-green-500 to-emerald-500 rounded-2xl flex items-center justify-center shadow-lg shadow-green-500/30">
+                      <Sparkles className="w-8 h-8 text-white" />
+                    </div>
+                    <h3 className="text-xl font-bold text-white mb-2">
                       {t('upgrade.maxPackage', { defaultValue: 'Je hebt al het hoogste pakket!' })}
                     </h3>
-                    <p className="text-sm">
+                    <p className="text-sm text-gray-400">
                       {t('upgrade.maxPackageDesc', { defaultValue: 'Je hebt toegang tot alle functies.' })}
                     </p>
                   </div>
@@ -248,34 +258,40 @@ export default function UpgradeModal({
               /* Confirmation View */
               <div className="space-y-6">
                 {error && (
-                  <div className="p-4 rounded-xl bg-red-500/10 border border-red-500/30 flex items-center gap-3">
-                    <AlertCircle className="w-5 h-5 text-red-500 flex-shrink-0" />
-                    <p className="text-sm text-red-400">{error}</p>
+                  <div className="p-4 rounded-2xl bg-red-500/10 border-2 border-red-500/30 flex items-center gap-3">
+                    <div className="w-8 h-8 bg-gradient-to-br from-red-500 to-rose-500 rounded-lg flex items-center justify-center flex-shrink-0">
+                      <AlertCircle className="w-4 h-4 text-white" />
+                    </div>
+                    <p className="text-sm text-red-400 font-medium">{error}</p>
                   </div>
                 )}
 
                 {/* Upgrade Summary */}
-                <div className="p-5 rounded-xl bg-gradient-to-br from-purple-500/10 to-pink-500/10 border border-purple-500/30">
-                  <div className="flex items-center gap-4 mb-4">
+                <div className="p-6 rounded-2xl bg-gradient-to-br from-purple-500/10 to-pink-500/10 border-2 border-purple-500/30">
+                  <div className="flex items-center gap-4 mb-5">
                     <div className="flex items-center gap-2">
                       <span className="text-2xl">{currentPkg.icon}</span>
                       <span className="font-medium text-gray-400">{currentPkg.name}</span>
                     </div>
-                    <ArrowRight className="w-5 h-5 text-purple-400" />
+                    <div className="w-8 h-8 bg-gradient-to-br from-purple-500 to-pink-500 rounded-lg flex items-center justify-center">
+                      <ArrowRight className="w-4 h-4 text-white" />
+                    </div>
                     <div className="flex items-center gap-2">
                       <span className="text-2xl">{selectedPkgInfo?.icon}</span>
                       <span className="font-bold text-white">{selectedPkgInfo?.name}</span>
                     </div>
                   </div>
 
-                  <h3 className="font-semibold text-white mb-3">
+                  <h3 className="font-bold text-white mb-4">
                     {t('upgrade.whatYouGet', { defaultValue: 'Dit krijg je erbij:' })}
                   </h3>
                   
-                  <div className="space-y-2">
+                  <div className="space-y-3">
                     {selectedPkgInfo?.features.map((feature, i) => (
-                      <div key={i} className="flex items-center gap-2">
-                        <Check className="w-4 h-4 text-green-400 flex-shrink-0" />
+                      <div key={i} className="flex items-center gap-3">
+                        <div className="w-6 h-6 bg-gradient-to-br from-green-500 to-emerald-500 rounded-lg flex items-center justify-center flex-shrink-0">
+                          <Check className="w-3.5 h-3.5 text-white" />
+                        </div>
                         <span className="text-sm text-gray-300">{feature}</span>
                       </div>
                     ))}
@@ -283,54 +299,61 @@ export default function UpgradeModal({
                 </div>
 
                 {/* Pricing Summary */}
-                <div className="p-5 rounded-xl bg-gray-800/50 border border-gray-700">
-                  <h3 className="font-semibold text-white mb-4">
+                <div className="p-6 rounded-2xl bg-gradient-to-br from-gray-800/80 to-gray-900/80 border-2 border-gray-700">
+                  <h3 className="font-bold text-white mb-4">
                     {t('upgrade.pricingSummary', { defaultValue: 'Prijsoverzicht' })}
                   </h3>
                   
                   <div className="space-y-3">
                     <div className="flex items-center justify-between">
-                      <span className="text-gray-400">{t('upgrade.monthlyDiff', { defaultValue: 'Maandelijks verschil' })}</span>
-                      <span className="font-medium text-white">+€{priceDiff}/maand</span>
+                      <span className="text-gray-400 font-medium">{t('upgrade.monthlyDiff', { defaultValue: 'Maandelijks verschil' })}</span>
+                      <span className="font-bold text-white">+€{priceDiff}/maand</span>
                     </div>
                     {setupDiff > 0 && (
                       <div className="flex items-center justify-between">
-                        <span className="text-gray-400">{t('upgrade.oneTimeUpgrade', { defaultValue: 'Eenmalige upgrade kosten' })}</span>
-                        <span className="font-medium text-white">€{setupDiff}</span>
+                        <span className="text-gray-400 font-medium">{t('upgrade.oneTimeUpgrade', { defaultValue: 'Eenmalige upgrade kosten' })}</span>
+                        <span className="font-bold text-white">€{setupDiff}</span>
                       </div>
                     )}
-                    <div className="pt-3 border-t border-gray-700">
+                    <div className="pt-4 mt-4 border-t border-gray-700">
                       <div className="flex items-center justify-between">
-                        <span className="font-medium text-white">{t('upgrade.newMonthly', { defaultValue: 'Nieuw maandbedrag' })}</span>
-                        <span className="text-2xl font-bold text-white">€{selectedPkgInfo?.price}/maand</span>
+                        <span className="font-bold text-white">{t('upgrade.newMonthly', { defaultValue: 'Nieuw maandbedrag' })}</span>
+                        <span className="text-2xl font-bold bg-gradient-to-r from-purple-400 to-pink-400 bg-clip-text text-transparent">€{selectedPkgInfo?.price}/maand</span>
                       </div>
                     </div>
                   </div>
                 </div>
 
                 {/* Confirmation Notice */}
-                <div className="p-4 rounded-xl bg-amber-500/10 border border-amber-500/30">
+                <div className="p-5 rounded-2xl bg-gradient-to-br from-amber-500/10 to-orange-500/10 border-2 border-amber-500/30 flex items-start gap-3">
+                  <div className="w-8 h-8 bg-gradient-to-br from-amber-500 to-orange-500 rounded-lg flex items-center justify-center flex-shrink-0 mt-0.5">
+                    <span className="text-white text-sm">💡</span>
+                  </div>
                   <p className="text-sm text-amber-300">
                     <strong>{t('upgrade.note', { defaultValue: 'Let op:' })}</strong>{' '}
                     {t('upgrade.noteText', { 
-                      defaultValue: 'Het nieuwe maandbedrag gaat in vanaf je volgende factureringsperiode. Je hebt direct toegang tot alle nieuwe functies.' 
+                      defaultValue: 'Het nieuwe maandbedrag gaat in vanaf je volgende factureringsperiode. Je hebt direct toegang tot alle nieuwe functies.'
                     })}
                   </p>
                 </div>
 
                 {/* Action Buttons */}
                 <div className="flex gap-3">
-                  <button
+                  <motion.button
                     onClick={handleBack}
                     disabled={isProcessing}
-                    className="flex-1 px-6 py-3 rounded-xl font-medium border border-gray-700 text-gray-300 hover:bg-gray-800 transition-colors disabled:opacity-50"
+                    className="flex-1 px-6 py-3.5 rounded-xl font-semibold border-2 border-gray-700 text-gray-300 hover:bg-gray-800 hover:border-gray-600 transition-all disabled:opacity-50"
+                    whileHover={{ scale: isProcessing ? 1 : 1.02 }}
+                    whileTap={{ scale: isProcessing ? 1 : 0.98 }}
                   >
                     {t('common.back', { defaultValue: 'Terug' })}
-                  </button>
-                  <button
+                  </motion.button>
+                  <motion.button
                     onClick={handleConfirmUpgrade}
                     disabled={isProcessing}
-                    className="flex-1 px-6 py-3 rounded-xl font-semibold bg-gradient-to-r from-purple-500 to-pink-500 text-white hover:from-purple-600 hover:to-pink-600 transition-all disabled:opacity-50 flex items-center justify-center gap-2"
+                    className="flex-1 px-6 py-3.5 rounded-xl font-semibold bg-gradient-to-r from-purple-500 to-pink-500 text-white shadow-lg shadow-purple-500/30 hover:shadow-xl hover:shadow-purple-500/40 transition-all disabled:opacity-50 flex items-center justify-center gap-2"
+                    whileHover={{ scale: isProcessing ? 1 : 1.02 }}
+                    whileTap={{ scale: isProcessing ? 1 : 0.98 }}
                   >
                     {isProcessing ? (
                       <>
@@ -343,7 +366,7 @@ export default function UpgradeModal({
                         {t('upgrade.confirm', { defaultValue: 'Ja, upgrade mijn pakket' })}
                       </>
                     )}
-                  </button>
+                  </motion.button>
                 </div>
               </div>
             )}

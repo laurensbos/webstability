@@ -90,33 +90,43 @@ export default function PaymentPhaseCard({
     <motion.div
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
-      className={`rounded-2xl border overflow-hidden ${
+      transition={{ type: 'spring', stiffness: 300, damping: 25 }}
+      className={`rounded-2xl border-2 overflow-hidden ${
         darkMode 
-          ? 'bg-gray-900/80 border-purple-500/30' 
-          : 'bg-white border-purple-200 shadow-lg'
+          ? 'bg-gradient-to-br from-gray-900 to-gray-950 border-purple-500/40 shadow-lg shadow-purple-500/10' 
+          : 'bg-gradient-to-br from-white to-gray-50 border-purple-200 shadow-xl shadow-purple-500/10'
       }`}
     >
+      {/* Gradient accent line */}
+      <div className={`h-1.5 ${
+        isPaid 
+          ? 'bg-gradient-to-r from-green-500 via-emerald-500 to-green-500'
+          : isOverdue
+            ? 'bg-gradient-to-r from-red-500 via-orange-500 to-red-500'
+            : 'bg-gradient-to-r from-purple-500 via-indigo-500 to-purple-500'
+      }`} />
+      
       {/* Header */}
       <div className={`p-5 relative overflow-hidden ${
         isPaid 
-          ? 'bg-gradient-to-r from-green-500/20 to-emerald-500/20'
+          ? 'bg-gradient-to-r from-green-500/10 to-emerald-500/10'
           : isOverdue
-            ? 'bg-gradient-to-r from-red-500/20 to-orange-500/20'
-            : 'bg-gradient-to-r from-purple-500/20 via-indigo-500/20 to-purple-500/20'
+            ? 'bg-gradient-to-r from-red-500/10 to-orange-500/10'
+            : 'bg-gradient-to-r from-purple-500/10 via-indigo-500/10 to-purple-500/10'
       }`}>
         <div className={`absolute inset-0 ${
           isPaid 
-            ? 'bg-[radial-gradient(circle_at_top_right,rgba(34,197,94,0.2),transparent_70%)]'
-            : 'bg-[radial-gradient(circle_at_top_right,rgba(139,92,246,0.2),transparent_70%)]'
+            ? 'bg-[radial-gradient(circle_at_top_right,rgba(34,197,94,0.15),transparent_70%)]'
+            : 'bg-[radial-gradient(circle_at_top_right,rgba(139,92,246,0.15),transparent_70%)]'
         }`} />
         
         <div className="relative flex items-start gap-4">
           <div className={`w-14 h-14 rounded-2xl flex items-center justify-center shadow-lg ${
             isPaid 
-              ? 'bg-gradient-to-br from-green-500 to-emerald-500 shadow-green-500/25'
+              ? 'bg-gradient-to-br from-green-500 to-emerald-500 shadow-green-500/30'
               : isOverdue
-                ? 'bg-gradient-to-br from-red-500 to-orange-500 shadow-red-500/25'
-                : 'bg-gradient-to-br from-purple-500 to-indigo-500 shadow-purple-500/25'
+                ? 'bg-gradient-to-br from-red-500 to-orange-500 shadow-red-500/30'
+                : 'bg-gradient-to-br from-purple-500 to-indigo-500 shadow-purple-500/30'
           }`}>
             {isPaid ? (
               <CheckCircle2 className="w-7 h-7 text-white" />
@@ -147,8 +157,8 @@ export default function PaymentPhaseCard({
       <div className="p-5 space-y-5">
         {/* Payment Summary */}
         {!isPaid && (
-          <div className={`p-4 rounded-xl ${
-            darkMode ? 'bg-gray-800/50' : 'bg-gray-50'
+          <div className={`p-4 rounded-xl border-2 ${
+            darkMode ? 'bg-gray-800/50 border-gray-700' : 'bg-gray-50 border-gray-100'
           }`}>
             <div className="flex items-center justify-between mb-4">
               <span className={`text-sm ${darkMode ? 'text-gray-400' : 'text-gray-600'}`}>

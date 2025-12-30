@@ -128,12 +128,14 @@ export default function NotificationBell({
   return (
     <div ref={dropdownRef} className="relative">
       {/* Bell Button */}
-      <button
+      <motion.button
         onClick={() => setIsOpen(!isOpen)}
-        className={`relative p-2 rounded-xl transition-colors ${
+        whileHover={{ scale: 1.05 }}
+        whileTap={{ scale: 0.95 }}
+        className={`relative p-2.5 rounded-xl transition-all duration-200 border-2 ${
           darkMode 
-            ? 'hover:bg-gray-800 text-gray-400 hover:text-white' 
-            : 'hover:bg-gray-100 text-gray-500 hover:text-gray-900'
+            ? 'hover:bg-gray-800 text-gray-400 hover:text-white border-transparent hover:border-gray-700' 
+            : 'hover:bg-gray-100 text-gray-500 hover:text-gray-900 border-transparent hover:border-gray-200'
         }`}
       >
         <Bell className="w-5 h-5" />
@@ -145,13 +147,13 @@ export default function NotificationBell({
               initial={{ scale: 0 }}
               animate={{ scale: 1 }}
               exit={{ scale: 0 }}
-              className="absolute -top-0.5 -right-0.5 min-w-[18px] h-[18px] flex items-center justify-center bg-red-500 text-white text-xs font-bold rounded-full"
+              className="absolute -top-1 -right-1 min-w-[20px] h-[20px] flex items-center justify-center bg-gradient-to-r from-red-500 to-rose-500 text-white text-xs font-bold rounded-full shadow-lg shadow-red-500/40"
             >
               {unreadCount > 9 ? '9+' : unreadCount}
             </motion.span>
           )}
         </AnimatePresence>
-      </button>
+      </motion.button>
 
       {/* Dropdown */}
       <AnimatePresence>
@@ -160,40 +162,47 @@ export default function NotificationBell({
             initial={{ opacity: 0, y: 10, scale: 0.95 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: 10, scale: 0.95 }}
-            transition={{ duration: 0.15 }}
-            className={`absolute right-0 mt-2 w-80 sm:w-96 rounded-2xl shadow-xl overflow-hidden z-50 ${
+            transition={{ type: 'spring', stiffness: 300, damping: 25 }}
+            className={`absolute right-0 mt-2 w-80 sm:w-96 rounded-2xl shadow-2xl overflow-hidden z-50 border-2 ${
               darkMode 
-                ? 'bg-gray-900 border border-gray-800' 
-                : 'bg-white border border-gray-200'
+                ? 'bg-gradient-to-br from-gray-900 to-gray-950 border-gray-800' 
+                : 'bg-white border-gray-200'
             }`}
           >
+            {/* Gradient accent line */}
+            <div className="h-1 bg-gradient-to-r from-primary-500 via-blue-500 to-primary-500" />
+            
             {/* Header */}
             <div className={`p-4 border-b ${darkMode ? 'border-gray-800' : 'border-gray-200'}`}>
               <div className="flex items-center justify-between">
-                <h3 className={`font-semibold ${darkMode ? 'text-white' : 'text-gray-900'}`}>
+                <h3 className={`font-bold ${darkMode ? 'text-white' : 'text-gray-900'}`}>
                   Notificaties
                 </h3>
                 <div className="flex items-center gap-2">
                   {unreadCount > 0 && (
-                    <button
+                    <motion.button
                       onClick={onMarkAllAsRead}
-                      className={`text-xs font-medium px-2 py-1 rounded-lg transition-colors ${
+                      whileHover={{ scale: 1.02 }}
+                      whileTap={{ scale: 0.98 }}
+                      className={`text-xs font-semibold px-3 py-1.5 rounded-lg transition-colors ${
                         darkMode 
-                          ? 'text-blue-400 hover:bg-blue-500/10' 
-                          : 'text-blue-600 hover:bg-blue-50'
+                          ? 'text-blue-400 hover:bg-blue-500/10 border border-blue-500/30' 
+                          : 'text-blue-600 hover:bg-blue-50 border border-blue-200'
                       }`}
                     >
                       Alles gelezen
-                    </button>
+                    </motion.button>
                   )}
-                  <button
+                  <motion.button
                     onClick={() => setIsOpen(false)}
-                    className={`p-1 rounded-lg transition-colors ${
+                    whileHover={{ scale: 1.1 }}
+                    whileTap={{ scale: 0.9 }}
+                    className={`p-1.5 rounded-lg transition-colors ${
                       darkMode ? 'hover:bg-gray-800 text-gray-400' : 'hover:bg-gray-100 text-gray-500'
                     }`}
                   >
                     <X className="w-4 h-4" />
-                  </button>
+                  </motion.button>
                 </div>
               </div>
             </div>

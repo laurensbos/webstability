@@ -258,96 +258,157 @@ export default function AccountSection({
     setTimeout(() => setCopiedReferral(false), 2000)
   }
 
+  // Status card configurations for enhanced design
+  const statusCards = [
+    {
+      id: 'phase',
+      icon: Sparkles,
+      label: t('account.currentPhase', 'Huidige fase'),
+      value: phaseInfo.label,
+      color: phaseInfo.color,
+      gradient: phaseInfo.bg === 'bg-blue-500' ? 'from-blue-500 to-indigo-500' :
+               phaseInfo.bg === 'bg-purple-500' ? 'from-purple-500 to-pink-500' :
+               phaseInfo.bg === 'bg-amber-500' ? 'from-amber-500 to-orange-500' :
+               phaseInfo.bg === 'bg-green-500' ? 'from-green-500 to-emerald-500' :
+               phaseInfo.bg === 'bg-pink-500' ? 'from-pink-500 to-rose-500' :
+               phaseInfo.bg === 'bg-cyan-500' ? 'from-cyan-500 to-blue-500' :
+               'from-primary-500 to-primary-600',
+      bgClass: darkMode ? 'bg-gray-800/80' : 'bg-white',
+    },
+    {
+      id: 'changes',
+      icon: Zap,
+      label: t('account.changesLeft', 'Wijzigingen over'),
+      value: `${changesPerMonth - changesUsedThisMonth}/${changesPerMonth}`,
+      color: darkMode ? 'text-amber-400' : 'text-amber-600',
+      gradient: 'from-amber-500 to-orange-500',
+      bgClass: darkMode ? 'bg-gray-800/80' : 'bg-white',
+    },
+    ...(project.status === 'live' && project.domainInfo?.domainName ? [{
+      id: 'domain',
+      icon: Globe,
+      label: t('account.yourWebsite', 'Je website'),
+      value: project.domainInfo.domainName,
+      color: 'text-primary-500',
+      gradient: 'from-primary-500 to-primary-600',
+      bgClass: darkMode ? 'bg-gray-800/80' : 'bg-white',
+      isLink: true,
+      href: `https://${project.domainInfo.domainName}`,
+    }] : [{
+      id: 'progress',
+      icon: TrendingUp,
+      label: t('account.progress', 'Voortgang'),
+      value: `${(project as any).onboardingProgress || 0}%`,
+      subValue: t('account.complete', 'compleet'),
+      color: darkMode ? 'text-emerald-400' : 'text-emerald-600',
+      gradient: 'from-emerald-500 to-green-500',
+      bgClass: darkMode ? 'bg-gray-800/80' : 'bg-white',
+    }]),
+  ]
+  
   return (
     <div className="space-y-6">
-      {/* Quick Status Bar */}
-      <div className={`grid grid-cols-2 sm:grid-cols-3 gap-3`}>
-        {/* Current Phase */}
-        <div className={`rounded-xl p-4 border ${darkMode ? 'bg-gray-800/50 border-gray-700/50' : 'bg-white border-gray-200'}`}>
-          <div className="flex items-center gap-2 mb-1">
-            <div className={`w-2 h-2 rounded-full ${phaseInfo.bg}`} />
-            <span className={`text-xs font-medium ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>
-              {t('account.currentPhase', 'Huidige fase')}
-            </span>
-          </div>
-          <p className={`font-semibold ${phaseInfo.color}`}>{phaseInfo.label}</p>
-        </div>
-        
-        {/* Changes This Month */}
-        <div className={`rounded-xl p-4 border ${darkMode ? 'bg-gray-800/50 border-gray-700/50' : 'bg-white border-gray-200'}`}>
-          <div className="flex items-center gap-2 mb-1">
-            <Zap className={`w-3 h-3 ${darkMode ? 'text-gray-400' : 'text-gray-500'}`} />
-            <span className={`text-xs font-medium ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>
-              {t('account.changesLeft', 'Wijzigingen over')}
-            </span>
-          </div>
-          <p className={`font-semibold ${darkMode ? 'text-white' : 'text-gray-900'}`}>
-            {changesPerMonth - changesUsedThisMonth}/{changesPerMonth}
-          </p>
-        </div>
-        
-        {/* Domain - only show if live */}
-        {project.status === 'live' && project.domainInfo?.domainName ? (
-          <div className={`rounded-xl p-4 border col-span-2 sm:col-span-1 ${darkMode ? 'bg-gray-800/50 border-gray-700/50' : 'bg-white border-gray-200'}`}>
-            <div className="flex items-center gap-2 mb-1">
-              <Globe className={`w-3 h-3 ${darkMode ? 'text-gray-400' : 'text-gray-500'}`} />
-              <span className={`text-xs font-medium ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>
-                {t('account.yourWebsite', 'Je website')}
-              </span>
+      {/* Quick Status Bar - Enhanced with gradients and animations */}
+      <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
+        {statusCards.map((card, index) => (
+          <motion.div
+            key={card.id}
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: index * 0.1, type: 'spring', stiffness: 300, damping: 25 }}
+            whileHover={{ y: -2, transition: { duration: 0.2 } }}
+            className={`relative rounded-2xl p-5 border-2 overflow-hidden transition-all duration-300 ${
+              card.id === 'progress' || card.id === 'domain' ? 'col-span-2 sm:col-span-1' : ''
+            } ${card.bgClass} ${
+              darkMode ? 'border-gray-700/50 hover:border-gray-600' : 'border-gray-100 hover:border-gray-200'
+            } shadow-lg ${darkMode ? 'shadow-black/20' : 'shadow-gray-100'}`}
+          >
+            {/* Gradient accent line at top */}
+            <div className={`absolute top-0 left-0 right-0 h-1 bg-gradient-to-r ${card.gradient}`} />
+            
+            {/* Decorative blur orb */}
+            <div className={`absolute -top-6 -right-6 w-20 h-20 bg-gradient-to-br ${card.gradient} opacity-10 rounded-full blur-2xl pointer-events-none`} />
+            
+            <div className="relative">
+              <div className="flex items-center gap-2.5 mb-3">
+                <div className={`w-9 h-9 rounded-xl bg-gradient-to-br ${card.gradient} bg-opacity-15 flex items-center justify-center`}>
+                  <card.icon className="w-4 h-4 text-white" />
+                </div>
+                <span className={`text-xs font-medium ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>
+                  {card.label}
+                </span>
+              </div>
+              
+              {(card as any).isLink ? (
+                <a 
+                  href={(card as any).href}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className={`text-lg font-bold ${card.color} hover:opacity-80 flex items-center gap-1.5 transition-opacity`}
+                >
+                  {card.value}
+                  <ExternalLink className="w-4 h-4" />
+                </a>
+              ) : (
+                <p className={`text-xl font-bold ${card.color}`}>
+                  {card.value}
+                  {(card as any).subValue && (
+                    <span className={`text-sm font-normal ml-1.5 ${darkMode ? 'text-gray-500' : 'text-gray-400'}`}>
+                      {(card as any).subValue}
+                    </span>
+                  )}
+                </p>
+              )}
             </div>
-            <a 
-              href={`https://${project.domainInfo.domainName}`}
-              target="_blank"
-              rel="noopener noreferrer"
-              className={`font-semibold text-primary-500 hover:text-primary-400 flex items-center gap-1`}
-            >
-              {project.domainInfo.domainName}
-              <ExternalLink className="w-3 h-3" />
-            </a>
-          </div>
-        ) : (
-          <div className={`rounded-xl p-4 border col-span-2 sm:col-span-1 ${darkMode ? 'bg-gray-800/50 border-gray-700/50' : 'bg-white border-gray-200'}`}>
-            <div className="flex items-center gap-2 mb-1">
-              <TrendingUp className={`w-3 h-3 ${darkMode ? 'text-gray-400' : 'text-gray-500'}`} />
-              <span className={`text-xs font-medium ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>
-                {t('account.progress', 'Voortgang')}
-              </span>
-            </div>
-            <p className={`font-semibold ${darkMode ? 'text-white' : 'text-gray-900'}`}>
-              {(project as any).onboardingProgress || 0}% {t('account.complete', 'compleet')}
-            </p>
-          </div>
-        )}
+          </motion.div>
+        ))}
       </div>
 
-      {/* Header with avatar and quick info */}
-      <div className={`rounded-2xl border overflow-hidden ${
-        darkMode ? 'bg-gray-800/50 border-gray-700/50' : 'bg-white border-gray-200'
-      }`}>
-        <div className={`relative overflow-hidden p-5 ${darkMode ? currentPackage.bgDark : currentPackage.bgLight}`}>
-          {/* Gradient overlay */}
-          <div className={`absolute inset-0 bg-gradient-to-br ${currentPackage.gradient} opacity-5`} />
+      {/* Header with avatar and quick info - Enhanced with glassmorphism */}
+      <motion.div 
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.3, type: 'spring', stiffness: 300, damping: 25 }}
+        className={`rounded-2xl border-2 overflow-hidden backdrop-blur-sm ${
+          darkMode ? 'bg-gray-800/80 border-gray-700/50' : 'bg-white border-gray-100'
+        } shadow-xl ${darkMode ? 'shadow-black/30' : 'shadow-gray-200/80'}`}
+      >
+        <div className={`relative overflow-hidden p-6 ${darkMode ? currentPackage.bgDark : currentPackage.bgLight}`}>
+          {/* Enhanced gradient overlay with multiple layers */}
+          <div className={`absolute inset-0 bg-gradient-to-br ${currentPackage.gradient} opacity-10`} />
+          <div className="absolute inset-0 bg-gradient-to-t from-black/5 to-transparent" />
           
-          <div className="relative flex items-center gap-4">
-            {/* Avatar */}
-            <div className={`w-14 h-14 rounded-xl bg-gradient-to-br ${currentPackage.gradient} flex items-center justify-center shadow-lg flex-shrink-0`}>
-              <span className="text-xl font-bold text-white">
+          {/* Decorative blur orbs */}
+          <div className={`absolute -top-10 -right-10 w-40 h-40 bg-gradient-to-br ${currentPackage.gradient} opacity-20 rounded-full blur-3xl pointer-events-none`} />
+          <div className={`absolute -bottom-8 -left-8 w-32 h-32 bg-gradient-to-br ${currentPackage.gradient} opacity-15 rounded-full blur-2xl pointer-events-none`} />
+          
+          <div className="relative flex items-center gap-5">
+            {/* Avatar - Enhanced with ring and shadow */}
+            <motion.div 
+              whileHover={{ scale: 1.05 }}
+              transition={{ type: 'spring', stiffness: 400, damping: 20 }}
+              className={`w-16 h-16 rounded-2xl bg-gradient-to-br ${currentPackage.gradient} flex items-center justify-center shadow-xl shadow-${currentPackage.gradient.split('-')[1]}-500/30 ring-4 ring-white/20 flex-shrink-0`}
+            >
+              <span className="text-2xl font-bold text-white">
                 {(project.businessName || project.contactName || 'W').charAt(0).toUpperCase()}
               </span>
-            </div>
+            </motion.div>
             
             <div className="flex-1 min-w-0">
-              <h2 className={`text-lg font-bold truncate ${darkMode ? 'text-white' : 'text-gray-900'}`}>
+              <h2 className={`text-xl font-bold truncate ${darkMode ? 'text-white' : 'text-gray-900'}`}>
                 {project.businessName || t('account.yourBusiness')}
               </h2>
               <p className={`text-sm truncate ${darkMode ? 'text-gray-400' : 'text-gray-600'}`}>
                 {project.contactName || project.contactEmail}
               </p>
-              <div className="flex items-center gap-2 mt-1.5">
-                <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium bg-gradient-to-r ${currentPackage.gradient} text-white`}>
-                  <Package className="w-3 h-3" />
+              <div className="flex items-center gap-2.5 mt-2.5 flex-wrap">
+                <motion.span 
+                  whileHover={{ scale: 1.05 }}
+                  className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-gradient-to-r ${currentPackage.gradient} text-white shadow-lg shadow-${currentPackage.gradient.split('-')[1]}-500/25`}
+                >
+                  <Package className="w-3.5 h-3.5" />
                   {currentPackage.name}
-                </span>
+                </motion.span>
                 <button
                   onClick={copyProjectId}
                   className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs transition-colors ${
@@ -364,34 +425,31 @@ export default function AccountSection({
           </div>
         </div>
 
-        {/* Tabs */}
-        <div className={`flex border-t ${darkMode ? 'border-gray-700/50' : 'border-gray-100'}`}>
-          {tabs.map((tab) => (
-            <button
+        {/* Tabs - Enhanced with pills style */}
+        <div className={`flex gap-1 p-2 border-t ${darkMode ? 'border-gray-700/50' : 'border-gray-100'}`}>
+          {tabs.map((tab, index) => (
+            <motion.button
               key={tab.id}
               onClick={() => setActiveTab(tab.id)}
-              className={`flex-1 flex items-center justify-center gap-2 px-4 py-3 text-sm font-medium transition-colors relative ${
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.4 + index * 0.05 }}
+              whileHover={{ scale: 1.02 }}
+              whileTap={{ scale: 0.98 }}
+              className={`flex-1 flex items-center justify-center gap-2 px-4 py-2.5 text-sm font-medium rounded-xl transition-all relative ${
                 activeTab === tab.id
-                  ? darkMode
-                    ? 'text-white'
-                    : 'text-gray-900'
+                  ? `bg-gradient-to-r ${currentPackage.gradient} text-white shadow-lg shadow-${currentPackage.gradient.split('-')[1]}-500/25`
                   : darkMode
-                    ? 'text-gray-500 hover:text-gray-300'
-                    : 'text-gray-500 hover:text-gray-700'
+                    ? 'text-gray-400 hover:text-white hover:bg-gray-700/50'
+                    : 'text-gray-500 hover:text-gray-700 hover:bg-gray-100'
               }`}
             >
               <tab.icon className="w-4 h-4" />
               <span className="hidden sm:inline">{tab.label}</span>
-              {activeTab === tab.id && (
-                <motion.div
-                  layoutId="account-tab-indicator"
-                  className={`absolute bottom-0 left-0 right-0 h-0.5 bg-gradient-to-r ${currentPackage.gradient}`}
-                />
-              )}
-            </button>
+            </motion.button>
           ))}
         </div>
-      </div>
+      </motion.div>
 
       {/* Tab Content */}
       <AnimatePresence mode="wait">
@@ -399,59 +457,70 @@ export default function AccountSection({
         {activeTab === 'profile' && (
           <motion.div
             key="profile"
-            initial={{ opacity: 0, y: 10 }}
+            initial={{ opacity: 0, y: 15 }}
             animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -10 }}
-            className="space-y-4"
+            exit={{ opacity: 0, y: -15 }}
+            transition={{ type: 'spring', stiffness: 300, damping: 25 }}
+            className="space-y-5"
           >
-            {/* Success message */}
+            {/* Success message - Enhanced */}
             {saveSuccess && (
               <motion.div
-                initial={{ opacity: 0, y: -10 }}
-                animate={{ opacity: 1, y: 0 }}
-                className={`p-3 rounded-xl flex items-center gap-3 ${
-                  darkMode ? 'bg-green-500/10 border border-green-500/20' : 'bg-green-50 border border-green-200'
+                initial={{ opacity: 0, scale: 0.95, y: -10 }}
+                animate={{ opacity: 1, scale: 1, y: 0 }}
+                className={`p-4 rounded-2xl flex items-center gap-3 border-2 ${
+                  darkMode 
+                    ? 'bg-green-500/10 border-green-500/30 shadow-lg shadow-green-500/10' 
+                    : 'bg-green-50 border-green-200 shadow-lg shadow-green-100'
                 }`}
               >
-                <CheckCircle2 className="w-5 h-5 text-green-500 flex-shrink-0" />
-                <span className={`text-sm font-medium ${darkMode ? 'text-green-400' : 'text-green-700'}`}>
+                <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-green-500 to-emerald-500 flex items-center justify-center shadow-lg shadow-green-500/25">
+                  <CheckCircle2 className="w-5 h-5 text-white" />
+                </div>
+                <span className={`text-sm font-semibold ${darkMode ? 'text-green-400' : 'text-green-700'}`}>
                   {t('account.saved')}
                 </span>
               </motion.div>
             )}
 
-            {/* Contact Details Card */}
-            <div className={`rounded-2xl border overflow-hidden ${
-              darkMode ? 'bg-gray-800/50 border-gray-700/50' : 'bg-white border-gray-200'
-            }`}>
-              <div className={`flex items-center justify-between px-5 py-4 border-b ${
+            {/* Contact Details Card - Enhanced */}
+            <motion.div 
+              whileHover={{ y: -2 }}
+              transition={{ duration: 0.2 }}
+              className={`rounded-2xl border-2 overflow-hidden ${
+                darkMode ? 'bg-gray-800/80 border-gray-700/50' : 'bg-white border-gray-100'
+              } shadow-lg ${darkMode ? 'shadow-black/20' : 'shadow-gray-100'}`}
+            >
+              <div className={`flex items-center justify-between px-6 py-5 border-b ${
                 darkMode ? 'border-gray-700/50' : 'border-gray-100'
               }`}>
-                <div className="flex items-center gap-3">
-                  <div className={`w-9 h-9 rounded-xl flex items-center justify-center ${
-                    darkMode ? 'bg-primary-500/20' : 'bg-primary-50'
-                  }`}>
-                    <User className={`w-4 h-4 ${darkMode ? 'text-primary-400' : 'text-primary-600'}`} />
+                <div className="flex items-center gap-4">
+                  <div className="w-11 h-11 rounded-xl bg-gradient-to-br from-primary-500 to-primary-600 flex items-center justify-center shadow-lg shadow-primary-500/25">
+                    <User className="w-5 h-5 text-white" />
                   </div>
-                  <h3 className={`font-semibold ${darkMode ? 'text-white' : 'text-gray-900'}`}>
+                  <h3 className={`text-lg font-bold ${darkMode ? 'text-white' : 'text-gray-900'}`}>
                     {t('account.contactDetails')}
                   </h3>
                 </div>
                 {!isEditing ? (
-                  <button
+                  <motion.button
                     onClick={() => setIsEditing(true)}
-                    className={`flex items-center gap-2 px-3 py-1.5 rounded-lg text-sm font-medium transition-colors ${
+                    whileHover={{ scale: 1.02 }}
+                    whileTap={{ scale: 0.98 }}
+                    className={`flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-semibold transition-colors ${
                       darkMode 
-                        ? 'bg-primary-500/10 text-primary-400 hover:bg-primary-500/20' 
+                        ? 'bg-primary-500/15 text-primary-400 hover:bg-primary-500/25' 
                         : 'bg-primary-50 text-primary-600 hover:bg-primary-100'
                     }`}
                   >
-                    <Edit3 className="w-3.5 h-3.5" />
+                    <Edit3 className="w-4 h-4" />
                     {t('account.edit')}
-                  </button>
+                  </motion.button>
                 ) : (
                   <div className="flex gap-2">
-                    <button
+                    <motion.button
+                      whileHover={{ scale: 1.02 }}
+                      whileTap={{ scale: 0.98 }}
                       onClick={() => {
                         setIsEditing(false)
                         setFormData({
@@ -462,31 +531,33 @@ export default function AccountSection({
                           preferredLanguage: project.preferredLanguage || 'nl',
                         })
                       }}
-                      className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-colors ${
+                      className={`px-4 py-2 rounded-xl text-sm font-semibold transition-colors ${
                         darkMode 
                           ? 'bg-gray-700 text-gray-300 hover:bg-gray-600' 
                           : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
                       }`}
                     >
                       {t('account.cancel')}
-                    </button>
-                    <button
+                    </motion.button>
+                    <motion.button
+                      whileHover={{ scale: 1.02 }}
+                      whileTap={{ scale: 0.98 }}
                       onClick={handleSave}
                       disabled={isSaving}
-                      className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-primary-500 text-white text-sm font-medium hover:bg-primary-600 transition-colors disabled:opacity-50"
+                      className="flex items-center gap-2 px-4 py-2 rounded-xl bg-gradient-to-r from-primary-500 to-primary-600 text-white text-sm font-semibold shadow-lg shadow-primary-500/25 hover:shadow-primary-500/40 transition-all disabled:opacity-50"
                     >
                       {isSaving ? (
-                        <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                        <Loader2 className="w-4 h-4 animate-spin" />
                       ) : (
-                        <Save className="w-3.5 h-3.5" />
+                        <Save className="w-4 h-4" />
                       )}
                       {t('account.save')}
-                    </button>
+                    </motion.button>
                   </div>
                 )}
               </div>
 
-              <div className="p-5">
+              <div className="p-6">
                 {isEditing ? (
                   <div className="grid sm:grid-cols-2 gap-4">
                     <div>
@@ -606,33 +677,35 @@ export default function AccountSection({
                         {project.contactEmail || <span className="text-gray-400 italic">{t('account.notFilled')}</span>}
                       </p>
                     </div>
-                    <div className={`p-3.5 rounded-xl ${darkMode ? 'bg-gray-900/50' : 'bg-gray-50'}`}>
-                      <div className="flex items-center gap-2 mb-1">
+                    <div className={`p-4 rounded-xl ${darkMode ? 'bg-gray-900/50' : 'bg-gray-50'}`}>
+                      <div className="flex items-center gap-2 mb-1.5">
                         <Phone className={`w-4 h-4 ${darkMode ? 'text-gray-500' : 'text-gray-400'}`} />
-                        <span className={`text-xs ${darkMode ? 'text-gray-500' : 'text-gray-400'}`}>{t('account.phone')}</span>
+                        <span className={`text-xs font-medium ${darkMode ? 'text-gray-500' : 'text-gray-400'}`}>{t('account.phone')}</span>
                       </div>
-                      <p className={`font-medium ${darkMode ? 'text-white' : 'text-gray-900'}`}>
+                      <p className={`font-semibold ${darkMode ? 'text-white' : 'text-gray-900'}`}>
                         {project.contactPhone || <span className="text-gray-400 italic">{t('account.notFilled')}</span>}
                       </p>
                     </div>
                   </div>
                 )}
               </div>
-            </div>
+            </motion.div>
 
-            {/* Project Info Card */}
-            <div className={`rounded-2xl border overflow-hidden ${
-              darkMode ? 'bg-gray-800/50 border-gray-700/50' : 'bg-white border-gray-200'
-            }`}>
-              <div className={`flex items-center gap-3 px-5 py-4 border-b ${
+            {/* Project Info Card - Enhanced */}
+            <motion.div 
+              whileHover={{ y: -2 }}
+              transition={{ duration: 0.2 }}
+              className={`rounded-2xl border-2 overflow-hidden ${
+                darkMode ? 'bg-gray-800/80 border-gray-700/50' : 'bg-white border-gray-100'
+              } shadow-lg ${darkMode ? 'shadow-black/20' : 'shadow-gray-100'}`}
+            >
+              <div className={`flex items-center gap-4 px-6 py-5 border-b ${
                 darkMode ? 'border-gray-700/50' : 'border-gray-100'
               }`}>
-                <div className={`w-9 h-9 rounded-xl flex items-center justify-center ${
-                  darkMode ? 'bg-gray-700' : 'bg-gray-100'
-                }`}>
-                  <Globe className={`w-4 h-4 ${darkMode ? 'text-gray-400' : 'text-gray-500'}`} />
+                <div className="w-11 h-11 rounded-xl bg-gradient-to-br from-gray-500 to-gray-600 flex items-center justify-center shadow-lg shadow-gray-500/25">
+                  <Globe className="w-5 h-5 text-white" />
                 </div>
-                <h3 className={`font-semibold ${darkMode ? 'text-white' : 'text-gray-900'}`}>
+                <h3 className={`text-lg font-bold ${darkMode ? 'text-white' : 'text-gray-900'}`}>
                   {t('account.projectInfo')}
                 </h3>
               </div>
@@ -654,35 +727,40 @@ export default function AccountSection({
                     </p>
                   </div>
                   <div className={`p-3.5 rounded-xl ${darkMode ? 'bg-gray-900/50' : 'bg-gray-50'}`}>
-                    <p className={`text-xs mb-1 ${darkMode ? 'text-gray-500' : 'text-gray-400'}`}>{t('account.serviceType')}</p>
-                    <p className={`font-medium capitalize ${darkMode ? 'text-white' : 'text-gray-900'}`}>
+                    <p className={`text-xs font-medium mb-1.5 ${darkMode ? 'text-gray-500' : 'text-gray-400'}`}>{t('account.serviceType')}</p>
+                    <p className={`font-semibold capitalize ${darkMode ? 'text-white' : 'text-gray-900'}`}>
                       {t(`account.${project.serviceType || 'website'}`)}
                     </p>
                   </div>
-                  <div className={`p-3.5 rounded-xl ${darkMode ? 'bg-gray-900/50' : 'bg-gray-50'}`}>
-                    <p className={`text-xs mb-1 ${darkMode ? 'text-gray-500' : 'text-gray-400'}`}>{t('account.package.title')}</p>
-                    <p className={`font-medium ${darkMode ? 'text-white' : 'text-gray-900'}`}>{currentPackage.name}</p>
+                  <div className={`p-4 rounded-xl ${darkMode ? 'bg-gray-900/50' : 'bg-gray-50'}`}>
+                    <p className={`text-xs font-medium mb-1.5 ${darkMode ? 'text-gray-500' : 'text-gray-400'}`}>{t('account.package.title')}</p>
+                    <p className={`font-semibold ${darkMode ? 'text-white' : 'text-gray-900'}`}>{currentPackage.name}</p>
                   </div>
                 </div>
               </div>
-            </div>
+            </motion.div>
           </motion.div>
         )}
 
-        {/* Payments Tab */}
+        {/* Payments Tab - Enhanced */}
         {activeTab === 'payments' && (
           <motion.div
             key="payments"
-            initial={{ opacity: 0, y: 10 }}
+            initial={{ opacity: 0, y: 15 }}
             animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -10 }}
-            className="space-y-4"
+            exit={{ opacity: 0, y: -15 }}
+            transition={{ type: 'spring', stiffness: 300, damping: 25 }}
+            className="space-y-5"
           >
-            {/* Payment Status */}
-            <div className={`rounded-2xl border overflow-hidden ${
-              darkMode ? 'bg-gray-800/50 border-gray-700/50' : 'bg-white border-gray-200'
-            }`}>
-              <div className={`flex items-center gap-3 px-5 py-4 border-b ${
+            {/* Payment Status - Enhanced */}
+            <motion.div 
+              whileHover={{ y: -2 }}
+              transition={{ duration: 0.2 }}
+              className={`rounded-2xl border-2 overflow-hidden ${
+                darkMode ? 'bg-gray-800/80 border-gray-700/50' : 'bg-white border-gray-100'
+              } shadow-lg ${darkMode ? 'shadow-black/20' : 'shadow-gray-100'}`}
+            >
+              <div className={`flex items-center gap-4 px-6 py-5 border-b ${
                 darkMode ? 'border-gray-700/50' : 'border-gray-100'
               }`}>
                 <div className={`w-9 h-9 rounded-xl flex items-center justify-center ${
@@ -734,12 +812,12 @@ export default function AccountSection({
                       </div>
                     </div>
                     
-                    <div className={`p-4 rounded-xl ${darkMode ? 'bg-gray-900/50' : 'bg-gray-50'}`}>
-                      <p className={`text-sm font-medium mb-2 ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>
+                    <div className={`p-5 rounded-xl ${darkMode ? 'bg-gray-900/50' : 'bg-gray-50'}`}>
+                      <p className={`text-sm font-medium mb-3 ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>
                         {t('account.afterApproval')}
                       </p>
                       <div className="flex items-baseline gap-2">
-                        <span className={`text-2xl font-bold ${darkMode ? 'text-white' : 'text-gray-900'}`}>
+                        <span className={`text-3xl font-bold ${darkMode ? 'text-white' : 'text-gray-900'}`}>
                           €{currentPackage.setupFee}
                         </span>
                         <span className={`text-sm ${darkMode ? 'text-gray-500' : 'text-gray-500'}`}>
@@ -750,22 +828,24 @@ export default function AccountSection({
                   </div>
                 )}
               </div>
-            </div>
+            </motion.div>
 
-            {/* Monthly Subscription Info */}
-            <div className={`rounded-2xl border overflow-hidden ${
-              darkMode ? 'bg-gray-800/50 border-gray-700/50' : 'bg-white border-gray-200'
-            }`}>
-              <div className={`flex items-center gap-3 px-5 py-4 border-b ${
+            {/* Monthly Subscription Info - Enhanced */}
+            <motion.div 
+              whileHover={{ y: -2 }}
+              transition={{ duration: 0.2 }}
+              className={`rounded-2xl border-2 overflow-hidden ${
+                darkMode ? 'bg-gray-800/80 border-gray-700/50' : 'bg-white border-gray-100'
+              } shadow-lg ${darkMode ? 'shadow-black/20' : 'shadow-gray-100'}`}
+            >
+              <div className={`flex items-center gap-4 px-6 py-5 border-b ${
                 darkMode ? 'border-gray-700/50' : 'border-gray-100'
               }`}>
-                <div className={`w-9 h-9 rounded-xl flex items-center justify-center ${
-                  darkMode ? 'bg-primary-500/20' : 'bg-primary-50'
-                }`}>
-                  <Receipt className={`w-4 h-4 ${darkMode ? 'text-primary-400' : 'text-primary-600'}`} />
+                <div className="w-11 h-11 rounded-xl bg-gradient-to-br from-primary-500 to-primary-600 flex items-center justify-center shadow-lg shadow-primary-500/25">
+                  <Receipt className="w-5 h-5 text-white" />
                 </div>
                 <div>
-                  <h3 className={`font-semibold ${darkMode ? 'text-white' : 'text-gray-900'}`}>
+                  <h3 className={`text-lg font-bold ${darkMode ? 'text-white' : 'text-gray-900'}`}>
                     {t('account.monthlySubscription')}
                   </h3>
                   <p className={`text-xs ${darkMode ? 'text-gray-500' : 'text-gray-400'}`}>
@@ -876,33 +956,41 @@ export default function AccountSection({
                   </div>
                 </div>
                 
-                {/* Cancellation info */}
-                <div className={`mt-4 p-3 rounded-xl border-2 border-dashed ${
+                {/* Cancellation info - Enhanced */}
+                <div className={`mt-5 p-4 rounded-xl border-2 border-dashed ${
                   darkMode ? 'border-gray-700 bg-gray-900/30' : 'border-gray-200 bg-gray-50/50'
                 }`}>
-                  <p className={`text-xs text-center ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>
+                  <p className={`text-sm text-center font-medium ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>
                     {t('account.cancelAnytime')}
                   </p>
                 </div>
               </div>
-            </div>
+            </motion.div>
           </motion.div>
         )}
 
-        {/* Package Tab */}
+        {/* Package Tab - Enhanced */}
         {activeTab === 'package' && (
           <motion.div
             key="package"
-            initial={{ opacity: 0, y: 10 }}
+            initial={{ opacity: 0, y: 15 }}
             animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -10 }}
-            className="space-y-4"
+            exit={{ opacity: 0, y: -15 }}
+            transition={{ type: 'spring', stiffness: 300, damping: 25 }}
+            className="space-y-5"
           >
-            {/* Current Package */}
-            <div className={`rounded-2xl border overflow-hidden ${
-              darkMode ? 'bg-gray-800/50 border-gray-700/50' : 'bg-white border-gray-200'
-            }`}>
-              <div className={`relative overflow-hidden p-5 ${darkMode ? currentPackage.bgDark : currentPackage.bgLight}`}>
+            {/* Current Package - Enhanced */}
+            <motion.div 
+              whileHover={{ y: -2 }}
+              transition={{ duration: 0.2 }}
+              className={`rounded-2xl border-2 overflow-hidden ${
+                darkMode ? 'bg-gray-800/80 border-gray-700/50' : 'bg-white border-gray-100'
+              } shadow-lg ${darkMode ? 'shadow-black/20' : 'shadow-gray-100'}`}
+            >
+              <div className={`relative overflow-hidden p-6 ${darkMode ? currentPackage.bgDark : currentPackage.bgLight}`}>
+                {/* Enhanced gradient overlay with blur orbs */}
+                <div className={`absolute inset-0 bg-gradient-to-br ${currentPackage.gradient} opacity-15`} />
+                <div className={`absolute -top-10 -right-10 w-40 h-40 bg-gradient-to-br ${currentPackage.gradient} opacity-20 rounded-full blur-3xl pointer-events-none`} />
                 <div className={`absolute inset-0 bg-gradient-to-br ${currentPackage.gradient} opacity-10`} />
                 <div className="relative">
                   <div className="flex items-center gap-3 mb-3">
@@ -931,36 +1019,47 @@ export default function AccountSection({
                 <h4 className={`text-sm font-medium mb-3 ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>
                   {t('account.package.includedInPackage')}
                 </h4>
-                <ul className="space-y-2.5">
+                <ul className="space-y-3">
                   {currentPackage.features.slice(0, 6).map((feature, i) => (
-                    <li key={i} className="flex items-start gap-2.5">
-                      <div className={`w-5 h-5 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5 ${
-                        darkMode ? 'bg-green-500/20' : 'bg-green-100'
-                      }`}>
-                        <Check className="w-3 h-3 text-green-500" />
+                    <motion.li 
+                      key={i} 
+                      initial={{ opacity: 0, x: -10 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      transition={{ delay: i * 0.05 }}
+                      className="flex items-start gap-3"
+                    >
+                      <div className="w-6 h-6 rounded-full bg-gradient-to-br from-green-500 to-emerald-500 flex items-center justify-center flex-shrink-0 mt-0.5 shadow-md shadow-green-500/25">
+                        <Check className="w-3.5 h-3.5 text-white" />
                       </div>
-                      <span className={`text-sm ${darkMode ? 'text-gray-300' : 'text-gray-600'}`}>
+                      <span className={`text-sm font-medium ${darkMode ? 'text-gray-300' : 'text-gray-600'}`}>
                         {feature}
                       </span>
-                    </li>
+                    </motion.li>
                   ))}
                 </ul>
               </div>
-            </div>
+            </motion.div>
 
-            {/* Upgrade hint - only show for non-business */}
+            {/* Upgrade hint - only show for non-business - Enhanced */}
             {project.package !== 'business' && (
-              <div className={`rounded-2xl border p-5 ${
-                darkMode ? 'bg-gradient-to-br from-amber-500/10 to-orange-500/10 border-amber-500/20' : 'bg-gradient-to-br from-amber-50 to-orange-50 border-amber-200'
-              }`}>
-                <div className="flex items-start gap-3">
-                  <div className={`w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0 ${
-                    darkMode ? 'bg-amber-500/20' : 'bg-amber-100'
-                  }`}>
-                    <Sparkles className="w-5 h-5 text-amber-500" />
+              <motion.div 
+                whileHover={{ y: -2, scale: 1.01 }}
+                transition={{ duration: 0.2 }}
+                className={`relative rounded-2xl border-2 p-6 overflow-hidden ${
+                  darkMode 
+                    ? 'bg-gradient-to-br from-amber-500/10 to-orange-500/10 border-amber-500/30' 
+                    : 'bg-gradient-to-br from-amber-50 to-orange-50 border-amber-200'
+                } shadow-lg ${darkMode ? 'shadow-amber-500/10' : 'shadow-amber-100'}`}
+              >
+                {/* Decorative blur orb */}
+                <div className="absolute -top-8 -right-8 w-32 h-32 bg-gradient-to-br from-amber-500 to-orange-500 opacity-20 rounded-full blur-3xl pointer-events-none" />
+                
+                <div className="relative flex items-start gap-4">
+                  <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-amber-500 to-orange-500 flex items-center justify-center flex-shrink-0 shadow-lg shadow-amber-500/30">
+                    <Sparkles className="w-6 h-6 text-white" />
                   </div>
                   <div>
-                    <h4 className={`font-medium mb-1 ${darkMode ? 'text-amber-400' : 'text-amber-700'}`}>
+                    <h4 className={`text-lg font-bold mb-1.5 ${darkMode ? 'text-amber-400' : 'text-amber-700'}`}>
                       {t('account.package.needMore')}
                     </h4>
                     <p className={`text-sm ${darkMode ? 'text-amber-400/70' : 'text-amber-600'}`}>
@@ -968,25 +1067,30 @@ export default function AccountSection({
                     </p>
                   </div>
                 </div>
-              </div>
+              </motion.div>
             )}
           </motion.div>
         )}
 
-        {/* Security Tab */}
+        {/* Security Tab - Enhanced */}
         {activeTab === 'security' && (
           <motion.div
             key="security"
-            initial={{ opacity: 0, y: 10 }}
+            initial={{ opacity: 0, y: 15 }}
             animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -10 }}
-            className="space-y-4"
+            exit={{ opacity: 0, y: -15 }}
+            transition={{ type: 'spring', stiffness: 300, damping: 25 }}
+            className="space-y-5"
           >
-            {/* Password Reset */}
-            <div className={`rounded-2xl border overflow-hidden ${
-              darkMode ? 'bg-gray-800/50 border-gray-700/50' : 'bg-white border-gray-200'
-            }`}>
-              <div className={`flex items-center gap-3 px-5 py-4 border-b ${
+            {/* Password Reset - Enhanced */}
+            <motion.div 
+              whileHover={{ y: -2 }}
+              transition={{ duration: 0.2 }}
+              className={`rounded-2xl border-2 overflow-hidden ${
+                darkMode ? 'bg-gray-800/80 border-gray-700/50' : 'bg-white border-gray-100'
+              } shadow-lg ${darkMode ? 'shadow-black/20' : 'shadow-gray-100'}`}
+            >
+              <div className={`flex items-center gap-4 px-6 py-5 border-b ${
                 darkMode ? 'border-gray-700/50' : 'border-gray-100'
               }`}>
                 <div className={`w-9 h-9 rounded-xl flex items-center justify-center ${
@@ -1030,29 +1134,35 @@ export default function AccountSection({
                   </button>
                 )}
               </div>
-            </div>
+            </motion.div>
 
-            {/* Email Address - Contact Info */}
-            <div className={`rounded-2xl border overflow-hidden ${
-              darkMode ? 'bg-gray-800/50 border-gray-700/50' : 'bg-white border-gray-200'
-            }`}>
-              <div className={`flex items-center gap-3 px-5 py-4 border-b ${
+            {/* Email Address - Contact Info - Enhanced */}
+            <motion.div 
+              whileHover={{ y: -2 }}
+              transition={{ duration: 0.2 }}
+              className={`rounded-2xl border-2 overflow-hidden ${
+                darkMode ? 'bg-gray-800/80 border-gray-700/50' : 'bg-white border-gray-100'
+              } shadow-lg ${darkMode ? 'shadow-black/20' : 'shadow-gray-100'}`}
+            >
+              <div className={`flex items-center gap-4 px-6 py-5 border-b ${
                 darkMode ? 'border-gray-700/50' : 'border-gray-100'
               }`}>
-                <div className={`w-9 h-9 rounded-xl flex items-center justify-center bg-green-500/20`}>
-                  <Mail className={`w-4 h-4 text-green-500`} />
+                <div className="w-11 h-11 rounded-xl bg-gradient-to-br from-green-500 to-emerald-500 flex items-center justify-center shadow-lg shadow-green-500/25">
+                  <Mail className="w-5 h-5 text-white" />
                 </div>
-                <h3 className={`font-semibold ${darkMode ? 'text-white' : 'text-gray-900'}`}>
+                <h3 className={`text-lg font-bold ${darkMode ? 'text-white' : 'text-gray-900'}`}>
                   {t('account.security.email', 'E-mailadres')}
                 </h3>
               </div>
-              <div className="p-5">
-                <div className={`flex items-center gap-3 p-4 rounded-xl ${
+              <div className="p-6">
+                <div className={`flex items-center gap-4 p-5 rounded-xl ${
                   darkMode ? 'bg-green-500/10' : 'bg-green-50'
                 }`}>
-                  <CheckCircle2 className="w-5 h-5 text-green-500" />
+                  <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-green-500 to-emerald-500 flex items-center justify-center shadow-md shadow-green-500/20">
+                    <CheckCircle2 className="w-5 h-5 text-white" />
+                  </div>
                   <div>
-                    <p className={`font-medium ${darkMode ? 'text-green-400' : 'text-green-700'}`}>
+                    <p className={`font-semibold ${darkMode ? 'text-green-400' : 'text-green-700'}`}>
                       {project.contactEmail || t('account.security.noEmail', 'Geen e-mail ingesteld')}
                     </p>
                     <p className={`text-sm ${darkMode ? 'text-green-400/70' : 'text-green-600'}`}>
@@ -1061,26 +1171,36 @@ export default function AccountSection({
                   </div>
                 </div>
               </div>
-            </div>
+            </motion.div>
 
-            {/* Referral Program */}
-            <div className={`rounded-2xl border overflow-hidden relative ${
-              darkMode ? 'bg-gradient-to-br from-purple-500/10 via-pink-500/5 to-purple-500/10 border-purple-500/20' : 'bg-gradient-to-br from-purple-50 via-pink-50/50 to-purple-50 border-purple-200'
-            }`}>
+            {/* Referral Program - Enhanced */}
+            <motion.div 
+              whileHover={{ y: -2, scale: 1.005 }}
+              transition={{ duration: 0.2 }}
+              className={`rounded-2xl border-2 overflow-hidden relative ${
+                darkMode 
+                  ? 'bg-gradient-to-br from-purple-500/15 via-pink-500/10 to-purple-500/15 border-purple-500/30' 
+                  : 'bg-gradient-to-br from-purple-50 via-pink-50/50 to-purple-50 border-purple-200'
+              } shadow-lg ${darkMode ? 'shadow-purple-500/10' : 'shadow-purple-100'}`}
+            >
               {/* Shimmer effect */}
               <div className="absolute inset-0 -translate-x-full animate-[shimmer_4s_infinite] bg-gradient-to-r from-transparent via-white/10 to-transparent pointer-events-none" />
               
-              <div className={`flex items-center gap-3 px-5 py-4 border-b relative ${
+              {/* Decorative blur orbs */}
+              <div className="absolute -top-10 -right-10 w-40 h-40 bg-gradient-to-br from-purple-500 to-pink-500 opacity-20 rounded-full blur-3xl pointer-events-none" />
+              <div className="absolute -bottom-8 -left-8 w-32 h-32 bg-gradient-to-br from-pink-500 to-purple-500 opacity-15 rounded-full blur-2xl pointer-events-none" />
+              
+              <div className={`flex items-center gap-4 px-6 py-5 border-b relative ${
                 darkMode ? 'border-purple-500/20' : 'border-purple-200'
               }`}>
-                <div className={`w-10 h-10 rounded-xl flex items-center justify-center bg-gradient-to-br from-purple-500 to-pink-500 shadow-lg shadow-purple-500/25`}>
-                  <Gift className="w-5 h-5 text-white" />
+                <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center shadow-xl shadow-purple-500/30">
+                  <Gift className="w-6 h-6 text-white" />
                 </div>
                 <div>
-                  <h3 className={`font-semibold ${darkMode ? 'text-white' : 'text-gray-900'}`}>
+                  <h3 className={`text-lg font-bold ${darkMode ? 'text-white' : 'text-gray-900'}`}>
                     {t('account.referral.title', 'Verdien €25 korting')}
                   </h3>
-                  <p className={`text-xs ${darkMode ? 'text-purple-400' : 'text-purple-600'}`}>
+                  <p className={`text-sm font-medium ${darkMode ? 'text-purple-400' : 'text-purple-600'}`}>
                     {t('account.referral.subtitle', 'Voor elke vriend die start')}
                   </p>
                 </div>
@@ -1137,21 +1257,21 @@ export default function AccountSection({
                     <p className={`text-2xl font-bold ${darkMode ? 'text-white' : 'text-gray-900'}`}>
                       {project.referralsCount || 0}
                     </p>
-                    <p className={`text-xs ${darkMode ? 'text-gray-500' : 'text-gray-400'}`}>
+                    <p className={`text-xs font-medium ${darkMode ? 'text-gray-500' : 'text-gray-400'}`}>
                       {t('account.referral.friends', 'Vrienden verwezen')}
                     </p>
                   </div>
-                  <div className={`p-3 rounded-xl text-center ${darkMode ? 'bg-gray-900/50' : 'bg-white'}`}>
-                    <p className={`text-2xl font-bold text-green-500`}>
+                  <div className={`p-4 rounded-xl text-center ${darkMode ? 'bg-gray-900/50' : 'bg-white'}`}>
+                    <p className={`text-3xl font-bold text-green-500`}>
                       €{project.referralRewards || 0}
                     </p>
-                    <p className={`text-xs ${darkMode ? 'text-gray-500' : 'text-gray-400'}`}>
+                    <p className={`text-xs font-medium ${darkMode ? 'text-gray-500' : 'text-gray-400'}`}>
                       {t('account.referral.earned', 'Korting verdiend')}
                     </p>
                   </div>
                 </div>
               </div>
-            </div>
+            </motion.div>
           </motion.div>
         )}
       </AnimatePresence>

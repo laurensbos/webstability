@@ -126,18 +126,22 @@ export default function DomainPhaseCard({
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
-        className={`rounded-2xl border overflow-hidden ${
+        transition={{ type: 'spring', stiffness: 300, damping: 25 }}
+        className={`rounded-2xl border-2 overflow-hidden ${
           darkMode 
-            ? 'bg-gray-900/80 border-pink-500/30' 
-            : 'bg-white border-pink-200 shadow-lg'
+            ? 'bg-gradient-to-br from-gray-900 to-gray-950 border-pink-500/40 shadow-lg shadow-pink-500/10' 
+            : 'bg-gradient-to-br from-white to-gray-50 border-pink-200 shadow-xl shadow-pink-500/10'
         }`}
       >
+        {/* Gradient accent line */}
+        <div className="h-1.5 bg-gradient-to-r from-pink-500 via-rose-500 to-pink-500" />
+        
         {/* Header with gradient */}
-        <div className="bg-gradient-to-r from-pink-500/20 via-rose-500/20 to-pink-500/20 p-5 relative overflow-hidden">
-          <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_right,rgba(236,72,153,0.2),transparent_70%)]" />
+        <div className="bg-gradient-to-r from-pink-500/10 via-rose-500/10 to-pink-500/10 p-5 relative overflow-hidden">
+          <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_right,rgba(236,72,153,0.15),transparent_70%)]" />
           
           <div className="relative flex items-start gap-4">
-            <div className="w-14 h-14 bg-gradient-to-br from-pink-500 to-rose-500 rounded-2xl flex items-center justify-center shadow-lg shadow-pink-500/25">
+            <div className="w-14 h-14 bg-gradient-to-br from-pink-500 to-rose-500 rounded-2xl flex items-center justify-center shadow-lg shadow-pink-500/30">
               <motion.div
                 animate={{ rotate: [0, 10, -10, 0] }}
                 transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
@@ -147,7 +151,7 @@ export default function DomainPhaseCard({
             </div>
             
             <div className="flex-1">
-              <h3 className={`text-lg font-bold mb-1 ${darkMode ? 'text-white' : 'text-gray-900'}`}>
+              <h3 className={`text-xl font-bold mb-1 ${darkMode ? 'text-white' : 'text-gray-900'}`}>
                 {t('phases.domain.title', 'Setting up your domain')} 🌐
               </h3>
               <p className={`text-sm ${darkMode ? 'text-gray-400' : 'text-gray-600'}`}>

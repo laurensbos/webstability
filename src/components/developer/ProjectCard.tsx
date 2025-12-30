@@ -35,45 +35,48 @@ export default function ProjectCard({ project, onClick }: ProjectCardProps) {
       layout
       layoutId={project.id}
       onClick={onClick}
-      className="bg-gray-800 rounded-xl p-4 cursor-pointer hover:bg-gray-750 transition border border-gray-700/50 hover:border-gray-600 group"
-      whileHover={{ scale: 1.02 }}
+      className="relative bg-gradient-to-br from-gray-800 to-gray-850 rounded-2xl p-4 cursor-pointer transition-all duration-200 border-2 border-gray-700/50 hover:border-emerald-500/30 hover:shadow-lg hover:shadow-emerald-500/10 group overflow-hidden"
+      whileHover={{ scale: 1.02, y: -2 }}
       whileTap={{ scale: 0.98 }}
     >
+      {/* Gradient accent line */}
+      <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-emerald-500 via-cyan-500 to-emerald-500 opacity-0 group-hover:opacity-100 transition-opacity" />
+      
       {/* Header */}
       <div className="flex items-start justify-between mb-3">
         <div className="flex-1 min-w-0">
-          <h3 className="font-semibold text-white truncate group-hover:text-emerald-400 transition">
+          <h3 className="font-bold text-white truncate group-hover:text-emerald-400 transition">
             {project.businessName}
           </h3>
           <p className="text-xs text-gray-500 truncate">{project.contactName}</p>
         </div>
         
         {/* Badges */}
-        <div className="flex items-center gap-1 ml-2">
+        <div className="flex items-center gap-1.5 ml-2">
           {serviceInfo && (
-            <span className="text-sm" title={serviceInfo.label}>{serviceInfo.emoji}</span>
+            <span className="text-sm p-1.5 bg-gray-700/50 rounded-lg" title={serviceInfo.label}>{serviceInfo.emoji}</span>
           )}
-          <span className="text-sm" title={packageInfo.name}>{packageInfo.emoji}</span>
+          <span className="text-sm p-1.5 bg-gray-700/50 rounded-lg" title={packageInfo.name}>{packageInfo.emoji}</span>
         </div>
       </div>
 
       {/* Alerts */}
       <div className="flex flex-wrap gap-1.5 mb-3">
         {unreadMessages > 0 && (
-          <span className="inline-flex items-center gap-1 px-2 py-0.5 bg-blue-500/20 text-blue-400 rounded text-xs font-medium">
+          <span className="inline-flex items-center gap-1 px-2.5 py-1 bg-gradient-to-r from-blue-500/20 to-cyan-500/20 text-blue-400 rounded-lg text-xs font-semibold border border-blue-500/30">
             <MessageSquare className="w-3 h-3" />
             {unreadMessages}
           </span>
         )}
         
         {hasPendingPayment && (
-          <span className="inline-flex items-center gap-1 px-2 py-0.5 bg-amber-500/20 text-amber-400 rounded text-xs font-medium animate-pulse">
+          <span className="inline-flex items-center gap-1 px-2.5 py-1 bg-gradient-to-r from-amber-500/20 to-orange-500/20 text-amber-400 rounded-lg text-xs font-semibold animate-pulse border border-amber-500/30">
             💳 {t('developerDashboard.urgency.waitingForPayment')}
           </span>
         )}
         
         {hasPendingFeedback && (
-          <span className="inline-flex items-center gap-1 px-2 py-0.5 bg-purple-500/20 text-purple-400 rounded text-xs font-medium">
+          <span className="inline-flex items-center gap-1 px-2.5 py-1 bg-gradient-to-r from-purple-500/20 to-pink-500/20 text-purple-400 rounded-lg text-xs font-semibold border border-purple-500/30">
             <AlertCircle className="w-3 h-3" />
             Feedback
           </span>
@@ -81,26 +84,26 @@ export default function ProjectCard({ project, onClick }: ProjectCardProps) {
       </div>
 
       {/* Footer */}
-      <div className="flex items-center justify-between text-xs text-gray-500">
-        <div className="flex items-center gap-1">
-          <Clock className="w-3 h-3" />
+      <div className="flex items-center justify-between text-xs">
+        <div className="flex items-center gap-1.5 text-gray-500 font-medium">
+          <Clock className="w-3.5 h-3.5" />
           {daysInPhase === 0 ? t('developerDashboard.projectCard.today') : `${daysInPhase}d`}
         </div>
         
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-3">
           {project.designPreviewUrl && (
             <a 
               href={project.designPreviewUrl} 
               target="_blank" 
               rel="noopener noreferrer"
               onClick={e => e.stopPropagation()}
-              className="hover:text-purple-400 transition"
+              className="text-gray-500 hover:text-purple-400 transition p-1 hover:bg-purple-500/10 rounded-lg"
               title="Design preview"
             >
               <ExternalLink className="w-3.5 h-3.5" />
             </a>
           )}
-          <span className="text-gray-600">€{packageInfo.price}/m</span>
+          <span className="text-gray-400 font-semibold px-2 py-0.5 bg-gray-700/50 rounded-lg">€{packageInfo.price}/m</span>
         </div>
       </div>
     </motion.div>

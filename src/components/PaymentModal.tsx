@@ -254,21 +254,24 @@ export default function PaymentModal({
           animate={{ opacity: 1, y: 0, scale: 1 }}
           exit={{ opacity: 0, y: 50, scale: 0.95 }}
           transition={{ type: 'spring', damping: 25, stiffness: 300 }}
-          className="relative bg-white dark:bg-gray-800 rounded-t-2xl sm:rounded-2xl w-full max-w-lg max-h-[85vh] sm:max-h-[90vh] overflow-y-auto shadow-2xl modal-safe-height"
+          className="relative bg-white dark:bg-gray-800 rounded-t-2xl sm:rounded-2xl w-full max-w-lg max-h-[85vh] sm:max-h-[90vh] overflow-y-auto shadow-2xl modal-safe-height border-2 border-gray-200 dark:border-gray-700"
         >
+          {/* Premium gradient accent line */}
+          <div className="absolute top-0 left-0 right-0 h-1.5 bg-gradient-to-r from-primary-500 via-blue-500 to-primary-500 rounded-t-xl" />
+          
           {/* Mobile drag handle */}
-          <div className="sm:hidden flex justify-center pt-3 pb-1">
+          <div className="sm:hidden flex justify-center pt-4 pb-1">
             <div className="w-10 h-1 rounded-full bg-gray-300 dark:bg-gray-600" />
           </div>
 
           {/* Header */}
-          <div className="sticky top-0 bg-white dark:bg-gray-800 px-5 py-4 border-b border-gray-100 dark:border-gray-700 flex items-center justify-between z-10">
+          <div className="sticky top-0 bg-white/95 dark:bg-gray-800/95 backdrop-blur-sm px-5 py-4 border-b border-gray-100 dark:border-gray-700 flex items-center justify-between z-10">
             <div className="flex items-center gap-3">
-              <div className="w-10 h-10 bg-gradient-to-br from-primary-500 to-primary-600 rounded-xl flex items-center justify-center shadow-lg shadow-primary-500/25">
-                <CreditCard className="w-5 h-5 text-white" />
+              <div className="w-12 h-12 bg-gradient-to-br from-primary-500 to-blue-500 rounded-xl flex items-center justify-center shadow-lg shadow-primary-500/30">
+                <CreditCard className="w-6 h-6 text-white" />
               </div>
               <div>
-                <h2 className="font-semibold text-gray-900 dark:text-white">
+                <h2 className="font-bold text-gray-900 dark:text-white">
                   {t('paymentModal.title', 'Betaling afronden')}
                 </h2>
                 <p className="text-sm text-gray-500 dark:text-gray-400">
@@ -276,23 +279,25 @@ export default function PaymentModal({
                 </p>
               </div>
             </div>
-            <button
+            <motion.button
               onClick={handleClose}
-              className="p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors"
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+              className="p-2.5 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-xl transition-colors border-2 border-transparent hover:border-gray-200 dark:hover:border-gray-600"
               aria-label={t('common.close', 'Sluiten')}
             >
               <X className="w-5 h-5 text-gray-500 dark:text-gray-400" />
-            </button>
+            </motion.button>
           </div>
 
           <div className="p-5 space-y-5">
             {/* Package Summary */}
-            <div className="bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-700 dark:to-gray-800 rounded-xl p-4">
-              <div className="flex items-center justify-between mb-3">
-                <span className="text-sm text-gray-600 dark:text-gray-400">
+            <div className="bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-700 dark:to-gray-800 rounded-2xl p-5 border-2 border-gray-200 dark:border-gray-600">
+              <div className="flex items-center justify-between mb-4">
+                <span className="text-sm font-medium text-gray-600 dark:text-gray-400">
                   {t('paymentModal.package', 'Jouw pakket')}
                 </span>
-                <span className="px-2.5 py-1 bg-primary-100 dark:bg-primary-900/30 text-primary-700 dark:text-primary-300 text-sm font-medium rounded-full">
+                <span className="px-3 py-1.5 bg-gradient-to-r from-primary-500 to-blue-500 text-white text-sm font-semibold rounded-full shadow-lg shadow-primary-500/25">
                   {pkg.name}
                 </span>
               </div>
@@ -348,17 +353,19 @@ export default function PaymentModal({
 
             {/* Discount Code */}
             <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+              <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
                 {t('paymentModal.discount.label', 'Kortingscode')}
                 <span className="text-gray-400 font-normal ml-1">({t('common.optional', 'optioneel')})</span>
               </label>
 
               {appliedDiscount ? (
-                <div className="flex items-center justify-between p-3 bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-700 rounded-xl">
+                <div className="flex items-center justify-between p-4 bg-gradient-to-r from-green-50 to-emerald-50 dark:from-green-900/20 dark:to-emerald-900/20 border-2 border-green-200 dark:border-green-700 rounded-2xl">
                   <div className="flex items-center gap-2">
-                    <Check className="w-5 h-5 text-green-600 dark:text-green-400" />
+                    <div className="p-1.5 bg-gradient-to-br from-green-500 to-emerald-500 rounded-lg">
+                      <Check className="w-4 h-4 text-white" />
+                    </div>
                     <div>
-                      <span className="font-medium text-green-700 dark:text-green-300">
+                      <span className="font-semibold text-green-700 dark:text-green-300">
                         {appliedDiscount.code}
                       </span>
                       <span className="text-sm text-green-600 dark:text-green-400 ml-2">
@@ -371,7 +378,7 @@ export default function PaymentModal({
                   </div>
                   <button
                     onClick={removeDiscount}
-                    className="text-sm text-green-700 dark:text-green-300 hover:underline"
+                    className="text-sm text-green-700 dark:text-green-300 hover:underline font-medium"
                   >
                     {t('paymentModal.discount.remove', 'Verwijderen')}
                   </button>
@@ -386,19 +393,21 @@ export default function PaymentModal({
                       setDiscountError('')
                     }}
                     placeholder={t('paymentModal.discount.placeholder', 'Voer code in')}
-                    className="flex-1 px-4 py-2.5 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-400 focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all"
+                    className="flex-1 px-4 py-3 border-2 border-gray-200 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-400 focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-all"
                   />
-                  <button
+                  <motion.button
                     onClick={() => validateDiscount()}
                     disabled={checkingDiscount || !discountCode.trim()}
-                    className="px-4 py-2.5 bg-gray-100 dark:bg-gray-600 text-gray-700 dark:text-gray-200 font-medium rounded-xl hover:bg-gray-200 dark:hover:bg-gray-500 disabled:opacity-50 disabled:cursor-not-allowed transition-colors flex items-center gap-2"
+                    whileHover={{ scale: 1.02 }}
+                    whileTap={{ scale: 0.98 }}
+                    className="px-5 py-3 bg-gradient-to-r from-gray-100 to-gray-200 dark:from-gray-600 dark:to-gray-700 text-gray-700 dark:text-gray-200 font-semibold rounded-xl hover:from-gray-200 hover:to-gray-300 dark:hover:from-gray-500 dark:hover:to-gray-600 disabled:opacity-50 disabled:cursor-not-allowed transition-all flex items-center gap-2 border-2 border-gray-200 dark:border-gray-500"
                   >
                     {checkingDiscount ? (
                       <Loader2 className="w-4 h-4 animate-spin" />
                     ) : (
                       t('paymentModal.discount.apply', 'Toepassen')
                     )}
-                  </button>
+                  </motion.button>
                 </div>
               )}
 
@@ -411,26 +420,28 @@ export default function PaymentModal({
             </div>
 
             {/* What's included */}
-            <div className="bg-blue-50 dark:bg-blue-900/20 rounded-xl p-4">
-              <h4 className="font-medium text-blue-900 dark:text-blue-300 mb-2 flex items-center gap-2">
-                <Sparkles className="w-4 h-4" />
+            <div className="bg-gradient-to-br from-blue-50 to-cyan-50 dark:from-blue-900/20 dark:to-cyan-900/20 rounded-2xl p-5 border-2 border-blue-200 dark:border-blue-700">
+              <h4 className="font-semibold text-blue-900 dark:text-blue-300 mb-3 flex items-center gap-2">
+                <div className="p-1.5 bg-gradient-to-br from-blue-500 to-cyan-500 rounded-lg shadow-lg shadow-blue-500/25">
+                  <Sparkles className="w-4 h-4 text-white" />
+                </div>
                 {t('paymentModal.included.title', 'Dit zit in je abonnement')}
               </h4>
-              <ul className="space-y-1 text-sm text-blue-800 dark:text-blue-300">
-                <li className="flex items-center gap-2">
-                  <Check className="w-4 h-4 flex-shrink-0" />
+              <ul className="space-y-2 text-sm text-blue-800 dark:text-blue-300">
+                <li className="flex items-center gap-3">
+                  <Check className="w-4 h-4 flex-shrink-0 text-blue-600 dark:text-blue-400" />
                   {t('paymentModal.included.hosting', 'Hosting & SSL-certificaat')}
                 </li>
-                <li className="flex items-center gap-2">
-                  <Check className="w-4 h-4 flex-shrink-0" />
+                <li className="flex items-center gap-3">
+                  <Check className="w-4 h-4 flex-shrink-0 text-blue-600 dark:text-blue-400" />
                   {t('paymentModal.included.maintenance', 'Onderhoud & updates')}
                 </li>
-                <li className="flex items-center gap-2">
-                  <Check className="w-4 h-4 flex-shrink-0" />
+                <li className="flex items-center gap-3">
+                  <Check className="w-4 h-4 flex-shrink-0 text-blue-600 dark:text-blue-400" />
                   {t('paymentModal.included.support', 'Persoonlijke support')}
                 </li>
-                <li className="flex items-center gap-2">
-                  <Check className="w-4 h-4 flex-shrink-0" />
+                <li className="flex items-center gap-3">
+                  <Check className="w-4 h-4 flex-shrink-0 text-blue-600 dark:text-blue-400" />
                   {t('paymentModal.included.changes', 'Maandelijkse wijzigingen')}
                 </li>
               </ul>
@@ -438,7 +449,7 @@ export default function PaymentModal({
 
             {/* Error message */}
             {error && (
-              <div className="p-4 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-700 rounded-xl">
+              <div className="p-4 bg-gradient-to-r from-red-50 to-rose-50 dark:from-red-900/20 dark:to-rose-900/20 border-2 border-red-200 dark:border-red-700 rounded-2xl">
                 <p className="text-sm text-red-700 dark:text-red-300 flex items-center gap-2">
                   <AlertCircle className="w-5 h-5 flex-shrink-0" />
                   {error}
@@ -447,10 +458,12 @@ export default function PaymentModal({
             )}
 
             {/* Pay button */}
-            <button
+            <motion.button
               onClick={initiatePayment}
               disabled={isProcessing}
-              className="w-full py-4 bg-gradient-to-r from-primary-500 to-primary-600 hover:from-primary-600 hover:to-primary-700 text-white font-semibold rounded-xl transition-all shadow-lg shadow-primary-500/25 hover:shadow-primary-500/40 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+              whileHover={{ scale: 1.02 }}
+              whileTap={{ scale: 0.98 }}
+              className="w-full py-4 bg-gradient-to-r from-primary-500 via-blue-500 to-primary-500 hover:from-primary-600 hover:via-blue-600 hover:to-primary-600 text-white font-bold rounded-xl transition-all shadow-xl shadow-primary-500/30 hover:shadow-primary-500/50 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
             >
               {isProcessing ? (
                 <>
@@ -464,15 +477,15 @@ export default function PaymentModal({
                   <ExternalLink className="w-4 h-4 ml-1" />
                 </>
               )}
-            </button>
+            </motion.button>
 
             {/* Security badges */}
-            <div className="flex items-center justify-center gap-4 pt-2">
-              <div className="flex items-center gap-1 text-xs text-gray-500 dark:text-gray-400">
+            <div className="flex items-center justify-center gap-6 pt-2">
+              <div className="flex items-center gap-1.5 text-xs text-gray-500 dark:text-gray-400 font-medium">
                 <Shield className="w-4 h-4" />
                 <span>{t('paymentModal.secure', 'Beveiligd')}</span>
               </div>
-              <div className="flex items-center gap-1 text-xs text-gray-500 dark:text-gray-400">
+              <div className="flex items-center gap-1.5 text-xs text-gray-500 dark:text-gray-400 font-medium">
                 <Lock className="w-4 h-4" />
                 <span>{t('paymentModal.encrypted', 'Versleuteld')}</span>
               </div>

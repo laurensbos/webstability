@@ -383,10 +383,13 @@ export default function ProjectDetailModal({
         exit={{ y: '100%', opacity: 0 }}
         transition={{ type: 'spring', damping: 25, stiffness: 300 }}
         onClick={e => e.stopPropagation()}
-        className="w-full sm:max-w-2xl max-h-[95vh] sm:max-h-[90vh] bg-gray-900 rounded-t-2xl sm:rounded-2xl overflow-hidden shadow-2xl border-t sm:border border-gray-800"
+        className="relative w-full sm:max-w-2xl max-h-[95vh] sm:max-h-[90vh] bg-gradient-to-br from-gray-900 to-gray-950 rounded-t-2xl sm:rounded-2xl overflow-hidden shadow-2xl border-2 border-gray-800"
       >
+        {/* Gradient accent line */}
+        <div className="absolute top-0 left-0 right-0 h-1.5 bg-gradient-to-r from-emerald-500 via-cyan-500 to-emerald-500 z-10" />
+        
         {/* Mobile drag handle */}
-        <div className="sm:hidden flex justify-center pt-2 pb-1">
+        <div className="sm:hidden flex justify-center pt-3 pb-1">
           <div className="w-10 h-1 rounded-full bg-gray-700" />
         </div>
         
@@ -397,7 +400,7 @@ export default function ProjectDetailModal({
               <div className="flex items-center gap-2 mb-1 flex-wrap">
                 {serviceInfo && <span className="text-base sm:text-lg">{serviceInfo.emoji}</span>}
                 <h2 className="text-lg sm:text-xl font-bold text-white truncate">{project.businessName}</h2>
-                <span className={`px-2 py-0.5 rounded text-xs font-medium ${phaseInfo.bgColor} ${phaseInfo.color} whitespace-nowrap`}>
+                <span className={`px-2.5 py-1 rounded-lg text-xs font-semibold ${phaseInfo.bgColor} ${phaseInfo.color} whitespace-nowrap border border-current/20`}>
                   {phaseInfo.emoji} {phaseInfo.label}
                 </span>
               </div>
@@ -438,7 +441,7 @@ export default function ProjectDetailModal({
           </div>
 
           {/* Tabs */}
-          <div className="flex gap-1 mt-4 overflow-x-auto scrollbar-hide pb-1 -mx-1 px-1">
+          <div className="flex gap-1.5 mt-4 overflow-x-auto scrollbar-hide pb-1 -mx-1 px-1">
             {[
               { id: 'info', label: 'Info', icon: FileText },
               { id: 'onboarding', label: 'Onboarding', icon: ClipboardList },
@@ -446,23 +449,25 @@ export default function ProjectDetailModal({
               { id: 'feedback', label: 'Feedback', icon: AlertCircle, badge: pendingFeedback.length > 0 ? pendingFeedback.length : undefined },
               { id: 'customer', label: 'Klant', icon: User },
             ].map(tab => (
-              <button
+              <motion.button
                 key={tab.id}
                 onClick={() => setActiveTab(tab.id as typeof activeTab)}
-                className={`flex items-center gap-1.5 sm:gap-2 px-3 sm:px-4 py-2 rounded-lg text-xs sm:text-sm font-medium transition whitespace-nowrap flex-shrink-0 ${
+                whileHover={{ scale: 1.02 }}
+                whileTap={{ scale: 0.98 }}
+                className={`relative flex items-center gap-1.5 sm:gap-2 px-3 sm:px-4 py-2.5 rounded-xl text-xs sm:text-sm font-semibold transition-all duration-200 whitespace-nowrap flex-shrink-0 border-2 ${
                   activeTab === tab.id
-                    ? 'bg-emerald-500/20 text-emerald-400'
-                    : 'text-gray-400 hover:text-white hover:bg-gray-800'
+                    ? 'bg-gradient-to-r from-emerald-500/20 to-cyan-500/20 text-emerald-400 border-emerald-500/30 shadow-lg shadow-emerald-500/10'
+                    : 'text-gray-400 hover:text-white hover:bg-gray-800/50 border-transparent'
                 }`}
               >
                 <tab.icon className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
                 <span className="hidden xs:inline sm:inline">{tab.label}</span>
                 {tab.badge && tab.badge > 0 && (
-                  <span className="px-1.5 py-0.5 bg-red-500 text-white text-xs rounded-full">
+                  <span className="px-1.5 py-0.5 bg-gradient-to-r from-red-500 to-rose-500 text-white text-xs font-bold rounded-full shadow-lg shadow-red-500/30">
                     {tab.badge}
                   </span>
                 )}
-              </button>
+              </motion.button>
             ))}
           </div>
         </div>
@@ -480,11 +485,11 @@ export default function ProjectDetailModal({
                 className="space-y-4"
               >
                 {/* Quick Info */}
-                <div className="grid grid-cols-2 gap-2 sm:gap-3">
-                  <div className="bg-gray-800/50 rounded-xl p-2.5 sm:p-3">
-                    <p className="text-xs text-gray-500 mb-1">Pakket</p>
-                    <p className="text-white font-medium text-sm sm:text-base">{packageInfo.emoji} {packageInfo.name}</p>
-                    <p className="text-emerald-400 text-xs sm:text-sm">€{packageInfo.price}/maand</p>
+                <div className="grid grid-cols-2 gap-3">
+                  <div className="bg-gradient-to-br from-gray-800/50 to-gray-850/50 rounded-2xl p-3 sm:p-4 border-2 border-gray-700/50">
+                    <p className="text-xs text-gray-500 mb-1 font-medium">Pakket</p>
+                    <p className="text-white font-bold text-sm sm:text-base">{packageInfo.emoji} {packageInfo.name}</p>
+                    <p className="text-emerald-400 text-xs sm:text-sm font-semibold">€{packageInfo.price}/maand</p>
                   </div>
                   <div className="bg-gray-800/50 rounded-xl p-2.5 sm:p-3">
                     <p className="text-xs text-gray-500 mb-1">Betaling</p>
