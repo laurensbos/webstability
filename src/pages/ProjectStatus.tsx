@@ -29,7 +29,13 @@ import {
   Timer,
   CreditCard,
   X,
-  RefreshCw
+  RefreshCw,
+  MoreVertical,
+  HelpCircle,
+  Moon,
+  Sun,
+  Languages,
+  User
 } from 'lucide-react'
 import Logo from '../components/Logo'
 import AccountSection from '../components/AccountSection'
@@ -46,8 +52,6 @@ import SatisfactionSurveyModal from '../components/SatisfactionSurveyModal'
 import { ReferralWidget } from '../components/GrowthTools'
 import MobileBottomNav from '../components/MobileBottomNav'
 import QuickActions from '../components/QuickActions'
-import { DarkModeButton } from '../components/DarkModeToggle'
-import { LanguageSelector } from '../components/LanguageSelector'
 import Footer from '../components/Footer'
 import { useKeyboardShortcuts, KeyboardShortcutsModal, KeyboardShortcutHint } from '../hooks/useKeyboardShortcuts'
 import PWAInstallPrompt from '../components/PWAInstallPrompt'
@@ -193,7 +197,7 @@ const useDeadlineCountdown = (deadline?: string) => {
 }
 
 export default function ProjectStatus() {
-  const { t } = useTranslation()
+  const { t, i18n } = useTranslation()
   const { projectId } = useParams<{ projectId: string }>()
   const navigate = useNavigate()
   const [searchParams] = useSearchParams()
@@ -216,6 +220,8 @@ export default function ProjectStatus() {
   const [messageLoading, setMessageLoading] = useState(false)
   const [showChat, setShowChat] = useState(false)
   const [chatExpanded, setChatExpanded] = useState(false)
+  const [showSettingsMenu, setShowSettingsMenu] = useState(false)
+  const settingsMenuRef = useRef<HTMLDivElement>(null)
   const messagesEndRef = useRef<HTMLDivElement>(null)
   const prevMessageCountRef = useRef<number>(0)
   
@@ -283,6 +289,17 @@ export default function ProjectStatus() {
   // Calculate deadline for current phase
   const currentDeadline = project?.phaseDeadlines?.[project.status as keyof typeof project.phaseDeadlines]
   const countdown = useDeadlineCountdown(currentDeadline)
+
+  // Close settings menu on click outside
+  useEffect(() => {
+    function handleClickOutside(event: MouseEvent) {
+      if (settingsMenuRef.current && !settingsMenuRef.current.contains(event.target as Node)) {
+        setShowSettingsMenu(false)
+      }
+    }
+    document.addEventListener('mousedown', handleClickOutside)
+    return () => document.removeEventListener('mousedown', handleClickOutside)
+  }, [])
 
   // Check for existing session
   useEffect(() => {
@@ -888,7 +905,7 @@ export default function ProjectStatus() {
 
   return (
     <div className={`min-h-screen transition-colors duration-300 ${darkMode ? 'bg-gray-950' : 'bg-gray-50'}`}>
-      {/* Header - Compact version */}
+      {/* Header - Clean & Simple */}
       <header className={`sticky top-0 z-50 border-b backdrop-blur-xl transition-colors duration-300 ${
         darkMode 
           ? 'border-white/10 bg-gray-950/80' 
@@ -900,23 +917,8 @@ export default function ProjectStatus() {
               <Logo variant="white" size="sm" />
             </Link>
             <div className="flex items-center gap-1">
-              {/* Language selector */}
-              <div className="relative group">
-                <LanguageSelector variant="minimal" />
-              </div>
-              {/* Dark mode toggle - always visible */}
-              <div className="relative group">
-                <DarkModeButton
-                  darkMode={darkMode}
-                  onToggle={toggleDarkMode}
-                  size="md"
-                />
-                <span className="absolute -bottom-8 left-1/2 -translate-x-1/2 px-2 py-1 text-xs font-medium rounded bg-gray-900 text-white opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap pointer-events-none hidden sm:block">
-                  {darkMode ? 'Lichte modus' : 'Donkere modus'}
-                </span>
-              </div>
               {/* Notifications - always visible */}
-              <div data-tour="notifications" className="relative group">
+              <div data-tour="notifications" className="relative">
                 <NotificationBell
                   notifications={notifications}
                   onMarkAsRead={(id) => {
@@ -929,64 +931,143 @@ export default function ProjectStatus() {
                   }}
                   darkMode={darkMode}
                 />
-                <span className="absolute -bottom-8 left-1/2 -translate-x-1/2 px-2 py-1 text-xs font-medium rounded bg-gray-900 text-white opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap pointer-events-none hidden sm:block">
-                  Meldingen
-                </span>
               </div>
-              {/* Chat - hidden on mobile (available in bottom nav) */}
-              <div className="relative group hidden sm:block">
+              {/* Chat - always visible */}
+              <button
+                onClick={() => setShowChat(!showChat)}
+                className={`relative p-2 transition rounded-lg ${
+                  darkMode 
+                    ? 'text-gray-400 hover:text-white hover:bg-gray-800' 
+                    : 'text-gray-500 hover:text-gray-900 hover:bg-gray-100'
+                }`}
+              >
+                <MessageSquare className="w-5 h-5" />
+                {unreadMessages > 0 && (
+                  <span className="absolute -top-1 -right-1 w-4 h-4 bg-red-500 text-white text-xs rounded-full flex items-center justify-center">
+                    {unreadMessages}
+                  </span>
+                )}
+              </button>
+              {/* Settings Menu - dropdown with all other options */}
+              <div ref={settingsMenuRef} className="relative">
                 <button
-                  onClick={() => setShowChat(!showChat)}
-                  className="relative p-2 text-gray-400 hover:text-white transition rounded-lg hover:bg-gray-800"
+                  onClick={() => setShowSettingsMenu(!showSettingsMenu)}
+                  className={`p-2 transition rounded-lg ${
+                    darkMode 
+                      ? 'text-gray-400 hover:text-white hover:bg-gray-800' 
+                      : 'text-gray-500 hover:text-gray-900 hover:bg-gray-100'
+                  }`}
+                  aria-label="Menu"
                 >
-                  <MessageSquare className="w-5 h-5" />
-                  {unreadMessages > 0 && (
-                    <span className="absolute -top-1 -right-1 w-4 h-4 bg-red-500 text-white text-xs rounded-full flex items-center justify-center">
-                      {unreadMessages}
-                    </span>
+                  <MoreVertical className="w-5 h-5" />
+                </button>
+                <AnimatePresence>
+                  {showSettingsMenu && (
+                    <motion.div
+                      initial={{ opacity: 0, y: -10, scale: 0.95 }}
+                      animate={{ opacity: 1, y: 0, scale: 1 }}
+                      exit={{ opacity: 0, y: -10, scale: 0.95 }}
+                      transition={{ duration: 0.15 }}
+                      className={`absolute right-0 mt-2 w-56 rounded-xl shadow-xl border overflow-hidden z-50 ${
+                        darkMode 
+                          ? 'bg-gray-900 border-gray-700' 
+                          : 'bg-white border-gray-200'
+                      }`}
+                    >
+                      {/* Dark Mode Toggle */}
+                      <button
+                        onClick={() => {
+                          toggleDarkMode()
+                          setShowSettingsMenu(false)
+                        }}
+                        className={`w-full flex items-center gap-3 px-4 py-3 text-left transition-colors ${
+                          darkMode 
+                            ? 'hover:bg-gray-800 text-gray-200' 
+                            : 'hover:bg-gray-50 text-gray-700'
+                        }`}
+                      >
+                        {darkMode ? <Sun className="w-5 h-5" /> : <Moon className="w-5 h-5" />}
+                        <span className="flex-1">{darkMode ? t('settings.lightMode', 'Lichte modus') : t('settings.darkMode', 'Donkere modus')}</span>
+                      </button>
+                      
+                      {/* Language */}
+                      <div className={`px-4 py-3 border-t ${darkMode ? 'border-gray-700' : 'border-gray-100'}`}>
+                        <div className={`flex items-center gap-3 mb-2 ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>
+                          <Languages className="w-5 h-5" />
+                          <span className="text-sm">{t('settings.language', 'Taal')}</span>
+                        </div>
+                        <div className="flex gap-2 ml-8">
+                          <button
+                            onClick={() => {
+                              i18n.changeLanguage('nl')
+                              localStorage.setItem('language', 'nl')
+                            }}
+                            className={`px-3 py-1.5 text-sm font-medium rounded-lg transition-colors ${
+                              i18n.language.startsWith('nl')
+                                ? 'bg-primary-500 text-white'
+                                : darkMode 
+                                  ? 'bg-gray-800 text-gray-300 hover:bg-gray-700' 
+                                  : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                            }`}
+                          >
+                            🇳🇱 NL
+                          </button>
+                          <button
+                            onClick={() => {
+                              i18n.changeLanguage('en')
+                              localStorage.setItem('language', 'en')
+                            }}
+                            className={`px-3 py-1.5 text-sm font-medium rounded-lg transition-colors ${
+                              i18n.language.startsWith('en')
+                                ? 'bg-primary-500 text-white'
+                                : darkMode 
+                                  ? 'bg-gray-800 text-gray-300 hover:bg-gray-700' 
+                                  : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                            }`}
+                          >
+                            🇬🇧 EN
+                          </button>
+                        </div>
+                      </div>
+
+                      <div className={`border-t ${darkMode ? 'border-gray-700' : 'border-gray-100'}`}>
+                        {/* Help */}
+                        <button
+                          data-tour="help"
+                          onClick={() => {
+                            setShowHelpCenter(true)
+                            setShowSettingsMenu(false)
+                          }}
+                          className={`w-full flex items-center gap-3 px-4 py-3 text-left transition-colors ${
+                            darkMode 
+                              ? 'hover:bg-gray-800 text-gray-200' 
+                              : 'hover:bg-gray-50 text-gray-700'
+                          }`}
+                        >
+                          <HelpCircle className="w-5 h-5" />
+                          <span>{t('settings.help', 'Hulp & FAQ')}</span>
+                        </button>
+                        
+                        {/* Account */}
+                        <button
+                          onClick={() => {
+                            setActiveView('account')
+                            setShowSettingsMenu(false)
+                            window.scrollTo({ top: 0, behavior: 'smooth' })
+                          }}
+                          className={`w-full flex items-center gap-3 px-4 py-3 text-left transition-colors ${
+                            darkMode 
+                              ? 'hover:bg-gray-800 text-gray-200' 
+                              : 'hover:bg-gray-50 text-gray-700'
+                          }`}
+                        >
+                          <User className="w-5 h-5" />
+                          <span>{t('projectStatus.myAccount', 'Mijn account')}</span>
+                        </button>
+                      </div>
+                    </motion.div>
                   )}
-                </button>
-                <span className="absolute -bottom-8 left-1/2 -translate-x-1/2 px-2 py-1 text-xs font-medium rounded bg-gray-900 text-white opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap pointer-events-none">
-                  Chat
-                </span>
-              </div>
-              {/* Help - hidden on mobile (available in bottom nav) */}
-              <div className="relative group hidden sm:block">
-                <button
-                  data-tour="help"
-                  onClick={() => setShowHelpCenter(true)}
-                  className={`p-2 transition rounded-lg ${
-                    darkMode 
-                      ? 'text-gray-400 hover:text-white hover:bg-gray-800' 
-                      : 'text-gray-500 hover:text-gray-900 hover:bg-gray-100'
-                  }`}
-                >
-                  <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                  </svg>
-                </button>
-                <span className="absolute -bottom-8 left-1/2 -translate-x-1/2 px-2 py-1 text-xs font-medium rounded bg-gray-900 text-white opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap pointer-events-none">
-                  Hulp & FAQ
-                </span>
-              </div>
-              {/* Account - hidden on mobile (available in bottom nav) */}
-              <div className="relative group hidden sm:block">
-                <button
-                  onClick={() => {
-                    setActiveView('account')
-                    window.scrollTo({ top: 0, behavior: 'smooth' })
-                  }}
-                  className={`p-2 transition rounded-lg ${
-                    darkMode 
-                      ? 'text-gray-400 hover:text-white hover:bg-gray-800' 
-                      : 'text-gray-500 hover:text-gray-900 hover:bg-gray-100'
-                  }`}
-                >
-                  <FolderOpen className="w-5 h-5" />
-                </button>
-                <span className="absolute -bottom-8 left-1/2 -translate-x-1/2 px-2 py-1 text-xs font-medium rounded bg-gray-900 text-white opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap pointer-events-none">
-                  {t('projectStatus.myAccount')}
-                </span>
+                </AnimatePresence>
               </div>
             </div>
           </div>
