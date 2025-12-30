@@ -20,6 +20,7 @@ import {
   Target,
   ArrowUpRight,
   Image,
+  Camera,
   type LucideIcon
 } from 'lucide-react'
 import { 
@@ -134,6 +135,10 @@ function RadioQuestion({ question, value, onChange, disabled, darkMode }: Questi
   // Check if this is the main CTA question and user wants e-commerce
   const isMainCTAQuestion = question.id === 'mainCTA'
   const wantsEcommerce = isMainCTAQuestion && value === 'buy'
+  
+  // Check if this is the photos question - always show drone upsell
+  const isPhotosQuestion = question.id === 'hasPhotos'
+  const showDroneUpsell = isPhotosQuestion && value // Show when any option is selected
   
   return (
     <div className="space-y-2">
@@ -263,6 +268,73 @@ function RadioQuestion({ question, value, onChange, disabled, darkMode }: Questi
               </div>
               <p className={`mt-2 text-xs ${darkMode ? 'text-gray-500' : 'text-gray-400'}`}>
                 {t('onboarding.webshopContactUs', { defaultValue: 'Neem contact op via de chat om te upgraden naar een webshop pakket.' })}
+              </p>
+            </div>
+          </div>
+        </motion.div>
+      )}
+      
+      {/* Drone Photography upsell */}
+      {showDroneUpsell && (
+        <motion.div
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          className={`mt-4 p-4 rounded-xl border ${
+            darkMode 
+              ? 'bg-gradient-to-r from-sky-500/10 to-cyan-500/10 border-sky-500/30' 
+              : 'bg-gradient-to-r from-sky-50 to-cyan-50 border-sky-200'
+          }`}
+        >
+          <div className="flex items-start gap-3">
+            <div className={`w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0 ${
+              darkMode ? 'bg-sky-500/20' : 'bg-sky-100'
+            }`}>
+              <Camera className={`w-5 h-5 ${darkMode ? 'text-sky-400' : 'text-sky-600'}`} />
+            </div>
+            <div className="flex-1">
+              <h4 className={`font-semibold ${darkMode ? 'text-white' : 'text-gray-900'}`}>
+                {t('onboarding.droneUpsellTitle', { defaultValue: 'Professionele drone fotografie' })}
+              </h4>
+              <p className={`text-sm mt-1 ${darkMode ? 'text-gray-400' : 'text-gray-600'}`}>
+                {t('onboarding.droneUpsellDescription', { defaultValue: 'Maak indruk met spectaculaire luchtfoto\'s van je bedrijfspand, locatie of evenement.' })}
+              </p>
+              <div className="mt-3 space-y-1.5">
+                <div className="flex items-center gap-2 text-sm">
+                  <Check className={`w-4 h-4 ${darkMode ? 'text-sky-400' : 'text-sky-600'}`} />
+                  <span className={darkMode ? 'text-gray-300' : 'text-gray-700'}>
+                    {t('onboarding.droneFeature1', { defaultValue: 'Professionele 4K beelden' })}
+                  </span>
+                </div>
+                <div className="flex items-center gap-2 text-sm">
+                  <Check className={`w-4 h-4 ${darkMode ? 'text-sky-400' : 'text-sky-600'}`} />
+                  <span className={darkMode ? 'text-gray-300' : 'text-gray-700'}>
+                    {t('onboarding.droneFeature2', { defaultValue: 'Gecertificeerde dronepiloot' })}
+                  </span>
+                </div>
+                <div className="flex items-center gap-2 text-sm">
+                  <Check className={`w-4 h-4 ${darkMode ? 'text-sky-400' : 'text-sky-600'}`} />
+                  <span className={darkMode ? 'text-gray-300' : 'text-gray-700'}>
+                    {t('onboarding.droneFeature3', { defaultValue: 'Direct te gebruiken op je website' })}
+                  </span>
+                </div>
+              </div>
+              <div className={`mt-3 p-3 rounded-lg ${darkMode ? 'bg-sky-500/10' : 'bg-sky-50'}`}>
+                <div className="flex items-center justify-between">
+                  <div>
+                    <span className={`text-sm line-through ${darkMode ? 'text-gray-500' : 'text-gray-400'}`}>
+                      €349
+                    </span>
+                    <span className={`text-sm ml-2 ${darkMode ? 'text-gray-400' : 'text-gray-600'}`}>
+                      {t('onboarding.droneWebsiteDiscount', { defaultValue: 'Website klant korting' })}
+                    </span>
+                  </div>
+                  <span className={`text-lg font-bold ${darkMode ? 'text-sky-400' : 'text-sky-600'}`}>
+                    €249
+                  </span>
+                </div>
+              </div>
+              <p className={`mt-2 text-xs ${darkMode ? 'text-gray-500' : 'text-gray-400'}`}>
+                {t('onboarding.droneContactUs', { defaultValue: 'Interesse? Laat het weten in de chat en we nemen contact op.' })}
               </p>
             </div>
           </div>
