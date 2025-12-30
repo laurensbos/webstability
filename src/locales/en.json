@@ -125,7 +125,9 @@
     "priceSubtext": "No hidden costs",
     "noObligations": "No obligations",
     "fastLive": "Fast launch",
-    "monthlyPayment": "Pay monthly"
+    "monthlyPayment": "Pay monthly",
+    "deliveryDays": "7 days",
+    "deliveryTime": "Delivery time"
   },
   "benefits": {
     "title": "Why choose a website subscription?",

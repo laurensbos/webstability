@@ -125,7 +125,9 @@
     "priceSubtext": "Geen verborgen kosten",
     "noObligations": "Geen verplichtingen",
     "fastLive": "Snel live",
-    "monthlyPayment": "Maandelijks betalen"
+    "monthlyPayment": "Maandelijks betalen",
+    "deliveryDays": "7 dagen",
+    "deliveryTime": "Levertijd"
   },
   "benefits": {
     "title": "Waarom kiezen voor een website abonnement?",

@@ -339,8 +339,8 @@ export default function Hero() {
                     </svg>
                   </div>
                   <div>
-                    <div className="text-lg font-bold text-gray-900 dark:text-white">7 dagen</div>
-                    <div className="text-xs text-gray-500 dark:text-gray-400">Levertijd</div>
+                    <div className="text-lg font-bold text-gray-900 dark:text-white">{t('hero.deliveryDays')}</div>
+                    <div className="text-xs text-gray-500 dark:text-gray-400">{t('hero.deliveryTime')}</div>
                   </div>
                 </div>
               </motion.div>
