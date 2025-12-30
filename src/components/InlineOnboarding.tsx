@@ -131,6 +131,10 @@ function RadioQuestion({ question, value, onChange, disabled, darkMode }: Questi
   const isLogoQuestion = question.id === 'hasLogo'
   const wantsNewLogo = isLogoQuestion && (value === 'no' || value === 'refresh')
   
+  // Check if this is the main CTA question and user wants e-commerce
+  const isMainCTAQuestion = question.id === 'mainCTA'
+  const wantsEcommerce = isMainCTAQuestion && value === 'buy'
+  
   return (
     <div className="space-y-2">
       {question.options?.map((option) => (
@@ -198,6 +202,68 @@ function RadioQuestion({ question, value, onChange, disabled, darkMode }: Questi
               }`}>
                 {t('onboarding.logoDesignIncluded', { defaultValue: '✓ Inbegrepen bij je pakket' })}
               </div>
+            </div>
+          </div>
+        </motion.div>
+      )}
+      
+      {/* E-commerce / Webshop upsell */}
+      {wantsEcommerce && (
+        <motion.div
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          className={`mt-4 p-4 rounded-xl border ${
+            darkMode 
+              ? 'bg-gradient-to-r from-emerald-500/10 to-teal-500/10 border-emerald-500/30' 
+              : 'bg-gradient-to-r from-emerald-50 to-teal-50 border-emerald-200'
+          }`}
+        >
+          <div className="flex items-start gap-3">
+            <div className={`w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0 ${
+              darkMode ? 'bg-emerald-500/20' : 'bg-emerald-100'
+            }`}>
+              <ShoppingCart className={`w-5 h-5 ${darkMode ? 'text-emerald-400' : 'text-emerald-600'}`} />
+            </div>
+            <div className="flex-1">
+              <h4 className={`font-semibold ${darkMode ? 'text-white' : 'text-gray-900'}`}>
+                {t('onboarding.webshopUpsellTitle', { defaultValue: '🛒 Webshop nodig?' })}
+              </h4>
+              <p className={`text-sm mt-1 ${darkMode ? 'text-gray-400' : 'text-gray-600'}`}>
+                {t('onboarding.webshopUpsellDescription', { defaultValue: 'Voor e-commerce heb je een webshop pakket nodig met productbeheer, winkelwagen, betaalsysteem en voorraadbeheer.' })}
+              </p>
+              <div className="mt-3 space-y-1.5">
+                <div className="flex items-center gap-2 text-sm">
+                  <Check className={`w-4 h-4 ${darkMode ? 'text-emerald-400' : 'text-emerald-600'}`} />
+                  <span className={darkMode ? 'text-gray-300' : 'text-gray-700'}>
+                    {t('onboarding.webshopFeature1', { defaultValue: 'Onbeperkt producten toevoegen' })}
+                  </span>
+                </div>
+                <div className="flex items-center gap-2 text-sm">
+                  <Check className={`w-4 h-4 ${darkMode ? 'text-emerald-400' : 'text-emerald-600'}`} />
+                  <span className={darkMode ? 'text-gray-300' : 'text-gray-700'}>
+                    {t('onboarding.webshopFeature2', { defaultValue: 'iDEAL, creditcard & meer betaalmethodes' })}
+                  </span>
+                </div>
+                <div className="flex items-center gap-2 text-sm">
+                  <Check className={`w-4 h-4 ${darkMode ? 'text-emerald-400' : 'text-emerald-600'}`} />
+                  <span className={darkMode ? 'text-gray-300' : 'text-gray-700'}>
+                    {t('onboarding.webshopFeature3', { defaultValue: 'Automatische verzendlabels & tracking' })}
+                  </span>
+                </div>
+              </div>
+              <div className={`mt-3 p-3 rounded-lg ${darkMode ? 'bg-emerald-500/10' : 'bg-emerald-50'}`}>
+                <div className="flex items-center justify-between">
+                  <span className={`text-sm ${darkMode ? 'text-gray-400' : 'text-gray-600'}`}>
+                    {t('onboarding.webshopStartingAt', { defaultValue: 'Webshop pakket vanaf' })}
+                  </span>
+                  <span className={`text-lg font-bold ${darkMode ? 'text-emerald-400' : 'text-emerald-600'}`}>
+                    €299/maand
+                  </span>
+                </div>
+              </div>
+              <p className={`mt-2 text-xs ${darkMode ? 'text-gray-500' : 'text-gray-400'}`}>
+                {t('onboarding.webshopContactUs', { defaultValue: 'Neem contact op via de chat om te upgraden naar een webshop pakket.' })}
+              </p>
             </div>
           </div>
         </motion.div>

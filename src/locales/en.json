@@ -1464,6 +1464,13 @@
     "logoDesignTitle": "Need a professional logo?",
     "logoDesignDescription": "Our designers create a unique logo that perfectly matches your brand and style.",
     "logoDesignIncluded": "✓ Included in your package",
+    "webshopUpsellTitle": "🛒 Need a webshop?",
+    "webshopUpsellDescription": "For e-commerce you need a webshop package with product management, shopping cart, payment system and inventory management.",
+    "webshopFeature1": "Add unlimited products",
+    "webshopFeature2": "iDEAL, credit card & more payment methods",
+    "webshopFeature3": "Automatic shipping labels & tracking",
+    "webshopStartingAt": "Webshop package from",
+    "webshopContactUs": "Contact us via chat to upgrade to a webshop package.",
     "prefilled": {
       "title": "Details transferred from your registration",
       "company": "Company",
