@@ -5,16 +5,17 @@ import crypto from 'crypto'
 const developerSessions: Record<string, { expiresAt: number }> = {}
 
 // Valid passwords - use environment variables for security
-// Set these in Vercel: ADMIN_PASSWORD, DEV_PASSWORD_1, DEV_PASSWORD_2
+// Set these in Vercel: ADMIN_PASSWORD, DEV_PASSWORD_1, DEV_PASSWORD_2, DEVELOPER_PASSWORD
 const VALID_PASSWORDS = [
   process.env.ADMIN_PASSWORD,
   process.env.DEV_PASSWORD_1,
   process.env.DEV_PASSWORD_2,
+  process.env.DEVELOPER_PASSWORD,
 ].filter(Boolean) as string[]
 
 // Warning if no passwords are configured
 if (VALID_PASSWORDS.length === 0) {
-  console.warn('[Developer Login] WARNING: No passwords configured. Set ADMIN_PASSWORD, DEV_PASSWORD_1, or DEV_PASSWORD_2 environment variables.')
+  console.warn('[Developer Login] WARNING: No passwords configured. Set ADMIN_PASSWORD, DEV_PASSWORD_1, DEV_PASSWORD_2, or DEVELOPER_PASSWORD environment variables.')
 }
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
@@ -39,7 +40,18 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       return res.status(400).json({ success: false, message: 'Wachtwoord is verplicht.' })
     }
 
-    if (VALID_PASSWORDS.includes(password)) {
+    // Trim password to avoid whitespace issues
+    const trimmedPassword = password.trim()
+
+    if (VALID_PASSWORDS.length === 0) {
+      console.error('[Developer Login] No valid passwords configured!')
+      return res.status(500).json({ 
+        success: false, 
+        message: 'Server configuratiefout: geen wachtwoorden geconfigureerd.' 
+      })
+    }
+
+    if (VALID_PASSWORDS.includes(trimmedPassword)) {
       // Generate session token
       const sessionToken = crypto.randomBytes(32).toString('hex')
       const expiresAt = Date.now() + (24 * 60 * 60 * 1000) // 24 hours
