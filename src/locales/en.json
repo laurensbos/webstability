@@ -874,6 +874,8 @@
     "contactEmailPlaceholder": "email@example.com",
     "contactPhone": "Phone number",
     "contactPhonePlaceholder": "06 12345678",
+    "emailLanguage": "Email language",
+    "emailLanguageDescription": "Which language do you want to receive emails in?",
     "businessName": "Business name",
     "businessNamePlaceholder": "Your business name",
     "projectId": "Project ID",

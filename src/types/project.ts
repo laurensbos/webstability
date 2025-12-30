@@ -431,6 +431,8 @@ export interface Project {
     wantsTermsCreated?: boolean
     wantsAnalytics?: boolean
   }
+  // Email preferences
+  preferredLanguage?: 'nl' | 'en'    // Preferred language for emails
   businessInfo?: {
     kvkNumber?: string
     btwNumber?: string

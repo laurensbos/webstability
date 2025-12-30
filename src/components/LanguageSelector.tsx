@@ -8,6 +8,11 @@ const languages = [
   { code: 'en', name: 'English', flag: '🇬🇧' }
 ]
 
+// Helper to get the base language code (e.g., 'nl-NL' -> 'nl')
+const getBaseLanguage = (lang: string): string => {
+  return lang?.split('-')[0]?.toLowerCase() || 'nl'
+}
+
 interface LanguageSelectorProps {
   variant?: 'default' | 'minimal' | 'footer'
   className?: string
@@ -18,7 +23,8 @@ export function LanguageSelector({ variant = 'default', className = '' }: Langua
   const [isOpen, setIsOpen] = useState(false)
   const dropdownRef = useRef<HTMLDivElement>(null)
 
-  const currentLanguage = languages.find(lang => lang.code === i18n.language) || languages[0]
+  const baseLang = getBaseLanguage(i18n.language)
+  const currentLanguage = languages.find(lang => lang.code === baseLang) || languages[0]
 
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
@@ -45,7 +51,7 @@ export function LanguageSelector({ variant = 'default', className = '' }: Langua
             key={lang.code}
             onClick={() => changeLanguage(lang.code)}
             className={`px-2 py-1 text-sm font-medium rounded transition-colors ${
-              i18n.language === lang.code
+              baseLang === lang.code
                 ? 'bg-brand-500 text-white'
                 : 'text-gray-600 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-800'
             }`}
@@ -67,7 +73,7 @@ export function LanguageSelector({ variant = 'default', className = '' }: Langua
             <button
               onClick={() => changeLanguage(lang.code)}
               className={`text-sm transition-colors ${
-                i18n.language === lang.code
+                baseLang === lang.code
                   ? 'text-white font-medium'
                   : 'text-gray-400 hover:text-white'
               }`}
@@ -113,16 +119,16 @@ export function LanguageSelector({ variant = 'default', className = '' }: Langua
                 key={lang.code}
                 onClick={() => changeLanguage(lang.code)}
                 className={`w-full flex items-center gap-3 px-4 py-3 text-left text-sm transition-colors ${
-                  i18n.language === lang.code
+                  baseLang === lang.code
                     ? 'bg-brand-50 dark:bg-brand-900/20 text-brand-600 dark:text-brand-400'
                     : 'text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-700'
                 }`}
                 role="option"
-                aria-selected={i18n.language === lang.code}
+                aria-selected={baseLang === lang.code}
               >
                 <span className="text-xl">{lang.flag}</span>
                 <span className="flex-1 font-medium">{lang.name}</span>
-                {i18n.language === lang.code && (
+                {baseLang === lang.code && (
                   <Check className="w-4 h-4 text-brand-500" />
                 )}
               </button>
@@ -137,6 +143,7 @@ export function LanguageSelector({ variant = 'default', className = '' }: Langua
 // Mobile-friendly language selector for navigation
 export function MobileLanguageSelector({ className = '' }: { className?: string }) {
   const { i18n } = useTranslation()
+  const baseLang = getBaseLanguage(i18n.language)
 
   const changeLanguage = (langCode: string) => {
     i18n.changeLanguage(langCode)
@@ -151,7 +158,7 @@ export function MobileLanguageSelector({ className = '' }: { className?: string 
           key={lang.code}
           onClick={() => changeLanguage(lang.code)}
           className={`flex items-center gap-2 px-4 py-2 rounded-lg transition-all ${
-            i18n.language === lang.code
+            baseLang === lang.code
               ? 'bg-brand-500 text-white'
               : 'bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300'
           }`}

@@ -833,6 +833,8 @@
     "contactEmailPlaceholder": "email@voorbeeld.nl",
     "contactPhone": "Telefoonnummer",
     "contactPhonePlaceholder": "06 12345678",
+    "emailLanguage": "E-mail taal",
+    "emailLanguageDescription": "In welke taal wil je e-mails ontvangen?",
     "businessName": "Bedrijfsnaam",
     "businessNamePlaceholder": "Jouw bedrijfsnaam",
     "projectId": "Project ID",

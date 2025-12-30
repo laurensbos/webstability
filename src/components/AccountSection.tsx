@@ -110,6 +110,7 @@ export default function AccountSection({
     contactEmail: project.contactEmail || '',
     contactPhone: project.contactPhone || '',
     businessName: project.businessName || '',
+    preferredLanguage: project.preferredLanguage || 'nl',
   })
 
   // Update form when project changes
@@ -119,6 +120,7 @@ export default function AccountSection({
       contactEmail: project.contactEmail || '',
       contactPhone: project.contactPhone || '',
       businessName: project.businessName || '',
+      preferredLanguage: project.preferredLanguage || 'nl',
     })
   }, [project])
 
@@ -138,6 +140,7 @@ export default function AccountSection({
         contactEmail: formData.contactEmail,
         contactPhone: formData.contactPhone,
         businessName: formData.businessName,
+        preferredLanguage: formData.preferredLanguage as 'nl' | 'en',
       })
       setSaveSuccess(true)
       setIsEditing(false)
@@ -298,6 +301,7 @@ export default function AccountSection({
                           contactEmail: project.contactEmail || '',
                           contactPhone: project.contactPhone || '',
                           businessName: project.businessName || '',
+                          preferredLanguage: project.preferredLanguage || 'nl',
                         })
                       }}
                       className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-colors ${
@@ -390,6 +394,29 @@ export default function AccountSection({
                         }`}
                         placeholder={t('account.placeholders.phone')}
                       />
+                    </div>
+                    <div className="sm:col-span-2">
+                      <label className={`text-xs font-medium mb-1.5 block ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>
+                        {t('account.emailLanguage')}
+                      </label>
+                      <div className="flex items-center gap-2">
+                        <Globe className={`w-4 h-4 ${darkMode ? 'text-gray-500' : 'text-gray-400'}`} />
+                        <select
+                          value={formData.preferredLanguage}
+                          onChange={(e) => setFormData({ ...formData, preferredLanguage: e.target.value as 'nl' | 'en' })}
+                          className={`flex-1 px-3.5 py-2.5 rounded-xl border text-sm focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all appearance-none cursor-pointer ${
+                            darkMode 
+                              ? 'bg-gray-900 border-gray-700 text-white' 
+                              : 'bg-gray-50 border-gray-200 text-gray-900'
+                          }`}
+                        >
+                          <option value="nl">🇳🇱 Nederlands</option>
+                          <option value="en">🇬🇧 English</option>
+                        </select>
+                      </div>
+                      <p className={`text-xs mt-1.5 ${darkMode ? 'text-gray-500' : 'text-gray-400'}`}>
+                        {t('account.emailLanguageDescription')}
+                      </p>
                     </div>
                   </div>
                 ) : (

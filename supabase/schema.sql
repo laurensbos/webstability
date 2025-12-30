@@ -75,6 +75,7 @@ CREATE TABLE users (
   full_name TEXT,
   avatar_url TEXT,
   role user_role DEFAULT 'customer' NOT NULL,
+  preferred_language TEXT DEFAULT 'nl' CHECK (preferred_language IN ('nl', 'en')),
   metadata JSONB
 );
 
@@ -96,6 +97,7 @@ CREATE TABLE projects (
   subscription_id UUID,
   live_url TEXT,
   notes TEXT,
+  preferred_language TEXT DEFAULT 'nl' CHECK (preferred_language IN ('nl', 'en')),
   metadata JSONB
 );
 
